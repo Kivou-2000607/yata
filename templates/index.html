@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+
+    <!-- load jquery from https://code.jquery.com/ -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+
+    <!-- jquery module to sort tables from http://tablesorter.com -->
+    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
+
+    <!-- scripts jquery perso -->
+    <script>
+
+        $(document).on('click', '.update-item', function(e){
+            e.preventDefault();
+            var td = $(this).closest('th');
+            var tId = td.find(".tId").val();
+            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#item-sell-table-" + tId ).load( "updateItemBazaar", {
+                tId: tId,
+                html: "item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', '.update-type', function(e){
+            e.preventDefault();
+            var td = $(this).closest('form');
+            var tType = td.find(".tType").val();
+            $( "#loop-over-item-sell-table-" + tType ).html('<div class="justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            $( "#loop-over-item-sell-table-" + tType ).load( "updateTypeBazaar", {
+                tType: tType,
+                html: "loop_over_item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', '.update-key', function(e){
+            e.preventDefault();
+            var key = $("#key-value").val();
+            $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            $( "#api-key" ).load( "updateKey", {
+                keyValue: key,
+                html: "api_key",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', 'h2.toggleDisplay', function(e){
+            e.preventDefault();
+            var title = $(this);
+            var arrow = title.find("i.title-arrow");
+            var mainDiv = title.next("div");
+            var divToToggle = mainDiv.find("div.toggleDisplay");
+            if(divToToggle.css("display") == "none") {
+                title.css("border-radius", "6px 6px 0 0");
+            }
+            divToToggle.slideToggle("fast", function(){
+                if(divToToggle.css("display") == "none") {
+                    title.css("border-radius", "6px");
+                    arrow.removeClass("down");
+                    arrow.addClass("side");
+                } else {
+                    arrow.removeClass("side");
+                    arrow.addClass("down");
+                }
+            });
+        });
+
+    </script>
+
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+
+    <title>Yet Another Torn App</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
+            <p><b>Bazaar overview</b>: buy and sell at the right price!</p>
+            <br />
+            <input type="hidden" id="view-byType" value="{{view.byType}}">
+            <input type="hidden" id="view-refreshAll" value="{{view.refreshAll}}">
+            <div id="api-key">
+                {% include "sub/api_key.html" %}
+            </div>
+
+            <div id="loop-over-types">
+                {% include "sub/loop_over_types.html" %}
+            </div> <!--end of loop over types-->
+
+            <h2 class="title greyTitle toggleDisplay"><img src={% static "images/tutorial.png" %} alt="help"> Help<i class="title-arrow side"></i></h2>
+            <div class="module whiteBG">
+                <div class="justTxt toggleDisplay">
+                    <h3>What does that means ?</h3>
+                    This tool shows, for every items some basic information along with the current bazaars sales. Each tables contains:
+                    <ul>
+                        <li> Row 1: icon / refresh button</li>
+                        <li> Row 2: time since last update</li>
+                        <li> Row 3: item name / link to its description (pretty useless)</li>
+                        <li> Row 4: current market price / link to the torn item market of this item</li>
+                        <li> The colored rows are information of the users bazaars. Each row corresponds to a bazaar.
+                            <ul>
+                                <li> Column 1: the number of item to sell</li>
+                                <li> Column 2: the selling price of one item</li>
+                                <i>If you let the cursor hover it, you can see the cummulative price</i>
+                            </ul>
+                        </li>
+                        <li>The colors correspond to the prices compared to the current market price.
+                        <div class="module">
+                            <table class="item-sell-table scale">
+                                <tr >
+                                    <td  class="llt"> < 3%    </td>
+                                    <td  class="lt" > < 1%    </td>
+                                    <td  class="eq" > &plusmn; 1% </td>
+                                    <td  class="gt" > > 1%    </td>
+                                    <td  class="ggt"> > 3%    </td>
+                                </tr>
+                            </table>
+                        </div></li>
+                    </ul>
+
+                    <h3>How does it work ?</h3>
+                    <ul>
+                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down.</li>
+                        <li>Click on the item type to show the tables.</li>
+                        <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
+                        <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call/item + 1)</li>
+                        <li>API key and personal information are not stored. Sessions expire after 30 minutes.</li>
+                    </ul>
+                    <br />
+                    <p><i>YATA <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>. Bump or rate the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16051010&b=0&a=0&start=0&to=18616946" target="_blank">forum thread</a>.</i></p>
+            </div>
+            <div id="loading-div"></div>
+        </div>
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>

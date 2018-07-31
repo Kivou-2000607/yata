@@ -1,0 +1,17 @@
+
+{% if request.session.user %}
+<h2 class="title">Hello {{request.session.user.name}}</h2>
+<div class="module whiteBG justTxt">
+    <h3><a class="deletelink" href=logout>Logout</a></h3>
+</div>
+{% else %}
+<h2 class="title">Enter your API key to refresh data</h2>
+<div class="module whiteBG justTxt">
+<form method="post">
+    {% csrf_token %}
+    <input id="key-value" placeholder="API key" type=text>
+    <input type="submit" class="update-key" value="Login">
+    {% if apiError %}<a class="deletelink" href="">{{ apiError }}</a>{% endif %}
+</form>
+</div>
+{% endif %}
