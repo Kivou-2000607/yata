@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import *
+from .models import MarketData
+from .models import Item
+from .models import config
+from .models import login
+from .models import loginDate
 
 
 class MarketDataInline(admin.TabularInline):
@@ -14,18 +18,6 @@ class MarketDataAdmin(admin.ModelAdmin):
 
 
 admin.site.register(MarketData, MarketDataAdmin)
-
-
-class userStockInline(admin.TabularInline):
-    model = userStock
-    extra = 0
-
-
-class userStockAdmin(admin.ModelAdmin):
-    list_display = ['item', 'user', 'quantity']
-
-
-admin.site.register(userStock, userStockAdmin)
 
 
 def remove_from_market(modeladmin, request, queryset):
@@ -47,8 +39,7 @@ admin.site.register(Item, ItemAdmin)
 
 
 class configAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nItems', 'key', 'stockKeys']
-
+    list_display = ['id', 'nItems', 'autorisedId', 'lastScan']
 
 admin.site.register(config, configAdmin)
 
@@ -59,8 +50,10 @@ class loginDateInline(admin.TabularInline):
     model = loginDate
     extra = 0
 
+
 class loginDateAdmin(admin.ModelAdmin):
     list_display = ['date']
+
 
 admin.site.register(loginDate, loginDateAdmin)
 
@@ -73,5 +66,6 @@ class loginAdmin(admin.ModelAdmin):
     def show_url(self, instance):
         return format_html('<a href="{url}" target="_blank">{url}</a>'.format(url=instance.torn_url_page()))
     show_url.allow_tags = True
+
 
 admin.site.register(login, loginAdmin)

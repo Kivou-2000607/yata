@@ -1,17 +1,26 @@
 
 {% if request.session.user %}
-<h2 class="title">Hello {{request.session.user.name}}</h2>
-<div class="module whiteBG justTxt">
-    <h3><a class="deletelink" href=logout>Logout</a></h3>
-</div>
+    <h2 class="title">Hello {{request.session.user.name}}</h2>
 {% else %}
-<h2 class="title">Enter your API key to refresh data</h2>
-<div class="module whiteBG justTxt">
-<form method="post">
-    {% csrf_token %}
-    <input id="key-value" placeholder="API key" type=text>
-    <input type="submit" class="update-key" value="Login">
-    {% if apiError %}<a class="deletelink" href="">{{ apiError }}</a>{% endif %}
-</form>
-</div>
+    <h2 class="title">Hello unkown user</h2>
 {% endif %}
+
+<div class="module whiteBG justTxt">
+    <p>This tool shows, for every items some basic information along with the current bazaars sales.<p>
+    <ul>
+        <li><a href={% url "index" %}>List of the most interesting items</a></li>
+        <li><a href={% url "sets" %}>List the flower and plushie sets</a></li>
+        <li><a href={% url "fullList" %}>List of all the items</a></li>
+    </ul>
+    {% if request.session.user %}
+        <h3><a class="deletelink" href=logout>Logout</a></h3>
+    {% else %}
+        <p>Enter your API key to refresh data</p>
+        <form method="post">
+            {% csrf_token %}
+            <input id="key-value" placeholder="API key" type=text>
+            <input type="submit" class="update-key" value="Login">
+            {% if apiError %}<a class="deletelink" href="">{{ apiError }}</a>{% endif %}
+        </form>
+    {% endif %}
+</div>

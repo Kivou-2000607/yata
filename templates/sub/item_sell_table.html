@@ -16,8 +16,13 @@
     </th>
     </tr>
     <tr>
+
     <th colspan="2" id="form-update-item-{{item.tId}}">
-        {{item.last_update}}
+        <form method="post">{% csrf_token %}
+            <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+            <a href="" class="delete-item">{{item.last_update}}</a>
+        </form>
+        <!-- {{item.last_update}} -->
     </th>
     </tr>
     <tr>
