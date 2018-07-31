@@ -2,7 +2,9 @@
 {% load mathfilters %}
 
 {% if apiError %}
-<a class="deletelink" href="">{{ apiError }}</a>
+<div class="justTxt">
+    <a class="deletelink" href="">{{ apiError }}</a>
+</div>
 {% else %}
 
 {% for item in items|dictsort:"tName" %}
