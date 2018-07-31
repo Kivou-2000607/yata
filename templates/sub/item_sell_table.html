@@ -26,7 +26,14 @@
     </th>
     </tr>
     <tr>
-    <tr class="name"><th colspan="2"><a href={% url "details" item.tId %}>{{item.tName|truncatechars:25}}</a></th></tr>
+        <tr class="name"><th colspan="2">
+            <form method="post">{% csrf_token %}
+                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+                <a href="" class="show-details">{{item.tName|truncatechars:25}}</a>
+
+                <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "index" %}>{{item.tName|truncatechars:25}}</a> -->
+            </from>
+        </th></tr>
     {% for stock in item.userstock_set.all|dictsort:"user" %}
         <tr><th class="{% if not stock.quantity %}lack{% endif %}" colspan="2">{{stock.user|make_list|slice:':3'|join:''}} : {{stock.quantity}}</th></tr>
     {% endfor %}

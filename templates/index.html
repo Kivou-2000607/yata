@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load i18n %}
+{% load humanize %}
 {% get_current_language as LANGUAGE_CODE %}
 
 <!-- Current language: {{ LANGUAGE_CODE }} -->
@@ -20,6 +21,32 @@
 
     <!-- scripts jquery perso -->
     <script>
+        //
+        // $(document).on('click', 'a.show-details', function(e){
+        //     e.preventDefault();
+        //     tId = $(this).attr("id").split('-').pop();
+        //     $( "#details" ).load( "details", {
+        //         tId: tId,
+        //         html: "details",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        // });
+
+        $(document).on('click', 'a.show-details', function(e){
+            e.preventDefault();
+            var td = $(this).closest('th');
+            var tId = td.find(".tId").val();
+            $( "#details" ).load( "details", {
+                tId: tId,
+                html: "details",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', '.close', function(e){
+            e.preventDefault();
+            $(this).parent("div.container").css("display", "none");
+        });
 
         $(document).on('click', '.update-item', function(e){
             e.preventDefault();
@@ -63,7 +90,7 @@
             $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#api-key" ).load( "updateKey", {
                 keyValue: key,
-                html: "api_key",
+                html: "intro",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
         });
@@ -103,6 +130,8 @@
 </head>
 
 <body>
+    <div id="details"></div>
+
     <div id="container">
         <div id="content">
             <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
@@ -111,8 +140,10 @@
             <input type="hidden" id="view-byType" value="{{view.byType}}">
             <input type="hidden" id="view-refreshAll" value="{{view.refreshAll}}">
             <div id="api-key">
-                {% include "sub/api_key.html" %}
+                {% include "sub/intro.html" %}
             </div>
+
+
 
             {% if view.lastScan %}
             <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Last scan update</h2>

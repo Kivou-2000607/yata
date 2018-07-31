@@ -196,6 +196,10 @@ def updateTypeBazaar(request):
         return HttpResponse("Don't try to be a smart ass, you need to post.")
 
 
-def details(request, tId):
-    item = Item.objects.filter(tId=tId)[0]
-    return render(request, 'details.html', {'item': item})
+def details(request):
+    if request.method == "POST":
+        p = request.POST
+        item = Item.objects.filter(tId=p["tId"])[0]
+        return render(request, 'sub/details.html', {'item': item})
+    else:
+        return HttpResponse("Don't try to be a smart ass, you need to post.")
