@@ -11,16 +11,16 @@
     </table>
 {% endfor %}
 
-{% if view.refreshType %}
-    <div class="module">
-        <div class="submit-row">
+<div class="module">
+    <div class="submit-row">
+        {% if view.refreshType %}
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" class="tType" name="tType" value={{items.0.tType}}>
                 <p class="deletelink-box"><input type="submit" class="update-type" value="Refresh {{items.0.tType}}"></p>
             </form>
-        </div>
+        {% endif %}
     </div>
-{% endif %}
+</div>
 
 {% endif %}

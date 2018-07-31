@@ -45,6 +45,18 @@
             });
         });
 
+        $(document).on('click', '.delete-item', function(e){
+            e.preventDefault();
+            var td = $(this).closest('th');
+            var tId = td.find(".tId").val();
+            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#item-sell-table-" + tId ).load( "deleteItemBazaar", {
+                tId: tId,
+                html: "item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
         $(document).on('click', '.update-key', function(e){
             e.preventDefault();
             var key = $("#key-value").val();
@@ -102,19 +114,38 @@
                 {% include "sub/api_key.html" %}
             </div>
 
+            {% if view.lastScan %}
+            <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Last scan update</h2>
+            <div class="module whiteBG">
+                <div class="justTxt">
+                    Last scan of the object list has been made on {{ view.lastScan }}
+                </div>
+            </div>
+            {% endif %}
+
             <div id="loop-over-types">
                 {% include "sub/loop_over_types.html" %}
             </div> <!--end of loop over types-->
 
+            {% if view.help %}
             <h2 class="title greyTitle toggleDisplay"><img src={% static "images/tutorial.png" %} alt="help"> Help<i class="title-arrow side"></i></h2>
             <div class="module whiteBG">
                 <div class="justTxt toggleDisplay">
-                    <h3>What does that means ?</h3>
-                    This tool shows, for every items some basic information along with the current bazaars sales. Each tables contains:
+                    <h3>How does it work?</h3>
+                    <ul>
+                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down.</li>
+                        <li>Click on the item type to show the tables.</li>
+                        <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
+                        <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call + 1/item). This feature is not available for the full list.</li>
+                        <li>API key and personal information (except for name, user id and login dates to monitor the activity) are not stored. Sessions expire after 30 minutes.</li>
+                    </ul>
+
+                    <h3>What does the tables mean?</h3>
+                    <p>Each tables contains:</p>
                     <ul>
                         <li> Row 1: icon / refresh button</li>
-                        <li> Row 2: time since last update</li>
-                        <li> Row 3: item name / link to its description (pretty useless)</li>
+                        <li> Row 2: time since last update / click to delete bazaar data (because why not?) </li>
+                        <li> Row 3: item name / link to its description</li>
                         <li> Row 4: current market price / link to the torn item market of this item</li>
                         <li> The colored rows are information of the users bazaars. Each row corresponds to a bazaar.
                             <ul>
@@ -137,19 +168,27 @@
                         </div></li>
                     </ul>
 
-                    <h3>How does it work ?</h3>
+
+                    <h3>About the project</h3>
                     <ul>
-                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down.</li>
-                        <li>Click on the item type to show the tables.</li>
-                        <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
-                        <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call/item + 1)</li>
-                        <li>API key and personal information are not stored. Sessions expire after 30 minutes.</li>
-                    </ul>
-                    <br />
-                    <p><i>YATA <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>. Bump or rate the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16051010&b=0&a=0&start=0&to=18616946" target="_blank">forum thread</a>.</i></p>
-            </div>
-            <div id="loading-div"></div>
-        </div>
+                        <li>The code is open source and hosted on <a href="https://github.com/Kivou-2000607/yata" target="_blank">github</a> and is currently maintained by <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>. Fill free to do whatever you want with it and post issues if you find some bugs.</li>
+                        <li>Fill free to bump, rate and comment the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16051010&b=0&a=0&start=0&to=18616946" target="_blank">forum thread</a>.</i></li>
+                        <li> log
+                            <ul>
+                                <li><b>v1.0 (2018-07-31)</b>: Stable release</li>
+                                <ul>
+                                    <li>add torn style</li>
+                                    <li>add full list and sets</li>
+                                    <li>hide tables by default</li>
+                                </ul>
+                                <li><b>beta (2018-07-03)</b>: First public release</li>
+                            </ul>
+                        </li>
+                    <ul>
+                </div>
+                <div id="loading-div"></div>
+            </div> <!--  end of help -->
+            {% endif %}
         </div> <!--end of content-->
     </div> <!--end of container-->
 </body>
