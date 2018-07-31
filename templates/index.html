@@ -62,8 +62,7 @@
 
         $(document).on('click', '.update-type', function(e){
             e.preventDefault();
-            var td = $(this).closest('form');
-            var tType = td.find(".tType").val();
+            var tType = $(this).prev('.tType').val();
             $( "#loop-over-item-sell-table-" + tType ).html('<div class="justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#loop-over-item-sell-table-" + tType ).load( "updateTypeBazaar", {
                 tType: tType,
