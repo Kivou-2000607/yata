@@ -1,0 +1,7 @@
+Django>=2.0
+requests>=2.18
+django-mathfilters>=0.4.0
+gunicorn>=19.7
+dj_database_url>=0.4.2
+psycopg2>=2.7
+whitenoise>=3.3

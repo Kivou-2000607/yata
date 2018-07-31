@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    
+    <!-- load jquery from https://code.jquery.com/ -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+
+    <!-- jquery module to sort tables from http://tablesorter.com -->
+    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
+
+    <!-- scripts jquery perso -->
+    <script>
+    
+        $(document).on('click', '.update-item', function(e){
+            e.preventDefault();
+            var td = $(this).closest('th');
+            var tId = td.find(".tId").val();
+            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#item-sell-table-" + tId ).load( "/script/updateItemBazaar", {
+                tId: tId,
+                html: "item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+        
+        $(document).on('click', '.delete-item', function(e){
+            e.preventDefault();
+            var td = $(this).closest('th');
+            var tId = td.find(".tId").val();
+            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#item-sell-table-" + tId ).load( "/script/deleteItemBazaar", {
+                tId: tId,
+                html: "item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', '.update-type', function(e){
+            e.preventDefault();
+            var td = $(this).closest('form');
+            var tType = td.find(".tType").val();
+            $( "#loop-over-item-sell-table-" + tType ).html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#loop-over-item-sell-table-" + tType ).load( "/script/updateTypeBazaar", {
+                tType: tType,
+                html: "loop_over_item_sell_table",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        $(document).on('click', '.update-all', function(e){
+            e.preventDefault();
+            $( "div[id^='loop-over-item-sell-table-']" ).html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            $( "#loop-over-types" ).load( "/script/updateAll", {
+                html: "loop_over_types",
+                viewByType:     $("#view-byType").val(),
+                viewRefreshAll: $("#view-refreshAll").val(),
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+
+        });
+        
+    </script>
+
+    
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+    
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+
+    <title>Yet Another Torn App</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
+            <input type="hidden" id="view-byType" value="{{view.byType}}">
+            <input type="hidden" id="view-refreshAll" value="{{view.refreshAll}}">
+            <h3>Show <a href={% url "index" %}>items on market</a> or just <a href={% url "sets" %}>flowers and plushies</a> or <a href={% url "fullList" %}>all items by types</a></h3>
+
+            <div id="loop-over-types">
+                {% include "sub/loop_over_types.html" %}
+            </div> <!--end of loop over types-->
+
+            <div class="module">
+                <table class="item-sell-table scale">
+                    <tr >
+                        <td  class="llt"> < 3%    </td>
+                        <td  class="lt" > < 1%    </td>
+                        <td  class="eq" > &plusmn; 1% </td>
+                        <td  class="gt" > > 1%    </td>
+                        <td  class="ggt"> > 3%    </td>
+                    </tr>
+                </table>
+            </div>
+            
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>

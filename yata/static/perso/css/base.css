@@ -1,0 +1,247 @@
+/* torn like */
+
+body {
+     background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
+}
+
+img.thumb{
+    height: 26px;
+    margin:0 10px 2px -7px ;
+    background:#ccc url("/static/images/bg_hospital.jpg") left top repeat;
+    border-radius: 4px;
+}
+
+.module {
+    background-color: #cccccc00;
+    /* padding:0 10px 0 10px; */
+}
+
+.whiteBG {
+   background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
+   border-radius:0 0 6px 6px;
+}
+
+.justTxt {
+    padding: 10px;
+}
+
+
+h2.title {
+    background: #ccc url("/static/images/section_title_black_bg.png") left top repeat;
+    /* color: #ccc; */
+    /* cursor: pointer; */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.65);
+    padding-left: 10px;
+    height: 30px;
+    line-height: 30px;
+    color: #FFF;
+    font-weight: normal;
+    letter-spacing: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    padding-left: 10px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 6px 6px 0 0;
+    margin-top:0;
+}
+
+h2.greyTitle {
+    background: #ccc url("/static/images/section_title_gray_bg.png") left top repeat;
+}
+
+h2.toggleDisplay {
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+div.toggleDisplay {
+    display: none;
+}
+
+i.title-arrow{
+    display: inline-block;
+    margin: 0 20px 0 20px;
+    /* padding: 10; */
+    border: 0;
+    vertical-align: middle;
+}
+
+i.down {
+    background: url("/static/images/mobile_side_nav_arrow_down.png") left top no-repeat;
+    height: 9px;
+    width: 14px;
+}
+
+i.side{
+    background: url("/static/images/mobile_side_nav_arrow_side.png") left top no-repeat;
+    height: 14px;
+    width: 19px;
+}
+
+.submit-row {
+    /* background-color: #cccccc00; */
+    border:0px;
+    border-radius: 0 0 6px 6px;
+    background: #ccc url("/static/images/section_title_black_bg.png") left top repeat;
+    text-align: left;
+}
+
+input.update-key,
+input.update-type {
+    display: inline-block;
+    align:left;
+    padding: 0 12px 0 12px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    color: #333;
+    cursor: pointer;
+    margin-top: 2px;
+    margin-left: 5px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background: url("/static/images/buttons_desktop.png") left top no-repeat;
+    background-position: 0 0px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+input.update-type:hover,
+input.update-type:focus,
+input.update-type:active,
+input.update-key:hover,
+input.update-key:focus,
+input.update-key:active {
+    background: url("/static/images/buttons_desktop.png") left top no-repeat;
+    background-position: 0 -48px;
+}
+
+table tr:last-child td {
+    border: 0px;
+}
+
+table.tablehover td {
+    vertical-align:middle;
+    height: 50px;
+}
+table.tablehover tr:nth-child(2n) {
+    background:#EEE;
+}
+table.tablehover tr:nth-child(2n+1) {
+    background:#FFF;
+}
+table.tablehover tr:hover {
+    background:#AAA;
+}
+
+td.notOnMarket {
+    background:#FD6431;
+}
+td.onMarket {
+    background:#79C732;
+}
+
+
+table.item-sell-table  {
+    display: inline-table;
+    width:120px;
+    box-sizing: border-box;
+}
+
+table.item-sell-table img {
+    width:100%;
+}
+
+table.item-sell-table a:hover {
+    text-decoration: underline;
+}
+
+
+table.item-sell-table td.A,
+table.item-sell-table th.A {
+    padding:2px;
+    max-width:45px;
+    width:55px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+table.item-sell-table td.B,
+table.item-sell-table th.B {
+    padding:2px;
+    max-width:75px;
+    width:66px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+table.item-sell-table th {
+    text-align:center;
+}
+
+table.item-sell-table tr {
+    text-align:center;
+}
+
+table.item-sell-table tr.imag th {
+    max-height:65px;
+}
+
+table.item-sell-table div.time {
+    max-height:15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table.item-sell-table tr.name th {
+    height:35px;
+    vertical-align:middle;
+}
+table.item-sell-table tr.name div {
+    max-height:30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table.item-sell-table.scale {
+    width:375px;
+}
+
+table.item-sell-table.scale td {
+    height:10px!important;
+    width:75px!important;
+    text-align:center;
+
+}
+
+table.item-sell-table th img {
+    cursor:pointer;
+}
+table.item-sell-table td {
+    text-align:right;
+}
+
+td.llt      ,tr.llt       { background:#d9ead3; }
+td.lt       ,tr.lt        { background:#b6d7a8; }
+td.eq       ,tr.eq        { background:#9fc5e8; }
+td.gt       ,tr.gt        { background:#f9cb9c; }
+td.ggt      ,tr.ggt       { background:#fce5cd; }
+/* td.ignore   ,tr.ignore    { background:#eeeeee; color:#aaaaaa; } */
+
+td.llt:hover,tr.llt:hover { background:#b6d7a8; color:#000000; }
+td.lt:hover ,tr.lt:hover  { background:#93c47d; color:#000000; }
+td.eq:hover ,tr.eq:hover  { background:#6fa8dc; color:#000000; }
+td.gt:hover ,tr.gt:hover  { background:#f6b26b; color:#000000; }
+td.ggt:hover,tr.ggt:hover { background:#f9cb9c; color:#000000; }
+
+tr.llt { animation: blinker 1s linear infinite; }
+@keyframes blinker {  50% { opacity: 0.5; } }
+
+table.item-sell-table th.lack       { background:#f4cccc!important; }
+table.item-sell-table th.lack:hover { background:#ea9999!important; }

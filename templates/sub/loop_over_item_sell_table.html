@@ -1,0 +1,26 @@
+{% load humanize %}
+{% load mathfilters %}
+
+{% if apiError %}
+<a class="deletelink" href="">{{ apiError }}</a>
+{% else %}
+
+{% for item in items|dictsort:"tName" %}
+    <table id="item-sell-table-{{item.tId}}" class="item-sell-table">
+        {% include "sub/item_sell_table.html" with item=item%}
+    </table>
+{% endfor %}
+
+{% if view.refreshType %}
+    <div class="module">
+        <div class="submit-row">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" class="tType" name="tType" value={{items.0.tType}}>
+                <p class="deletelink-box"><input type="submit" class="update-type" value="Refresh {{items.0.tType}}"></p>
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+{% endif %}
