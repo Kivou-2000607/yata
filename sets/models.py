@@ -57,6 +57,8 @@ class Item(models.Model):
         self.tMarketValue = int(v['market_value'])
         self.tDescription = v['description']
         self.tImage = v['image']
+        self.date = timezone.now()
+        self.save()
 
     def display_image(self):
         from urllib.parse import urlparse
