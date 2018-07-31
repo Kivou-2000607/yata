@@ -31,6 +31,9 @@ class Item(models.Model):
     tType = models.CharField(max_length=200)
     tDescription = models.TextField(default="")
     tMarketValue = models.BigIntegerField(default=0)
+    tSellPrice = models.BigIntegerField(default=0)
+    tBuyPrice = models.BigIntegerField(default=0)
+    tCirculation = models.BigIntegerField(default=0)
     tImage = models.URLField(max_length=500)
     onMarket = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
@@ -45,16 +48,30 @@ class Item(models.Model):
                    tName=v['name'],
                    tType=v['type'].replace(" ", ""),
                    tMarketValue=int(v['market_value']),
+                   tSellPrice=int(v['sell_price']),
+                   tBuyPrice=int(v['buy_price']),
+                   tCirculation=int(v['circulation']),
                    tDescription=v['description'],
                    tImage=v['image'])
         return item
 
     def update(self, k, v):
+        # v = {'name': 'Kitchen Knife',
+        #      'description': 'Do your attempts to prepare food like your favourite TV chef end up more like hack and saw than slice and dice? If so, a sharp new knife could be your saviour.',
+        #      'type': 'Melee',
+        #      'buy_price': 1500,
+        #      'sell_price': 1000,
+        #      'market_value': 2094,
+        #      'circulation': 68911,
+        #      'image': 'http://www.torn.com/images/items/6/large.png'}
         print("[MODEL Item] update", k, v['name'], v['type'], v['market_value'])
         self.tId = int(k)
         self.tName = v['name']
         self.tType = v['type'].replace(" ", "")
         self.tMarketValue = int(v['market_value'])
+        self.tSellPrice = int(v['sell_price'])
+        self.tBuyPrice = int(v['buy_price'])
+        self.tCirculation = int(v['circulation'])
         self.tDescription = v['description']
         self.tImage = v['image']
         self.date = timezone.now()

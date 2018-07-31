@@ -1,7 +1,36 @@
 /* torn like */
 
-body {
-     background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
+html, body{
+  min-height: 100%;
+  background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
+}
+body{
+  position: relative;
+}
+
+div.overlay{
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+
+div.modal {
+    width: 300px;
+    height: 20px;
+    line-height: 20px;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -150px;
+    background-color: #f1c40f;
+    border-radius: 5px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
 }
 
 img.thumb{
@@ -24,6 +53,7 @@ img.thumb{
 .justTxt {
     padding: 10px;
 }
+
 
 
 h2.title {
@@ -51,6 +81,11 @@ h2.title {
 
 h2.greyTitle {
     background: #ccc url("/static/images/section_title_gray_bg.png") left top repeat;
+}
+
+
+h2.close {
+    cursor: pointer;
 }
 
 h2.toggleDisplay {
