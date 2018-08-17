@@ -4,13 +4,17 @@
 {% if view.byType %}
 
     {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
-    <h2 class="title toggleDisplay">{{v.0.display_thumb}} {{k}}<i class="title-arrow side"></i></h2>
-    <div class="module whiteBG">
-        <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay">
-            {% include "sub/loop_over_item_sell_table.html" with items=v %}
+    {% if view.hideType %}
+        <h2 class="title toggleDisplay side">{{v.0.display_thumb}} {{k}}<i class="title-arrow"></i></h2>
+        {% else %}
+        <h2 class="title toggleDisplay down">{{v.0.display_thumb}} {{k}}<i class="title-arrow"></i></h2>
+    {% endif %}
+        <div class="module whiteBG">
+            <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay {% if view.hideType %}hide{% endif %}">
+                {% include "sub/loop_over_item_sell_table.html" with items=v %}
+            </div>
+            <div id="loading-div"></div>
         </div>
-        <div id="loading-div"></div>
-    </div>
     {% endfor %}
 
 {% else %}

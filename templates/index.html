@@ -101,16 +101,13 @@
             var mainDiv = title.next("div");
             var divToToggle = mainDiv.find("div.toggleDisplay");
             if(divToToggle.css("display") == "none") {
-                title.css("border-radius", "6px 6px 0 0");
+                title.removeClass("side");
+                title.addClass("down");
             }
             divToToggle.slideToggle("fast", function(){
                 if(divToToggle.css("display") == "none") {
-                    title.css("border-radius", "6px");
-                    arrow.removeClass("down");
-                    arrow.addClass("side");
-                } else {
-                    arrow.removeClass("side");
-                    arrow.addClass("down");
+                    title.removeClass("down");
+                    title.addClass("side");
                 }
             });
         });
@@ -158,9 +155,9 @@
             </div> <!--end of loop over types-->
 
             {% if view.help %}
-            <h2 class="title greyTitle toggleDisplay"><img src={% static "images/tutorial.png" %} alt="help"> Help<i class="title-arrow side"></i></h2>
+            <h2 class="title greyTitle toggleDisplay side"><img src={% static "images/tutorial.png" %} alt="help"> Help<i class="title-arrow"></i></h2>
             <div class="module whiteBG">
-                <div class="justTxt toggleDisplay">
+                <div class="justTxt toggleDisplay hide">
                     <h3>How does it work?</h3>
                     <ul>
                         <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down.</li>

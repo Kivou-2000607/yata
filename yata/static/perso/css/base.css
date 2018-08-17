@@ -88,13 +88,9 @@ h2.close {
     cursor: pointer;
 }
 
+
 h2.toggleDisplay {
     cursor: pointer;
-    border-radius: 6px;
-}
-
-div.toggleDisplay {
-    display: none;
 }
 
 i.title-arrow{
@@ -105,17 +101,33 @@ i.title-arrow{
     vertical-align: middle;
 }
 
-i.down {
+
+div.hide {
+    display: none;
+}
+
+
+h2.side {
+    border-radius: 6px;
+}
+
+h2.side i {
+    background: url("/static/images/mobile_side_nav_arrow_side.png") left top no-repeat;
+    height: 14px;
+    width: 19px;
+}
+
+h2.down {
+    border-radius: 6px 6px 0 0;
+}
+
+h2.down i {
     background: url("/static/images/mobile_side_nav_arrow_down.png") left top no-repeat;
     height: 9px;
     width: 14px;
 }
 
-i.side{
-    background: url("/static/images/mobile_side_nav_arrow_side.png") left top no-repeat;
-    height: 14px;
-    width: 19px;
-}
+
 
 .submit-row {
     /* background-color: #cccccc00; */

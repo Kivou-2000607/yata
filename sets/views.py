@@ -18,17 +18,16 @@ def index(request):
         key = False
     else:
         key = request.session["key"]["value"]
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "key": key, "help": True}
+    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "key": key, "help": True}
     return render(request, 'index.html', out)
-
-
+    
 def fullList(request):
     allItems = Item.objects
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     lastScan = config.objects.all()[0].lastScan
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "lastScan": lastScan}
+    out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": True, "lastScan": lastScan}
     return render(request, 'index.html', out)
 
 
@@ -39,7 +38,7 @@ def sets(request):
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         if tType in acceptedTypes:
             out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "help": True}
+    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
     return render(request, 'index.html', out)
 
 
