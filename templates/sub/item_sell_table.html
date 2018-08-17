@@ -16,7 +16,6 @@
     </th>
     </tr>
     <tr>
-
     <th colspan="2" id="form-update-item-{{item.tId}}">
         <form method="post">{% csrf_token %}
             <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
@@ -59,4 +58,20 @@
         <td class="A">{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
         </tr>
     {% endfor %}
+
+    {% if request.session.user %}
+    <tr>
+        <th colspan="2" id="form-update-item-{{item.tId}}">
+            <form method="post">{% csrf_token %}
+                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+                {% if toggleMessage %}
+                    <a href="" class="toggle-item">{{toggleMessage}}</a>
+                {% else %}
+                    <a href="" class="toggle-item">Add / remove</a>
+                {% endif %}
+            </form>
+        </th>
+    </tr>
+    {% endif %}
+
 </tbody>

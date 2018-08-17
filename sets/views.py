@@ -9,18 +9,36 @@ from .models import login
 
 
 def index(request):
+    if request.session.get("user") is not None:
+        return HttpResponseRedirect(reverse('custom'))
+    else:
+        return HttpResponseRedirect(reverse('default'))
+
+def custom(request):
+    try:
+        key = request.session["user"].get("keyValue")
+        user_id = request.session["user"].get("id")
+        user = login.objects.filter(user_id=user_id)[0]
+        out = dict({"allItemsOnMarket": dict()})
+        allItems = Item.objects
+        try:
+            out["allItemsOnMarket"]["My Items"] = [allItems.filter(tId=id)[0] for id in user.get_items_id()]
+        except:
+            out["allItemsOnMarket"]["My Items"] = []
+        out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": False, "help": True}
+        return render(request, 'index.html', out)
+    except:
+        return HttpResponseRedirect(reverse('default'))
+
+def default(request):
     # allItems = Item.objects.filter( onMarket=True ).exclude( tType="Flower" ).exclude( tType="Plushie" )
     allItems = Item.objects.filter(onMarket=True)
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
-    if not request.session.get("key"):
-        key = False
-    else:
-        key = request.session["key"]["value"]
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "key": key, "help": True}
+    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "help": True}
     return render(request, 'index.html', out)
-    
+
 def fullList(request):
     allItems = Item.objects
     out = dict({"allItemsOnMarket": dict()})
@@ -46,8 +64,8 @@ def scan(request):
     apiKey = ""
     userId = ""
     try:
-        apiKey = request.session["user"]["keyValue"]
-        userId = int(request.session["user"]["id"])
+        apiKey = request.session["user"].get("keyValue")
+        userId = int(request.session["user"].get("id"))
     except:
         pass
 
@@ -141,6 +159,26 @@ def updateItemBazaar(request):
 
     else:
         return HttpResponse("Don't try to be a smart ass, you need to post.")
+
+def toggleItem(request):
+    if request.method == "POST":
+        p = request.POST
+        itemId = p["tId"]
+        item = Item.objects.filter(tId=itemId)[0]
+        user_id = request.session["user"].get("id")
+        user = login.objects.filter(user_id=user_id)[0]
+        add = user.toggle_item(itemId)
+
+        if add:
+            message = "Added"
+        else:
+            message = "Removed"
+
+        return render(request, "sub/{}.html".format(p["html"]), {'item': item, 'toggleMessage': message})
+
+    else:
+        return HttpResponse("Don't try to be a smart ass, you need to post.")
+
 
 
 def deleteItemBazaar(request):

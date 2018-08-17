@@ -11,6 +11,10 @@
     <table id="item-sell-table-{{item.tId}}" class="item-sell-table">
         {% include "sub/item_sell_table.html" with item=item%}
     </table>
+{%empty%}
+    <div class="justTxt">
+        No item here.
+    </div>
 {% endfor %}
 
 <div class="module">

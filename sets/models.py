@@ -144,6 +144,7 @@ class login(models.Model):
     user_id = models.BigIntegerField(default=4)
     date = models.DateTimeField(default=timezone.now)
     n_log = models.IntegerField(default=1)
+    items_id = models.TextField(default="", blank=True)
 
     def __str__(self):
         return "{} [{}]".format(self.user_name, self.user_id)
@@ -151,6 +152,27 @@ class login(models.Model):
     def torn_url_page(self):
         return "https://www.torn.com/profiles.php?XID={}".format(self.user_id)
 
+    def get_items_id(self):
+        if self.items_id:
+            return self.items_id.strip().replace(" ", "").split(',')
+        else:
+            return []
+
+    def toggle_item(self, id):
+        list_id = self.get_items_id()
+        print(list_id)
+        if id in list_id:
+            del list_id[list_id.index(id)]
+            self.items_id = ",".join(list_id)
+            self.save()
+            print(self.items_id)
+            return False
+        else:
+            list_id.append(id)
+            self.items_id = ",".join(list_id)
+            self.save()
+            print(self.items_id)
+            return True
 
 class loginDate(models.Model):
     login = models.ForeignKey(login, on_delete=models.CASCADE)
