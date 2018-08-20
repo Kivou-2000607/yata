@@ -65,7 +65,7 @@ def scan(request):
     userId = ""
     try:
         apiKey = request.session["user"].get("keyValue")
-        userId = int(request.session["user"].get("id"))
+        userId = int(request.session["user"].get("playerId"))
     except:
         pass
 
