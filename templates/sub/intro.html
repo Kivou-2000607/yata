@@ -8,15 +8,15 @@
 <div class="module whiteBG justTxt">
     <p>This tool shows, for every items some basic information along with the current bazaars sales.<p>
     <ul>
-        <li><a href="{% url "default" %}">List of the most interesting items</a></li>
-        <li><a href="{% url "sets" %}">List the flower and plushie sets</a></li>
-        <li><a href="{% url "fullList" %}">List of all the items</a></li>
+        <li><a href="{% url 'bazaar:default' %}">List of the default items</a></li>
+        <li><a href="{% url 'bazaar:sets' %}">List the flower and plushie sets</a></li>
+        <li><a href="{% url 'bazaar:fullList' %}">List of all the items</a></li>
         {% if request.session.user %}
-            <li><a href="{% url "custom" %}">Custom list of items</a></li>
+            <li><a href="{% url 'bazaar:custom' %}">Custom list of items</a></li>
         {% endif %}
     </ul>
     {% if request.session.user %}
-        <h3><a class="deletelink" href=logout>Logout</a></h3>
+        <h3><a class="deletelink" href="{% url 'bazaar:logout' %}">Logout</a></h3>
     {% else %}
         <p>Enter your API key to refresh data and create your custom list of items</p>
         <form method="post">

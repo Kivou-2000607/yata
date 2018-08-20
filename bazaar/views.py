@@ -3,22 +3,22 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
 import requests
-from .models import config
+from .models import Config
 from .models import Item
-from .models import login
+from .models import Player
 
 
 def index(request):
     if request.session.get("user") is not None:
-        return HttpResponseRedirect(reverse('custom'))
+        return HttpResponseRedirect(reverse('bazaar:custom'))
     else:
-        return HttpResponseRedirect(reverse('default'))
+        return HttpResponseRedirect(reverse('bazaar:default'))
 
 def custom(request):
     try:
         key = request.session["user"].get("keyValue")
-        user_id = request.session["user"].get("id")
-        user = login.objects.filter(user_id=user_id)[0]
+        playerId = request.session["user"].get("playerId")
+        user = Player.objects.filter(playerId=playerId)[0]
         out = dict({"allItemsOnMarket": dict()})
         allItems = Item.objects
         try:
@@ -26,9 +26,9 @@ def custom(request):
         except:
             out["allItemsOnMarket"]["My Items"] = []
         out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": False, "help": True}
-        return render(request, 'index.html', out)
+        return render(request, 'bazaar.html', out)
     except:
-        return HttpResponseRedirect(reverse('default'))
+        return HttpResponseRedirect(reverse('bazaar:default'))
 
 def default(request):
     # allItems = Item.objects.filter( onMarket=True ).exclude( tType="Flower" ).exclude( tType="Plushie" )
@@ -37,16 +37,16 @@ def default(request):
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "help": True}
-    return render(request, 'index.html', out)
+    return render(request, 'bazaar.html', out)
 
 def fullList(request):
     allItems = Item.objects
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
-    lastScan = config.objects.all()[0].lastScan
+    lastScan = Config.objects.all()[0].lastScan
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": True, "lastScan": lastScan}
-    return render(request, 'index.html', out)
+    return render(request, 'bazaar.html', out)
 
 
 def sets(request):
@@ -57,7 +57,7 @@ def sets(request):
         if tType in acceptedTypes:
             out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
-    return render(request, 'index.html', out)
+    return render(request, 'bazaar.html', out)
 
 
 def scan(request):
@@ -69,9 +69,9 @@ def scan(request):
     except:
         pass
 
-    autorisedId = config.objects.all()[0].listAutorisedId()
+    autorisedIds = Config.objects.all()[0].list_autorised_id()
 
-    if userId in autorisedId:
+    if userId in autorisedIds:
         request_url = "https://api.torn.com/torn/?selections=items&key={}".format(apiKey)
         items = requests.get(request_url).json()['items']
         for k, v in items.items():
@@ -87,12 +87,12 @@ def scan(request):
                 print("[VIEW scan]: request found more than one item id", len(req))
                 return None
 
-        config.objects.all()[0].updateLastScan()
+        Config.objects.all()[0].update_last_scan()
 
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse('bazaar:index'))
 
     else:
-        return HttpResponse("You don't have the right to do that.")
+        return HttpResponse("You don't have the right to do that. Torn id \"{}\" not in autorised list.".format(userId))
 
 
 # UPDATE ON THE FLY
@@ -101,7 +101,7 @@ def logout(request):
         del request.session["user"]
     except:
         pass
-    return HttpResponseRedirect(reverse('index'))
+    return HttpResponseRedirect(reverse('bazaar:index'))
 
 
 def updateKey(request):
@@ -110,17 +110,17 @@ def updateKey(request):
         user = requests.get("https://api.torn.com/user/?selections=basic&key={}".format(p["keyValue"])).json()
         try:
             name = "{} [{}]".format(user["name"], user["player_id"])
-            request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'id': user["player_id"]}
+            request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'playerId': user["player_id"]}
             request.session.set_expiry(1800)
             # log
-            find_log = login.objects.filter(user_id=user["player_id"])
-            if len(find_log):
-                log = find_log[0]
-                log.n_log += 1
+            findLog = Player.objects.filter(playerId=user["player_id"])
+            if len(findLog):
+                log = findLog[0]
+                log.nLog += 1
                 log.date = timezone.now()
             else:
-                log = login.objects.create(user_name=user["name"], user_id=user["player_id"])
-            log.logindate_set.create()
+                log = Player.objects.create(name=user["name"], playerId=user["player_id"])
+            log.login_set.create()
             log.save()
         except:
             try:
@@ -132,6 +132,7 @@ def updateKey(request):
                 return render(request, "sub/{}.html".format(p["html"]), out)
             except:
                 pass
+            print("updateKey: fail log")
             pass
         return render(request, "sub/{}.html".format(p["html"]))
 
@@ -143,14 +144,14 @@ def updateItemBazaar(request):
     if request.method == "POST":
         p = request.POST
         item = Item.objects.filter(tId=p["tId"])[0]
-        nItems = config.objects.all()[0].nItems
+        nItems = Config.objects.all()[0].nItems
         apiKey = ""
         try:
             apiKey = request.session["user"]["keyValue"]
         except:
             pass
 
-        req = item.updateBazaar(key=apiKey, n=nItems)
+        req = item.update_bazaar(key=apiKey, n=nItems)
 
         if "error" in req:
             return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])})
@@ -165,8 +166,8 @@ def toggleItem(request):
         p = request.POST
         itemId = p["tId"]
         item = Item.objects.filter(tId=itemId)[0]
-        user_id = request.session["user"].get("id")
-        user = login.objects.filter(user_id=user_id)[0]
+        playerId = request.session["user"].get("playerId")
+        user = Player.objects.filter(playerId=playerId)[0]
         add = user.toggle_item(itemId)
 
         if add:
@@ -196,8 +197,7 @@ def deleteItemBazaar(request):
 def updateTypeBazaar(request):
     if request.method == "POST":
         p = request.POST
-        nItems = config.objects.all()[0].nItems
-
+        nItems = Config.objects.all()[0].nItems
         apiKey = ""
         try:
             apiKey = request.session["user"]["keyValue"]
@@ -220,7 +220,7 @@ def updateTypeBazaar(request):
             print("[VIEW updateTypeBazaar]: update ", item)
             item.update(item.tId, itemsAPI[str(item.tId)])
             try:
-                item.updateBazaar(key=request.session["user"]["keyValue"], n=nItems)
+                item.update_bazaar(key=request.session["user"]["keyValue"], n=nItems)
             except:
                 print("wrong api key")
                 pass

@@ -4,12 +4,12 @@ from django.utils import timezone
 import requests
 
 
-class config(models.Model):
+class Config(models.Model):
     autorisedId = models.CharField(default="", max_length=200)
     nItems = models.IntegerField(default=10)
     lastScan = models.DateTimeField(default=timezone.now)
 
-    def listAutorisedId(self):
+    def list_autorised_id(self):
         # split string by ","
         try:
             list = [int(id.strip()) for id in self.autorisedId.split(',')]
@@ -18,7 +18,7 @@ class config(models.Model):
             list = [-1]
         return list
 
-    def updateLastScan(self):
+    def update_last_scan(self):
         self.lastScan = timezone.now()
         self.save()
 
@@ -93,7 +93,7 @@ class Item(models.Model):
         list = [s for s in str(timezone.now() - self.date).split(".")[0].split(':')]
         return "{}h {:02.0f}m".format(list[0], float(list[1]))
 
-    def getBazaar(self, n=10):
+    def get_bazaar(self, n=10):
         bData = self.marketdata_set.all().order_by('cost')
         try:
             cData = []
@@ -108,7 +108,7 @@ class Item(models.Model):
             cData = []
         return cData
 
-    def updateBazaar(self, key="", n=10):
+    def update_bazaar(self, key="", n=10):
         # API Call
         req = requests.get("https://api.torn.com/market/{}?selections=bazaar&key={}".format(self.tId, key)).json()
         try:
@@ -117,8 +117,8 @@ class Item(models.Model):
             self.marketdata_set.all().delete()
             if baz is not None:
                 for i, r in enumerate(baz):
-                    print("[MODEL Item] getBazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
-                    self.marketdata_set.create(user_id=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
+                    print("[MODEL Item] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
+                    self.marketdata_set.create(userId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
                     if i >= n - 1:
                         break
             self.date = timezone.now()
@@ -131,49 +131,47 @@ class Item(models.Model):
 
 class MarketData(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    user_id = models.BigIntegerField(default=0)
+    userId = models.BigIntegerField(default=0)
     quantity = models.BigIntegerField(default=1)
     cost = models.BigIntegerField(default=0)
 
     def __str__(self):
-        return "{} ({}): {} x {}".format(self.item, self.user_id, self.quantity, self.cost)
+        return "{} ({}): {} x {}".format(self.item, self.userId, self.quantity, self.cost)
 
 
-class login(models.Model):
-    user_name = models.CharField(default="Duke", max_length=100)
-    user_id = models.BigIntegerField(default=4)
+class Player(models.Model):
+    name = models.CharField(default="Duke", max_length=100)
+    playerId = models.BigIntegerField(default=4)
     date = models.DateTimeField(default=timezone.now)
-    n_log = models.IntegerField(default=1)
-    items_id = models.TextField(default="", blank=True)
+    nLog = models.IntegerField(default=1)
+    itemsId = models.TextField(default="", blank=True)
 
     def __str__(self):
-        return "{} [{}]".format(self.user_name, self.user_id)
+        return "{} [{}]".format(self.name, self.playerId)
 
     def torn_url_page(self):
-        return "https://www.torn.com/profiles.php?XID={}".format(self.user_id)
+        return "https://www.torn.com/profiles.php?XID={}".format(self.playerId)
 
     def get_items_id(self):
-        if self.items_id:
-            return self.items_id.strip().replace(" ", "").split(',')
+        if self.itemsId:
+            return self.itemsId.strip().replace(" ", "").split(',')
         else:
             return []
 
     def toggle_item(self, id):
         list_id = self.get_items_id()
-        print(list_id)
         if id in list_id:
             del list_id[list_id.index(id)]
-            self.items_id = ",".join(list_id)
+            self.itemsId = ",".join(list_id)
             self.save()
-            print(self.items_id)
             return False
         else:
             list_id.append(id)
-            self.items_id = ",".join(list_id)
+            self.itemsId = ",".join(list_id)
             self.save()
-            print(self.items_id)
             return True
 
-class loginDate(models.Model):
-    login = models.ForeignKey(login, on_delete=models.CASCADE)
+
+class Login(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)

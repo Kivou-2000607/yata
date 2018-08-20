@@ -3,9 +3,9 @@ from django.utils.html import format_html
 
 from .models import MarketData
 from .models import Item
-from .models import config
-from .models import login
-from .models import loginDate
+from .models import Config
+from .models import Player
+from .models import Login
 
 
 class MarketDataInline(admin.TabularInline):
@@ -14,7 +14,7 @@ class MarketDataInline(admin.TabularInline):
 
 
 class MarketDataAdmin(admin.ModelAdmin):
-    list_display = ['user_id', 'quantity', 'cost']
+    list_display = ['userId', 'quantity', 'cost']
 
 
 admin.site.register(MarketData, MarketDataAdmin)
@@ -38,34 +38,28 @@ class ItemAdmin(admin.ModelAdmin):
 admin.site.register(Item, ItemAdmin)
 
 
-class configAdmin(admin.ModelAdmin):
+class ConfigAdmin(admin.ModelAdmin):
     list_display = ['id', 'nItems', 'autorisedId', 'lastScan']
 
-admin.site.register(config, configAdmin)
+
+admin.site.register(Config, ConfigAdmin)
 
 
-# login
-
-class loginDateInline(admin.TabularInline):
-    model = loginDate
-    extra = 0
-
-
-class loginDateAdmin(admin.ModelAdmin):
-    list_display = ['date']
-
-
-admin.site.register(loginDate, loginDateAdmin)
-
-
-class loginAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'date', 'n_log', 'show_url']
-    list_filter = ['user_name', 'user_id']
-    inlines = [loginDateInline]
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'date', 'nLog', 'show_url']
+    list_filter = ['name', 'playerId']
 
     def show_url(self, instance):
         return format_html('<a href="{url}" target="_blank">{url}</a>'.format(url=instance.torn_url_page()))
     show_url.allow_tags = True
 
 
-admin.site.register(login, loginAdmin)
+admin.site.register(Player, PlayerAdmin)
+
+
+class LoginAdmin(admin.ModelAdmin):
+    list_display = ['id', 'player', 'date']
+    list_filter = ['player', 'date']
+
+
+admin.site.register(Login, LoginAdmin)

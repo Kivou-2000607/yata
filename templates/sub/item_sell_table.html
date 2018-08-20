@@ -30,7 +30,7 @@
                 <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
                 <a href="" class="show-details">{{item.tName|truncatechars:25}}</a>
 
-                <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "index" %}>{{item.tName|truncatechars:25}}</a> -->
+                <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "bazaar:index" %}>{{item.tName|truncatechars:25}}</a> -->
             </from>
         </th></tr>
     {% for stock in item.userstock_set.all|dictsort:"user" %}
@@ -39,7 +39,7 @@
     <tr><th colspan="2"><a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a></th></tr>
 </thead>
 <tbody>
-    {% for data in item.getBazaar %}
+    {% for data in item.get_bazaar %}
         {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
             {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ignore ggt "   title="cumulative: ${{data.cumulative|intcomma}}">
             {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="ignore gt "    title="cumulative: ${{data.cumulative|intcomma}}">

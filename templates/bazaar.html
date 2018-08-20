@@ -36,7 +36,7 @@
             e.preventDefault();
             var td = $(this).closest('th');
             var tId = td.find(".tId").val();
-            $( "#details" ).load( "details", {
+            $( "#details" ).load( "{% url 'bazaar:details' %}", {
                 tId: tId,
                 html: "details",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
@@ -53,7 +53,7 @@
             var td = $(this).closest('th');
             var tId = td.find(".tId").val();
             td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "updateItemBazaar", {
+            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:updateItemBazaar' %}", {
                 tId: tId,
                 html: "item_sell_table",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
@@ -65,7 +65,7 @@
             var td = $(this).closest('th');
             var tId = td.find(".tId").val();
             td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "toggleItem", {
+            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:toggleItem' %}", {
                 tId: tId,
                 html: "item_sell_table",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
@@ -76,7 +76,7 @@
             e.preventDefault();
             var tType = $(this).prev('.tType').val();
             $( "#loop-over-item-sell-table-" + tType ).html('<div class="justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
-            $( "#loop-over-item-sell-table-" + tType ).load( "updateTypeBazaar", {
+            $( "#loop-over-item-sell-table-" + tType ).load( "{% url 'bazaar:updateTypeBazaar' %}", {
                 tType: tType,
                 html: "loop_over_item_sell_table",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
@@ -88,7 +88,7 @@
             var td = $(this).closest('th');
             var tId = td.find(".tId").val();
             td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "deleteItemBazaar", {
+            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:deleteItemBazaar' %}", {
                 tId: tId,
                 html: "item_sell_table",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
@@ -99,7 +99,7 @@
             e.preventDefault();
             var key = $("#key-value").val();
             $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
-            $( "#api-key" ).load( "updateKey", {
+            $( "#api-key" ).load( "{% url 'bazaar:updateKey' %}", {
                 keyValue: key,
                 html: "intro",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
