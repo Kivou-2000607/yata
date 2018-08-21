@@ -7,6 +7,14 @@ from .models import Config
 from .models import Item
 from .models import Player
 
+def allow_scan(request):
+    try:
+        playerId = request.session["user"].get("playerId")
+        if playerId in Config.objects.all()[0].list_autorised_id():
+            return True
+    except:
+        pass
+    return False
 
 def index(request):
     if request.session.get("user") is not None:
@@ -16,7 +24,6 @@ def index(request):
 
 def custom(request):
     try:
-        key = request.session["user"].get("keyValue")
         playerId = request.session["user"].get("playerId")
         user = Player.objects.filter(playerId=playerId)[0]
         out = dict({"allItemsOnMarket": dict()})
@@ -37,6 +44,7 @@ def default(request):
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "help": True}
+
     return render(request, 'bazaar.html', out)
 
 def fullList(request):
@@ -46,6 +54,10 @@ def fullList(request):
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     lastScan = Config.objects.all()[0].lastScan
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": True, "lastScan": lastScan}
+
+    if allow_scan(request):
+        out["view"]["scan"] = True
+
     return render(request, 'bazaar.html', out)
 
 
@@ -61,38 +73,46 @@ def sets(request):
 
 
 def scan(request):
-    apiKey = ""
-    userId = ""
-    try:
-        apiKey = request.session["user"].get("keyValue")
-        userId = int(request.session["user"].get("playerId"))
-    except:
-        pass
+    if request.method == "POST":
+        p = request.POST
 
-    autorisedIds = Config.objects.all()[0].list_autorised_id()
+        apiKey = ""
+        userId = ""
+        try:
+            apiKey = request.session["user"].get("keyValue")
+            userId = int(request.session["user"].get("playerId"))
+        except:
+            pass
 
-    if userId in autorisedIds:
-        request_url = "https://api.torn.com/torn/?selections=items&key={}".format(apiKey)
-        items = requests.get(request_url).json()['items']
-        for k, v in items.items():
-            req = Item.objects.filter(tId=int(k))
-            if len(req) == 0:
-                item = Item.create(k, v)
-                item.save()
-            elif len(req) == 1:
-                item = req[0]
-                item.update(k, v)
-                item.save()
-            else:
-                print("[VIEW scan]: request found more than one item id", len(req))
-                return None
+        autorisedIds = Config.objects.all()[0].list_autorised_id()
 
-        Config.objects.all()[0].update_last_scan()
+        if userId in autorisedIds:
+            request_url = "https://api.torn.com/torn/?selections=items&key={}".format(apiKey)
+            items = requests.get(request_url).json()['items']
+            for k, v in items.items():
+                req = Item.objects.filter(tId=int(k))
+                if len(req) == 0:
+                    item = Item.create(k, v)
+                    item.save()
+                elif len(req) == 1:
+                    item = req[0]
+                    item.update(k, v)
+                    item.save()
+                else:
+                    print("[VIEW scan]: request found more than one item id", len(req))
+                    return None
 
-        return HttpResponseRedirect(reverse('bazaar:index'))
+                break
+
+            lastScan = Config.objects.all()[0].update_last_scan()
+            out = {"view": {"scan": True, "lastScan": lastScan}}
+            return render(request, "sub/{}.html".format(p["html"]), out)
+
+        else:
+            return HttpResponse("You don't have the right to do that. Torn id \"{}\" not in autorised list.".format(userId))
 
     else:
-        return HttpResponse("You don't have the right to do that. Torn id \"{}\" not in autorised list.".format(userId))
+        return HttpResponse("Don't try to be a smart ass, you need to post.")
 
 
 # UPDATE ON THE FLY
@@ -179,7 +199,6 @@ def toggleItem(request):
 
     else:
         return HttpResponse("Don't try to be a smart ass, you need to post.")
-
 
 
 def deleteItemBazaar(request):

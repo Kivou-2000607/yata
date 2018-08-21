@@ -138,6 +138,7 @@ h2.down i {
 }
 
 input.update-key,
+input.update-scan,
 input.update-type {
     display: inline-block;
     align:left;
@@ -160,6 +161,9 @@ input.update-type {
 input.update-type:hover,
 input.update-type:focus,
 input.update-type:active,
+input.update-scan:hover,
+input.update-scan:focus,
+input.update-scan:active,
 input.update-key:hover,
 input.update-key:focus,
 input.update-key:active {

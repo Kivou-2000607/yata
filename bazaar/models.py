@@ -21,6 +21,7 @@ class Config(models.Model):
     def update_last_scan(self):
         self.lastScan = timezone.now()
         self.save()
+        return self.lastScan
 
 
 class Item(models.Model):
