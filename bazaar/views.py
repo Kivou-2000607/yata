@@ -102,8 +102,6 @@ def scan(request):
                     print("[VIEW scan]: request found more than one item id", len(req))
                     return None
 
-                break
-
             lastScan = Config.objects.all()[0].update_last_scan()
             out = {"view": {"scan": True, "lastScan": lastScan}}
             return render(request, "sub/{}.html".format(p["html"]), out)
