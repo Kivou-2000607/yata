@@ -76,7 +76,7 @@ class Item(models.Model):
         self.tCirculation = int(v['circulation'])
         self.tDescription = v['description']
         self.tImage = v['image']
-        self.date = timezone.now()
+        # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
 
     def display_image(self):

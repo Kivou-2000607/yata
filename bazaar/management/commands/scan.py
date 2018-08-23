@@ -21,6 +21,8 @@ class Command(BaseCommand):
             elif len(req) == 1:
                 item = req[0]
                 item.update(k, v)
+                if item.onMarket:
+                    item.update_bazaar(key=conf.apiKey)
                 item.save()
             else:
                 print("[COMMAND scan]: request found more than one item id", len(req))
