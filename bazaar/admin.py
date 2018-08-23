@@ -39,7 +39,7 @@ admin.site.register(Item, ItemAdmin)
 
 
 class ConfigAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nItems', 'autorisedId', 'lastScan']
+    list_display = ['id', 'nItems', 'autorisedId', 'lastScan', 'apiKey']
 
 
 admin.site.register(Config, ConfigAdmin)

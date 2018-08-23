@@ -21,17 +21,6 @@
 
     <!-- scripts jquery perso -->
     <script>
-        //
-        // $(document).on('click', 'a.show-details', function(e){
-        //     e.preventDefault();
-        //     tId = $(this).attr("id").split('-').pop();
-        //     $( "#details" ).load( "details", {
-        //         tId: tId,
-        //         html: "details",
-        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        //     });
-        // });
-
         $(document).on('click', 'a.show-details', function(e){
             e.preventDefault();
             var td = $(this).closest('th');
@@ -106,15 +95,6 @@
             });
         });
 
-        $(document).on('click', '.update-scan', function(e){
-            e.preventDefault();
-            $( "#update-scan-refresh" ).html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#update-scan" ).load( "{% url 'bazaar:scan' %}", {
-                html: "last_scan",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-        });
-
         $(document).on('click', 'h2.toggleDisplay', function(e){
             e.preventDefault();
             var title = $(this);
@@ -160,9 +140,14 @@
                 {% include "sub/intro.html" %}
             </div>
 
-            <div id="update-scan">
-                {% include "sub/last_scan.html" %}
+            {% if view.lastScan %}
+            <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Last scan update</h2>
+            <div class="module whiteBG">
+                <div class="justTxt">
+                    Last scan of the object list has been made on {{ view.lastScan }}
+                </div>
             </div>
+            {% endif %}
 
             <div id="loop-over-types">
                 {% include "sub/loop_over_types.html" %}

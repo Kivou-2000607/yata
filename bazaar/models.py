@@ -6,6 +6,7 @@ import requests
 
 class Config(models.Model):
     autorisedId = models.CharField(default="", max_length=200)
+    apiKey = models.CharField(default="", max_length=16)
     nItems = models.IntegerField(default=10)
     lastScan = models.DateTimeField(default=timezone.now)
 
