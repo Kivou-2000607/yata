@@ -88,10 +88,12 @@
         $(document).on('click', '.update-key', function(e){
             e.preventDefault();
             var key = $("#key-value").val();
+            var check = $("#key-check-remember").is(':checked');
             $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#api-key" ).load( "{% url 'bazaar:updateKey' %}", {
                 keyValue: key,
                 html: "intro",
+                rememberSession: check,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
         });
@@ -160,11 +162,12 @@
                 <div class="justTxt toggleDisplay hide">
                     <h3>How does it work?</h3>
                     <ul>
-                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down.</li>
+                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down (1 API call).</li>
                         <li>Click on the item type to show the tables.</li>
                         <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
                         <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call + 1/item). This feature is not available for the full list.</li>
                         <li>API key are not stored. Sensible personal information are not even looked at. The only information stored (if you enter your API key) are the name, the user id, the custom list and the login dates (to monitor the activity).</li>
+                        <li>If you entered your API key, the session expires when your browser is closed. If you clicked "remember me" the session will expire in one year.</li>
                     </ul>
 
                     <h3>What does the tables mean?</h3>

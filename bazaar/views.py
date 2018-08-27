@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
 import requests
+import json
 from .models import Config
 from .models import Item
 from .models import Player
@@ -77,7 +78,13 @@ def updateKey(request):
         try:
             name = "{} [{}]".format(user["name"], user["player_id"])
             request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'playerId': user["player_id"]}
-            request.session.set_expiry(1800)
+            check = json.loads(p.get("rememberSession"))
+            if check:
+                print("[Login]: log for 1 year")
+                request.session.set_expiry(31536000) # 1 year
+            else:
+                print("[Login]: log for the session")
+                request.session.set_expiry(0) # logout when close browser
             # log
             findLog = Player.objects.filter(playerId=user["player_id"])
             if len(findLog):
