@@ -124,6 +124,7 @@ class Item(models.Model):
                     if i >= n - 1:
                         break
             self.date = timezone.now()
+            self.itemupdate_set.create()
             self.save()
         except:
             pass
@@ -139,6 +140,11 @@ class MarketData(models.Model):
 
     def __str__(self):
         return "{} ({}): {} x {}".format(self.item, self.userId, self.quantity, self.cost)
+
+
+class ItemUpdate(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
 
 
 class Player(models.Model):

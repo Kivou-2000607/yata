@@ -2,10 +2,24 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .models import MarketData
+from .models import ItemUpdate
 from .models import Item
 from .models import Config
 from .models import Player
 from .models import Login
+
+
+class ItemUpdateInline(admin.TabularInline):
+    model = ItemUpdate
+    extra = 0
+
+
+class ItemUpdateAdmin(admin.ModelAdmin):
+    list_display = ['item', 'date']
+    list_filter = ['date']
+
+
+admin.site.register(ItemUpdate, ItemUpdateAdmin)
 
 
 class MarketDataInline(admin.TabularInline):
@@ -46,12 +60,20 @@ admin.site.register(Config, ConfigAdmin)
 
 
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'date', 'nLog', 'show_url']
+    list_display = ['__str__', 'date', 'number_of_log', 'custom_items', 'torn_url']
     list_filter = ['name', 'playerId']
 
-    def show_url(self, instance):
+    def torn_url(self, instance):
         return format_html('<a href="{url}" target="_blank">{url}</a>'.format(url=instance.torn_url_page()))
-    show_url.allow_tags = True
+    torn_url.allow_tags = True
+
+    def number_of_log(self, instance):
+        return instance.nLog
+    number_of_log.allow_tags = True
+
+    def custom_items(self, instance):
+        return instance.itemsId
+    custom_items.allow_tags = True
 
 
 admin.site.register(Player, PlayerAdmin)

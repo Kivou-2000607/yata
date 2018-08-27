@@ -6,13 +6,16 @@ import requests
 import json
 from .models import Config
 from .models import Item
+from .models import ItemUpdate
 from .models import Player
+
 
 def index(request):
     if request.session.get("user") is not None:
         return HttpResponseRedirect(reverse('bazaar:custom'))
     else:
         return HttpResponseRedirect(reverse('bazaar:default'))
+
 
 def custom(request):
     try:
@@ -25,9 +28,14 @@ def custom(request):
         except:
             out["allItemsOnMarket"]["Custom"] = []
         out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
+        out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
+
         return render(request, 'bazaar.html', out)
+
     except:
+
         return HttpResponseRedirect(reverse('bazaar:default'))
+
 
 def default(request):
     # allItems = Item.objects.filter( onMarket=True ).exclude( tType="Flower" ).exclude( tType="Plushie" )
@@ -36,8 +44,10 @@ def default(request):
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "help": True}
+    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
     return render(request, 'bazaar.html', out)
+
 
 def fullList(request):
     allItems = Item.objects
@@ -46,6 +56,7 @@ def fullList(request):
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     lastScan = Config.objects.all()[0].lastScan
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": True, "lastScan": lastScan}
+    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
     return render(request, 'bazaar.html', out)
 
@@ -58,6 +69,7 @@ def sets(request):
         if tType in acceptedTypes:
             out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
+    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
     return render(request, 'bazaar.html', out)
 
@@ -81,10 +93,10 @@ def updateKey(request):
             check = json.loads(p.get("rememberSession"))
             if check:
                 print("[Login]: log for 1 year")
-                request.session.set_expiry(31536000) # 1 year
+                request.session.set_expiry(31536000)  # 1 year
             else:
                 print("[Login]: log for the session")
-                request.session.set_expiry(0) # logout when close browser
+                request.session.set_expiry(0)  # logout when close browser
             # log
             findLog = Player.objects.filter(playerId=user["player_id"])
             if len(findLog):
@@ -133,6 +145,7 @@ def updateItemBazaar(request):
 
     else:
         return HttpResponse("Don't try to be a smart ass, you need to post.")
+
 
 def toggleItem(request):
     if request.method == "POST":
