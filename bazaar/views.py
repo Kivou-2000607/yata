@@ -196,7 +196,7 @@ def updateTypeBazaar(request):
                 pass
             item.save()
 
-        out = dict({"items": items})
+        out = dict({"itemType": p["tType"], "items": items})
         out["view"] = {"byType": True, "refreshType": True}
         return render(request, "sub/{}.html".format(p["html"]), out)
     else:
