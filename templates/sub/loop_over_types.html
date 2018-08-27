@@ -11,7 +11,7 @@
     {% endif %}
         <div class="module whiteBG">
             <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay {% if view.hideType %}hide{% endif %}">
-                {% include "sub/loop_over_item_sell_table.html" with items=v %}
+                {% include "sub/loop_over_item_sell_table.html" with itemType=k items=v %}
             </div>
             <div id="loading-div"></div>
         </div>

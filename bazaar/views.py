@@ -20,10 +20,10 @@ def custom(request):
         out = dict({"allItemsOnMarket": dict()})
         allItems = Item.objects
         try:
-            out["allItemsOnMarket"]["My Items"] = [allItems.filter(tId=id)[0] for id in user.get_items_id()]
+            out["allItemsOnMarket"]["Custom"] = [allItems.filter(tId=id)[0] for id in user.get_items_id()]
         except:
-            out["allItemsOnMarket"]["My Items"] = []
-        out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": False, "help": True}
+            out["allItemsOnMarket"]["Custom"] = []
+        out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
         return render(request, 'bazaar.html', out)
     except:
         return HttpResponseRedirect(reverse('bazaar:default'))
@@ -57,6 +57,7 @@ def sets(request):
         if tType in acceptedTypes:
             out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
+
     return render(request, 'bazaar.html', out)
 
 
@@ -178,7 +179,12 @@ def updateTypeBazaar(request):
             else:
                 return render(request, "sub/{}.html".format(p["html"]), {"apiError": "something went wrong from out side..."})
 
-        items = Item.objects.filter(onMarket=True).filter(tType=p["tType"])
+        if p["tType"] == "Custom":
+            playerId = request.session["user"].get("playerId")
+            user = Player.objects.filter(playerId=playerId)[0]
+            items = Item.objects.filter(tId__in=user.get_items_id())
+        else:
+            items = Item.objects.filter(onMarket=True).filter(tType=p["tType"])
 
         for item in items:
             print("[VIEW updateTypeBazaar]: update ", item)

@@ -64,11 +64,12 @@
         $(document).on('click', '.update-type', function(e){
             e.preventDefault();
             var tType = $(this).prev('.tType').val();
+            var csrf = $( "#update-type-csrf-" + tType ).val();
             $( "#loop-over-item-sell-table-" + tType ).html('<div class="justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#loop-over-item-sell-table-" + tType ).load( "{% url 'bazaar:updateTypeBazaar' %}", {
                 tType: tType,
                 html: "loop_over_item_sell_table",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                csrfmiddlewaretoken: csrf,
             });
         });
 
