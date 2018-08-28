@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 import requests
-
+from .handy import apiCall
 
 class Config(models.Model):
     autorisedId = models.CharField(default="", max_length=200)
@@ -112,10 +112,10 @@ class Item(models.Model):
 
     def update_bazaar(self, key="", n=10):
         # API Call
-        req = requests.get("https://api.torn.com/market/{}?selections=bazaar&key={}".format(self.tId, key)).json()
-        try:
-            baz = req['bazaar']
-            # delete and fill date
+        baz = apiCall("market", self.tId, "bazaar", key, sub="bazaar")
+        if "apiError" in baz:
+            pass
+        else:
             self.marketdata_set.all().delete()
             if baz is not None:
                 for i, r in enumerate(baz):
@@ -126,10 +126,8 @@ class Item(models.Model):
             self.date = timezone.now()
             self.itemupdate_set.create()
             self.save()
-        except:
-            pass
 
-        return req
+        return baz
 
 
 class MarketData(models.Model):

@@ -8,6 +8,15 @@ from .models import Config
 from .models import Item
 from .models import ItemUpdate
 from .models import Player
+from .handy import apiCall
+
+
+# out["view"] = {"byType": True,
+#                "refreshAll": False,
+#                "refreshType": True,
+#                "hideType": False,
+#                "hideType": Config.objects.all()[0].lastScan,
+#                "help": True}
 
 
 def index(request):
@@ -27,7 +36,7 @@ def custom(request):
             out["allItemsOnMarket"]["Custom"] = [allItems.filter(tId=id)[0] for id in user.get_items_id()]
         except:
             out["allItemsOnMarket"]["Custom"] = []
-        out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
+        out["view"] = {"byType": True, "refreshType": True, "help": True}
         out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
         return render(request, 'bazaar.html', out)
@@ -43,7 +52,7 @@ def default(request):
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": True, "help": True}
+    out["view"] = {"byType": True, "refreshType": True, "hideType": True, "help": True}
     out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
     return render(request, 'bazaar.html', out)
@@ -54,8 +63,7 @@ def fullList(request):
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
-    lastScan = Config.objects.all()[0].lastScan
-    out["view"] = {"byType": True, "refreshAll": False, "refreshType": False, "hideType": True, "lastScan": lastScan}
+    out["view"] = {"byType": True, "hideType": True, "lastScan": Config.objects.all()[0].lastScan}
     out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
     return render(request, 'bazaar.html', out)
@@ -86,38 +94,29 @@ def logout(request):
 def updateKey(request):
     if request.method == "POST":
         p = request.POST
-        user = requests.get("https://api.torn.com/user/?selections=basic&key={}".format(p["keyValue"])).json()
-        try:
-            name = "{} [{}]".format(user["name"], user["player_id"])
-            request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'playerId': user["player_id"]}
-            check = json.loads(p.get("rememberSession"))
-            if check:
-                print("[Login]: log for 1 year")
-                request.session.set_expiry(31536000)  # 1 year
-            else:
-                print("[Login]: log for the session")
-                request.session.set_expiry(0)  # logout when close browser
-            # log
-            findLog = Player.objects.filter(playerId=user["player_id"])
-            if len(findLog):
-                log = findLog[0]
-                log.nLog += 1
-                log.date = timezone.now()
-            else:
-                log = Player.objects.create(name=user["name"], playerId=user["player_id"])
-            log.save()
-        except:
-            try:
-                del request.session["user"]
-            except:
-                pass
-            try:
-                out = dict({"apiError": "API error code {}: {}.".format(user["error"]["code"], user["error"]["error"])})
-                return render(request, "sub/{}.html".format(p["html"]), out)
-            except:
-                pass
-            print("updateKey: fail log")
-            pass
+
+        user = apiCall("user", "", "basic", p.get("keyValue"))
+        if "apiError" in user:
+            return render(request, "sub/{}.html".format(p["html"]), user)
+
+        name = "{} [{}]".format(user["name"], user["player_id"])
+        request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'playerId': user["player_id"]}
+        check = json.loads(p.get("rememberSession"))
+        if check:
+            print("[Login]: log for 1 year")
+            request.session.set_expiry(31536000)  # 1 year
+        else:
+            print("[Login]: log for the session")
+            request.session.set_expiry(0)  # logout when close browser
+        # log
+        findLog = Player.objects.filter(playerId=user["player_id"])
+        if len(findLog):
+            log = findLog[0]
+            log.nLog += 1
+            log.date = timezone.now()
+        else:
+            log = Player.objects.create(name=user["name"], playerId=user["player_id"])
+        log.save()
         return render(request, "sub/{}.html".format(p["html"]))
 
     else:
@@ -129,16 +128,15 @@ def updateItemBazaar(request):
         p = request.POST
         item = Item.objects.filter(tId=p["tId"])[0]
         nItems = Config.objects.all()[0].nItems
-        apiKey = ""
         try:
             apiKey = request.session["user"]["keyValue"]
         except:
-            pass
+            apiKey = ""
 
-        req = item.update_bazaar(key=apiKey, n=nItems)
+        baz = item.update_bazaar(key=apiKey, n=nItems)
 
-        if "error" in req:
-            return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])})
+        if "apiError" in baz:
+            return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": baz["apiError"]})
         else:
             return render(request, "sub/{}.html".format(p["html"]), {'item': item})
 
@@ -188,15 +186,10 @@ def updateTypeBazaar(request):
         except:
             pass
 
-        req = requests.get("https://api.torn.com/torn/?selections=items&key={}".format(apiKey)).json()
-        try:
-            itemsAPI = req['items']
-        except:
-            if "error" in req:
-                out = dict({"apiError": "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])})
-                return render(request, "sub/{}.html".format(p["html"]), out)
-            else:
-                return render(request, "sub/{}.html".format(p["html"]), {"apiError": "something went wrong from out side..."})
+        itemsAPI = apiCall("torn", "", "items", apiKey, sub='items')
+
+        if "apiError" in itemsAPI:
+            return render(request, "sub/{}.html".format(p["html"]), itemsAPI)
 
         if p["tType"] == "Custom":
             playerId = request.session["user"].get("playerId")
