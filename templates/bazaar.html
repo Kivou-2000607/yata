@@ -167,7 +167,7 @@
                         <li>Click on the item type to show the tables.</li>
                         <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
                         <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call + 1/item). This feature is not available for the full list.</li>
-                        <li>API key are not stored. Sensible personal information are not even looked at. The only information stored (if you enter your API key) are the name, the user id, the custom list and the login dates (to monitor the activity).</li>
+                        <li>API key are not stored. Sensible personal information are not even looked at. The only information stored (if you enter your API key) are your name and user id. Your personal stocks are not stored but computed on the fly (1 API call).</li>
                         <li>If you entered your API key, the session expires when your browser is closed. If you clicked "remember me" the session will expire in one year.</li>
                     </ul>
 
@@ -177,6 +177,7 @@
                         <li> Row 1: icon / refresh button</li>
                         <li> Row 2: time since last update / click to delete bazaar data (because why not?) </li>
                         <li> Row 3: item name / link to its description</li>
+                        <li> Row 3+1: personal stock of the item if you entered your API key and only on the custom list page (refresh is needed to see changes)</li>
                         <li> Row 4: current market price / link to the torn item market of this item</li>
                         <li> The colored rows are information of the users bazaars. Each row corresponds to a bazaar
                             <ul>
@@ -207,6 +208,12 @@
                         <li>Fill free to bump, rate and comment the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16051010&b=0&a=0&start=0&to=18616946" target="_blank">forum thread</a>.</i></li>
                         <li> log
                             <ul>
+                                <li><b>v1.2 (2018-08-28)</b>: Personal stocks</li>
+                                <ul>
+                                    <li>add personal stock for all items of the custom list</li>
+                                    <li>refresh button for the custom list</li>
+                                    <li>daily scan to get market prices of all items fresh</li>
+                                </ul>
                                 <li><b>v1.1 (2018-08-18)</b>: Custom list</li>
                                 <ul>
                                     <li>add custom list</li>
