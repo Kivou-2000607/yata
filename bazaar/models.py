@@ -120,7 +120,7 @@ class Item(models.Model):
             if baz is not None:
                 for i, r in enumerate(baz):
                     print("[MODEL Item] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
-                    self.marketdata_set.create(userId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
+                    self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
                     if i >= n - 1:
                         break
             self.date = timezone.now()
@@ -134,12 +134,12 @@ class Item(models.Model):
 
 class MarketData(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    userId = models.BigIntegerField(default=0)
+    sellId = models.BigIntegerField(default=0)
     quantity = models.BigIntegerField(default=1)
     cost = models.BigIntegerField(default=0)
 
     def __str__(self):
-        return "{} ({}): {} x {}".format(self.item, self.userId, self.quantity, self.cost)
+        return "{} ({}): {} x {}".format(self.item, self.sellId, self.quantity, self.cost)
 
 
 class ItemUpdate(models.Model):
@@ -178,8 +178,3 @@ class Player(models.Model):
             self.itemsId = ",".join(list_id)
             self.save()
             return True
-
-
-class Login(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now)

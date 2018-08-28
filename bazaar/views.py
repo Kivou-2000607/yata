@@ -105,7 +105,6 @@ def updateKey(request):
                 log.date = timezone.now()
             else:
                 log = Player.objects.create(name=user["name"], playerId=user["player_id"])
-            log.login_set.create()
             log.save()
         except:
             try:

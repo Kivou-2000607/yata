@@ -6,7 +6,6 @@ from .models import ItemUpdate
 from .models import Item
 from .models import Config
 from .models import Player
-from .models import Login
 
 
 class ItemUpdateInline(admin.TabularInline):
@@ -28,7 +27,7 @@ class MarketDataInline(admin.TabularInline):
 
 
 class MarketDataAdmin(admin.ModelAdmin):
-    list_display = ['userId', 'quantity', 'cost']
+    list_display = ['item', 'sellId', 'quantity', 'cost']
 
 
 admin.site.register(MarketData, MarketDataAdmin)
@@ -43,10 +42,10 @@ def put_on_market(modeladmin, request, queryset):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ['id', 'tId', 'tName', 'tType', 'tMarketValue', 'tImage', 'onMarket']
+    list_display = ['__str__', 'tType', 'date', 'tMarketValue', 'tImage', 'onMarket']
     inlines = [MarketDataInline]
     actions = [remove_from_market, put_on_market]
-    list_filter = ['tType']
+    list_filter = ['tType', 'date']
 
 
 admin.site.register(Item, ItemAdmin)
@@ -77,11 +76,3 @@ class PlayerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Player, PlayerAdmin)
-
-
-class LoginAdmin(admin.ModelAdmin):
-    list_display = ['id', 'player', 'date']
-    list_filter = ['player', 'date']
-
-
-admin.site.register(Login, LoginAdmin)
