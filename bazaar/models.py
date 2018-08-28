@@ -39,6 +39,7 @@ class Item(models.Model):
     tImage = models.URLField(max_length=500)
     onMarket = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)

@@ -15,7 +15,8 @@ from .handy import apiCall
 #                "refreshAll": False,
 #                "refreshType": True,
 #                "hideType": False,
-#                "hideType": Config.objects.all()[0].lastScan,
+#                "lastScan": Config.objects.all()[0].lastScan,
+#                "stock": False,
 #                "help": True}
 
 
@@ -33,10 +34,20 @@ def custom(request):
         out = dict({"allItemsOnMarket": dict()})
         allItems = Item.objects
         try:
-            out["allItemsOnMarket"]["Custom"] = [allItems.filter(tId=id)[0] for id in user.get_items_id()]
+            out["allItemsOnMarket"]["Custom"] = []
+            # get dictionary of stocks
+            inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
+            id_stock = {id: 0 for id in user.get_items_id()}
+            for inv in inventory:
+                if str(inv["ID"]) in id_stock:
+                    id_stock[str(inv["ID"])] = inv["quantity"]
+            print(id_stock)
+            for item in [allItems.filter(tId=int(id))[0] for id in id_stock]:
+                item.stock = id_stock[str(item.tId)]
+                out["allItemsOnMarket"]["Custom"].append(item)
         except:
             out["allItemsOnMarket"]["Custom"] = []
-        out["view"] = {"byType": True, "refreshType": True, "help": True}
+        out["view"] = {"byType": True, "refreshType": True, "help": True, "stock": True}
         out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
         return render(request, 'bazaar.html', out)

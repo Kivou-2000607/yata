@@ -33,9 +33,9 @@
                 <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "bazaar:index" %}>{{item.tName|truncatechars:25}}</a> -->
             </from>
         </th></tr>
-    {% for stock in item.userstock_set.all|dictsort:"user" %}
-        <tr><th class="{% if not stock.quantity %}lack{% endif %}" colspan="2">{{stock.user|make_list|slice:':3'|join:''}} : {{stock.quantity}}</th></tr>
-    {% endfor %}
+    {% if view.stock %}
+        <tr><th class="{% if not item.stock %}lack{% endif %}" colspan="2">stock: {{item.stock}}</th></tr>
+    {% endif %}
     <tr><th colspan="2"><a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a></th></tr>
 </thead>
 <tbody>
