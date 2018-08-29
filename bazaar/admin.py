@@ -8,6 +8,16 @@ from .models import Config
 from .models import Player
 
 
+from django.contrib.sessions.models import Session
+
+
+class SessionAdmin(admin.ModelAdmin):
+    list_display = ['session_key', 'expire_date']
+
+
+admin.site.register(Session, SessionAdmin)
+
+
 class ItemUpdateInline(admin.TabularInline):
     model = ItemUpdate
     extra = 0
