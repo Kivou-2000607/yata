@@ -46,7 +46,8 @@ def custom(request):
         except:
             out["allItemsOnMarket"]["Custom"] = []
         out["view"] = {"byType": True, "refreshType": True, "help": True, "stock": True}
-        out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
+        out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                          Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
 
         return render(request, 'bazaar.html', out)
 
@@ -73,7 +74,8 @@ def default(request):
             out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "refreshType": True, "hideType": True, "help": True}
-    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
+    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
 
     return render(request, 'bazaar.html', out)
 
@@ -95,7 +97,8 @@ def fullList(request):
             out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "hideType": True, "lastScan": Config.objects.all()[0].lastScan}
-    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
+    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
 
     return render(request, 'bazaar.html', out)
 
@@ -119,7 +122,8 @@ def sets(request):
                 out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
-    out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
+    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
 
     return render(request, 'bazaar.html', out)
 
@@ -155,7 +159,6 @@ def updateKey(request):
         if len(findLog):
             log = findLog[0]
             log.nLog += 1
-            log.date = timezone.now()
         else:
             log = Player.objects.create(name=user["name"], playerId=user["player_id"])
         log.save()
@@ -189,6 +192,10 @@ def updateItemBazaar(request):
                 item.stock = inv["quantity"]
                 break
 
+        user = Player.objects.filter(playerId=request.session["user"].get("playerId"))[0]
+        user.date = timezone.now()
+        user.save()
+
         return render(request, "sub/{}.html".format(p["html"]), {'item': item})
 
     else:
@@ -200,8 +207,7 @@ def toggleItem(request):
         p = request.POST
         itemId = p["tId"]
         item = Item.objects.filter(tId=itemId)[0]
-        playerId = request.session["user"].get("playerId")
-        user = Player.objects.filter(playerId=playerId)[0]
+        user = Player.objects.filter(playerId=request.session["user"].get("playerId"))[0]
         add = user.toggle_item(itemId)
 
         if add:
@@ -262,6 +268,11 @@ def updateTypeBazaar(request):
 
         out = dict({"itemType": p["tType"], "items": items})
         out["view"] = {"byType": True, "refreshType": True}
+
+        user = Player.objects.filter(playerId=request.session["user"].get("playerId"))[0]
+        user.date = timezone.now()
+        user.save()
+
         return render(request, "sub/{}.html".format(p["html"]), out)
     else:
         return HttpResponse("Don't try to be a smart ass, you need to post.")
