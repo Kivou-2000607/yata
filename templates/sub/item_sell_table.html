@@ -33,7 +33,7 @@
                 <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "bazaar:index" %}>{{item.tName|truncatechars:25}}</a> -->
             </from>
         </th></tr>
-    {% if view.stock %}
+    {% if request.session.user %}
         <tr><th class="{% if not item.stock %}lack{% endif %}" colspan="2">stock: {{item.stock}}</th></tr>
     {% endif %}
     <tr><th colspan="2"><a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a></th></tr>

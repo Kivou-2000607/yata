@@ -114,19 +114,21 @@ class Item(models.Model):
     def update_bazaar(self, key="", n=10):
         # API Call
         baz = apiCall("market", self.tId, "bazaar", key, sub="bazaar")
-        if "apiError" in baz:
-            pass
-        else:
-            self.marketdata_set.all().delete()
-            if baz is not None:
-                for i, r in enumerate(baz):
-                    print("[MODEL Item] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
-                    self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
-                    if i >= n - 1:
-                        break
-            self.date = timezone.now()
-            self.itemupdate_set.create()
-            self.save()
+
+        if baz is not None:
+            if "apiError" in baz:
+                pass
+            else:
+                self.marketdata_set.all().delete()
+                if baz is not None:
+                    for i, r in enumerate(baz):
+                        print("[MODEL Item] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
+                        self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
+                        if i >= n - 1:
+                            break
+                self.date = timezone.now()
+                self.itemupdate_set.create()
+                self.save()
 
         return baz
 

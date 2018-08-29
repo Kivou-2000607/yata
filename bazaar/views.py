@@ -2,7 +2,6 @@ from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
-import requests
 import json
 from .models import Config
 from .models import Item
@@ -41,7 +40,6 @@ def custom(request):
             for inv in inventory:
                 if str(inv["ID"]) in id_stock:
                     id_stock[str(inv["ID"])] = inv["quantity"]
-            print(id_stock)
             for item in [allItems.filter(tId=int(id))[0] for id in id_stock]:
                 item.stock = id_stock[str(item.tId)]
                 out["allItemsOnMarket"]["Custom"].append(item)
@@ -60,9 +58,20 @@ def custom(request):
 def default(request):
     # allItems = Item.objects.filter( onMarket=True ).exclude( tType="Flower" ).exclude( tType="Plushie" )
     allItems = Item.objects.filter(onMarket=True)
+
+    if request.session.get("user"):  # if log
+        inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
+        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+    else:
+        id_stock = dict({})
+
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
-        out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
+        out["allItemsOnMarket"][tType] = []
+        for item in allItems.filter(tType=tType):
+            item.stock = id_stock.get(item.tId, 0)
+            out["allItemsOnMarket"][tType].append(item)
+
     out["view"] = {"byType": True, "refreshType": True, "hideType": True, "help": True}
     out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
@@ -71,9 +80,20 @@ def default(request):
 
 def fullList(request):
     allItems = Item.objects
+
+    if request.session.get("user"):  # if log
+        inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
+        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+    else:
+        id_stock = dict({})
+
     out = dict({"allItemsOnMarket": dict()})
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
-        out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
+        out["allItemsOnMarket"][tType] = []
+        for item in allItems.filter(tType=tType):
+            item.stock = id_stock.get(item.tId, 0)
+            out["allItemsOnMarket"][tType].append(item)
+
     out["view"] = {"byType": True, "hideType": True, "lastScan": Config.objects.all()[0].lastScan}
     out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
@@ -82,11 +102,22 @@ def fullList(request):
 
 def sets(request):
     allItems = Item.objects.filter(onMarket=True)
+
+    if request.session.get("user"):  # if log
+        inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
+        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+    else:
+        id_stock = dict({})
+
     out = dict({"allItemsOnMarket": dict()})
     acceptedTypes = ["Flower", "Plushie"]
     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
         if tType in acceptedTypes:
-            out["allItemsOnMarket"][tType] = [i for i in allItems.filter(tType=tType)]
+            out["allItemsOnMarket"][tType] = []
+            for item in allItems.filter(tType=tType):
+                item.stock = id_stock.get(item.tId, 0)
+                out["allItemsOnMarket"][tType].append(item)
+
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
     out["nUpdate"] = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()
 
@@ -145,11 +176,20 @@ def updateItemBazaar(request):
             apiKey = ""
 
         baz = item.update_bazaar(key=apiKey, n=nItems)
+        if baz is not None:
+            if "apiError" in baz:
+                return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": baz["apiError"]})
 
-        if "apiError" in baz:
-            return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": baz["apiError"]})
-        else:
-            return render(request, "sub/{}.html".format(p["html"]), {'item': item})
+        inventory = apiCall("user", "", "inventory", apiKey, sub="inventory")
+        if "apiError" in inventory:
+            return render(request, "sub/{}.html".format(p["html"]), {'item': item, "apiError": inventory["apiError"]})
+
+        for inv in inventory:
+            if inv["ID"] == item.tId:
+                item.stock = inv["quantity"]
+                break
+
+        return render(request, "sub/{}.html".format(p["html"]), {'item': item})
 
     else:
         return HttpResponse("Don't try to be a smart ass, you need to post.")
@@ -198,9 +238,13 @@ def updateTypeBazaar(request):
             pass
 
         itemsAPI = apiCall("torn", "", "items", apiKey, sub='items')
-
         if "apiError" in itemsAPI:
             return render(request, "sub/{}.html".format(p["html"]), itemsAPI)
+
+        inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
+        if "apiError" in inventory:
+            return render(request, "sub/{}.html".format(p["html"]), inventory)
+        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
 
         if p["tType"] == "Custom":
             playerId = request.session["user"].get("playerId")
@@ -212,12 +256,9 @@ def updateTypeBazaar(request):
         for item in items:
             print("[VIEW updateTypeBazaar]: update ", item)
             item.update(item.tId, itemsAPI[str(item.tId)])
-            try:
-                item.update_bazaar(key=request.session["user"]["keyValue"], n=nItems)
-            except:
-                print("wrong api key")
-                pass
+            item.update_bazaar(key=request.session["user"]["keyValue"], n=nItems)
             item.save()
+            item.stock = id_stock.get(item.tId, 0)
 
         out = dict({"itemType": p["tType"], "items": items})
         out["view"] = {"byType": True, "refreshType": True}
