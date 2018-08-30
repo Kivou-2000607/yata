@@ -8,6 +8,7 @@ from .models import Item
 from .models import ItemUpdate
 from .models import Player
 from .handy import apiCall
+from .handy import getTopThreeUpdates
 
 
 # out["view"] = {"byType": True,
@@ -46,9 +47,10 @@ def custom(request):
         except:
             out["allItemsOnMarket"]["Custom"] = []
         out["view"] = {"byType": True, "refreshType": True, "help": True, "stock": True}
-        out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
-                          Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
-
+        itemUpdates = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1))
+        out["nUpdate"] = [itemUpdates.count(),
+                          Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                          getTopThreeUpdates(itemUpdates)]
         return render(request, 'bazaar.html', out)
 
     except:
@@ -74,8 +76,10 @@ def default(request):
             out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "refreshType": True, "hideType": True, "help": True}
-    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
-                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
+    itemUpdates = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1))
+    out["nUpdate"] = [itemUpdates.count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      getTopThreeUpdates(itemUpdates)]
 
     return render(request, 'bazaar.html', out)
 
@@ -97,8 +101,10 @@ def fullList(request):
             out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "hideType": True, "lastScan": Config.objects.all()[0].lastScan}
-    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
-                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
+    itemUpdates = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1))
+    out["nUpdate"] = [itemUpdates.count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      getTopThreeUpdates(itemUpdates)]
 
     return render(request, 'bazaar.html', out)
 
@@ -122,8 +128,10 @@ def sets(request):
                 out["allItemsOnMarket"][tType].append(item)
 
     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
-    out["nUpdate"] = [ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
-                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count()]
+    itemUpdates = ItemUpdate.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1))
+    out["nUpdate"] = [itemUpdates.count(),
+                      Player.objects.filter(date__gte=timezone.now() - timezone.timedelta(days=1)).count(),
+                      getTopThreeUpdates(itemUpdates)]
 
     return render(request, 'bazaar.html', out)
 
