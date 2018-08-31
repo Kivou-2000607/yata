@@ -188,4 +188,7 @@ class Stat(models.Model):
         date = models.DateTimeField(default=timezone.now)
 
         def getStats(self):
-            return self.numberUpdates, self.numberPlayers, [t.split(",") for t in self.firstThree.split(';')], self.date
+            try:
+                return self.numberUpdates, self.numberPlayers, [t.split(",") for t in self.firstThree.split(';')], self.date
+            except:
+                return False
