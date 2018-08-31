@@ -6,7 +6,7 @@ from .models import ItemUpdate
 from .models import Item
 from .models import Config
 from .models import Player
-
+from .models import Stat
 
 from django.contrib.sessions.models import Session
 
@@ -86,3 +86,10 @@ class PlayerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Player, PlayerAdmin)
+
+
+
+class StatAdmin(admin.ModelAdmin):
+    list_display = ['firstThree', 'numberUpdates', 'numberPlayers']
+
+admin.site.register(Stat, StatAdmin)

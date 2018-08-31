@@ -136,8 +136,7 @@
         <div id="content">
             <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
             <p><b>Bazaar overview</b>: buy and sell at the right price!</p>
-            <p><i>The last 24 hours, <b>{{nUpdate.0}}</b> item{{nUpdate.0|pluralize}} has been updated by <b>{{nUpdate.1}}</b> {{nUpdate.1|pluralize:"user,different users"}}.
-                {% if nUpdate.2 %} if Top {{nUpdate.2|length}}: {% for item in nUpdate.2 %} {{item.1}} ({{item.0}}){% if not forloop.last %}, {% endif %} {% endfor %} {% endif %}</i></p>
+            <p>This tool shows, for every items some basic information along with the current bazaars sales.<p>
             <br />
             <input type="hidden" id="view-byType" value="{{view.byType}}">
             <input type="hidden" id="view-refreshAll" value="{{view.refreshAll}}">
@@ -235,6 +234,18 @@
                 <div id="loading-div"></div>
             </div> <!--  end of help -->
             {% endif %}
+            <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Stats ({{nUpdate.3}})<i class="title-arrow"></i></h2>
+            <div class="module whiteBG">
+                <div class="justTxt">
+                    <p>The last 24 hours, <b>{{nUpdate.0}}</b> item{{nUpdate.0|pluralize}} has been updated by <b>{{nUpdate.1}}</b> {{nUpdate.1|pluralize:"user,different users"}}.</p>
+                    <p>The top {{nUpdate.2|length}} item updates is: 
+                        {% for item in nUpdate.2 %}
+                            <b>{{item.0}}</b> ({{item.1}}){% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+
         </div> <!--end of content-->
     </div> <!--end of container-->
 </body>

@@ -179,3 +179,13 @@ class Player(models.Model):
             self.itemsId = ",".join(list_id)
             self.save()
             return True
+
+
+class Stat(models.Model):
+        firstThree = models.CharField(default="Nothing", max_length=100)
+        numberUpdates = models.IntegerField(default=0)
+        numberPlayers = models.IntegerField(default=0)
+        date = models.DateTimeField(default=timezone.now)
+
+        def getStats(self):
+            return self.numberUpdates, self.numberPlayers, [t.split(",") for t in self.firstThree.split(';')], self.date

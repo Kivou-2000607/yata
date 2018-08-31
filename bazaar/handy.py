@@ -23,14 +23,3 @@ def apiCall(section, id, selections, key, sub=None):
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
-
-
-def getTopThreeUpdates(itemUpdates):
-    #listItems = [a.item.tName for a in itemUpdates.all()]
-    #distItems = list(set(listItems))
-    #distOccur = [0]*len(distItems)
-    #for i, item in enumerate(distItems):
-        #print(item)
-        #distOccur[i] = listItems.count(item)
-    #return sorted(zip(distOccur, distItems), reverse=True)[:3]
-    return False

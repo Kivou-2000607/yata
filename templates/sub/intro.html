@@ -6,15 +6,14 @@
 {% endif %}
 
 <div class="module whiteBG justTxt">
-    <p>This tool shows, for every items some basic information along with the current bazaars sales.<p>
-    <ul>
-        <li><a href="{% url 'bazaar:default' %}">List of the default items</a></li>
-        <li><a href="{% url 'bazaar:sets' %}">List the flower and plushie sets</a></li>
-        <li><a href="{% url 'bazaar:fullList' %}">List of all the items</a></li>
+    <p> 
+        <a href="{% url 'bazaar:default' %}">List of the default items</a> - 
+        <a href="{% url 'bazaar:sets' %}">List the flower and plushie sets</a> - 
+        <a href="{% url 'bazaar:fullList' %}">List of all the items</a>
         {% if request.session.user %}
-            <li><a href="{% url 'bazaar:custom' %}">Custom list of items</a></li>
+             - <a href="{% url 'bazaar:custom' %}">Custom list of items</a>
         {% endif %}
-    </ul>
+    </p>
     {% if request.session.user %}
         <h3><a class="deletelink" href="{% url 'bazaar:logout' %}">Logout</a></h3>
     {% else %}
