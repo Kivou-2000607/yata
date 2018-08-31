@@ -26,7 +26,6 @@ def apiCall(section, id, selections, key, sub=None):
 
 
 def getTopThreeUpdates(itemUpdates):
-    print(itemUpdates.discinct())
     listItems = [a.item.tName for a in itemUpdates.all()]
     distItems = list(set(listItems))
     distOccur = [0]*len(distItems)
