@@ -23,7 +23,7 @@
                             [<a href={% url 'chain:report' chain.tId %}>see</a> -
                              <a href={% url 'chain:createReport' chain.tId %}>refresh</a> -
                              <a href={% url 'chain:deleteReport' chain.tId %}>delete</a> -
-                             <a href={% url 'chain:toggleReport' chain.tId %}>{% if chain.jointReport %}remove from{% else %}add to{% endif %} join report</a>
+                             <a href={% url 'chain:toggleReport' chain.tId %}>{% if chain.jointReport %}remove from{% else %}add to{% endif %} joint report</a>
                             ]
                         {% else %}
                             [<a href={% url 'chain:report' chain.tId %}>see</a>]
