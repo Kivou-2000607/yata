@@ -216,7 +216,7 @@ def createReport(request, chainId):
             chain.report_set.all().delete()
             report = chain.report_set.create()
         except:
-            return render(request, 'chain.html')
+            return HttpResponseRedirect(reverse('chain:index'))
 
         members = faction.member_set.all()
         attackers = dict({})  # create attackers array on the fly to avoid db connectio in the loop

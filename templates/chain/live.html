@@ -2,7 +2,7 @@
 {% load mathfilters %}
 
 <div>
-    <h2 class="title">Live chain report</h2>
+    <h2 class="title">Chain status</h2>
 
         {% if liveChain.current %}
         <div class="module whiteBG">
@@ -14,7 +14,7 @@
                 <tbody>
                     <tr><td>Chain at</td><td>{{liveChain.current}}</td></tr>
                     <tr><td>Timeout</td><td>{{liveChain.timeout}}</td></tr>
-                    <tr><td>Modifier</td><td>{{liveChain.modifier}}</td></tr>
+                    <tr><td>Modifier</td><td>{{liveChain.modifier|floatformat:2}}</td></tr>
                     <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
                 </tbody>
             </table>
