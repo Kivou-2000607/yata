@@ -79,7 +79,7 @@
         </table>
 
         <div class="submit-row">
-        {% if request.session.user.AA %}
+        {% if request.session.chainer.AA %}
             <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Refresh report"></a>
             <a href={% url 'chain:deleteReport' chain.tId %}><input type="submit" class="update-type" value="Delete report"></a>
         {% else %}

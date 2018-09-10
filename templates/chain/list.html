@@ -19,7 +19,7 @@
                 <td><b>{{chain.respect}}</b></td>
                 <td>
                     {% if chain.have_report %}
-                        {% if request.session.user.AA %}
+                        {% if request.session.chainer.AA %}
                             [<a href={% url 'chain:report' chain.tId %}>see</a> -
                              <a href={% url 'chain:createReport' chain.tId %}>refresh</a> -
                              <a href={% url 'chain:deleteReport' chain.tId %}>delete</a> -
@@ -29,7 +29,7 @@
                             [<a href={% url 'chain:report' chain.tId %}>see</a>]
                         {% endif %}
                     {% else %}
-                        {% if request.session.user.AA %}
+                        {% if request.session.chainer.AA %}
                             [<a href={% url 'chain:createReport' chain.tId %}>create</a>]
                         {% else %}
                             [no report]
@@ -41,7 +41,7 @@
             </tbody>
         </table>
         <div class="submit-row">
-        {% if request.session.user.AA %}
+        {% if request.session.chainer.AA %}
             <a href={% url 'chain:createList' %}><input type="submit" class="update-type" value="Refresh chain list"></a>
                 {% else %}
             <a><input type="submit" class="update-type" value="You need AA right to refresh the list"></a>

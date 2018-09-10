@@ -22,8 +22,8 @@ def index(request):
 
 
 def list(request):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
@@ -38,18 +38,18 @@ def list(request):
 
 
 def createList(request):  # able to create faction
-    if request.session.get("user"):
-        key = request.session["user"].get("keyValue")
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        key = request.session["chainer"].get("keyValue")
+        factionId = request.session["chainer"].get("factionId")
         request.session["onTheFlyMessage"] = []
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
         except:
-            faction = Faction.objects.create(tId=factionId, name=request.session["user"].get("factionName"))
+            faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
             request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
 
-        if request.session["user"].get("AA"):
+        if request.session["chainer"].get("AA"):
             req = apiCall("faction", faction.tId, "chains", key, sub='chains')
             for r in req:
                 if req[r]['chain'] >= faction.hitsThreshold:
@@ -65,8 +65,8 @@ def createList(request):  # able to create faction
 
 
 def members(request):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
@@ -83,16 +83,16 @@ def members(request):
 
 
 def createMembers(request):
-    if request.session.get("user"):
+    if request.session.get("chainer"):
         request.session["onTheFlyMessage"] = []
 
-        key = request.session["user"].get("keyValue")
-        factionId = request.session["user"].get("factionId")
+        key = request.session["chainer"].get("keyValue")
+        factionId = request.session["chainer"].get("factionId")
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
         except:
-            faction = Faction.objects.create(tId=factionId, name=request.session["user"].get("factionName"))
+            faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
             request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
 
         members = apiCall("faction", factionId, "basic", key, sub="members")
@@ -113,8 +113,8 @@ def createMembers(request):
 
 
 def report(request, chainId):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
@@ -132,8 +132,8 @@ def report(request, chainId):
 
 
 def jointReport(request):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
@@ -171,9 +171,9 @@ def jointReport(request):
 
 
 def createReport(request, chainId):
-    if request.session.get("user") and request.session["user"].get("AA"):
-        key = request.session["user"].get("keyValue")
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer") and request.session["chainer"].get("AA"):
+        key = request.session["chainer"].get("keyValue")
+        factionId = request.session["chainer"].get("factionId")
         request.session["onTheFlyMessage"] = []
 
         try:
@@ -240,8 +240,8 @@ def createReport(request, chainId):
 
 
 def deleteReport(request, chainId):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
         request.session["onTheFlyMessage"] = []
 
         try:
@@ -259,8 +259,8 @@ def deleteReport(request, chainId):
 
 
 def toggleReport(request, chainId):
-    if request.session.get("user"):
-        factionId = request.session["user"].get("factionId")
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
         request.session["onTheFlyMessage"] = []
 
         try:
@@ -287,9 +287,8 @@ def updateKey(request):
             return render(request, "chain/{}.html".format(p["html"]), user)
 
         if user["faction"]["faction_id"] in [33241]:
-
             AArights = "chains" in apiCall("faction", user["faction"]["faction_id"], "chains", p.get("keyValue"))
-            request.session["user"] = {'keyValue': p["keyValue"],
+            request.session["chainer"] = {'keyValue': p["keyValue"],
                                        'name': user["name"],
                                        'playerId': user["player_id"],
                                        'factionName': user["faction"]["faction_name"],
@@ -313,7 +312,7 @@ def updateKey(request):
 
 def logout(request):
     try:
-        del request.session["user"]
+        del request.session["chainer"]
     except:
         pass
     return HttpResponseRedirect(reverse('chain:index'))

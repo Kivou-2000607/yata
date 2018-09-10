@@ -1,14 +1,14 @@
 <div id="api-key-refresh">
-    {% if request.session.user %}
-        <h2 class="title">Hello {{request.session.user.name}}, fellow member of {{request.session.user.factionName}}</h2>
+    {% if request.session.chainer %}
+        <h2 class="title">Hello {{request.session.chainer.name}}, fellow member of {{request.session.chainer.factionName}}</h2>
     {% else %}
         <h2 class="title">Hello unkown user</h2>
     {% endif %}
 
     <div class="module whiteBG justTxt">
-        {% if request.session.user %}
+        {% if request.session.chainer %}
 
-            {%if request.session.user.AA %}
+            {%if request.session.chainer.AA %}
                 You've got the AA right. You can create chain reports.
             {% else %}
                 You don't have the AA right. You can only see existing chain reports.
