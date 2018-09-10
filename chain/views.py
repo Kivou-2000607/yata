@@ -247,7 +247,7 @@ def createReport(request, chainId):
 
         nWins = 0
         i = 0
-        for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"]):
+        for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
             i += 1
             attackerID = int(v["attacker_id"])
             # print(i, nWins, v["chain"], v["timestamp_started"])

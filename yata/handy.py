@@ -81,7 +81,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
         print("call number {}: {}".format(i, url), end='... ')
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
-            for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"]):
+            for k, v in attacks.items():
                 chain[k] = v
                 currentEndTS = min(v["timestamp_ended"], currentEndTS)
             if(len(attacks) < 1000):
