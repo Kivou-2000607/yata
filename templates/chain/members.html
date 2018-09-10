@@ -1,0 +1,32 @@
+<div>
+    <h2 class="title">Members of the faction</h2>
+    <div class="module whiteBG">
+        <table id="chain-members" class="tablesorter chain-report center">
+            <thead>
+                    <tr>
+                    <th>Name</th>
+                    <th style="text-align: center;">id</th>
+                    <th style="text-align: center;">Days in faction</th>
+                    <th style="text-align: center;">Last Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in members|dictsortreversed:"daysInFaction" %}
+                {% if m.daysInFaction >= 0 %}
+                    <tr>
+                        <td>{{m.name}}</td>
+                        <td style="text-align: center;">[{{m.tId}}]</td>
+                            <td style="text-align: center;">{{m.daysInFaction}}</td>
+                        <td style="text-align: center;">{{m.lastAction}}</td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="submit-row">
+            <a href={% url 'chain:createMembers' %}><input type="submit" class="update-type" value="Refresh member list"></a>
+        </div>
+
+    </div>
+</div>

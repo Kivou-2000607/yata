@@ -1,0 +1,91 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<div>
+    <h2 class="title">{{chain}}</h2>
+
+    <div class="module whiteBG">
+        <br>
+        <table class="center">
+            <thead>
+                <tr><th colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
+                <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
+                <tr><td>Respect earnt</td><td><b>{{chain.respect}}</b></td></tr>
+                <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
+            </tbody>
+        </table>
+        <br>
+
+        {% if bonus %}
+            <table class="center">
+                <thead>
+                    <tr><th style="text-align: center;" colspan="5">Bonuses</th></tr>
+                    <tr>
+                        <th style="text-align: center;">Bonus</th>
+                        <th>Name</th>
+                        <th style="text-align: center;">respect won</th>
+                        <th style="text-align: center;">respect max</th>
+                        <th style="text-align: center;">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bonus %}
+                    <tr>
+                        <td style="text-align: center;">{{b.hit}}</td>
+                        <td>{{b.name}}</td>
+                        <td style="text-align: center;">{{b.respect|floatformat:2}}</td>
+                        <td style="text-align: center;">{{b.respectMax|floatformat:2}}</td>
+                        <td style="text-align: center;">{{b.respect|div:b.respectMax|mul:100|floatformat:1}} %</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <br>
+        {% endif %}
+
+        <table id="chain-report-hits" class="tablesorter chain-report center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
+                <tr>
+                    <th style="text-align: center;">Rank</th>
+                    <th>Name</th>
+                    <th style="text-align: center;"># hits</th>
+                    <th style="text-align: center;"># attacks</th>
+                    <th style="text-align: center;">respect<br>without bonus</th>
+                    <th style="text-align: center;">respect<br>with bonus</th>
+                    <th style="text-align: center;">days in factions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in counts|dictsortreversed:"hits" %}
+                <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td>{{c.name}}</td>
+                    <td style="text-align: center;">{{c.wins}}</td>
+                    <td style="text-align: center;">{{c.hits}}</td>
+                    <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+                    <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
+                {% if c.daysInFaction < 0 %}
+                    <td style="text-align: center;">out</td>
+                {% else %}
+                    <td style="text-align: center;">{{c.daysInFaction}}</td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="submit-row">
+        {% if request.session.user.AA %}
+            <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Refresh report"></a>
+            <a href={% url 'chain:deleteReport' chain.tId %}><input type="submit" class="update-type" value="Delete report"></a>
+        {% else %}
+            <a><input type="submit" class="update-type" value="You need AA right to refresh the report"></a>
+        {% endif %}
+        </div>
+
+    </div>
+</div>

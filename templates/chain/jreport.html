@@ -1,0 +1,63 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<div>
+    <h2 class="title">Joint report</h2>
+
+    <div class="module whiteBG justTxt">
+        <br>
+        <table class="center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="4">Summary of the joint report ({{chainsReport|length}} chains)</th></tr>
+            </thead>
+            <tbody>
+                {% for chain in chainsReport %}
+                    <tr><td style="text-align: center;">{{ forloop.counter }}</td>
+                        <td>Chain of {{chain.startDate}}</td>
+                        <td><b>{{chain.nHits}}</b> hits</td>
+                        <td><b>{{chain.respect|floatformat:2}}</b> respects</td>
+                        <td><a href={% url 'chain:report' chain.tId %}>see report</a></td>
+                    </tr>
+                {% endfor %}
+                <tr><td colspan="2"><b>Total</b></td>
+                    <td><b>{{total.nHits}}</b> hits</td>
+                    <td><b>{{total.respect|floatformat:2}}</b> respects</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+
+        <table id="chain-report-hits" class="tablesorter chain-report center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
+                <tr>
+                    <th style="text-align: center;">Rank</th>
+                    <th>Name</th>
+                    <th style="text-align: center;"># hits</th>
+                    <th style="text-align: center;"># attacks</th>
+                    <th style="text-align: center;">respect<br>without bonus</th>
+                    <th style="text-align: center;">respect<br>with bonus</th>
+                    <th style="text-align: center;">days in factions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in counts|dictsortreversed:"wins" %}
+                <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td>{{c.name}}</td>
+                    <td style="text-align: center;">{{c.wins}}</td>
+                    <td style="text-align: center;">{{c.hits}}</td>
+                    <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+                    <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
+                {% if c.daysInFaction < 0 %}
+                    <td style="text-align: center;">out</td>
+                {% else %}
+                    <td style="text-align: center;">{{c.daysInFaction}}</td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>

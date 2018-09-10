@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "torn-yata.herokuapp.com"]
 # Application definition
 
 INSTALLED_APPS = [
+    'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
     'django.contrib.admin',
     'django.contrib.auth',

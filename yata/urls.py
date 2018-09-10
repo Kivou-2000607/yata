@@ -20,8 +20,14 @@ from django.contrib import admin
 
 from . import views
 
+app_name = "yata"
 urlpatterns = [
+    # app
     re_path(r'^bazaar/', include('bazaar.urls')),
+    re_path(r'^chain/', include('chain.urls')),
     path('admin/', admin.site.urls),
-    path('', views.index),
+
+    # site
+    path('', views.index, name="index"),
+
 ] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

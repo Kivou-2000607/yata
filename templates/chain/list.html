@@ -1,0 +1,51 @@
+<div>
+    <h2 class="title">List of chains</h2>
+    <div class="module whiteBG">
+        <table id="chain-report-list"  class="tablesorter chain-report center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Start</th>
+                    <th>Hits</th>
+                    <th>Respect</th>
+                    <th>Report</th>
+            </thead>
+            <tbody>
+            {% for chain in chains %}
+            <tr>
+                <td>{{chain.tId}}</td>
+                <td>{{chain.startDate}}</td>
+                <td><b>{{chain.nHits}}</b></td>
+                <td><b>{{chain.respect}}</b></td>
+                <td>
+                    {% if chain.have_report %}
+                        {% if request.session.user.AA %}
+                            [<a href={% url 'chain:report' chain.tId %}>see</a> -
+                             <a href={% url 'chain:createReport' chain.tId %}>refresh</a> -
+                             <a href={% url 'chain:deleteReport' chain.tId %}>delete</a> -
+                             <a href={% url 'chain:toggleReport' chain.tId %}>{% if chain.jointReport %}remove from{% else %}add to{% endif %} join report</a>
+                            ]
+                        {% else %}
+                            [<a href={% url 'chain:report' chain.tId %}>see</a>]
+                        {% endif %}
+                    {% else %}
+                        {% if request.session.user.AA %}
+                            [<a href={% url 'chain:createReport' chain.tId %}>create</a>]
+                        {% else %}
+                            [no report]
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="submit-row">
+        {% if request.session.user.AA %}
+            <a href={% url 'chain:createList' %}><input type="submit" class="update-type" value="Refresh chain list"></a>
+                {% else %}
+            <a><input type="submit" class="update-type" value="You need AA right to refresh the list"></a>
+        {% endif %}
+        </div>
+    </div>
+</div>
