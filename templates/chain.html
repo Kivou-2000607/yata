@@ -24,15 +24,18 @@
         $(document).on('click', '.update-key', function(e){
             e.preventDefault();
             var key = $( "#key-value" ).val();
+            alert(key);
             var csrf  = $( "#update-key-csrf" ).val();
+            alert(csrf);
             var check = $("#key-check-remember").is(':checked');
+            alert(check);
             $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
                 keyValue: key,
                 html: "login",
                 rememberSession: check,
                 csrfmiddlewaretoken: csrf,
-            });
+            }, alert("log success"));
         });
 
         $(document).ready(function() {
