@@ -9,7 +9,7 @@
 <head>
 
     <!-- load jquery from https://code.jquery.com/ -->
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
     <!-- css -->
     <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
@@ -23,20 +23,21 @@
     <script>
         $(document).on('click', '.update-key', function(e){
             e.preventDefault();
-            var key = $( "#key-value" ).val();
+            var key = $("#key-value").val();
             alert(key);
-            var csrf  = $( "#update-key-csrf" ).val();
-            alert(csrf);
             var check = $("#key-check-remember").is(':checked');
             alert(check);
+            var csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            alert(csrf);
             $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
                 keyValue: key,
                 html: "login",
                 rememberSession: check,
                 csrfmiddlewaretoken: csrf,
-            }, alert("log success"));
+            });
         });
+
 
         $(document).ready(function() {
             $("#chain-report-hits").tablesorter();

@@ -27,7 +27,7 @@
                 <input id="key-value" placeholder="API key" type=text>
                 <input id="key-check-remember" type="checkbox" value="Remember me">
                 <label for="key-check-remember">Remember me</label>
-                <input id="update-key-csrf" type="hidden"  value="{{csrf_token}}">
+                <!-- <input id="update-key-csrf" type="hidden"  value="{{csrf_token}}"> -->
                 <input type="submit" class="update-key" value="Login">
                 {% if apiError %}<a class="deletelink" href="">{{ apiError }}</a>{% endif %}
             </form>
