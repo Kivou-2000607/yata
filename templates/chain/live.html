@@ -1,0 +1,28 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<div>
+    <h2 class="title">Live chain report</h2>
+
+        {% if liveChain.current %}
+        <div class="module whiteBG">
+            <br>
+            <table class="center">
+                <thead>
+                    <tr><th colspan="2">Summary of the current chain</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Chain at</td><td>{{liveChain.current}}</td></tr>
+                    <tr><td>Timeout</td><td>{{liveChain.timeout}}</td></tr>
+                    <tr><td>Modifier</td><td>{{liveChain.modifier}}</td></tr>
+                    <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
+                </tbody>
+            </table>
+            <br>
+        </div>
+        {% else %}
+        <div class="module whiteBG justTxt">
+            No active chaining
+        </div>
+        {% endif %}
+</div>

@@ -1,7 +1,17 @@
 from django.utils import timezone
 
+
 def apiCall(section, id, selections, key, sub=None):
     import requests
+
+    # if selections == "chain" and section == "faction":
+    #     chain = dict({"chain": {"current": 123,
+    #                             "timeout": 158,
+    #                             "modifier": 0.75,
+    #                             "cooldown": 18
+    #                             }
+    #                 })
+    #     return chain[sub] if sub is not None else chain
 
     try:
         r = requests.get("https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key))
@@ -57,26 +67,41 @@ def timestampToDate(timestamp):
 #     # pickle.dump(chain, open('chain-{}-{}.p'.format(beginTS, endTS), 'wb'))
 #     return chain
 
-def apiCallAttacks( factionId, beginTS, endTS, key ):
+def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     import requests
 
     chain = dict({})
 
     beginTS = beginTS
-    currentEndTS = endTS+1 # add one to get last hit
+    currentEndTS = endTS + 1  # add one to get last hit
     feedAttacks = True
     i = 1
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
         print("call number {}: {}".format(i, url), end='... ')
         attacks = requests.get(url).json()["attacks"]
-        for k, v in attacks.items():
-            chain[k] = v
-            currentEndTS = min(v["timestamp_ended"], currentEndTS)
-        if(len(attacks)<1000):
+        if len(attacks):
+            for k, v in attacks.items():
+                chain[k] = v
+                currentEndTS = min(v["timestamp_ended"], currentEndTS)
+            if(len(attacks) < 1000):
+                feedAttacks = False
+            print("\tNumber of attacks: {}".format(len(attacks)))
+            i += 1
+        else:
+            print("\tNumber of attacks: {}".format(len(attacks)))
             feedAttacks = False
-        print("\tNumber of attacks: {}".format(len(attacks)))
-        i+=1
+
+        if stopAfterNAttacks is not False and len(chain) >= stopAfterNAttacks:
+            print("Stop after {} attacks".format(stopAfterNAttacks))
+            feedAttacks = False
 
     # pickle.dump(chain, open('chain-{}-{}.p'.format(beginTS, endTS), 'wb'))
     return chain
+
+
+def toggleMessage(request, context, key):
+    if key in request.session:
+        context[key] = request.session[key]
+        request.session[key] = False
+    return context

@@ -2,10 +2,15 @@
 {% load mathfilters %}
 
 <div>
-    <h2 class="title">{{chain}}</h2>
+    {% if liveChain %}
+        <h2 class="title">Live chain report (last update: {{chain.endDate}})</h2>
+    {% else %}
+        <h2 class="title">{{chain}}</h2>
+    {% endif %}
 
     <div class="module whiteBG">
         <br>
+        {% if not liveChain %}
         <table class="center">
             <thead>
                 <tr><th colspan="2">Summary of the chain {{chain.tId}}</th></tr>
@@ -18,6 +23,7 @@
             </tbody>
         </table>
         <br>
+        {% endif %}
 
         {% if bonus %}
             <table class="center">

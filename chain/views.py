@@ -1,23 +1,50 @@
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import timezone
 
 import json
 
 from yata.handy import apiCall
 from yata.handy import apiCallAttacks
 from yata.handy import timestampToDate
+from yata.handy import toggleMessage
 
 from .models import Faction
 
 
-def toggleMessage(request, context, key):
-    if key in request.session:
-        context[key] = request.session[key]
-        request.session[key] = False
-    return context
-
-
 def index(request):
+    if request.session.get("chainer"):
+        factionId = request.session["chainer"].get("factionId")
+        key = request.session["chainer"].get("keyValue")
+
+        try:
+            faction = Faction.objects.filter(tId=factionId)[0]
+        except:
+            return render(request, 'chain.html')
+
+        liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
+        activeChain = bool(liveChain["current"])
+
+        if activeChain:
+            try:
+                chain = faction.chain_set.filter(tId=0)[0]
+                report = chain.report_set.filter(chain=chain)[0]
+                counts = report.count_set.all()
+                bonus = report.bonus_set.all()
+            except:
+                faction.chain_set.filter(tId=0).delete()
+                chain = faction.chain_set.create(tId=0, status=False)
+                report = False
+                counts = False
+                bonus = False
+
+            context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, "view": {"report": True, "liveReport": True}})
+
+        else:
+            context = dict({'liveChain': liveChain, "view": {"liveReport": True}})
+
+        return render(request, 'chain.html', context)
+
     return render(request, 'chain.html')
 
 
@@ -48,6 +75,12 @@ def createList(request):  # able to create faction
         except:
             faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
             request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
+
+        # create live chain
+        try:
+            faction.chain_set.create(tId=0, status=False)
+        except:
+            pass
 
         if request.session["chainer"].get("AA"):
             req = apiCall("faction", faction.tId, "chains", key, sub='chains')
@@ -189,7 +222,21 @@ def createReport(request, chainId):
         for m in members:
             attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
 
-        attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
+        if int(chainId) == 0:
+            print("create report live")
+            chain.end = int(timezone.now().timestamp())
+            chain.start = 1
+            chain.startDate = timestampToDate(chain.start)
+            chain.endDate = timestampToDate(chain.end)
+            chain.save()
+            stopAfterNAttacks = apiCall("faction", factionId, "chain", key, sub="chain")["current"]
+            if stopAfterNAttacks:
+                attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
+            else:
+                attacks = dict({})
+        else:
+            attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
+            stopAfterNAttacks = False
 
         # loop over the attacks
         BONUS_RESPECT = {10: 8.4, 25: 16.8, 50: 33.6, 100: 67.2, 250: 134.4, 500: 268.8, 1000: 537.6,
@@ -228,6 +275,9 @@ def createReport(request, chainId):
 
                 attackers[name][1] += 1
 
+                if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
+                    break
+
         for k, v in attackers.items():
             if v[1]:
                 report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], respect=v[2], respectTotal=v[3], daysInFaction=v[4])
@@ -236,7 +286,10 @@ def createReport(request, chainId):
 
         request.session["onTheFlyMessage"].append("Report of chain {} updated".format(chainId))
 
-    return HttpResponseRedirect(reverse('chain:report', kwargs={"chainId": chainId}))
+    if int(chainId) == 0:
+        return HttpResponseRedirect(reverse('chain:index'))
+    else:
+        return HttpResponseRedirect(reverse('chain:report', kwargs={"chainId": chainId}))
 
 
 def deleteReport(request, chainId):
@@ -293,12 +346,12 @@ def updateKey(request):
             print("[updateKey]: factionId ok ")
             AArights = "chains" in apiCall("faction", user["faction"]["faction_id"], "chains", p.get("keyValue"))
             request.session["chainer"] = {'keyValue': p["keyValue"],
-                                       'name': user["name"],
-                                       'playerId': user["player_id"],
-                                       'factionName': user["faction"]["faction_name"],
-                                       'factionId': user["faction"]["faction_id"],
-                                       'AA': AArights,
-                                       }
+                                          'name': user["name"],
+                                          'playerId': user["player_id"],
+                                          'factionName': user["faction"]["faction_name"],
+                                          'factionId': user["faction"]["faction_id"],
+                                          'AA': AArights,
+                                          }
             check = json.loads(p.get("rememberSession"))
             print("[updateKey]: check".format(check))
             if check:

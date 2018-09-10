@@ -81,6 +81,12 @@
                 {% include "chain/login.html" %}
             </div>
 
+            {% if view.liveReport %}
+                <div id="chain-live">
+                    {% include "chain/live.html" %}
+                </div>
+            {% endif %}
+
             {% if view.report %}
                 <div id="chain-report">
                     {% include "chain/report.html" %}

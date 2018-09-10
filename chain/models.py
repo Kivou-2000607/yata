@@ -16,7 +16,7 @@ class Faction(models.Model):
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
-    tId = models.IntegerField(default=0, unique=True)
+    tId = models.IntegerField(default=0)
     nHits = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     start = models.IntegerField(default=0)
