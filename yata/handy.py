@@ -5,7 +5,7 @@ def apiCall(section, id, selections, key, sub=None):
     import requests
 
     # if selections == "chain" and section == "faction":
-    #     chain = dict({"chain": {"current": 123,
+    #     chain = dict({"chain": {"current": 3,
     #                             "timeout": 158,
     #                             "modifier": 0.75,
     #                             "cooldown": 18

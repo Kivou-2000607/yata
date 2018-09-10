@@ -41,6 +41,7 @@ def index(request):
             context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, "view": {"report": True, "liveReport": True}})
 
         else:
+            faction.chain_set.filter(tId=0).delete()
             context = dict({'liveChain': liveChain, "view": {"liveReport": True}})
 
         return render(request, 'chain.html', context)
