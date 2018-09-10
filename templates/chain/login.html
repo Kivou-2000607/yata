@@ -23,7 +23,6 @@
         {% else %}
             <p>Enter your API key see the chain reports of you faction</p>
             <form method="post">
-                {% csrf_token %}
                 <input id="key-value" placeholder="API key" type=text>
                 <input id="key-check-remember" type="checkbox" value="Remember me">
                 <label for="key-check-remember">Remember me</label>
