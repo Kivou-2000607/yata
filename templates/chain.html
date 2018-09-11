@@ -42,6 +42,12 @@
             $("#chain-members").tablesorter();
         });
 
+        $(document).ready(function() {
+            $("#chain-report-list").tablesorter( {sortList: [[0,1]]} );
+            $("#chain-members").tablesorter( {sortList: [[2,1], [0,0]]} );
+        });
+
+
     </script>
 
 

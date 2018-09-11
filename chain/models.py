@@ -6,6 +6,7 @@ class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
     hitsThreshold = models.IntegerField(default=100)
+    apiKey = models.CharField(default="0", max_length=16)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)

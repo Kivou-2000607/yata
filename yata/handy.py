@@ -31,7 +31,7 @@ def apiCall(section, id, selections, key, sub=None):
                 return rjson
 
     except requests.exceptions.HTTPError as e:
-        print("[apiCall] API HTTPError {}".format(e))
+        print("[FUNCTION apiCall] API HTTPError {}".format(e))
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
@@ -78,7 +78,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     i = 1
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
-        print("call number {}: {}".format(i, url), end='... ')
+        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url), end='... ')
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
             for k, v in attacks.items():
@@ -93,7 +93,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
             feedAttacks = False
 
         if stopAfterNAttacks is not False and len(chain) >= stopAfterNAttacks:
-            print("Stop after {} attacks".format(stopAfterNAttacks))
+            print("[FUNCTION apiCallAttacks] Stop after {} attacks".format(stopAfterNAttacks))
             feedAttacks = False
 
     # pickle.dump(chain, open('chain-{}-{}.p'.format(beginTS, endTS), 'wb'))

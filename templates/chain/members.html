@@ -4,8 +4,8 @@
         <table id="chain-members" class="tablesorter chain-report center">
             <thead>
                     <tr>
-                    <th>Name</th>
                     <th style="text-align: center;">id</th>
+                    <th>Name</th>
                     <th style="text-align: center;">Days in faction</th>
                     <th style="text-align: center;">Last Action</th>
                 </tr>
@@ -14,16 +14,16 @@
                 {% for m in members|dictsortreversed:"daysInFaction" %}
                 {% if m.daysInFaction >= 0 %}
                     <tr>
+                        <td style="text-align: center;">{{m.tId}}</td>
                         <td>{{m.name}}</td>
-                        <td style="text-align: center;">[{{m.tId}}]</td>
-                            <td style="text-align: center;">{{m.daysInFaction}}</td>
+                        <td style="text-align: center;">{{m.daysInFaction}}</td>
                         <td style="text-align: center;">{{m.lastAction}}</td>
                     </tr>
                 {% endif %}
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <div class="submit-row">
             <a href={% url 'chain:createMembers' %}><input type="submit" class="update-type" value="Refresh member list"></a>
         </div>

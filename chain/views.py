@@ -337,14 +337,11 @@ def updateKey(request):
     print("[updateKey]: in")
     if request.method == "POST":
         p = request.POST
-        print("[updateKey]: post {}".format(p))
         user = apiCall("user", "", "profile", p.get("keyValue"))
-        print("[updateKey]: user {}".format(user))
         if "apiError" in user:
             return render(request, "chain/{}.html".format(p["html"]), user)
 
         if user["faction"]["faction_id"] in [33241]:
-            print("[updateKey]: factionId ok ")
             AArights = "chains" in apiCall("faction", user["faction"]["faction_id"], "chains", p.get("keyValue"))
             request.session["chainer"] = {'keyValue': p["keyValue"],
                                           'name': user["name"],
@@ -354,17 +351,14 @@ def updateKey(request):
                                           'AA': AArights,
                                           }
             check = json.loads(p.get("rememberSession"))
-            print("[updateKey]: check".format(check))
             if check:
                 request.session.set_expiry(31536000)  # 1 year
             else:
                 request.session.set_expiry(0)  # logout when close browser
-            print("[updateKey]: render")
             return render(request, "chain/{}.html".format(p["html"]))
 
         else:
             user = {"apiError": "Sorry but this website is not yet opened to your faction"}
-            print("[updateKey]: user error".format(user))
             return render(request, "chain/{}.html".format(p["html"]), user)
 
     else:
