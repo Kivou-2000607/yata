@@ -35,6 +35,8 @@ class Command(BaseCommand):
                         report = chain.report_set.create()
                         print("[COMMAND live] report created")
 
+                    report.count_set.all().delete()
+
                     members = faction.member_set.all()
                     attackers = dict({})  # create attackers array on the fly to avoid db connectio in the loop
                     for m in members:
