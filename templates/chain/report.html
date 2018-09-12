@@ -1,7 +1,9 @@
+{% load static %}
 {% load humanize %}
 {% load mathfilters %}
 
 <div>
+{% if counts|length %}
     {% if liveChain %}
         <h2 class="title">Live chain report (last update: {{chain.endDate}})</h2>
     {% else %}
@@ -52,38 +54,39 @@
         <br>
         {% endif %}
 
-        <table id="chain-report-hits" class="tablesorter chain-report center">
-            <thead>
-                <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
-                <tr>
-                    <th style="text-align: center;">Rank</th>
-                    <th>Name</th>
-                    <th style="text-align: center;"># hits</th>
-                    <th style="text-align: center;"># attacks</th>
-                    <th style="text-align: center;">respect<br>without bonus</th>
-                    <th style="text-align: center;">respect<br>with bonus</th>
-                    <th style="text-align: center;">days in factions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in counts|dictsortreversed:"wins" %}
-                <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
-                    <td style="text-align: center;">{{ forloop.counter }}</td>
-                    <td>{{c.name}}</td>
-                    <td style="text-align: center;">{{c.wins}}</td>
-                    <td style="text-align: center;">{{c.hits}}</td>
-                    <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                    <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
-                {% if c.daysInFaction < 0 %}
-                    <td style="text-align: center;">out</td>
-                {% else %}
-                    <td style="text-align: center;">{{c.daysInFaction}}</td>
-                {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+        {% if counts|length %}
+            <table id="chain-report-hits" class="tablesorter chain-report center">
+                <thead>
+                    <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
+                    <tr>
+                        <th style="text-align: center;">Rank</th>
+                        <th>Name</th>
+                        <th style="text-align: center;"># hits</th>
+                        <th style="text-align: center;"># attacks</th>
+                        <th style="text-align: center;">respect<br>without bonus</th>
+                        <th style="text-align: center;">respect<br>with bonus</th>
+                        <th style="text-align: center;">days in factions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in counts|dictsortreversed:"wins" %}
+                    <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
+                        <td style="text-align: center;">{{ forloop.counter }}</td>
+                        <td>{{c.name}}</td>
+                        <td style="text-align: center;">{{c.wins}}</td>
+                        <td style="text-align: center;">{{c.hits}}</td>
+                        <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+                        <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
+                    {% if c.daysInFaction < 0 %}
+                        <td style="text-align: center;">out</td>
+                    {% else %}
+                        <td style="text-align: center;">{{c.daysInFaction}}</td>
+                    {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
         <div class="submit-row">
         {% if request.session.chainer.AA %}
             <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Refresh report"></a>
@@ -92,6 +95,20 @@
             <a><input type="submit" class="update-type" value="You need AA right to refresh the report"></a>
         {% endif %}
         </div>
-
     </div>
+{% else %}
+    <h2 class="title">Report not yet created</h2>
+    <div class="module whiteBG justTxt">
+        {% if request.session.chainer.AA %}
+            <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Create report"></a>
+        {% endif %}
+    </div>
+{% endif  %}
+
+{% if liveChain %}
+    <h2 class="title greyTitle"><img src="{% static "images/tutorial.png" %}" alt="help"> Live reports</h2>
+    <div class="module whiteBG justTxt">
+        <p>Live reports are automatically created/updated every 10 minutes.</p>
+    </div>
+{% endif %}
 </div>
