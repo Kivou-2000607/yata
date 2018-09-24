@@ -19,11 +19,10 @@ def index(request):
 
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
+            liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
+            activeChain = bool(liveChain["current"])
         except:
             return render(request, 'chain.html')
-
-        liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
-        activeChain = bool(liveChain["current"])
 
         if activeChain:
             try:
@@ -335,6 +334,18 @@ def toggleReport(request, chainId):
 # UPDATE ON THE FLY
 def updateKey(request):
     print("[updateKey]: in")
+
+    # request.session["chainer"] = {'keyValue': "myKeyForDebug",
+    #                               'name': "Kivou",
+    #                               'playerId': 2000607,
+    #                               'factionName': "Nub Navy",
+    #                               'factionId': 33241,
+    #                               'AA': True,
+    #                               }
+    # request.session.set_expiry(0)  # logout when close browser
+    # return render(request, "chain/login.html")
+
+
     if request.method == "POST":
         p = request.POST
         user = apiCall("user", "", "profile", p.get("keyValue"))

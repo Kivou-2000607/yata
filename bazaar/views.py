@@ -48,7 +48,7 @@ def custom(request):
             out["allItemsOnMarket"]["Custom"] = []
         out["view"] = {"byType": True, "refreshType": True, "help": True, "stock": True}
         out["nUpdate"] = Stat.objects.all()[0].getStats()
-        
+
         return render(request, 'bazaar.html', out)
 
     except:
@@ -62,7 +62,10 @@ def default(request):
 
     if request.session.get("user"):  # if log
         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+        if "apiError" in inventory:
+            id_stock = dict({})
+        else:
+            id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
     else:
         id_stock = dict({})
 
@@ -84,7 +87,10 @@ def fullList(request):
 
     if request.session.get("user"):  # if log
         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+        if "apiError" in inventory:
+            id_stock = dict({})
+        else:
+            id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
     else:
         id_stock = dict({})
 
@@ -106,7 +112,10 @@ def sets(request):
 
     if request.session.get("user"):  # if log
         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-        id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
+        if "apiError" in inventory:
+            id_stock = dict({})
+        else:
+            id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
     else:
         id_stock = dict({})
 
@@ -135,6 +144,14 @@ def logout(request):
 
 
 def updateKey(request):
+
+    # request.session["user"] = {'keyValue': "myKeyForDebug",
+    #                            'name': "Kivou",
+    #                            'playerId': 2000607,
+    #                            }
+    # request.session.set_expiry(0)  # logout when close browser
+    # return render(request, "sub/intro.html")
+
     if request.method == "POST":
         p = request.POST
 
