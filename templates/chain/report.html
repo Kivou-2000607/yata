@@ -70,7 +70,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for c in counts|dictsortreversed:"wins" %}
+                    {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
                     <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
                         <td style="text-align: center;">{{ forloop.counter }}</td>
                         <td>{{c.name}}</td>
