@@ -65,6 +65,7 @@
                         <th style="text-align: center;"># attacks</th>
                         <th style="text-align: center;">respect<br>without bonus</th>
                         <th style="text-align: center;">respect<br>with bonus</th>
+                        <th style="text-align: center;">respect<br>per hit</th>
                         <th style="text-align: center;">days in factions</th>
                     </tr>
                 </thead>
@@ -77,6 +78,7 @@
                         <td style="text-align: center;">{{c.hits}}</td>
                         <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                         <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
+                        <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
                     {% if c.daysInFaction < 0 %}
                         <td style="text-align: center;">out</td>
                     {% else %}
