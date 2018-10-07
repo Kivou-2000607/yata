@@ -56,7 +56,8 @@ def list(request):
         except:
             return HttpResponseRedirect(reverse('chain:createList'))
 
-        context = dict({'chains': faction.chain_set.filter(status=True), "view": {"list": True}})
+        factions = faction.chain_set.filter(status=True).order_by('-end')
+        context = dict({'chains': factions, "view": {"list": True}})
         context = toggleMessage(request, context, "onTheFlyMessage")
         return render(request, 'chain.html', context)
     else:
@@ -155,7 +156,8 @@ def report(request, chainId):
         except:
             return render(request, 'chain.html')
 
-        context = dict({'chain': chain, 'members': members, 'chains': faction.chain_set.filter(status=True), 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}})
+        factions = faction.chain_set.filter(status=True).order_by('-end')
+        context = dict({'chain': chain, 'members': members, 'chains': factions, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}})
         context = toggleMessage(request, context, "onTheFlyMessage")
 
         return render(request, 'chain.html', context)
@@ -194,7 +196,7 @@ def jointReport(request):
                                                 "daysInFaction": count.daysInFaction}
 
         arrayCounts = [v for k, v in counts.items()]
-        
+
         factions = faction.chain_set.filter(status=True).order_by('-end')
         context = dict({'chains': factions, 'chainsReport': chains, 'total': total, 'counts': arrayCounts, "view": {"jointReport": True, "list": True}})
 
