@@ -313,6 +313,12 @@ table.center {
   margin-right:25%;
 }
 
+table.center-large {
+  width:80%;
+  margin-left:10%;
+  margin-right:10%;
+}
+
 #content div.validnote {
     color: #0B8E14;
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;

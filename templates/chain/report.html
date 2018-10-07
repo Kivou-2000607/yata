@@ -56,7 +56,7 @@
         {% endif %}
 
         {% if counts|length %}
-            <table id="chain-report-hits" class="tablesorter chain-report center">
+            <table id="chain-report-hits" class="tablesorter chain-report center-large">
                 <thead>
                     <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
                     <tr>
@@ -64,8 +64,8 @@
                         <th>Name</th>
                         <th style="text-align: center;"># hits</th>
                         <th style="text-align: center;"># attacks</th>
-                        <th style="text-align: center;">fair fight<br>(average)</th>
-                        <th style="text-align: center;">fair fight<br>(total)</th>
+                        <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
+                        <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
                         <th style="text-align: center;">days in factions</th>
