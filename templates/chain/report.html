@@ -21,7 +21,7 @@
             <tbody>
                 <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
                 <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-                <tr><td>Respect earnt</td><td><b>{{chain.respect}}</b></td></tr>
+                <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
                 <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
             </tbody>
         </table>
@@ -58,15 +58,15 @@
         {% if counts|length %}
             <table id="chain-report-hits" class="tablesorter chain-report center">
                 <thead>
-                    <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
+                    <tr><th style="text-align: center;" colspan="8">Hit count</th></tr>
                     <tr>
                         <th style="text-align: center;">Rank</th>
                         <th>Name</th>
                         <th style="text-align: center;"># hits</th>
                         <th style="text-align: center;"># attacks</th>
-                        <th style="text-align: center;">respect<br>without bonus</th>
-                        <th style="text-align: center;">respect<br>with bonus</th>
-                        <th style="text-align: center;">respect<br>per hit</th>
+                        <th style="text-align: center;">Fair fight<br>(average)</th>
+                        <th style="text-align: center;">Fair fight<br>(total)</th>
+                        <th style="text-align: center;">respect</th>
                         <th style="text-align: center;">days in factions</th>
                     </tr>
                 </thead>
@@ -77,13 +77,13 @@
                         <td>{{c.name}}</td>
                         <td style="text-align: center;">{{c.wins}}</td>
                         <td style="text-align: center;">{{c.hits}}</td>
-                        <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                        <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
                         {% if c.wins %}
-                            <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                            <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
                         {% else %}
                             <td style="text-align: center;">0.00</td>
                         {% endif %}
+                        <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
+                        <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                     {% if c.daysInFaction < 0 %}
                         <td style="text-align: center;">out</td>
                     {% else %}

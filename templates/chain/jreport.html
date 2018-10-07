@@ -33,26 +33,32 @@
 
         <table id="chain-report-hits" class="tablesorter chain-report center">
             <thead>
-                <tr><th style="text-align: center;" colspan="7">Hit count</th></tr>
+                <tr><th style="text-align: center;" colspan="8">Hit count</th></tr>
                 <tr>
                     <th style="text-align: center;">Rank</th>
                     <th>Name</th>
                     <th style="text-align: center;"># hits</th>
                     <th style="text-align: center;"># attacks</th>
-                    <th style="text-align: center;">respect<br>without bonus</th>
-                    <th style="text-align: center;">respect<br>with bonus</th>
+                    <th style="text-align: center;">Fair fight<br>(average)</th>
+                    <th style="text-align: center;">Fair fight<br>(total)</th>
+                    <th style="text-align: center;">respect</th>
                     <th style="text-align: center;">days in factions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for c in counts|dictsortreversed:"wins" %}
+                {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
                 <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
                     <td style="text-align: center;">{{ forloop.counter }}</td>
                     <td>{{c.name}}</td>
                     <td style="text-align: center;">{{c.wins}}</td>
                     <td style="text-align: center;">{{c.hits}}</td>
+                    {% if c.wins %}
+                        <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
+                    {% else %}
+                        <td style="text-align: center;">0.00</td>
+                    {% endif %}
+                    <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
                     <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                    <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
                 {% if c.daysInFaction < 0 %}
                     <td style="text-align: center;">out</td>
                 {% else %}

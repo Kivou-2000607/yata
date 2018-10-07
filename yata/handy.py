@@ -70,18 +70,23 @@ def timestampToDate(timestamp):
 def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     import requests
 
+    WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
+
     chain = dict({})
 
     beginTS = beginTS
     currentEndTS = endTS + 1  # add one to get last hit
     feedAttacks = True
     i = 1
+    nWins = 0
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
         print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url), end='... ')
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
             for k, v in attacks.items():
+                if v["result"] in WINS and float(v["respect_gain"]) > 0.0:
+                    nWins += 1
                 chain[k] = v
                 currentEndTS = min(v["timestamp_ended"], currentEndTS)
             if(len(attacks) < 1000):
@@ -92,7 +97,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
             print("\tNumber of attacks: {}".format(len(attacks)))
             feedAttacks = False
 
-        if stopAfterNAttacks is not False and len(chain) >= stopAfterNAttacks:
+        if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
             print("[FUNCTION apiCallAttacks] Stop after {} attacks".format(stopAfterNAttacks))
             feedAttacks = False
 

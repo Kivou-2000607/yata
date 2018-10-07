@@ -181,18 +181,18 @@ def jointReport(request):
         for chain in chains:
             for count in chain.report_set.all()[0].count_set.all():
                 total["nHits"] += count.wins
-                total["respect"] += float(count.respectTotal)
+                total["respect"] += float(count.respect)
                 if count.attackerId in counts:
                     counts[count.attackerId]["hits"] += count.hits
                     counts[count.attackerId]["wins"] += count.wins
                     counts[count.attackerId]["respect"] += count.respect
-                    counts[count.attackerId]["respectTotal"] += count.respectTotal
+                    counts[count.attackerId]["fairFight"] += count.fairFight
                 else:
                     counts[count.attackerId] = {"name": count.name,
                                                 "hits": count.hits,
                                                 "wins": count.wins,
                                                 "respect": count.respect,
-                                                "respectTotal": count.respectTotal,
+                                                "fairFight": count.fairFight,
                                                 "daysInFaction": count.daysInFaction}
 
         arrayCounts = [v for k, v in counts.items()]
@@ -261,7 +261,7 @@ def createReport(request, chainId):
                 else:
                     tmpAttacker = apiCall("user", attackerID, "basic", key)
                     name = tmpAttacker["name"]
-                    attackers[name] = [0, 0, 0.0, 0.0, -1, attackerID]                                # add out of faction attackers on the fly
+                    attackers[name] = [0, 0, 0.0, 0.0, -1, attackerID] # add out of faction attackers on the fly
                     faction.member_set.create(tId=attackerID, name=name, daysInFaction=-1)
                 respect = float(v["respect_gain"])
 
@@ -269,11 +269,8 @@ def createReport(request, chainId):
                     nWins += 1
                     attackers[name][0] += 1
                     if v["chain"] in BONUS_RESPECT:
-                        # print(k, v)
-                        attackers[name][2] += respect - BONUS_RESPECT[v["chain"]]
                         bonus.append((v["chain"], name, respect, BONUS_RESPECT[v["chain"]]))
-                    else:
-                        attackers[name][2] += respect
+                    attackers[name][2] += float(v["modifiers"]["fairFight"])
                     attackers[name][3] += respect
                     nRespect += respect
 
@@ -288,7 +285,7 @@ def createReport(request, chainId):
 
         for k, v in attackers.items():
             if v[1]:
-                report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], respect=v[2], respectTotal=v[3], daysInFaction=v[4])
+                report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
         for b in bonus:
             report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 
