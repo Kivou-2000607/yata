@@ -1,0 +1,16 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<div>
+    <h2 class="title">Faction upgrade tree</h2>
+        <div class="module whiteBG justTxt">
+            {% for branch, upgrades in tree.items %}
+                <h3>{{branch}}</h3>
+                <ul>
+                    {% for upgrade, description in upgrades.items %}
+                        <li>{{upgrade}}: {{description.ability}}</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+</div>

@@ -18,9 +18,10 @@ urlpatterns = [
 
     re_path(r'^jointReport/$', views.jointReport, name='jointReport'),
 
+    re_path(r'^tree/$', views.tree, name='tree'),
+
     re_path(r'^updateKey/$', views.updateKey, name='updateKey'),
     re_path(r'^logout/$', views.logout, name='logout'),
-
 
     # path('<int:tId>', views.details, name='details'),
     ]

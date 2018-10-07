@@ -25,7 +25,7 @@ class Command(BaseCommand):
                         chain = faction.chain_set.filter(tId=0)[0]
                         print("[COMMAND live] chain found")
                     except:
-                        chain = faction.chain_set.create(tId=0, status=False)
+                        chain = faction.chain_set.create(tId=0)
                         print("[COMMAND live] chain created")
 
                     try:
@@ -62,6 +62,7 @@ class Command(BaseCommand):
                     bonus = []
 
                     nWins = 0
+                    nRespect = 0.0
                     i = 0
                     for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
                         i += 1
@@ -89,11 +90,16 @@ class Command(BaseCommand):
                                 else:
                                     attackers[name][2] += respect
                                 attackers[name][3] += respect
+                                nRespect += respect
 
                             attackers[name][1] += 1
 
                             if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
                                 break
+
+                    chain.nHits = nWins
+                    chain.respect = nRespect
+                    chain.save()
 
                     for k, v in attackers.items():
                         if v[1]:

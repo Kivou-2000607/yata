@@ -1,7 +1,9 @@
+{% load mathfilters %}
+
 <div>
     <h2 class="title">List of chains</h2>
     <div class="module whiteBG">
-        <table id="chain-report-list"  class="tablesorter chain-report center">
+        <table class="tablesorter chain-report center">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -13,10 +15,15 @@
             <tbody>
             {% for chain in chains %}
             <tr>
-                <td>{{chain.tId}}</td>
-                <td>{{chain.startDate}}</td>
+                {% if chain.start == 1 %}
+                    <td>-</td>
+                    <td>current chain</td>
+                {% else %}
+                    <td>{{chain.tId}}</td>
+                    <td>{{chain.startDate}}</td>
+                {% endif %}
                 <td><b>{{chain.nHits}}</b></td>
-                <td><b>{{chain.respect}}</b></td>
+                <td><b>{{chain.respect|floatformat:2}}</b></td>
                 <td>
                     {% if chain.have_report %}
                         {% if request.session.chainer.AA %}

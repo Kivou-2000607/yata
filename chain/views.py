@@ -16,7 +16,6 @@ def index(request):
     if request.session.get("chainer"):
         factionId = request.session["chainer"].get("factionId")
         key = request.session["chainer"].get("keyValue")
-
         try:
             faction = Faction.objects.filter(tId=factionId)[0]
             liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
@@ -32,7 +31,7 @@ def index(request):
                 bonus = report.bonus_set.all()
             except:
                 faction.chain_set.filter(tId=0).delete()
-                chain = faction.chain_set.create(tId=0, status=False)
+                chain = faction.chain_set.create(tId=0)
                 report = False
                 counts = False
                 bonus = False
@@ -78,7 +77,7 @@ def createList(request):  # able to create faction
 
         # create live chain
         try:
-            faction.chain_set.create(tId=0, status=False)
+            faction.chain_set.create(tId=0)
         except:
             pass
 
@@ -195,8 +194,9 @@ def jointReport(request):
                                                 "daysInFaction": count.daysInFaction}
 
         arrayCounts = [v for k, v in counts.items()]
-
-        context = dict({'chains': faction.chain_set.filter(status=True), 'chainsReport': chains, 'total': total, 'counts': arrayCounts, "view": {"jointReport": True, "list": True}})
+        
+        factions = faction.chain_set.filter(status=True).order_by('-end')
+        context = dict({'chains': factions, 'chainsReport': chains, 'total': total, 'counts': arrayCounts, "view": {"jointReport": True, "list": True}})
 
         return render(request, 'chain.html', context)
     else:
@@ -245,6 +245,7 @@ def createReport(request, chainId):
         bonus = []
 
         nWins = 0
+        nRespect = 0.0
         i = 0
         for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
             i += 1
@@ -272,11 +273,16 @@ def createReport(request, chainId):
                     else:
                         attackers[name][2] += respect
                     attackers[name][3] += respect
+                    nRespect += respect
 
                 attackers[name][1] += 1
 
                 if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
                     break
+
+        chain.nHits = nWins
+        chain.respect = nRespect
+        chain.save()
 
         for k, v in attackers.items():
             if v[1]:
@@ -329,6 +335,31 @@ def toggleReport(request, chainId):
             pass
 
     return HttpResponseRedirect(reverse('chain:list'))
+
+
+def tree(request):
+    if request.session.get("chainer") and request.session["chainer"].get("AA"):
+        key = request.session["chainer"].get("keyValue")
+        factionId = request.session["chainer"].get("factionId")
+
+        upgrades = apiCall("faction", factionId, "upgrades", key, sub="upgrades")
+
+        tree = dict({})
+
+        for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]["branchorder"], reverse=False):
+            if upgrade["branch"] != "Core":
+                if tree.get(upgrade["branch"]) is None:
+                    tree[upgrade["branch"]] = dict({})
+                tree[upgrade["branch"]][upgrade["name"]] = upgrade
+
+
+        for k, upgrade in tree.items():
+            print(k, upgrade)
+        context = dict({"tree": tree, "view": {"tree": True}})
+
+        return render(request, 'chain.html', context)
+    else:
+        return HttpResponseRedirect(reverse('chain:index'))
 
 
 # UPDATE ON THE FLY

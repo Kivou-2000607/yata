@@ -61,7 +61,7 @@ class ChainInline(admin.TabularInline):
 
 
 class ChainAdmin(admin.ModelAdmin):
-    list_display = ['tId', 'nHits', 'startDate', 'startDate', 'respect', 'status']
+    list_display = ['tId', 'nHits', 'startDate', 'endDate', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
     inlines = [ReportInline]
 

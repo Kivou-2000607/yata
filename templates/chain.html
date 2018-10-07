@@ -60,7 +60,6 @@
             });
 
             $("#chain-report-hits").tablesorter();
-            $("#chain-report-list").tablesorter( {sortList: [[0,1]]} );
             $("#chain-members").tablesorter({
                 headers: {
                     3: { sorter: "since" }
@@ -91,6 +90,10 @@
             <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
             <p><b>Chain reports</b>: who's been a good chainer?</p>
             <br />
+
+            <div id="api-key">
+                {% include "chain/login.html" %}
+            </div>
 
             {% if onTheFlyMessage %}
                 <div class="module">
@@ -141,9 +144,6 @@
                 </div>
             {% endif %}
 
-            <div id="api-key">
-                {% include "chain/login.html" %}
-            </div>
 
         </div> <!--end of content-->
     </div> <!--end of container-->
