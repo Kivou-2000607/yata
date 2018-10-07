@@ -3,6 +3,7 @@
 {% load mathfilters %}
 
 <div>
+
 {% if counts|length %}
     {% if liveChain %}
         <h2 class="title">Live chain report (last update: {{chain.endDate}})</h2>
@@ -78,7 +79,11 @@
                         <td style="text-align: center;">{{c.hits}}</td>
                         <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                         <td style="text-align: center;">{{c.respectTotal|floatformat:2}}</td>
-                        <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                        {% if c.wins %}
+                            <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                        {% else %}
+                            <td style="text-align: center;">0.00</td>
+                        {% endif %}
                     {% if c.daysInFaction < 0 %}
                         <td style="text-align: center;">out</td>
                     {% else %}
