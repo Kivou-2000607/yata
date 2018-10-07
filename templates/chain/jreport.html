@@ -13,7 +13,11 @@
             <tbody>
                 {% for chain in chainsReport %}
                     <tr><td style="text-align: center;">{{ forloop.counter }}</td>
-                        <td>Chain of {{chain.startDate}}</td>
+                        {% if chain.start == 1 %}
+                            <td>current chain</td>
+                        {% else %}
+                            <td>Chain of {{chain.startDate}}</td>
+                        {% end %}
                         <td><b>{{chain.nHits}}</b> hits</td>
                         <td><b>{{chain.respect|floatformat:2}}</b> respects</td>
                         <td><a href={% url 'chain:report' chain.tId %}>see report</a></td>
