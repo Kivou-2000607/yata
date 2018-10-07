@@ -58,15 +58,16 @@
         {% if counts|length %}
             <table id="chain-report-hits" class="tablesorter chain-report center">
                 <thead>
-                    <tr><th style="text-align: center;" colspan="8">Hit count</th></tr>
+                    <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
                     <tr>
                         <th style="text-align: center;">Rank</th>
                         <th>Name</th>
                         <th style="text-align: center;"># hits</th>
                         <th style="text-align: center;"># attacks</th>
-                        <th style="text-align: center;">Fair fight<br>(average)</th>
-                        <th style="text-align: center;">Fair fight<br>(total)</th>
-                        <th style="text-align: center;">respect</th>
+                        <th style="text-align: center;">fair fight<br>(average)</th>
+                        <th style="text-align: center;">fair fight<br>(total)</th>
+                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
+                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
                         <th style="text-align: center;">days in factions</th>
                     </tr>
                 </thead>
@@ -83,6 +84,11 @@
                             <td style="text-align: center;">0.00</td>
                         {% endif %}
                         <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
+                        {% if c.wins %}
+                            <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                        {% else %}
+                            <td style="text-align: center;">0.00</td>
+                        {% endif %}
                         <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                     {% if c.daysInFaction < 0 %}
                         <td style="text-align: center;">out</td>

@@ -87,7 +87,7 @@ class Command(BaseCommand):
                                     bonus.append((v["chain"], name, respect, BONUS_RESPECT[v["chain"]]))
 
                                 attackers[name][2] += float[v["modifiers"]["fairFight"]]
-                                attackers[name][3] += respect
+                                attackers[name][3] += respect / float(v["modifiers"]["chainBonus"])
                                 nRespect += respect
 
                             attackers[name][1] += 1
