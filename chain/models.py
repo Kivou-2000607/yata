@@ -26,6 +26,7 @@ class Chain(models.Model):
     endDate = models.DateTimeField(default=timezone.now)
     status = models.BooleanField(default=True)
     jointReport = models.BooleanField(default=False)
+    graph = models.TextField(default="")
 
     def __str__(self):
         return "Chain [{}]".format(self.tId)

@@ -157,8 +157,11 @@ def report(request, chainId):
             return render(request, 'chain.html')
 
         factions = faction.chain_set.filter(status=True).order_by('-end')
-        context = dict({'chain': chain, 'members': members, 'chains': factions, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}})
+        context = dict({'chain': chain, 'members': members, 'chains': factions, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True},
+                        'values': [['foo', 32], ['bar', 64], ['baz', 96]] })
         context = toggleMessage(request, context, "onTheFlyMessage")
+
+
 
         return render(request, 'chain.html', context)
     else:
