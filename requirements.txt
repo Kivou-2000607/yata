@@ -5,3 +5,4 @@ gunicorn>=19.7
 dj_database_url>=0.4.2
 psycopg2-binary==2.7.5
 whitenoise==3.3.1
+numpy==1.14.3

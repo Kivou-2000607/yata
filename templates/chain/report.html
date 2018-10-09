@@ -14,6 +14,7 @@
 
     <div class="module whiteBG">
         <br>
+
         {% if not liveChain %}
         <table class="center">
             <thead>
@@ -74,7 +75,7 @@
                 </thead>
                 <tbody>
                     {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                    <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
+                    <tr {% if c.daysInFaction < 0 %}class="out"{% elif c.wins < 1 %}class="zero"{% endif %} >
                         <td style="text-align: center;">{{ forloop.counter }}</td>
                         <td>{{c.name}}</td>
                         <td style="text-align: center;">{{c.wins}}</td>
@@ -100,26 +101,8 @@
                     {% endfor %}
                 </tbody>
             </table>
-            
-<!--             <div id="out"></div> -->
-            {% googlecharts %}
-                {# named data and options can be reused #}
-                {% data values "out_data" %}
-                    {% col "string" "Name" %}"{{ val }}"{% endcol %}
-                    {% col "number" "Value" %}{{ val }}{% endcol %}
-                {% enddata %}
-                {# you can also use global javascript variables here, #}
-                {# and call functions #}
-                {% options "out_options" %}
-                    kind: "PieChart",
-                    options: {
-                        width: 300,
-                        height: 240
-                    }
-                {% endoptions %}
-                {# chart is assembled from container, data and options #}
-                {% graph "out" "out_data" "out_options" %}
-            {% endgooglecharts %}
+
+            <div id="curve_chart"></div>
 
         {% endif %}
         <div class="submit-row">

@@ -2,6 +2,8 @@ from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
+from datetime import datetime
+import numpy
 import json
 
 from yata.handy import apiCall
@@ -156,9 +158,12 @@ def report(request, chainId):
         except:
             return render(request, 'chain.html')
 
-        factions = faction.chain_set.filter(status=True).order_by('-end')
-        context = dict({'chain': chain, 'members': members, 'chains': factions, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True},
-                        'values': [['foo', 32], ['bar', 64], ['baz', 96]] })
+        chains = faction.chain_set.filter(status=True).order_by('-end')
+        graph = []
+        for line in chain.graph.split(","):
+            splt=line.split(":")
+            graph.append( [timestampToDate(int(splt[0])), int(splt[1])] )
+        context = dict({'chain': chain, 'members': members, 'chains': chains, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}, 'graph': graph})
         context = toggleMessage(request, context, "onTheFlyMessage")
 
 
@@ -252,6 +257,7 @@ def createReport(request, chainId):
         nWins = 0
         nRespect = 0.0
         i = 0
+        attacksForHisto = []
         for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
             i += 1
             attackerID = int(v["attacker_id"])
@@ -269,6 +275,7 @@ def createReport(request, chainId):
                 respect = float(v["respect_gain"])
 
                 if v["result"] in WINS and respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
+                    attacksForHisto.append(v["timestamp_ended"])
                     nWins += 1
                     attackers[name][0] += 1
                     if v["chain"] in BONUS_RESPECT:
@@ -283,13 +290,16 @@ def createReport(request, chainId):
                 if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
                     break
 
+        histo, bin_edges = numpy.histogram(attacksForHisto, bins=50)
+        bins = [int(0.5*(a+b)) for (a,b) in zip(bin_edges[0:-1], bin_edges[1:])]
         chain.nHits = nWins
         chain.respect = nRespect
+        chain.graph = ",".join(["{}:{}".format(a,b) for (a,b) in zip(bins, histo)])
         chain.save()
 
         for k, v in attackers.items():
-            if v[1]:
-                report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
+            # if v[1]:
+            report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
         for b in bonus:
             report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 
