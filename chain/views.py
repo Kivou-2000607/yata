@@ -294,8 +294,7 @@ def createReport(request, chainId):
                 if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
                     break
 
-        bins = min(int(int(chain.end-chain.start)/(5*60)), 1000)
-        print("bins=", bins)
+        bins = min(int(int(chain.end-chain.start)/(5*60)), 256)
         histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
         bins = [int(0.5*(a+b)) for (a,b) in zip(bin_edges[0:-1], bin_edges[1:])]
         chain.nHits = nWins
