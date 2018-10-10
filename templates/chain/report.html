@@ -102,11 +102,18 @@
 
                     {% endfor %}
                     <tr class="white"><th id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="9">Show / Hide inactives in faction</th></tr>
-                    <!-- <tr class="white"><td id="histogram" colspan="9"></td></tr> -->
                 </tbody>
             </table>
 
-            <div id="histogram"></div>
+            <br>
+            <table class="center-large">
+                <thead>
+                    <tr><th style="text-align: center;">Number of hits over time</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="white"><td id="histogram" colspan="9"></td></tr>
+                </tbody>
+            </table>
 
         {% endif %}
         <div class="submit-row">

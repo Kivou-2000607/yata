@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load humanize %}
+{% load mathfilters %}
 {% get_current_language as LANGUAGE_CODE %}
 
 <!-- Current language: {{ LANGUAGE_CODE }} -->
@@ -80,25 +81,20 @@
 
         function drawChart() {
           var data = google.visualization.arrayToDataTable([
-            ['Time', '# hits', { role: 'style' }],
-            {% for a,b in graph %}
-                [new Date({{a|date:"Y"}}, {{a|date:"n"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b < 2 %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}],
+            ['Time', '# of hits / {{graph.info|floatformat:1}} minutes', { role: 'style' }, '# of commmulative hits'],
+            {% for a,b,c in graph.data %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b < 2 %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
              {% endfor %}
           ]);
 
           var options = {
-            title: 'Hits over time',
-            titleTextStyle: {
-                color: "#333",    // any HTML string color ('red', '#cc00cc')
-                fontName: 'Roboto', // i.e. 'Times New Roman'
-                fontSize: 14, // 12, 18 whatever you want (don't specify px)
-                // bold: <boolean>,    // true or false
-                // italic: <boolean>   // true of false
-            },
-            // curveType: 'function',
-            bar: {groupWidth: "100%"},
-            legend: { position: 'none' },
-            // series: { 0: { color: '#787878' } },
+            // bar: {groupWidth: "100%"},
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                     },
             'backgroundColor': 'transparent',
             'chartArea': {'width': '90%', 'height': '70%'},
           };
@@ -106,8 +102,7 @@
           var view = new google.visualization.DataView(data);
           view.setColumns([0, 1]);
 
-
-          var chart = new google.visualization.ColumnChart(document.getElementById('histogram'));
+          var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
 
           chart.draw(data, options);
         }

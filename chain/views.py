@@ -159,10 +159,14 @@ def report(request, chainId):
             return render(request, 'chain.html')
 
         chains = faction.chain_set.filter(status=True).order_by('-end')
-        graph = []
-        for line in chain.graph.split(","):
+        graphSplit = chain.graph.split(",")
+        bins = (int(graphSplit[-1].split(":")[0])-int(graphSplit[0].split(":")[0]))/float(60*len(graphSplit)) # compute average time for one bar
+        graph = {"data":[], "info":bins}
+        cummulativeHits = 0
+        for line in graphSplit:
             splt=line.split(":")
-            graph.append( [timestampToDate(int(splt[0])), int(splt[1])] )
+            cummulativeHits += int(splt[1])
+            graph["data"].append( [timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits] )
         context = dict({'chain': chain, 'members': members, 'chains': chains, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}, 'graph': graph})
         context = toggleMessage(request, context, "onTheFlyMessage")
 
