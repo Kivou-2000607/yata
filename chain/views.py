@@ -265,7 +265,6 @@ def createReport(request, chainId):
         for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
             i += 1
             attackerID = int(v["attacker_id"])
-            # print(i, nWins, v["chain"], v["timestamp_started"])
             if(int(v["attacker_faction"]) == faction.tId):
                 # get relevent info
                 tmp = faction.member_set.filter(tId=attackerID)
@@ -279,15 +278,19 @@ def createReport(request, chainId):
                 respect = float(v["respect_gain"])
 
                 if v["result"] in WINS and respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
+                # if v["result"] in WINS:  # respect > 0.0 in case of friendly fire ^^
+                # if respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
                     attacksForHisto.append(v["timestamp_ended"])
                     nWins += 1
                     attackers[name][0] += 1
                     if v["chain"] in BONUS_RESPECT:
                         bonus.append((v["chain"], name, respect, BONUS_RESPECT[v["chain"]]))
-                    # print()
                     attackers[name][2] += float(v["modifiers"]["fairFight"])
                     attackers[name][3] += respect / float(v["modifiers"]["chainBonus"])
                     nRespect += respect
+                else:
+                    if v['result'] in WINS:
+                        print("Win with 0 respect: ", v)
 
                 attackers[name][1] += 1
 
