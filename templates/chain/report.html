@@ -17,7 +17,7 @@
         {% if not liveChain %}
         <table class="center">
             <thead>
-                <tr><th colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+                <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
             </thead>
             <tbody>
                 <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
@@ -74,7 +74,7 @@
                 </thead>
                 <tbody>
                     {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                    <tr {% if c.daysInFaction < 0 %}class="out"{% elif c.wins < 1 %}class="zero"{% endif %} >
+                    <tr class="{% if c.daysInFaction < 0 %}out{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                         <td style="text-align: center;">{{ forloop.counter }}</td>
                         <td>{{c.name}}</td>
                         <td style="text-align: center;">{{c.wins}}</td>
@@ -98,10 +98,12 @@
                     {% endif %}
                     </tr>
                     {% endfor %}
+                    <tr class="white"><th id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="9">Show / Hide inactives</th></tr>
+                    <!-- <tr class="white"><td id="histogram" colspan="9"></td></tr> -->
                 </tbody>
             </table>
 
-            <div id="curve_chart"></div>
+            <div id="histogram"></div>
 
         {% endif %}
         <div class="submit-row">

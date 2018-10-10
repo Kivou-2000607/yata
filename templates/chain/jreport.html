@@ -39,8 +39,8 @@
                     <th>Name</th>
                     <th style="text-align: center;"># hits</th>
                     <th style="text-align: center;"># attacks</th>
-                    <th style="text-align: center;">fair fight<br>(average)</th>
-                    <th style="text-align: center;">fair fight<br>(total)</th>
+                    <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
+                    <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
                     <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                     <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
                     <th style="text-align: center;">days in factions</th>
@@ -48,7 +48,7 @@
             </thead>
             <tbody>
                 {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                <tr {% if c.daysInFaction < 0 %}class="out"{% endif %} >
+                <tr class="{% if c.daysInFaction < 0 %}out{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                     <td style="text-align: center;">{{ forloop.counter }}</td>
                     <td>{{c.name}}</td>
                     <td style="text-align: center;">{{c.wins}}</td>
@@ -72,6 +72,8 @@
                 {% endif %}
                 </tr>
                 {% endfor %}
+                <tr class="white"><th id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="9">Show / Hide inactives</th></tr>
+                <!-- <tr class="white"><td id="histogram" colspan="9"></td></tr> -->
             </tbody>
         </table>
 
