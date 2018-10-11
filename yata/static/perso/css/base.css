@@ -297,19 +297,20 @@ tr.llt { animation: blinker 1s linear infinite; }
 table.item-sell-table th.lack       { background:#f4cccc!important; }
 table.item-sell-table th.lack:hover { background:#ea9999!important; }
 
-table.chain-report tr.zero-hits       { background:#f4cccc!important; display: none;}
-table.chain-report tr.zero-hits:hover { background:#ea9999!important; }
-table.chain-report tr.out       { background:#f9cb9c!important; }
-table.chain-report tr.out:hover { background:#f6b26b!important; }
+tr.zero-hits       { background:#f4cccc!important; display: none;}
+tr.zero-hits:hover { background:#ea9999!important; }
+tr.kicked-members       { color:#aaaaaa; }
+/* tr.kicked-members:hover { background:#ddddddaa!important; } */
+
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
 
 table.chain-report tr:nth-child(odd)  { background:#cccccc22;  }
 table.chain-report tr:nth-child(even) { background:#ffffff22; }
-table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; }
-table.chain-report tr:nth-child(even):hover { background:#dddddd22; }
-table.chain-report tr.white { background:#ffffff22; }
-table.chain-report tr.white:hover { background:#dddddd22; }
+table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; font-weight: bold; }
+table.chain-report tr:nth-child(even):hover { background:#dddddd22; font-weight: bold; }
+table.chain-report td.white { background:#ffffff22; font-weight: bold; }
+table.chain-report td.white:hover { background:#aaaaaa22; font-weight: bold; }
 
 table.center {
   width:50%;

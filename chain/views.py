@@ -131,18 +131,25 @@ def createMembers(request):
             request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
 
         members = apiCall("faction", factionId, "basic", key, sub="members")
-        for m in members:
-            tmp = faction.member_set.filter(tId=m)
-            if len(tmp):
-                tmp[0].tId = m
-                tmp[0].name = members[m]["name"]
-                tmp[0].lastAction = members[m]["last_action"]
-                tmp[0].daysInFaction = members[m]["days_in_faction"]
-                tmp[0].save()
-            else:
-                faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
 
-        request.session["onTheFlyMessage"].append("Member list updated")
+        # delete all and recreate all
+        faction.member_set.all().delete()
+        for m in members:
+            faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
+
+        # just update and add new
+        # for m in members:
+        #     tmp = faction.member_set.filter(tId=m)
+        #     if len(tmp):
+        #         tmp[0].tId = m
+        #         tmp[0].name = members[m]["name"]
+        #         tmp[0].lastAction = members[m]["last_action"]
+        #         tmp[0].daysInFaction = members[m]["days_in_faction"]
+        #         tmp[0].save()
+        #     else:
+        #         faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
+
+        request.session["onTheFlyMessage"].append("Member list updated. {} members added".format(len(members)))
 
     return HttpResponseRedirect(reverse('chain:members'))
 
@@ -205,7 +212,8 @@ def jointReport(request):
                                                 "wins": count.wins,
                                                 "respect": count.respect,
                                                 "fairFight": count.fairFight,
-                                                "daysInFaction": count.daysInFaction}
+                                                "daysInFaction": count.daysInFaction,
+                                                "attackerId": count.attackerId}
 
         arrayCounts = [v for k, v in counts.items()]
 
@@ -232,7 +240,7 @@ def createReport(request, chainId):
             return HttpResponseRedirect(reverse('chain:index'))
 
         members = faction.member_set.all()
-        attackers = dict({})  # create attackers array on the fly to avoid db connectio in the loop
+        attackers = dict({})  # create attackers array on the fly to avoid db connection in the loop
         for m in members:
             attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
 
@@ -265,16 +273,10 @@ def createReport(request, chainId):
         for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
             i += 1
             attackerID = int(v["attacker_id"])
+            attackerName = v["attacker_name"]
             if(int(v["attacker_faction"]) == faction.tId):
-                # get relevent info
-                tmp = faction.member_set.filter(tId=attackerID)
-                if len(tmp):
-                    name = tmp[0].name
-                else:
-                    tmpAttacker = apiCall("user", attackerID, "basic", key)
-                    name = tmpAttacker["name"]
-                    attackers[name] = [0, 0, 0.0, 0.0, -1, attackerID] # add out of faction attackers on the fly
-                    faction.member_set.create(tId=attackerID, name=name, daysInFaction=-1)
+                if attackerName not in attackers:
+                    attackers[attackerName] = [0, 0, 0.0, 0.0, -1, attackerID] # add out of faction attackers on the fly
                 respect = float(v["respect_gain"])
 
                 if v["result"] in WINS and respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
@@ -282,17 +284,17 @@ def createReport(request, chainId):
                 # if respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
                     attacksForHisto.append(v["timestamp_ended"])
                     nWins += 1
-                    attackers[name][0] += 1
+                    attackers[attackerName][0] += 1
                     if v["chain"] in BONUS_RESPECT:
-                        bonus.append((v["chain"], name, respect, BONUS_RESPECT[v["chain"]]))
-                    attackers[name][2] += float(v["modifiers"]["fairFight"])
-                    attackers[name][3] += respect / float(v["modifiers"]["chainBonus"])
+                        bonus.append((v["chain"], attackerName, respect, BONUS_RESPECT[v["chain"]]))
+                    attackers[attackerName][2] += float(v["modifiers"]["fairFight"])
+                    attackers[attackerName][3] += respect / float(v["modifiers"]["chainBonus"])
                     nRespect += respect
                 else:
                     if v['result'] in WINS:
                         print("Win with 0 respect: ", v)
 
-                attackers[name][1] += 1
+                attackers[attackerName][1] += 1
 
                 if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
                     break

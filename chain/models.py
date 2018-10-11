@@ -42,9 +42,9 @@ class Chain(models.Model):
 class Member(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0, unique=True)
-    name = models.CharField(default="Duke", max_length=200)
+    name = models.CharField(default="Unkown", max_length=200)
     daysInFaction = models.IntegerField(default=0)
-    lastAction = models.CharField(default="Duke", max_length=200)
+    lastAction = models.CharField(default="-", max_length=200)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)

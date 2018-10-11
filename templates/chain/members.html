@@ -4,7 +4,6 @@
         <table id="chain-members" class="tablesorter chain-report center">
             <thead>
                     <tr>
-                    <th style="text-align: center;">id</th>
                     <th>Name</th>
                     <th style="text-align: center;">Days in faction</th>
                     <th style="text-align: center;">Last Action</th>
@@ -12,14 +11,11 @@
             </thead>
             <tbody>
                 {% for m in members|dictsortreversed:"daysInFaction" %}
-                {% if m.daysInFaction >= 0 %}
-                    <tr>
-                        <td style="text-align: center;">{{m.tId}}</td>
-                        <td>{{m.name}}</td>
+                    <tr class="{% if m.daysInFaction < 0 %}kicked-from-fac{% endif %}">
+                        <td><a href="https://www.torn.com/profiles.php?XID={{m.tId}}" target="_blank">{{m.name}} [{{m.tId}}]</a></td>
                         <td style="text-align: center;">{{m.daysInFaction}}</td>
                         <td style="text-align: center;">{{m.lastAction}}</td>
                     </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

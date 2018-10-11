@@ -75,6 +75,10 @@
             e.preventDefault();
             $(".zero-hits").slideToggle( 'slow', function() {} );
         });
+        $(document).on('click', '#toggle-kicked-members', function(e){
+            e.preventDefault();
+            $(".kicked-members").slideToggle( 'slow', function() {} );
+        });
 
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);

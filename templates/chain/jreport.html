@@ -48,10 +48,10 @@
             </thead>
             <tbody>
                 {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                {% if c.daysInFaction > -1 and c.wins > -1  %}
-                    <tr class="{% if c.daysInFaction < 0 %}out{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
+                    {% if c.daysInFaction > -1 or c.wins > 0 %}
+                    <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                         <td style="text-align: center;">{{ forloop.counter }}</td>
-                        <td>{{c.name}}</td>
+                        <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
                         <td style="text-align: center;">{{c.wins}}</td>
                         <td style="text-align: center;">{{c.hits}}</td>
                         {% if c.wins %}
@@ -67,15 +67,17 @@
                         {% endif %}
                         <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                     {% if c.daysInFaction < 0 %}
-                        <td style="text-align: center;">out</td>
+                        <td style="text-align: center;">kicked</td>
                     {% else %}
                         <td style="text-align: center;">{{c.daysInFaction}}</td>
                     {% endif %}
                     </tr>
-                {% endif %}
+                    {% endif %}
                 {% endfor %}
-                <tr class="white"><th id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="9">Show / Hide inactives in faction</th></tr>
-                <!-- <tr class="white"><td id="histogram" colspan="9"></td></tr> -->
+                <tr>
+                    <td class="white" id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="5">Show / Hide inactive members</td>
+                    <td class="white" id="toggle-kicked-members" style="text-align: center; cursor: pointer;" colspan="4">Show / Hide kicked members</td>
+                </tr>
             </tbody>
         </table>
 
