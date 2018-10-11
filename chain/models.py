@@ -26,10 +26,10 @@ class Chain(models.Model):
     endDate = models.DateTimeField(default=timezone.now)
     status = models.BooleanField(default=True)
     jointReport = models.BooleanField(default=False)
-    graph = models.TextField(default="")
+    graph = models.TextField(default="", null=True, blank=True)
 
     def __str__(self):
-        return "Chain [{}]".format(self.tId)
+        return "chain [{}]".format(self.tId)
 
     def have_report(self):
         return True if len(self.report_set.all()) else False
@@ -55,7 +55,7 @@ class Report(models.Model):
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return("Report of chain [{}]".format(self.chain.tId))
+        return("Report of {}".format(self.chain))
 
 
 class Bonus(models.Model):
@@ -64,6 +64,9 @@ class Bonus(models.Model):
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     respectMax = models.FloatField(default=0)
+
+    def __str__(self):
+        return("Bonus of {}".format(self.report.chain))
 
 
 class Count(models.Model):
@@ -75,3 +78,6 @@ class Count(models.Model):
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
     daysInFaction = models.IntegerField(default=0)
+
+    def __str__(self):
+        return("Count of {}".format(self.report.chain))

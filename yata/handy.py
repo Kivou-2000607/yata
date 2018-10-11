@@ -1,20 +1,28 @@
-from django.utils import timezone
+def timestampToDate(timestamp):
+    import datetime
+    import pytz
+    return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
 
 
 def apiCall(section, id, selections, key, sub=None):
     import requests
-
+    # DEBUG live chain
     # if selections == "chain" and section == "faction":
+    #     print("[FUNCTION apiCall] DEBUG chain/faction")
     #     chain = dict({"chain": {"current": 3,
     #                             "timeout": 158,
     #                             "modifier": 0.75,
     #                             "cooldown": 18
-    #                             }
-    #                 })
+    #                             }})
     #     return chain[sub] if sub is not None else chain
 
+    # DEBUG API error
+    # return dict({"apiError": "API error code 42: debug error."})
+
     try:
-        r = requests.get("https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key))
+        url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+        print("[FUNCTION apiCall] {}".format(url.replace(key, "*" * len(key))))
+        r = requests.get(url)
         r.raise_for_status()
 
         rjson = r.json()
@@ -37,38 +45,9 @@ def apiCall(section, id, selections, key, sub=None):
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
 
 
-def timestampToDate(timestamp):
-    import datetime
-    import pytz
-    return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
-
-
-# def apiCallAttacks( factionId, beginTS, endTS, key ):
-#     import requests
-#
-#     chain = dict({})
-#
-#     currentBeginTS = beginTS
-#     endTS = endTS+1 # add one to get last hit
-#     feedAttacks = True
-#     i = 1
-#     while feedAttacks:
-#         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, currentBeginTS, endTS)
-#         print("call number {}: {}".format(i, url), end='... ')
-#         attacks = requests.get(url).json()["attacks"]
-#         for k, v in attacks.items():
-#             chain[k] = v
-#             currentBeginTS = max(v["timestamp_ended"], currentBeginTS)
-#         if(len(attacks)<1000):
-#             feedAttacks = False
-#         print("\tNumber of attacks: {}".format(len(attacks)))
-#         i+=1
-#
-#     # pickle.dump(chain, open('chain-{}-{}.p'.format(beginTS, endTS), 'wb'))
-#     return chain
-
 def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     import requests
+    # WARNING no fallback for this method if api crashed. Will yeld server error.
 
     WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
 
@@ -81,7 +60,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     nWins = 0
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
-        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url), end='... ')
+        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace(key, "*" * len(key))), end='... ')
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
             for k, v in attacks.items():
@@ -98,10 +77,9 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
             feedAttacks = False
 
         if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
-            print("[FUNCTION apiCallAttacks] Stop after {} attacks".format(stopAfterNAttacks))
+            print("[FUNCTION apiCallAttacks] stopped after {} attacks".format(stopAfterNAttacks))
             feedAttacks = False
 
-    # pickle.dump(chain, open('chain-{}-{}.p'.format(beginTS, endTS), 'wb'))
     return chain
 
 

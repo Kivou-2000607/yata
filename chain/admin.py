@@ -28,7 +28,7 @@ class CountInline(admin.TabularInline):
 
 
 class CountAdmin(admin.ModelAdmin):
-    list_display = ['report', 'name', 'hits']
+    list_display = ['__str__', 'name', 'hits']
 
 
 admin.site.register(Count, CountAdmin)
@@ -40,7 +40,7 @@ class ReportInline(admin.TabularInline):
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ['chain', 'date']
+    list_display = ['__str__', 'date']
     inlines = [CountInline]
 
 
@@ -61,7 +61,7 @@ class ChainInline(admin.TabularInline):
 
 
 class ChainAdmin(admin.ModelAdmin):
-    list_display = ['tId', 'nHits', 'startDate', 'endDate', 'respect', 'status']
+    list_display = ['__str__', 'tId', 'nHits', 'startDate', 'endDate', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
     inlines = [ReportInline]
 
@@ -75,7 +75,7 @@ class MemberInline(admin.TabularInline):
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ['tId', 'name', 'daysInFaction', 'lastAction']
+    list_display = ['__str__', 'daysInFaction', 'lastAction']
     # inlines = [CountInline]
 
 

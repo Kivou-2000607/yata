@@ -2,7 +2,6 @@ from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
-from datetime import datetime
 import numpy
 import json
 
@@ -14,203 +13,347 @@ from yata.handy import toggleMessage
 from .models import Faction
 
 
+# render view
 def index(request):
     if request.session.get("chainer"):
+        # get session info
+        print("[VIEW index] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW index] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
         key = request.session["chainer"].get("keyValue")
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-            liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
-            activeChain = bool(liveChain["current"])
-        except:
-            return render(request, 'chain.html')
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
+            request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
+            print("[VIEW index] faction {} created".format(factionId))
+        else:
+            print("[VIEW index] faction {} found".format(factionId))
+
+        liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
+        if "apiError" in liveChain:
+            return render(request, "errorPage.html", liveChain)
+        activeChain = bool(liveChain["current"])
 
         if activeChain:
-            try:
-                chain = faction.chain_set.filter(tId=0)[0]
-                report = chain.report_set.filter(chain=chain)[0]
+            print("[VIEW index] chain active")
+            chain = faction.chain_set.filter(tId=0).first()
+            if chain is None:
+                print("[VIEW index] live chain 0 created")
+                request.session["onTheFlyMessage"].append("New live chain created.")
+                chain = faction.chain_set.create(tId=0, start=1, status=False)
+            else:
+                print("[VIEW index] live chain 0 found")
+
+            report = chain.report_set.filter(chain=chain).first()
+            print("[VIEW index] live report is {}".format(report))
+            if report is None:
+                chain.graph = ""
+                chain.save()
+                counts = None
+                bonus = None
+                print("[VIEW index] live counts is {}".format(counts))
+                print("[VIEW index] live bonus is {}".format(bonus))
+            else:
                 counts = report.count_set.all()
                 bonus = report.bonus_set.all()
-            except:
-                faction.chain_set.filter(tId=0).delete()
-                chain = faction.chain_set.create(tId=0)
-                report = False
-                counts = False
-                bonus = False
+                print("[VIEW index] live counts of length {}".format(len(counts)))
+                print("[VIEW index] live bonus of length {}".format(len(bonus)))
 
+            # create graph
             graphSplit = chain.graph.split(",")
-            graph = {"data":[], "info":0}
-            try:
-                bins = (int(graphSplit[-1].split(":")[0])-int(graphSplit[0].split(":")[0]))/float(60*len(graphSplit)) # compute average time for one bar
+            if len(graphSplit) > 1:
+                print("[VIEW index] data found for graph of length {}".format(len(graphSplit)))
+                # compute average time for one bar
+                bins = (int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])) / float(60 * len(graphSplit))
+                graph = {"data": [], "info": bins}
                 cummulativeHits = 0
                 for line in graphSplit:
-                    splt=line.split(":")
+                    splt = line.split(":")
                     cummulativeHits += int(splt[1])
-                    graph["data"].append( [timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits] )
-                graph["info"] = bins
-            except:
-                pass
+                    graph["data"].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+            else:
+                print("[VIEW index] no data found for graph")
+                graph = {"data": [], "info": 0}
+
+            # context
             context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, "view": {"report": True, "liveReport": True}, 'graph': graph})
 
         else:
-            faction.chain_set.filter(tId=0).delete()
+            chain = faction.chain_set.filter(tId=0).first()
+            if chain is not None:
+                chain.delete()
+                request.session["onTheFlyMessage"].append("Chain died. Live report deleted.")
+                print("[VIEW index] chain 0 deleted")
+
+            # context
             context = dict({'liveChain': liveChain, "view": {"liveReport": True}})
 
+        # context
+        context = toggleMessage(request, context, "onTheFlyMessage")
+
+        # render if logged
         return render(request, 'chain.html', context)
 
+    # render if logged
     return render(request, 'chain.html')
 
 
+# render view
 def list(request):
     if request.session.get("chainer"):
+        # get session info
+        print("[VIEW list] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW list] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-        except:
-            return HttpResponseRedirect(reverse('chain:createList'))
-
-        factions = faction.chain_set.filter(status=True).order_by('-end')
-        context = dict({'chains': factions, "view": {"list": True}})
-        context = toggleMessage(request, context, "onTheFlyMessage")
-        return render(request, 'chain.html', context)
-    else:
-        return HttpResponseRedirect(reverse('chain:index'))
-
-
-def createList(request):  # able to create faction
-    if request.session.get("chainer"):
-        key = request.session["chainer"].get("keyValue")
-        factionId = request.session["chainer"].get("factionId")
-        request.session["onTheFlyMessage"] = []
-
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-        except:
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
             faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
             request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
+            print("[VIEW list] faction {} created".format(factionId))
+        else:
+            print("[VIEW list] faction {} found".format(factionId))
 
-        # create live chain
-        # try:
-        #     faction.chain_set.create(tId=0)
-        # except:
-        #     pass
+        # get chains
+        factions = faction.chain_set.filter(status=True).order_by('-end')
 
+        # context
+        context = dict({'chains': factions, "view": {"list": True}})
+        context = toggleMessage(request, context, "onTheFlyMessage")
+
+        # render if logged
+        return render(request, 'chain.html', context)
+
+    else:
+        # render if not logged
+        return render(request, 'errorPage.html', {"errorMessage": "You shouldn't be here. You need to enter valid API key."})
+
+
+# action view
+def createList(request):  # no context
+    if request.session.get("chainer"):
+        # get session info
+        print("[VIEW createList] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW createList] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
+        factionId = request.session["chainer"].get("factionId")
+        key = request.session["chainer"].get("keyValue")
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
+            request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
+            print("[VIEW createList] faction {} created".format(factionId))
+        else:
+            print("[VIEW createList] faction {} found".format(factionId))
+
+        # if AA refresh list of chains
         if request.session["chainer"].get("AA"):
-            req = apiCall("faction", faction.tId, "chains", key, sub='chains')
-            for r in req:
-                if req[r]['chain'] >= faction.hitsThreshold:
-                    if len(faction.chain_set.filter(tId=r)) == 0:
-                        faction.chain_set.create(tId=r, nHits=req[r]['chain'], respect=req[r]['respect'],
-                                                 start=req[r]['start'], startDate=timestampToDate(req[r]['start']),
-                                                 end=req[r]['end'], endDate=timestampToDate(req[r]['end']))
+            chains = apiCall("faction", faction.tId, "chains", key, sub='chains')
+            if "apiError" in chains:
+                return render(request, "errorPage.html", chains)
 
-            request.session["onTheFlyMessage"].append("List of {} chains updated.".format(len(faction.chain_set.all())))
+            nCreated = 0
+            nIgnored = 0
+            for k, v in chains.items():
+                if v['chain'] >= faction.hitsThreshold:
+                    chain = faction.chain_set.filter(tId=k).first()
+                    if chain is None:
+                        print("[VIEW createList] chain {} created".format(k))
+                        nCreated += 1
+                        faction.chain_set.create(tId=k, nHits=v['chain'], respect=v['respect'],
+                                                 start=v['start'], startDate=timestampToDate(v['start']),
+                                                 end=v['end'], endDate=timestampToDate(v['end']))
+                    else:
+                        print("[VIEW createList] chain {} found".format(k))
+                else:
+                    # print("[VIEW createList] chain {} ignored".format(k))
+                    nIgnored += 1
 
-        return HttpResponseRedirect(reverse('chain:list'))
-    return HttpResponseRedirect(reverse('chain:index'))
+            # on the fly message
+            request.session["onTheFlyMessage"].append("{} chains created for a total of {} chains and {} chains ignored.".format(nCreated, len(faction.chain_set.filter(status=True)), nIgnored))
+
+    # redirection
+    return HttpResponseRedirect(reverse('chain:list'))
 
 
+# render view
 def members(request):
     if request.session.get("chainer"):
+        # get session info
+        print("[VIEW members] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW members] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-        except:
-            return HttpResponseRedirect(reverse('chain:createMembers'))
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
+            request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
+            print("[VIEW members] faction {} created".format(factionId))
+        else:
+            print("[VIEW members] faction {} found".format(factionId))
 
+        # get members
         members = faction.member_set.all()
 
+        # context
         context = dict({'members': members, "view": {"members": True}})
         context = toggleMessage(request, context, "onTheFlyMessage")
+
+        # render if logged
         return render(request, 'chain.html', context)
+
     else:
-        return render(request, 'chain.html')
+        # render if logged
+        return render(request, 'errorPage.html', {"errorMessage": "You shouldn't be here. You need to enter valid API key."})
 
 
-def createMembers(request):
+# action view
+def createMembers(request):  # no context
     if request.session.get("chainer"):
-        request.session["onTheFlyMessage"] = []
-
-        key = request.session["chainer"].get("keyValue")
+        # get session info
+        print("[VIEW createMembers] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW createMembers] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
+        key = request.session["chainer"].get("keyValue")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-        except:
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
             faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
-            request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
+            request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
+            print("[VIEW members] faction {} created".format(factionId))
+        else:
+            print("[VIEW members] faction {} found".format(factionId))
 
+        # call members
         members = apiCall("faction", factionId, "basic", key, sub="members")
+        if "apiError" in members:
+            return render(request, "errorPage.html", members)
 
-        # delete all and recreate all
+        # delete all and recreate all members
         faction.member_set.all().delete()
         for m in members:
             faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
 
-        # just update and add new
-        # for m in members:
-        #     tmp = faction.member_set.filter(tId=m)
-        #     if len(tmp):
-        #         tmp[0].tId = m
-        #         tmp[0].name = members[m]["name"]
-        #         tmp[0].lastAction = members[m]["last_action"]
-        #         tmp[0].daysInFaction = members[m]["days_in_faction"]
-        #         tmp[0].save()
-        #     else:
-        #         faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
-
+        # on the fly message
         request.session["onTheFlyMessage"].append("List of {} members updated.".format(len(members)))
 
+    # redirection
     return HttpResponseRedirect(reverse('chain:members'))
 
 
+# render view
 def report(request, chainId):
     if request.session.get("chainer"):
+        # get session info
+        print("[VIEW report] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW report] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-            chain = faction.chain_set.filter(tId=chainId)[0]
-            report = chain.report_set.filter(chain=chain)[0]
-        except:
-            return render(request, 'chain.html')
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW report] faction {} found".format(factionId))
 
-        chains = faction.chain_set.filter(status=True).order_by('-end')
+        # get chain
+        chain = faction.chain_set.filter(tId=chainId).first()
+        if chain is None:
+            return render(request, "errorPage.html", {"errorMessage": "Chain {} not found in the database.".format(chainId)})
+        print("[VIEW report] chain {} found".format(chainId))
+
+        # get report
+        report = chain.report_set.filter(chain=chain).first()
+        if report is None:
+            return render(request, "errorPage.html", {"errorMessage": "Report of chain {} not found in the database.".format(chainId)})
+        print("[VIEW report] report of {} found".format(chain))
+
+        # create graph
         graphSplit = chain.graph.split(",")
-        bins = (int(graphSplit[-1].split(":")[0])-int(graphSplit[0].split(":")[0]))/float(60*len(graphSplit)) # compute average time for one bar
-        graph = {"data":[], "info":bins}
-        cummulativeHits = 0
-        for line in graphSplit:
-            splt=line.split(":")
-            cummulativeHits += int(splt[1])
-            graph["data"].append( [timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits] )
-        context = dict({'chain': chain, 'members': members, 'chains': chains, 'counts': report.count_set.all(), 'bonus': report.bonus_set.all(), "view": {"report": True, "list": True}, 'graph': graph})
+        if len(graphSplit) > 1:
+            print("[VIEW report] data found for graph of length {}".format(len(graphSplit)))
+            # compute average time for one bar
+            bins = (int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])) / float(60 * len(graphSplit))
+            graph = {"data": [], "info": bins}
+            cummulativeHits = 0
+            for line in graphSplit:
+                splt = line.split(":")
+                cummulativeHits += int(splt[1])
+                graph["data"].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+        else:
+            print("[VIEW report] no data found for graph")
+            graph = {"data": [], "info": 0}
+
+        # context
+        context = dict({'chain': chain,  # for general info
+                        'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
+                        'counts': report.count_set.all(),  # for report
+                        'bonus': report.bonus_set.all(),  # for report
+                        'graph': graph,  # for report
+                        "view": {"report": True, "list": True}})  # views
         context = toggleMessage(request, context, "onTheFlyMessage")
 
-
-
+        # render if logged
         return render(request, 'chain.html', context)
+
     else:
-        return render(request, 'chain.html')
+        # render if not logged
+        return render(request, 'errorPage.html', {"errorMessage": "You shouldn't be here. You need to enter valid API key."})
 
 
+# render view
 def jointReport(request):
     if request.session.get("chainer"):
+        # get session info
+        print("[VIEW jointReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW jointReport] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-        except:
-            return render(request, 'chain.html')
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW jointReport] faction {} found".format(factionId))
 
+        # get chains
         chains = faction.chain_set.filter(jointReport=True)
+        print("[VIEW jointReport] {} chains for the joint report".format(len(chains)))
+        if len(chains) < 1:
+            request.session["onTheFlyMessage"].append("0 report found for the joint report.")
+            return HttpResponseRedirect(reverse('chain:list'))
 
+        # loop over chains
         counts = dict({})
         total = {"nHits": 0, "respect": 0.0}
         for chain in chains:
-            for count in chain.report_set.all()[0].count_set.all():
+            print("[VIEW jointReport] chain {} found".format(chain.tId))
+            # get report
+            report = chain.report_set.filter(chain=chain).first()
+            if report is None:
+                return render(request, "errorPage.html", {"errorMessage": "Report of chain {} not found in the database.".format(chain.tId)})
+            print("[VIEW jointReport] report of {} found".format(chain))
+            # loop over counts
+            chainCounts = report.count_set.all()
+            for count in chainCounts:
                 total["nHits"] += count.wins
                 total["respect"] += float(count.respect)
                 if count.attackerId in counts:
@@ -226,186 +369,274 @@ def jointReport(request):
                                                 "fairFight": count.fairFight,
                                                 "daysInFaction": count.daysInFaction,
                                                 "attackerId": count.attackerId}
+            print("[VIEW jointReport] {} counts for {}".format(len(counts), chain))
 
+        # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
 
-        factions = faction.chain_set.filter(status=True).order_by('-end')
-        context = dict({'chains': factions, 'chainsReport': chains, 'total': total, 'counts': arrayCounts, "view": {"jointReport": True, "list": True}})
+        # context
+        context = dict({'chainsReport': chains,  # chains of joint report
+                        'total': total,  # for general info
+                        'counts': arrayCounts,  # counts for report
+                        'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
+                        "view": {"jointReport": True, "list": True}})  # view
 
+        # render if logged
         return render(request, 'chain.html', context)
+
     else:
-        return render(request, 'chain.html')
+        # render if not logged
+        return render(request, 'errorPage.html', {"errorMessage": "You shouldn't be here. You need to enter valid API key."})
 
 
+# action view
 def createReport(request, chainId):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
-        key = request.session["chainer"].get("keyValue")
+        # get session info
+        print("[VIEW createReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW createReport] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
-        request.session["onTheFlyMessage"] = []
+        key = request.session["chainer"].get("keyValue")
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-            chain = faction.chain_set.filter(tId=chainId)[0]
-            chain.report_set.all().delete()
-            report = chain.report_set.create()
-        except:
-            return HttpResponseRedirect(reverse('chain:index'))
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW createReport] faction {} found".format(factionId))
 
+        # get chain
+        chain = faction.chain_set.filter(tId=chainId).first()
+        if chain is None:
+            return render(request, "errorPage.html", {"errorMessage": "Chain {} not found in the database.".format(chainId)})
+        print("[VIEW createReport] chain {} found".format(chainId))
+
+        # delete old report and create new
+        chain.report_set.all().delete()
+        report = chain.report_set.create()
+        print("[VIEW createReport] report created")
+
+        # refresh members
         members = apiCall("faction", factionId, "basic", key, sub="members")
+        if "apiError" in members:
+            return render(request, "errorPage.html", members)
         faction.member_set.all().delete()
         for m in members:
             faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
         members = faction.member_set.all()
         request.session["onTheFlyMessage"].append("List of {} members updated.".format(len(members)))
 
-        attackers = dict({})  # create attackers array on the fly to avoid db connection in the loop
-        for m in members:
-            attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
-
+        # case of live chain
         if int(chainId) == 0:
-            print("create report live")
+            print("[VIEW createReport] this is a live report")
+            # change dates and status
+            chain.status = True
             chain.end = int(timezone.now().timestamp())
             chain.start = 1
             chain.startDate = timestampToDate(chain.start)
             chain.endDate = timestampToDate(chain.end)
             chain.save()
-            stopAfterNAttacks = apiCall("faction", factionId, "chain", key, sub="chain")["current"]
+            # get number of attacks
+            chainInfo = apiCall("faction", factionId, "chain", key, sub="chain")
+            if "apiError" in chainInfo:
+                return render(request, "errorPage.html", chainInfo)
+            stopAfterNAttacks = chainInfo.get("current")
+            print("[VIEW createReport] stop after {} attacks".format(stopAfterNAttacks))
             if stopAfterNAttacks:
                 attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
             else:
                 attacks = dict({})
+
+        # case registered chain
         else:
             attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
             stopAfterNAttacks = False
 
-        # loop over the attacks
-        BONUS_RESPECT = {10: 8.4, 25: 16.8, 50: 33.6, 100: 67.2, 250: 134.4, 500: 268.8, 1000: 537.6,
-                         2500: 1075.2, 5000: 2150.4, 10000: 4300.8, 25000: 8601.6, 50000: 17203.2, 100000: 34406.4}
-        WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
-        bonus = []
+        # initialisation of variables before loop
+        bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
+        nWR = [0, 0.0]  # number of wins and respect
+        bonus = []  # chain bonus
+        attacksForHisto = []  # record attacks timestamp histogram
 
-        nWins = 0
-        nRespect = 0.0
-        i = 0
-        attacksForHisto = []
+        # create attackers array on the fly to avoid db connection in the loop
+        attackers = dict({})
+        for m in members:
+            attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
+
+        # loop over attacks
         for k, v in sorted(attacks.items(), key=lambda x: x[1]["timestamp_ended"], reverse=True):
-            i += 1
             attackerID = int(v["attacker_id"])
             attackerName = v["attacker_name"]
+            # if attacker part of the faction at the time of the chain
             if(int(v["attacker_faction"]) == faction.tId):
+                # if attacker not part of the faction at the time of the call
                 if attackerName not in attackers:
-                    attackers[attackerName] = [0, 0, 0.0, 0.0, -1, attackerID] # add out of faction attackers on the fly
-                respect = float(v["respect_gain"])
+                    attackers[attackerName] = [0, 0, 0.0, 0.0, -1, attackerID]  # add out of faction attackers on the fly
 
-                if v["result"] in WINS and respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
-                # if v["result"] in WINS:  # respect > 0.0 in case of friendly fire ^^
-                # if respect > 0.0:  # respect > 0.0 in case of friendly fire ^^
+                # if it's a hit
+                respect = float(v["respect_gain"])
+                if respect > 0.0:
                     attacksForHisto.append(v["timestamp_ended"])
-                    nWins += 1
+                    nWR[0] += 1
                     attackers[attackerName][0] += 1
-                    if v["chain"] in BONUS_RESPECT:
-                        bonus.append((v["chain"], attackerName, respect, BONUS_RESPECT[v["chain"]]))
+                    if v["chain"] in bonus_hits:
+                        r = 4.2 * 2**(1 + float([i for i, x in enumerate(bonus_hits) if x == int(v["chain"])][0]))
+                        print("[VIEW createReport] bonus {}: {} respects".format(v["chain"], r))
+                        bonus.append((v["chain"], attackerName, respect, r))
                     attackers[attackerName][2] += float(v["modifiers"]["fairFight"])
                     attackers[attackerName][3] += respect / float(v["modifiers"]["chainBonus"])
-                    nRespect += respect
-                else:
-                    if v['result'] in WINS:
-                        print("Win with 0 respect: ", v)
+                    nWR[1] += respect
 
                 attackers[attackerName][1] += 1
 
-                if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
+                if stopAfterNAttacks is not False and nWR[0] >= stopAfterNAttacks:
                     break
 
-        bins = min(int(int(chain.end-chain.start)/(5*60)), 256)
+        # create histogram
+        diff = int(chain.end - chain.start)
+        bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
+        print("[VIEW createReport] bins={} diff={}".format(bins, diff))
         histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
-        bins = [int(0.5*(a+b)) for (a,b) in zip(bin_edges[0:-1], bin_edges[1:])]
-        chain.nHits = nWins
-        chain.respect = nRespect
-        chain.graph = ",".join(["{}:{}".format(a,b) for (a,b) in zip(bins, histo)])
+        binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
+        chain.nHits = nWR[0]
+        chain.respect = nWR[1]
+        chain.graph = ",".join(["{}:{}".format(a, b) for (a, b) in zip(binsCenter, histo)])
         chain.save()
 
+        # fill the database with counts and bonuses
         for k, v in attackers.items():
             # if v[1]:
             report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
         for b in bonus:
             report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 
+        # on the fly message
         request.session["onTheFlyMessage"].append("Report of chain {} updated with {} hits done.".format(chainId, chain.nHits))
 
+    # redirection for live chain
     if int(chainId) == 0:
         return HttpResponseRedirect(reverse('chain:index'))
+
+    # redirection for normal chains
     else:
         return HttpResponseRedirect(reverse('chain:report', kwargs={"chainId": chainId}))
 
 
+# action view
 def deleteReport(request, chainId):
-    if request.session.get("chainer"):
+    if request.session.get("chainer") and request.session["chainer"].get("AA"):
+        # get session info
+        print("[VIEW deleteReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW deleteReport] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
-        request.session["onTheFlyMessage"] = []
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-            chain = faction.chain_set.filter(tId=chainId)[0]
-            chain.report_set.all().delete()
-            chain.jointReport = False
-            chain.save()
-        except:
-            pass
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW deleteReport] faction {} found".format(factionId))
 
-        request.session["onTheFlyMessage"].append("Report of chain {} deleted".format(chainId))
+        # get chain
+        chain = faction.chain_set.filter(tId=chainId).first()
+        if chain is None:
+            return render(request, "errorPage.html", {"errorMessage": "Chain {} not found in the database.".format(chainId)})
+        print("[VIEW deleteReport] chain {} found".format(chainId))
 
+        # delete old report and remove from joint report
+        chain.report_set.all().delete()
+        chain.jointReport = False
+        chain.save()
+        print("[VIEW deleteReport] report deleted")
+
+        # on the fly message
+        request.session["onTheFlyMessage"].append("Report of chain {} deleted.".format(chainId))
+
+    # redirection
     return HttpResponseRedirect(reverse('chain:list'))
 
 
+# action view
 def toggleReport(request, chainId):
-    if request.session.get("chainer"):
+    if request.session.get("chainer") and request.session["chainer"].get("AA"):
+        # get session info
+        print("[VIEW deleteReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW deleteReport] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
-        request.session["onTheFlyMessage"] = []
 
-        try:
-            faction = Faction.objects.filter(tId=factionId)[0]
-            chain = faction.chain_set.filter(tId=chainId)[0]
-            tog = chain.toggle_report()
-            chain.save()
-            if tog:
-                request.session["onTheFlyMessage"].append("Report of chain {} added to joint report".format(chainId))
-            else:
-                request.session["onTheFlyMessage"].append("Report of chain {} removed from joint report".format(chainId))
-        except:
-            pass
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW deleteReport] faction {} found".format(factionId))
 
+        # get chain
+        chain = faction.chain_set.filter(tId=chainId).first()
+        if chain is None:
+            return render(request, "errorPage.html", {"errorMessage": "Chain {} not found in the database.".format(chainId)})
+        print("[VIEW deleteReport] chain {} found".format(chainId))
+
+        # toggle
+        tog = chain.toggle_report()
+        chain.save()
+
+        # message
+        msg = "added" if tog else "removed"
+        request.session["onTheFlyMessage"].append("Report of chain {} {} to joint report.".format(chainId, msg))
+
+    # redirection
     return HttpResponseRedirect(reverse('chain:list'))
 
 
 def tree(request):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
-        key = request.session["chainer"].get("keyValue")
+        # get session info
+        print("[VIEW tree] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
+        if request.session.get("onTheFlyMessage") is False:
+            print("[VIEW tree] on the fly messages are initialised")
+            request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
+        key = request.session["chainer"].get("keyValue")
 
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, "errorPage.html", {"errorMessage": "Faction {} not found in the database.".format(factionId)})
+        print("[VIEW tree] faction {} found".format(factionId))
+
+        # call for upgrades
         upgrades = apiCall("faction", factionId, "upgrades", key, sub="upgrades")
+        if "apiError" in upgrades:
+            return render(request, "errorPage.html", upgrades)
 
+        # building upgrades tree
         tree = dict({})
-
         for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]["branchorder"], reverse=False):
             if upgrade["branch"] != "Core":
                 if tree.get(upgrade["branch"]) is None:
                     tree[upgrade["branch"]] = dict({})
                 tree[upgrade["branch"]][upgrade["name"]] = upgrade
 
-
         for k, upgrade in tree.items():
-            print(k, upgrade)
+            print("[VIEW tree] {} ({} upgrades)".format(k, len(upgrade)))
+
+        # context
         context = dict({"tree": tree, "view": {"tree": True}})
 
+        # render if logged
         return render(request, 'chain.html', context)
     else:
-        return HttpResponseRedirect(reverse('chain:index'))
+        # render if not logged
+        return render(request, 'errorPage.html', {"errorMessage": "You shouldn't be here. You need to enter valid API key."})
 
 
 # UPDATE ON THE FLY
 def updateKey(request):
-    print("[updateKey]: in")
+    print("[updateKey] in")
 
     # request.session["chainer"] = {'keyValue': "myKeyForDebug",
     #                               'name': "Kivou",
@@ -416,7 +647,6 @@ def updateKey(request):
     #                               }
     # request.session.set_expiry(0)  # logout when close browser
     # return render(request, "chain/login.html")
-
 
     if request.method == "POST":
         p = request.POST
