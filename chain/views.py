@@ -38,7 +38,19 @@ def index(request):
                 counts = False
                 bonus = False
 
-            context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, "view": {"report": True, "liveReport": True}})
+            graphSplit = chain.graph.split(",")
+            graph = {"data":[], "info":0}
+            try:
+                bins = (int(graphSplit[-1].split(":")[0])-int(graphSplit[0].split(":")[0]))/float(60*len(graphSplit)) # compute average time for one bar
+                cummulativeHits = 0
+                for line in graphSplit:
+                    splt=line.split(":")
+                    cummulativeHits += int(splt[1])
+                    graph["data"].append( [timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits] )
+                graph["info"] = bins
+            except:
+                pass
+            context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, "view": {"report": True, "liveReport": True}, 'graph': graph})
 
         else:
             faction.chain_set.filter(tId=0).delete()
@@ -76,13 +88,13 @@ def createList(request):  # able to create faction
             faction = Faction.objects.filter(tId=factionId)[0]
         except:
             faction = Faction.objects.create(tId=factionId, name=request.session["chainer"].get("factionName"))
-            request.session["onTheFlyMessage"].append("Faction {} created".format(factionId))
+            request.session["onTheFlyMessage"].append("Faction {} [{}] created.".format(faction.name, factionId))
 
         # create live chain
-        try:
-            faction.chain_set.create(tId=0)
-        except:
-            pass
+        # try:
+        #     faction.chain_set.create(tId=0)
+        # except:
+        #     pass
 
         if request.session["chainer"].get("AA"):
             req = apiCall("faction", faction.tId, "chains", key, sub='chains')
@@ -93,7 +105,7 @@ def createList(request):  # able to create faction
                                                  start=req[r]['start'], startDate=timestampToDate(req[r]['start']),
                                                  end=req[r]['end'], endDate=timestampToDate(req[r]['end']))
 
-            request.session["onTheFlyMessage"].append("List of chains updated")
+            request.session["onTheFlyMessage"].append("List of {} chains updated.".format(len(faction.chain_set.all())))
 
         return HttpResponseRedirect(reverse('chain:list'))
     return HttpResponseRedirect(reverse('chain:index'))
@@ -149,7 +161,7 @@ def createMembers(request):
         #     else:
         #         faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
 
-        request.session["onTheFlyMessage"].append("Member list updated. {} members added".format(len(members)))
+        request.session["onTheFlyMessage"].append("List of {} members updated.".format(len(members)))
 
     return HttpResponseRedirect(reverse('chain:members'))
 
@@ -239,7 +251,13 @@ def createReport(request, chainId):
         except:
             return HttpResponseRedirect(reverse('chain:index'))
 
+        members = apiCall("faction", factionId, "basic", key, sub="members")
+        faction.member_set.all().delete()
+        for m in members:
+            faction.member_set.create(tId=m, name=members[m]["name"], lastAction=members[m]["last_action"], daysInFaction=members[m]["days_in_faction"])
         members = faction.member_set.all()
+        request.session["onTheFlyMessage"].append("List of {} members updated.".format(len(members)))
+
         attackers = dict({})  # create attackers array on the fly to avoid db connection in the loop
         for m in members:
             attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
@@ -313,7 +331,7 @@ def createReport(request, chainId):
         for b in bonus:
             report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 
-        request.session["onTheFlyMessage"].append("Report of chain {} updated".format(chainId))
+        request.session["onTheFlyMessage"].append("Report of chain {} updated with {} hits done.".format(chainId, chain.nHits))
 
     if int(chainId) == 0:
         return HttpResponseRedirect(reverse('chain:index'))

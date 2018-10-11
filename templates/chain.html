@@ -141,11 +141,9 @@
             {% if onTheFlyMessage %}
                 <div class="module">
                     <div class="errornote validnote">
-                        <ul>
                         {% for message  in onTheFlyMessage %}
-                            <li>{{message}}</li>
+                            {{message}}
                         {% endfor %}
-                        </ul>
                     </div>
                 </div>
             {% endif %}
