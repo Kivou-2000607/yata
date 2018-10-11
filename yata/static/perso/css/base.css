@@ -307,10 +307,12 @@ tr.kicked-members       { color:#aaaaaa; }
 
 table.chain-report tr:nth-child(odd)  { background:#cccccc22;  }
 table.chain-report tr:nth-child(even) { background:#ffffff22; }
-table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; font-weight: bold; }
-table.chain-report tr:nth-child(even):hover { background:#dddddd22; font-weight: bold; }
+table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; }
+table.chain-report tr:nth-child(even):hover { background:#dddddd22; }
 table.chain-report td.white { background:#ffffff22; font-weight: bold; }
 table.chain-report td.white:hover { background:#aaaaaa22; font-weight: bold; }
+
+table.highlight tr:hover { font-weight: bold; }
 
 table.center {
   width:50%;
