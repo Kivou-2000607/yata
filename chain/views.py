@@ -18,7 +18,7 @@ def index(request):
     if request.session.get("chainer"):
         # get session info
         print("[VIEW index] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW index] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -107,7 +107,7 @@ def list(request):
     if request.session.get("chainer"):
         # get session info
         print("[VIEW list] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW list] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -141,7 +141,7 @@ def createList(request):  # no context
     if request.session.get("chainer"):
         # get session info
         print("[VIEW createList] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW createList] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -191,7 +191,7 @@ def members(request):
     if request.session.get("chainer"):
         # get session info
         print("[VIEW members] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW members] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -225,7 +225,7 @@ def createMembers(request):  # no context
     if request.session.get("chainer"):
         # get session info
         print("[VIEW createMembers] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW createMembers] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -262,7 +262,7 @@ def report(request, chainId):
     if request.session.get("chainer"):
         # get session info
         print("[VIEW report] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW report] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -323,7 +323,7 @@ def jointReport(request):
     if request.session.get("chainer"):
         # get session info
         print("[VIEW jointReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW jointReport] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -394,7 +394,7 @@ def createReport(request, chainId):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
         # get session info
         print("[VIEW createReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW createReport] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -528,7 +528,7 @@ def deleteReport(request, chainId):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
         # get session info
         print("[VIEW deleteReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW deleteReport] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -563,7 +563,7 @@ def toggleReport(request, chainId):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
         # get session info
         print("[VIEW deleteReport] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW deleteReport] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")
@@ -596,7 +596,7 @@ def tree(request):
     if request.session.get("chainer") and request.session["chainer"].get("AA"):
         # get session info
         print("[VIEW tree] on the fly messages are {}".format(request.session.get("onTheFlyMessage")))
-        if request.session.get("onTheFlyMessage") is False:
+        if request.session.get("onTheFlyMessage") is False or request.session.get("onTheFlyMessage") is None:
             print("[VIEW tree] on the fly messages are initialised")
             request.session["onTheFlyMessage"] = []
         factionId = request.session["chainer"].get("factionId")

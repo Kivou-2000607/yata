@@ -20,7 +20,7 @@
                         {% endif %}
                         <td><b>{{chain.nHits}}</b> hits</td>
                         <td><b>{{chain.respect|floatformat:2}}</b> respects</td>
-                        <td><a href={% url 'chain:report' chain.tId %}>see report</a></td>
+                        <td><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>
                     </tr>
                 {% endfor %}
                 <tr><td colspan="2"><b>Total</b></td>
