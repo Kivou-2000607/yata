@@ -4,7 +4,7 @@
     <table class="tablesorter chain-report center-large">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Chain [ID]</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>Hits</th>
@@ -15,11 +15,11 @@
         {% for chain in chains %}
         <tr>
             {% if chain.tId > 1 %}
-                <td>Chain number {{chain.tId}}</td>
+                <td><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
                 <td>{{chain.startDate}}</td>
                 <td>{{chain.endDate}}</td>
             {% else %}
-                <td colspan="3" style="text-align: center;">Live chain</td>
+                <td colspan="3" style="text-align: center;"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
             {% endif %}
             <td><b>{{chain.nHits}}</b></td>
             <td><b>{{chain.respect|floatformat:2}}</b></td>
