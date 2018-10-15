@@ -1,0 +1,35 @@
+{% load mathfilters %}
+
+<div id="chain-list-reload">
+    <table class="tablesorter chain-report center-large">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Hits</th>
+                <th>Respect</th>
+                <th>Report</th>
+        </thead>
+        <tbody>
+        {% for chain in chains %}
+        <tr>
+            {% if chain.tId > 1 %}
+                <td>Chain number {{chain.tId}}</td>
+                <td>{{chain.startDate}}</td>
+                <td>{{chain.endDate}}</td>
+            {% else %}
+                <td colspan="3" style="text-align: center;">Live chain</td>
+            {% endif %}
+            <td><b>{{chain.nHits}}</b></td>
+            <td><b>{{chain.respect|floatformat:2}}</b></td>
+            <td>
+                <div id="catch-buttons-{{chain.tId}}">
+                    {% include "chain/list_reload_buttons.html" %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

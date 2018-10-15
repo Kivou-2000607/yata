@@ -1,0 +1,146 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+<div id="chain-report-reload">
+
+    <script>
+
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Time', '# of hits / {{graph.info|floatformat:1}} minutes', { role: 'style' }, '# of commmulative hits'],
+        {% for a,b,c in graph.data %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b < 2 %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+         {% endfor %}
+      ]);
+
+      var options = {
+        // bar: {groupWidth: "100%"},
+        legend: {position: 'top', textStyle: {fontSize: 14}},
+        seriesType: 'bars',
+        series: {
+                  0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                  1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                 },
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1]);
+
+      var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
+
+      chart.draw(data, options);
+    }
+    </script>
+
+        <br>
+        <table class="center">
+            <thead>
+                {% if chain.tId > 0 %}
+                    <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+                {% else %}
+                    <tr><th tyle="text-align: center;" colspan="2">Summary of live chain</th></tr>
+                {% endif %}
+            </thead>
+            <tbody>
+                <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
+                <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
+                <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
+                <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
+            </tbody>
+        </table>
+
+        {% if bonus %}
+            <br>
+            <table class="chain-report center">
+                <thead>
+                    <tr><th style="text-align: center;" colspan="5">Bonuses</th></tr>
+                    <tr>
+                        <th style="text-align: center;">Bonus</th>
+                        <th>Name</th>
+                        <th style="text-align: center;">respect won</th>
+                        <th style="text-align: center;">respect max</th>
+                        <th style="text-align: center;">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bonus %}
+                    <tr>
+                        <td style="text-align: center;">{{b.hit}}</td>
+                        <td>{{b.name}}</td>
+                        <td style="text-align: center;">{{b.respect|floatformat:2}}</td>
+                        <td style="text-align: center;">{{b.respectMax|floatformat:2}}</td>
+                        <td style="text-align: center;">{{b.respect|div:b.respectMax|mul:100|floatformat:1}} %</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if counts|length %}
+        <br>
+            <table id="chain-report-hits" class="tablesorter chain-report highlight center-large">
+                <thead>
+                    <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
+                    <tr>
+                        <th style="text-align: center;">Rank</th>
+                        <th>Name</th>
+                        <th style="text-align: center;"># hits</th>
+                        <th style="text-align: center;"># attacks</th>
+                        <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
+                        <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
+                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
+                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
+                        <th style="text-align: center;">days in factions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
+                        {% if c.daysInFaction > -1 or c.wins > 0 %}
+                        <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
+                            <td style="text-align: center;">{{ forloop.counter }}</td>
+                            <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
+                            <td style="text-align: center;">{{c.wins}}</td>
+                            <td style="text-align: center;">{{c.hits}}</td>
+                            {% if c.wins %}
+                                <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
+                            {% else %}
+                                <td style="text-align: center;">0.00</td>
+                            {% endif %}
+                            <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
+                            {% if c.wins %}
+                                <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                            {% else %}
+                                <td style="text-align: center;">0.00</td>
+                            {% endif %}
+                            <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+                        {% if c.daysInFaction < 0 %}
+                            <td style="text-align: center;">kicked</td>
+                        {% else %}
+                            <td style="text-align: center;">{{c.daysInFaction}}</td>
+                        {% endif %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <tr>
+                        <td class="white" id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="5">Show / Hide inactive members</td>
+                        <td class="white" id="toggle-kicked-members" style="text-align: center; cursor: pointer;" colspan="4">Show / Hide kicked members</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="center-large">
+                <thead>
+                    <tr><th style="text-align: center;">Number of hits over time</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="white"><td><div id="histogram"></div></td></tr>
+                </tbody>
+            </table>
+        {% endif %}
+</div>

@@ -81,10 +81,3 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
             feedAttacks = False
 
     return chain
-
-
-def toggleMessage(request, context, key):
-    if key in request.session:
-        context[key] = request.session[key]
-        request.session[key] = False
-    return context

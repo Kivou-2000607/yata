@@ -1,133 +1,25 @@
 {% load static %}
-{% load humanize %}
-{% load mathfilters %}
-
-<div>
 
 {% if counts|length %}
-    {% if liveChain %}
-        <h2 class="title">Live chain report (last update: {{chain.endDate}})</h2>
+    {% if chain.tId > 0 %}
+        <h2 id="chain-report" class="title">{{chain}}</h2>
     {% else %}
-        <h2 class="title">{{chain}}</h2>
+        <h2 id="chain-report" class="title">Live chain report (last update: {{chain.endDate}})</h2>
     {% endif %}
 
     <div class="module whiteBG">
-        <br>
-
-        {% if not liveChain %}
-        <table class="center">
-            <thead>
-                <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
-                <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-                <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
-                <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
-            </tbody>
-        </table>
-        <br>
-        {% endif %}
-
-        {% if bonus %}
-            <table class="chain-report center">
-                <thead>
-                    <tr><th style="text-align: center;" colspan="5">Bonuses</th></tr>
-                    <tr>
-                        <th style="text-align: center;">Bonus</th>
-                        <th>Name</th>
-                        <th style="text-align: center;">respect won</th>
-                        <th style="text-align: center;">respect max</th>
-                        <th style="text-align: center;">%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for b in bonus %}
-                    <tr>
-                        <td style="text-align: center;">{{b.hit}}</td>
-                        <td>{{b.name}}</td>
-                        <td style="text-align: center;">{{b.respect|floatformat:2}}</td>
-                        <td style="text-align: center;">{{b.respectMax|floatformat:2}}</td>
-                        <td style="text-align: center;">{{b.respect|div:b.respectMax|mul:100|floatformat:1}} %</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        <br>
-        {% endif %}
-
-        {% if counts|length %}
-            <table id="chain-report-hits" class="tablesorter chain-report highlight center-large">
-                <thead>
-                    <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
-                    <tr>
-                        <th style="text-align: center;">Rank</th>
-                        <th>Name</th>
-                        <th style="text-align: center;"># hits</th>
-                        <th style="text-align: center;"># attacks</th>
-                        <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
-                        <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
-                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
-                        <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-                        <th style="text-align: center;">days in factions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                        {% if c.daysInFaction > -1 or c.wins > 0 %}
-                        <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
-                            <td style="text-align: center;">{{ forloop.counter }}</td>
-                            <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
-                            <td style="text-align: center;">{{c.wins}}</td>
-                            <td style="text-align: center;">{{c.hits}}</td>
-                            {% if c.wins %}
-                                <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
-                            {% else %}
-                                <td style="text-align: center;">0.00</td>
-                            {% endif %}
-                            <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
-                            {% if c.wins %}
-                                <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
-                            {% else %}
-                                <td style="text-align: center;">0.00</td>
-                            {% endif %}
-                            <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                        {% if c.daysInFaction < 0 %}
-                            <td style="text-align: center;">kicked</td>
-                        {% else %}
-                            <td style="text-align: center;">{{c.daysInFaction}}</td>
-                        {% endif %}
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                    <tr>
-                        <td class="white" id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="5">Show / Hide inactive members</td>
-                        <td class="white" id="toggle-kicked-members" style="text-align: center; cursor: pointer;" colspan="4">Show / Hide kicked members</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <br>
-            <table class="center-large">
-                <thead>
-                    <tr><th style="text-align: center;">Number of hits over time</th></tr>
-                </thead>
-                <tbody>
-                    <tr class="white"><td><div id="histogram"></div></td></tr>
-                </tbody>
-            </table>
-
-        {% endif %}
+        {% include "chain/report_reload.html" %}
         <div class="submit-row">
-        {% if request.session.chainer.AA %}
-            <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Refresh report"></a>
-            <a href={% url 'chain:deleteReport' chain.tId %}><input type="submit" class="update-type" value="Delete report"></a>
-        {% else %}
-            <a><input type="submit" class="update-type" value="You need AA right to refresh the report"></a>
-        {% endif %}
+            {% if request.session.chainer.AA %}
+                <form style="display: inline;" method="post">{% csrf_token %}
+                    <input id="chain-report-id" type="hidden" value="{{chain.tId}}">
+                    <a><input id="chain-report-refresh" type="submit" class="update-type" value="Refresh report"></a>
+                </form>
+                <a href={% url 'chain:deleteReport' chain.tId %}><input id="chain-report-delete" type="submit" class="update-type" value="Delete report"></a>
+            {% else %}
+                <a><input type="submit" class="update-type" value="You need AA right to refresh the report"></a>
+            {% endif %}
         </div>
-
-
     </div>
 {% else %}
     <h2 class="title">Report not yet created</h2>
@@ -144,4 +36,3 @@
         <p>Live reports are automatically created/updated every 10 minutes.</p>
     </div>
 {% endif %}
-</div>

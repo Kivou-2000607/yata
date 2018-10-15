@@ -1,0 +1,25 @@
+<div id="chain-members-reload">
+    <table class="chain-report center">
+        <thead>
+            <th>List of the {{members|length}} members</th>
+        </thead>
+    </table>
+    <table id="chain-members-table" class="tablesorter chain-report center">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th style="text-align: center;">Days in faction</th>
+                <th style="text-align: center;">Last Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members|dictsortreversed:"daysInFaction" %}
+                <tr class="{% if m.daysInFaction < 0 %}kicked-from-fac{% endif %}">
+                    <td><a href="https://www.torn.com/profiles.php?XID={{m.tId}}" target="_blank">{{m.name}} [{{m.tId}}]</a></td>
+                    <td style="text-align: center;">{{m.daysInFaction}}</td>
+                    <td style="text-align: center;">{{m.lastAction}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

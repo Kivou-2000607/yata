@@ -1,28 +1,9 @@
-<div>
-    <h2 class="title">Members of the faction</h2>
-    <div class="module whiteBG">
-        <table id="chain-members" class="tablesorter chain-report center">
-            <thead>
-                    <tr>
-                    <th>Name</th>
-                    <th style="text-align: center;">Days in faction</th>
-                    <th style="text-align: center;">Last Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m in members|dictsortreversed:"daysInFaction" %}
-                    <tr class="{% if m.daysInFaction < 0 %}kicked-from-fac{% endif %}">
-                        <td><a href="https://www.torn.com/profiles.php?XID={{m.tId}}" target="_blank">{{m.name}} [{{m.tId}}]</a></td>
-                        <td style="text-align: center;">{{m.daysInFaction}}</td>
-                        <td style="text-align: center;">{{m.lastAction}}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="submit-row">
-            <a href={% url 'chain:createMembers' %}><input type="submit" class="update-type" value="Refresh member list"></a>
-        </div>
-
+<h2 class="title">Members of the faction</h2>
+<div class="module whiteBG">
+    {% include "chain/members_reload.html" %}
+    <div class="submit-row">
+        <form method="post">{% csrf_token %}
+            <a href={% url 'chain:createMembers' %}><input id="chain-members-refresh" type="submit" class="update-type" value="Refresh member list"></a>
+        </form>
     </div>
 </div>

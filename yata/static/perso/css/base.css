@@ -330,4 +330,10 @@ table.center-large {
     color: #0B8E14;
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
     border-color: #0B8E14;
+    margin:0px 50px;
+}
+
+div.loader{
+    text-align:center;
+    padding:10px;
 }

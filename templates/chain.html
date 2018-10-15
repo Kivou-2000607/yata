@@ -27,19 +27,6 @@
 
     <!-- scripts jquery perso -->
     <script>
-        $(document).on('click', '.update-key', function(e){
-            e.preventDefault();
-            var key = $("#key-value").val();
-            var check = $("#key-check-remember").is(':checked');
-            var csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-            $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
-            $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
-                keyValue: key,
-                html: "login",
-                rememberSession: check,
-                csrfmiddlewaretoken: csrf,
-            });
-        });
 
         $(document).ready(function() {
             $.tablesorter.addParser({
@@ -66,11 +53,11 @@
             });
 
             $("#chain-report-hits").tablesorter();
-            $("#chain-members").tablesorter({
+            $("#chain-members-table").tablesorter({
                 headers: {
-                    3: { sorter: "since" }
+                    2: { sorter: "since" }
                 },
-                sortList: [[3,0], [2,1]],
+                sortList: [[2,0], [1,1]],
             });
         });
 
@@ -83,37 +70,80 @@
             $(".kicked-members").slideToggle( 'slow', function() {} );
         });
 
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
+        $(document).on('click', '.update-key', function(e){
+            e.preventDefault();
+            var key = $("#key-value").val();
+            var check = $("#key-check-remember").is(':checked');
+            var csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
+                keyValue: key,
+                html: "login",
+                rememberSession: check,
+                csrfmiddlewaretoken: csrf,
+            });
+        });
 
-        function drawChart() {
-          var data = google.visualization.arrayToDataTable([
-            ['Time', '# of hits / {{graph.info|floatformat:1}} minutes', { role: 'style' }, '# of commmulative hits'],
-            {% for a,b,c in graph.data %}
-                [new Date({{a|date:"Y"}}, {{a|date:"n"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b < 2 %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
-             {% endfor %}
-          ]);
+        // refresh members
+        $(document).on('click', '#chain-members-refresh', function(e){
+            e.preventDefault();
+            var reload = $("#chain-members-reload");
+            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            reload.load( "{% url 'chain:createMembers' %}", {
+                html: "members_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
 
-          var options = {
-            // bar: {groupWidth: "100%"},
-            legend: {position: 'top', textStyle: {fontSize: 14}},
-            seriesType: 'bars',
-            series: {
-                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
-                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
-                     },
-            'backgroundColor': 'transparent',
-            'chartArea': {'width': '90%', 'height': '70%'},
-          };
+        // refresh chain list
+        $(document).on('click', '#chain-list-refresh', function(e){
+            e.preventDefault();
+            var reload = $("#chain-list-reload");
+            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            reload.load( "{% url 'chain:createList' %}", {
+                html: "list_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
 
-          var view = new google.visualization.DataView(data);
-          view.setColumns([0, 1]);
+        // refresh report from report button
+        $(document).on('click', '#chain-report-refresh', function(e){
+            e.preventDefault();
+            var reload = $("#chain-report-reload");
+            var chainId = $("#chain-report-id").val();
+            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            reload.load( "/chain/createReport/"+chainId, {
+                html: "report_reload",
+                chainId: chainId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
 
-          var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
+        // refresh/create report from list button
+        $(document).on('click', '.chain-report-refresh-list', function(e){
+            e.preventDefault();
+            var chainId = this.href.split("/").pop();;
+            var reload = $("#catch-buttons-"+chainId);
+            reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            reload.load( "/chain/createReport/"+chainId, {
+                html: "list_reload_buttons",
+                chainId: chainId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
 
-          chart.draw(data, options);
-        }
-
+        // toggle report from list button
+        $(document).on('click', '.chain-report-toggle-list', function(e){
+            e.preventDefault();
+            var chainId = this.href.split("/").pop();;
+            var reload = $("#catch-buttons-"+chainId);
+            reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+            reload.load( "/chain/toggleReport/"+chainId, {
+                html: "list_reload_buttons",
+                chainId: chainId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
 
     </script>
 
@@ -141,16 +171,6 @@
                 {% include "chain/login.html" %}
             </div>
 
-            {% if onTheFlyMessage %}
-                <div class="module">
-                    <div class="errornote validnote">
-                        {% for message  in onTheFlyMessage %}
-                            {{message}}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
 
             {% if view.liveReport %}
                 <div id="chain-live">
@@ -158,29 +178,15 @@
                 </div>
             {% endif %}
 
-            {% if view.report %}
-                <div id="chain-report">
-                    {% include "chain/report.html" %}
-                </div>
-            {% endif %}
+            {% if view.report %}{% include "chain/report.html" %}{% endif %}
 
             {% if view.jointReport %}
-                <div id="chain-report">
-                    {% include "chain/jreport.html" %}
-                </div>
+                {% include "chain/jreport.html" %}
             {% endif %}
 
-            {% if view.list %}
-                <div id="list-chains">
-                    {% include "chain/list.html" %}
-                </div>
-            {% endif %}
+            {% if view.list %}{% include "chain/list.html" %}{% endif %}
 
-            {% if view.members %}
-                <div id="faction-members">
-                    {% include "chain/members.html" %}
-                </div>
-            {% endif %}
+            {% if view.members %}{% include "chain/members.html" %}{% endif %}
 
             {% if view.tree %}
                 <div id="chain-tree">
