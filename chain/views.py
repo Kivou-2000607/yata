@@ -59,18 +59,18 @@ def index(request):
             # create graph
             graphSplit = chain.graph.split(',')
             if len(graphSplit) > 1:
-                print('[VIEW index] data found for graph of length {}'.format(len(graphSplit)))
+                print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
-                bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * len(graphSplit))
-                graph = {'data': [], 'info': bins}
+                bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
+                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins)/(5)}}
                 cummulativeHits = 0
                 for line in graphSplit:
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
             else:
-                print('[VIEW index] no data found for graph')
-                graph = {'data': [], 'info': 0}
+                print('[VIEW report] no data found for graph')
+                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
             # context
             context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph})
@@ -259,7 +259,7 @@ def report(request, chainId):
             print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
             # compute average time for one bar
             bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-            graph = {'data': [], 'info': bins}
+            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins)/(5)}}
             cummulativeHits = 0
             for line in graphSplit:
                 splt = line.split(':')
@@ -267,7 +267,7 @@ def report(request, chainId):
                 graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
         else:
             print('[VIEW report] no data found for graph')
-            graph = {'data': [], 'info': 0}
+            graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
         # context
         context = dict({'chain': chain,  # for general info
@@ -373,7 +373,7 @@ def createReport(request, chainId):
         # delete old report and create new
         chain.report_set.all().delete()
         report = chain.report_set.create()
-        print('[VIEW createReport] report created')
+        print('[VIEW createReport] new report created')
 
         # refresh members
         members = apiCall('faction', factionId, 'basic', key, sub='members')
@@ -403,6 +403,8 @@ def createReport(request, chainId):
                 attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
             else:
                 attacks = dict({})
+                chain.delete()
+                return render(request, 'empty.html')
 
         # case registered chain
         else:
@@ -421,11 +423,16 @@ def createReport(request, chainId):
             attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
 
         # loop over attacks
+        tmp = dict({})
         for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
             attackerID = int(v['attacker_id'])
             attackerName = v['attacker_name']
             # if attacker part of the faction at the time of the chain
             if(int(v['attacker_faction']) == faction.tId):
+                if tmp.get(v["result"]) is None:
+                    tmp[v["result"]] = 1
+                else:
+                    tmp[v["result"]] += 1
                 # if attacker not part of the faction at the time of the call
                 if attackerName not in attackers:
                     print('[VIEW createReport] hitter out of faction: {}'.format(attackerName))
@@ -450,12 +457,28 @@ def createReport(request, chainId):
                 if stopAfterNAttacks is not False and nWR[0] >= stopAfterNAttacks:
                     break
 
+        for k, v in tmp.items():
+            print(k, v)
+
         # create histogram
         chain.start = int(attacksForHisto[-1])
         chain.startDate = timestampToDate(chain.start)
         diff = int(chain.end - chain.start)
-        bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
-        print('[VIEW createReport] bins={} diff={}'.format(bins, diff))
+        binsGapMinutes = 5
+        while diff / (binsGapMinutes * 60) > 256:
+            binsGapMinutes += 5
+
+        bins = [chain.start]
+        for i in range(256):
+            add = bins[i] + (binsGapMinutes * 60)
+            if add > chain.end:
+                break
+            bins.append(add)
+
+        # bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
+        print('[VIEW createReport] chain delta time: {} second'.format(diff))
+        print('[VIEW createReport] histogram bins delta time: {} second'.format(binsGapMinutes * 60))
+        print('[VIEW createReport] histogram number of bins: {}'.format(len(bins) - 1))
         histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
         binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
         chain.nHits = nWR[0]
@@ -472,12 +495,14 @@ def createReport(request, chainId):
 
         # render for on the fly modification
         if request.method == 'POST':
+            binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
             subcontext = dict({'liveChain': not bool(chain.tId),
                                'chain': chain,  # for general info
                                'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                                'counts': report.count_set.all(),  # for report
                                'bonus': report.bonus_set.all(),  # for report
-                               'graph': {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))], 'info': (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))},  # for report
+                               'graph': {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
+                                         'info': {"binsTime": binsTime, "criticalHits": binsTime / 5}},  # for report
                                'view': {'report': True, 'list': True}})  # views
 
             print('[VIEW createReport] render')
