@@ -116,28 +116,35 @@
                 <tbody>
                     {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
                         {% if c.daysInFaction > -1 or c.wins > 0 %}
-                        <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
+                        <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                             <td style="text-align: center;">{{ forloop.counter }}</td>
                             <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
-                            <td style="text-align: center;">{{c.wins}}</td>
-                            <td style="text-align: center;">{{c.hits}}</td>
-                            {% if c.wins %}
-                                <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
-                            {% else %}
-                                <td style="text-align: center;">0.00</td>
-                            {% endif %}
-                            <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
-                            {% if c.wins %}
-                                <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
-                            {% else %}
-                                <td style="text-align: center;">0.00</td>
-                            {% endif %}
-                            <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+
+                            {% if c.beenThere %}
+                                <td style="text-align: center;">{{c.wins}}</td>
+                                <td style="text-align: center;">{{c.hits}}</td>
+                                {% if c.wins %}
+                                    <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
+                                {% else %}
+                                    <td style="text-align: center;">0.00</td>
+                                {% endif %}
+                                <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
+                                {% if c.wins %}
+                                    <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
+                                {% else %}
+                                    <td style="text-align: center;">0.00</td>
+                                {% endif %}
+                                <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
+                        {% else %}
+                            <td colspan="6"><i>New recruit, was not in the faction for this</i></b>
+                        {% endif %}
+
                         {% if c.daysInFaction < 0 %}
                             <td style="text-align: center;">kicked</td>
                         {% else %}
                             <td style="text-align: center;">{{c.daysInFaction}}</td>
                         {% endif %}
+
                         </tr>
                         {% endif %}
                     {% endfor %}

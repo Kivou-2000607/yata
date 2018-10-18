@@ -323,6 +323,7 @@ def jointReport(request):
                     counts[count.attackerId]['wins'] += count.wins
                     counts[count.attackerId]['respect'] += count.respect
                     counts[count.attackerId]['fairFight'] += count.fairFight
+                    counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere'] # been present to at least one chain
                 else:
                     counts[count.attackerId] = {'name': count.name,
                                                 'hits': count.hits,
@@ -330,6 +331,7 @@ def jointReport(request):
                                                 'respect': count.respect,
                                                 'fairFight': count.fairFight,
                                                 'daysInFaction': count.daysInFaction,
+                                                'beenThere': count.beenThere,
                                                 'attackerId': count.attackerId}
             print('[VIEW jointReport] {} counts for {}'.format(len(counts), chain))
 
@@ -488,8 +490,10 @@ def createReport(request, chainId):
 
         # fill the database with counts and bonuses
         for k, v in attackers.items():
-            # if v[1]:
-            report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
+            # time now - chain end - days old: determine if member was in the fac for the chain
+            delta = int(timezone.now().timestamp()) - chain.end - v[4] * 24 * 3600
+            beenThere = True if (delta < 0 or v[4] < 0) else False
+            report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4], beenThere=beenThere)
         for b in bonus:
             report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 

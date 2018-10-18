@@ -78,6 +78,7 @@ class Count(models.Model):
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
     daysInFaction = models.IntegerField(default=0)
+    beenThere = models.BooleanField(default=False)
 
     def __str__(self):
         return("Count of {}".format(self.report.chain))

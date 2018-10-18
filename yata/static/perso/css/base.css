@@ -299,6 +299,8 @@ table.item-sell-table th.lack:hover { background:#ea9999!important; }
 
 tr.zero-hits       { background:#f4cccc!important; display: none;}
 tr.zero-hits:hover { background:#ea9999!important; }
+tr.not-there       { background:#b6d7a8!important; }
+tr.not-there:hover { background:#93c47d!important; }
 tr.kicked-members       { color:#aaaaaa; }
 /* tr.kicked-members:hover { background:#ddddddaa!important; } */
 
