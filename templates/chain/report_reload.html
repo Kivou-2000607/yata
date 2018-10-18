@@ -45,22 +45,23 @@
     </script>
 
         <br>
-        <table class="center">
-            <thead>
-                {% if chain.tId > 0 %}
-                    <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
-                {% else %}
-                    <tr><th tyle="text-align: center;" colspan="2">Summary of live chain</th></tr>
-                {% endif %}
-            </thead>
-            <tbody>
-                <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
-                <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-                <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
-                <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
-            </tbody>
-        </table>
-
+        {% if chain %}
+            <table class="center">
+                <thead>
+                    {% if chain.tId > 0 %}
+                        <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+                    {% else %}
+                        <tr><th tyle="text-align: center;" colspan="2">Summary of live chain</th></tr>
+                    {% endif %}
+                </thead>
+                <tbody>
+                    <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
+                    <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
+                    <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
+                    <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
+                </tbody>
+            </table>
+        {% endif %}
         {% if bonus %}
             <br>
             <table class="chain-report center">

@@ -4,7 +4,10 @@
 <div>
     <h2 class="title">Joint report</h2>
 
-    <div class="module whiteBG">
+
+
+    <div class="module whiteBG justxt">
+
         <br>
         <table class="center">
             <thead>
@@ -29,57 +32,9 @@
                 </tr>
             </tbody>
         </table>
+
+        {% include "chain/report_reload.html" %}
+
         <br>
-
-        <table id="chain-report-hits" class="tablesorter chain-report highlight center-large">
-            <thead>
-                <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
-                <tr>
-                    <th style="text-align: center;">Rank</th>
-                    <th>Name</th>
-                    <th style="text-align: center;"># hits</th>
-                    <th style="text-align: center;"># attacks</th>
-                    <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
-                    <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
-                    <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
-                    <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-                    <th style="text-align: center;">days in factions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
-                    {% if c.daysInFaction > -1 or c.wins > 0 %}
-                    <tr class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
-                        <td style="text-align: center;">{{ forloop.counter }}</td>
-                        <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
-                        <td style="text-align: center;">{{c.wins}}</td>
-                        <td style="text-align: center;">{{c.hits}}</td>
-                        {% if c.wins %}
-                            <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
-                        {% else %}
-                            <td style="text-align: center;">0.00</td>
-                        {% endif %}
-                        <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
-                        {% if c.wins %}
-                            <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
-                        {% else %}
-                            <td style="text-align: center;">0.00</td>
-                        {% endif %}
-                        <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                    {% if c.daysInFaction < 0 %}
-                        <td style="text-align: center;">kicked</td>
-                    {% else %}
-                        <td style="text-align: center;">{{c.daysInFaction}}</td>
-                    {% endif %}
-                    </tr>
-                    {% endif %}
-                {% endfor %}
-                <tr>
-                    <td class="white" id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="5">Show / Hide inactive members</td>
-                    <td class="white" id="toggle-kicked-members" style="text-align: center; cursor: pointer;" colspan="4">Show / Hide kicked members</td>
-                </tr>
-            </tbody>
-        </table>
-
     </div>
 </div>
