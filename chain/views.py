@@ -59,17 +59,17 @@ def index(request):
             # create graph
             graphSplit = chain.graph.split(',')
             if len(graphSplit) > 1:
-                print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
+                print('[VIEW index] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins)/(5)}}
+                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / (5)}}
                 cummulativeHits = 0
                 for line in graphSplit:
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
             else:
-                print('[VIEW report] no data found for graph')
+                print('[VIEW index] no data found for graph')
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
             # context
@@ -259,7 +259,7 @@ def report(request, chainId):
             print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
             # compute average time for one bar
             bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins)/(5)}}
+            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / (5)}}
             cummulativeHits = 0
             for line in graphSplit:
                 splt = line.split(':')
@@ -495,14 +495,22 @@ def createReport(request, chainId):
 
         # render for on the fly modification
         if request.method == 'POST':
-            binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
+            if len(binsCenter) > 1:
+                print('[VIEW createReport] data found for graph of length {}'.format(len(binsCenter)))
+                binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
+                graph = {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
+                         'info': {"binsTime": binsTime, "criticalHits": binsTime / 5}}
+            else:
+                print('[VIEW createReport] no data found for graph')
+                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
+
+            # context
             subcontext = dict({'liveChain': not bool(chain.tId),
                                'chain': chain,  # for general info
                                'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                                'counts': report.count_set.all(),  # for report
                                'bonus': report.bonus_set.all(),  # for report
-                               'graph': {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
-                                         'info': {"binsTime": binsTime, "criticalHits": binsTime / 5}},  # for report
+                               'graph': graph,  # for report
                                'view': {'report': True, 'list': True}})  # views
 
             print('[VIEW createReport] render')

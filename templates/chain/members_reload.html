@@ -1,4 +1,39 @@
 <div id="chain-members-reload">
+
+    <script>
+            $(document).ready(function() {
+                $.tablesorter.addParser({
+                  // set a unique id
+                  id: 'since',
+                  is: function(s, table, cell, $cell) {
+                    // return false so this parser is not auto detected
+                    return false;
+                  },
+                  format: function(s, table, cell, cellIndex) {
+                    // format your data for normalization
+                    var ret = s.toLowerCase()
+                              .replace(/days/,6)
+                              .replace(/day/,5)
+                              .replace(/hours/,4)
+                              .replace(/hour/,3)
+                              .replace(/minutes/,2)
+                              .replace(/minute/,1)
+                              .replace(/ago/,0).split(' ');
+                    return ret[1]+String('00000' + ret[0]).slice(-5);
+                  },
+                  // set type, either numeric or text
+                  type: 'numeric'
+                });
+
+                $("#chain-members-table").tablesorter({
+                    headers: {
+                        2: { sorter: "since" }
+                    },
+                    sortList: [[2,0], [1,1]],
+                });
+            });
+    </script>
+
     <table class="chain-report center">
         <thead>
             <th>List of the {{members|length}} members</th>
