@@ -90,9 +90,16 @@
 
         {% if counts|length %}
         <br>
+        <table class="chain-report center-large">
+            <thead>
+                <tr><th style="text-align: center;" colspan="9">
+                    <div id="toggle-kicked-members" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show kicked members</div>
+                    Hit count &nbsp; <div id="toggle-zero-hits" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="zero-hits-icon" class="fas fa-toggle-off"></i> Show inactive members</div>
+                </th></tr>
+            </thead>
+        </table>
             <table id="chain-report-hits" class="tablesorter chain-report highlight center-large">
                 <thead>
-                    <tr><th style="text-align: center;" colspan="9">Hit count</th></tr>
                     <tr>
                         <th style="text-align: center;">Rank</th>
                         <th>Name</th>
@@ -133,10 +140,6 @@
                         </tr>
                         {% endif %}
                     {% endfor %}
-                    <tr>
-                        <td class="white" id="toggle-zero-hits" style="text-align: center; cursor: pointer;" colspan="5">Show / Hide inactive members</td>
-                        <td class="white" id="toggle-kicked-members" style="text-align: center; cursor: pointer;" colspan="4">Show / Hide kicked members</td>
-                    </tr>
                 </tbody>
             </table>
 

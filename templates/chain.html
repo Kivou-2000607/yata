@@ -30,11 +30,32 @@
 
         $(document).on('click', '#toggle-zero-hits', function(e){
             e.preventDefault();
-            $(".zero-hits").slideToggle( 'slow', function() {} );
+            $(".zero-hits").slideToggle('fast', function() {});
+            $(".zero-hits").promise().done(function() {                            
+                var icon = $("#zero-hits-icon");
+                if (icon.hasClass("fas fa-toggle-on")) {
+                    icon.removeClass("fas fa-toggle-on");
+                    icon.addClass("fas fa-toggle-off");
+                } else {
+                    icon.removeClass("fas fa-toggle-off");
+                    icon.addClass("fas fa-toggle-on");
+                }
+            });
         });
+
         $(document).on('click', '#toggle-kicked-members', function(e){
             e.preventDefault();
-            $(".kicked-members").slideToggle( 'slow', function() {} );
+            $(".kicked-members").slideToggle('fast', function() {});
+            $(".kicked-members").promise().done(function() {
+                var icon = $("#kicked-members-icon");
+                if (icon.hasClass("fas fa-toggle-on")) {
+                    icon.removeClass("fas fa-toggle-on");
+                    icon.addClass("fas fa-toggle-off");
+                } else {
+                    icon.removeClass("fas fa-toggle-off");
+                    icon.addClass("fas fa-toggle-on");
+                }
+            });
         });
 
         $(document).on('click', '.update-key', function(e){
