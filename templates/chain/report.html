@@ -2,7 +2,7 @@
 
 {% if counts|length %}
     {% if chain.tId > 0 %}
-        <h2 id="chain-report" class="title">{{chain}}</h2>
+        <h2 id="chain-report" class="title">Report of chain number {{chain.tId}}</h2>
     {% else %}
         <h2 id="chain-report" class="title">Live chain report (last update: {{chain.endDate}})</h2>
     {% endif %}
@@ -17,16 +17,21 @@
                 </form>
                 <a href={% url 'chain:deleteReport' chain.tId %}><input id="chain-report-delete" type="submit" class="update-type" value="Delete report"></a>
             {% else %}
-                <a><input type="submit" class="update-type" value="You need AA right to refresh the report"></a>
+                <a><input type="submit" class="update-type" value="You need AA permission to refresh the report"></a>
             {% endif %}
         </div>
     </div>
 {% else %}
     <h2 class="title">Report not yet created</h2>
-    <div class="module whiteBG justTxt">
-        {% if request.session.chainer.AA %}
-            <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Create report"></a>
-        {% endif %}
+    <div class="module whiteBG">
+        <br>
+        <div class="submit-row">
+            {% if request.session.chainer.AA %}
+                <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Create report"></a>
+            {% else %}
+                <a><input type="submit" class="update-type" value="You need AA permission to create the report"></a>
+            {% endif %}
+        </div>
     </div>
 {% endif  %}
 

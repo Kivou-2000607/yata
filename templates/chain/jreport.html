@@ -11,7 +11,13 @@
         <br>
         <table class="center">
             <thead>
-                <tr><th style="text-align: center;" colspan="4">Summary of the joint report ({{chainsReport|length}} chains)</th></tr>
+                <tr><th style="text-align: center;" colspan="5">Summary of the joint report made of the following chain{{chainsReport|length|pluralize}}</th></tr>
+                <tr>
+                    <th colspan="2">Chain</th>
+                    <th>Hits</th>
+                    <th>Respect</th>
+                    <th>See report</th>
+                </tr>
             </thead>
             <tbody>
                 {% for chain in chainsReport %}

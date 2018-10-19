@@ -12,17 +12,25 @@
                     <tr><th colspan="2">Summary of the current chain</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Chain at</td><td>{{liveChain.current}}</td></tr>
-                    <tr><td>Timeout</td><td>{{liveChain.timeout}}</td></tr>
-                    <tr><td>Modifier</td><td>{{liveChain.modifier|floatformat:2}}</td></tr>
-                    <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
+                    <tr><td>Chain progress to next bonus</td><td>{{liveChain.current}} / {{liveChain.nextBonus}} &nbsp; &nbsp; <progress value="{{liveChain.current}}" max="{{liveChain.nextBonus}}"></progress></td></tr>
+                    {% with minutes=liveChain.timeout|intdiv:60 %}
+                    {% if minutes %}
+                        <tr><td>Chain timeout</td><td>{{minutes}} minute{{minutes|pluralize}} and {{liveChain.timeout|mod:60}} seconds</td></tr>
+                    {% else %}
+                        <tr><td>Chain timeout</td><td><span style="color: #FF4444; font-weight: bold;">{{liveChain.timeout|mod:60}} seconds<span></td></tr>
+                    {% endif %}
+                    {% endwith %}
+                    <tr><td>Chain multiplier</td><td>{{liveChain.modifier|floatformat:2}}</td></tr>
+                    {% if liveChain.cooldown %}
+                        <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
             <br>
         </div>
         {% else %}
         <div class="module whiteBG justTxt">
-            No active chaining
+            No active chain
         </div>
         {% endif %}
 </div>

@@ -16,7 +16,7 @@
 
         function drawChart() {
           var data = google.visualization.arrayToDataTable([
-            ['Time', '{{graph.info.binsTime|floatformat:0}} min hit count', { role: 'style' }, 'total hit count'],
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
             {% for a,b,c in graph.data %}
                 [new Date({{a|date:"Y"}}, {{a|date:"n"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
              {% endfor %}
@@ -159,8 +159,8 @@
                     </thead>
                     <tbody>
                         <tr class="white"><td><div id="histogram"></div></td></tr>
-                        <tr><td>Each of the {{graph.data|length}} bars represents {{graph.info.binsTime|floatformat:0}} minutes</td></tr>
-                        <tr><td>Red bars correpsond to critical time where the average hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).</td></tr>
+                        <tr><td>Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.</td></tr>
+                        <tr><td>Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).</td></tr>
                     </tbody>
                 </table>
             {% endif %}

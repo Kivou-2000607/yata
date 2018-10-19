@@ -9,20 +9,20 @@
         {% if request.session.chainer %}
 
             {%if request.session.chainer.AA %}
-                You've got the AA right. You can create chain reports.
+                <p>You've got the AA permission. You can create chain reports.</p>
             {% else %}
-                You don't have the AA right. You can only see existing chain reports.
+                <p>You don't have the AA permission. You can only see existing chain reports.</p>
             {% endif %}
 
             <p>
                 <a href="{% url 'chain:index' %}">Live report</a> -
+                <a href="{% url 'chain:jointReport' %}">Joint report</a> - 
                 <a href="{% url 'chain:list' %}">List of chains</a> -
-                <a href="{% url 'chain:members' %}">List of members</a> -
-                <a href="{% url 'chain:jointReport' %}">Joint report</a>
+                <a href="{% url 'chain:members' %}">List of members</a>
             </p>
             <h3><a class="deletelink" href="{% url 'chain:logout' %}">Logout</a></h3>
         {% else %}
-            <p>Enter your API key see the chain reports of you faction</p>
+            <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to see the chain reports of your faction</p>
             <form method="post">
                 {% csrf_token %}
                 <input id="key-value" placeholder="API key" type=text>

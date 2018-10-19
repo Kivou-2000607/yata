@@ -10,9 +10,9 @@ def apiCall(section, id, selections, key, sub=None):
     # if selections == "chain" and section == "faction":
     #     print("[FUNCTION apiCall] DEBUG chain/faction")
     #     chain = dict({"chain": {"current": 3,
-    #                             "timeout": 158,
+    #                             "timeout": 65,
     #                             "modifier": 0.75,
-    #                             "cooldown": 18
+    #                             "cooldown": 0
     #                             }})
     #     return chain[sub] if sub is not None else chain
 

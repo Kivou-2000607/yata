@@ -11,6 +11,8 @@ from yata.handy import timestampToDate
 
 from .models import Faction
 
+# global variable
+bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
 
 # render view
 def index(request):
@@ -27,10 +29,16 @@ def index(request):
         else:
             print('[VIEW index] faction {} found'.format(factionId))
 
+        # get live chain and next bonus
         liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
         if 'apiError' in liveChain:
             return render(request, 'errorPage.html', liveChain)
         activeChain = bool(liveChain['current'])
+        liveChain["nextBonus"] = 10
+        for i in bonus_hits:
+            liveChain["nextBonus"] = i
+            if i >= int(liveChain["current"]):
+                break
 
         if activeChain:
             print('[VIEW index] chain active')
@@ -414,7 +422,6 @@ def createReport(request, chainId):
             stopAfterNAttacks = False
 
         # initialisation of variables before loop
-        bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
         nWR = [0, 0.0]  # number of wins and respect
         bonus = []  # chain bonus
         attacksForHisto = []  # record attacks timestamp histogram
