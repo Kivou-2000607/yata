@@ -4,6 +4,7 @@ from django.utils import timezone
 import numpy
 
 from chain.models import Faction
+from chain.views import bonus_hits
 from yata.handy import apiCall
 from yata.handy import apiCallAttacks
 from yata.handy import timestampToDate
@@ -78,7 +79,6 @@ class Command(BaseCommand):
             members = faction.member_set.all()
 
             # initialisation of variables before loop
-            bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
             nWR = [0, 0.0]  # number of wins and respect
             bonus = []  # chain bonus
             attacksForHisto = []  # record attacks timestamp histogram
@@ -91,7 +91,6 @@ class Command(BaseCommand):
             # loop over attacks
             tmp = dict({})
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-
                 attackerID = int(v['attacker_id'])
                 attackerName = v['attacker_name']
                 # if attacker part of the faction at the time of the chain
@@ -155,8 +154,10 @@ class Command(BaseCommand):
 
             # fill the database with counts and bonuses
             for k, v in attackers.items():
-                # if v[1]:
-                report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4])
+                # time now - chain end - days old: determine if member was in the fac for the chain
+                delta = int(timezone.now().timestamp()) - chain.end - v[4] * 24 * 3600
+                beenThere = True if (delta < 0 or v[4] < 0) else False
+                report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4], beenThere=beenThere)
             for b in bonus:
                 report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 
