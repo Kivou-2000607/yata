@@ -31,7 +31,7 @@
         $(document).on('click', '#toggle-zero-hits', function(e){
             e.preventDefault();
             $(".zero-hits").slideToggle('fast', function() {});
-            $(".zero-hits").promise().done(function() {                            
+            $(".zero-hits").promise().done(function() {
                 var icon = $("#zero-hits-icon");
                 if (icon.hasClass("fas fa-toggle-on")) {
                     icon.removeClass("fas fa-toggle-on");
@@ -129,6 +129,20 @@
             reload.load( "/chain/toggleReport/"+chainId, {
                 html: "list_reload_buttons",
                 chainId: chainId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+        });
+
+        // show individual report
+        $(document).on('click', '.chain-ireport', function(e){
+            e.preventDefault();
+            var splt = this.href.split("/");
+            var memberId = splt.pop();
+            var chainId = splt.pop();
+            var reload = $("#individal-report-"+memberId);
+            reload.html('<td colspan="10" style="text-align: center;"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></td>');
+            reload.load( "/chain/createIndividualReport/"+chainId+"/"+memberId, {
+                html: "ireport_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
         });

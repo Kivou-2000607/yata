@@ -93,7 +93,7 @@
         <br>
         <table class="chain-report center-large">
             <thead>
-                <tr><th style="text-align: center;" colspan="9">
+                <tr><th style="text-align: center;">
                     <div id="toggle-kicked-members" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show kicked members</div>
                     Hit count &nbsp; <div id="toggle-zero-hits" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="zero-hits-icon" class="fas fa-toggle-off"></i> Show inactive members</div>
                 </th></tr>
@@ -111,6 +111,7 @@
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
                         <th style="text-align: center;">days in factions</th>
+                        <th style="text-align: center;">Individual<br>report</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -145,8 +146,23 @@
                             <td style="text-align: center;">{{c.daysInFaction}}</td>
                         {% endif %}
 
+                        {% if chain.tId %}
+                            {% if request.session.chainer.AA %}
+                                <td style="text-align: center;">
+                                    <a class="chain-ireport" href="{% url 'chain:createIndividualReport' chain.tId c.attackerId %}">
+                                        <i class="fas fa-chart-bar" title="See individal report"></i>
+                                    </a>
+                                </td>
+                            {% else %}
+                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="Need AA permission too see individual reports"></i></td>
+                            {% endif %}
+                        {% else %}
+                            <td style="text-align: center;"><i class="fas fa-chart-bar" style="color: #ea9999;" title="Individual reports not available in joint or live report"></i></td>
+                        {% endif %}
+
                         </tr>
                         {% endif %}
+                        <tr id="individal-report-{{c.attackerId}}"></tr>
                     {% endfor %}
                 </tbody>
             </table>
