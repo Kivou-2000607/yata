@@ -83,7 +83,7 @@ def index(request):
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
             # context
-            context = dict({'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph})
+            context = dict({'faction': faction, 'liveChain': liveChain, 'chain': chain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph})
 
         else:
             chain = faction.chain_set.filter(tId=0).first()
@@ -92,7 +92,7 @@ def index(request):
                 print('[VIEW index] chain 0 deleted')
 
             # context
-            context = dict({'liveChain': liveChain, 'view': {'liveReport': True}})
+            context = dict({'faction': faction, 'liveChain': liveChain, 'view': {'liveReport': True}})
 
         # render if logged
         return render(request, 'chain.html', context)
@@ -646,6 +646,39 @@ def toggleReport(request, chainId):
 
     else:
         print('[VIEW toggleReport] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged and have AA rights.'})
+
+
+# action view
+def toggleFactionKey(request):
+    if request.session.get('chainer') and request.session['chainer'].get('AA'):
+        # get session info
+        factionId = request.session['chainer'].get('factionId')
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, 'errorPage.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+        print('[VIEW toggleFactionKey] faction {} found'.format(factionId))
+
+
+        faction.toggle_key(request.session['chainer'].get("name"),
+                           request.session['chainer'].get("keyValue"))
+
+
+        # render for on the fly modification
+        if request.method == "POST":
+            print('[VIEW toggleFactionKey] render')
+            subcontext = dict({"faction": faction})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+        # else redirection
+        else:
+            print('[VIEW toggleFactionKey] redirect')
+            return HttpResponseRedirect(reverse('chain:index'))
+
+    else:
+        print('[VIEW toggleFactionKey] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged and have AA rights.'})
 
 

@@ -6,13 +6,55 @@ class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
     hitsThreshold = models.IntegerField(default=100)
-    apiKey = models.CharField(default="0", max_length=16)
+    # apiKey = models.CharField(default="0", max_length=16)
+
+    # "login1:key1,login2:key2,login3:key3"
+    apiString = models.CharField(default="0", max_length=330)  # for 10 pairs login(15):key(16)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
     def get_n_chains(self):
         return(len(self.chain_set.all()))
+
+    def get_random_key(self):
+        from numpy.random import randint
+        pairs = self.apiString.split(",")
+        i = randint(0, len(pairs))
+        return pairs[i].split(":")
+
+    def get_all_pairs(self):
+        if self.apiString == "0":
+            return []
+        else:
+            pairs = self.apiString.split(",")
+            return [pair.split(":") for pair in pairs]
+
+    def get_all_keys(self):
+        if self.apiString == "0":
+            return []
+        else:
+            pairs = self.apiString.split(",")
+            return [pair.split(":")[1] for pair in pairs]
+
+    def toggle_key(self, name, key):
+        print("[MODEL toggle_key] "+name)
+        pairs = self.get_all_pairs()
+        if key in self.get_all_keys():
+            print("[MODEL toggle_key] remove key")
+            pairs.remove([name, key])
+        else:
+            print("[MODEL toggle_key] add key")
+            if len(pairs)<11:
+                pairs.append([name, key])
+            else:
+                return False
+
+        string = ",".join([p[0]+":"+p[1] for p in pairs])
+        self.apiString = string if string else 0
+        self.save()
+
+        return True
 
 
 class Chain(models.Model):

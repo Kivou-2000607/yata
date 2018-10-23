@@ -133,6 +133,18 @@
             });
         });
 
+        // toggle faction key
+        // $(document).on('click', '.faction-key-toggle', function(e){
+        //     e.preventDefault();
+        //     var reload = $("#faction-key");
+        //     reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+        //     reload.load( "{% url 'chain:toggleFactionKey' %}", {
+        //         html: "faction_key_reload",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        // });
+
+
         // show individual report
         $(document).on('click', '.chain-ireport', function(e){
             e.preventDefault();
@@ -175,9 +187,7 @@
 
 
             {% if view.liveReport %}
-                <div id="chain-live">
-                    {% include "chain/live.html" %}
-                </div>
+                {% include "chain/live.html" %}
             {% endif %}
 
             {% if view.report %}{% include "chain/report.html" %}{% endif %}
@@ -196,6 +206,9 @@
                 </div>
             {% endif %}
 
+            {% if view.liveReport %}
+                {% include "chain/faction_key.html" %}
+            {% endif %}
 
         </div> <!--end of content-->
     </div> <!--end of container-->

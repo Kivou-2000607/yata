@@ -17,14 +17,14 @@ class Command(BaseCommand):
             print("[COMMAND live] faction {}".format(faction))
 
             # get api key
-            if faction.apiKey == "0":
+            if faction.apiString == "0":
                 print("[COMMAND live] no api key found")
                 break
             factionId = faction.tId
-            key = faction.apiKey
+            keyHolder, key = faction.get_random_key()
 
             # get chain status
-            print("[COMMAND live] with api key")
+            print("[COMMAND live] with {} api key".format(keyHolder))
             liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
             if 'apiError' in liveChain:
                 print('[COMMAND live] api key error: {}'.format((liveChain['apiError'])))

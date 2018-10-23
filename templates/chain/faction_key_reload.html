@@ -1,0 +1,33 @@
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+
+<p>Live reports are automatically created/updated every 10 minutes.
+For that at least one faction member with AA permission needs to enter its api key.</p>
+{% with keys=faction.get_all_pairs %}
+    {% if keys|length %}
+        <p>There is currently {{keys|length}} key{{keys|length|pluralize}} entered:
+            {% for k in keys %}
+                {{k.0}}{% if not forloop.last %}, {% else %}.{% endif %}
+            {% endfor %}
+        </p>
+    {% else %}
+        <p>There is currently no key entered.</p>
+    {% endif %}
+{% endwith %}
+
+{%if request.session.chainer.AA %}
+{% if request.session.chainer.keyValue in faction.get_all_keys %}
+    <form method="post">{% csrf_token %}
+        <p><a class="faction-key-toggle" href={% url 'chain:toggleFactionKey' %}><i class="fas fa-minus-circle"></i> Remove your key</a></p>
+    </form>
+{% else %}
+    <form method="post">{% csrf_token %}
+        <p><a class="faction-key-toggle" href={% url 'chain:toggleFactionKey' %}><i class="fas fa-plus-circle"></i> Add your key</a></p>
+    </form>
+{% endif %}
+<br>
+<p>Validity of each key is checked daily. If an api server error is encontered, the api key is deleted.
+    A maximum of 10 keys can be entered.
+Keys are randomly chosen for the calls.</p>
+{% endif %}
