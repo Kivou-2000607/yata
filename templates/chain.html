@@ -9,20 +9,26 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
 
-    <!-- load jquery from https://code.jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-
-    <!-- load fontawsome from  -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <!-- load fontawesome -->
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+          crossorigin="anonymous">
 
     <!-- css -->
     <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
     <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
     <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
 
+    <!-- load jquery from https://code.jquery.com/ -->
+    <script
+    			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+    			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    			  crossorigin="anonymous"></script>
+
     <!-- jquery module to sort tables from http://tablesorter.com -->
     <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
 
+    <!-- google charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- scripts jquery perso -->
@@ -62,36 +68,36 @@
             e.preventDefault();
             var key = $("#key-value").val();
             var check = $("#key-check-remember").is(':checked');
-            var csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-            $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
+            var reload = $("#api-key");
             $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
                 keyValue: key,
                 html: "login",
                 rememberSession: check,
-                csrfmiddlewaretoken: csrf,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
         });
 
         // refresh members
         $(document).on('click', '#chain-members-refresh', function(e){
             e.preventDefault();
             var reload = $("#chain-members-reload");
-            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             reload.load( "{% url 'chain:createMembers' %}", {
                 html: "members_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<div class="loader"></div>');
         });
 
         // refresh chain list
         $(document).on('click', '#chain-list-refresh', function(e){
             e.preventDefault();
             var reload = $("#chain-list-reload");
-            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             reload.load( "{% url 'chain:createList' %}", {
                 html: "list_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<div class="loader"></div>');
         });
 
         // refresh report from report button
@@ -99,12 +105,12 @@
             e.preventDefault();
             var reload = $("#chain-report-reload");
             var chainId = $("#chain-report-id").val();
-            reload.html('<div class="loader"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
             reload.load( "/chain/createReport/"+chainId, {
                 html: "report_reload",
                 chainId: chainId,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<div class="loader"></div>');
         });
 
         // refresh/create report from list button
@@ -112,12 +118,25 @@
             e.preventDefault();
             var chainId = this.href.split("/").pop();;
             var reload = $("#catch-buttons-"+chainId);
-            reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
             reload.load( "/chain/createReport/"+chainId, {
                 html: "list_reload_buttons",
                 chainId: chainId,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<div class="loader"></div>');
+        });
+
+        // delete report from list button
+        $(document).on('click', '.chain-report-delete-list', function(e){
+            e.preventDefault();
+            var chainId = this.href.split("/").pop();;
+            var reload = $("#catch-buttons-"+chainId);
+            reload.load( "/chain/deleteReport/"+chainId, {
+                html: "list_reload_buttons",
+                chainId: chainId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
         });
 
         // toggle report from list button
@@ -125,25 +144,24 @@
             e.preventDefault();
             var chainId = this.href.split("/").pop();;
             var reload = $("#catch-buttons-"+chainId);
-            reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
             reload.load( "/chain/toggleReport/"+chainId, {
                 html: "list_reload_buttons",
                 chainId: chainId,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<div class="loader"></div>');
         });
 
         // toggle faction key
-        // $(document).on('click', '.faction-key-toggle', function(e){
-        //     e.preventDefault();
-        //     var reload = $("#faction-key");
-        //     reload.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-        //     reload.load( "{% url 'chain:toggleFactionKey' %}", {
-        //         html: "faction_key_reload",
-        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        //     });
-        // });
-
+        $(document).on('click', '.faction-key-toggle', function(e){
+            e.preventDefault();
+            var reload = $("#toggle-faction-key");
+            reload.load( "{% url 'chain:toggleFactionKey' %}", {
+                html: "faction_key_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            // reload.html('<div class="loader"></div>');
+        });
 
         // show individual report
         $(document).on('click', '.chain-ireport', function(e){
@@ -152,11 +170,11 @@
             var memberId = splt.pop();
             var chainId = splt.pop();
             var reload = $("#individal-report-"+memberId);
-            reload.html('<td colspan="10" style="text-align: center;"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></td>');
             reload.load( "/chain/createIndividualReport/"+chainId+"/"+memberId, {
                 html: "ireport_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            reload.html('<td colspan="10" style="text-align: center;"><div class="loader"></div></td>');
         });
 
     </script>

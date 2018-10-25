@@ -479,15 +479,6 @@ def createIndividualReport(request, chainId, memberId):
             return render(request, 'errorPage.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId)})
         print('[VIEW createIndividualReport] chain {} found'.format(chainId))
 
-        # get report
-        report = chain.report_set.filter().first()
-        if chain is None:
-            return render(request, 'errorPage.html', {'errorMessage': 'Report of chain {} not found in the database.'.format(chainId)})
-        print('[VIEW createIndividualReport] report of chain {} found'.format(chainId))
-
-        # get members
-        members = faction.member_set.all()
-
         # case of live chain
         if int(chainId) == 0:
             print('[VIEW createIndividualReport] this is a live report')
@@ -514,7 +505,6 @@ def createIndividualReport(request, chainId, memberId):
         else:
             attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
             stopAfterNAttacks = False
-
 
         # get individal attacks
         attacksForHisto = []
@@ -599,7 +589,11 @@ def deleteReport(request, chainId):
         # render for on the fly modification
         if request.method == "POST":
             print('[VIEW deleteReport] render')
-            return render(request, 'chain/{}.html'.format(request.POST.get('html')))
+
+            # context
+            subcontext = dict({'chain': chain})  # views
+
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
         # else redirection
         else:
@@ -661,10 +655,8 @@ def toggleFactionKey(request):
             return render(request, 'errorPage.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
         print('[VIEW toggleFactionKey] faction {} found'.format(factionId))
 
-
         faction.toggle_key(request.session['chainer'].get("name"),
                            request.session['chainer'].get("keyValue"))
-
 
         # render for on the fly modification
         if request.method == "POST":

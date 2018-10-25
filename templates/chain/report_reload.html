@@ -137,11 +137,12 @@
                                 {% endif %}
                                 <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                         {% else %}
-                            <td colspan="6"><i>New recruit, was not in the faction for this</i></b>
+                            <td style="text-align: center;" colspan="2"><i class="fas fa-child"></i></td>
+                            <td style="text-align: center;" colspan="4"><i>New recruit, was not in the faction for this</i></td>
                         {% endif %}
 
                         {% if c.daysInFaction < 0 %}
-                            <td style="text-align: center;">kicked</td>
+                            <td style="text-align: center;"><i class="fas fa-sign-out-alt" title="kicked"></i></td>
                         {% else %}
                             <td style="text-align: center;">{{c.daysInFaction}}</td>
                         {% endif %}

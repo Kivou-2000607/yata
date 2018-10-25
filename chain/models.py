@@ -24,14 +24,14 @@ class Faction(models.Model):
         return pairs[i].split(":")
 
     def get_all_pairs(self):
-        if self.apiString == "0":
+        if str(self.apiString) == "0" or self.apiString == "":
             return []
         else:
             pairs = self.apiString.split(",")
             return [pair.split(":") for pair in pairs]
 
     def get_all_keys(self):
-        if self.apiString == "0":
+        if str(self.apiString) == "0" or self.apiString == "":
             return []
         else:
             pairs = self.apiString.split(",")

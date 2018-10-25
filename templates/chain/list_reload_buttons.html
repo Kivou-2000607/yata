@@ -1,41 +1,43 @@
 {% if chain %}
-{% if chain.have_report %}
-    {% if request.session.chainer.AA %}
-        <!-- see -->
-        <a href="{% url 'chain:report' chain.tId %}#chain-report">      <i class="fas fa-eye" title="See report"></i></a> -
+    {% if chain.have_report %}
+        {% if request.session.chainer.AA %}
+            <!-- see -->
+            <a href="{% url 'chain:report' chain.tId %}#chain-report">      <i class="fas fa-eye" title="See report"></i></a> -
 
-        <!-- refresh -->
-        <form style="display: inline;">{% csrf_token %}
-            <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-sync-alt" title="Refresh report"></i></a> -
-        </form>
+            <!-- refresh -->
+            <form style="display: inline;">{% csrf_token %}
+                <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-sync-alt" title="Refresh report"></i></a> -
+            </form>
 
-        <!-- delete -->
-        <a href={% url 'chain:deleteReport' chain.tId %}><i class="fas fa-trash-alt" title="Delete report"></i></a> -
+            <!-- delete -->
+            <form style="display: inline;">{% csrf_token %}
+                <a class="chain-report-delete-list" href={% url 'chain:deleteReport' chain.tId %}><i class="fas fa-trash-alt" title="Delete report"></i></a> -
+            </form>
 
-        <!-- toggle -->
-        <form style="display: inline;">{% csrf_token %}
-            <a class="chain-report-toggle-list" href={% url 'chain:toggleReport' chain.tId %}>
-                {% if chain.jointReport %}
-                   <i class="fas fa-toggle-on" title="Remove from joint report"></i>
-               {% else %}
-                   <i class="fas fa-toggle-off" title="Add to report"></i>
-               {% endif %}</a>
-            </a>
-        </form>
+            <!-- toggle -->
+            <form style="display: inline;">{% csrf_token %}
+                <a class="chain-report-toggle-list" href={% url 'chain:toggleReport' chain.tId %}>
+                    {% if chain.jointReport %}
+                       <i class="fas fa-toggle-on" title="Remove from joint report"></i>
+                   {% else %}
+                       <i class="fas fa-toggle-off" title="Add to report"></i>
+                   {% endif %}</a>
+                </a>
+            </form>
 
+        {% else %}
+            <a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="See report"></i></a>
+        {% endif %}
     {% else %}
-        <a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="See report"></i></a>
+        {% if request.session.chainer.AA %}
+            <form style="display: inline;">{% csrf_token %}
+                <input class="chain-report-id-list" type="hidden" value="{{chain.tId}}">
+                <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-plus-square" title="Create report"></i></a>
+            </form>
+        {% else %}
+            <i class="fas fa-times-circle" style="color: #ea9999;" title="No report for this chain"></i>
+        {% endif %}
     {% endif %}
 {% else %}
-    {% if request.session.chainer.AA %}
-        <form style="display: inline;">{% csrf_token %}
-            <input class="chain-report-id-list" type="hidden" value="{{chain.tId}}">
-            <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-plus-square" title="Create report"></i></a>
-        </form>
-    {% else %}
-        <i class="fas fa-times-circle" style="color: #ea9999;" title="No report for this chain"></i>
-    {% endif %}
-{% endif %}
-{% else %}
-chain = {{chain}}
+not chain
 {% endif %}
