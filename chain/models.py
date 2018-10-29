@@ -84,7 +84,7 @@ class Chain(models.Model):
 class Member(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0, unique=True)
-    name = models.CharField(default="Unkown", max_length=200)
+    name = models.CharField(default="Duke", max_length=15)
     daysInFaction = models.IntegerField(default=0)
     lastAction = models.CharField(default="-", max_length=200)
 
@@ -102,7 +102,7 @@ class Report(models.Model):
 
 class Bonus(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    name = models.CharField(default="Duke", max_length=200)
+    name = models.CharField(default="Duke", max_length=15)
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     respectMax = models.FloatField(default=0)
@@ -114,7 +114,7 @@ class Bonus(models.Model):
 class Count(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     attackerId = models.IntegerField(default=0)
-    name = models.CharField(default="Duke", max_length=200)
+    name = models.CharField(default="Duke", max_length=15)
     hits = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
@@ -124,3 +124,13 @@ class Count(models.Model):
 
     def __str__(self):
         return("Count of {}".format(self.report.chain))
+
+
+class Target(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    targetId = models.IntegerField(default=0)
+    targetName = models.CharField(default="Duke", max_length=15)
+    result = models.CharField(default="Poutrage", max_length=15)
+    respect = models.FloatField(default=0)
+    fairFight = models.FloatField(default=0)
+    endDate = models.DateTimeField(default=timezone.now)

@@ -8,6 +8,7 @@ from .models import Member
 from .models import Report
 from .models import Count
 from .models import Bonus
+from .models import Target
 
 
 class BonusInline(admin.TabularInline):
@@ -68,6 +69,14 @@ class ChainAdmin(admin.ModelAdmin):
 
 admin.site.register(Chain, ChainAdmin)
 
+class TargetInline(admin.TabularInline):
+    model = Target
+    extra = 0
+
+
+class TargetAdmin(admin.ModelAdmin):
+    list_display = ['defender_name', 'flatRespect', 'endDate']
+
 
 class MemberInline(admin.TabularInline):
     model = Member
@@ -76,7 +85,7 @@ class MemberInline(admin.TabularInline):
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'daysInFaction', 'lastAction']
-    # inlines = [CountInline]
+    inlines = [TargetInline]
 
 
 admin.site.register(Member, MemberAdmin)

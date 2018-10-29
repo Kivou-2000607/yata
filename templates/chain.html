@@ -152,6 +152,44 @@
             reload.html('<div class="loader"></div>');
         });
 
+        // toggle target from attack list button
+        $(document).on('click', '.attack-list-toggle', function(e){
+            e.preventDefault();
+            var targetId = this.href.split("/").pop();
+            var reload = $(".catch-buttons-attack-"+targetId);
+            reload.load( "/chain/toggleTarget/"+targetId, {
+                html: "attacks_reload_buttons",
+                targetId: targetId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
+
+        // toggle target from target list button
+        $(document).on('click', '.target-list-toggle', function(e){
+            e.preventDefault();
+            var targetId = this.href.split("/").pop();
+            var reload = $("#catch-line-target-"+targetId);
+            reload.load( "/chain/refreshTarget/"+targetId, {
+                html: "targets_reload_line",
+                targetId: targetId,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
+
+        // delete target from target list button
+        $(document).on('click', '.target-list-delete', function(e){
+            e.preventDefault();
+            var targetId = this.href.split("/").pop();
+            var reload = $("#catch-line-target-"+targetId);
+            reload.load( "/chain/deleteTarget/"+targetId, {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
+
+
         // toggle faction key
         $(document).on('click', '.faction-key-toggle', function(e){
             e.preventDefault();
@@ -204,19 +242,17 @@
             </div>
 
 
-            {% if view.liveReport %}
-                {% include "chain/live.html" %}
-            {% endif %}
+            {% if view.liveReport %}{% include "chain/live.html" %}{% endif %}
 
             {% if view.report %}{% include "chain/report.html" %}{% endif %}
 
-            {% if view.jointReport %}
-                {% include "chain/jreport.html" %}
-            {% endif %}
+            {% if view.jointReport %}{% include "chain/jreport.html" %}{% endif %}
 
             {% if view.list %}{% include "chain/list.html" %}{% endif %}
 
             {% if view.members %}{% include "chain/members.html" %}{% endif %}
+
+            {% if view.targets %}{% include "chain/targets.html" %}{% endif %}
 
             {% if view.tree %}
                 <div id="chain-tree">

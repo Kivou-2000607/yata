@@ -16,9 +16,10 @@
 
             <p>
                 <a href="{% url 'chain:index' %}">Live report</a> -
-                <a href="{% url 'chain:jointReport' %}">Joint report</a> - 
+                <a href="{% url 'chain:jointReport' %}">Joint report</a> -
                 <a href="{% url 'chain:list' %}">List of chains</a> -
-                <a href="{% url 'chain:members' %}">List of members</a>
+                <a href="{% url 'chain:members' %}">List of members</a> -
+                <a href="{% url 'chain:targets' %}">Target list</a>
             </p>
             <h3><a class="deletelink" href="{% url 'chain:logout' %}">Logout</a></h3>
         {% else %}

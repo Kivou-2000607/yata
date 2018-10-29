@@ -11,6 +11,7 @@ from yata.handy import timestampToDate
 from yata.handy import fillReport
 
 from .models import Faction
+from .models import Member
 
 # global variable
 bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
@@ -710,6 +711,170 @@ def tree(request):
     else:
         # render if not logged
         return render(request, 'errorPage.html', {'errorMessage': 'You shouldn\'t be here. You need to enter valid API key.'})
+
+
+# render view
+def targets(request):
+    if request.session.get('chainer'):
+        # get session info
+        key = request.session['chainer'].get('keyValue')
+        playerId = request.session['chainer'].get('playerId')
+
+        # call for attacks
+        attacks = apiCall('user', "", 'attacks', key, sub='attacks')
+        if 'apiError' in attacks:
+            return render(request, 'errorPage.html', attacks)
+
+        remove = []
+        for k, v in attacks.items():
+            if float(v["respect_gain"]) > 0.0:
+                attacks[k]["endDate"] = timestampToDate(v["timestamp_ended"])
+                attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+            else:
+                remove.append(k)
+        for k in remove:
+            del attacks[k]
+
+        # context
+        chainer = Member.objects.filter(tId=playerId).first()
+        targets = chainer.target_set.all()
+        allDefenders = [target.targetId for target in targets]
+        context = dict({'attacks': attacks,  # list of attacks
+                        'targets': targets,
+                        'allDefenders': allDefenders,  # list of defenders id
+                        'view': {'targets': True}})  # views
+
+        # render if logged
+        return render(request, 'chain.html', context)
+
+    else:
+        # render if not logged
+        return render(request, 'errorPage.html', {'errorMessage': 'You shouldn\'t be here. You need to enter valid API key.'})
+
+
+# action view
+def refreshTarget(request, targetId):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            key = request.session['chainer'].get('keyValue')
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+            print(chainer)
+
+            # call for attacks
+            attacks = apiCall('user', "", 'attacks', key, sub='attacks')
+            if 'apiError' in attacks:
+                return render(request, 'errorPage.html', attacks)
+
+            # get target if exists
+            target = chainer.target_set.filter(targetId=targetId).first()
+            for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+                if int(v["defender_id"]) == int(targetId):
+                    chainer.target_set.filter(targetId=targetId).delete()
+                    target = chainer.target_set.create(targetId=targetId,
+                                                       targetName=v["defender_name"],
+                                                       result=v["result"],
+                                                       endDate = timestampToDate(v["timestamp_ended"]),
+                                                       fairFight = float(v['modifiers']['fairFight']),
+                                                       respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus']))
+                    break
+
+            # render for on the fly modification
+            print('[VIEW toggleTarget] render')
+            allDefenders = [target.targetId for target in chainer.target_set.all()]
+            subcontext = dict({"target": target, "allDefenders": allDefenders})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+        # else redirection since no post
+        else:
+            print('[VIEW toggleTarget] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW toggleTarget] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+# action view
+def deleteTarget(request, targetId):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            key = request.session['chainer'].get('keyValue')
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+            print(chainer)
+
+            # delete
+            target = chainer.target_set.filter(targetId=targetId).delete()
+
+            # render for on the fly modification
+            print('[VIEW toggleTarget] render')
+            return render(request, 'empty.html')
+
+        # else redirection since no post
+        else:
+            print('[VIEW toggleTarget] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW toggleTarget] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+
+# action view
+def toggleTarget(request, targetId):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            key = request.session['chainer'].get('keyValue')
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+            print(chainer)
+
+            # call for attacks
+            attacks = apiCall('user', "", 'attacks', key, sub='attacks')
+            if 'apiError' in attacks:
+                return render(request, 'errorPage.html', attacks)
+
+            # get target if exists
+            target = chainer.target_set.filter(targetId=targetId).first()
+            if target is None:
+                print("create target")
+                for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+                    if int(v["defender_id"]) == int(targetId):
+                        target = chainer.target_set.create(targetId=targetId,
+                                                             targetName=v["defender_name"],
+                                                             result=v["result"],
+                                                             endDate = timestampToDate(v["timestamp_ended"]),
+                                                             fairFight = float(v['modifiers']['fairFight']),
+                                                             respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus']))
+                        break
+            else:
+                print("delete target")
+                target = chainer.target_set.filter(targetId=targetId).delete()
+
+            # render for on the fly modification
+            print('[VIEW toggleTarget] render')
+            allDefenders = [target.targetId for target in chainer.target_set.all()]
+            subcontext = dict({"target": {"defender_id": int(targetId)}, "allDefenders": allDefenders})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+        # else redirection since no post
+        else:
+            print('[VIEW toggleTarget] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW toggleTarget] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
 
 
 # UPDATE ON THE FLY

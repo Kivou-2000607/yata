@@ -1,0 +1,40 @@
+{% load mathfilters %}
+
+<h2 id="chain-list" class="title">Target list</h2>
+<div class="module whiteBG justTxt">
+
+    <script>
+            $(document).ready(function() {
+                $("#target-list-table").tablesorter({sortList: [[5,1]]});
+            });
+    </script>
+    <table id="target-list-table" class="tablesorter center-large">
+        <thead>
+            <tr>
+                <th>Last attack</th>
+                <!-- <th>Attacker</th> -->
+                <th>Defender</th>
+                <th>Result</th>
+                <th>Fair fight</th>
+                <th>Flat respect</th>
+                <th>Score</th>
+                <th>Refresh</th>
+        </thead>
+        <tbody>
+        {% for target in targets %}
+        <tr id="catch-line-target-{{target.targetId}}">
+            {% include "chain/targets_reload_line.html" %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<h2 id="chain-list" class="title">List of latest wins</h2>
+<div class="module whiteBG">
+    {% include "chain/attacks_reload.html" %}
+    <div class="submit-row">
+        <a href={% url 'chain:targets' %}><input type="submit" class="update-type" value="Refresh latest attacks list"></a>
+    </div>
+</div>

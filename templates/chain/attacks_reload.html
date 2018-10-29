@@ -1,0 +1,42 @@
+{% load mathfilters %}
+
+<div id="target-list-reload">
+
+    <script>
+            $(document).ready(function() {
+                $("#attack-list-table").tablesorter();
+            });
+    </script>
+
+    <table id="attack-list-table" class="tablesorter center-large">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <!-- <th>Attacker</th> -->
+                <th>Defender</th>
+                <th>Result</th>
+                <th>Fair fight</th>
+                <th>Flat respect</th>
+                <th>Score</th>
+                <th>Save target</th>
+        </thead>
+        <tbody>
+        {% for k, v in attacks.items %}
+        <tr>
+            <td>{{v.endDate}}</td>
+            <!-- <td><a href="https://www.torn.com/profiles.php?XID={{v.attacker_id}}" target="_blank"> {{v.attacker_name}} [{{v.attacker_id}}]</a></td> -->
+            <td><a href="https://www.torn.com/profiles.php?XID={{v.defender_id}}" target="_blank"> {{v.defender_name}} [{{v.defender_id}}]</a></td>
+            <td>{{v.result}}</td>
+            <td>{{v.modifiers.fairFight|floatformat:2}}</td>
+            <td>{{v.flatRespect|floatformat:2}}</td>
+            <td>{{v.flatRespect|mul:v.modifiers.fairFight|floatformat:2}}</td>
+            <td>
+                <div class="catch-buttons-attack-{{v.defender_id}}">
+                    {% include "chain/attacks_reload_buttons.html" with target=v %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

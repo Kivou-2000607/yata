@@ -1,0 +1,23 @@
+{% load mathfilters %}
+
+
+<td>{{target.endDate}}</td>
+<!-- <td><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->
+<td><a href="https://www.torn.com/profiles.php?XID={{target.targetId}}" target="_blank"> {{target.targetName}} [{{target.targetId}}]</a></td>
+<td>{{target.result}}</td>
+<td>{{target.fairFight|floatformat:2}}</td>
+<td>{{target.respect|floatformat:2}}</td>
+<td>{{target.respect|mul:target.fairFight|floatformat:2}}</td>
+<td>
+    <!-- toggle -->
+    <form style="display: inline;">{% csrf_token %}
+        <a class="target-list-toggle" href={% url 'chain:refreshTarget' target.targetId %}>
+           <i class="fas fa-sync-alt" title="Refresh target"></i>
+        </a>
+    </form> -
+    <!-- delete -->
+    <form style="display: inline;">{% csrf_token %}
+        <a class="target-list-delete" href={% url 'chain:deleteTarget' target.targetId %}><i class="fas fa-trash-alt" title="Delete target"></i></a>
+    </form>
+
+</td>

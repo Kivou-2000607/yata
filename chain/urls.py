@@ -5,6 +5,7 @@ from . import views
 app_name = "chain"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
+
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^createMembers/$', views.createMembers, name='createMembers'),
 
@@ -19,6 +20,11 @@ urlpatterns = [
     re_path(r'^createIndividualReport/(?P<chainId>\w+)/(?P<memberId>\w+)$', views.createIndividualReport, name='createIndividualReport'),
 
     re_path(r'^jointReport/$', views.jointReport, name='jointReport'),
+
+    re_path(r'^targets/$', views.targets, name='targets'),
+    re_path(r'^refreshTarget/(?P<targetId>\w+)$', views.refreshTarget, name='refreshTarget'),
+    re_path(r'^deleteTarget/(?P<targetId>\w+)$', views.deleteTarget, name='deleteTarget'),
+    re_path(r'^toggleTarget/(?P<targetId>\w+)$', views.toggleTarget, name='toggleTarget'),
 
     re_path(r'^tree/$', views.tree, name='tree'),
 
