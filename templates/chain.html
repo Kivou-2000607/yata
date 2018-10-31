@@ -232,6 +232,10 @@
             // reload.html('<div class="loader"></div>');
         }, 10000);
 
+        window.setInterval(function(){
+            $("#targets-reload").load("{% url 'chain:reloadAllTargets' %}");
+        }, 60000);
+
     </script>
 
 

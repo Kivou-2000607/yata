@@ -945,6 +945,27 @@ def refreshAllTargets(request):
 
 
 # action view
+def reloadAllTargets(request):
+    if request.session.get('chainer'):
+        # get info
+        key = request.session['chainer'].get('keyValue')
+        playerId = request.session['chainer'].get('playerId')
+
+        # get member
+        chainer = Member.objects.filter(tId=playerId).first()
+        print('[VIEW reloadAllTargets] chainer: {}'.format(chainer))
+
+        # render for on the fly modification
+        print('[VIEW reloadAllTargets] render')
+        subcontext = dict({"targets": chainer.target_set.all()})
+        return render(request, 'chain/targets_reload.html', subcontext)
+
+    else:
+        print('[VIEW reloadAllTargets] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+
+# action view
 def deleteTarget(request, targetId):
     if request.session.get('chainer'):
         if request.method == "POST":

@@ -139,5 +139,5 @@ class Target(models.Model):
     lifeMax = models.IntegerField(default=100)
     status = models.CharField(default="Okay", max_length=100)
     lastAction = models.CharField(default="Who knows", max_length=20)
-    lastUpdate = models.DateTimeField(default=timezone.now)
+    # lastUpdate = models.DateTimeField(default=timezone.now)
     lastUpdateTS = models.IntegerField(default=0)
