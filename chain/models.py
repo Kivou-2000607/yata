@@ -102,7 +102,7 @@ class Report(models.Model):
 
 class Bonus(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    name = models.CharField(default="Duke", max_length=15)
+    name = models.CharField(default="Duke", max_length=64)
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     respectMax = models.FloatField(default=0)
@@ -114,7 +114,7 @@ class Bonus(models.Model):
 class Count(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     attackerId = models.IntegerField(default=0)
-    name = models.CharField(default="Duke", max_length=15)
+    name = models.CharField(default="Duke", max_length=64)
     hits = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
@@ -129,16 +129,16 @@ class Count(models.Model):
 class Target(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     targetId = models.IntegerField(default=0)
-    targetName = models.CharField(default="Duke", max_length=15)
-    result = models.CharField(default="Poutrage", max_length=15)
+    targetName = models.CharField(default="Duke", max_length=64)
+    result = models.CharField(default="Poutrage", max_length=64)
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
     endDate = models.DateTimeField(default=timezone.now)
 
     level = models.IntegerField(default=0)
-    rank = models.CharField(default="Nub", max_length=15)
+    rank = models.CharField(default="Nub", max_length=64)
     life = models.IntegerField(default=100)
     lifeMax = models.IntegerField(default=100)
     status = models.CharField(default="Okay", max_length=100)
-    lastAction = models.CharField(default="Who knows", max_length=20)
+    lastAction = models.CharField(default="Who knows", max_length=64)
     lastUpdate = models.IntegerField(default=0)

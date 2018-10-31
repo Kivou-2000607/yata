@@ -223,18 +223,18 @@
             reload.html('<td colspan="10" style="text-align: center;"><div class="loader"></div></td>');
         });
 
-        // window.setInterval(function(){
-        //     var reload = $("#live-chain-status");
-        //     reload.load( "{% url 'chain:updateLive' %}", {
-        //         html: "live_reload",
-        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        //     });
-        //     // reload.html('<div class="loader"></div>');
-        // }, 10000);
-        //
-        // window.setInterval(function(){
-        //     $("#targets-reload").load("{% url 'chain:reloadAllTargets' %}");
-        // }, 60000);
+        window.setInterval(function(){
+            var reload = $("#live-chain-status");
+            reload.load( "{% url 'chain:updateLive' %}", {
+                html: "live_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            // reload.html('<div class="loader"></div>');
+        }, 10000);
+
+        window.setInterval(function(){
+            $("#targets-reload").load("{% url 'chain:reloadAllTargets' %}");
+        }, 60000);
 
     </script>
 
