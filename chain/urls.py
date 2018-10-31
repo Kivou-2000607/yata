@@ -5,6 +5,7 @@ from . import views
 app_name = "chain"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
+    re_path(r'^updateLive/$', views.updateLive, name='updateLive'),
 
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^createMembers/$', views.createMembers, name='createMembers'),
@@ -23,6 +24,7 @@ urlpatterns = [
 
     re_path(r'^targets/$', views.targets, name='targets'),
     re_path(r'^refreshTarget/(?P<targetId>\w+)$', views.refreshTarget, name='refreshTarget'),
+    re_path(r'^refreshAllTargets/$', views.refreshAllTargets, name='refreshAllTargets'),
     re_path(r'^deleteTarget/(?P<targetId>\w+)$', views.deleteTarget, name='deleteTarget'),
     re_path(r'^toggleTarget/(?P<targetId>\w+)$', views.toggleTarget, name='toggleTarget'),
 

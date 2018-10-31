@@ -1,38 +1,8 @@
-{% load humanize %}
-{% load mathfilters %}
-{% load static %}
-
 <div>
     <h2 class="title">Chain status</h2>
 
-        {% if liveChain.current %}
-        <div class="module whiteBG">
-            <br>
-            <table class="center">
-                <thead>
-                    <tr><th colspan="2">Summary of the current chain</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Chain progress to next bonus</td><td>{{liveChain.current}} / {{liveChain.nextBonus}} &nbsp; &nbsp; <progress value="{{liveChain.current}}" max="{{liveChain.nextBonus}}"></progress></td></tr>
-                    {% with minutes=liveChain.timeout|intdiv:60 %}
-                    {% if minutes %}
-                        <tr><td>Chain timeout</td><td>{{minutes}} minute{{minutes|pluralize}} and {{liveChain.timeout|mod:60}} seconds</td></tr>
-                    {% else %}
-                        <tr><td>Chain timeout</td><td><span style="color: #FF4444; font-weight: bold;">{{liveChain.timeout|mod:60}} seconds<span></td></tr>
-                    {% endif %}
-                    {% endwith %}
-                    <tr><td>Chain multiplier</td><td>{{liveChain.modifier|floatformat:2}}</td></tr>
-                    {% if liveChain.cooldown %}
-                        <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
-                    {% endif %}
-                </tbody>
-            </table>
-            <br>
+        <div id="live-chain-status">
+            {% include "chain/live_reload.html" %}
         </div>
-        {% else %}
-        <div class="module whiteBG justTxt">
-            No active chain
-        </div>
-        {% endif %}
 
 </div>

@@ -1,3 +1,21 @@
+
+# global bonus hits
+BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+
+
+def getBonusHits(hitNumber, ts):
+    # new report timestamp based on ched annoncement date
+    # https://www.torn.com/forums.php#!p=threads&t=16067103
+    import datetime
+    import time
+    if int(ts) < int(time.mktime(datetime.datetime(2018, 10, 30, 15, 00).timetuple())):
+        # bonus respect values are 4.2*2**n
+        return 4.2 * 2**(1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+    else:
+        # bonus respect values are 10*2**(n-1)
+        return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+
+
 def timestampToDate(timestamp):
     import datetime
     import pytz
@@ -21,7 +39,7 @@ def apiCall(section, id, selections, key, sub=None):
 
     try:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-        print("[FUNCTION apiCall] {}".format(url.replace(key, "*" * len(key))))
+        print("[FUNCTION apiCall] {}".format(url.replace("&key="+key, "")))
         r = requests.get(url)
         r.raise_for_status()
 
@@ -60,7 +78,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
     nWins = 0
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
-        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace(key, "*" * len(key))), end='... ')
+        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key="+key, "")))
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
             for k, v in attacks.items():
@@ -70,10 +88,10 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
                 currentEndTS = min(v["timestamp_ended"], currentEndTS)
             if(len(attacks) < 1000):
                 feedAttacks = False
-            print("\tNumber of attacks: {}".format(len(attacks)))
+            print("[FUNCTION apiCallAttacks] Number of attacks: {}".format(len(attacks)))
             i += 1
         else:
-            print("\tNumber of attacks: {}".format(len(attacks)))
+            print("[FUNCTION apiCallAttacks] Number of attacks: {}".format(len(attacks)))
             feedAttacks = False
 
         if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
@@ -86,8 +104,6 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
 def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     from django.utils import timezone
     import numpy
-
-    bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
 
     # initialisation of variables before loop
     nWR = [0, 0.0]  # number of wins and respect
@@ -121,8 +137,8 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
                 attacksForHisto.append(v['timestamp_ended'])
                 nWR[0] += 1
                 attackers[attackerName][0] += 1
-                if v['chain'] in bonus_hits:
-                    r = 4.2 * 2**(1 + float([i for i, x in enumerate(bonus_hits) if x == int(v['chain'])][0]))
+                if v['chain'] in BONUS_HITS:
+                    r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
                 attackers[attackerName][2] += float(v['modifiers']['fairFight'])
@@ -135,7 +151,7 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
                 break
 
     for k, v in tmp.items():
-        print(k, v)
+        print("[FUNCTION fillReport] total number of {}: {}".format(k, v))
 
     # create histogram
     chain.start = int(attacksForHisto[-1])

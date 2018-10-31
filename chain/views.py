@@ -9,12 +9,10 @@ from yata.handy import apiCall
 from yata.handy import apiCallAttacks
 from yata.handy import timestampToDate
 from yata.handy import fillReport
+from yata.handy import BONUS_HITS
 
 from .models import Faction
 from .models import Member
-
-# global variable
-bonus_hits = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]  # bonus respect values are 4.2**n
 
 
 # render view
@@ -38,7 +36,7 @@ def index(request):
             return render(request, 'errorPage.html', liveChain)
         activeChain = bool(liveChain['current'])
         liveChain["nextBonus"] = 10
-        for i in bonus_hits:
+        for i in BONUS_HITS:
             liveChain["nextBonus"] = i
             if i >= int(liveChain["current"]):
                 break
@@ -100,6 +98,40 @@ def index(request):
 
     # render if logged
     return render(request, 'chain.html')
+
+
+# action view
+def updateLive(request):  # no context
+    if request.session.get('chainer') and request.method == 'POST':
+        # get session info
+        factionId = request.session['chainer'].get('factionId')
+        key = request.session['chainer'].get('keyValue')
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=request.session['chainer'].get('factionName'))
+            print('[VIEW updateLive] faction {} created'.format(factionId))
+        else:
+            print('[VIEW updateLive] faction {} found'.format(factionId))
+
+        # get live chain and next bonus
+        liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
+        if 'apiError' in liveChain:
+            return render(request, 'errorPage.html', liveChain)
+        liveChain["nextBonus"] = 10
+        for i in BONUS_HITS:
+            liveChain["nextBonus"] = i
+            if i >= int(liveChain["current"]):
+                break
+
+        # context
+        subcontext = dict({'liveChain': liveChain})
+        return render(request, 'chain/{}.html'.format(request.POST.get("html")), subcontext)
+
+    return render(request, 'errorPage.html', {'errorMessage': 'You need to POST.'})
+
+
 
 
 # render view
@@ -227,14 +259,22 @@ def createMembers(request):  # no context
         if 'apiError' in members:
             return render(request, 'errorPage.html', members)
 
-        # delete all and recreate all members
-        faction.member_set.all().delete()
+        # update members
+        membersDB = faction.member_set.all()
         for m in members:
-            faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
+            memberDB = membersDB.filter(tId=m).first()
+            if memberDB is not None:
+                print('[VIEW members] member {} updated'.format(members[m]['name']))
+                memberDB.name = members[m]['name']
+                memberDB.lastAction = members[m]['last_action']
+                memberDB.daysInFaction = members[m]['days_in_faction']
+                memberDB.save()
+            else:
+                print('[VIEW members] member {} created'.format(members[m]['name']))
+                faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
 
         # context
-        members = faction.member_set.all()
-        subcontext = dict({'members': members})
+        subcontext = dict({'members': membersDB})
 
         return render(request, 'chain/{}.html'.format(request.POST.get("html")), subcontext)
     return render(request, 'errorPage.html', {'errorMessage': 'You need to POST.'})
@@ -392,10 +432,20 @@ def createReport(request, chainId):
         members = apiCall('faction', factionId, 'basic', key, sub='members')
         if 'apiError' in members:
             return render(request, 'errorPage.html', members)
-        faction.member_set.all().delete()
-        for m in members:
-            faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
-        members = faction.member_set.all()
+
+        # update members
+        membersDB = faction.member_set.all()
+        # for m in members:
+        #     memberDB = membersDB.filter(tId=m).first()
+        #     if memberDB is not None:
+        #         print('[VIEW members] member {} updated'.format(members[m]['name']))
+        #         memberDB.name = members[m]['name']
+        #         memberDB.lastAction = members[m]['last_action']
+        #         memberDB.daysInFaction = members[m]['days_in_faction']
+        #         memberDB.save()
+        #     else:
+        #         print('[VIEW members] member {} created'.format(members[m]['name']))
+        #         faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
 
         # case of live chain
         if int(chainId) == 0:
@@ -424,7 +474,7 @@ def createReport(request, chainId):
             attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
             stopAfterNAttacks = False
 
-        chain, report, (binsCenter, histo) = fillReport(faction, members, chain, report, attacks, stopAfterNAttacks)
+        chain, report, (binsCenter, histo) = fillReport(faction, membersDB, chain, report, attacks, stopAfterNAttacks)
 
         # render for on the fly modification
         if request.method == 'POST':
@@ -719,6 +769,26 @@ def targets(request):
         # get session info
         key = request.session['chainer'].get('keyValue')
         playerId = request.session['chainer'].get('playerId')
+        factionId = request.session['chainer'].get('factionId')
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=request.session['chainer'].get('factionName'))
+            print('[VIEW index] faction {} created'.format(factionId))
+        else:
+            print('[VIEW index] faction {} found'.format(factionId))
+
+        # get live chain and next bonus
+        liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
+        if 'apiError' in liveChain:
+            return render(request, 'errorPage.html', liveChain)
+        activeChain = bool(liveChain['current'])
+        liveChain["nextBonus"] = 10
+        for i in BONUS_HITS:
+            liveChain["nextBonus"] = i
+            if i >= int(liveChain["current"]):
+                break
 
         # call for attacks
         attacks = apiCall('user', "", 'attacks', key, sub='attacks')
@@ -727,11 +797,12 @@ def targets(request):
 
         remove = []
         for k, v in attacks.items():
-            if float(v["respect_gain"]) > 0.0:
+            # if float(v["respect_gain"]) > 0.0:
+            if int(v["defender_id"]) == int(playerId):
+                remove.append(k)
+            else:
                 attacks[k]["endDate"] = timestampToDate(v["timestamp_ended"])
                 attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
-            else:
-                remove.append(k)
         for k in remove:
             del attacks[k]
 
@@ -742,7 +813,8 @@ def targets(request):
         context = dict({'attacks': attacks,  # list of attacks
                         'targets': targets,
                         'allDefenders': allDefenders,  # list of defenders id
-                        'view': {'targets': True}})  # views
+                        'liveChain': liveChain,
+                        'view': {'targets': True, 'liveReport': True}})  # views
 
         # render if logged
         return render(request, 'chain.html', context)
@@ -762,35 +834,49 @@ def refreshTarget(request, targetId):
 
             # get member
             chainer = Member.objects.filter(tId=playerId).first()
-            print(chainer)
+            print('[VIEW refreshTarget] chainer: {}'.format(chainer))
+
+            # get target if exists
+            target = chainer.target_set.filter(targetId=targetId).first()
+
+            # call for target info
+            # call for attacks
+            targetInfo = apiCall('user', targetId, '', key)
+            if 'apiError' in targetInfo:
+                return render(request, 'errorPage.html', targetInfo)
 
             # call for attacks
             attacks = apiCall('user', "", 'attacks', key, sub='attacks')
             if 'apiError' in attacks:
                 return render(request, 'errorPage.html', attacks)
 
-            # get target if exists
-            target = chainer.target_set.filter(targetId=targetId).first()
+            # get latest attack to target id
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId):
                     chainer.target_set.filter(targetId=targetId).delete()
                     target = chainer.target_set.create(targetId=targetId,
                                                        targetName=v["defender_name"],
                                                        result=v["result"],
-                                                       endDate = timestampToDate(v["timestamp_ended"]),
-                                                       fairFight = float(v['modifiers']['fairFight']),
-                                                       respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus']))
+                                                       endDate=timestampToDate(v["timestamp_ended"]),
+                                                       fairFight=float(v['modifiers']['fairFight']),
+                                                       respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
+                                                       life=int(targetInfo["life"]["current"]),
+                                                       lifeMax=int(targetInfo["life"]["maximum"]),
+                                                       # status=" ".join(targetInfo["status"]),
+                                                       status=targetInfo["status"][0],
+                                                       lastAction=targetInfo["last_action"],
+                                                       lastUpdate=int(timezone.now().timestamp()),
+                                                       )
                     break
 
             # render for on the fly modification
-            print('[VIEW toggleTarget] render')
-            allDefenders = [target.targetId for target in chainer.target_set.all()]
-            subcontext = dict({"target": target, "allDefenders": allDefenders})
+            print('[VIEW refreshTarget] render')
+            subcontext = dict({"target": target})
             return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
         # else redirection since no post
         else:
-            print('[VIEW toggleTarget] no post')
+            print('[VIEW refreshTarget] no post')
             return HttpResponseRedirect(reverse('chain:list'))
 
     else:
@@ -798,7 +884,7 @@ def refreshTarget(request, targetId):
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
 # action view
-def deleteTarget(request, targetId):
+def refreshAllTargets(request):
     if request.session.get('chainer'):
         if request.method == "POST":
             # get info
@@ -807,22 +893,81 @@ def deleteTarget(request, targetId):
 
             # get member
             chainer = Member.objects.filter(tId=playerId).first()
-            print(chainer)
+            print('[VIEW refreshAllTargets] chainer: {}'.format(chainer))
 
-            # delete
-            target = chainer.target_set.filter(targetId=targetId).delete()
+            # get target if exists
+            targets = chainer.target_set.all()
+            for target in targets:
+                # call for target info
+                # call for attacks
+                targetInfo = apiCall('user', target.targetId, '', key)
+                if 'apiError' in targetInfo:
+                    return render(request, 'errorPage.html', targetInfo)
+
+                # call for attacks
+                attacks = apiCall('user', "", 'attacks', key, sub='attacks')
+                if 'apiError' in attacks:
+                    return render(request, 'errorPage.html', attacks)
+
+                # get latest attack to target id
+                for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+                    if int(v["defender_id"]) == int(target.targetId):
+                        chainer.target_set.filter(targetId=target.targetId).delete()
+                        target = chainer.target_set.create(targetId=target.targetId,
+                                                           targetName=v["defender_name"],
+                                                           result=v["result"],
+                                                           endDate=timestampToDate(v["timestamp_ended"]),
+                                                           fairFight=float(v['modifiers']['fairFight']),
+                                                           respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
+                                                           life=int(targetInfo["life"]["current"]),
+                                                           lifeMax=int(targetInfo["life"]["maximum"]),
+                                                           # status=" ".join(targetInfo["status"]),
+                                                           status=targetInfo["status"][0],
+                                                           lastAction=targetInfo["last_action"],
+                                                           lastUpdate=int(timezone.now().timestamp()),
+                                                           )
+                        break
+
 
             # render for on the fly modification
-            print('[VIEW toggleTarget] render')
+            print('[VIEW refreshAllTargets] render')
+            subcontext = dict({"targets": chainer.target_set.all()})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+        # else redirection since no post
+        else:
+            print('[VIEW refreshAllTargets] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW refreshAllTargets] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+
+# action view
+def deleteTarget(request, targetId):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+
+            # delete
+            chainer.target_set.filter(targetId=targetId).delete()
+
+            # render for on the fly modification
+            print('[VIEW deleteTarget] render')
             return render(request, 'empty.html')
 
         # else redirection since no post
         else:
-            print('[VIEW toggleTarget] no post')
+            print('[VIEW deleteTarget] no post')
             return HttpResponseRedirect(reverse('chain:list'))
 
     else:
-        print('[VIEW toggleTarget] render error')
+        print('[VIEW deleteTarget] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
 
@@ -836,7 +981,6 @@ def toggleTarget(request, targetId):
 
             # get member
             chainer = Member.objects.filter(tId=playerId).first()
-            print(chainer)
 
             # call for attacks
             attacks = apiCall('user', "", 'attacks', key, sub='attacks')
@@ -850,11 +994,11 @@ def toggleTarget(request, targetId):
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if int(v["defender_id"]) == int(targetId):
                         target = chainer.target_set.create(targetId=targetId,
-                                                             targetName=v["defender_name"],
-                                                             result=v["result"],
-                                                             endDate = timestampToDate(v["timestamp_ended"]),
-                                                             fairFight = float(v['modifiers']['fairFight']),
-                                                             respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus']))
+                                                           targetName=v["defender_name"],
+                                                           result=v["result"],
+                                                           endDate=timestampToDate(v["timestamp_ended"]),
+                                                           fairFight=float(v['modifiers']['fairFight']),
+                                                           respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus']))
                         break
             else:
                 print("delete target")
@@ -862,7 +1006,7 @@ def toggleTarget(request, targetId):
 
             # render for on the fly modification
             print('[VIEW toggleTarget] render')
-            allDefenders = [target.targetId for target in chainer.target_set.all()]
+            allDefenders = [t.targetId for t in chainer.target_set.all()]
             subcontext = dict({"target": {"defender_id": int(targetId)}, "allDefenders": allDefenders})
             return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
@@ -874,7 +1018,6 @@ def toggleTarget(request, targetId):
     else:
         print('[VIEW toggleTarget] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
-
 
 
 # UPDATE ON THE FLY

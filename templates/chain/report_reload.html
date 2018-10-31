@@ -80,9 +80,9 @@
                     <tr>
                         <td style="text-align: center;">{{b.hit}}</td>
                         <td>{{b.name}}</td>
-                        <td style="text-align: center;">{{b.respect|floatformat:2}}</td>
-                        <td style="text-align: center;">{{b.respectMax|floatformat:2}}</td>
-                        <td style="text-align: center;">{{b.respect|div:b.respectMax|mul:100|floatformat:1}} %</td>
+                        <td style="text-align: center;">{{b.respect|floatformat:0}}</td>
+                        <td style="text-align: center;">{{b.respectMax|floatformat:0}}</td>
+                        <td style="text-align: center;">{{b.respect|div:b.respectMax|mul:100|floatformat:0}} %</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -304,6 +304,18 @@ tr.not-there:hover { background:#93c47d!important; }
 tr.kicked-members       { color:#aaaaaa; }
 /* tr.kicked-members:hover { background:#ddddddaa!important; } */
 
+tr.zero-respect       { background:#f4cccc!important; }
+tr.zero-respect:hover { background:#ea9999!important; }
+tr.max-fair-fight       { background:#b6d7a8!important; }
+tr.max-fair-fight:hover { background:#93c47d!important; }
+tr.good-fair-fight       { background:#d9ead3!important; }
+tr.good-fair-fight:hover { background:#b6d7a8!important; }
+
+tr.not-okay       { background:#f4cccc!important; }
+tr.not-okay:hover { background:#ea9999!important; }
+td.not-okay       { background:#f4cccc!important; }
+td.not-okay:hover { background:#ea9999!important; }
+
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
 

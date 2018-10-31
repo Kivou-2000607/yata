@@ -134,3 +134,9 @@ class Target(models.Model):
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
     endDate = models.DateTimeField(default=timezone.now)
+
+    life = models.IntegerField(default=100)
+    lifeMax = models.IntegerField(default=100)
+    status = models.CharField(default="Okay", max_length=100)
+    lastAction = models.CharField(default="Who knows", max_length=20)
+    lastUpdate = models.IntegerField(default=0)

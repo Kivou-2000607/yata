@@ -10,9 +10,8 @@
 <head>
 
     <!-- load fontawesome -->
-    <link rel="stylesheet"
-          href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
-          crossorigin="anonymous">
+    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
 
     <!-- css -->
     <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
@@ -20,10 +19,9 @@
     <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
 
     <!-- load jquery from https://code.jquery.com/ -->
-    <script
-    			  src="https://code.jquery.com/jquery-3.3.1.min.js"
-    			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    			  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    	    crossorigin="anonymous"></script>
 
     <!-- jquery module to sort tables from http://tablesorter.com -->
     <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
@@ -165,7 +163,7 @@
             reload.html('<div class="loader"></div>');
         });
 
-        // toggle target from target list button
+        // target list button
         $(document).on('click', '.target-list-toggle', function(e){
             e.preventDefault();
             var targetId = this.href.split("/").pop();
@@ -175,7 +173,7 @@
                 targetId: targetId,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
-            reload.html('<div class="loader"></div>');
+            reload.html('<td colspan="10" style="text-align: center;"><div class="loader"></div></td>');
         });
 
         // delete target from target list button
@@ -189,6 +187,16 @@
             reload.html('<div class="loader"></div>');
         });
 
+        // refresh all targets
+        $(document).on('click', '#targets-refresh', function(e){
+            e.preventDefault();
+            var reload = $("#targets-reload");
+            reload.load( "{% url 'chain:refreshAllTargets' %}", {
+                html: "targets_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
 
         // toggle faction key
         $(document).on('click', '.faction-key-toggle', function(e){
@@ -214,6 +222,15 @@
             });
             reload.html('<td colspan="10" style="text-align: center;"><div class="loader"></div></td>');
         });
+
+        window.setInterval(function(){
+            var reload = $("#live-chain-status");
+            reload.load( "{% url 'chain:updateLive' %}", {
+                html: "live_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            // reload.html('<div class="loader"></div>');
+        }, 10000);
 
     </script>
 
@@ -260,7 +277,7 @@
                 </div>
             {% endif %}
 
-            {% if view.liveReport %}
+            {% if view.liveReport and view.report %}
                 {% include "chain/faction_key.html" %}
             {% endif %}
 

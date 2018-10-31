@@ -1,40 +1,27 @@
-{% load mathfilters %}
+{% load static %}
 
 <h2 id="chain-list" class="title">Target list</h2>
-<div class="module whiteBG justTxt">
-
-    <script>
-            $(document).ready(function() {
-                $("#target-list-table").tablesorter({sortList: [[5,1]]});
-            });
-    </script>
-    <table id="target-list-table" class="tablesorter center-large">
-        <thead>
-            <tr>
-                <th>Last attack</th>
-                <!-- <th>Attacker</th> -->
-                <th>Defender</th>
-                <th>Result</th>
-                <th>Fair fight</th>
-                <th>Flat respect</th>
-                <th>Score</th>
-                <th>Refresh</th>
-        </thead>
-        <tbody>
-        {% for target in targets %}
-        <tr id="catch-line-target-{{target.targetId}}">
-            {% include "chain/targets_reload_line.html" %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="module whiteBG">
+    {% include "chain/targets_reload.html" %}
+    <div class="submit-row">
+        <form method="post">{% csrf_token %}
+            <a href={% url 'chain:refreshAllTargets' %}><input id="targets-refresh" type="submit" class="update-type" value="Refresh target list (2 API calls / target)"></a>
+        </form>
+    </div>
 </div>
 
 
-<h2 id="chain-list" class="title">List of latest wins</h2>
+<h2 id="chain-list" class="title">List of latest attacks</h2>
 <div class="module whiteBG">
     {% include "chain/attacks_reload.html" %}
     <div class="submit-row">
-        <a href={% url 'chain:targets' %}><input type="submit" class="update-type" value="Refresh latest attacks list"></a>
+        <a href={% url 'chain:targets' %}><input type="submit" class="update-type" value="Refresh latest attack list (1 API call)"></a>
     </div>
+</div>
+
+<h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Target and attack lists</h2>
+<div class="module whiteBG justTxt">
+    <p>The target list shows results of the latest attack made against the player.</p>
+    <p>The list of recent attacks is created when the page is loaded. Refresh the page to refresh the list.</p>
+    <p><b>Warning: </b> refreshing a target cost 2 API calls. Think twice before refreshing the full list.</p>
 </div>
