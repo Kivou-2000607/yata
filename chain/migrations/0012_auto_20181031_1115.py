@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='target',
             name='lastUpdate',
-            field=models.DateTimeField(default=django.utils.timezone.now),
+            field=models.IntegerField(default=0),
         ),
         migrations.AddField(
             model_name='target',
