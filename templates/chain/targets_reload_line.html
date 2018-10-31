@@ -2,6 +2,8 @@
 <td><b {% if not target.respect %}style="color: #ff1111;"{% endif %}>{{target.result}}</b> on {{target.endDate}}</td>
 <!-- <td><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->
 <td><a href="https://www.torn.com/profiles.php?XID={{target.targetId}}" target="_blank"> {{target.targetName}} [{{target.targetId}}]</a></td>
+<td>{{target.level}}</td>
+<td>{{target.rank}}</td>
 <td>{{target.lastAction}}</td>
 <td>{{target.fairFight|floatformat:2}}</td>
 <td>{{target.respect|floatformat:2}}</td>
@@ -10,15 +12,15 @@
 <td><progress value={{target.life}} max={{target.lifeMax}} title="Life {{target.life}}/{{target.lifeMax}}"></progress></td>
 <td>
     {% now "U" as ts %}
-    {% with seconds=ts|sub:target.lastUpdateTS%}
+    {% with seconds=ts|sub:target.lastUpdate%}
         {% with minutes=seconds|intdiv:60 %}
             {% with hours=minutes|intdiv:60 %}
                 {% if hours %}
                     > 1h ago
                 {% elif minutes %}
-                    {{minutes}}min {{ts|sub:target.lastUpdateTS|mod:60}}s ago
+                    {{minutes}}min {{ts|sub:target.lastUpdate|mod:60}}s ago
                 {% else %}
-                    {{ts|sub:target.lastUpdateTS|mod:60}}s ago
+                    {{ts|sub:target.lastUpdate|mod:60}}s ago
                 {% endif %}
             {% endwith %}
         {% endwith %}

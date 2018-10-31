@@ -865,7 +865,9 @@ def refreshTarget(request, targetId):
                                                        # status=" ".join(targetInfo["status"]),
                                                        status=targetInfo["status"][0],
                                                        lastAction=targetInfo["last_action"],
-                                                       lastUpdateTS=int(timezone.now().timestamp()),
+                                                       lastUpdate=int(timezone.now().timestamp()),
+                                                       level=targetInfo["level"],
+                                                       rank=targetInfo["rank"]
                                                        )
                     break
 
@@ -924,7 +926,9 @@ def refreshAllTargets(request):
                                                            # status=" ".join(targetInfo["status"]),
                                                            status=targetInfo["status"][0],
                                                            lastAction=targetInfo["last_action"],
-                                                           lastUpdateTS=int(timezone.now().timestamp()),
+                                                           lastUpdate=int(timezone.now().timestamp()),
+                                                           level=targetInfo["level"],
+                                                           rank=targetInfo["rank"]
                                                            )
                         break
 
