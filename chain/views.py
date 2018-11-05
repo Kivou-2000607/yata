@@ -183,22 +183,20 @@ def createList(request):  # no context
             if 'apiError' in chains:
                 return render(request, 'errorPage.html', chains)
 
-            nCreated = 0
-            nIgnored = 0
             for k, v in chains.items():
+                chain = faction.chain_set.filter(tId=k).first()
                 if v['chain'] >= faction.hitsThreshold:
-                    chain = faction.chain_set.filter(tId=k).first()
                     if chain is None:
                         print('[VIEW createList] chain {} created'.format(k))
-                        nCreated += 1
                         faction.chain_set.create(tId=k, nHits=v['chain'], respect=v['respect'],
                                                  start=v['start'], startDate=timestampToDate(v['start']),
                                                  end=v['end'], endDate=timestampToDate(v['end']))
                     else:
                         print('[VIEW createList] chain {} found'.format(k))
                 else:
-                    # print('[VIEW createList] chain {} ignored'.format(k))
-                    nIgnored += 1
+                    if chain is not None:
+                        print('[VIEW createList] chain {} deleted'.format(k))
+                        chain.delete()
 
         # get chains
         chains = faction.chain_set.filter(status=True).order_by('-end')

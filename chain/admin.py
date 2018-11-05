@@ -99,7 +99,7 @@ admin.site.register(Member, MemberAdmin)
 
 class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'number_of_chains', 'hitsThreshold']
-    inlines = [ChainInline, MemberInline]
+    # inlines = [ChainInline, MemberInline]
 
     def number_of_chains(self, instance):
         return(len(instance.chain_set.all()))
