@@ -453,7 +453,7 @@ def createReport(request, chainId):
             # change dates and status
             chain.status = True
             chain.end = int(timezone.now().timestamp())
-            chain.start = 1
+            # chain.start = 1
             chain.endDate = timestampToDate(chain.end)
             chain.save()
             # get number of attacks
@@ -463,7 +463,7 @@ def createReport(request, chainId):
             stopAfterNAttacks = chainInfo.get('current')
             print('[VIEW createReport] stop after {} attacks'.format(stopAfterNAttacks))
             if stopAfterNAttacks:
-                attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
+                attacks = apiCallAttacks(factionId, 1, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
             else:
                 attacks = dict({})
                 chain.delete()
@@ -536,7 +536,7 @@ def createIndividualReport(request, chainId, memberId):
             # change dates and status
             chain.status = True
             chain.end = int(timezone.now().timestamp())
-            chain.start = 1
+            # chain.start = 1
             chain.endDate = timestampToDate(chain.end)
             chain.save()
             # get number of attacks
@@ -546,7 +546,7 @@ def createIndividualReport(request, chainId, memberId):
             stopAfterNAttacks = chainInfo.get('current')
             print('[VIEW createIndividualReport] stop after {} attacks'.format(stopAfterNAttacks))
             if stopAfterNAttacks:
-                attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
+                attacks = apiCallAttacks(factionId, 1, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
             else:
                 attacks = dict({})
                 chain.delete()
@@ -800,9 +800,15 @@ def targets(request):
             # if float(v["respect_gain"]) > 0.0:
             if int(v["defender_id"]) == int(playerId):
                 remove.append(k)
+            elif int(v["chain"]) in BONUS_HITS:
+                attacks[k]["endDate"] = timestampToDate(v["timestamp_ended"])
+                attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                attacks[k]["bonus"] = int(v["chain"])
             else:
                 attacks[k]["endDate"] = timestampToDate(v["timestamp_ended"])
                 attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                attacks[k]["bonus"] = 0
+
         for k in remove:
             del attacks[k]
 
@@ -852,7 +858,7 @@ def refreshTarget(request, targetId):
 
             # get latest attack to target id
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-                if int(v["defender_id"]) == int(targetId):
+                if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     chainer.target_set.filter(targetId=targetId).delete()
                     target = chainer.target_set.create(targetId=targetId,
                                                        targetName=v["defender_name"],
@@ -863,7 +869,7 @@ def refreshTarget(request, targetId):
                                                        life=int(targetInfo["life"]["current"]),
                                                        lifeMax=int(targetInfo["life"]["maximum"]),
                                                        # status=" ".join(targetInfo["status"]),
-                                                       status=targetInfo["status"][0],
+                                                       status=targetInfo["status"][0].replace("In hospital", "Hosp"),
                                                        lastAction=targetInfo["last_action"],
                                                        lastUpdate=int(timezone.now().timestamp()),
                                                        level=targetInfo["level"],
@@ -913,7 +919,7 @@ def refreshAllTargets(request):
 
                 # get latest attack to target id
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-                    if int(v["defender_id"]) == int(target.targetId):
+                    if int(v["defender_id"]) == int(target.targetId) and int(v["chain"]) not in BONUS_HITS:
                         chainer.target_set.filter(targetId=target.targetId).delete()
                         target = chainer.target_set.create(targetId=target.targetId,
                                                            targetName=v["defender_name"],
@@ -924,7 +930,7 @@ def refreshAllTargets(request):
                                                            life=int(targetInfo["life"]["current"]),
                                                            lifeMax=int(targetInfo["life"]["maximum"]),
                                                            # status=" ".join(targetInfo["status"]),
-                                                           status=targetInfo["status"][0],
+                                                           status=targetInfo["status"][0].replace("In hospital", "Hosp"),
                                                            lastAction=targetInfo["last_action"],
                                                            lastUpdate=int(timezone.now().timestamp()),
                                                            level=targetInfo["level"],

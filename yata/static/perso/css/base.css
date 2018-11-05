@@ -310,6 +310,8 @@ tr.max-fair-fight       { background:#b6d7a8!important; }
 tr.max-fair-fight:hover { background:#93c47d!important; }
 tr.good-fair-fight       { background:#d9ead3!important; }
 tr.good-fair-fight:hover { background:#b6d7a8!important; }
+tr.bonus-attack       { background:#a8b6d7!important; }
+tr.bonus-attack:hover { background:#7d93c4!important; }
 
 tr.not-okay       { background:#f4cccc!important; }
 tr.not-okay:hover { background:#ea9999!important; }
