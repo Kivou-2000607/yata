@@ -15,10 +15,10 @@
                 <!-- <th>Attacker</th> -->
                 <th>Defender</th>
                 <th>Result</th>
-                <th>Fair fight</th>
-                <th>Flat respect</th>
-                <th>Score</th>
-                <th>Save target</th>
+                <th style="text-align: center;">Fair fight</th>
+                <th style="text-align: center;">Flat respect</th>
+                <th style="text-align: center;">Score</th>
+                <th style="text-align: center;">Save target</th>
         </thead>
         <tbody>
         {% for k, v in attacks.items %}
@@ -28,13 +28,13 @@
             <td><a href="https://www.torn.com/profiles.php?XID={{v.defender_id}}" target="_blank"> {{v.defender_name}} [{{v.defender_id}}]</a></td>
             <td>{{v.result}}</td>
             {% if v.bonus == 0 %}
-                <td>{{v.modifiers.fairFight|floatformat:2}}</td>
-                <td>{{v.flatRespect|floatformat:2}}</td>
-                <td>{{v.flatRespect|mul:v.modifiers.fairFight|floatformat:2}}</td>
+                <td style="text-align: center;">{{v.modifiers.fairFight|floatformat:2}}</td>
+                <td style="text-align: center;">{{v.flatRespect|floatformat:2}}</td>
+                <td style="text-align: center;">{{v.flatRespect|mul:v.modifiers.fairFight|floatformat:2}}</td>
             {% else %}
-                <td colspan="3">Bonus: {{v.bonus}}</td>
+                <td style="text-align: center;" colspan="3">Bonus: {{v.bonus}}</td>
             {% endif %}
-            <td>
+            <td style="text-align: center;">
                 <div class="catch-buttons-attack-{{v.defender_id}}">
                     {% include "chain/attacks_reload_buttons.html" with target=v %}
                 </div>

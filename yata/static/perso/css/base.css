@@ -318,7 +318,45 @@ tr.not-okay:hover { background:#ea9999!important; }
 td.not-okay       { background:#f4cccc!important; }
 td.not-okay:hover { background:#ea9999!important; }
 
+.progress-bar {
+    background-color: lightgray;
+    border-radius: 4px;
+    width: 150px;
+    height: 14px;
+    display: inline-block;
+}
 
+.progress-value-timeout {
+    background-color: #666;
+    transition: 0.3s all linear;
+    border-radius: 4px;
+    height: 14px;
+    display: inline-block;
+}
+
+.progress-value-life {
+    background-color: #00E;
+    transition: 0.3s all linear;
+    border-radius: 4px;
+    height: 14px;
+    text-align:left;
+    display: inline-block;
+}
+
+@keyframes refresh {
+    0%   {width: 100%;}
+    100% {width: 0%;}
+}
+
+.progress-value-refresh {
+    background-color: #666;
+    transition: 0.3s all linear;
+    border-radius: 4px;
+    height: 14px;
+    display: inline-block;
+    animation: refresh 10s linear;
+    -webkit-animation: refresh 10s linear;
+}
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
 
 table.chain-report tr:nth-child(odd)  { background:#cccccc22;  }

@@ -10,18 +10,41 @@
             <tr><th colspan="2">Summary of the current chain</th></tr>
         </thead>
         <tbody>
-            <tr><td>Chain progress to next bonus</td><td>{{liveChain.current}} / {{liveChain.nextBonus}} &nbsp; &nbsp; <progress value="{{liveChain.current}}" max="{{liveChain.nextBonus}}"></progress></td></tr>
+            <tr><td>Chain progress to next bonus</td>
+                <td>
+                    <div class="progress-bar">
+                        <span class="progress-value-timeout" style="width: {{liveChain.current|div:liveChain.nextBonus|mul:100|floatformat:0}}%;"></span>
+                    </div>
+                    &nbsp; &nbsp;
+                    {{liveChain.current}} / {{liveChain.nextBonus}}
+                    &nbsp; &nbsp;
+                    (x{{liveChain.modifier|floatformat:2}})
+                </td></tr>
             {% with minutes=liveChain.timeout|intdiv:60 %}
-            {% if minutes %}
-                <tr><td>Chain timeout</td><td>{{minutes}} minute{{minutes|pluralize}} and {{liveChain.timeout|mod:60}} seconds</td></tr>
-            {% else %}
-                <tr><td>Chain timeout</td><td><span style="color: #FF4444; font-weight: bold;">{{liveChain.timeout|mod:60}} seconds<span></td></tr>
-            {% endif %}
+            <tr><td>Chain timeout</td>
+                <td>
+                    <div class="progress-bar">
+                        <span class="progress-value-timeout" style="width: {{liveChain.timeout|div:3|floatformat:0}}%;"></span>
+                    </div>
+                    &nbsp; &nbsp;
+                {% if minutes %}
+                    {{minutes}} minute{{minutes|pluralize}} and {{liveChain.timeout|mod:60}} seconds
+                    {% else %}
+                    <span style="color: #FF4444; font-weight: bold;">{{liveChain.timeout|mod:60}} seconds<span>
+                {% endif %}
+            </td></tr>
             {% endwith %}
-            <tr><td>Chain multiplier</td><td>{{liveChain.modifier|floatformat:2}}</td></tr>
             {% if liveChain.cooldown %}
                 <tr><td>Cooldown</td><td>{{liveChain.cooldown}}</td></tr>
             {% endif %}
+            <tr>
+                <td>Next refresh</td>
+                <td>
+                    <div class="progress-bar">
+                        <span class="progress-value-refresh" style="width: 100%;"></span>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <br>

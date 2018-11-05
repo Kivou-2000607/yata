@@ -10,7 +10,11 @@
 <td style="text-align: center;">{{target.respect|floatformat:2}}</td>
 <td style="text-align: center;">{{target.respect|mul:target.fairFight|floatformat:2}}</td>
 <td class='{% if target.status.0 != "O" %}not-okay{% endif %}'>{{target.status}}</td>
-<td style="text-align: center;"><progress value={{target.life}} max={{target.lifeMax}} title="Life {{target.life}}/{{target.lifeMax}}"></progress></td>
+<td>
+    <div class="progress-bar">
+        <span class="progress-value-life" style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
+    </div>
+</td>
 <td style="text-align: center;">
     {% now "U" as ts %}
     {% with seconds=ts|sub:target.lastUpdate%}
