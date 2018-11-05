@@ -69,13 +69,17 @@ class ChainAdmin(admin.ModelAdmin):
 
 admin.site.register(Chain, ChainAdmin)
 
+
 class TargetInline(admin.TabularInline):
     model = Target
     extra = 0
 
 
 class TargetAdmin(admin.ModelAdmin):
-    list_display = ['defender_name', 'flatRespect', 'endDate']
+    list_display = ['__str__', 'targetName', 'targetId']
+
+
+admin.site.register(Target, TargetAdmin)
 
 
 class MemberInline(admin.TabularInline):
@@ -84,9 +88,11 @@ class MemberInline(admin.TabularInline):
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'daysInFaction', 'lastAction']
+    list_display = ['__str__', 'number_of_targets', 'lastAction']
     inlines = [TargetInline]
 
+    def number_of_targets(self, instance):
+        return(len(instance.target_set.all()))
 
 admin.site.register(Member, MemberAdmin)
 
@@ -95,7 +101,7 @@ class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'number_of_chains', 'hitsThreshold']
     inlines = [ChainInline, MemberInline]
 
-    def number_of_chains(seld, instance):
+    def number_of_chains(self, instance):
         return(len(instance.chain_set.all()))
 
 

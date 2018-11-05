@@ -142,3 +142,6 @@ class Target(models.Model):
     status = models.CharField(default="Okay", max_length=100)
     lastAction = models.CharField(default="Who knows", max_length=64)
     lastUpdate = models.IntegerField(default=0)
+
+    def __str__(self):
+        return("Target of {}".format(self.member))
