@@ -377,6 +377,10 @@ def jointReport(request):
                     counts[count.attackerId]['wins'] += count.wins
                     counts[count.attackerId]['respect'] += count.respect
                     counts[count.attackerId]['fairFight'] += count.fairFight
+                    counts[count.attackerId]['war'] += count.war
+                    counts[count.attackerId]['retaliation'] += count.retaliation
+                    counts[count.attackerId]['groupAttack'] += count.groupAttack
+                    counts[count.attackerId]['overseas'] += count.overseas
                     counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere']  # been present to at least one chain
                 else:
                     counts[count.attackerId] = {'name': count.name,
@@ -384,6 +388,10 @@ def jointReport(request):
                                                 'wins': count.wins,
                                                 'respect': count.respect,
                                                 'fairFight': count.fairFight,
+                                                'war': count.war,
+                                                'retaliation': count.retaliation,
+                                                'groupAttack': count.groupAttack,
+                                                'overseas': count.overseas,
                                                 'daysInFaction': count.daysInFaction,
                                                 'beenThere': count.beenThere,
                                                 'attackerId': count.attackerId}
