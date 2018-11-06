@@ -120,6 +120,10 @@ class Count(models.Model):
     wins = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
+    war = models.FloatField(default=0)
+    retaliation = models.FloatField(default=0)
+    groupAttack = models.FloatField(default=0)
+    overseas = models.FloatField(default=0)
     daysInFaction = models.IntegerField(default=0)
     beenThere = models.BooleanField(default=False)
 
