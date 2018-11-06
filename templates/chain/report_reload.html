@@ -178,6 +178,7 @@
                         <tr class="white"><td><div id="histogram"></div></td></tr>
                         <tr><td>Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.</td></tr>
                         <tr><td>Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).</td></tr>
+                        <tr><td>Hit rate: {{graph.info.speedRate|floatformat:1}} hits every 5 minutes</td></td>
                     </tbody>
                 </table>
             {% endif %}

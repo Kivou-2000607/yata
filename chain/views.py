@@ -71,12 +71,15 @@ def index(request):
                 print('[VIEW index] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / (5)}}
+                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                 cummulativeHits = 0
                 for line in graphSplit:
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                graph['info']['speedRate'] = speedRate
+
             else:
                 print('[VIEW index] no data found for graph')
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
@@ -308,15 +311,17 @@ def report(request, chainId):
             print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
             # compute average time for one bar
             bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / (5)}}
+            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
             cummulativeHits = 0
             for line in graphSplit:
                 splt = line.split(':')
                 cummulativeHits += int(splt[1])
                 graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                graph['info']['speedRate'] = speedRate
         else:
             print('[VIEW report] no data found for graph')
-            graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
+            graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
         # context
         context = dict({'chain': chain,  # for general info
@@ -357,6 +362,8 @@ def jointReport(request):
         total = {'nHits': 0, 'respect': 0.0}
         for chain in chains:
             print('[VIEW jointReport] chain {} found'.format(chain.tId))
+            total['nHits'] += chain.nHits
+            total['respect'] += float(chain.respect)
             # get report
             report = chain.report_set.filter(chain=chain).first()
             if report is None:
@@ -365,8 +372,6 @@ def jointReport(request):
             # loop over counts
             chainCounts = report.count_set.all()
             for count in chainCounts:
-                total['nHits'] += count.wins
-                total['respect'] += float(count.respect)
                 if count.attackerId in counts:
                     counts[count.attackerId]['hits'] += count.hits
                     counts[count.attackerId]['wins'] += count.wins
@@ -479,11 +484,12 @@ def createReport(request, chainId):
             if len(binsCenter) > 1:
                 print('[VIEW createReport] data found for graph of length {}'.format(len(binsCenter)))
                 binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
+                speedRate = numpy.sum(histo)*300/float(binsCenter[-1] - binsCenter[0])  # hits every 5 minutes
                 graph = {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
-                         'info': {"binsTime": binsTime, "criticalHits": binsTime / 5}}
+                         'info': {'binsTime': binsTime, 'criticalHits': binsTime / 5, 'speedRate': speedRate}}
             else:
                 print('[VIEW createReport] no data found for graph')
-                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
+                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
             # context
             subcontext = dict({'liveChain': not bool(chain.tId),
