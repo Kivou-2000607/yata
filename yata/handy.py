@@ -113,46 +113,55 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     # create attackers array on the fly to avoid db connection in the loop
     attackers = dict({})
     for m in members:
-        attackers[m.name] = [0, 0, 0.0, 0.0, m.daysInFaction, m.tId]
+        # 0: attacks
+        # 1: wins
+        # 2: fairFight
+        # 3: war
+        # 4: retaliation
+        # 5: groupAttack
+        # 6: overseas
+        # 7: chainBonus
+        # 8:respect_gain
+        # 9: daysInFaction
+        # 10: tId
+        attackers[m.name] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.tId]
 
     # loop over attacks
-    tmp = dict({})
     for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
         attackerID = int(v['attacker_id'])
         attackerName = v['attacker_name']
         # if attacker part of the faction at the time of the chain
         if(int(v['attacker_faction']) == faction.tId):
-            if tmp.get(v["result"]) is None:
-                tmp[v["result"]] = 1
-            else:
-                tmp[v["result"]] += 1
             # if attacker not part of the faction at the time of the call
             if attackerName not in attackers:
                 print('[FUNCTION fillReport] hitter out of faction: {}'.format(attackerName))
-                attackers[attackerName] = [0, 0, 0.0, 0.0, -1, attackerID]  # add out of faction attackers on the fly
+                attackers[attackerName] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerID]  # add out of faction attackers on the fly
+
+            attackers[attackerName][0] += 1
+            nWRA[2] += 1
 
             # if it's a hit
             respect = float(v['respect_gain'])
             if respect > 0.0:
                 attacksForHisto.append(v['timestamp_ended'])
                 nWRA[0] += 1
-                attackers[attackerName][0] += 1
+                nWRA[1] += respect
+
+                attackers[attackerName][1] += 1
+                attackers[attackerName][2] += float(v['modifiers']['fairFight'])
+                attackers[attackerName][3] += float(v['modifiers']['war'])
+                attackers[attackerName][4] += float(v['modifiers']['retaliation'])
+                attackers[attackerName][5] += float(v['modifiers']['groupAttack'])
+                attackers[attackerName][6] += float(v['modifiers']['overseas'])
+                attackers[attackerName][7] += float(v['modifiers']['chainBonus'])
+                attackers[attackerName][8] += respect / float(v['modifiers']['chainBonus'])
                 if v['chain'] in BONUS_HITS:
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
-                attackers[attackerName][2] += float(v['modifiers']['fairFight'])
-                attackers[attackerName][3] += respect / float(v['modifiers']['chainBonus'])
-                nWRA[1] += respect
-
-            attackers[attackerName][1] += 1
-            nWRA[2] += 1
 
             if stopAfterNAttacks is not False and nWRA[0] >= stopAfterNAttacks:
                 break
-
-    for k, v in tmp.items():
-        print("[FUNCTION fillReport] total number of {}: {}".format(k, v))
 
     # create histogram
     chain.start = int(attacksForHisto[-1])
@@ -181,12 +190,38 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.save()
 
-    # fill the database with counts and bonuses
+    # fill the database with counts
+    print('[FUNCTION fillReport] fill database with counts')
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
-        delta = int(timezone.now().timestamp()) - chain.end - v[4] * 24 * 3600
-        beenThere = True if (delta < 0 or v[4] < 0) else False
-        report.count_set.create(attackerId=v[5], name=k, wins=v[0], hits=v[1], fairFight=v[2], respect=v[3], daysInFaction=v[4], beenThere=beenThere)
+        delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
+        beenThere = True if (delta < 0 or v[9] < 0) else False
+        # 0: attacks
+        # 1: wins
+        # 2: fairFight
+        # 3: war
+        # 4: retaliation
+        # 5: groupAttack
+        # 6: overseas
+        # 7: chainBonus
+        # 8:respect_gain
+        # 9: daysInFaction
+        # 10: tId
+        report.count_set.create(attackerId=v[10],
+                                name=k,
+                                hits=v[0],
+                                wins=v[1],
+                                fairFight=v[2],
+                                war=v[3],
+                                retaliation=v[4],
+                                groupAttack=v[5],
+                                overseas=v[6],
+                                respect=v[8],
+                                daysInFaction=v[9],
+                                beenThere=beenThere)
+
+    # fill the database with bonus
+    print('[FUNCTION fillReport] fill database with bonus')
     for b in bonus:
         report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 

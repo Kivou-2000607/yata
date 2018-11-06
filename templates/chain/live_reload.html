@@ -11,8 +11,8 @@
         </thead> -->
         <tbody>
             <tr>
-                <td>Chain progress to next bonus</td>
-                <td>
+                <td style="width: 200px">Chain progress to next bonus</td>
+                <td style="width: 150px">
                     <div class="progress-bar">
                         <span style="width: {{liveChain.current|div:liveChain.nextBonus|mul:100|floatformat:0}}%;"></span>
                     </div>
@@ -45,8 +45,22 @@
             {% if liveChain.cooldown %}
             <tr>
                 <td>Cooldown</td>
-                <td>{{liveChain.cooldown}}</td>
-                <td></td>
+
+                <td>
+                    <div class="progress-bar move-strips violet">
+                        <span class="strips" style="width: {{100|mul:liveChain.cooldown|div:10|div:liveChain.current|floatformat:0}}%;"></span>
+                    </div>
+                </td>
+
+                {% with minutes=liveChain.cooldown|intdiv:60 %}
+                <td>
+                    {% if minutes %}
+                        {{minutes}} minute{{minutes|pluralize}} and {{liveChain.cooldown|mod:60}} seconds
+                    {% else %}
+                        <span style="color: #FF4444; font-weight: bold;">{{liveChain.cooldown|mod:60}} seconds<span>
+                    {% endif %}
+                </td>
+                {% endwith %}
             </tr>
             {% endif %}
 

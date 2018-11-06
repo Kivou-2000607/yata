@@ -103,14 +103,18 @@
                 <thead>
                     <tr>
                         <th style="text-align: center;">Rank</th>
-                        <th>Name</th>
-                        <th style="text-align: center;"># hits</th>
-                        <th style="text-align: center;"># attacks</th>
-                        <th style="text-align: center;" title="Average of fair fight multipliers over all hits">fair fight<br>(average)</th>
-                        <th style="text-align: center;" title="Sum of all fair fight multipliers over all hits">fair fight<br>(total)</th>
+                        <th>Name [id]</th>
+                        <th style="text-align: center;">Number<br> of hits</th>
+                        <th style="text-align: center;">Number<br> of attacks</th>
+                        <th style="text-align: center;" title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
+                        <th style="text-align: center;" title="Average of war modifier over all hits">modifiers<br>(war)</th>
+                        <th style="text-align: center;" title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
+                        <th style="text-align: center;" title="Average of groupe attack modifier over all hits">modifiers<br>(groupe attack)</th>
+                        <th style="text-align: center;" title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th>
+                        <!-- <th style="text-align: center;" title="Sum of all modifier over all hits">modifiers<br>(total)</th> -->
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-                        <th style="text-align: center;">days in factions</th>
+                        <th style="text-align: center;">days in<br>faction</th>
                         {% if chain.tId > -1 %}
                             <th style="text-align: center;">Individual<br>report</th>
                         {% endif %}
@@ -128,10 +132,18 @@
                                 <td style="text-align: center;">{{c.hits}}</td>
                                 {% if c.wins %}
                                     <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
+                                    <td style="text-align: center;">{{c.war|div:c.wins|floatformat:2}}</td>
+                                    <td style="text-align: center;">{{c.retaliation|div:c.wins|floatformat:2}}</td>
+                                    <td style="text-align: center;">{{c.groupAttack|div:c.wins|floatformat:2}}</td>
+                                    <td style="text-align: center;">{{c.overseas|div:c.wins|floatformat:2}}</td>
                                 {% else %}
                                     <td style="text-align: center;">0.00</td>
+                                    <td style="text-align: center;">0.00</td>
+                                    <td style="text-align: center;">0.00</td>
+                                    <td style="text-align: center;">0.00</td>
+                                    <td style="text-align: center;">0.00</td>
                                 {% endif %}
-                                <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td>
+                                <!-- <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td> -->
                                 {% if c.wins %}
                                     <td style="text-align: center;">{{c.respect|div:c.wins|floatformat:2}}</td>
                                 {% else %}
@@ -139,8 +151,7 @@
                                 {% endif %}
                                 <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                         {% else %}
-                            <td style="text-align: center;" colspan="2"><i class="fas fa-child"></i></td>
-                            <td style="text-align: center;" colspan="4"><i>New recruit, was not in the faction for this</i></td>
+                            <td style="text-align: center;" colspan="9"><i class="fas fa-child"></i> &nbsp; &nbsp; <i>New recruit, was not in the faction for this</i></td>
                         {% endif %}
 
                         {% if c.daysInFaction < 0 %}

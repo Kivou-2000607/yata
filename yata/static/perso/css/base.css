@@ -367,6 +367,10 @@ td.not-okay:hover { background:#ea9999!important; }
   background-color: #7d93c4;
 }
 
+.violet > span {
+  background-color: #c493c4;
+}
+
 @keyframes refresh {
     0%   {width: 100%; background-color: #f1a165;}
     100% {width: 0%; background-color: #ff0000;}
@@ -394,6 +398,16 @@ td.not-okay:hover { background:#ea9999!important; }
 .refresh > span.strips:after {
     animation: refresh-content 10s linear;
     -webkit-animation: refresh-content 10s linear;
+}
+
+@keyframes move-strips {
+    0%   {width: 100%;}
+    100% {width: 0%;}
+}
+
+.move-strips > span.strips:after {
+    animation: move-strips 10s linear;
+    -webkit-animation: move-strips 10s linear;
 }
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
