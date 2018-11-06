@@ -11,8 +11,8 @@
 <td style="text-align: center;">{{target.respect|mul:target.fairFight|floatformat:2}}</td>
 <td class='{% if target.status.0 != "O" %}not-okay{% endif %}'>{{target.status}}</td>
 <td>
-    <div class="progress-bar">
-        <span class="progress-value-life" style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
+    <div class="progress-bar blue">
+        <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
     </div>
 </td>
 <td style="text-align: center;">
