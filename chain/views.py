@@ -855,8 +855,11 @@ def refreshTarget(request, targetId):
                 return render(request, 'errorPage.html', attacks)
 
             # get latest attack to target id
+            findInAttacks = False
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
+                    findInAttacks = True
+                    print('[VIEW refreshTarget] target find in attacks and refreshed')
                     chainer.target_set.filter(targetId=targetId).delete()
                     target = chainer.target_set.create(targetId=targetId,
                                                        targetName=v["defender_name"],
@@ -874,6 +877,18 @@ def refreshTarget(request, targetId):
                                                        rank=targetInfo["rank"]
                                                        )
                     break
+
+            if not findInAttacks:
+                print('[VIEW refreshTarget] target not found in attacks but refreshed')
+                target = chainer.target_set.filter(targetId=targetId).first()
+                target.life = int(targetInfo["life"]["current"])
+                target.lifeMax = int(targetInfo["life"]["maximum"])
+                target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
+                target.lastAction = targetInfo["last_action"]
+                target.lastUpdate = int(timezone.now().timestamp())
+                target.level = targetInfo["level"]
+                target.rank = targetInfo["rank"]
+                target.save()
 
             # render for on the fly modification
             print('[VIEW refreshTarget] render')
@@ -916,8 +931,11 @@ def refreshAllTargets(request):
                     return render(request, 'errorPage.html', attacks)
 
                 # get latest attack to target id
+                findInAttacks = False
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if int(v["defender_id"]) == int(target.targetId) and int(v["chain"]) not in BONUS_HITS:
+                        findInAttacks = True
+                        print('[VIEW refreshAllTarget] target find in attacks and refreshed')
                         chainer.target_set.filter(targetId=target.targetId).delete()
                         target = chainer.target_set.create(targetId=target.targetId,
                                                            targetName=v["defender_name"],
@@ -935,6 +953,18 @@ def refreshAllTargets(request):
                                                            rank=targetInfo["rank"]
                                                            )
                         break
+
+                if not findInAttacks:
+                    print('[VIEW refreshAllTarget] target not found in attacks but refreshed')
+                    target = chainer.target_set.filter(targetId=target.targetId).first()
+                    target.life = int(targetInfo["life"]["current"])
+                    target.lifeMax = int(targetInfo["life"]["maximum"])
+                    target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
+                    target.lastAction = targetInfo["last_action"]
+                    target.lastUpdate = int(timezone.now().timestamp())
+                    target.level = targetInfo["level"]
+                    target.rank = targetInfo["rank"]
+                    target.save()
 
 
             # render for on the fly modification
