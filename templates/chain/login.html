@@ -23,7 +23,7 @@
             </p>
             <h3><a class="deletelink" href="{% url 'chain:logout' %}">Logout</a></h3>
         {% else %}
-            <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to see the chain reports of your faction</p>
+            <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to see the chain reports of your faction and create a target list based on your recent attacks</p>
             <form method="post">
                 {% csrf_token %}
                 <input id="key-value" placeholder="API key" type=text>
