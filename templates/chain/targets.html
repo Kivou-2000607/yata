@@ -1,11 +1,12 @@
 {% load static %}
+{% load mathfilters %}
 
-<h2 id="chain-list" class="title">Target list</h2>
+<h2 id="chain-list" class="title">Target list ({{targets|length}} targets)</h2>
 <div class="module whiteBG">
     {% include "chain/targets_reload.html" %}
     <div class="submit-row">
         <form method="post">{% csrf_token %}
-            <a href={% url 'chain:refreshAllTargets' %}><input id="targets-refresh" type="submit" class="update-type" value="Refresh target list (2 API calls / target)"></a>
+            <a href={% url 'chain:refreshAllTargets' %}><input id="targets-refresh" type="submit" class="update-type" value="Refresh target list ({{targets|length|mul:"2"}} API calls)"></a>
         </form>
     </div>
 </div>
