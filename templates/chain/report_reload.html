@@ -57,8 +57,8 @@
                 <tbody>
                     <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
                     <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-                    <tr><td>Respect earnt</td><td><b>{{chain.respect|floatformat:0}}</b></td></tr>
-                    <tr><td>Hits done</td><td><b>{{chain.nHits}}</b></td></tr>
+                    <tr><td>Hits / attacks done</td><td><b>{{chain.nHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
+                    <tr><td>Respect earnt &nbsp; (energy / respect)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.nAttacks|mul:"25"|div:chain.respect|floatformat:2}})</b></td></tr>
                 </tbody>
             </table>
         {% endif %}

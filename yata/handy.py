@@ -106,7 +106,7 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     import numpy
 
     # initialisation of variables before loop
-    nWR = [0, 0.0]  # number of wins and respect
+    nWRA = [0, 0.0, 0]  # number of wins, respect and attacks
     bonus = []  # chain bonus
     attacksForHisto = []  # record attacks timestamp histogram
 
@@ -135,7 +135,7 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
             respect = float(v['respect_gain'])
             if respect > 0.0:
                 attacksForHisto.append(v['timestamp_ended'])
-                nWR[0] += 1
+                nWRA[0] += 1
                 attackers[attackerName][0] += 1
                 if v['chain'] in BONUS_HITS:
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
@@ -143,11 +143,12 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
                     bonus.append((v['chain'], attackerName, respect, r))
                 attackers[attackerName][2] += float(v['modifiers']['fairFight'])
                 attackers[attackerName][3] += respect / float(v['modifiers']['chainBonus'])
-                nWR[1] += respect
+                nWRA[1] += respect
 
             attackers[attackerName][1] += 1
+            nWRA[2] += 1
 
-            if stopAfterNAttacks is not False and nWR[0] >= stopAfterNAttacks:
+            if stopAfterNAttacks is not False and nWRA[0] >= stopAfterNAttacks:
                 break
 
     for k, v in tmp.items():
@@ -174,8 +175,9 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     print('[FUNCTION fillReport] histogram number of bins: {}'.format(len(bins) - 1))
     histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
     binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
-    chain.nHits = nWR[0]
-    chain.respect = nWR[1]
+    chain.nHits = nWRA[0]
+    chain.respect = nWRA[1]
+    chain.nAttacks = nWRA[2]
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.save()
 
