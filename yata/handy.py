@@ -214,11 +214,11 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
         beenThere = True if (delta < 0 or v[9] < 0) else False
         if k in attackersHisto:
             histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
-            watcher = sum(histoTmp > 0) / float(len(histo))
+            watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
+            graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
         else:
-            histoTmp = ''
+            graphTmp = ''
             watcher = 0
-        graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
         # 0: attacks
         # 1: wins
         # 2: fairFight
