@@ -58,7 +58,7 @@
                     <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
                     <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
                     <tr><td>Hits / attacks done</td><td><b>{{chain.nHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
-                    <tr><td>Respect earnt &nbsp; (energy / respect)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.nAttacks|mul:"25"|div:chain.respect|floatformat:2}})</b></td></tr>
+                    <tr><td>Respect earnt &nbsp; (respect / hits)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.respect|div:chain.nAttacks|floatformat:2}})</b></td></tr>
                 </tbody>
             </table>
         {% endif %}
@@ -106,18 +106,18 @@
                         <th>Name [id]</th>
                         <th style="text-align: center;">Number<br> of hits</th>
                         <th style="text-align: center;">Number<br> of attacks</th>
-                        <th style="text-align: center;" title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
+                        <!-- <th style="text-align: center;" title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
                         <th style="text-align: center;" title="Average of war modifier over all hits">modifiers<br>(war)</th>
                         <th style="text-align: center;" title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
                         <th style="text-align: center;" title="Average of groupe attack modifier over all hits">modifiers<br>(groupe attack)</th>
-                        <th style="text-align: center;" title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th>
-                        <!-- <th style="text-align: center;" title="Sum of all modifier over all hits">modifiers<br>(total)</th> -->
+                        <th style="text-align: center;" title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th> -->
+                        <th style="text-align: center;" title="Average of all modifier over all hits">modifiers<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-                        <th style="text-align: center;">days in<br>faction</th>
                         {% if chain.tId > -1 %}
-                            <th style="text-align: center;">Individual<br>report</th>
+                            <th style="text-align: center;">Chain<br>watcher</th>
                         {% endif %}
+                        <th style="text-align: center;">days in<br>faction</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,16 +131,17 @@
                                 <td style="text-align: center;">{{c.wins}}</td>
                                 <td style="text-align: center;">{{c.hits}}</td>
                                 {% if c.wins %}
-                                    <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td>
-                                    <td style="text-align: center;">{{c.war|div:c.wins|floatformat:2}}</td>
-                                    <td style="text-align: center;">{{c.retaliation|div:c.wins|floatformat:2}}</td>
-                                    <td style="text-align: center;">{{c.groupAttack|div:c.wins|floatformat:2}}</td>
-                                    <td style="text-align: center;">{{c.overseas|div:c.wins|floatformat:2}}</td>
+                                    <!-- <td style="text-align: center;">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->
+                                    <!-- <td style="text-align: center;">{{c.war|div:c.wins|floatformat:2}}</td> -->
+                                    <!-- <td style="text-align: center;">{{c.retaliation|div:c.wins|floatformat:2}}</td> -->
+                                    <!-- <td style="text-align: center;">{{c.groupAttack|div:c.wins|floatformat:2}}</td> -->
+                                    <!-- <td style="text-align: center;">{{c.overseas|div:c.wins|floatformat:2}}</td> -->
+                                    <td style="text-align: center;">{{c.fairFight|div:c.wins|mul:c.war|div:c.wins|mul:c.retaliation|div:c.wins|mul:c.groupAttack|div:c.wins|mul:c.overseas|div:c.wins|floatformat:2}}</td>
                                 {% else %}
+                                    <!-- <td style="text-align: center;">0.00</td>
                                     <td style="text-align: center;">0.00</td>
                                     <td style="text-align: center;">0.00</td>
-                                    <td style="text-align: center;">0.00</td>
-                                    <td style="text-align: center;">0.00</td>
+                                    <td style="text-align: center;">0.00</td> -->
                                     <td style="text-align: center;">0.00</td>
                                 {% endif %}
                                 <!-- <td style="text-align: center;">{{c.fairFight|floatformat:2}}</td> -->
@@ -151,7 +152,22 @@
                                 {% endif %}
                                 <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
                         {% else %}
-                            <td style="text-align: center;" colspan="9"><i class="fas fa-child"></i> &nbsp; &nbsp; <i>New recruit, was not in the faction for this</i></td>
+                            <td style="text-align: center;" colspan="5"><i class="fas fa-child"></i> &nbsp; &nbsp; <i>New recruit, was not in the faction for this</i></td>
+                        {% endif %}
+
+                        {% if chain.tId > -1 %}
+                            {% if c.graph|length %}
+                                <td style="text-align: center;">
+                                    <form style="display: inline;" method="post">{% csrf_token %}
+                                        <a class="chain-ireport" href="{% url 'chain:renderIndividualReport' chain.tId c.attackerId %}">
+                                            <!-- <i class="fas fa-chart-bar" title="See individal report"></i> -->
+                                            {{c.watcher|mul:100|floatformat:0}}%
+                                        </a>
+                                    </form>
+                                </td>
+                            {% else %}
+                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="Need AA permission too see individual reports"></i></td>
+                            {% endif %}
                         {% endif %}
 
                         {% if c.daysInFaction < 0 %}
@@ -160,17 +176,6 @@
                             <td style="text-align: center;">{{c.daysInFaction}}</td>
                         {% endif %}
 
-                        {% if chain.tId > -1 %}
-                            {% if request.session.chainer.AA %}
-                                <td style="text-align: center;">
-                                    <a class="chain-ireport" href="{% url 'chain:createIndividualReport' chain.tId c.attackerId %}">
-                                        <i class="fas fa-chart-bar" title="See individal report"></i>
-                                    </a>
-                                </td>
-                            {% else %}
-                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="Need AA permission too see individual reports"></i></td>
-                            {% endif %}
-                        {% endif %}
 
                         </tr>
                         {% endif %}

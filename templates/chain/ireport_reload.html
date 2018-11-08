@@ -3,7 +3,7 @@
 {% load mathfilters %}
 
 {% if graph.data|length %}
-<td colspan="13">
+<td colspan="9">
     <script>
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
@@ -39,4 +39,5 @@
 
     <div id="ihistogram-{{memberId}}"></div>
 </td>
+<!-- <td style="text-align: center;" id="ihistogram-close-{{memberId}}"><a href=""><i class="far fa-times-circle"></i></a></td> -->
 {% endif %}

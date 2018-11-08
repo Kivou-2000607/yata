@@ -102,8 +102,11 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
 
 
 def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
+    import time
     from django.utils import timezone
     import numpy
+
+    tip = time.time()
 
     # initialisation of variables before loop
     nWRA = [0, 0.0, 0]  # number of wins, respect and attacks
@@ -112,6 +115,7 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
 
     # create attackers array on the fly to avoid db connection in the loop
     attackers = dict({})
+    attackersHisto = dict({})
     for m in members:
         # 0: attacks
         # 1: wins
@@ -144,6 +148,11 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
             respect = float(v['respect_gain'])
             if respect > 0.0:
                 attacksForHisto.append(v['timestamp_ended'])
+                if attackerName in attackersHisto:
+                    attackersHisto[attackerName].append(v['timestamp_ended'])
+                else:
+                    attackersHisto[attackerName] = [v['timestamp_ended']]
+
                 nWRA[0] += 1
                 nWRA[1] += respect
 
@@ -162,6 +171,9 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
 
             if stopAfterNAttacks is not False and nWRA[0] >= stopAfterNAttacks:
                 break
+
+    print('[FUNCTION fillReport] It took {} seconds to build the attacker array'.format(time.time() - tip))
+    tip = time.time()
 
     # create histogram
     chain.start = int(attacksForHisto[-1])
@@ -190,12 +202,23 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.save()
 
+    print('[FUNCTION fillReport] It took {} seconds to build histogram'.format(time.time() - tip))
+    tip = time.time()
+
+
     # fill the database with counts
     print('[FUNCTION fillReport] fill database with counts')
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
         delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
         beenThere = True if (delta < 0 or v[9] < 0) else False
+        if k in attackersHisto:
+            histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
+            watcher = sum(histoTmp > 0) / float(len(histo))
+        else:
+            histoTmp = ''
+            watcher = 0
+        graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
         # 0: attacks
         # 1: wins
         # 2: fairFight
@@ -218,11 +241,19 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
                                 overseas=v[6],
                                 respect=v[8],
                                 daysInFaction=v[9],
-                                beenThere=beenThere)
+                                beenThere=beenThere,
+                                graph=graphTmp,
+                                watcher=watcher)
+
+    print('[FUNCTION fillReport] It took {} seconds to fill the count'.format(time.time() - tip))
+    tip = time.time()
 
     # fill the database with bonus
     print('[FUNCTION fillReport] fill database with bonus')
     for b in bonus:
         report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
+
+    print('[FUNCTION fillReport] It took {} seconds to fill the bonus'.format(time.time() - tip))
+    tip = time.time()
 
     return chain, report, (binsCenter, histo)

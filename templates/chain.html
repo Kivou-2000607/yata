@@ -216,11 +216,17 @@
             var memberId = splt.pop();
             var chainId = splt.pop();
             var reload = $("#individal-report-"+memberId);
-            reload.load( "/chain/createIndividualReport/"+chainId+"/"+memberId, {
+            reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
                 html: "ireport_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
-            reload.html('<td colspan="13" style="text-align: center;"><div class="loader"></div></td>');
+            reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
+        });
+
+        // close individual report
+        $(document).on('click', '[id^="individal-report-"]', function(e){
+            e.preventDefault();
+            $(this).html("");
         });
 
         window.setInterval(function(){

@@ -522,10 +522,8 @@ def createReport(request, chainId):
 
 
 # action view
-def createIndividualReport(request, chainId, memberId):
-    import numpy
-
-    if request.session.get('chainer') and request.session['chainer'].get('AA'):
+def renderIndividualReport(request, chainId, memberId):
+    if request.session.get('chainer'):
         # get session info
         factionId = request.session['chainer'].get('factionId')
         key = request.session['chainer'].get('keyValue')
@@ -534,94 +532,49 @@ def createIndividualReport(request, chainId, memberId):
         faction = Faction.objects.filter(tId=factionId).first()
         if faction is None:
             return render(request, 'errorPage.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-        print('[VIEW createIndividualReport] faction {} found'.format(factionId))
+        print('[VIEW renderIndividualReport] faction {} found'.format(factionId))
 
         # get chain
         chain = faction.chain_set.filter(tId=chainId).first()
         if chain is None:
             return render(request, 'errorPage.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId)})
-        print('[VIEW createIndividualReport] chain {} found'.format(chainId))
+        print('[VIEW renderIndividualReport] chain {} found'.format(chainId))
 
-        # case of live chain
-        if int(chainId) == 0:
-            print('[VIEW createIndividualReport] this is a live report')
-            # change dates and status
-            chain.status = True
-            chain.end = int(timezone.now().timestamp())
-            # chain.start = 1
-            chain.endDate = timestampToDate(chain.end)
-            chain.save()
-            # get number of attacks
-            chainInfo = apiCall('faction', factionId, 'chain', key, sub='chain')
-            if 'apiError' in chainInfo:
-                return render(request, 'errorPage.html', chainInfo)
-            stopAfterNAttacks = chainInfo.get('current')
-            print('[VIEW createIndividualReport] stop after {} attacks'.format(stopAfterNAttacks))
-            if stopAfterNAttacks:
-                attacks = apiCallAttacks(factionId, 1, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
-            else:
-                attacks = dict({})
-                chain.delete()
-                return render(request, 'empty.html')
+        # get report
+        report = chain.report_set.filter(chain=chain).first()
+        if report is None:
+            return render(request, 'errorPage.html', {'errorMessage': 'Report of chain {} not found in the database.'.format(chainId)})
+        print('[VIEW renderIndividualReport] report of {} found'.format(chain))
 
-        # case registered chain
+        # create graph
+        count = report.count_set.filter(attackerId=memberId).first()
+        graphSplit = count.graph.split(',')
+        if len(graphSplit) > 1:
+            print('[VIEW renderIndividualReport] data found for graph of length {}'.format(len(graphSplit)))
+            # compute average time for one bar
+            bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
+            graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+            cummulativeHits = 0
+            for line in graphSplit:
+                splt = line.split(':')
+                cummulativeHits += int(splt[1])
+                graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                graph['info']['speedRate'] = speedRate
         else:
-            attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
-            stopAfterNAttacks = False
+            print('[VIEW report] no data found for graph')
+            graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
-        # get individal attacks
-        attacksForHisto = []
-        for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-            attackerId = int(v['attacker_id'])
-            respect = float(v['respect_gain'])
-            if attackerId == int(memberId) and respect > 0.0:
-                attacksForHisto.append(v['timestamp_ended'])
+        # context
+        subcontext = dict({'graph': graph,  # for report
+                           'memberId': memberId})  # for selecting to good div
 
-        # individual histogram
-        diff = int(chain.end - chain.start)
-        binsGapMinutes = 5
-        while diff / (binsGapMinutes * 60) > 256:
-            binsGapMinutes += 5
+        print('[VIEW renderIndividualReport] render')
+        return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
-        bins = [chain.start]
-        for i in range(256):
-            add = bins[i] + (binsGapMinutes * 60)
-            if add > chain.end:
-                break
-            bins.append(add)
-
-        # bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
-        print('[VIEW createIndividualReport] chain delta time: {} second'.format(diff))
-        print('[VIEW createIndividualReport] histogram bins delta time: {} second'.format(binsGapMinutes * 60))
-        print('[VIEW createIndividualReport] histogram number of bins: {}'.format(len(bins) - 1))
-        histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
-        binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
-
-        # render for on the fly modification
-        if request.method == 'POST':
-            if len(binsCenter) > 1:
-                print('[VIEW createIndividualReport] data found for graph of length {}'.format(len(binsCenter)))
-                binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
-                graph = {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
-                         'info': {"binsTime": binsTime, "criticalHits": binsTime / 5}}
-            else:
-                print('[VIEW createIndividualReport] no data found for graph')
-                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
-
-            # context
-            subcontext = dict({'graph': graph,  # for report
-                               'memberId': memberId})  # for selecting to good div
-
-            print('[VIEW createIndividualReport] render')
-            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
-
-        # redirect
-        else:
-            print('[VIEW createIndividualReport] redirect')
-            return HttpResponseRedirect(reverse('chain:report', kwargs={'chainId': chainId}))
 
     else:
-        print('[VIEW createIndividualReport] render error')
+        print('[VIEW renderIndividualReport] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
 

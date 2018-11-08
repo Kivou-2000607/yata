@@ -126,6 +126,8 @@ class Count(models.Model):
     overseas = models.FloatField(default=0)
     daysInFaction = models.IntegerField(default=0)
     beenThere = models.BooleanField(default=False)
+    graph = models.TextField(default="", null=True, blank=True)
+    watcher = models.FloatField(default=0)
 
     def __str__(self):
         return("Count of {}".format(self.report.chain))
