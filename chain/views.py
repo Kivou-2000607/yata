@@ -440,9 +440,9 @@ def createReport(request, chainId):
         print('[VIEW createReport] new report created')
 
         # refresh members
-        members = apiCall('faction', factionId, 'basic', key, sub='members')
-        if 'apiError' in members:
-            return render(request, 'errorPage.html', members)
+        # members = apiCall('faction', factionId, 'basic', key, sub='members')
+        # if 'apiError' in members:
+        #     return render(request, 'errorPage.html', members)
 
         # update members
         membersDB = faction.member_set.all()
@@ -461,31 +461,20 @@ def createReport(request, chainId):
         # case of live chain
         if int(chainId) == 0:
             print('[VIEW createReport] this is a live report')
-            # change dates and status
-            chain.status = True
-            chain.end = int(timezone.now().timestamp())
-            # chain.start = 1
-            chain.endDate = timestampToDate(chain.end)
-            chain.save()
-            # get number of attacks
             chainInfo = apiCall('faction', factionId, 'chain', key, sub='chain')
             if 'apiError' in chainInfo:
                 return render(request, 'errorPage.html', chainInfo)
-            stopAfterNAttacks = chainInfo.get('current')
-            print('[VIEW createReport] stop after {} attacks'.format(stopAfterNAttacks))
-            if stopAfterNAttacks:
-                attacks = apiCallAttacks(factionId, 1, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
-            else:
-                attacks = dict({})
-                chain.delete()
-                return render(request, 'empty.html')
+            # change dates and status
+            chain.status = True
+            chain.end = int(timezone.now().timestamp())
+            chain.endDate = timestampToDate(chain.end)
+            chain.start = int(chainInfo.get("start"))
+            chain.startDate = timestampToDate(chain.start)
+            chain.save()
 
-        # case registered chain
-        else:
-            attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
-            stopAfterNAttacks = False
+        attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
 
-        chain, report, (binsCenter, histo) = fillReport(faction, membersDB, chain, report, attacks, stopAfterNAttacks)
+        chain, report, (binsCenter, histo) = fillReport(faction, membersDB, chain, report, attacks)
 
         # render for on the fly modification
         if request.method == 'POST':
@@ -838,7 +827,7 @@ def refreshTarget(request, targetId):
                                                        lifeMax=int(targetInfo["life"]["maximum"]),
                                                        # status=" ".join(targetInfo["status"]),
                                                        status=targetInfo["status"][0].replace("In hospital", "Hosp"),
-                                                       lastAction=targetInfo["last_action"],
+                                                       lastAction=targetInfo["last_action"]["relative"],
                                                        lastUpdate=int(timezone.now().timestamp()),
                                                        level=targetInfo["level"],
                                                        rank=targetInfo["rank"]
@@ -851,7 +840,7 @@ def refreshTarget(request, targetId):
                 target.life = int(targetInfo["life"]["current"])
                 target.lifeMax = int(targetInfo["life"]["maximum"])
                 target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
-                target.lastAction = targetInfo["last_action"]
+                target.lastAction = targetInfo["last_action"]["relative"]
                 target.lastUpdate = int(timezone.now().timestamp())
                 target.level = targetInfo["level"]
                 target.rank = targetInfo["rank"]
@@ -914,7 +903,7 @@ def refreshAllTargets(request):
                                                            lifeMax=int(targetInfo["life"]["maximum"]),
                                                            # status=" ".join(targetInfo["status"]),
                                                            status=targetInfo["status"][0].replace("In hospital", "Hosp"),
-                                                           lastAction=targetInfo["last_action"],
+                                                           lastAction=targetInfo["last_action"]["relative"],
                                                            lastUpdate=int(timezone.now().timestamp()),
                                                            level=targetInfo["level"],
                                                            rank=targetInfo["rank"]
@@ -927,7 +916,7 @@ def refreshAllTargets(request):
                     target.life = int(targetInfo["life"]["current"])
                     target.lifeMax = int(targetInfo["life"]["maximum"])
                     target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
-                    target.lastAction = targetInfo["last_action"]
+                    target.lastAction = targetInfo["last_action"]["relative"]
                     target.lastUpdate = int(timezone.now().timestamp())
                     target.level = targetInfo["level"]
                     target.rank = targetInfo["rank"]

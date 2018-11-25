@@ -63,7 +63,7 @@ def apiCall(section, id, selections, key, sub=None):
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
 
 
-def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
+def apiCallAttacks(factionId, beginTS, endTS, key):
     import requests
     # WARNING no fallback for this method if api crashed. Will yeld server error.
 
@@ -71,37 +71,42 @@ def apiCallAttacks(factionId, beginTS, endTS, key, stopAfterNAttacks=False):
 
     chain = dict({})
 
-    beginTS = beginTS
-    currentEndTS = endTS + 1  # add one to get last hit
+    # beginTS = beginTS
+    # currentEndTS = endTS + 1  # add one to get last hit
+    # currentBeginTS = beginTS
+    # currentEndTS = endTS + 1  # add one to get last hit
     feedAttacks = True
     i = 1
     nWins = 0
     while feedAttacks:
-        url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, currentEndTS)
+        url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, endTS)
         print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key="+key, "")))
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
-            for k, v in attacks.items():
-                if v["result"] in WINS and float(v["respect_gain"]) > 0.0:
+            for i,( k, v )in enumerate(attacks.items()):
+            # for i,( k, v )in enumerate(sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=False)):
+                # print(i, timestampToDate(v["timestamp_ended"]), v["chain"])
+                if float(v["respect_gain"]) > 0.0:
                     nWins += 1
                 chain[k] = v
-                currentEndTS = min(v["timestamp_ended"], currentEndTS)
-            if(len(attacks) < 1000):
+                beginTS = max(v["timestamp_ended"]+1, beginTS)
+
+                if i==99:
+                    break
+
+            if(len(attacks) < 100):
                 feedAttacks = False
+
             print("[FUNCTION apiCallAttacks] Number of attacks: {}".format(len(attacks)))
             i += 1
         else:
             print("[FUNCTION apiCallAttacks] Number of attacks: {}".format(len(attacks)))
             feedAttacks = False
 
-        if stopAfterNAttacks is not False and nWins >= stopAfterNAttacks:
-            print("[FUNCTION apiCallAttacks] stopped after {} attacks".format(stopAfterNAttacks))
-            feedAttacks = False
-
     return chain
 
 
-def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
+def fillReport(faction, members, chain, report, attacks):
     import time
     from django.utils import timezone
     import numpy
@@ -168,9 +173,6 @@ def fillReport(faction, members, chain, report, attacks, stopAfterNAttacks):
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
-
-            if stopAfterNAttacks is not False and nWRA[0] >= stopAfterNAttacks:
-                break
 
     print('[FUNCTION fillReport] It took {} seconds to build the attacker array'.format(time.time() - tip))
     tip = time.time()
