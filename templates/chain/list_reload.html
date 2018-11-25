@@ -16,11 +16,16 @@
         <tr>
             {% if chain.tId > 1 %}
                 <td><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
-                <td>{{chain.startDate}}</td>
+            {% else %}
+                <td><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
+            {% endif %}
+            <td>{{chain.startDate}}</td>
+            {% if chain.tId > 1 %}
                 <td>{{chain.endDate}}</td>
             {% else %}
-                <td colspan="3" style="text-align: center;"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
+                <td>-</td>
             {% endif %}
+
             <td><b>{{chain.nHits}}</b></td>
             <td><b>{{chain.respect|floatformat:2}}</b></td>
             <td>
