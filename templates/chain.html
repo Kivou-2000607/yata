@@ -187,16 +187,40 @@
             reload.html('<div class="loader"></div>');
         });
 
+        // toggle target refresh status from target list button
+        $(document).on('click', '.target-list-toggle-refresh-status', function(e){
+            e.preventDefault();
+            var targetId = this.href.split("/").pop();
+            var reload = $("#catch-line-target-"+targetId);
+            reload.load( "/chain/toggleTargetRefreshStatus/"+targetId, {
+                html: "targets_reload_line",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
+
         // refresh all targets
-        $(document).on('click', '#targets-refresh', function(e){
+        $(document).on('click', '#targets-refresh-all', function(e){
             e.preventDefault();
             var reload = $("#targets-reload");
-            reload.load( "{% url 'chain:refreshAllTargets' %}", {
+            reload.load( "/chain/refreshTargets/0", {
                 html: "targets_reload",
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             reload.html('<div class="loader"></div>');
         });
+
+        // refresh selected targets
+        $(document).on('click', '#targets-refresh-selected', function(e){
+            e.preventDefault();
+            var reload = $("#targets-reload");
+            reload.load( "/chain/refreshTargets/1", {
+                html: "targets_reload",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<div class="loader"></div>');
+        });
+
 
         // toggle faction key
         $(document).on('click', '.faction-key-toggle', function(e){

@@ -150,5 +150,11 @@ class Target(models.Model):
     lastAction = models.CharField(default="Who knows", max_length=64)
     lastUpdate = models.IntegerField(default=0)
 
+    refreshStatus = models.BooleanField(default=True)
+
     def __str__(self):
         return("Target of {}".format(self.member))
+
+    def toggleRefreshStatus(self):
+        self.refreshStatus = not self.refreshStatus
+        return self.refreshStatus

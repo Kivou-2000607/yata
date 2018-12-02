@@ -77,7 +77,7 @@ def index(request):
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
-                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
 
             else:
@@ -133,8 +133,6 @@ def updateLive(request):  # no context
         return render(request, 'chain/{}.html'.format(request.POST.get("html")), subcontext)
 
     return render(request, 'errorPage.html', {'errorMessage': 'You need to POST.'})
-
-
 
 
 # render view
@@ -317,7 +315,7 @@ def report(request, chainId):
                 splt = line.split(':')
                 cummulativeHits += int(splt[1])
                 graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
-                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
         else:
             print('[VIEW report] no data found for graph')
@@ -481,7 +479,7 @@ def createReport(request, chainId):
             if len(binsCenter) > 1:
                 print('[VIEW createReport] data found for graph of length {}'.format(len(binsCenter)))
                 binsTime = (binsCenter[-1] - binsCenter[0]) / float(60 * (len(histo) - 1))
-                speedRate = numpy.sum(histo)*300/float(binsCenter[-1] - binsCenter[0])  # hits every 5 minutes
+                speedRate = numpy.sum(histo) * 300 / float(binsCenter[-1] - binsCenter[0])  # hits every 5 minutes
                 graph = {'data': [[timestampToDate(a), b, c] for a, b, c in zip(binsCenter, histo, numpy.cumsum(histo))],
                          'info': {'binsTime': binsTime, 'criticalHits': binsTime / 5, 'speedRate': speedRate}}
             else:
@@ -515,7 +513,7 @@ def renderIndividualReport(request, chainId, memberId):
     if request.session.get('chainer'):
         # get session info
         factionId = request.session['chainer'].get('factionId')
-        key = request.session['chainer'].get('keyValue')
+        # key = request.session['chainer'].get('keyValue')
 
         # get faction
         faction = Faction.objects.filter(tId=factionId).first()
@@ -548,7 +546,7 @@ def renderIndividualReport(request, chainId, memberId):
                 splt = line.split(':')
                 cummulativeHits += int(splt[1])
                 graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
-                speedRate = cummulativeHits*300/float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
         else:
             print('[VIEW report] no data found for graph')
@@ -560,7 +558,6 @@ def renderIndividualReport(request, chainId, memberId):
 
         print('[VIEW renderIndividualReport] render')
         return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
-
 
     else:
         print('[VIEW renderIndividualReport] render error')
@@ -737,7 +734,7 @@ def targets(request):
         liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
         if 'apiError' in liveChain:
             return render(request, 'errorPage.html', liveChain)
-        activeChain = bool(liveChain['current'])
+        # activeChain = bool(liveChain['current'])
         liveChain["nextBonus"] = 10
         for i in BONUS_HITS:
             liveChain["nextBonus"] = i
@@ -769,9 +766,11 @@ def targets(request):
         # context
         chainer = Member.objects.filter(tId=playerId).first()
         targets = chainer.target_set.all()
+        targetsR = chainer.target_set.filter(refreshStatus=True)
         allDefenders = [target.targetId for target in targets]
         context = dict({'attacks': attacks,  # list of attacks
                         'targets': targets,
+                        'targetsR': targetsR,
                         'allDefenders': allDefenders,  # list of defenders id
                         'liveChain': liveChain,
                         'view': {'targets': True, 'liveReport': True}})  # views
@@ -811,40 +810,25 @@ def refreshTarget(request, targetId):
                 return render(request, 'errorPage.html', attacks)
 
             # get latest attack to target id
-            findInAttacks = False
+            print('[VIEW refreshTarget] refresh target basic info')
+            target = chainer.target_set.filter(targetId=targetId).first()
+            target.life = int(targetInfo["life"]["current"])
+            target.lifeMax = int(targetInfo["life"]["maximum"])
+            target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
+            target.lastAction = targetInfo["last_action"]["relative"]
+            target.lastUpdate = int(timezone.now().timestamp())
+            target.level = targetInfo["level"]
+            target.rank = targetInfo["rank"]
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
-                    findInAttacks = True
-                    print('[VIEW refreshTarget] target find in attacks and refreshed')
-                    chainer.target_set.filter(targetId=targetId).delete()
-                    target = chainer.target_set.create(targetId=targetId,
-                                                       targetName=v["defender_name"],
-                                                       result=v["result"],
-                                                       endDate=timestampToDate(v["timestamp_ended"]),
-                                                       fairFight=float(v['modifiers']['fairFight']),
-                                                       respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
-                                                       life=int(targetInfo["life"]["current"]),
-                                                       lifeMax=int(targetInfo["life"]["maximum"]),
-                                                       # status=" ".join(targetInfo["status"]),
-                                                       status=targetInfo["status"][0].replace("In hospital", "Hosp"),
-                                                       lastAction=targetInfo["last_action"]["relative"],
-                                                       lastUpdate=int(timezone.now().timestamp()),
-                                                       level=targetInfo["level"],
-                                                       rank=targetInfo["rank"]
-                                                       )
+                    print('[VIEW refreshTarget] refresh traget last attack info')
+                    target.targetName=v["defender_name"]
+                    target.result=v["result"]
+                    target.endDate=timestampToDate(v["timestamp_ended"])
+                    target.fairFight=float(v['modifiers']['fairFight'])
+                    target.respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                     break
-
-            if not findInAttacks:
-                print('[VIEW refreshTarget] target not found in attacks but refreshed')
-                target = chainer.target_set.filter(targetId=targetId).first()
-                target.life = int(targetInfo["life"]["current"])
-                target.lifeMax = int(targetInfo["life"]["maximum"])
-                target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
-                target.lastAction = targetInfo["last_action"]["relative"]
-                target.lastUpdate = int(timezone.now().timestamp())
-                target.level = targetInfo["level"]
-                target.rank = targetInfo["rank"]
-                target.save()
+            target.save()
 
             # render for on the fly modification
             print('[VIEW refreshTarget] render')
@@ -857,11 +841,12 @@ def refreshTarget(request, targetId):
             return HttpResponseRedirect(reverse('chain:list'))
 
     else:
-        print('[VIEW toggleTarget] render error')
+        print('[VIEW refreshTarget] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
+
 # action view
-def refreshAllTargets(request):
+def refreshTargets(request, select):
     if request.session.get('chainer'):
         if request.method == "POST":
             # get info
@@ -870,10 +855,16 @@ def refreshAllTargets(request):
 
             # get member
             chainer = Member.objects.filter(tId=playerId).first()
-            print('[VIEW refreshAllTargets] chainer: {}'.format(chainer))
+            print('[VIEW refreshTargets] chainer: {}'.format(chainer))
 
             # get target if exists
-            targets = chainer.target_set.all()
+            print('[VIEW refreshTargets] select: {}'.format(select))
+            if int(select) == 1:
+                print('[VIEW refreshTargets] selected targets')
+                targets = chainer.target_set.filter(refreshStatus=True)
+            else:
+                print('[VIEW refreshTargets] all targets')
+                targets = chainer.target_set.all()
             for target in targets:
                 # call for target info
                 # call for attacks
@@ -887,54 +878,37 @@ def refreshAllTargets(request):
                     return render(request, 'errorPage.html', attacks)
 
                 # get latest attack to target id
-                findInAttacks = False
+                print('[VIEW refreshTarget] refresh target basic info')
+                target.life = int(targetInfo["life"]["current"])
+                target.lifeMax = int(targetInfo["life"]["maximum"])
+                target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
+                target.lastAction = targetInfo["last_action"]["relative"]
+                target.lastUpdate = int(timezone.now().timestamp())
+                target.level = targetInfo["level"]
+                target.rank = targetInfo["rank"]
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if int(v["defender_id"]) == int(target.targetId) and int(v["chain"]) not in BONUS_HITS:
-                        findInAttacks = True
-                        print('[VIEW refreshAllTarget] target find in attacks and refreshed')
-                        chainer.target_set.filter(targetId=target.targetId).delete()
-                        target = chainer.target_set.create(targetId=target.targetId,
-                                                           targetName=v["defender_name"],
-                                                           result=v["result"],
-                                                           endDate=timestampToDate(v["timestamp_ended"]),
-                                                           fairFight=float(v['modifiers']['fairFight']),
-                                                           respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
-                                                           life=int(targetInfo["life"]["current"]),
-                                                           lifeMax=int(targetInfo["life"]["maximum"]),
-                                                           # status=" ".join(targetInfo["status"]),
-                                                           status=targetInfo["status"][0].replace("In hospital", "Hosp"),
-                                                           lastAction=targetInfo["last_action"]["relative"],
-                                                           lastUpdate=int(timezone.now().timestamp()),
-                                                           level=targetInfo["level"],
-                                                           rank=targetInfo["rank"]
-                                                           )
+                        print('[VIEW refreshTarget] refresh traget last attack info')
+                        target.targetName=v["defender_name"]
+                        target.result=v["result"]
+                        target.endDate=timestampToDate(v["timestamp_ended"])
+                        target.fairFight=float(v['modifiers']['fairFight'])
+                        target.respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                         break
-
-                if not findInAttacks:
-                    print('[VIEW refreshAllTarget] target not found in attacks but refreshed')
-                    target = chainer.target_set.filter(targetId=target.targetId).first()
-                    target.life = int(targetInfo["life"]["current"])
-                    target.lifeMax = int(targetInfo["life"]["maximum"])
-                    target.status = targetInfo["status"][0].replace("In hospital", "Hosp")
-                    target.lastAction = targetInfo["last_action"]["relative"]
-                    target.lastUpdate = int(timezone.now().timestamp())
-                    target.level = targetInfo["level"]
-                    target.rank = targetInfo["rank"]
-                    target.save()
-
+                target.save()
 
             # render for on the fly modification
-            print('[VIEW refreshAllTargets] render')
+            print('[VIEW refreshTargets] render')
             subcontext = dict({"targets": chainer.target_set.all()})
             return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
         # else redirection since no post
         else:
-            print('[VIEW refreshAllTargets] no post')
+            print('[VIEW refreshTargets] no post')
             return HttpResponseRedirect(reverse('chain:list'))
 
     else:
-        print('[VIEW refreshAllTargets] render error')
+        print('[VIEW refreshTargets] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
 
@@ -942,7 +916,7 @@ def refreshAllTargets(request):
 def reloadAllTargets(request):
     if request.session.get('chainer'):
         # get info
-        key = request.session['chainer'].get('keyValue')
+        # key = request.session['chainer'].get('keyValue')
         playerId = request.session['chainer'].get('playerId')
 
         # get member
@@ -983,6 +957,42 @@ def deleteTarget(request, targetId):
 
     else:
         print('[VIEW deleteTarget] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+
+# action view
+def toggleTargetRefreshStatus(request, targetId):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+
+            # get target
+            target = chainer.target_set.filter(targetId=targetId).first()
+
+            # toggle
+            status = target.toggleRefreshStatus()
+            target.save()
+            print('[VIEW toggleTarget] refresh status is now: {}'.format(status))
+
+            # render for on the fly modification
+            print('[VIEW toggleTarget] render')
+            subcontext = dict({"target": target})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+            print('[VIEW toggleTargetRefreshStatus] render')
+            return render(request, 'empty.html')
+
+        # else redirection since no post
+        else:
+            print('[VIEW toggleTargetRefreshStatus] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW toggleTargetRefreshStatus] render error')
         return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
 
 

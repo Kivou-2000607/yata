@@ -53,3 +53,15 @@
         <a class="target-list-delete" href={% url 'chain:deleteTarget' target.targetId %}><i class="fas fa-trash-alt" title="Delete target"></i></a>
     </form>
 </td>
+
+<td style="text-align: center;">
+    <!-- toogle target refresh list -->
+    <form style="display: inline;">{% csrf_token %}
+        <a class="target-list-toggle-refresh-status" href={% url 'chain:toggleTargetRefreshStatus' target.targetId %}>
+            {% if target.refreshStatus %}
+               <i class="fas fa-toggle-on" title="Remove from refresh list"></i>
+           {% else %}
+               <i class="fas fa-toggle-off" title="Add to refresh list"></i>
+           {% endif %}</a>
+    </form>
+</td>
