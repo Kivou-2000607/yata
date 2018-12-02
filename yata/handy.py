@@ -26,11 +26,13 @@ def apiCall(section, id, selections, key, sub=None):
     import requests
     # DEBUG live chain
     # if selections == "chain" and section == "faction":
+    #     from django.utils import timezone
     #     print("[FUNCTION apiCall] DEBUG chain/faction")
     #     chain = dict({"chain": {"current": 3,
     #                             "timeout": 65,
     #                             "modifier": 0.75,
-    #                             "cooldown": 0
+    #                             "cooldown": 0,
+    #                             "start": timezone.now().timestamp()-36000
     #                             }})
     #     return chain[sub] if sub is not None else chain
 
@@ -71,28 +73,16 @@ def apiCallAttacks(factionId, beginTS, endTS, key):
 
     chain = dict({})
 
-    # beginTS = beginTS
-    # currentEndTS = endTS + 1  # add one to get last hit
-    # currentBeginTS = beginTS
-    # currentEndTS = endTS + 1  # add one to get last hit
     feedAttacks = True
     i = 1
-    nWins = 0
     while feedAttacks:
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, endTS)
         print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key="+key, "")))
         attacks = requests.get(url).json()["attacks"]
         if len(attacks):
-            for i,( k, v )in enumerate(attacks.items()):
-            # for i,( k, v )in enumerate(sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=False)):
-                # print(i, timestampToDate(v["timestamp_ended"]), v["chain"])
-                if float(v["respect_gain"]) > 0.0:
-                    nWins += 1
+            for j, ( k, v )in enumerate(attacks.items()):
                 chain[k] = v
                 beginTS = max(v["timestamp_ended"]+1, beginTS)
-
-                if i==99:
-                    break
 
             if(len(attacks) < 100):
                 feedAttacks = False

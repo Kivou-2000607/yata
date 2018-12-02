@@ -44,23 +44,18 @@ class Command(BaseCommand):
                 chain = faction.chain_set.create(tId=0)
 
             # change dates and status
-            chain.status = True
-            chain.end = int(timezone.now().timestamp())
-            chain.start = 1
-            chain.endDate = timestampToDate(chain.end)
-            chain.save()
-            # get number of attacks
             chainInfo = apiCall('faction', factionId, 'chain', key, sub='chain')
             if 'apiError' in chainInfo:
                 print('[COMMAND live] api key error: {}'.format((chainInfo['apiError'])))
                 break
+            chain.status = True
+            chain.end = int(timezone.now().timestamp())
+            chain.endDate = timestampToDate(chain.end)
+            chain.start = int(chainInfo.get("start"))
+            chain.startDate = timestampToDate(chain.start)
+            chain.save()
 
-            stopAfterNAttacks = chainInfo.get('current')
-            print('[COMMAND live] stop after {} attacks'.format(stopAfterNAttacks))
-            if stopAfterNAttacks:
-                attacks = apiCallAttacks(factionId, chain.start, chain.end, key, stopAfterNAttacks=stopAfterNAttacks)
-            else:
-                attacks = dict({})
+            attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
 
             # delete old report and create new
             chain.report_set.all().delete()
@@ -87,6 +82,6 @@ class Command(BaseCommand):
                     print('[VIEW members] member {} created'.format(members[m]['name']))
                     faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
 
-            fillReport(faction, membersDB, chain, report, attacks, stopAfterNAttacks)
+            fillReport(faction, membersDB, chain, report, attacks)
 
             print("[COMMAND live] end")
