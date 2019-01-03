@@ -25,6 +25,7 @@ urlpatterns = [
     # app
     re_path(r'^bazaar/', include('bazaar.urls')),
     re_path(r'^chain/', include('chain.urls')),
+    re_path(r'^awards/', include('awards.urls')),
     path('admin/', admin.site.urls),
 
     # site

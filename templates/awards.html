@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+{% load mathfilters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+
+    <!-- load fontawesome -->
+    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+
+    <!-- load jquery from https://code.jquery.com/ -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    	    crossorigin="anonymous"></script>
+
+    <!-- jquery module to sort tables from http://tablesorter.com -->
+    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
+
+    <!-- google charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <!-- scripts jquery perso -->
+    <script>
+
+        $(document).on('click', '.update-key', function(e){
+            e.preventDefault();
+            var key = $("#key-value").val();
+            var check = $("#key-check-remember").is(':checked');
+            var reload = $("#api-key");
+            $( "#api-key" ).load( "{% url 'awards:updateKey' %}", {
+                keyValue: key,
+                html: "login",
+                rememberSession: check,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            reload.html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
+        });
+
+        $(document).ready(function() {
+            $("#crime-list").tablesorter({sortList: [[0,0], [5,0]]});
+        });
+
+
+    </script>
+
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+
+    <title>Yet Another Torn App</title>
+</head>
+
+<body>
+    <div id="details"></div>
+
+    <div id="container">
+        <div id="content">
+            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp &nbsp; &nbsp; &nbsp; &nbsp;  <a href="{% url 'bazaar:index' %}"><b>bazaar</b></a> - <a href="{% url 'chain:index' %}"><b>chain</b></a> - <a href="{% url 'awards:index' %}"><b>awards</b></a></h1>
+            <p><b>Awards tracker</b>: track the next merits you can get.</p>
+            <br />
+
+            <div id="api-key">
+                {% include "awards/login.html" %}
+            </div>
+
+            {% if crimes %}
+                {% include "awards/crimes.html" %}
+            {% endif %}
+
+
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>

@@ -1,0 +1,28 @@
+<div id="api-key-refresh">
+    {% if request.session.awards %}
+        <h2 class="title">Hello {{request.session.awards.name}}</h2>
+    {% else %}
+        <h2 class="title">Hello unkown user</h2>
+    {% endif %}
+
+    <div class="module whiteBG justTxt">
+        {% if request.session.awards %}
+            <p>
+                <a href="{% url 'awards:crimes' %}">Crimes</a> -
+            </p>
+
+            <h3><a class="deletelink" href="{% url 'awards:logout' %}">Logout</a></h3>
+        {% else %}
+            <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start tracking your awards</p>
+            <form method="post">
+                {% csrf_token %}
+                <input id="key-value" placeholder="API key" type=text>
+                <input id="key-check-remember" type="checkbox" value="Remember me">
+                <label for="key-check-remember">Remember me</label>
+                <!-- <input id="update-key-csrf" type="hidden"  value="{{csrf_token}}"> -->
+                <input type="submit" class="update-key" value="Login">
+                {% if apiError %}<a class="deletelink" href="">{{ apiError }}</a>{% endif %}
+            </form>
+        {% endif %}
+    </div>
+</div>
