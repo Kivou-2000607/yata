@@ -249,3 +249,8 @@ def fillReport(faction, members, chain, report, attacks):
     tip = time.time()
 
     return chain, report, (binsCenter, histo)
+
+
+
+def None2Zero(a):
+    return 0 if a is None else a
