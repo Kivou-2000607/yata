@@ -50,6 +50,7 @@
             $("#crime-list").tablesorter({sortList: [[0,0], [5,0]]});
             $("#drug-list").tablesorter({sortList: [[4,1]]});
             $("#attack-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
+            $("#item-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
         });
 
 
@@ -89,6 +90,10 @@
 
             {% if attacks %}
                 {% include "awards/attacks.html" %}
+            {% endif %}
+
+            {% if items %}
+                {% include "awards/items.html" %}
             {% endif %}
 
 

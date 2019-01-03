@@ -1,0 +1,58 @@
+{% load mathfilters %}
+
+            <h2 class="title">List of items left to do</h2>
+            <div class="module whiteBG">
+                <table class="tablesorter center chain-report">
+                    <thead>
+                        <tr>
+                            <th>Type of Items</th>
+                            <th>Awarded</th>
+                            <th>Awards</th>
+                            <th>Remains</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for itemType, awards in itemsSummary.items %}
+                        {% if awards.nAwards > awards.nAwarded %}
+                            <tr>
+                                <td>{{itemType}}</td>
+                                <td>{{awards.nAwarded}}</td>
+                                <td>{{awards.nAwards}}</td>
+                                <td>{{awards.nAwards|sub:awards.nAwarded}}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <table id="item-list" class="tablesorter chain-report center-large">
+                    <thead>
+                        <tr>
+                            <th>Type of item</th>
+                            <th>Award type</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>State</th>
+                            <th>Goal</th>
+                            <th>Acheive</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for itemType, itemsList in items.items %}
+                        {% for itemId, item in itemsList.items %}
+                            {% if item.achieve < 1 %}
+                                <tr {% if item.awardType == "Honor" %}title='{{item.rarity}}: {{item.circulation}}'{% endif%}>
+                                    <td>{{itemType}}</td>
+                                    <td>{{item.awardType}}</td>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.description}}</td>
+                                    <td>{{item.current}}</td>
+                                    <td>{{item.goal}}</td>
+                                    <td>{{item.achieve|mul:100|floatformat:0}}%</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
