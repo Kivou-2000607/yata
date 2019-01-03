@@ -48,6 +48,7 @@
 
         $(document).ready(function() {
             $("#crime-list").tablesorter({sortList: [[0,0], [5,0]]});
+            $("#drug-list").tablesorter({sortList: [[4,1]]});
         });
 
 
@@ -79,6 +80,10 @@
 
             {% if crimes %}
                 {% include "awards/crimes.html" %}
+            {% endif %}
+
+            {% if drugs %}
+                {% include "awards/drugs.html" %}
             {% endif %}
 
 

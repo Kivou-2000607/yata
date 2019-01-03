@@ -9,6 +9,7 @@
         {% if request.session.awards %}
             <p>
                 <a href="{% url 'awards:crimes' %}">Crimes</a> -
+                <a href="{% url 'awards:drugs' %}">Drugs</a> -
             </p>
 
             <h3><a class="deletelink" href="{% url 'awards:logout' %}">Logout</a></h3>

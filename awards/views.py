@@ -5,28 +5,6 @@ from django.utils import timezone
 import json
 from yata.handy import apiCall
 
-crimeBridgeMedal2App = {
-                    "Computer": "Computer crimes",
-                    "Murder": "Murder",
-                    "Grand theft auto": "Auto theft",
-                    "Theft": "Theft",
-                    "Drug dealing": "Drug deals",
-                    "Arson": "Fraud crimes"
-            }
-
-crimeBridgeApp2API = {
-                    "Computer crimes": "computer_crimes",
-                    "Illegal products": "selling_illegal_products",
-                    "Murder": "murder",
-                    "Auto theft": "auto_theft",
-                    "Theft": "theft",
-                    "Drug deals": "drug_deals",
-                    "Fraud crimes": "fraud_crimes",
-                    "Other": "other",
-                    "Total": "total",
-            }
-
-
 
 def index(request):
     return render(request, 'awards.html')
@@ -38,9 +16,30 @@ def crimes(request):
         allAwards = apiCall('torn', '', 'honors,medals', key)
         if 'apiError' in allAwards:
             return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'crimes,medals,honors', key)
+        myAwards = apiCall('user', '', 'personalstats,crimes,medals,honors', key)
         if 'apiError' in myAwards:
             return render(request, 'errorPage.html', myAwards)
+
+        crimeBridgeMedal2App = {
+                            "Computer": "Computer crimes",
+                            "Murder": "Murder",
+                            "Grand theft auto": "Auto theft",
+                            "Theft": "Theft",
+                            "Drug dealing": "Drug deals",
+                            "Arson": "Fraud crimes"
+                    }
+
+        crimeBridgeApp2API = {
+                            "Computer crimes": "computer_crimes",
+                            "Illegal products": "selling_illegal_products",
+                            "Murder": "murder",
+                            "Auto theft": "auto_theft",
+                            "Theft": "theft",
+                            "Drug deals": "drug_deals",
+                            "Fraud crimes": "fraud_crimes",
+                            "Other": "other",
+                            "Total": "total",
+                    }
 
         # fill crimes awards
         crimes = dict({
@@ -119,7 +118,7 @@ def crimes(request):
                 elif int(k) in [552]  :
                     ctype = "Organised crimes"
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["current"] = "?"
+                    vp["current"] = myAwards["personalstats"].get("organisedcrimes")
                     crimes[ctype]["h_"+k] = vp
 
         for k, v in allAwards["medals"].items():
@@ -150,6 +149,65 @@ def crimes(request):
         return render(request, 'awards.html', out)
 
     return render(request, 'awards.html')
+
+def drugs(request):
+    if request.session.get('awards'):
+        key = request.session['awards'].get('keyValue')
+        allAwards = apiCall('torn', '', 'honors,medals', key)
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+        myAwards = apiCall('user', '', 'personalstats,medals,honors', key)
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
+
+        # fill drugs awards
+        drugs = dict({
+            "Cannabis": dict(),
+            "Ecstasy": dict(),
+            "Ketamine": dict(),
+            "LSD": dict(),
+            "Opium": dict(),
+            "Shrooms": dict(),
+            "Speed": dict(),
+            "PCP": dict(),
+            "Xanax": dict(),
+            "Vicodin": dict(),
+        })
+
+        for k, v in allAwards["honors"].items():
+            if v["type"] == 6:
+                print(k, v)
+                vp = v
+                vp["awardType"] = "Honor"
+
+                if int(k) in [26]:
+                    dtype = "Cannabis"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                elif int(k) in [29, 30, 31, 32, 33, 34, 35, 36, 37, 38]:
+                    dtype = v["description"].split(" ")[-1]
+                    vp["goal"] = 50
+                    key = dtype.lower()[:3]+"taken"
+                    vp["current"] = 0 if myAwards["personalstats"].get(key) is None else myAwards["personalstats"].get(key)
+                    vp["achieve"] = min(1, float(vp["current"])/float(vp["goal"]))
+
+                drugs[dtype]["h_"+k] = vp
+
+
+        drugsSummary = dict()
+        for k, v in drugs.items():
+            n = 0
+            for l, w in v.items():
+                if w["achieve"] == 1:
+                    n += 1
+            drugsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+
+        out = {"drugs": drugs, "drugsSummary": drugsSummary}
+        return render(request, 'awards.html', out)
+
+    return render(request, 'awards.html')
+
 
 
 # UPDATE ON THE FLY
