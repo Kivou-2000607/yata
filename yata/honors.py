@@ -15,11 +15,11 @@ d = {
     274: 739693375,  # Redline
     380: 462192588,  # Ecstatic
     167: 363324386,  # Velutinous
-    312: 0,  # Time Traveller
-    231: 0,  # Discovery
+    312: 834531746,  # Time Traveller
+    231: 175241290,  # Discovery
+    566: 572050307,  # You've Got Some Nerve
     164: 0,  # Keen
     572: 0,  # Motorhead
-    566: 0,  # You've Got Some Nerve
     620: 0,  # OP
     5: 0,  # Journalist
     156: 0,  # RDD
@@ -160,9 +160,9 @@ d = {
     46: 915200783,  # Red Camo
     47: 981248146,  # Blue Camo
     48: 777643835,  # Orange Camo
+    49: 258216045,  # Pink Camo
     50: 0,  # Zebra Skin
     51: 0,  # Leopard Skin
-    49: 0,  # Pink Camo
     52: 0,  # Tiger Skin
 
     # 4
@@ -173,14 +173,14 @@ d = {
     64: 478147325,  # Sports Bachelor
     63: 577782139,  # Psychology Bachelor
     54: 400541661,  # Business Bachelor
-    57: 0,  # Defense Bachelor
-    58: 0,  # General Bachelor
-    53: 0,  # Biology Bachelor
-    59: 0,  # Fitness Bachelor
-    61: 0,  # Law Bachelor
-    62: 0,  # Mathematics Bachelor
-    530: 0,  # Talented
-    525: 0,  # Tireless
+    57: 356727252,  # Defense Bachelor
+    58: 106391733,  # General Bachelor
+    53: 822324233,  # Biology Bachelor
+    59: 160303661,  # Fitness Bachelor
+    61: 147044720,  # Law Bachelor
+    62: 720247983,  # Mathematics Bachelor
+    530: 120872843,  # Talented
+    525: 301786663,  # Tireless
     533: 0,  # Tough
 
     # 5
@@ -191,11 +191,11 @@ d = {
     24: 455713236,  # Fire Starter
     552: 409748477,  # Mastermind
     153: 193222093,  # Escobar
-    2: 0,  # Smokin' Barrels
-    158: 0,  # Breaking And Entering
+    2: 529618516,  # Smokin' Barrels
+    158: 374334948,  # Breaking And Entering
+    155: 282251659,  # We Have A Breach
     154: 0,  # Stroke Bringer
     6: 0,  # Find A Penny, Pick It Up
-    155: 0,  # We Have A Breach
     160: 0,  # Joy Rider
     152: 0,  # Civil Offence
     159: 0,  # Professional
@@ -205,7 +205,7 @@ d = {
     30: 196995484,  # Party Animal
     29: 750345257,  # Who's Frank?
     26: 499675289,  # Spaced Out
-    38: 0,  # Painkiller
+    38: 147355307,  # Painkiller
     32: 0,  # Acid Dream
     31: 0,  # Horse Tranquilizer
     34: 0,  # I Think I See Dead People
@@ -256,8 +256,8 @@ d = {
     477: 352979366,  # Massacre
     478: 171416497,  # Genocide
     232: 519824611,  # Bounty Hunter
-    22: 0,  # Self Defense
-    270: 0,  # Deadlock
+    22: 907689909,  # Self Defense
+    270: 813450559,  # Deadlock
     228: 0,  # 007
     17: 0,  # Kill Streaker 3
     490: 0,  # Sidekick
@@ -310,12 +310,12 @@ d = {
     218: 294488415,  # Three's a Crowd
     219: 534607883,  # Social Butterfly
     246: 536984897,  # Pyramid Scheme
-    166: 0,  # Stairway To Heaven
+    166: 507297243,  # Stairway To Heaven
 
     # 12
     18: 978797305,  # Another Brick In The Wall
     259: 587092963,  # Half Way There
-    13: 0,  # The Beautiful City
+    13: 257829928,  # The Beautiful City
     264: 0,  # The Whole Nine Yards
     265: 0,  # To The Limit
 
@@ -335,14 +335,14 @@ d = {
     213: 576433461,  # Allure
     284: 485677656,  # Electric Dream
     315: 232432811,  # Glimmer
-    212: 0,  # Mission Accomplished
-    214: 0,  # Jack Of All Trades
+    212: 153743487,  # Mission Accomplished
+    214: 241772067,  # Jack Of All Trades
+    306: 412574893,  # Resistance
+    321: 195063590,  # Supernova
     224: 0,  # Proven Capacity
     225: 0,  # Master Of One
     278: 0,  # Globally Effective
-    306: 0,  # Resistance
     279: 0,  # Domination
-    321: 0,  # Supernova
     294: 0,  # Pepperoni
     263: 0,  # Survivor
     277: 0,  # Departure
@@ -363,9 +363,9 @@ d = {
     418: 832724939,  # Transfusion
     7: 559177183,  # Magical Veins
     398: 670385087,  # Anaemic
-    4: 0,  # I'm a Real Doctor
-    248: 0,  # Bar Breaker
-    252: 0,  # Freedom Isn't Free
+    4: 408554952,  # I'm a Real Doctor
+    248: 922672544,  # Bar Breaker
+    252: 937648106,  # Freedom Isn't Free
     249: 0,  # Aiding And Abetting
     23: 0,  # Florence Nightingale
     267: 0,  # Second Chance
