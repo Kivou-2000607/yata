@@ -47,12 +47,23 @@
         });
 
         $(document).ready(function() {
-            $("#crime-list").tablesorter({sortList: [[0,0], [5,0]]});
-            $("#drug-list").tablesorter({sortList: [[4,1]]});
-            $("#attack-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
-            $("#item-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
+            $("#award-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
         });
 
+        $(document).on('click', '#toggle-awards-done', function(e){
+            e.preventDefault();
+            $("tr.awards-done").slideToggle('fast', function() {});
+            $("tr.awards-done").promise().done(function() {
+                var icon = $("#awards-done-icon");
+                if (icon.hasClass("fas fa-toggle-on")) {
+                    icon.removeClass("fas fa-toggle-on");
+                    icon.addClass("fas fa-toggle-off");
+                } else {
+                    icon.removeClass("fas fa-toggle-off");
+                    icon.addClass("fas fa-toggle-on");
+                }
+            });
+        });
 
     </script>
 
@@ -80,20 +91,8 @@
                 {% include "awards/login.html" %}
             </div>
 
-            {% if crimes %}
-                {% include "awards/crimes.html" %}
-            {% endif %}
-
-            {% if drugs %}
-                {% include "awards/drugs.html" %}
-            {% endif %}
-
-            {% if attacks %}
-                {% include "awards/attacks.html" %}
-            {% endif %}
-
-            {% if items %}
-                {% include "awards/items.html" %}
+            {% if awards %}
+                {% include "awards/awards-list.html" %}
             {% endif %}
 
 

@@ -7,11 +7,14 @@
 
     <div class="module whiteBG justTxt">
         {% if request.session.awards %}
-            <p>
+        <p>
+            Browse through the following award sections to check your stats:
                 <a href="{% url 'awards:crimes' %}">Crimes</a> -
                 <a href="{% url 'awards:drugs' %}">Drugs</a> -
                 <a href="{% url 'awards:attacks' %}">Attacks</a> -
                 <a href="{% url 'awards:items' %}">Items</a> -
+                <a href="{% url 'awards:travel' %}">Travel</a> -
+                <a href="{% url 'awards:education' %}">Education</a> -
             </p>
 
             <h3><a class="deletelink" href="{% url 'awards:logout' %}">Logout</a></h3>

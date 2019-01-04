@@ -444,3 +444,24 @@ div.loader{
     padding:10px;
     background: url("https://www.torn.com/images/v2/main/ajax-loader.gif") center no-repeat;
 }
+
+tr.award-medal  { background:#ffffff22;  }
+tr.award-medal:hover  { background:#dddddd22; }
+tr.award-honor  { background:#cccccc22;  }
+tr.award-honor:hover  { background:#aaaaaa22; }
+
+tr.awards-done {
+
+    color: #0B8E14;
+}
+tr.awards-done       { background:#d9ead3!important; display: none; }
+tr.awards-done:hover { background:#b6d7a8!important; }
+
+td.awards-done {
+    color: #0B8E14;
+    font-weight: bold;
+}
+td.awards-todo {
+    color: #8E0B14;
+    font-weight: bold;
+}

@@ -9,6 +9,8 @@ urlpatterns = [
     re_path(r'^drugs/$', views.drugs, name='drugs'),
     re_path(r'^attacks/$', views.attacks, name='attacks'),
     re_path(r'^items/$', views.items, name='items'),
+    re_path(r'^travel/$', views.travel, name='travel'),
+    re_path(r'^education/$', views.education, name='education'),
 
     re_path(r'^updateKey/$', views.updateKey, name='updateKey'),
     re_path(r'^logout/$', views.logout, name='logout'),

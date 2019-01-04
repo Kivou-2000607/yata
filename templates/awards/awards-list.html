@@ -1,0 +1,58 @@
+{% load mathfilters %}
+{% load humanize %}
+            <h2 class="title">List of awards left <span id="toggle-awards-done" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> Show achieved awards</span></h2>
+            <div class="module whiteBG">
+                <table class="tablesorter center awards-report">
+                    <thead>
+                        <tr>
+                            <th colspan="4">Summary by award category (done / total / remains)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for awardType, awards in awardsSummary.items %}
+                            {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                                <td class="{% if awards.nAwarded == awards.nAwards %}awards-done{% else %}awards-todo{% endif %}">
+                                    {{awardType}}: {{awards.nAwarded}} / {{awards.nAwards}} / {{awards.nAwards|sub:awards.nAwarded}}
+                                </td>
+                            {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+                       {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <table id="award-list" class="tablesorter awards-report center-large">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>State</th>
+                            <th>Goal</th>
+                            <th>Achieve</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for awardType, awardsList in awards.items %}
+                        {% for awardId, award in awardsList.items %}
+                            <tr class="{% if award.achieve == 1 %}awards-done{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
+                                <td>{{awardType}}</td>
+                                <td>{{award.awardType}} [{{awardId}}]</td>
+                                {% if award.awardType == "Honor" %}
+                                    {% if award.img == None %}
+                                        <td>{{award.title}}</td>
+                                    {% else %}
+                                        <td><img src="https://awardimages.torn.com/{{award.img}}.png" title="{{award.title}}" style="margin:0px, padding:0px"></td>
+                                    {% endif %}
+                                {% else %}
+                                    <td>{{award.name}}</td>
+                                {% endif %}
+                                <td>{{award.description}}</td>
+                                <td>{{award.current}}</td>
+                                <td>{{award.goal}}</td>
+                                <td>{{award.achieve|mul:100|floatformat:0}}%</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
