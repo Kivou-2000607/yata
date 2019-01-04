@@ -778,7 +778,6 @@ def education(request):
                     type = "Stats"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     key = "_".join(v["description"].split(" ")[2:]).replace("ou", "o")
-                    print(key)
                     vp["current"] = None2Zero(myAwards.get(key))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
@@ -789,7 +788,6 @@ def education(request):
                     vp["current"] = None2Zero(len(myAwards.get("education_completed")))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
-
 
                 else:
                     print(k, v)
@@ -822,6 +820,78 @@ def education(request):
 
     return render(request, 'awards.html')
 
+
+def gym(request):
+    if request.session.get('awards'):
+        key = request.session['awards'].get('keyValue')
+        allAwards = apiCall('torn', '', 'honors,medals', key)
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+        myAwards = apiCall('user', '', 'battlestats,medals,honors', key)
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
+
+        awards = dict({
+            "Memberships": dict(),
+            "Defense": dict(),
+            "Dexterity": dict(),
+            "Speed": dict(),
+            "Strength": dict(),
+            "Total stats": dict()})
+
+        for k, v in allAwards["honors"].items():
+            if int(v["type"]) in [10]:
+                vp = v
+                vp["awardType"] = "Honor"
+                vp["img"] = honorId2Img(int(k))
+                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
+
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640 ,643, 646, 686, 687, 694, 720, 723]:
+                    # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
+                    type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    key = v["description"].split(" ")[2].lower()
+                    vp["current"] = None2Zero(myAwards.get(key)).split(".")[0]
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+                elif int(k) in [233, 234, 235]:
+                    # 233 {'name': 'Bronze Belt', 'description': 'Own all lightweight gym memberships', 'type': 10, 'circulation': 61239, 'rarity': 'Common', 'awardType': 'Honor', 'img': 439667520, 'title': 'Bronze Belt [233]: Common (61239)'}
+                    type = "Memberships"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
+                else:
+                    print(k, v)
+
+        # for k, v in allAwards["medals"].items():
+        #     if v["type"] == "OTR":
+        #         vp = v
+        #         vp["awardType"] = "Medal"
+        #
+        #         if int(k) in [207, 208, 209]:
+        #             # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
+        #             type = "Time"
+        #             vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
+        #             vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
+        #             vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+        #             awards[type]["m_" + k] = vp
+        #         else:
+        #             print(k, v)
+
+        awardsSummary = dict()
+        for k, v in awards.items():
+            n = 0
+            for l, w in v.items():
+                if w["achieve"] == 1:
+                    n += 1
+            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+
+        out = {"awards": awards, "awardsSummary": awardsSummary}
+        return render(request, 'awards.html', out)
+
+    return render(request, 'awards.html')
 
 # UPDATE ON THE FLY
 def updateKey(request):

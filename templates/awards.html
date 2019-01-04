@@ -47,8 +47,27 @@
         });
 
         $(document).ready(function() {
-            $("#award-list").tablesorter({sortList: [[0,0], [4,0], [5,0]]});
+            $.tablesorter.addParser({
+              // set a unique id
+              id: "bignumbers",
+              is: function(s) {
+                return /^[0-9]?[0-9,\.]*$/.test(s);
+              },
+              format: function(s) {
+                return $.tablesorter.formatFloat( s.replace(/,/g,'') );
+              },
+              type: "numeric"
+            });
+
+            $("#award-list").tablesorter({
+                headers: {
+                    4: { sorter: "bignumbers" },
+                    5: { sorter: "bignumbers" },
+                },
+                sortList: [[0,0], [4,0], [5,0]],
+            });
         });
+
 
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();

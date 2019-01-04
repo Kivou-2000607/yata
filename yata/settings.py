@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "torn-yata.herokuapp.com"]
 INSTALLED_APPS = [
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
+    'awards.apps.AwardsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
