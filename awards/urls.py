@@ -12,6 +12,7 @@ urlpatterns = [
     re_path(r'^travel/$', views.travel, name='travel'),
     re_path(r'^education/$', views.education, name='education'),
     re_path(r'^gym/$', views.gym, name='gym'),
+    re_path(r'^money/$', views.money, name='money'),
 
     re_path(r'^updateKey/$', views.updateKey, name='updateKey'),
     re_path(r'^logout/$', views.logout, name='logout'),

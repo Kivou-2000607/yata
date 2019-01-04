@@ -12,7 +12,7 @@
                         {% for awardType, awards in awardsSummary.items %}
                             {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
                                 <td class="{% if awards.nAwarded == awards.nAwards %}awards-done{% else %}awards-todo{% endif %}">
-                                    {{awardType}}: {{awards.nAwarded}} / {{awards.nAwards}} / {{awards.nAwards|sub:awards.nAwarded}}
+                                    <span style="cursor: pointer;">&nbsp; &nbsp; <i id="award-category-{{awardType|cut:" "}}" class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i> {{awardType}}: {{awards.nAwarded}} / {{awards.nAwards}} / {{awards.nAwards|sub:awards.nAwarded}}</span>
                                 </td>
                             {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
                        {% endfor %}
@@ -34,7 +34,7 @@
                     <tbody>
                     {% for awardType, awardsList in awards.items %}
                         {% for awardId, award in awardsList.items %}
-                            <tr class="{% if award.achieve == 1 %}awards-done{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
+                            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
                                 <td>{{awardType}}</td>
                                 <td>{{award.awardType}} [{{awardId}}]</td>
                                 {% if award.awardType == "Honor" %}
@@ -47,8 +47,8 @@
                                     <td>{{award.name}}</td>
                                 {% endif %}
                                 <td>{{award.description}}</td>
-                                <td>{{award.current|intcomma}}</td>
-                                <td>{{award.goal|intcomma}}</td>
+                                <td>{{award.head}}{{award.current|intcomma}}</td>
+                                <td>{{award.head}}{{award.goal|intcomma}}</td>
                                 <td>{{award.achieve|mul:100|floatformat:0}}%</td>
                             </tr>
                         {% endfor %}

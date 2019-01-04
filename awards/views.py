@@ -5,6 +5,7 @@ import json
 from yata.handy import apiCall
 from yata.handy import None2Zero
 from yata.handy import honorId2Img
+from yata.handy import createAwardSummary
 
 
 def index(request):
@@ -157,16 +158,7 @@ def crimes(request):
                 else:
                     print(k, v)
 
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
-
-        for k, v in awardsSummary.items():
-            print(k, v)
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -221,13 +213,7 @@ def drugs(request):
                 else:
                     print(k, v)
 
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -355,6 +341,7 @@ def attacks(request):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", "").replace("$", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("totalbountyreward"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["head"] = "$"
                     awards[type]["h_" + k] = vp
                 elif int(k) in [247]:
                     # 247 {'name': 'Blood Money', 'description': 'Make $1,000,000 from a single mugging', 'type': 8, 'circulation': 32879, 'rarity': 'Common', 'awardType': 'Honor'}
@@ -362,6 +349,7 @@ def attacks(request):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", "").replace("$", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("largestmug"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["head"] = "$"
                     awards[type]["h_" + k] = vp
                 elif int(k) in [270]:
                     # 270 {'name': 'Deadlock', 'description': 'Stalemate 100 times', 'type': 8, 'circulation': 5194, 'rarity': 'Rare', 'awardType': 'Honor'}
@@ -480,13 +468,7 @@ def attacks(request):
                 else:
                     print(k, v)
 
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -647,13 +629,7 @@ def items(request):
                 else:
                     print(k, v)
 
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -696,7 +672,7 @@ def travel(request):
                     # 567 {'name': 'Frequent Flyer', 'description': 'Spend 31 days in the air', 'type': 7, 'circulation': 9638, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 891235999, 'title': 'Frequent Flyer [567]: Limited (9638)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = int(None2Zero(myAwards["personalstats"].get("traveltime"))/(3600*24))
+                    vp["current"] = int(None2Zero(myAwards["personalstats"].get("traveltime")) / (3600 * 24))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
@@ -727,13 +703,7 @@ def travel(request):
                 else:
                     print(k, v)
 
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -792,28 +762,7 @@ def education(request):
                 else:
                     print(k, v)
 
-        # for k, v in allAwards["medals"].items():
-        #     if v["type"] == "OTR":
-        #         vp = v
-        #         vp["awardType"] = "Medal"
-        #
-        #         if int(k) in [207, 208, 209]:
-        #             # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
-        #             type = "Time"
-        #             vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
-        #             vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
-        #             vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-        #             awards[type]["m_" + k] = vp
-        #         else:
-        #             print(k, v)
-
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
@@ -846,7 +795,7 @@ def gym(request):
                 vp["img"] = honorId2Img(int(k))
                 vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
-                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640 ,643, 646, 686, 687, 694, 720, 723]:
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -865,33 +814,106 @@ def gym(request):
                 else:
                     print(k, v)
 
-        # for k, v in allAwards["medals"].items():
-        #     if v["type"] == "OTR":
-        #         vp = v
-        #         vp["awardType"] = "Medal"
-        #
-        #         if int(k) in [207, 208, 209]:
-        #             # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
-        #             type = "Time"
-        #             vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
-        #             vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
-        #             vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-        #             awards[type]["m_" + k] = vp
-        #         else:
-        #             print(k, v)
-
-        awardsSummary = dict()
-        for k, v in awards.items():
-            n = 0
-            for l, w in v.items():
-                if w["achieve"] == 1:
-                    n += 1
-            awardsSummary[k] = {"nAwarded": n, "nAwards": len(v)}
+        awardsSummary = createAwardSummary(awards)
 
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
     return render(request, 'awards.html')
+
+
+def money(request):
+    if request.session.get('awards'):
+        key = request.session['awards'].get('keyValue')
+        allAwards = apiCall('torn', '', 'honors,medals', key)
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+        myAwards = apiCall('user', '', 'personalstats,networth,medals,honors', key)
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
+
+        awards = dict({
+            "Stocks": dict(),
+            "Bank": dict(),
+            "Loan": dict(),
+            "Networth": dict()})
+
+        for k, v in allAwards["honors"].items():
+            if int(v["type"]) in [14]:
+                vp = v
+                vp["awardType"] = "Honor"
+                vp["img"] = honorId2Img(int(k))
+                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
+
+                if int(k) in [546]:
+                    # 546 {'name': 'Dividend', 'description': 'Receive 100 stock payouts ', 'type': 14, 'circulation': 8295, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 543547927, 'title': 'Dividend [546]: Limited (8295)'}
+                    type = "Stocks"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("stockpayouts"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [3, 19, 546]:
+                    # 3 {'name': 'Moneybags', 'description': 'Achieve excellent success in the stock market', 'type': 14, 'circulation': 20747, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 234842928, 'title': 'Moneybags [3]: Uncommon (20747)'}
+                    # 19 {'name': 'Stock Analyst', 'description': 'Buy and sell shares actively in the stock market', 'type': 14, 'circulation': 2446, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 890959235, 'title': 'Stock Analyst [19]: Rare (2446)'}
+                    type = "Stocks"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [10]:
+                    # 10 {'name': 'Green, Green Grass', 'description': 'Make an investment in the city bank of over $1,000,000,000', 'type': 14, 'circulation': 21990, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 927018892, 'title': 'Green, Green Grass [10]: Uncommon (21990)'}
+                    type = "Bank"
+                    vp["goal"] = int(v["description"].split(" ")[-1].replace(",", "").replace("$", ""))
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = None2Zero(myAwards["networth"].get("bank"))
+                    vp["head"] = "$"
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [12]:
+                    # 12 {'name': 'Pocket Money', 'description': 'Make an investment in the city bank', 'type': 14, 'circulation': 182442, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 533285823, 'title': 'Pocket Money [12]: Very Common (182442)'}
+                    type = "Bank"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [8]:
+                    # 8 {'name': 'Loan Shark', 'description': 'Achieve a high credit score with Duke', 'type': 14, 'circulation': 10499, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 602403620, 'title': 'Loan Shark [8]: Limited (10499)'}
+                    type = "Loan"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
+                else:
+                    print(k, v)
+
+        for k, v in allAwards["medals"].items():
+            if v["type"] == "NTW":
+                vp = v
+                vp["awardType"] = "Medal"
+
+                if int(k) in [89, 90, 91, 92, 93, 94, 95, 96, 236, 237, 238, 239, 240, 241]:
+                    # 89 {'name': 'Apprentice', 'description': 'Have a recorded networth value of $100,000 for at least 3 days', 'type': 'NTW', 'awardType': 'Medal'}
+                    type = "Networth"
+                    vp["goal"] = int(v["description"].split(" ")[6].replace(",", "").replace("$", ""))
+                    vp["current"] = None2Zero(myAwards["networth"].get("total"))
+                    vp["achieve"] = 1 if int(k) in myAwards["medals_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["head"] = "$"
+                    awards[type]["m_" + k] = vp
+
+                else:
+                    print(k, v)
+
+        awardsSummary = createAwardSummary(awards)
+
+        out = {"awards": awards, "awardsSummary": awardsSummary}
+        return render(request, 'awards.html', out)
+
+    return render(request, 'awards.html')
+
 
 # UPDATE ON THE FLY
 def updateKey(request):

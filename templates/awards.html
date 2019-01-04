@@ -54,7 +54,7 @@
                 return /^[0-9]?[0-9,\.]*$/.test(s);
               },
               format: function(s) {
-                return $.tablesorter.formatFloat( s.replace(/,/g,'') );
+                return $.tablesorter.formatFloat( s.replace(/,/g,'').replace(/\$/g,'') );
               },
               type: "numeric"
             });
@@ -71,17 +71,39 @@
 
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();
-            $("tr.awards-done").slideToggle('fast', function() {});
-            $("tr.awards-done").promise().done(function() {
+            var cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
+            $("tr.award-done").promise().done(function() {
                 var icon = $("#awards-done-icon");
                 if (icon.hasClass("fas fa-toggle-on")) {
                     icon.removeClass("fas fa-toggle-on");
                     icon.addClass("fas fa-toggle-off");
+                    $("tr.award-done").slideUp('fast', function() {});
                 } else {
                     icon.removeClass("fas fa-toggle-off");
                     icon.addClass("fas fa-toggle-on");
+                    $("tr.award-done."+cat.attr('id')).slideDown('fast', function() {});
                 }
             });
+        });
+
+        $(document).on('click', '[id^="award-category-"]', function(e){
+            e.preventDefault();
+            $("tr.award-todo").show('fast', function() {});
+            $('[id^="award-category-"]').removeClass("fas fa-toggle-on");
+            $('[id^="award-category-"]').addClass("fas fa-toggle-off");
+            var id = $(this).attr("id");
+            var icon = $("#awards-done-icon");
+            var localIcon = $("#"+id);
+            if (icon.hasClass("fas fa-toggle-on")) {
+                // alert("with done");
+                $("tr.award-done").show('fast', function() {});
+                $('tr[class^="award-"]:not(.'+id+')').hide();
+            } else {
+                // alert("without done "+id);
+                $('tr.award-todo:not(.'+id+')').hide();
+            }
+            localIcon.removeClass("fas fa-toggle-off");
+            localIcon.addClass("fas fa-toggle-on");
         });
 
     </script>
