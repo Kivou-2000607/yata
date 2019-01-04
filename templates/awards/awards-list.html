@@ -12,7 +12,7 @@
                         {% for awardType, awards in awardsSummary.items %}
                             {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
                                 <td class="{% if awards.nAwarded == awards.nAwards %}awards-done{% else %}awards-todo{% endif %}">
-                                    <span style="cursor: pointer;">&nbsp; &nbsp; <i id="award-category-{{awardType|cut:" "}}" class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i> {{awardType}}: {{awards.nAwarded}} / {{awards.nAwards}} / {{awards.nAwards|sub:awards.nAwarded}}</span>
+                                    <span id="award-category-{{awardType|cut:" "}}" style="cursor: pointer;">&nbsp; &nbsp; <i id="award-category-{{awardType|cut:" "}}" class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i> {{awardType}}: {{awards.nAwarded}} / {{awards.nAwards}} / {{awards.nAwards|sub:awards.nAwarded}}</span>
                                 </td>
                             {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
                        {% endfor %}

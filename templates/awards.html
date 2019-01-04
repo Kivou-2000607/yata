@@ -72,6 +72,7 @@
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();
             var cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
+            alert(cat.attr("id"));
             $("tr.award-done").promise().done(function() {
                 var icon = $("#awards-done-icon");
                 if (icon.hasClass("fas fa-toggle-on")) {
@@ -86,20 +87,18 @@
             });
         });
 
-        $(document).on('click', '[id^="award-category-"]', function(e){
+        $(document).on('click', 'span[id^="award-category-"]', function(e){
             e.preventDefault();
             $("tr.award-todo").show('fast', function() {});
-            $('[id^="award-category-"]').removeClass("fas fa-toggle-on");
-            $('[id^="award-category-"]').addClass("fas fa-toggle-off");
+            $('[id^="award-category-"]').children("i").removeClass("fas fa-toggle-on");
+            $('[id^="award-category-"]').children("i").addClass("fas fa-toggle-off");
             var id = $(this).attr("id");
             var icon = $("#awards-done-icon");
-            var localIcon = $("#"+id);
+            var localIcon = $("#"+id).children("i");
             if (icon.hasClass("fas fa-toggle-on")) {
-                // alert("with done");
                 $("tr.award-done").show('fast', function() {});
                 $('tr[class^="award-"]:not(.'+id+')').hide();
             } else {
-                // alert("without done "+id);
                 $('tr.award-todo:not(.'+id+')').hide();
             }
             localIcon.removeClass("fas fa-toggle-off");

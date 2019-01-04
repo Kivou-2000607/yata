@@ -3,6 +3,7 @@
 html, body{
   min-height: 100%;
   background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
+  font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
 }
 body{
   position: relative;

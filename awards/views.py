@@ -542,13 +542,6 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("dumpfinds"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
-                elif int(k) in [239]:
-                    # 239 {'name': 'Middleman', 'description': 'Have 100 customers buy from your bazaar', 'type': 16, 'circulation': 27683, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
-                    type = "Miscellaneous"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = None2Zero(myAwards["personalstats"].get("bazaarcustomers"))
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    awards[type]["h_" + k] = vp
                 elif int(k) in [271]:
                     # 271 {'name': 'Eco Friendly', 'description': 'Trash 5,000 items', 'type': 16, 'circulation': 14796, 'rarity': 'Uncommon', 'awardType': 'Honor', 'achieve': 0}
                     type = "City"
@@ -711,23 +704,24 @@ def travel(request):
     return render(request, 'awards.html')
 
 
-def education(request):
+def work(request):
     if request.session.get('awards'):
         key = request.session['awards'].get('keyValue')
         allAwards = apiCall('torn', '', 'honors,medals', key)
         if 'apiError' in allAwards:
             return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'workstats,education,medals,honors', key)
+        myAwards = apiCall('user', '', 'workstats,personalstats,education,medals,honors', key)
         if 'apiError' in myAwards:
             return render(request, 'errorPage.html', myAwards)
 
         awards = dict({
             "Bachelors": dict(),
-            "Stats": dict(),
-            "Courses": dict()})
+            "Courses": dict(),
+            "Working stats": dict(),
+            "City jobs": dict()})
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [4]:
+            if int(v["type"]) in [0, 4, 15]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -740,17 +734,6 @@ def education(request):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
-
-                elif int(k) in [525, 530, 533]:
-                    # 525 {'name': 'Tireless', 'description': 'Attain 100,000 endurance', 'type': 4, 'circulation': 8731, 'rarity': 'Limited', 'awardType': 'Honor', 'img': None, 'title': 'Tireless [525]: Limited (8731)'}
-                    # 530 {'name': 'Talented', 'description': 'Attain 100,000 intelligence', 'type': 4, 'circulation': 11171, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': None, 'title': 'Talented [530]: Uncommon (11171)'}
-                    # 533 {'name': 'Tough', 'description': 'Attain 100,000 manual labour', 'type': 4, 'circulation': 7204, 'rarity': 'Limited', 'awardType': 'Honor', 'img': None, 'title': 'Tough [533]: Limited (7204)'}
-                    type = "Stats"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    key = "_".join(v["description"].split(" ")[2:]).replace("ou", "o")
-                    vp["current"] = None2Zero(myAwards.get(key))
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    awards[type]["h_" + k] = vp
                 elif int(k) in [653]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
@@ -758,7 +741,44 @@ def education(request):
                     vp["current"] = None2Zero(len(myAwards.get("education_completed")))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
-
+                elif int(k) in [4]:
+                    # 4 {'name': "I'm a Real Doctor", 'description': 'Steal 500 medical items', 'type': 15, 'circulation': 24996, 'rarity': 'Common', 'awardType': 'Honor', 'img': 408554952, 'title': "I'm a Real Doctor [4]: Common (24996)"}
+                    type = "City jobs"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("medstolen"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+                elif int(k) in [23, 267]:
+                    # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 15, 'circulation': 1053, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Florence Nightingale [23]: Extraordinary (1053)'}
+                    type = "City jobs"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("revives"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+                elif int(k) in [164]:
+                    # 164 {'name': 'Keen', 'description': 'Spy on people while in the army 100 times', 'type': 0, 'circulation': 2066, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Keen [164]: Extraordinary (2066)'}
+                    type = "City jobs"
+                    vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("?"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+                elif int(k) in [220]:
+                    # 220 {'name': 'The Affronted', 'description': 'Infuriate all interviewers in starter jobs', 'type': 0, 'circulation': 4630, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 384148528, 'title': 'The Affronted [220]: Rare (4630)'}
+                    type = "City jobs"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+                elif int(k) in [525, 530, 533]:
+                    # 525 {'name': 'Tireless', 'description': 'Attain 100,000 endurance', 'type': 4, 'circulation': 8731, 'rarity': 'Limited', 'awardType': 'Honor', 'img': None, 'title': 'Tireless [525]: Limited (8731)'}
+                    # 530 {'name': 'Talented', 'description': 'Attain 100,000 intelligence', 'type': 4, 'circulation': 11171, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': None, 'title': 'Talented [530]: Uncommon (11171)'}
+                    # 533 {'name': 'Tough', 'description': 'Attain 100,000 manual labour', 'type': 4, 'circulation': 7204, 'rarity': 'Limited', 'awardType': 'Honor', 'img': None, 'title': 'Tough [533]: Limited (7204)'}
+                    type = "Working stats"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    key = "_".join(v["description"].split(" ")[2:]).replace("ou", "o")
+                    vp["current"] = None2Zero(myAwards.get(key))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
                 else:
                     print(k, v)
 
@@ -835,11 +855,11 @@ def money(request):
         awards = dict({
             "Stocks": dict(),
             "Bank": dict(),
-            "Loan": dict(),
+            "Miscellaneous": dict(),
             "Networth": dict()})
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [14]:
+            if int(v["type"]) in [14, 16]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -881,10 +901,18 @@ def money(request):
 
                 elif int(k) in [8]:
                     # 8 {'name': 'Loan Shark', 'description': 'Achieve a high credit score with Duke', 'type': 14, 'circulation': 10499, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 602403620, 'title': 'Loan Shark [8]: Limited (10499)'}
-                    type = "Loan"
+                    type = "Miscellaneous"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [239]:
+                    # 239 {'name': 'Middleman', 'description': 'Have 100 customers buy from your bazaar', 'type': 16, 'circulation': 27683, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
+                    type = "Miscellaneous"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("bazaarcustomers"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
                 else:
