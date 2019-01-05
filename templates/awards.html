@@ -64,7 +64,7 @@
                     4: { sorter: "bignumbers" },
                     5: { sorter: "bignumbers" },
                 },
-                sortList: [[0,0], [4,0], [5,0]],
+                sortList: [[0,0], [4,1], [5,0]],
             });
         });
 
@@ -72,16 +72,18 @@
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();
             var cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
-            alert(cat.attr("id"));
+            // alert(cat.attr("id"));
             $("tr.award-done").promise().done(function() {
                 var icon = $("#awards-done-icon");
                 if (icon.hasClass("fas fa-toggle-on")) {
                     icon.removeClass("fas fa-toggle-on");
                     icon.addClass("fas fa-toggle-off");
+                    $('#toggle-awards-done-txt').html("Show");
                     $("tr.award-done").slideUp('fast', function() {});
                 } else {
                     icon.removeClass("fas fa-toggle-off");
                     icon.addClass("fas fa-toggle-on");
+                    $('#toggle-awards-done-txt').html("Hide");
                     $("tr.award-done."+cat.attr('id')).slideDown('fast', function() {});
                 }
             });
