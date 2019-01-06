@@ -1265,6 +1265,7 @@ def commitment(request):
             "Donator": dict(),
             "Age": dict(),
             "Level": dict(),
+            "Rank": dict(),
             "Other": dict()})
 
         for k, v in allAwards["honors"].items():
@@ -1296,11 +1297,9 @@ def commitment(request):
                     # 312 {'name': 'Time Traveller', 'description': 'Survive a Torn City restore', 'type': 0, 'circulation': 24165, 'rarity': 'Common', 'awardType': 'Honor', 'img': 834531746, 'title': 'Time Traveller [312]: Common (24165)'}
                     type = "Other"
                     vp["goal"] = 1
-                    print(myAwards["honors_awarded"])
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
-                    print(vp)
 
                 elif int(k) in [3, 19, 546]:
                     type = "Spouse"
@@ -1316,12 +1315,12 @@ def commitment(request):
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
-                #
-                # else:
-                #     print(k, v)
+
+                else:
+                    print(k, v)
 
         for k, v in allAwards["medals"].items():
-            if v["type"] in ["CMT", "LVL"]:
+            if v["type"] in ["CMT", "LVL", "RNK"]:
                 vp = v
                 vp["awardType"] = "Medal"
 
@@ -1358,6 +1357,14 @@ def commitment(request):
                     vp["goal"] = str2int[" ".join(v["description"].split(" ")[2:])]
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
+                    awards[type]["m_" + k] = vp
+
+                elif int(k) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]:
+                    # 1 {'name': 'Beginner', 'description': 'Reach the rank of "Beginner"', 'type': 'RNK', 'awardType': 'Medal'}
+                    type = "Rank"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0
+                    vp["current"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0
                     awards[type]["m_" + k] = vp
 
                 else:
