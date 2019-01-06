@@ -14,13 +14,8 @@ def index(request):
 
 def crimes(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,crimes,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         crimeBridgeMedal2App = {
             "Computer": "Computer crimes",
@@ -67,60 +62,70 @@ def crimes(request):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [6]:
                     type = "Other"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [24]:
                     type = "Fraud crimes"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [152]:
                     type = "Illegal products"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [153]:
                     type = "Drug deals"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [155, 161]:
                     type = "Computer crimes"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [159]:
                     type = "Murder"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [160]:
                     type = "Auto theft"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [251]:
                     type = "Total"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [552]:
                     type = "Organised crimes"
                     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("organisedcrimes"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [248, 249, 250]:
                     # 248 {'name': 'Bar Breaker', 'description': 'Make 1,000 busts', 'type': 15, 'circulation': 4454, 'rarity': 'Rare', 'goal': 1000, 'awardType': 'Honor'}
                     type = "Busts"
@@ -128,6 +133,7 @@ def crimes(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebusted"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [252]:
                     # 252 {'name': "Freedom Isn't Free", 'description': 'Make 500 bails from jail', 'type': 15, 'circulation': 2032, 'rarity': 'Extraordinary', 'goal': 500, 'awardType': 'Honor'}
                     type = "Busts"
@@ -142,12 +148,14 @@ def crimes(request):
         for k, v in allAwards["medals"].items():
             vp = v
             vp["awardType"] = "Medal"
+
             if v["type"] == "CRM":
                 type = crimeBridgeMedal2App[" ".join(v["description"].split(" ")[2:-1])]
                 vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                 vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                 vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                 awards[type]["m_" + k] = vp
+
             elif v["type"] == "OTR":
                 if int(k) in [30, 31, 32, 33, 105, 106, 107]:
                     type = "Busts"
@@ -159,7 +167,6 @@ def crimes(request):
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -168,13 +175,8 @@ def crimes(request):
 
 def drugs(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Cannabis": dict(),
@@ -216,7 +218,6 @@ def drugs(request):
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -225,13 +226,8 @@ def drugs(request):
 
 def attacks(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Wins": dict(),
@@ -471,7 +467,6 @@ def attacks(request):
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -480,13 +475,8 @@ def attacks(request):
 
 def faction(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,profile,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Respects": dict(),
@@ -563,13 +553,8 @@ def faction(request):
 
 def items(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "City": dict(),
@@ -591,6 +576,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("bloodwithdrawn"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [367, 406]:
                     # 406 {'name': 'Vampire', 'description': 'Random chance upon using a blood bag', 'type': 15, 'circulation': 10562, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     # 367 {'name': 'Clotted', 'description': 'Suffer from an acute haemolytic reaction, or be immune to it', 'type': 15, 'circulation': 11247, 'rarity': 'Uncommon', 'awardType': 'Honor', 'achieve': 0}
@@ -599,6 +585,7 @@ def items(request):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [4]:
                     # 4 {'name': "I'm a Real Doctor", 'description': 'Steal 500 medical items', 'type': 15, 'circulation': 24992, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
                     type = "Medical items"
@@ -606,6 +593,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medstolen"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [7]:
                     # 7 {'name': 'Magical Veins', 'description': 'Use 5,000 medical items', 'type': 15, 'circulation': 4686, 'rarity': 'Rare', 'awardType': 'Honor', 'achieve': 0}
                     type = "Medical items"
@@ -613,6 +601,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medicalitemsused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [1]:
                     # 1 {'name': "I'm Watching You", 'description': 'Find 50 items in the city', 'type': 16, 'circulation': 26943, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
                     type = "City"
@@ -620,6 +609,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("cityfinds"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [238]:
                     # 238 {'name': 'Optimist', 'description': 'Find 1,000 items in the dump', 'type': 16, 'circulation': 5850, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "City"
@@ -627,6 +617,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("dumpfinds"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [271]:
                     # 271 {'name': 'Eco Friendly', 'description': 'Trash 5,000 items', 'type': 16, 'circulation': 14796, 'rarity': 'Uncommon', 'awardType': 'Honor', 'achieve': 0}
                     type = "City"
@@ -634,6 +625,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("itemsdumped"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [273]:
                     # 273 {'name': 'Bargain Hunter', 'description': 'Win 10 auctions', 'type': 16, 'circulation': 8415, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "Other"
@@ -641,6 +633,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("auctionswon"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [216]:
                     # 216 {'name': 'Silicon Valley', 'description': 'Code 100 viruses', 'type': 0, 'circulation': 3627, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 539384064, 'title': 'Silicon Valley [216]: Rare (3627)'}
                     type = "Other"
@@ -648,6 +641,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("virusescoded"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [527]:
                     # 527 {'name': 'Worth it', 'description': 'Use a stat enhancer', 'type': 16, 'circulation': 698, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
@@ -655,6 +649,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("statenhancersused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [534]:
                     # 534 {'name': 'Alcoholic', 'description': 'Drink 500 bottles of alcohol', 'type': 16, 'circulation': 7842, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
@@ -662,6 +657,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("alcoholused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [537]:
                     # 537 {'name': 'Diabetic', 'description': 'Eat 500 bags of candy', 'type': 16, 'circulation': 7948, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
@@ -669,6 +665,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("candyused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [538]:
                     # 538 {'name': 'Sodaholic', 'description': 'Drink 500 cans of energy drink', 'type': 16, 'circulation': 898, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
@@ -676,6 +673,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("boostersused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [539]:
                     # 539 {'name': 'Bibliophile', 'description': 'Read 10 books', 'type': 16, 'circulation': 384, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
@@ -683,6 +681,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("booksread"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 else:
                     print(k, v)
 
@@ -698,6 +697,7 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("cityfinds"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["m_" + k] = vp
+
                 elif int(k) in [198, 199, 200]:
                     # 198 {'name': 'Pin Cushion', 'description': 'Use 500 medical items', 'type': 'OTR', 'awardType': 'Medal', 'goal': 500, 'current': 0, 'achieve': 0.0}
                     type = "Medical items"
@@ -705,17 +705,11 @@ def items(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medicalitemsused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["m_" + k] = vp
-                # elif int(k) in [207, 208, 209]:
-                #     # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
-                #     type = "Travels"
-                #     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
-                #     vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
-                #     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+
                 else:
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -724,13 +718,8 @@ def items(request):
 
 def travel(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Destinations": dict(),
@@ -745,7 +734,6 @@ def travel(request):
 
                 if int(k) in [11, 165]:
                     # 11 {'name': 'Mile High Club', 'description': 'Travel 100 times', 'type': 7, 'circulation': 31338, 'rarity': 'Common', 'awardType': 'Honor', 'img': 241952085, 'title': 'Mile High Club [11]: Common (31338)'}
-                    # 165 {'name': 'There And Back', 'description': 'Travel 1,000 times', 'type': 7, 'circulation': 6183, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 317282935, 'title': 'There And Back [165]: Limited (6183)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
@@ -754,12 +742,12 @@ def travel(request):
 
                 elif int(k) in [549, 567]:
                     # 549 {'name': 'Tourist', 'description': 'Spend 7 days in the air', 'type': 7, 'circulation': 16881, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 724568067, 'title': 'Tourist [549]: Uncommon (16881)'}
-                    # 567 {'name': 'Frequent Flyer', 'description': 'Spend 31 days in the air', 'type': 7, 'circulation': 9638, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 891235999, 'title': 'Frequent Flyer [567]: Limited (9638)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = int(None2Zero(myAwards["personalstats"].get("traveltime")) / (3600 * 24))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
                     # 130 {'name': 'Maradona', 'description': 'Travel to Argentina 50 times', 'type': 7, 'circulation': 10543, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 697523940, 'title': 'Maradona [130]: Limited (10543)'}
                     type = "Destinations"
@@ -770,6 +758,7 @@ def travel(request):
                     vp["current"] = int(None2Zero(myAwards["personalstats"].get(key)))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 else:
                     print(k, v)
 
@@ -785,11 +774,11 @@ def travel(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["m_" + k] = vp
+
                 else:
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -798,13 +787,8 @@ def travel(request):
 
 def work(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'workstats,personalstats,education,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Bachelors": dict(),
@@ -826,6 +810,7 @@ def work(request):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [653]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
@@ -833,6 +818,7 @@ def work(request):
                     vp["current"] = None2Zero(len(myAwards.get("education_completed")))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [4]:
                     # 4 {'name': "I'm a Real Doctor", 'description': 'Steal 500 medical items', 'type': 15, 'circulation': 24996, 'rarity': 'Common', 'awardType': 'Honor', 'img': 408554952, 'title': "I'm a Real Doctor [4]: Common (24996)"}
                     type = "City jobs"
@@ -840,6 +826,7 @@ def work(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medstolen"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [23, 267]:
                     # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 15, 'circulation': 1053, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Florence Nightingale [23]: Extraordinary (1053)'}
                     type = "City jobs"
@@ -847,6 +834,7 @@ def work(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("revives"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [164]:
                     # 164 {'name': 'Keen', 'description': 'Spy on people while in the army 100 times', 'type': 0, 'circulation': 2066, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Keen [164]: Extraordinary (2066)'}
                     type = "City jobs"
@@ -854,6 +842,7 @@ def work(request):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("?"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [220]:
                     # 220 {'name': 'The Affronted', 'description': 'Infuriate all interviewers in starter jobs', 'type': 0, 'circulation': 4630, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 384148528, 'title': 'The Affronted [220]: Rare (4630)'}
                     type = "City jobs"
@@ -861,6 +850,7 @@ def work(request):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [525, 530, 533]:
                     # 525 {'name': 'Tireless', 'description': 'Attain 100,000 endurance', 'type': 4, 'circulation': 8731, 'rarity': 'Limited', 'awardType': 'Honor', 'img': None, 'title': 'Tireless [525]: Limited (8731)'}
                     # 530 {'name': 'Talented', 'description': 'Attain 100,000 intelligence', 'type': 4, 'circulation': 11171, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': None, 'title': 'Talented [530]: Uncommon (11171)'}
@@ -871,11 +861,11 @@ def work(request):
                     vp["current"] = None2Zero(myAwards.get(key))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 else:
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
-
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
 
@@ -884,13 +874,8 @@ def work(request):
 
 def gym(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'battlestats,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Memberships": dict(),
@@ -936,13 +921,8 @@ def gym(request):
 
 def money(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,networth,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Stocks": dict(),
@@ -1054,13 +1034,8 @@ def money(request):
 
 def competitions(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'workstats,personalstats,education,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Elimination": dict(),
@@ -1149,13 +1124,8 @@ def competitions(request):
 
 def miscellaneous(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'workstats,perks,personalstats,merits,education,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Social": dict(),
@@ -1167,7 +1137,7 @@ def miscellaneous(request):
             "Events": dict()})
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [0, 11]:
+            if int(v["type"]) in [0, 11, 17]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -1267,6 +1237,14 @@ def miscellaneous(request):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [371]:
+                    # 371 {'name': 'Protege', 'description': 'Complete the mission Introduction: Duke', 'type': 17, 'circulation': 44516, 'rarity': 'Common', 'awardType': 'Honor', 'img': 668653618, 'title': 'Protege [371]: Common (44516)'}
+                    type = "Other"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+
                 else:
                     print(k, v)
 
@@ -1279,22 +1257,18 @@ def miscellaneous(request):
 
 def commitment(request):
     if request.session.get('awards'):
-        key = request.session['awards'].get('keyValue')
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,profile,medals,honors', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
+        allAwards = request.session['awards'].get('allAwards')
+        myAwards = request.session['awards'].get('myAwards')
 
         awards = dict({
             "Spouse": dict(),
             "Donator": dict(),
             "Age": dict(),
+            "Level": dict(),
             "Other": dict()})
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [11]:
+            if int(v["type"]) in [0, 11, 12]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -1310,13 +1284,23 @@ def commitment(request):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                if int(k) in [245]:
+                elif int(k) in [245]:
                     # 245 {'name': 'Couch Potato', 'description': 'Achieve 1,000 hours of activity on Torn', 'type': 11, 'circulation': 8396, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 965199742, 'title': 'Couch Potato [245]: Limited (8396)'}
                     type = "Other"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = int(None2Zero(myAwards["personalstats"].get("useractivity")) / 3600)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
+                elif int(k) in [312]:
+                    # 312 {'name': 'Time Traveller', 'description': 'Survive a Torn City restore', 'type': 0, 'circulation': 24165, 'rarity': 'Common', 'awardType': 'Honor', 'img': 834531746, 'title': 'Time Traveller [312]: Common (24165)'}
+                    type = "Other"
+                    vp["goal"] = 1
+                    print(myAwards["honors_awarded"])
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    awards[type]["h_" + k] = vp
+                    print(vp)
 
                 elif int(k) in [3, 19, 546]:
                     type = "Spouse"
@@ -1325,13 +1309,19 @@ def commitment(request):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                    # 312 {'name': 'Time Traveller', 'description': 'Survive a Torn City restore', 'type': 0, 'circulation': 24165, 'rarity': 'Common', 'awardType': 'Honor', 'img': 834531746, 'title': 'Time Traveller [312]: Common (24165)'}
-
-                else:
-                    print(k, v)
+                elif int(k) in [13, 18, 259, 264, 265]:
+                    # 18 {'name': 'Another Brick In The Wall', 'description': 'Reach level 10', 'type': 12, 'circulation': 197925, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 978797305, 'title': 'Another Brick In The Wall [18]: Very Common (197925)'}
+                    type = "Level"
+                    vp["goal"] = int(v["description"].split(" ")[-1])
+                    vp["current"] = None2Zero(myAwards.get("level"))
+                    vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+                #
+                # else:
+                #     print(k, v)
 
         for k, v in allAwards["medals"].items():
-            if v["type"] == "CMT":
+            if v["type"] in ["CMT", "LVL"]:
                 vp = v
                 vp["awardType"] = "Medal"
 
@@ -1361,44 +1351,76 @@ def commitment(request):
                     vp["current"] = "{:.2f}".format(tmp)
                     awards[type]["m_" + k] = vp
 
+                elif int(k) in [34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]:
+                    # 34 {'name': 'Level Five', 'description': 'Reach level Five', 'type': 'LVL', 'awardType': 'Medal'}
+                    type = "Level"
+                    str2int = {"Five": 5, "Ten": 10, "Fifteen": 15, "Twenty": 20, "Twenty Five": 25, "Thirty": 30, "Thirty Five": 35, "Forty": 40, "Forty Five": 45, "Fifty": 50, "Fifty Five": 55, "Sixty": 60, "Sixty Five": 65, "Seventy": 70, "Seventy Five": 75, "Eighty": 80, "Eighty Five": 85, "Ninety": 90, "Ninety Five": 95, "One Hundred": 100 }
+                    vp["goal"] = str2int[" ".join(v["description"].split(" ")[2:])]
+                    vp["current"] = None2Zero(myAwards.get("level"))
+                    vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
+                    awards[type]["m_" + k] = vp
+
                 else:
                     print(k, v)
 
         awardsSummary = createAwardSummary(awards)
         out = {"awards": awards, "awardsSummary": awardsSummary}
         return render(request, 'awards.html', out)
+    else:
+        return render(request, 'awards.html')
 
 
 # UPDATE ON THE FLY
 def updateKey(request):
     print('[updateKey] in')
-
-    # request.session['chainer'] = {'keyValue': 'myKeyForDebug',
-    #                               'name': 'Kivou',
-    #                               'playerId': 2000607,
-    #                               'factionName': 'Nub Navy',
-    #                               'factionId': 33241,
-    #                               'AA': True,
-    #                               }
-    # request.session.set_expiry(0)  # logout when close browser
-    # return render(request, 'chain/login.html')
-
     if request.method == 'POST':
         p = request.POST
         user = apiCall('user', '', 'profile', p.get('keyValue'))
         if 'apiError' in user:
-            return render(request, 'chain/{}.html'.format(p['html']), user)
+            return render(request, 'errorPage.html', user)
+        allAwards = apiCall('torn', '', 'honors,medals', p.get('keyValue'))
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,networth,merits,profile,medals,honors', p.get('keyValue'))
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
 
         request.session['awards'] = {'keyValue': p['keyValue'],
                                      'name': user['name'],
-                                     'playerId': user['player_id']
+                                     'playerId': user['player_id'],
+                                     'allAwards': allAwards,
+                                     'myAwards': myAwards,
                                      }
+
         check = json.loads(p.get('rememberSession'))
         if check:
             request.session.set_expiry(31536000)  # 1 year
         else:
             request.session.set_expiry(0)  # logout when close browser
         return render(request, 'awards/{}.html'.format(p['html']))
+
+    else:
+        return HttpResponse('Don\'t try to be a smart ass, you need to post.')
+
+
+def updateData(request):
+    print('[updateData] in')
+    if request.method == 'POST':
+        key = request.session['awards'].get('keyValue')
+
+        allAwards = apiCall('torn', '', 'honors,medals', key)
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+
+        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,networth,merits,profile,medals,honors', key)
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
+
+        request.session['awards']['allAwards'] = allAwards
+        request.session['awards']['myAwards'] = myAwards
+        request.session.cycle_key()
+
+        return render(request, 'awards/{}.html'.format(request.POST['html']))
 
     else:
         return HttpResponse('Don\'t try to be a smart ass, you need to post.')

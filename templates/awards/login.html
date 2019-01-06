@@ -23,7 +23,12 @@
                 <a href="{% url 'awards:miscellaneous' %}">Miscellaneous</a> -
             </p>
 
-            <h3><a class="deletelink" href="{% url 'awards:logout' %}">Logout</a></h3>
+            <form method="post">
+                {% csrf_token %}
+                <h3><a class="update-data" href="{% url 'awards:updateData' %}"><i class="fa fa-sync-alt"></i>&nbsp; Refresh data</a> &nbsp; &nbsp;
+                <a href="{% url 'awards:logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a></h3>
+            </form>
+
         {% else %}
             <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start tracking your awards</p>
             <form method="post">

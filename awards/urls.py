@@ -19,6 +19,7 @@ urlpatterns = [
     re_path(r'^miscellaneous/$', views.miscellaneous, name='miscellaneous'),
 
     re_path(r'^updateKey/$', views.updateKey, name='updateKey'),
+    re_path(r'^updateData/$', views.updateData, name='updateData'),
     re_path(r'^logout/$', views.logout, name='logout'),
 
     # path('<int:tId>', views.details, name='details'),
