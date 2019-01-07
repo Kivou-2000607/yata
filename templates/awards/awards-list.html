@@ -41,7 +41,7 @@
                                     {% if award.img == None %}
                                         <td>{{award.title}}</td>
                                     {% else %}
-                                        <td><img src="https://awardimages.torn.com/{{award.img}}.png" title="{{award.title}}" style="margin:0px, padding:0px"></td>
+                                        <td><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px"></td>
                                     {% endif %}
                                 {% else %}
                                     <td>{{award.name}}</td>

@@ -8,6 +8,5 @@ from yata.honors import d
 class Command(BaseCommand):
     def handle(self, **options):
         file = os.path.join(settings.PROJECT_ROOT, 'static/honors/bannersId.json')
-        print(file)
         with open(file, 'w') as fp:
             json.dump(d, fp)

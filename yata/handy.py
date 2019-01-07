@@ -256,7 +256,19 @@ def None2Zero(a):
 
 def honorId2Img(i):
     from yata.honors import d
-    return d.get(i) if d.get(i) > 0 else None
+    from yata.honors import ts
+    from django.conf import settings
+
+    id = d.get(i)
+    url = None
+    if id:
+        url = "https://awardimages.torn.com/{}.png".format(id)
+    else:
+        id = ts.get(i)
+        if id:
+            url = "{}honors/tsimg/{}.png".format(settings.STATIC_URL, id)
+
+    return url
 
 
 def createAwardSummary(awards):
