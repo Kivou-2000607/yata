@@ -929,10 +929,11 @@ def money(request):
             "Bank": dict(),
             "Estate": dict(),
             "Networth": dict(),
+            "Casino": dict(),
             "Other": dict()})
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [0, 14, 16]:
+            if int(v["type"]) in [0, 9, 14, 16]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -1003,6 +1004,14 @@ def money(request):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("pointssold"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [237, 269, 275, 276, 326, 327, 338, 427, 431, 437, 513]:
+                    # 237 {'name': 'Poker King', 'description': 'Earn a poker score of 10,000,000', 'type': 9, 'circulation': 2267, 'rarity': 'Rare', 'awardType': 'Honor', 'img': '/static/honors/tsimg/NQ5Yy.png', 'title': 'Poker King [237]: Rare (2267)'}
+                    type = "Casino"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
                 else:

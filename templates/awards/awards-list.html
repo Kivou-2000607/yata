@@ -41,7 +41,11 @@
                                     {% if award.img == None %}
                                         <td>{{award.title}}</td>
                                     {% else %}
-                                        <td><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px"></td>
+                                        <td><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
+                                        {% if award.img|slice:"1:7" == 'static' %}
+                                            <b style="color: #cc0000; font-size: 20px">*</b>
+                                        {% endif %}
+                                        </td>
                                     {% endif %}
                                 {% else %}
                                     <td>{{award.name}}</td>
@@ -55,4 +59,6 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                <p><b style="color: #cc0000; font-size: 20px">*</b> Torn stat image</p>
+
             </div>
