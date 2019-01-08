@@ -21,7 +21,7 @@ d = {
     572: 422587009,  # Motorhead
     164: 789829185,  # Keen
     5: 647299034,  # Journalist
-    620: 0,  # OP
+    620: 195436798,  # OP
     156: 0,  # RDD
     14: 0,  # Slow Bomb
 
@@ -161,8 +161,8 @@ d = {
     47: 981248146,  # Blue Camo
     48: 777643835,  # Orange Camo
     49: 258216045,  # Pink Camo
-    50: 0,  # Zebra Skin
-    51: 0,  # Leopard Skin
+    50: 985394864,  # Zebra Skin
+    51: 582546730,  # Leopard Skin
     52: 0,  # Tiger Skin
 
     # 4
@@ -260,7 +260,7 @@ d = {
     270: 813450559,  # Deadlock
     228: 775225163,  # 007
     17: 230393459,  # Kill Streaker 3
-    490: 0,  # Sidekick
+    490: 733830023,  # Sidekick
     476: 0,  # Chainer 5
 
     # 9
@@ -273,8 +273,8 @@ d = {
     326: 156400756,  # Highs and Lows
     513: 814368109,  # Daddys New Shoes
     276: 494694037,  # Lucky Break
+    275: 689389128,  # Jackpot
     237: 0,  # Poker King
-    275: 0,  # Jackpot
 
     # 10
     687: 835636011,  # Lean
@@ -317,8 +317,8 @@ d = {
     18: 978797305,  # Another Brick In The Wall
     259: 587092963,  # Half Way There
     13: 257829928,  # The Beautiful City
-    264: 0,  # The Whole Nine Yards
-    265: 0,  # To The Limit
+    264: 211521466,  # The Whole Nine Yards
+    265: 398815295,  # To The Limit
 
     # 13
     283: 363100539,  # Globule
@@ -345,10 +345,10 @@ d = {
     278: 157258832,  # Globally Effective
     277: 161974875,  # Departure
     330: 154833045,  # Champion
-    279: 0,  # Domination
-    294: 0,  # Pepperoni
+    279: 374051880,  # Domination
+    294: 708894968,  # Pepperoni
+    311: 561381817,  # Brainz
     263: 0,  # Survivor
-    311: 0,  # Brainz
 
     # 14
     12: 533285823,  # Pocket Money
@@ -369,8 +369,8 @@ d = {
     252: 937648106,  # Freedom Isn't Free
     23: 493291412,  # Florence Nightingale
     249: 359869168,  # Aiding And Abetting
-    267: 0,  # Second Chance
-    250: 0,  # Don't Drop It
+    267: 856740501,  # Second Chance
+    250: 689889266,  # Don't Drop It
 
     # 16
     239: 275270401,  # Middleman
@@ -382,7 +382,7 @@ d = {
     238: 308563777,  # Optimist
     538: 590698912,  # Sodaholic
     527: 268017015,  # Worth it
-    539: 0,  # Bibliophile
+    539: 429058435,  # Bibliophile
 
     # 17
     371: 668653618,  # Protege
@@ -390,39 +390,9 @@ d = {
 
 # torn stat fallback
 ts = {
-    # 0
-    620: "6LTvzXx",  # OP
     156: "IqBED",  # RDD
     14: "bDcya",  # Slow Bomb
-
-    # 3
-    50: "R9wDs",  # Zebra Skin
-    51: "cjwMr",  # Leopard Skin
     52: "nR7S3",  # Tiger Skin
-
-    # 8
-    490: "3Z5kBEa",  # Sidekick
-    476: 0,  # Chainer 5
-
-    # 9
     237: "NQ5Yy",  # Poker King
-    275: "u4YzC",  # Jackpot
-
-    # 12
-    264: "ncl1H",  # The Whole Nine Yards
-    265: "Hfzxg",  # To The Limit
-
-    # 13
-    279: "Nw23Hzi",  # Domination
-    294: "zZv0Sz7",  # Pepperoni
     263: "iKUPG",  # Survivor
-    311: "COyyoPc",  # Brainz
-
-    # 15
-    267: "AMoyz",  # Second Chance
-    250: "CWjSK",  # Don't Drop It
-
-    # 16
-    539: "5xmayVr",  # Bibliophile
-
     }
