@@ -454,7 +454,7 @@ tr.award-honor:hover  { background:#aaaaaa22; }
 /* tr.awards-done {
     color: #0B8E14;
 } */
-tr.award-done       { background:#d9ead3!important; }
+tr.award-done       { background:#d9ead3!important; display: none;}
 tr.award-done:hover { background:#b6d7a8!important; }
 /* tr.award-todo > td:nth-child(2):before {
     position: absolute;

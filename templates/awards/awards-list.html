@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load static %}
 
-            <h2 class="title">List of awards left <span id="toggle-awards-done" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-on"></i> <span id="toggle-awards-done-txt">Hide</span> achieved awards</span></h2>
+            <h2 class="title">List of awards left <span id="toggle-awards-done" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span></h2>
             <div class="module whiteBG">
                 <table class="tablesorter center awards-report">
                     <thead>
@@ -39,7 +39,7 @@
                                 <td>{{awardType}}</td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
-                                        <td class="award-todo">{{award.title}}</td>
+                                        <td>{{award.title}}</td>
                                     {% else %}
                                         <td class="award-todo"><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
                                         {% if award.img|slice:"1:7" == 'static' %}
