@@ -181,7 +181,7 @@ d = {
     62: 720247983,  # Mathematics Bachelor
     530: 120872843,  # Talented
     525: 301786663,  # Tireless
-    533: 0,  # Tough
+    533: 730040877,  # Tough
 
     # 5
     25: 566282329,  # Candy Man
@@ -197,8 +197,8 @@ d = {
     154: 491826814,  # Stroke Bringer
     6: 707200186,  # Find A Penny, Pick It Up
     152: 324639311,  # Civil Offence
-    160: 0,  # Joy Rider
-    159: 0,  # Professional
+    160: 433767732,  # Joy Rider
+    159: 767298121,  # Professional
 
     # 6
     37: 602282262,  # Free Energy
@@ -367,7 +367,7 @@ d = {
     248: 922672544,  # Bar Breaker
     252: 937648106,  # Freedom Isn't Free
     23: 493291412,  # Florence Nightingale
-    249: 0,  # Aiding And Abetting
+    249: 359869168,  # Aiding And Abetting
     267: 0,  # Second Chance
     250: 0,  # Don't Drop It
 
@@ -399,13 +399,6 @@ ts = {
     51: "cjwMr",  # Leopard Skin
     52: "nR7S3",  # Tiger Skin
 
-    # 4
-    533: "hJeTEPU",  # Tough
-
-    # 5
-    160: "UjZrd",  # Joy Rider
-    159: "WxTd0",  # Professional
-
     # 8
     490: "3Z5kBEa",  # Sidekick
     476: 0,  # Chainer 5
@@ -425,7 +418,6 @@ ts = {
     311: "COyyoPc",  # Brainz
 
     # 15
-    249: "ySUG9",  # Aiding And Abetting
     267: "AMoyz",  # Second Chance
     250: "CWjSK",  # Don't Drop It
 
