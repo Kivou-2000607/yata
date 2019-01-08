@@ -20,8 +20,8 @@ d = {
     566: 572050307,  # You've Got Some Nerve
     572: 422587009,  # Motorhead
     164: 789829185,  # Keen
+    5: 647299034,  # Journalist
     620: 0,  # OP
-    5: 0,  # Journalist
     156: 0,  # RDD
     14: 0,  # Slow Bomb
 
@@ -196,8 +196,8 @@ d = {
     155: 282251659,  # We Have A Breach
     154: 491826814,  # Stroke Bringer
     6: 707200186,  # Find A Penny, Pick It Up
+    152: 324639311,  # Civil Offence
     160: 0,  # Joy Rider
-    152: 0,  # Civil Offence
     159: 0,  # Professional
 
     # 6
@@ -207,11 +207,11 @@ d = {
     26: 499675289,  # Spaced Out
     38: 147355307,  # Painkiller
     32: 632867236,  # Acid Dream
-    31: 0,  # Horse Tranquilizer
-    34: 0,  # I Think I See Dead People
-    33: 0,  # The Fields Of Opium
-    36: 0,  # Angel Dust
-    35: 0,  # Crank It Up
+    31: 174332641,  # Horse Tranquilizer
+    34: 349822848,  # I Think I See Dead People
+    33: 115402063,  # The Fields Of Opium
+    36: 750549181,  # Angel Dust
+    35: 628080473,  # Crank It Up
 
     # 7
     11: 241952085,  # Mile High Club
@@ -258,8 +258,8 @@ d = {
     232: 519824611,  # Bounty Hunter
     22: 907689909,  # Self Defense
     270: 813450559,  # Deadlock
-    228: 0,  # 007
-    17: 0,  # Kill Streaker 3
+    228: 775225163,  # 007
+    17: 230393459,  # Kill Streaker 3
     490: 0,  # Sidekick
     476: 0,  # Chainer 5
 
@@ -342,12 +342,12 @@ d = {
     224: 258134316,  # Proven Capacity
     225: 180853191,  # Master Of One
     278: 157258832,  # Globally Effective
+    277: 161974875,  # Departure
+    330: 154833045,  # Champion
     279: 0,  # Domination
     294: 0,  # Pepperoni
     263: 0,  # Survivor
-    277: 0,  # Departure
     311: 0,  # Brainz
-    330: 0,  # Champion
 
     # 14
     12: 533285823,  # Pocket Money
@@ -366,8 +366,8 @@ d = {
     4: 408554952,  # I'm a Real Doctor
     248: 922672544,  # Bar Breaker
     252: 937648106,  # Freedom Isn't Free
+    23: 493291412,  # Florence Nightingale
     249: 0,  # Aiding And Abetting
-    23: 0,  # Florence Nightingale
     267: 0,  # Second Chance
     250: 0,  # Don't Drop It
 
@@ -379,8 +379,8 @@ d = {
     537: 614179864,  # Diabetic
     534: 124108189,  # Alcoholic
     238: 308563777,  # Optimist
-    538: 0,  # Sodaholic
-    527: 0,  # Worth it
+    538: 590698912,  # Sodaholic
+    527: 268017015,  # Worth it
     539: 0,  # Bibliophile
 
     # 17
@@ -391,7 +391,6 @@ d = {
 ts = {
     # 0
     620: "6LTvzXx",  # OP
-    5: "hV0Xo",  # Journalist
     156: "IqBED",  # RDD
     14: "bDcya",  # Slow Bomb
 
@@ -405,19 +404,9 @@ ts = {
 
     # 5
     160: "UjZrd",  # Joy Rider
-    152: "rN2sM",  # Civil Offence
     159: "WxTd0",  # Professional
 
-    # 6
-    31: "8vnqj",  # Horse Tranquilizer
-    33: "5Vmp8",  # The Fields Of Opium
-    34: "HGcaP",  # I Think I See Dead People
-    36: "MLgws",  # Angel Dust
-    35: "R6JO7",  # Crank It Up
-
     # 8
-    228: "MC3FW",  # 007
-    17: "sDp0i",  # Kill Streaker 3
     490: "3Z5kBEa",  # Sidekick
     476: 0,  # Chainer 5
 
@@ -433,19 +422,14 @@ ts = {
     279: "Nw23Hzi",  # Domination
     294: "zZv0Sz7",  # Pepperoni
     263: "iKUPG",  # Survivor
-    277: "EiVrjiy",  # Departure
     311: "COyyoPc",  # Brainz
-    330: "fd9C6cz",  # Champion
 
     # 15
     249: "ySUG9",  # Aiding And Abetting
-    23: "4FMUx",  # Florence Nightingale
     267: "AMoyz",  # Second Chance
     250: "CWjSK",  # Don't Drop It
 
     # 16
-    538: "DAYdk2N",  # Sodaholic
-    527: "S4845LN",  # Worth it
     539: "5xmayVr",  # Bibliophile
 
     }
