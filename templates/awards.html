@@ -70,10 +70,10 @@
 
             $("#award-list").tablesorter({
                 headers: {
+                    3: { sorter: "bignumbers" },
                     4: { sorter: "bignumbers" },
-                    5: { sorter: "bignumbers" },
                 },
-                sortList: [[0,0], [4,1], [5,0]],
+                sortList: [[0,0], [3,1], [4,0]],
             });
         });
 

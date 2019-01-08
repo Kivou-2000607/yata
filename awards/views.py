@@ -148,6 +148,7 @@ def crimes(request):
         for k, v in allAwards["medals"].items():
             vp = v
             vp["awardType"] = "Medal"
+            vp["img"] = k
 
             if v["type"] == "CRM":
                 type = crimeBridgeMedal2App[" ".join(v["description"].split(" ")[2:-1])]
@@ -405,6 +406,7 @@ def attacks(request):
             if v["type"] == "ATK":
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [174, 175, 176, 177, 178]:
                     # 174 {'name': 'Anti Social', 'description': 'Win 50 attacks', 'type': 'ATK'}
@@ -524,6 +526,7 @@ def faction(request):
             if v["type"] in ["ATK", "CMT"]:
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [215, 216, 217, 218, 219, 220, 221, 222, 223, 224]:
                     # 215 {'name': 'Recruit', 'description': 'Earn 100 respect for your faction', 'type': 'ATK', 'awardType': 'Medal'}
@@ -689,6 +692,7 @@ def items(request):
             if v["type"] == "OTR":
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [204, 205, 206]:
                     # 204 {'name': 'Watchful', 'description': 'Find 10 items in the city', 'type': 'OTR', 'awardType': 'Medal', 'goal': 10, 'current': 0, 'achieve': 0.0}
@@ -766,6 +770,7 @@ def travel(request):
             if v["type"] == "OTR":
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [207, 208, 209]:
                     # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
@@ -1021,6 +1026,7 @@ def money(request):
             if v["type"] == "NTW":
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [89, 90, 91, 92, 93, 94, 95, 96, 236, 237, 238, 239, 240, 241]:
                     # 89 {'name': 'Apprentice', 'description': 'Have a recorded networth value of $100,000 for at least 3 days', 'type': 'NTW', 'awardType': 'Medal'}
@@ -1332,6 +1338,7 @@ def commitment(request):
             if v["type"] in ["CMT", "LVL", "RNK"]:
                 vp = v
                 vp["awardType"] = "Medal"
+                vp["img"] = k
 
                 if int(k) in [74, 75, 76, 77, 78, 79, 80, 110, 111, 112, 113, 114, 115, 116, 156, 157, 158, 159, 160, 161, 162]:
                     # 74 {'name': 'Silver Anniversary', 'description': 'Stay married to a single person for 50 days without divorce', 'type': 'CMT', 'awardType': 'Medal'}
@@ -1371,6 +1378,10 @@ def commitment(request):
                 elif int(k) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]:
                     # 1 {'name': 'Beginner', 'description': 'Reach the rank of "Beginner"', 'type': 'RNK', 'awardType': 'Medal'}
                     type = "Rank"
+                    # vp["img"] = "https://www.torn.com/images/v2/main/medals/rank_slice.png"
+                    # shift = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+                    # vp["shift"] = shift.index(int(k))
+                    # vp["init"] = [0, 0]
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0
                     vp["current"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0

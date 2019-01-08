@@ -465,3 +465,7 @@ td.awards-todo {
     color: #8E0B14;
     font-weight: bold;
 }
+
+img.medals {
+    height: 19px;
+}

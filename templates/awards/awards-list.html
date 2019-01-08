@@ -1,5 +1,7 @@
 {% load mathfilters %}
 {% load humanize %}
+{% load static %}
+
             <h2 class="title">List of awards left <span id="toggle-awards-done" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-on"></i> <span id="toggle-awards-done-txt">Hide</span> achieved awards</span></h2>
             <div class="module whiteBG">
                 <table class="tablesorter center awards-report">
@@ -23,7 +25,6 @@
                     <thead>
                         <tr>
                             <th>Category</th>
-                            <th>Type</th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>State</th>
@@ -36,7 +37,6 @@
                         {% for awardId, award in awardsList.items %}
                             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
                                 <td>{{awardType}}</td>
-                                <td>{{award.awardType}}</td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
                                         <td>{{award.title}}</td>
@@ -48,7 +48,9 @@
                                         </td>
                                     {% endif %}
                                 {% else %}
-                                    <td>{{award.name}}</td>
+                                    {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
+                                        <td><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
+                                    {% endwith %}
                                 {% endif %}
                                 <td>{{award.description}}</td>
                                 <td>{{award.head}}{{award.current|intcomma}}</td>
