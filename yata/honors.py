@@ -296,6 +296,7 @@ d = {
     235: 877994898,  # Gold Belt
     506: 926799069,  # Lightspeed
     640: 795066538,  # Bulletproof
+    708: 374066101,  # Conditioned
 
     # 11
     163: 431464057,  # Fascination

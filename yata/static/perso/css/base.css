@@ -456,6 +456,20 @@ tr.award-honor:hover  { background:#aaaaaa22; }
 } */
 tr.award-done       { background:#d9ead3!important; }
 tr.award-done:hover { background:#b6d7a8!important; }
+/* tr.award-todo > td:nth-child(2):before {
+    position: absolute;
+    height: 12px;
+    margin-top:2px;
+    margin-left:10px;
+    content: url("https://www.torn.com//images/v2/awards/honor_lock_reg.png");
+} */
+tr.award-todo > td:nth-child(2) > img {
+    opacity: 0.5;
+}
+
+tr.award-todo:hover > td:nth-child(2) > img {
+    opacity: 1.0;
+}
 
 td.awards-done {
     color: #0B8E14;

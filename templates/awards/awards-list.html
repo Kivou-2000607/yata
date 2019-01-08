@@ -39,9 +39,9 @@
                                 <td>{{awardType}}</td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
-                                        <td>{{award.title}}</td>
+                                        <td class="award-todo">{{award.title}}</td>
                                     {% else %}
-                                        <td><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
+                                        <td class="award-todo"><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
                                         {% if award.img|slice:"1:7" == 'static' %}
                                             <b style="color: #cc0000; font-size: 20px">*</b>
                                         {% endif %}
