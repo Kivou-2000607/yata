@@ -19,7 +19,7 @@ d = {
     231: 175241290,  # Discovery
     566: 572050307,  # You've Got Some Nerve
     572: 422587009,  # Motorhead
-    164: 0,  # Keen
+    164: 789829185,  # Keen
     620: 0,  # OP
     5: 0,  # Journalist
     156: 0,  # RDD
@@ -194,8 +194,8 @@ d = {
     2: 529618516,  # Smokin' Barrels
     158: 374334948,  # Breaking And Entering
     155: 282251659,  # We Have A Breach
-    154: 0,  # Stroke Bringer
-    6: 0,  # Find A Penny, Pick It Up
+    154: 491826814,  # Stroke Bringer
+    6: 707200186,  # Find A Penny, Pick It Up
     160: 0,  # Joy Rider
     152: 0,  # Civil Offence
     159: 0,  # Professional
@@ -206,7 +206,7 @@ d = {
     29: 750345257,  # Who's Frank?
     26: 499675289,  # Spaced Out
     38: 147355307,  # Painkiller
-    32: 0,  # Acid Dream
+    32: 632867236,  # Acid Dream
     31: 0,  # Horse Tranquilizer
     34: 0,  # I Think I See Dead People
     33: 0,  # The Fields Of Opium
@@ -339,9 +339,9 @@ d = {
     214: 241772067,  # Jack Of All Trades
     306: 412574893,  # Resistance
     321: 195063590,  # Supernova
-    224: 0,  # Proven Capacity
-    225: 0,  # Master Of One
-    278: 0,  # Globally Effective
+    224: 258134316,  # Proven Capacity
+    225: 180853191,  # Master Of One
+    278: 157258832,  # Globally Effective
     279: 0,  # Domination
     294: 0,  # Pepperoni
     263: 0,  # Survivor
@@ -390,7 +390,6 @@ d = {
 # torn stat fallback
 ts = {
     # 0
-    164: "8ZoTY",  # Keen
     620: "6LTvzXx",  # OP
     5: "hV0Xo",  # Journalist
     156: "IqBED",  # RDD
@@ -405,15 +404,12 @@ ts = {
     533: "hJeTEPU",  # Tough
 
     # 5
-    154: "q4Ce9",  # Stroke Bringer
-    6: "wcGkF",  # Find A Penny, Pick It Up
     160: "UjZrd",  # Joy Rider
     152: "rN2sM",  # Civil Offence
     159: "WxTd0",  # Professional
 
     # 6
     31: "8vnqj",  # Horse Tranquilizer
-    32: "2Pr9J",  # Acid Dream
     33: "5Vmp8",  # The Fields Of Opium
     34: "HGcaP",  # I Think I See Dead People
     36: "MLgws",  # Angel Dust
@@ -434,9 +430,6 @@ ts = {
     265: "Hfzxg",  # To The Limit
 
     # 13
-    224: "Os4BB",  # Proven Capacity
-    225: "8Nrzi",  # Master Of One
-    278: "Ls7pb",  # Globally Effective
     279: "Nw23Hzi",  # Domination
     294: "zZv0Sz7",  # Pepperoni
     263: "iKUPG",  # Survivor
