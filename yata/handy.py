@@ -256,17 +256,16 @@ def None2Zero(a):
 
 def honorId2Img(i):
     from yata.honors import d
-    from yata.honors import ts
-    from django.conf import settings
 
     id = d.get(i)
-    url = None
-    if id:
-        url = "https://awardimages.torn.com/{}.png".format(id)
+    if id is None:
+        url = None
+        print("honor number {}: not in dictionnary".format(i))
+    elif not id:
+        url = None
+        print("honor number {}: value 0".format(i))
     else:
-        id = ts.get(i)
-        if id:
-            url = "{}honors/tsimg/{}.png".format(settings.STATIC_URL, id)
+        url = "https://awardimages.torn.com/{}.png".format(id)
 
     return url
 

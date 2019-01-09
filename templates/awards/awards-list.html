@@ -21,46 +21,42 @@
                     </tbody>
                 </table>
                 <br>
-                <table id="award-list" class="tablesorter awards-report center-large">
+                <table id="award-list" class="tablesorter awards-report">
                     <thead>
                         <tr>
-                            <th>Category</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>State</th>
-                            <th>Goal</th>
-                            <th>Achieve</th>
+                            <th class="a" >Category</th>
+                            <th class="b" >Name</th>
+                            <th class="c" >Description</th>
+                            <th class="d" >State</th>
+                            <th class="d" >Goal</th>
+                            <th class="e" >Achieve</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% for awardType, awardsList in awards.items %}
                         {% for awardId, award in awardsList.items %}
                             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
-                                <td>{{awardType}}</td>
+                                <td class="a">{{awardType}}</td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
-                                        <td>{{award.title}}</td>
+                                        <td class="b">{{award.title}}</td>
                                     {% else %}
-                                        <td class="award-todo"><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
-                                        {% if award.img|slice:"1:7" == 'static' %}
-                                            <b style="color: #cc0000; font-size: 20px">*</b>
-                                        {% endif %}
+                                        <td class="b award-todo"><img src="{{award.img}}" title="{{award.title}}" style="margin:0px, padding:0px">
                                         </td>
                                     {% endif %}
                                 {% else %}
                                     {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
-                                        <td><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
+                                        <td class="b"><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
                                     {% endwith %}
                                 {% endif %}
-                                <td>{{award.description}}</td>
-                                <td>{{award.head}}{{award.current|intcomma}}</td>
-                                <td>{{award.head}}{{award.goal|intcomma}}</td>
-                                <td>{{award.achieve|mul:100|floatformat:0}}%</td>
+                                <td class="c">{{award.description}}</td>
+                                <td class="d">{{award.head}}{{award.current|intcomma}}</td>
+                                <td class="d">{{award.head}}{{award.goal|intcomma}}</td>
+                                <td class="e {% if award.achieve == 1 %}awards-done{% else %}awards-todo{% endif %}">{{award.achieve|mul:100|floatformat:0}}%</td>
                             </tr>
                         {% endfor %}
                     {% endfor %}
                     </tbody>
                 </table>
-                <p><b style="color: #cc0000; font-size: 20px">*</b> Torn stat image</p>
 
             </div>

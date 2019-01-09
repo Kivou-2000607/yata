@@ -22,8 +22,8 @@ d = {
     164: 789829185,  # Keen
     5: 647299034,  # Journalist
     620: 195436798,  # OP
-    156: 0,  # RDD
-    14: 0,  # Slow Bomb
+    156: 951557928,  # RDD
+    14: 506875686,  # Slow Bomb
 
     # 1
     171: 228001376,  # Afghanistan
@@ -163,7 +163,7 @@ d = {
     49: 258216045,  # Pink Camo
     50: 985394864,  # Zebra Skin
     51: 582546730,  # Leopard Skin
-    52: 0,  # Tiger Skin
+    52: 358419107,  # Tiger Skin
 
     # 4
     653: 872280837,  # Smart Alec
@@ -274,7 +274,7 @@ d = {
     513: 814368109,  # Daddys New Shoes
     276: 494694037,  # Lucky Break
     275: 689389128,  # Jackpot
-    237: 0,  # Poker King
+    237: 446331026,  # Poker King
 
     # 10
     687: 835636011,  # Lean
@@ -348,7 +348,7 @@ d = {
     279: 374051880,  # Domination
     294: 708894968,  # Pepperoni
     311: 561381817,  # Brainz
-    263: 0,  # Survivor
+    263: 936063655,  # Survivor
 
     # 14
     12: 533285823,  # Pocket Money
@@ -386,13 +386,4 @@ d = {
 
     # 17
     371: 668653618,  # Protege
-    }
-
-# torn stat fallback
-ts = {
-    156: "IqBED",  # RDD
-    14: "bDcya",  # Slow Bomb
-    52: "nR7S3",  # Tiger Skin
-    237: "NQ5Yy",  # Poker King
-    263: "iKUPG",  # Survivor
     }

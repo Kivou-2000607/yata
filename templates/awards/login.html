@@ -8,7 +8,7 @@
     <div class="module whiteBG justTxt">
         {% if request.session.awards %}
         <p>
-            Browse through the following award sections to check your stats:
+            Browse through the following award sections to check your stats:<br>
                 <a href="{% url 'awards:crimes' %}">Crimes</a> -
                 <a href="{% url 'awards:drugs' %}">Drugs</a> -
                 <a href="{% url 'awards:attacks' %}">Attacks</a> -
@@ -20,7 +20,7 @@
                 <a href="{% url 'awards:money' %}">Money</a> -
                 <a href="{% url 'awards:competitions' %}">Competitions</a> -
                 <a href="{% url 'awards:commitment' %}">Commitment</a> -
-                <a href="{% url 'awards:miscellaneous' %}">Miscellaneous</a> -
+                <a href="{% url 'awards:miscellaneous' %}">Miscellaneous</a>
             </p>
 
             <form method="post">

@@ -454,7 +454,7 @@ tr.award-honor:hover  { background:#aaaaaa22; }
 /* tr.awards-done {
     color: #0B8E14;
 } */
-tr.award-done       { background:#d9ead3!important; display: none;}
+tr.award-done       { background:#d9ead3aa!important; display: none;}
 tr.award-done:hover { background:#b6d7a8!important; }
 /* tr.award-todo > td:nth-child(2):before {
     position: absolute;
@@ -482,4 +482,62 @@ td.awards-todo {
 
 img.medals {
     height: 19px;
+}
+
+#award-list {
+    width:65%;
+    margin-left:15%;
+    margin-right:15%;
+}
+
+#award-list td {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#award-list th {
+    text-align: center;
+}
+
+#award-list td.a {
+    width: 10%;
+}
+
+#award-list td.b {
+    width: 25%;
+    font-style: oblique;
+}
+
+#award-list td.c {
+    width: 40%;
+}
+
+#award-list td.d {
+    width: 10%;
+    text-align: right;
+}
+
+
+#award-list td.e {
+    width: 5%;
+    text-align: center;
+}
+
+thead th.up:after {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0de";
+    display: block;
+}
+
+thead th.down:after {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0dd";
+    display: block;
+}
+
+thead th.none:after {
+    font-family: "Font Awesome 5 Free";
+    content: "c";
+    padding-left: 10px;
 }
