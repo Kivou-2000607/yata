@@ -64,7 +64,6 @@ def attacks(request):
         except:
             return HttpResponseRedirect(reverse('awards:logout'))
 
-    print("no sessions")
     return render(request, 'awards.html')
 
 
