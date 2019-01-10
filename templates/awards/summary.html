@@ -1,0 +1,40 @@
+{% load mathfilters %}
+{% load humanize %}
+
+<h2 class="title">Global summary</h2>
+<div class="module whiteBG">
+
+    <table class="tablesorter center awards-report">
+        <thead>
+            <tr>
+                <th><b>Type</b> / Category</th>
+                <th colspan="2">Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="font-weight: bold;">
+                <td>Medals</td>
+                <td>{{globalSummary.nMyMedals|div:globalSummary.nMedals|mul:100|floatformat:0}}%</td>
+                <td>{{globalSummary.nMyMedals}} / {{globalSummary.nMedals}}</td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td>Honors</td>
+                <td>{{globalSummary.nMyHonors|div:globalSummary.nHonors|mul:100|floatformat:0}}%</td>
+                <td>{{globalSummary.nMyHonors}} / {{globalSummary.nHonors}}</td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td>Total</td>
+                <td>{{globalSummary.nMyTotal|div:globalSummary.nTotal|mul:100|floatformat:0}}%</td>
+                <td>{{globalSummary.nMyTotal}} / {{globalSummary.nTotal}}</td>
+            </tr>
+            <!-- <tr><td>&nbsp;</td></tr>
+            {% for k, v in summaryByType.items %}
+            <tr>
+                <td>{{k}}</td>
+                <td>{{v.nAwarded|div:globalSummary.nHonors|mul:100|floatformat:0}}%</td>
+                <td>{{v.nAwarded}} / {{v.nAwards}}</td>
+            </tr>
+            {% endfor %} -->
+        </tbody>
+    </table>
+</div>

@@ -52,7 +52,7 @@
                 rememberSession: check,
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
-            reload.html('<h2 class="title">Connecting to API (3 API calls)</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
+            reload.html('<h2 class="title">Connecting to API (2 API calls)</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
         });
 
         $(document).ready(function() {
@@ -148,10 +148,13 @@
                 {% include "awards/login.html" %}
             </div>
 
+            {% if globalSummary %}
+            {% include "awards/summary.html" %}
+            {% endif %}
+
             {% if awards %}
                 {% include "awards/awards-list.html" %}
             {% endif %}
-
 
         </div> <!--end of content-->
     </div> <!--end of container-->

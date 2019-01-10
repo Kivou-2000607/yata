@@ -17,7 +17,6 @@ urlpatterns = [
     re_path(r'^competitions/$', views.competitions, name='competitions'),
     re_path(r'^commitment/$', views.commitment, name='commitment'),
     re_path(r'^miscellaneous/$', views.miscellaneous, name='miscellaneous'),
-    re_path(r'^all/$', views.all, name='all'),
 
     re_path(r'^updateKey/$', views.updateKey, name='updateKey'),
     re_path(r'^updateData/$', views.updateData, name='updateData'),

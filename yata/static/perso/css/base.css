@@ -475,9 +475,16 @@ td.awards-done {
     color: #0B8E14;
     font-weight: bold;
 }
+
+td.awards-done:hover {
+    color: #0BaE14;
+}
 td.awards-todo {
     color: #8E0B14;
     font-weight: bold;
+}
+td.awards-todo:hover {
+    color: #aE0B14;
 }
 
 img.medals {
@@ -540,4 +547,38 @@ thead th.none:after {
     font-family: "Font Awesome 5 Free";
     content: "c";
     padding-left: 10px;
+}
+
+#award-category-links {
+    width:40%;
+    margin-left:30%;
+    margin-right:30%;
+}
+
+#award-category-links th {
+    text-align: center!important;
+}
+#award-category-links td {
+    text-align: center!important;
+    width: 25%;
+    cursor: pointer;
+}
+
+#award-category-links td:hover {
+    background:#dddddd!important;
+    font-weight: bold;
+}
+
+.flush-right {
+    float: right;
+    margin-right: 10px;
+}
+
+a.red-link,
+span.red-link {
+    color: #dd5555;
+}
+a.red-link:hover,
+span.red-link:hover {
+    color: #FF3333;
 }

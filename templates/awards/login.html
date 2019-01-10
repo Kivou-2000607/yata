@@ -1,34 +1,77 @@
 <div id="api-key-refresh">
     {% if request.session.awards %}
-        <h2 class="title">Hello {{request.session.awards.name}}</h2>
+            <form method="post">
+                <h2 class="title">Hello {{request.session.awards.name}}
+                    {% csrf_token %}
+                    <div class="flush-right">
+                        <a class="update-data red-link" href="{% url 'awards:updateData' %}"><i class="fa fa-sync-alt"></i>&nbsp; Refresh data</a> &nbsp; &nbsp;
+                        <a class="red-link" href="{% url 'awards:logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
+                    </div>
+                </h2>
+            </form>
+
     {% else %}
         <h2 class="title">Hello unkown user</h2>
     {% endif %}
 
     <div class="module whiteBG justTxt">
         {% if request.session.awards %}
-        <p>
-            Browse through the following award sections to check your stats:<br>
-                <a href="{% url 'awards:crimes' %}">Crimes</a> -
-                <a href="{% url 'awards:drugs' %}">Drugs</a> -
-                <a href="{% url 'awards:attacks' %}">Attacks</a> -
-                <a href="{% url 'awards:faction' %}">Faction</a> -
-                <a href="{% url 'awards:items' %}">Items</a> -
-                <a href="{% url 'awards:travel' %}">Travel</a> -
-                <a href="{% url 'awards:work' %}">Work</a> -
-                <a href="{% url 'awards:gym' %}">Gym</a> -
-                <a href="{% url 'awards:money' %}">Money</a> -
-                <a href="{% url 'awards:competitions' %}">Competitions</a> -
-                <a href="{% url 'awards:commitment' %}">Commitment</a> -
-                <a href="{% url 'awards:miscellaneous' %}">Miscellaneous</a> - 
-                <a href="{% url 'awards:all' %}">All</a>
-            </p>
+            <table id="award-category-links">
+                <tr>
+                    <th colspan="4">
+                        Browse through the following award sections to check your progress
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'awards:crimes' %}">Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:drugs' %}">Drugs ({{summaryByType.Drugs.nAwarded}}/{{summaryByType.Drugs.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:attacks' %}">Attacks ({{summaryByType.Attacks.nAwarded}}/{{summaryByType.Attacks.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:faction' %}">Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'awards:items' %}">Items ({{summaryByType.Items.nAwarded}}/{{summaryByType.Items.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:travel' %}">Travel ({{summaryByType.Travel.nAwarded}}/{{summaryByType.Travel.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:work' %}">Work ({{summaryByType.Work.nAwarded}}/{{summaryByType.Work.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:gym' %}">Gym ({{summaryByType.Gym.nAwarded}}/{{summaryByType.Gym.nAwards}})</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'awards:money' %}">Money ({{summaryByType.Money.nAwarded}}/{{summaryByType.Money.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:competitions' %}">Competitions ({{summaryByType.Competitions.nAwarded}}/{{summaryByType.Competitions.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:commitment' %}">Commitment ({{summaryByType.Commitment.nAwarded}}/{{summaryByType.Commitment.nAwards}})</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'awards:miscellaneous' %}">Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <a href="{% url 'awards:index' %}">All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
+                    </td>
+                </tr>
+            </table>
 
-            <form method="post">
-                {% csrf_token %}
-                <h3><a class="update-data" href="{% url 'awards:updateData' %}"><i class="fa fa-sync-alt"></i>&nbsp; Refresh data</a> &nbsp; &nbsp;
-                <a href="{% url 'awards:logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a></h3>
-            </form>
+
 
         {% else %}
             <p>Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start tracking your awards</p>
