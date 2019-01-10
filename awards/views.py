@@ -3,18 +3,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 import json
 from yata.handy import apiCall
-from yata.handy import None2Zero
-from yata.handy import honorId2Img
 from yata.handy import createAwards
-from yata.handy import createAwardsSummary
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
+
 
 def index(request):
     if request.session.get('awards'):
         try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
             summaryByType = request.session['awards'].get('summaryByType')
             awards = request.session['awards'].get('awards')
             out = {"awards": awards, "summaryByType": summaryByType}
@@ -221,7 +217,8 @@ def updateKey(request):
         medals = allAwards["medals"]
         honors = allAwards["honors"]
         remove = [k for k, v in honors.items() if v["type"] == 1]
-        for k in remove: del honors[k]
+        for k in remove:
+            del honors[k]
         myMedals = myAwards["medals_awarded"]
         myHonors = myAwards["honors_awarded"]
 
@@ -232,9 +229,9 @@ def updateKey(request):
             summaryByType[type.title()] = awardsSummary["All awards"]
             awards.update(awardsTmp)
 
-        summaryByType["AllAwards"] = { "nAwarded": len(myHonors)+len(myMedals), "nAwards": len(honors)+len(medals) }
-        summaryByType["AllHonors"] = { "nAwarded": len(myHonors), "nAwards": len(honors) }
-        summaryByType["AllMedals"] = { "nAwarded": len(myMedals), "nAwards": len(medals) }
+        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
+        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
 
         request.session['awards'] = {'keyValue': p['keyValue'],
                                      'name': myAwards['name'],
@@ -272,7 +269,8 @@ def updateData(request):
         medals = allAwards["medals"]
         honors = allAwards["honors"]
         remove = [k for k, v in honors.items() if v["type"] == 1]
-        for k in remove: del honors[k]
+        for k in remove:
+            del honors[k]
         myMedals = myAwards["medals_awarded"]
         myHonors = myAwards["honors_awarded"]
 
@@ -283,17 +281,15 @@ def updateData(request):
             summaryByType[type.title()] = awardsSummary["All awards"]
             awards.update(awardsTmp)
 
-        summaryByType["AllAwards"] = { "nAwarded": len(myHonors)+len(myMedals), "nAwards": len(honors)+len(medals) }
-        summaryByType["AllHonors"] = { "nAwarded": len(myHonors), "nAwards": len(honors) }
-        summaryByType["AllMedals"] = { "nAwarded": len(myMedals), "nAwards": len(medals) }
+        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
+        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
 
         request.session['awards']['allAwards'] = allAwards
         request.session['awards']['myAwards'] = myAwards
         request.session['awards']['awards'] = awards
         request.session['awards']['summaryByType'] = dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
         request.session.cycle_key()
-
-        print(current_url)
 
         out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT}
         return render(request, 'awards/{}.html'.format(request.POST['html']), out)
