@@ -53,14 +53,23 @@ def drugs(request):
 
 def attacks(request):
     if request.session.get('awards'):
-        
-        allAwards = request.session['awards'].get('allAwards')
-        myAwards = request.session['awards'].get('myAwards')
-        myAwards = request.session['awards'].get('myAwards')
-        summaryByType = request.session['awards'].get('summaryByType')
-        awards, awardsSummary = createAwards(allAwards, myAwards, "attacks")
-        out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-        return render(request, 'awards.html', out)
+        try:
+            print("attacks: 1")
+            allAwards = request.session['awards'].get('allAwards')
+            print("attacks: 2")
+            myAwards = request.session['awards'].get('myAwards')
+            print("attacks: 3")
+            myAwards = request.session['awards'].get('myAwards')
+            print("attacks: 4")
+            summaryByType = request.session['awards'].get('summaryByType')
+            print("attacks: 5")
+            awards, awardsSummary = createAwards(allAwards, myAwards, "attacks")
+            print("attacks: 6")
+            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
+            print("attacks: 7")
+            return render(request, 'awards.html', out)
+        except:
+            return HttpResponseRedirect(reverse('awards:logout'))
 
     return render(request, 'awards.html')
 
