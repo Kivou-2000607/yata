@@ -5,7 +5,7 @@ from random import randint
 def random_number(length=3):
     return randint(10**(length-1), (10**(length)-1))
     
-fetch = numpy.arange(926,929)
+fetch = numpy.arange(1001, 1050)
 for i in fetch:
     print( "get image:", i+1 )
     if not os.path.isfile( "{}/large.png".format( i+1 ) ):
