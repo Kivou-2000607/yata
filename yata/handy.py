@@ -1540,7 +1540,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                         if key_perk.split("_")[-1] == "perks":
                             n += len(perks)
                     vp["current"] = n
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [371, 664]:
