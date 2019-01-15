@@ -1438,6 +1438,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "Perks": dict(),
             "Racing": dict(),
             "Other miscellaneous": dict(),
+            "Missions": dict(),
             "Maximum": dict(),
             "Events": dict()})
 
@@ -1542,12 +1543,18 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [371]:
+                elif int(k) in [371, 664]:
                     # 371 {'name': 'Protege', 'description': 'Complete the mission Introduction: Duke', 'type': 17, 'circulation': 44516, 'rarity': 'Common', 'awardType': 'Honor', 'img': 668653618, 'title': 'Protege [371]: Common (44516)'}
-                    type = "Other miscellaneous"
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    # "664": {"name": "Mercenary", "description": "Complete 1,000 contracts", "type": 17},
+                    type = "Missions"
+                    if int(k) == 371:
+                        vp["goal"] = 1
+                        key = "missionscompleted"
+                    else:
+                        vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                        key = "contractscompleted"
+                    vp["current"] = None2Zero(myAwards["personalstats"].get(key))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
                 # else:
