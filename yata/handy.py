@@ -329,7 +329,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [2, 25, 154, 157, 158]:
                     type = "Theft"
@@ -461,7 +460,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [26]:
                     type = "Cannabis"
@@ -502,7 +500,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]:
                     # 39 {'name': 'Woodland Camo', 'description': 'Win 5 awards', 'type': 3, 'circulation': 205626, 'rarity': 'Very Common', 'awardType': 'Honor', 'achieve': 0}
@@ -736,7 +733,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [253, 255, 257, 475, 476]:
                     # 253 {'name': 'Chainer 1', 'description': 'Participate in a 10 length chain', 'type': 8, 'circulation': 39418, 'rarity': 'Common', 'awardType': 'Honor'}
@@ -805,7 +801,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [398, 418]:
                     # 398 {'name': 'Anaemic', 'description': 'Fill 1,000 empty blood bags', 'type': 15, 'circulation': 3823, 'rarity': 'Rare', 'awardType': 'Honor', 'goal': 1000, 'current': 0, 'achieve': 0.0}
@@ -959,7 +954,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [11, 165]:
                     # 11 {'name': 'Mile High Club', 'description': 'Travel 100 times', 'type': 7, 'circulation': 31338, 'rarity': 'Common', 'awardType': 'Honor', 'img': 241952085, 'title': 'Mile High Club [11]: Common (31338)'}
@@ -1021,7 +1015,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]:
                     # 53 {'name': 'Biology Bachelor', 'description': 'Complete all classes in Biology', 'type': 4, 'circulation': 28936, 'rarity': 'Common', 'awardType': 'Honor', 'img': None, 'title': 'Biology Bachelor [53]: Common (28936)'}
@@ -1100,7 +1093,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
@@ -1136,7 +1128,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [546]:
                     # 546 {'name': 'Dividend', 'description': 'Receive 100 stock payouts ', 'type': 14, 'circulation': 8295, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 543547927, 'title': 'Dividend [546]: Limited (8295)'}
@@ -1249,7 +1240,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [213, 222, 330]:
                     # 213 {'name': 'Allure', 'description': 'Participate in the Mr & Ms Torn competition', 'type': 13, 'circulation': 3928, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 576433461, 'title': 'Allure [213]: Rare (3928)'}
@@ -1328,7 +1318,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [163, 162, 166]:
                     # 163 {'name': 'Fascination', 'description': 'Stay married for 250 days', 'type': 11, 'circulation': 75114, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 431464057, 'title': 'Fascination [163]: Very Common (75114)'}
@@ -1447,7 +1436,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
-                vp["title"] = "{} [{}]: {} ({})".format(vp["name"], k, vp["rarity"], vp["circulation"])
 
                 if int(k) in [5, 167, 217, 218, 219, 223, 246]:
                     # 5 {'name': 'Journalist', 'description': 'Have an article accepted in the newspaper', 'type': 0, 'circulation': 138, 'rarity': 'Extremely Rare', 'awardType': 'Honor', 'img': None, 'title': 'Journalist [5]: Extremely Rare (138)'}

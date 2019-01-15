@@ -517,16 +517,21 @@ img.medals {
 }
 
 #award-list td.c {
-    width: 40%;
+    width: 5%;
+    text-align: right;
 }
 
 #award-list td.d {
+    width: 35%;
+}
+
+#award-list td.e {
     width: 10%;
     text-align: right;
 }
 
 
-#award-list td.e {
+#award-list td.f {
     width: 5%;
     text-align: center;
 }
