@@ -512,7 +512,7 @@ img.medals {
 }
 
 #award-list td.b {
-    width: 25%;
+    width: 20%;
     font-style: oblique;
 }
 
@@ -522,18 +522,30 @@ img.medals {
 }
 
 #award-list td.d {
-    width: 35%;
+    /* width: 31%; */
 }
 
+/* x2 */
 #award-list td.e {
-    width: 10%;
+    width: 7%;
     text-align: right;
 }
 
 
 #award-list td.f {
-    width: 5%;
+    width: 4%;
     text-align: center;
+}
+
+
+#award-list td.g {
+    width: 6%;
+    text-align: right;
+}
+
+#award-list td.h {
+    width: 11%;
+    text-align: left;
 }
 
 thead th.up:after {

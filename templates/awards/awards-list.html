@@ -33,6 +33,7 @@
                             <th class="e" >State</th>
                             <th class="e" >Goal</th>
                             <th class="f" >Achieve</th>
+                            <th class="g" colspan="2" >Comment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,6 +58,13 @@
                                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
                                 <td class="f {% if award.achieve == 1 %}awards-done{% else %}awards-todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
+                                {% if award.left != "" %}
+                                    <td class="g">{{award.left|floatformat:0|intcomma}}</td>
+                                    <td class="h"><span title="{{award.comment.1}}">{{award.comment.0}}<span></td>
+                                {% else %}
+                                    <td class="g"></td>
+                                    <td class="h"></td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     {% endfor %}

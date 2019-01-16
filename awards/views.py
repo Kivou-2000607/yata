@@ -25,21 +25,16 @@ def crimes(request):
     if request.session.get('awards'):
         try:
             allAwards = request.session['awards'].get('allAwards')
-            print("1")
             myAwards = request.session['awards'].get('myAwards')
-            print("2")
             summaryByType = request.session['awards'].get('summaryByType')
-            print("3")
             awards, awardsSummary = createAwards(allAwards, myAwards, "crimes")
-            print("4")
             out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            print("5")
             return render(request, 'awards.html', out)
         except:
-            print("error")
+            print("[view.crimes] error while rendering")
             return HttpResponseRedirect(reverse('awards:logout'))
 
-    print("no sessions")
+    print("[view.crimes] no active session")
     return render(request, 'awards.html')
 
 
