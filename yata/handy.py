@@ -340,7 +340,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             if v["type"] in [5, 15]:
                 vp = v
                 vp["awardType"] = "Honor"
-                vp["comment"] = ["nerves needed", "nerves for 1 crime x number of crimes left / chance of success"]
+                vp["comment"] = ["nerve needed", "nerve for 1 crime x number of crimes left / chance of success"]
                 vp["img"] = honorId2Img(int(k))
 
                 if int(k) in [2, 25, 154, 157, 158]:
@@ -455,7 +455,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                 vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                 vp["left"] = max(forComment[type][0]*(vp["goal"]-vp["current"])/forComment[type][1], 0)
-                vp["comment"] = ["nerves needed", "nerves for 1 crime x number of crimes left / chance of success"]
+                vp["comment"] = ["nerve needed", "nerve for 1 crime x number of crimes left / chance of success"]
                 awards[type]["m_" + k] = vp
 
             elif v["type"] == "OTR":
@@ -547,6 +547,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("attackswon"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/win"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [28, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 515]:
@@ -575,9 +577,10 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     # 15 {'name': 'Kill Streaker 1', 'description': 'Achieve a best killstreak of 10', 'type': 8, 'circulation': 124231, 'rarity': 'Very Common'}
                     type = "Kill streak"
                     vp["goal"] = int(v["description"].split(" ")[-1].replace(",", ""))
-                    # vp["current"] = None2Zero(myAwards["personalstats"].get("killstreak"))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("bestkillstreak"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["currently", ""]
+                    vp["left"] = None2Zero(myAwards["personalstats"].get("killstreak"))
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [20, 227]:
@@ -631,6 +634,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("bountiescollected"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/bounty"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [236]:
@@ -665,6 +670,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["comment"] = ["energy needed", "25e/assist"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [490]:
@@ -673,6 +680,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("attacksassisted"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/assist"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [517]:
@@ -706,6 +715,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("attackswon"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/win"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [179, 180, 181, 182, 183]:
@@ -722,6 +733,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("yourunaway"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/escape"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [187, 188, 189]:
@@ -739,6 +752,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     # vp["current"] = None2Zero(myAwards["personalstats"].get("killstreak"))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("bestkillstreak"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["currently", ""]
+                    vp["left"] = None2Zero(myAwards["personalstats"].get("killstreak"))
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [195, 196, 197]:
@@ -755,6 +770,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("bountiescollected"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = ["energy needed", "25e/bounty"]
+                    vp["left"] = max(25*(vp["goal"]-vp["current"]), 0)
                     awards[type]["m_" + k] = vp
 
                 # else:

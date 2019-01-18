@@ -59,7 +59,7 @@
                                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
                                 <td class="f {% if award.achieve == 1 %}awards-done{% else %}awards-todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
                                 {% if award.left != "" %}
-                                    <td class="g">{{award.left|floatformat:0|intcomma}}</td>
+                                    <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
                                     <td class="h"><span title="{{award.comment.1}}">{{award.comment.0}}<span></td>
                                 {% else %}
                                     <td class="g"></td>
