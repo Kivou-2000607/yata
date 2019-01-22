@@ -166,7 +166,6 @@ d = {
     52: 358419107,  # Tiger Skin
 
     # 4
-    653: 872280837,  # Smart Alec
     55: 920148790,  # Combat Bachelor
     60: 145755443,  # History Bachelor
     56: 189007328,  # ICT Bachelor
@@ -182,6 +181,7 @@ d = {
     530: 120872843,  # Talented
     525: 301786663,  # Tireless
     533: 730040877,  # Tough
+    653: 355071632,  # Smart Alec
     659: 494666789,  # Clever Dick
     
     # 5
