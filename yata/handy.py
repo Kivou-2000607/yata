@@ -1163,7 +1163,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [653]:
+                elif int(k) in [653, 659]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))

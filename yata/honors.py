@@ -182,7 +182,8 @@ d = {
     530: 120872843,  # Talented
     525: 301786663,  # Tireless
     533: 730040877,  # Tough
-
+    659: 494666789,  # Clever Dick
+    
     # 5
     25: 566282329,  # Candy Man
     157: 486487597,  # Smile, You're On Camera
