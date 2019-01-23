@@ -289,6 +289,7 @@ def createAwardsSummary(awards):
 
 
 def createAwards(allAwards, myAwards, typeOfAwards):
+    from itertools import chain
 
     if typeOfAwards == "crimes":
 
@@ -889,8 +890,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["faction"].get("days_in_faction"))
                     vp["achieve"] = 1 if int(k) in myAwards["medals_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"]-vp["current"]), 0)
-                    vp["comment"] = ["days left", "days left"]
+                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
 
                 # else:
@@ -937,7 +938,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medstolen"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"]-vp["current"])/(0.5*7), 0)
-                    vp["comment"] = ["days left", "as brain surgeon stealing SFAK"]
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "as brain surgeon stealing SFAK"]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [7]:
@@ -958,7 +959,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratioFindsDays = vp["current"] / myAwards.get("age") if vp["current"] is not 0 else 1.0
                     vp["left"] = max((vp["goal"]-vp["current"])/ratioFindsDays, 0)
-                    vp["comment"] = ["days left", "with your current ratio of {:.2f} finds / day".format(ratioFindsDays)]
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "with your current ratio of {:.2f} finds/day".format(ratioFindsDays)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [238]:
@@ -996,8 +997,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("virusescoded"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(3*(vp["goal"] - vp["current"]), 0)
-                    vp["comment"] = ["days left", "coding simple viruses with IIL block and education"]
-
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "coding simple viruses with IIL block and education"]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [527]:
@@ -1045,8 +1045,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("booksread"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(31*(vp["goal"]-vp["current"]), 0)
-                    vp["comment"] = ["days left", "reading 31 days long books"]
-
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "reading 31 days long books"]
                     awards[type]["h_" + k] = vp
 
                 # else:
@@ -1066,7 +1065,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratioFindsDays = vp["current"] / myAwards.get("age") if vp["current"] is not 0 else 1.0
                     vp["left"] = max((vp["goal"]-vp["current"])/ratioFindsDays, 0)
-                    vp["comment"] = ["days left", "with your current ratio of {:.2f} finds / day".format(ratioFindsDays)]
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "with your current ratio of {:.2f} finds / day".format(ratioFindsDays)]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [198, 199, 200]:
@@ -1158,9 +1157,53 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 if int(k) in [53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]:
                     # 53 {'name': 'Biology Bachelor', 'description': 'Complete all classes in Biology', 'type': 4, 'circulation': 28936, 'rarity': 'Common', 'awardType': 'Honor', 'img': None, 'title': 'Biology Bachelor [53]: Common (28936)'}
                     type = "Bachelors"
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+
+                    eduBridge = {
+                        "Biology": "Biology",
+                        "Business": "Commerce",
+                        "Combat": "Military Arts and Science",
+                        "ICT": "Computer Science",
+                        "Defense": "Self Defense",
+                        "General": "General Studies",
+                        "Fitness": "Health Sciences",
+                        "History": "History",
+                        "Law": "Law",
+                        "Mathematics": "Mathematics",
+                        "Psychology": "Psychological Sciences",
+                        "Sports": "Sports Science",
+                    }
+
+                    eduDic = {
+                        "Commerce": list(range(1, 14)),
+                        "History": list(range(14, 22)),
+                        "Mathematics": list(chain([22], range(24, 34))),
+                        "Biology": list(chain(range(34, 43), [127])),
+                        "Sports Science": list(chain(range(43, 52), [126])),
+                        "Computer Science": list(range(52, 63)),
+                        "Psychological Sciences": list(range(63, 70)),
+                        "Self Defense": list(range(70, 78)),
+                        "Military Arts and Science": list(chain(range(78, 88), [125])),
+                        "Law": list(range(88, 103)),
+                        "Health Sciences": list(range(103, 112)),
+                        "General Studies": list(range(112, 124)),
+                    }
+
+                    name = v["name"].split(" ")[0]
+                    educationCompleted = myAwards.get("education_completed")
+                    numberOfClasses = len(eduDic[eduBridge[name]])
+                    numberOfClassesDone = 0
+                    for v in eduDic[eduBridge[name]]:
+                        if int(v) in myAwards.get("education_completed"):
+                            numberOfClassesDone += 1
+
+                    # vp["goal"] = 1
+                    # vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    # vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+
+                    vp["goal"] = numberOfClasses
+                    vp["current"] = numberOfClassesDone
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else numberOfClassesDone/float(numberOfClasses)
+
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [653, 659]:
@@ -1178,7 +1221,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["personalstats"].get("medstolen"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"]-vp["current"])/(0.5*7), 0)
-                    vp["comment"] = ["days left", "as brain surgeon stealing SFAK"]
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "as brain surgeon stealing SFAK"]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [23, 267]:
@@ -1452,6 +1495,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "Age": dict(),
             "Level": dict(),
             "Rank": dict(),
+            "Faction": dict(),
             "Other commitment": dict()})
 
         for k, v in allAwards["honors"].items():
@@ -1468,6 +1512,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["married"].get("duration"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [245]:
@@ -1516,6 +1562,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-4].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["married"].get("duration"))
                     vp["achieve"] = 1 if int(k) in myAwards["medals_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [210, 211, 212, 213, 214]:
@@ -1524,6 +1572,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("daysbeendonator"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [225, 226, 227, 228, 229, 230, 231, 232, 234, 235]:
@@ -1534,6 +1584,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     tmp = None2Zero(myAwards.get("age")) / 365.
                     vp["achieve"] = min(1, tmp / float(vp["goal"]))
                     vp["current"] = "{:.2f}".format(tmp)
+                    vp["left"] = max(365 * vp["goal"] - None2Zero(myAwards.get("age")), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]:
@@ -1555,6 +1607,16 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0
                     vp["current"] = 1 if int(k) in [int(a) for a in myAwards["medals_awarded"]] else 0
+                    awards[type]["m_" + k] = vp
+
+                elif int(k) in [26, 27, 28, 29, 108, 109, 148, 149, 150, 151]:
+                    # 26 {'name': 'Apprentice Faction Member', 'description': 'Serve 100 days in a single faction', 'type': 'CMT', 'awardType': 'Medal'}
+                    type = "Faction"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["faction"].get("days_in_faction"))
+                    vp["achieve"] = 1 if int(k) in myAwards["medals_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
 
                 # else:
