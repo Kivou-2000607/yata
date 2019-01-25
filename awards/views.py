@@ -240,8 +240,8 @@ def updateKey(request):
                                      'playerId': myAwards['player_id'],
                                      'allAwards': allAwards,
                                      'myAwards': myAwards,
-                                     # 'awards': awards,
-                                     # 'summaryByType': dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)}),
+                                     'awards': awards,
+                                     'summaryByType': dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)}),
                                      }
 
         check = json.loads(p.get('rememberSession'))
