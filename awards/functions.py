@@ -777,7 +777,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     # 538 {'name': 'Sodaholic', 'description': 'Drink 500 cans of energy drink', 'type': 16, 'circulation': 898, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = None2Zero(myAwards["personalstats"].get("boostersused"))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("energydrinkused"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(2 * (vp["goal"] - vp["current"]), 0)
                     vp["comment"] = ["hours of CD", "using 2h CD cans"]
