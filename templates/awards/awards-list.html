@@ -2,6 +2,8 @@
 {% load humanize %}
 {% load static %}
 
+
+
             <h2 class="title">List of awards left <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span></h2>
             <div class="module whiteBG">
                 {% if awardsSummary %}
@@ -14,7 +16,7 @@
                         <tbody>
                             {% for awardType, awards in awardsSummary.items %}
                                 {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
-                                    <td class="{% if awards.nAwarded == awards.nAwards %}awards-done{% else %}awards-todo{% endif %}">
+                                    <td class="{% if awards.nAwarded == awards.nAwards %}awards-done{% else %}awards-todo{% endif %}" >
                                         <span id="award-category-{{awardType|cut:" "}}" style="cursor: pointer;">&nbsp; &nbsp; <i id="award-category-{{awardType|cut:" "}}" class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i> {{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}</span>
                                     </td>
                                 {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
@@ -58,13 +60,8 @@
                                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
                                 <td class="f {% if award.achieve == 1 %}awards-done{% else %}awards-todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
-                                {% if award.left != "" %}
-                                    <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
-                                    <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0}}<span></td>
-                                {% else %}
-                                    <td class="g"></td>
-                                    <td class="h"></td>
-                                {% endif %}
+                                <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
+                                <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0}}<span></td>
                             </tr>
                         {% endfor %}
                     {% endfor %}

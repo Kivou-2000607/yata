@@ -9,6 +9,10 @@ body{
   position: relative;
 }
 
+a, th {
+    outline: none;
+}
+
 div.overlay{
     position: fixed;
     top: 0px;
@@ -492,9 +496,9 @@ img.medals {
 }
 
 #award-list {
-    width:90%;
-    margin-left:5%;
-    margin-right:5%;
+    width:95%;
+    margin-left:2.5%;
+    margin-right:2.5%;
 }
 
 #award-list td {
@@ -584,6 +588,12 @@ thead th.none:after {
 #award-category-links td:hover {
     background:#dddddd!important;
     font-weight: bold;
+}
+
+#award-category-links td a:hover,
+#award-category-links td a:focus,
+#award-category-links td a:active {
+    text-decoration: none;
 }
 
 .flush-right {

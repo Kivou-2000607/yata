@@ -34,11 +34,14 @@
 
         $(document).on('click', '.update-data', function(e){
             e.preventDefault();
-            $( "#api-key" ).load( "{% url 'awards:updateData' %}", {
-                html: "login",
+            var parts = window.location.href.split('/')
+            $( "#refresh-div" ).load( "{% url 'awards:updateData' %}", {
+                html: "refresh",
+                type: parts.pop() || parts.pop(),
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
-            $("#api-key").html('<h2 class="title">Updating data (2 API calls)</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
+            $("#refresh-div").html('<h2 class="title">Updating data (2 API calls)</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
+
         });
 
         $(document).on('click', '.update-key', function(e){
@@ -54,36 +57,6 @@
             });
             reload.html('<h2 class="title">Connecting to API (2 API calls)</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
         });
-
-        $(document).ready(function() {
-            $.tablesorter.addParser({
-              // set a unique id
-              id: "bignumbers",
-              is: function(s) {
-                return /^[0-9]?[0-9,\.]*$/.test(s);
-              },
-              format: function(s) {
-                return $.tablesorter.formatFloat( s.replace(/,/g,'').replace(/\$/g,'') );
-              },
-
-              type: "numeric"
-            });
-
-            $("#award-list").tablesorter({
-                headers: {
-                    2: { sorter: "bignumbers" },
-                    4: { sorter: "bignumbers" },
-                    5: { sorter: "bignumbers" },
-                    7: { sorter: "bignumbers" },
-                },
-                cssAsc: 'up',
-                cssDesc: 'down',
-                // cssNone: 'none',
-
-                sortList: [[0,0], [4,1], [5,0]],
-            });
-        });
-
 
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();
@@ -148,17 +121,9 @@
             <p><b>Awards tracker</b>: track the next merits you can get.</p>
             <br />
 
-            <div id="api-key">
-                {% include "awards/login.html" %}
+            <div id="refresh-div">
+                {% include "awards/refresh.html" %}
             </div>
-
-            {% if globalSummary %}
-            {% include "awards/summary.html" %}
-            {% endif %}
-
-            {% if awards %}
-                {% include "awards/awards-list.html" %}
-            {% endif %}
 
         </div> <!--end of content-->
     </div> <!--end of container-->

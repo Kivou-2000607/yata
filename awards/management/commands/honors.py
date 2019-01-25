@@ -3,7 +3,7 @@ from django.conf import settings
 
 import json
 import os
-from yata.honors import d
+from awards.honors import d
 
 class Command(BaseCommand):
     def handle(self, **options):

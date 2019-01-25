@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 import json
 from yata.handy import apiCall
-from yata.handy import createAwards
+from awards.functions import createAwards
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
@@ -240,8 +240,8 @@ def updateKey(request):
                                      'playerId': myAwards['player_id'],
                                      'allAwards': allAwards,
                                      'myAwards': myAwards,
-                                     'awards': awards,
-                                     'summaryByType': dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)}),
+                                     # 'awards': awards,
+                                     # 'summaryByType': dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)}),
                                      }
 
         check = json.loads(p.get('rememberSession'))
@@ -293,7 +293,12 @@ def updateData(request):
         request.session['awards']['summaryByType'] = dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
         request.session.cycle_key()
 
-        out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT}
+        if request.POST['type'] in AWARDS_CAT:
+            awards, awardsSummary = createAwards(allAwards, myAwards, request.POST['type'])
+            out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT, "awards": awards, "awardsSummary": awardsSummary}
+        else:
+            out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT, "awards": awards}
+
         return render(request, 'awards/{}.html'.format(request.POST['html']), out)
 
     else:
