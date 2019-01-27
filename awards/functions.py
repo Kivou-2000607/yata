@@ -860,8 +860,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(2 * flightTimes["mextravel"] * pilot * (vp["goal"] - vp["current"]) / 60., 0)
-                    vp["comment"] = ["hours left", "travelling to Mexico in {:.0f} minutes".format(flightTimes["mextravel"] * pilot)]
+                    ratio = vp["current"] / myAwards["age"] if vp["current"] is not 0 else 1.0
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0)
+                    vp["comment"] = ["days left", "current ratio of {:.02f} travels / day".format(ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [549, 567]:
@@ -870,9 +871,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = int(None2Zero(myAwards["personalstats"].get("traveltime")) / (3600 * 24))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"] - vp["current"]) / 24., 0)
-                    vp["comment"] = ["hours left", ""]
-
+                    ratio = vp["current"] / myAwards["age"] if vp["current"] is not 0 else 1.0
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0)
+                    vp["comment"] = ["days left", "current ratio of {:.02f} hours / day".format(ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
@@ -902,8 +903,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("traveltimes"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(2 * flightTimes["mextravel"] * pilot * (vp["goal"] - vp["current"]) / 60., 0)
-                    vp["comment"] = ["hours left", "travelling to Mexico in {:.0f} minutes".format(flightTimes["mextravel"] * pilot)]
+                    ratio = vp["current"] / myAwards["age"] if vp["current"] is not 0 else 1.0
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0)
+                    vp["comment"] = ["days left", "current ratio of {:.02f} travels / day".format(ratio)]
                     awards[type]["m_" + k] = vp
 
                 # else:
