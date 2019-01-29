@@ -1083,7 +1083,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
-                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708]:
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1098,9 +1098,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "money":
 

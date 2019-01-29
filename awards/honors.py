@@ -298,7 +298,8 @@ d = {
     506: 926799069,  # Lightspeed
     640: 795066538,  # Bulletproof
     708: 374066101,  # Conditioned
-
+    629: 371761723,  # Alpinist
+    
     # 11
     163: 431464057,  # Fascination
     309: 959806366,  # Christmas in Torn
