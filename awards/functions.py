@@ -195,8 +195,11 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     # 252 {'name': "Freedom Isn't Free", 'description': 'Make 500 bails from jail', 'type': 15, 'circulation': 2032, 'rarity': 'Extraordinary', 'goal': 500, 'awardType': 'Honor'}
                     type = "Busts"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebailed"))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebought"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    ratio = vp["current"] / float(max(None2Zero(myAwards["personalstats"].get("peopleboughtspent")), 1))
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    vp["comment"] = ["$ needed", "current ratio of {:,.0f} k$ / people bought".format(0.001/ratio)]
                     awards[type]["h_" + k] = vp
 
                 else:
