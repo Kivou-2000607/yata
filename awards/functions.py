@@ -85,6 +85,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "Busts": dict(),
             "Total": dict()})
 
+        totalNumberOfBusts = None2Zero(myAwards["personalstats"].get("peoplebusted")) + None2Zero(myAwards["personalstats"].get("failedbusts"))
+
         for k, v in allAwards["honors"].items():
             if v["type"] in [5, 15]:
                 vp = v
@@ -178,7 +180,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebusted"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["comment"] = ""
+                    ratio = vp["current"] / float(max(totalNumberOfBusts, 1)) if vp["current"] is not 0 else 1.0
+                    vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0)
+                    vp["comment"] = ["nerve needed", "with success rate of {:.0f}%".format(100 * ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [252]:
@@ -213,6 +217,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebusted"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / float(max(totalNumberOfBusts, 1)) if vp["current"] is not 0 else 1.0
+                    vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0)
+                    vp["comment"] = ["nerve needed", "with success rate of {:.0f}%".format(100 * ratio)]
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "drugs":
