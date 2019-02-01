@@ -443,7 +443,7 @@ def createReport(request, chainId):
         report = chain.report_set.create()
         print('[VIEW createReport] new report created')
 
-        # update members
+        # get members (no refresh)
         membersDB = faction.member_set.all()
 
         # case of live chain

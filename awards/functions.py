@@ -91,7 +91,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             if v["type"] in [5, 15]:
                 vp = v
                 vp["awardType"] = "Honor"
-                vp["comment"] = ["nerve needed", "nerve for 1 crime x number of crimes left / chance of success"]
                 vp["img"] = honorId2Img(int(k))
 
                 if int(k) in [2, 25, 154, 157, 158]:
@@ -100,6 +99,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [6]:
@@ -108,6 +108,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [24]:
@@ -116,6 +117,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [152]:
@@ -124,6 +126,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [153]:
@@ -132,6 +135,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [155, 161]:
@@ -140,6 +144,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [159]:
@@ -148,6 +153,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [160]:
@@ -156,6 +162,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [251]:
@@ -171,7 +178,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("organisedcrimes"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["comment"] = ""
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [248, 249, 250]:
@@ -182,7 +188,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
                     vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["nerve needed", "current ratio of {:,.4f} people busted / bust".format(ratio)]
+                    vp["comment"] = ["nerve needed", "current ratio of {:,.2f} people busted / bust".format(ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [252]:
@@ -191,7 +197,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebailed"))
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
-                    vp["comment"] = ""
                     awards[type]["h_" + k] = vp
 
                 else:
@@ -208,7 +213,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp["current"] = None2Zero(myAwards["criminalrecord"][crimeBridgeApp2API[type]])
                 vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                 vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                vp["comment"] = ["nerve needed", "nerve for 1 crime x number of crimes left / chance of success"]
+                vp["comment"] = ["nerve needed", "arbitrary success rate of {:,.0f}%".format(100 * forComment[type][1])]
                 awards[type]["m_" + k] = vp
 
             elif v["type"] == "OTR":
@@ -219,7 +224,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
                     vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["nerve needed", "current ratio of {:,.4f} people busted / bust".format(ratio)]
+                    vp["comment"] = ["nerve needed", "current ratio of {:,.2f} people busted / bust".format(ratio)]
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "drugs":
@@ -270,7 +275,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                         key = "exttaken"
                     vp["current"] = None2Zero(myAwards["personalstats"].get(key))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["comment"] = ["hours of CD", "based on average drug CD"]
+                    vp["comment"] = ["hours of CD", "average {:.0f} minutes of CD".format(forComment[type])]
                     vp["left"] = max(forComment[type] * (vp["goal"] - vp["current"]) / 60.0, 0)
                     awards[type]["h_" + k] = vp
 
