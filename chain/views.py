@@ -272,8 +272,14 @@ def createMembers(request):  # no context
                 print('[VIEW members] member {} created'.format(members[m]['name']))
                 faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
 
+        # delete old members
+        for m in membersDB:
+            if members.get(str(m.tId)) is None:
+                print('[VIEW members] member {} deleted'.format(m))
+                m.delete()
+
         # context
-        subcontext = dict({'members': membersDB})
+        subcontext = dict({'members': faction.member_set.all()})
 
         return render(request, 'chain/{}.html'.format(request.POST.get("html")), subcontext)
     return render(request, 'errorPage.html', {'errorMessage': 'You need to POST.'})
@@ -437,24 +443,8 @@ def createReport(request, chainId):
         report = chain.report_set.create()
         print('[VIEW createReport] new report created')
 
-        # refresh members
-        # members = apiCall('faction', factionId, 'basic', key, sub='members')
-        # if 'apiError' in members:
-        #     return render(request, 'errorPage.html', members)
-
-        # update members
+        # get members (no refresh)
         membersDB = faction.member_set.all()
-        # for m in members:
-        #     memberDB = membersDB.filter(tId=m).first()
-        #     if memberDB is not None:
-        #         print('[VIEW members] member {} updated'.format(members[m]['name']))
-        #         memberDB.name = members[m]['name']
-        #         memberDB.lastAction = members[m]['last_action']
-        #         memberDB.daysInFaction = members[m]['days_in_faction']
-        #         memberDB.save()
-        #     else:
-        #         print('[VIEW members] member {} created'.format(members[m]['name']))
-        #         faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
 
         # case of live chain
         if int(chainId) == 0:
