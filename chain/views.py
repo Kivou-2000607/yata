@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
 import numpy
+from scipy import stats
 import json
 
 from yata.handy import apiCall
@@ -73,12 +74,22 @@ def index(request):
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
                 graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                 cummulativeHits = 0
-                for line in graphSplit:
+                x = numpy.zeros(len(graphSplit))
+                y = numpy.zeros(len(graphSplit))
+                for i,line in enumerate(graphSplit):
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                    x[i] = int(splt[0])
+                    y[i] = cummulativeHits
                 speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
+
+                #  y = ax + b (y: hits, x: timestamp)
+                a, b, _, _, _ = stats.linregress(x, y)
+                ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
+                graph['info']['ETA'] = ETA
+
 
             else:
                 print('[VIEW index] no data found for graph')
