@@ -86,7 +86,12 @@ def index(request):
                 graph['info']['speedRate'] = speedRate
 
                 #  y = ax + b (y: hits, x: timestamp)
-                a, b, _, _, _ = stats.linregress(x[-10:], y[-10:])
+                a, b, _, _, _ = stats.linregress(x[-20:], y[-20:])
+                ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
+                graph['info']['ETALast'] = ETA
+                graph['info']['regLast'] = [a, b]
+
+                a, b, _, _, _ = stats.linregress(x, y)
                 ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
                 graph['info']['ETA'] = ETA
                 graph['info']['reg'] = [a, b]

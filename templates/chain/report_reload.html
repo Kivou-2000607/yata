@@ -17,9 +17,9 @@
         function drawChart() {
         {% if graph.info.reg|length == 2 %}
           var data = google.visualization.arrayToDataTable([
-            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count', 'linear reg'],
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'Current hit rate', 'Global hit rate', 'total hit count'],
             {% for a,b,c,d in graph.data %}
-                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}, {{graph.info.reg.0|mul:d|add:graph.info.reg.1}}],
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{graph.info.regLast.0|mul:d|add:graph.info.regLast.1}}, {{graph.info.reg.0|mul:d|add:graph.info.reg.1}}, {{c}}],
              {% endfor %}
           ]);
 
@@ -33,8 +33,9 @@
             },
             series: {
                       0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
-                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                      1: {type: 'line', targetAxisIndex: 1, color: '#cccc00'},
                       2: {type: 'line', targetAxisIndex: 1, color: '#55cc00'},
+                      3: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
                      },
             'backgroundColor': 'transparent',
             'chartArea': {'width': '90%', 'height': '70%'},
@@ -222,7 +223,11 @@
                         <tr class="white"><td><div id="histogram"></div></td></tr>
                         <tr><td>Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.</td></tr>
                         <tr><td>Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).</td></tr>
-                        <tr><td>Hit rate: {{graph.info.speedRate|floatformat:1}} hits every 5 minutes, at this speed, next bonus will be on {{graph.info.ETA}}</td></td>
+                        <tr><td>Hit rate: {{graph.info.speedRate|floatformat:1}} hits every 5 minutes.</td></td>
+                        {% if graph.info.reg|length == 2 %}
+                        <tr><td>With the current hit rate, next bonus will be on {{graph.info.ETALast}}</td></td>
+                        <tr><td>With the global hit rate, next bonus will be on {{graph.info.ETA}}</td></td>
+                        {% endif %}
                     </tbody>
                 </table>
             {% endif %}
