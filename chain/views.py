@@ -79,16 +79,17 @@ def index(request):
                 for i,line in enumerate(graphSplit):
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
-                    graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                    graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits, int(splt[0])])
                     x[i] = int(splt[0])
                     y[i] = cummulativeHits
                 speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
 
                 #  y = ax + b (y: hits, x: timestamp)
-                a, b, _, _, _ = stats.linregress(x, y)
+                a, b, _, _, _ = stats.linregress(x[-10:], y[-10:])
                 ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
                 graph['info']['ETA'] = ETA
+                graph['info']['reg'] = [a, b]
 
 
             else:

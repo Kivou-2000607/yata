@@ -15,10 +15,11 @@
         google.charts.setOnLoadCallback(drawChart);
 
         function drawChart() {
+        {% if graph.info.reg|length == 2 %}
           var data = google.visualization.arrayToDataTable([
-            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
-            {% for a,b,c in graph.data %}
-                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count', 'linear reg'],
+            {% for a,b,c,d in graph.data %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}, {{graph.info.reg.0|mul:d|add:graph.info.reg.1}}],
              {% endfor %}
           ]);
 
@@ -26,13 +27,40 @@
             // bar: {groupWidth: "100%"},
             legend: {position: 'top', textStyle: {fontSize: 14}},
             seriesType: 'bars',
+            vAxis: {
+                viewWindowMode:'explicit',
+                viewWindow: {min:0}
+            },
             series: {
                       0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
                       1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                      2: {type: 'line', targetAxisIndex: 1, color: '#55cc00'},
                      },
             'backgroundColor': 'transparent',
             'chartArea': {'width': '90%', 'height': '70%'},
           };
+
+          {% else %}
+              var data = google.visualization.arrayToDataTable([
+                ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
+                {% for a,b,c in graph.data %}
+                    [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+                 {% endfor %}
+              ]);
+
+              var options = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'top', textStyle: {fontSize: 14}},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                          1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                         },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+          {% endif %}
 
           var view = new google.visualization.DataView(data);
           view.setColumns([0, 1]);
