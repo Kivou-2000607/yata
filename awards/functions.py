@@ -851,7 +851,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
 
         awards = dict({
             "Destinations": dict(),
-            "Time": dict()})
+            "Time": dict(),
+            "Hunting": dict()})
 
         pilot = 0.7 if "+ Access to airstrip" in None2EmptyList(myAwards["property_perks"]) else 1.0
 
@@ -870,7 +871,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             }
 
         for k, v in allAwards["honors"].items():
-            if int(v["type"]) in [7]:
+            if int(v["type"]) in [3, 7]:
                 vp = v
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
@@ -908,6 +909,42 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max(2 * flightTimes[key] * pilot * (vp["goal"] - vp["current"]) / 60., 0)
                     vp["comment"] = ["hours left", "with a one way travel of {:.0f} minutes".format(flightTimes[key] * pilot)]
                     awards[type]["h_" + k] = vp
+
+                elif int(k) in [50, 51, 52]:
+                    # "50": {"name": "Zebra Skin", "description": "Achieve 50 skill in hunting", "type": 3, "circulation": 12118, "rarity": "Uncommon" },
+                    type = "Hunting"
+                    vp["goal"] = 1
+                    if int(k) == 50:
+                        vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 13100
+                        vp["comment"] = ["energy needed", "to go from 0 to 50"]
+
+                    elif int(k) == 51:
+                        vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        if 50 in myAwards["honors_awarded"]:
+                            vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 29700 - 13000
+                            vp["comment"] = ["energy needed", "to go from 50 to 75"]
+                        else:
+                            vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 29700
+                            vp["comment"] = ["energy needed", "to go from 0 to 75"]
+
+                    elif int(k) == 52:
+                        vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                        if 51 in myAwards["honors_awarded"]:
+                            vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 164800 - 29700
+                            vp["comment"] = ["energy needed", "to go from 75 to 100"]
+                        elif 50 in myAwards["honors_awarded"]:
+                            vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 164800 - 13000
+                            vp["comment"] = ["energy needed", "to go from 50 to 100"]
+                        else:
+                            vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 164800
+                            vp["comment"] = ["energy needed", "to go from 0 to 100"]
+
+                    awards[type]["h_" + k] = vp
+
 
                 # else:
                 #     print(k, v)
