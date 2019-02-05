@@ -69,22 +69,21 @@ def apiCallAttacks(factionId, beginTS, endTS, key):
     import requests
     from chain.models import Faction
 
-    
     # WARNING no fallback for this method if api crashed. Will yeld server error.
 
     # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
 
     chain = dict({})
-
+    keys = Faction.objects.filter(tId=factionId)[0].get_all_keys()
     feedAttacks = True
     i = 1
     while feedAttacks:
-        keyHolder, key = Faction.objects.filter(tId=factionId)[0].get_random_key()
-        print("[FUNCTION apiCallAttacks] using {} api key".format(keyHolder))
+        key = keys[i%len(keys)]
 
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, key, beginTS, endTS)
         print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key=" + key, "")))
         attacks = requests.get(url).json()["attacks"]
+
         if len(attacks):
             for j, (k, v)in enumerate(attacks.items()):
                 chain[k] = v
