@@ -230,6 +230,7 @@ d = {
     133: 545258345,  # Hula
     134: 759640199,  # The Rising Sun
     165: 317282935,  # There And Back
+    557: 980280221,  # Globetrotter
 
     # 8
     20: 778719620,  # Precision

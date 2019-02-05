@@ -887,7 +887,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["days left", "current ratio of {:.02f} travels / day".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [549, 567]:
+                elif int(k) in [549, 567, 557]:
                     # 549 {'name': 'Tourist', 'description': 'Spend 7 days in the air', 'type': 7, 'circulation': 16881, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 724568067, 'title': 'Tourist [549]: Uncommon (16881)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
