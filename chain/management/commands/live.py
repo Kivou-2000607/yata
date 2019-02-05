@@ -19,22 +19,22 @@ class Command(BaseCommand):
             # get api key
             if faction.apiString == "0":
                 print("[COMMAND live] no api key found")
-                break
+                continue
             factionId = faction.tId
             keyHolder, key = faction.get_random_key()
+            print("[COMMAND live] using {} api key".format(keyHolder))
 
             # get chain status
-            print("[COMMAND live] with {} api key".format(keyHolder))
             liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
             if 'apiError' in liveChain:
                 print('[COMMAND live] api key error: {}'.format((liveChain['apiError'])))
-                break
+                continue
 
             if not bool(liveChain["current"]):
                 print("[COMMAND live] no active chain")
                 faction.chain_set.filter(tId=0).delete()
                 print("[COMMAND live] report 0 deleted")
-                break
+                continue
 
             # get chain
             print('[COMMAND live] this is a live report')
@@ -47,7 +47,7 @@ class Command(BaseCommand):
             chainInfo = apiCall('faction', factionId, 'chain', key, sub='chain')
             if 'apiError' in chainInfo:
                 print('[COMMAND live] api key error: {}'.format((chainInfo['apiError'])))
-                break
+                continue
             chain.status = True
             chain.end = int(timezone.now().timestamp())
             chain.endDate = timestampToDate(chain.end)
@@ -55,6 +55,7 @@ class Command(BaseCommand):
             chain.startDate = timestampToDate(chain.start)
             chain.save()
 
+            keyHolder, key = faction.get_random_key()
             attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
 
             # delete old report and create new
@@ -66,7 +67,7 @@ class Command(BaseCommand):
             members = apiCall('faction', factionId, 'basic', key, sub='members')
             if 'apiError' in members:
                 print('[COMMAND live] api key error: {}'.format((members['apiError'])))
-                break
+                continue
 
             # update members
             membersDB = faction.member_set.all()
