@@ -68,6 +68,7 @@ class Chain(models.Model):
     end = models.IntegerField(default=0)
     endDate = models.DateTimeField(default=timezone.now)
     status = models.BooleanField(default=True)
+    createReport = models.BooleanField(default=False)
     jointReport = models.BooleanField(default=False)
     graph = models.TextField(default="", null=True, blank=True)
 

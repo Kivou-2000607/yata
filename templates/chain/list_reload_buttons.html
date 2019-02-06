@@ -1,6 +1,7 @@
 {% if chain %}
     {% if chain.have_report %}
         {% if request.session.chainer.AA %}
+
             <!-- see -->
             <a href="{% url 'chain:report' chain.tId %}#chain-report">      <i class="fas fa-eye" title="See report"></i></a> -
 
@@ -28,14 +29,24 @@
         {% else %}
             <a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="See report"></i></a>
         {% endif %}
+
+        {% if chain.createReport %}
+            - <i class="fas fa-clock" style="color: #ea9999;" title="A new report will be created in a couple of minutes."></i>
+        {% endif %}
+
+
     {% else %}
-        {% if request.session.chainer.AA %}
-            <form style="display: inline;">{% csrf_token %}
-                <input class="chain-report-id-list" type="hidden" value="{{chain.tId}}">
-                <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-plus-square" title="Create report"></i></a>
-            </form>
+        {% if chain.createReport %}
+            <i class="fas fa-clock" style="color: #ea9999;" title="Chain is to big. A new report will be created in a couple of minutes."></i>
         {% else %}
-            <i class="fas fa-times-circle" style="color: #ea9999;" title="No report for this chain"></i>
+            {% if request.session.chainer.AA %}
+                <form style="display: inline;">{% csrf_token %}
+                    <input class="chain-report-id-list" type="hidden" value="{{chain.tId}}">
+                    <a class="chain-report-refresh-list" href={% url 'chain:createReport' chain.tId %}><i class="fas fa-plus-square" title="Create report"></i></a>
+                </form>
+            {% else %}
+                <i class="fas fa-times-circle" style="color: #ea9999;" title="No report for this chain"></i>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% else %}

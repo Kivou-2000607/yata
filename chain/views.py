@@ -455,6 +455,15 @@ def createReport(request, chainId):
             return render(request, 'errorPage.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId)})
         print('[VIEW createReport] chain {} found'.format(chainId))
 
+        print('[VIEW createReport] number of hits: {}'.format(chain.nHits))
+        if chain.nHits > 2550:
+            print('[VIEW createReport] chain too big. Set on crontab.')
+            chain.createReport = True
+            # chain.report_set.create()
+            chain.save()
+            subcontext = {"chain": chain}
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
         # delete old report and create new
         chain.report_set.all().delete()
         report = chain.report_set.create()
@@ -592,6 +601,7 @@ def deleteReport(request, chainId):
         # delete old report and remove from joint report
         chain.report_set.all().delete()
         chain.jointReport = False
+        chain.createReport = False
         chain.save()
         print('[VIEW deleteReport] report deleted')
 
