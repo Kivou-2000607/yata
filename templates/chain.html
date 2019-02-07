@@ -99,17 +99,17 @@
         });
 
         // refresh report from report button
-        $(document).on('click', '#chain-report-refresh', function(e){
-            e.preventDefault();
-            var reload = $("#chain-report-reload");
-            var chainId = $("#chain-report-id").val();
-            reload.load( "/chain/createReport/"+chainId, {
-                html: "report_reload",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
+        // $(document).on('click', '#chain-report-refresh', function(e){
+        //     e.preventDefault();
+        //     var reload = $("#chain-report-reload");
+        //     var chainId = $("#chain-report-id").val();
+        //     reload.load( "/chain/createReport/"+chainId, {
+        //         html: "report_reload",
+        //         chainId: chainId,
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
 
         // refresh/create report from list button
         $(document).on('click', '.chain-report-refresh-list', function(e){
@@ -239,6 +239,7 @@
             var splt = this.href.split("/");
             var memberId = splt.pop();
             var chainId = splt.pop();
+            $('<tr id="individal-report-' + memberId + '"></tr>').insertAfter($(this).closest('tr'));
             var reload = $("#individal-report-"+memberId);
             reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
                 html: "ireport_reload",
