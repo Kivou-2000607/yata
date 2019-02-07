@@ -1,12 +1,7 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from chain.models import Faction
 from yata.handy import apiCall
-from yata.handy import apiCallAttacks
-from yata.handy import timestampToDate
-
-from yata.handy import fillReport
 
 
 class Command(BaseCommand):

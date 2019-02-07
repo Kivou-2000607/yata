@@ -3,10 +3,11 @@ from django.utils import timezone
 
 from chain.models import Faction
 from yata.handy import apiCall
-from yata.handy import apiCallAttacks
 from yata.handy import timestampToDate
 
-from yata.handy import fillReport
+from chain.functions import apiCallAttacks
+from chain.functions import fillReport
+from chain.functions import updateMembers
 
 
 class Command(BaseCommand):
@@ -63,26 +64,12 @@ class Command(BaseCommand):
             report = chain.report_set.create()
             print('[COMMAND live] new report created')
 
-            # call members
-            members = apiCall('faction', factionId, 'basic', key, sub='members')
+            # update members
+            members = updateMembers(faction)
             if 'apiError' in members:
-                print('[COMMAND live] api key error: {}'.format((members['apiError'])))
+                print("[COMMAND live] error in API continue to next chain: {}", members['apiError'])
                 continue
 
-            # update members
-            membersDB = faction.member_set.all()
-            for m in members:
-                memberDB = membersDB.filter(tId=m).first()
-                if memberDB is not None:
-                    print('[VIEW members] member {} updated'.format(members[m]['name']))
-                    memberDB.name = members[m]['name']
-                    memberDB.lastAction = members[m]['last_action']
-                    memberDB.daysInFaction = members[m]['days_in_faction']
-                    memberDB.save()
-                else:
-                    print('[VIEW members] member {} created'.format(members[m]['name']))
-                    faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
-
-            fillReport(faction, membersDB, chain, report, attacks)
+            fillReport(faction, members, chain, report, attacks)
 
             print("[COMMAND live] end")

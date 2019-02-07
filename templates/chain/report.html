@@ -9,7 +9,7 @@
 
     <div class="module whiteBG">
         {% include "chain/report_reload.html" %}
-        <div class="submit-row">
+        <!-- <div class="submit-row">
             {% if request.session.chainer.AA %}
                 {% if chain.nHits <= 2550 %}
                     <form style="display: inline;" method="post">{% csrf_token %}
@@ -23,13 +23,15 @@
             {% else %}
                 <a><input type="submit" class="update-type" value="You need AA permission to refresh the report"></a>
             {% endif %}
-        </div>
+        </div> -->
     </div>
 {% else %}
     <h2 class="title">Report not yet created</h2>
-    <div class="module whiteBG">
+    <div class="module whiteBG just">
         <br>
-        <div class="submit-row">
+        <p>It will be automatically update in a couple of minutes</p>
+        <br>
+        <!-- <div class="submit-row">
             {% if request.session.chainer.AA %}
                 {% if chain.nHits <= 2550 %}
                     <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Create report"></a>
@@ -39,6 +41,6 @@
             {% else %}
                 <a><input type="submit" class="update-type" value="You need AA permission to create the report"></a>
             {% endif %}
-        </div>
+        </div> -->
     </div>
 {% endif  %}

@@ -1,12 +1,10 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from chain.models import Faction
-from yata.handy import apiCall
-from yata.handy import apiCallAttacks
-from yata.handy import timestampToDate
 
-from yata.handy import fillReport
+from chain.functions import apiCallAttacks
+from chain.functions import fillReport
+from chain.functions import updateMembers
 
 
 class Command(BaseCommand):
@@ -34,11 +32,17 @@ class Command(BaseCommand):
                 print('[COMMAND bigChains] new report created')
 
                 # get members (no refresh)
-                membersDB = faction.member_set.all()
+                # members = faction.member_set.all()
 
-                attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
+                # update members
+                members = updateMembers(faction)
+                if 'apiError' in members:
+                    print("[COMMAND bigChains] error in API continue to next chain: {}", members['apiError'])
+                    continue
 
-                fillReport(faction, membersDB, chain, report, attacks)
+                attacks = apiCallAttacks(factionId, chain.start, chain.end)
+
+                fillReport(faction, members, chain, report, attacks)
 
                 chain.createReport = False
                 chain.save()

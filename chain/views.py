@@ -7,13 +7,15 @@ from scipy import stats
 import json
 
 from yata.handy import apiCall
-from yata.handy import apiCallAttacks
 from yata.handy import timestampToDate
-from yata.handy import fillReport
-from yata.handy import BONUS_HITS
 
-from .models import Faction
-from .models import Member
+from chain.functions import apiCallAttacks
+from chain.functions import fillReport
+from chain.functions import BONUS_HITS
+from chain.functions import updateMembers
+
+from chain.models import Faction
+from chain.models import Member
 
 
 # render view
@@ -76,7 +78,7 @@ def index(request):
                 cummulativeHits = 0
                 x = numpy.zeros(len(graphSplit))
                 y = numpy.zeros(len(graphSplit))
-                for i,line in enumerate(graphSplit):
+                for i, line in enumerate(graphSplit):
                     splt = line.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits, int(splt[0])])
@@ -95,7 +97,6 @@ def index(request):
                 ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
                 graph['info']['ETA'] = ETA
                 graph['info']['reg'] = [a, b]
-
 
             else:
                 print('[VIEW index] no data found for graph')
@@ -210,7 +211,11 @@ def createList(request):  # no context
                                                  start=v['start'], startDate=timestampToDate(v['start']),
                                                  end=v['end'], endDate=timestampToDate(v['end']))
                     else:
-                        print('[VIEW createList] chain {} found'.format(k))
+                        print('[VIEW createList] chain {} updated'.format(k))
+                        chain.nHits = v['chain']
+                        chain.respect = v['respect']
+                        chain.save()
+
                 else:
                     if chain is not None:
                         print('[VIEW createList] chain {} deleted'.format(k))
@@ -270,33 +275,13 @@ def createMembers(request):  # no context
         else:
             print('[VIEW members] faction {} found'.format(factionId))
 
-        # call members
-        members = apiCall('faction', factionId, 'basic', key, sub='members')
+        # update members
+        members = updateMembers(faction, key)
         if 'apiError' in members:
             return render(request, 'errorPage.html', members)
 
-        # update members
-        membersDB = faction.member_set.all()
-        for m in members:
-            memberDB = membersDB.filter(tId=m).first()
-            if memberDB is not None:
-                print('[VIEW members] member {} updated'.format(members[m]['name']))
-                memberDB.name = members[m]['name']
-                memberDB.lastAction = members[m]['last_action']
-                memberDB.daysInFaction = members[m]['days_in_faction']
-                memberDB.save()
-            else:
-                print('[VIEW members] member {} created'.format(members[m]['name']))
-                faction.member_set.create(tId=m, name=members[m]['name'], lastAction=members[m]['last_action'], daysInFaction=members[m]['days_in_faction'])
-
-        # delete old members
-        for m in membersDB:
-            if members.get(str(m.tId)) is None:
-                print('[VIEW members] member {} deleted'.format(m))
-                m.delete()
-
         # context
-        subcontext = dict({'members': faction.member_set.all()})
+        subcontext = dict({'members': members})
 
         return render(request, 'chain/{}.html'.format(request.POST.get("html")), subcontext)
     return render(request, 'errorPage.html', {'errorMessage': 'You need to POST.'})
@@ -470,7 +455,12 @@ def createReport(request, chainId):
         print('[VIEW createReport] new report created')
 
         # get members (no refresh)
-        membersDB = faction.member_set.all()
+        # members = faction.member_set.all()
+
+        # update members
+        members = updateMembers(faction, key)
+        if 'apiError' in members:
+            return render(request, 'errorPage.html', members)
 
         # case of live chain
         if int(chainId) == 0:
@@ -486,9 +476,9 @@ def createReport(request, chainId):
             chain.startDate = timestampToDate(chain.start)
             chain.save()
 
-        attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
+        attacks = apiCallAttacks(factionId, chain.start, chain.end, key=key)
 
-        chain, report, (binsCenter, histo) = fillReport(faction, membersDB, chain, report, attacks)
+        chain, report, (binsCenter, histo) = fillReport(faction, members, chain, report, attacks)
 
         # render for on the fly modification
         if request.method == 'POST':
@@ -839,11 +829,11 @@ def refreshTarget(request, targetId):
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     print('[VIEW refreshTarget] refresh traget last attack info')
-                    target.targetName=v["defender_name"]
-                    target.result=v["result"]
-                    target.endDate=timestampToDate(v["timestamp_ended"])
-                    target.fairFight=float(v['modifiers']['fairFight'])
-                    target.respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                    target.targetName = v["defender_name"]
+                    target.result = v["result"]
+                    target.endDate = timestampToDate(v["timestamp_ended"])
+                    target.fairFight = float(v['modifiers']['fairFight'])
+                    target.respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                     break
             target.save()
 
@@ -906,11 +896,11 @@ def refreshTargets(request, select):
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if int(v["defender_id"]) == int(target.targetId) and int(v["chain"]) not in BONUS_HITS:
                         print('[VIEW refreshTarget] refresh traget last attack info')
-                        target.targetName=v["defender_name"]
-                        target.result=v["result"]
-                        target.endDate=timestampToDate(v["timestamp_ended"])
-                        target.fairFight=float(v['modifiers']['fairFight'])
-                        target.respect=float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                        target.targetName = v["defender_name"]
+                        target.result = v["result"]
+                        target.endDate = timestampToDate(v["timestamp_ended"])
+                        target.fairFight = float(v['modifiers']['fairFight'])
+                        target.respect = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                         break
                 target.save()
 
