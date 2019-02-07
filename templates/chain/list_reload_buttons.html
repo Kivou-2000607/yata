@@ -3,7 +3,7 @@
         {% if request.session.chainer.AA %}
 
             <!-- see -->
-            <a href="{% url 'chain:report' chain.tId %}#chain-report"><i class="fas fa-eye" title="See report">view</i></a> -
+            <a href="{% url 'chain:report' chain.tId %}#chain-report"><i class="fas fa-eye" title="See report"></i></a> -
 
             <!-- refresh -->
             <form style="display: inline;">{% csrf_token %}
