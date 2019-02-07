@@ -212,7 +212,7 @@ def updateKey(request):
         allAwards = apiCall('torn', '', 'honors,medals', p.get('keyValue'))
         if 'apiError' in allAwards:
             return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors', p.get('keyValue'))
+        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', p.get('keyValue'))
         if 'apiError' in myAwards:
             return render(request, 'errorPage.html', myAwards)
 
@@ -264,7 +264,7 @@ def updateData(request):
         if 'apiError' in allAwards:
             return render(request, 'errorPage.html', allAwards)
 
-        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors', key)
+        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', key)
         if 'apiError' in myAwards:
             return render(request, 'errorPage.html', myAwards)
 

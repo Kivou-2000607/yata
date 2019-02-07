@@ -808,10 +808,16 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     # 539 {'name': 'Bibliophile', 'description': 'Read 10 books', 'type': 16, 'circulation': 384, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    if myAwards["icons"].get("icon68") is not None:
+                        tmp = myAwards["icons"].get("icon68").split("-")[-1].strip().split(",")
+                        currentBook = 31. - float(tmp[0].split()[0]) + float(tmp[1].split()[0])/24. + float(tmp[2].split()[0])/24./60.
+                    else:
+                        currentBook = 0
+                    print(currentBook)
                     vp["current"] = None2Zero(myAwards["personalstats"].get("booksread"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(31 * (vp["goal"] - vp["current"]), 0)
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "reading 31 days long books"]
+                    vp["left"] = max(31 * (vp["goal"] - vp["current"]) - currentBook, 0)
+                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "currently read {:.02f} days of a book".format(currentBook)]
                     awards[type]["h_" + k] = vp
 
                 # else:
