@@ -239,7 +239,9 @@
             var splt = this.href.split("/");
             var memberId = splt.pop();
             var chainId = splt.pop();
-            $('<tr id="individal-report-' + memberId + '"></tr>').insertAfter($(this).closest('tr'));
+            if( !$( "#individal-report-"+memberId ).length ) {
+                $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+            }
             var reload = $("#individal-report-"+memberId);
             reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
                 html: "ireport_reload",
@@ -247,6 +249,13 @@
             });
             reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
         });
+
+        // close individual report
+        $(document).on('click', '[id^="individal-report-"]', function(e){
+            e.preventDefault();
+            $(this).html("");
+        });
+
 
         // close individual report
         $(document).on('click', '[id^="individal-report-"]', function(e){

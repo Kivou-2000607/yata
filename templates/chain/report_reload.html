@@ -8,6 +8,10 @@
 
     $(document).ready(function() {
         $("#chain-report-hits").tablesorter();
+
+        $("#chain-report-hits").bind("sortStart",function() {
+            $('[id^="individal-report-"]').remove();
+        });
     });
 
     {% if graph.data|length %}
