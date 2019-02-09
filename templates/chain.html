@@ -187,6 +187,21 @@
             reload.html('<div class="loader"></div>');
         });
 
+        // delete target from target list button
+        $(document).on('click', '.target-list-list', function(e){
+            e.preventDefault();
+            var url = this.href.split("/")
+            var list = url.pop();
+            var targetId = url.pop();
+            var reload = $(this).closest("td");
+            // alert("coucou");
+            reload.load( "/chain/changeTargetList/"+targetId+"/"+list, {
+                html: "targets_reload_list_inline",
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            // reload.html('<div class="loader"></div>');
+        });
+
         // toggle target refresh status from target list button
         $(document).on('click', '.target-list-toggle-refresh-status', function(e){
             e.preventDefault();

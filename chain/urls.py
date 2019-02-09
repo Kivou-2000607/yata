@@ -29,6 +29,7 @@ urlpatterns = [
     re_path(r'^deleteTarget/(?P<targetId>\w+)$', views.deleteTarget, name='deleteTarget'),
     re_path(r'^toggleTarget/(?P<targetId>\w+)$', views.toggleTarget, name='toggleTarget'),
     re_path(r'^toggleTargetRefreshStatus/(?P<targetId>\w+)$', views.toggleTargetRefreshStatus, name='toggleTargetRefreshStatus'),
+    re_path(r'^changeTargetList/(?P<targetId>\w+)/(?P<newList>\w+)$', views.changeTargetList, name='changeTargetList'),
 
     re_path(r'^tree/$', views.tree, name='tree'),
 

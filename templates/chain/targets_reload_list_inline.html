@@ -1,0 +1,17 @@
+    {{target.list}}&nbsp;
+    <form style="display: inline;">{% csrf_token %}
+        {% if target.list > 1 %}
+            <a class="target-list-list" href={% url 'chain:changeTargetList' target.targetId target.list|add:-1%}>
+                <i class="fas fa-minus-square" title="-"></i>
+            </a>
+        {% else%}
+            <i class="fas fa-minus-square" title="-"></i>
+        {% endif %}
+        {% if target.list < 4 %}
+            <a class="target-list-list" href={% url 'chain:changeTargetList' target.targetId target.list|add:1%}>
+                <i class="fas fa-plus-square" title="+"></i>
+            </a>
+        {% else%}
+            <i class="fas fa-plus-square" title="+"></i>
+        {% endif %}
+    </form>

@@ -416,13 +416,20 @@ td.not-okay:hover { background:#ea9999!important; }
 }
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
-
+/* 
 table.chain-report tr:nth-child(odd)  { background:#cccccc22;  }
 table.chain-report tr:nth-child(even) { background:#ffffff22; }
 table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; }
-table.chain-report tr:nth-child(even):hover { background:#dddddd22; }
+table.chain-report tr:nth-child(even):hover { background:#dddddd22; } */
+
 table.chain-report td.white { background:#ffffff22; font-weight: bold; }
 table.chain-report td.white:hover { background:#aaaaaa22; font-weight: bold; }
+
+table.chain-report tr:hover  {
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px#888;
+    box-shadow: inner 0 0 5px #888;
+}
 
 table.highlight tr:hover { font-weight: bold; }
 

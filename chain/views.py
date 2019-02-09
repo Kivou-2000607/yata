@@ -968,6 +968,37 @@ def deleteTarget(request, targetId):
 
 
 # action view
+def changeTargetList(request, targetId, newList):
+    if request.session.get('chainer'):
+        if request.method == "POST":
+            # get info
+            playerId = request.session['chainer'].get('playerId')
+
+            # get member
+            chainer = Member.objects.filter(tId=playerId).first()
+
+            # delete
+            target = chainer.target_set.filter(targetId=targetId).first()
+
+            target.list = min(4, max(1, int(newList)))
+            target.save()
+
+            # render for on the fly modification
+            print('[VIEW changeTargetList] render')
+            subcontext = dict({"target": target})
+            return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
+
+        # else redirection since no post
+        else:
+            print('[VIEW changeTargetList] no post')
+            return HttpResponseRedirect(reverse('chain:list'))
+
+    else:
+        print('[VIEW changeTargetList] render error')
+        return render(request, 'errorPage.html', {'errorMessage': 'You need to be logged.'})
+
+
+# action view
 def toggleTargetRefreshStatus(request, targetId):
     if request.session.get('chainer'):
         if request.method == "POST":
