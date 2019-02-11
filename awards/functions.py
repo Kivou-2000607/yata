@@ -1705,14 +1705,12 @@ def createAwards(allAwards, myAwards, typeOfAwards):
     awardsSummary["All awards"] = {"nAwarded": nAwardedTot, "nAwards": nAwardsTot}
 
 
-    # check double crime mertis
-    # if typeOfAwards == "crimes":
-
     doubled = []
-    for category, crimes in awards.items():
-        # print("Cat = ", category)
-        for k1, v1 in crimes.items():
-            for k2, v2 in crimes.items():
+    nextNerve = 9999999999  # lowest nerve left
+    nextCrime = []  # list of next crime (if same lowest nerve)
+    for category, aw in awards.items():
+        for k1, v1 in aw.items():
+            for k2, v2 in aw.items():
                 if( k1 != k2 and v1["goal"] == v2["goal"] and v1["left"] == v2["left"] and v1["comment"][1] == v2["comment"][1] and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                     awards[category][k1]["double"] = True
                     awards[category][k2]["double"] = True
@@ -1722,5 +1720,18 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                         awards[category][k2]["left"] /= 2.0
 
                     doubled.append(k1)
+                    
+            if typeOfAwards == "crimes":
+                if category != "Busts" and int(v1["left"]):
+                    if int(v1["left"]) < nextNerve:
+                        nextCrime = [(category, k1)]
+                        nextNerve = int(v1["left"])
+                    elif int(v1["left"]) == nextNerve:
+                        nextCrime.append((category, k1))
+                        nextNerve = int(v1["left"])
+
+    if typeOfAwards == "crimes":
+        for (c, k) in nextCrime:
+            awards[c][k]["next"] = True
 
     return awards, awardsSummary

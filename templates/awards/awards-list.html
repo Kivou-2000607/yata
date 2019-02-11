@@ -41,7 +41,7 @@
                     <tbody>
                     {% for awardType, awardsList in awards.items %}
                         {% for awardId, award in awardsList.items %}
-                            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.double %}double{% endif%}">
+                            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%} {% if award.double %}double{% endif%}">
                                 <td class="a"><span title="{{awardType}}">{{awardType}}</span></td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
@@ -65,11 +65,7 @@
                                 {% else %}
                                     <td class="g"><span title="{{award.left|safe}}">{{award.left|safe}}</span></td>
                                 {% endif %}
-                                {% if award.double %}
-                                    <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0|safe}}<span><span title='Double merit!' style="font-weight: bold; float: right">&nbsp;<i class="fas fa-hand-peace"></i></span></td>
-                                {% else %}
-                                    <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0|safe}}<span></td>
-                                {% endif %}
+                                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1}}">{{award.comment.0|safe}}</span><span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i></span>{% endif %}</td> 
                             </tr>
                         {% endfor %}
                     {% endfor %}

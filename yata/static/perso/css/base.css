@@ -427,7 +427,7 @@ table.chain-report td.white:hover { background:#aaaaaa22; font-weight: bold; }
 
 table.chain-report tr:hover  {
     -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px#888;
+    -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
 }
 
@@ -464,7 +464,7 @@ tr.award-honor  { background:#cccccc22;  }
 
 table.awards-report tr:hover  {
     -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px#888;
+    -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
 }
 
@@ -529,6 +529,21 @@ img.medals {
 #award-list tr.double {
     background-color: #0000ff0E;
 }
+
+#award-list tr.next  {
+    -moz-box-shadow: inset 0 0 5px #aa0000;
+    -webkit-box-shadow: inset 0 0 5px #aa0000;
+    box-shadow: inner 0 0 5px #aa0000;
+    background-color: #ff00000E;
+}
+
+#award-list tr.next:hover  {
+    -moz-box-shadow: inset 0 0 5px #ff0000;
+    -webkit-box-shadow: inset 0 0 5px #ff0000;
+    box-shadow: inner 0 0 5px #ff0000;
+    background-color: #ff00000E;
+}
+
 
 #award-list td.a {
     width: 10%;
@@ -613,7 +628,7 @@ thead th.none:after {
 
 #award-category-links td:hover  {
     -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px#888;
+    -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
     font-weight: bold;
 }
