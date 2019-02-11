@@ -416,7 +416,7 @@ td.not-okay:hover { background:#ea9999!important; }
 }
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
-/* 
+/*
 table.chain-report tr:nth-child(odd)  { background:#cccccc22;  }
 table.chain-report tr:nth-child(even) { background:#ffffff22; }
 table.chain-report tr:nth-child(odd):hover  { background:#aaaaaa22; }
@@ -458,9 +458,17 @@ div.loader{
 }
 
 tr.award-medal  { background:#ffffff22;  }
-tr.award-medal:hover  { background:#dddddd22; }
+/* tr.award-medal:hover  { background:#dddddd22; } */
 tr.award-honor  { background:#cccccc22;  }
-tr.award-honor:hover  { background:#aaaaaa22; }
+/* tr.award-honor:hover  { background:#aaaaaa22; } */
+
+table.awards-report tr:hover  {
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px#888;
+    box-shadow: inner 0 0 5px #888;
+}
+
+
 
 /* tr.awards-done {
     color: #0B8E14;
@@ -516,6 +524,10 @@ img.medals {
 }
 #award-list th {
     text-align: center;
+}
+
+#award-list tr.double {
+    background-color: #0000ff0E;
 }
 
 #award-list td.a {
@@ -592,16 +604,21 @@ thead th.none:after {
     cursor: pointer;
 }
 
-#award-category-links td:hover {
-    background:#dddddd!important;
-    font-weight: bold;
-}
-
 #award-category-links td a:hover,
 #award-category-links td a:focus,
 #award-category-links td a:active {
     text-decoration: none;
+    color: #447e9b;
 }
+
+#award-category-links td:hover  {
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px#888;
+    box-shadow: inner 0 0 5px #888;
+    font-weight: bold;
+}
+
+
 
 .flush-right {
     float: right;

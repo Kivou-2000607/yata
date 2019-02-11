@@ -7,7 +7,7 @@
             <h2 class="title">List of awards left <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span></h2>
             <div class="module whiteBG">
                 {% if awardsSummary %}
-                    <table class="tablesorter center awards-report">
+                    <table class="tablesorter center awards-summary">
                         <thead>
                             <tr>
                                 <th colspan="4">Summary by award category</th>
@@ -41,7 +41,7 @@
                     <tbody>
                     {% for awardType, awardsList in awards.items %}
                         {% for awardId, award in awardsList.items %}
-                            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %}">
+                            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.double %}double{% endif%}">
                                 <td class="a"><span title="{{awardType}}">{{awardType}}</span></td>
                                 {% if award.awardType == "Honor" %}
                                     {% if award.img == None %}
@@ -65,7 +65,11 @@
                                 {% else %}
                                     <td class="g"><span title="{{award.left|safe}}">{{award.left|safe}}</span></td>
                                 {% endif %}
-                                <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0}}<span></td>
+                                {% if award.double %}
+                                    <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0|safe}}<span><span title='Double merit!' style="font-weight: bold; float: right">&nbsp;<i class="fas fa-hand-peace"></i></span></td>
+                                {% else %}
+                                    <td class="h"><span title="{{award.comment.1}}" style="cursor: pointer">{{award.comment.0|safe}}<span></td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     {% endfor %}
