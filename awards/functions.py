@@ -288,9 +288,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max(forComment[type] * (vp["goal"] - vp["current"]) / 60.0, 0)
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
     elif typeOfAwards == "attacks":
 
         awards = dict({
@@ -309,8 +306,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             None2Zero(myAwards["personalstats"].get("attacksdraw")) + None2Zero(myAwards["personalstats"].get("attacksassisted"))
         totalNumberOfDefends = None2Zero(myAwards["personalstats"].get("defendslost")) + None2Zero(myAwards["personalstats"].get("defendswon")) + \
             None2Zero(myAwards["personalstats"].get("defendsstalemated")) + None2Zero(myAwards["personalstats"].get("theyrunaway"))
-
-        # print("Total number of attacks:", totalNumberOfAttacks)
 
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [8, 2, 3]:
@@ -508,9 +503,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["energy needed", "current ratio of {:,.2f} hits / attack".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
         for k, v in allAwards["medals"].items():
             if v["type"] == "ATK":
                 vp = v
@@ -595,9 +587,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["energy needed", "25e / bounty"]
                     awards[type]["m_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
     elif typeOfAwards == "faction":
 
         awards = dict({
@@ -640,9 +629,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
         for k, v in allAwards["medals"].items():
             if v["type"] in ["ATK", "CMT"]:
                 vp = v
@@ -673,9 +659,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]), 0)
                     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "items":
 
@@ -829,15 +812,11 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                         currentBook = 31. - float(tmp[0].split()[0]) + float(tmp[1].split()[0]) / 24. + float(tmp[2].split()[0]) / 24. / 60.
                     else:
                         currentBook = 0
-                    print(currentBook)
                     vp["current"] = None2Zero(myAwards["personalstats"].get("booksread"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(31 * (vp["goal"] - vp["current"]) - currentBook, 0)
                     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "currently read {:.02f} days of a book".format(currentBook)]
                     awards[type]["h_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
         for k, v in allAwards["medals"].items():
             if v["type"] == "OTR":
@@ -867,9 +846,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max(vp["goal"] - vp["current"], 0)
                     vp["comment"] = ["hours of CD", "using 1h CD blood bags"]
                     awards[type]["m_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "travel":
 
@@ -971,9 +947,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
 
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
         for k, v in allAwards["medals"].items():
             if v["type"] == "OTR":
                 vp = v
@@ -992,9 +965,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["days left", "current ratio of {:.02f} travels / day".format(ratio)]
                     awards[type]["m_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "work":
         from awards.educations import educations
@@ -1151,9 +1121,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["days left", "if daily trains as primary stat"]
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
     elif typeOfAwards == "gym":
 
         awards = dict({
@@ -1281,9 +1248,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
         for k, v in allAwards["medals"].items():
             if v["type"] == "NTW":
                 vp = v
@@ -1300,9 +1264,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in myAwards["medals_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["head"] = "$"
                     awards[type]["m_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "competitions":
 
@@ -1400,9 +1361,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                # else:
-                #     print(k, v)
-
     elif typeOfAwards == "commitment":
 
         awards = dict({
@@ -1469,9 +1427,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max(vp["goal"] - vp["current"], 0)
                     vp["comment"] = ["level left", ""]
                     awards[type]["h_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
         for k, v in allAwards["medals"].items():
             if v["type"] in ["CMT", "LVL", "RNK"]:
@@ -1546,9 +1501,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]), 0)
                     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
                     awards[type]["m_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     elif typeOfAwards == "miscellaneous":
 
@@ -1684,9 +1636,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["days left", "current ratio of {:.02f} contracts / day".format(ratio)]
                     awards[type]["h_" + k] = vp
-
-                # else:
-                #     print(k, v)
 
     # create summary
     awardsSummary = dict()
