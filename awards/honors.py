@@ -183,7 +183,7 @@ d = {
     533: 730040877,  # Tough
     653: 355071632,  # Smart Alec
     659: 494666789,  # Clever Dick
-    
+
     # 5
     25: 566282329,  # Candy Man
     157: 486487597,  # Smile, You're On Camera
@@ -300,7 +300,8 @@ d = {
     640: 795066538,  # Bulletproof
     708: 374066101,  # Conditioned
     629: 371761723,  # Alpinist
-    
+    679: 102732935,  # Pumped
+
     # 11
     163: 431464057,  # Fascination
     309: 959806366,  # Christmas in Torn

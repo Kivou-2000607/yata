@@ -90,8 +90,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if v["type"] in [5, 15]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -204,13 +204,14 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["$ needed", "current ratio of {:,.0f} k$ / people bought".format(0.001 / ratio)]
                     awards[type]["h_" + k] = vp
 
-                else:
-                    vp["comment"] = ""
+                # else:
+                #     vp["comment"] = ["", ""]
+                #     vp["left"] = ""
 
         for k, v in allAwards["medals"].items():
             vp = v
-            vp["left"] = 0
-            vp["comment"] = ["", int(k)]
+            # vp["left"] = 0
+            # vp["comment"] = ["", int(k)]
             vp["awardType"] = "Medal"
             vp["img"] = k
 
@@ -264,8 +265,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if v["type"] == 6:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -310,8 +311,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [8, 2, 3]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -506,8 +507,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] == "ATK":
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -598,8 +599,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 8, 2]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -632,8 +633,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] in ["ATK", "CMT"]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -671,8 +672,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 15, 16]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -821,8 +822,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] == "OTR":
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -873,8 +874,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [3, 7]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -950,8 +951,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] == "OTR":
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -978,8 +979,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 4, 15]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -1134,12 +1135,12 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [10]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
-                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629]:
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1168,8 +1169,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 9, 14, 16]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -1251,8 +1252,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] == "NTW":
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -1278,8 +1279,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [13]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -1375,8 +1376,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 11, 12]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -1431,8 +1432,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["medals"].items():
             if v["type"] in ["CMT", "LVL", "RNK"]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Medal"
                 vp["img"] = k
 
@@ -1517,8 +1518,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 11, 17]:
                 vp = v
-                vp["left"] = 0
-                vp["comment"] = ["", int(k)]
+                # vp["left"] = 0
+                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
@@ -1659,7 +1660,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
     for category, aw in awards.items():
         for k1, v1 in aw.items():
             for k2, v2 in aw.items():
-                if(k1 != k2 and v1["goal"] == v2["goal"] and v1["left"] == v2["left"] and v1["comment"][1] == v2["comment"][1] and k2 not in doubled and v1["awardType"] != v2["awardType"]):
+                if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                     awards[category][k1]["double"] = True
                     awards[category][k2]["double"] = True
 
@@ -1672,7 +1673,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     doubled.append(k1)
 
             if typeOfAwards == "crimes":
-                if category != "Busts" and int(v1["left"]):
+                print(v1)
+                if category != "Busts" and int(None2Zero(v1.get("left"))):
                     if int(v1["left"]) < nextNerve:
                         nextCrime = [(category, k1)]
                         nextNerve = int(v1["left"])
