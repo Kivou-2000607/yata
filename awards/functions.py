@@ -1673,7 +1673,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     doubled.append(k1)
 
             if typeOfAwards == "crimes":
-                print(v1)
                 if category != "Busts" and int(None2Zero(v1.get("left"))):
                     if int(v1["left"]) < nextNerve:
                         nextCrime = [(category, k1)]
