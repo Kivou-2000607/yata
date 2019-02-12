@@ -201,7 +201,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     ratio = vp["current"] / float(max(None2Zero(myAwards["personalstats"].get("peopleboughtspent")), 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["$ needed", "current ratio of {:,.0f} k$ / people bought".format(0.001/ratio)]
+                    vp["comment"] = ["$ needed", "current ratio of {:,.0f} k$ / people bought".format(0.001 / ratio)]
                     awards[type]["h_" + k] = vp
 
                 else:
@@ -826,7 +826,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     if myAwards["icons"].get("icon68") is not None:
                         tmp = myAwards["icons"].get("icon68").split("-")[-1].strip().split(",")
-                        currentBook = 31. - float(tmp[0].split()[0]) + float(tmp[1].split()[0])/24. + float(tmp[2].split()[0])/24./60.
+                        currentBook = 31. - float(tmp[0].split()[0]) + float(tmp[1].split()[0]) / 24. + float(tmp[2].split()[0]) / 24. / 60.
                     else:
                         currentBook = 0
                     print(currentBook)
@@ -970,7 +970,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                             vp["comment"] = ["energy needed", "to go from 0 to 100"]
 
                     awards[type]["h_" + k] = vp
-
 
                 # else:
                 #     print(k, v)
@@ -1704,31 +1703,33 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         nAwardsTot += nAwards
     awardsSummary["All awards"] = {"nAwarded": nAwardedTot, "nAwards": nAwardsTot}
 
-
+    # handle double merits and next crimes
     doubled = []
     nextNerve = 9999999999  # lowest nerve left
     nextCrime = []  # list of next crime (if same lowest nerve)
     for category, aw in awards.items():
         for k1, v1 in aw.items():
             for k2, v2 in aw.items():
-                if( k1 != k2 and v1["goal"] == v2["goal"] and v1["left"] == v2["left"] and v1["comment"][1] == v2["comment"][1] and k2 not in doubled and v1["awardType"] != v2["awardType"]):
+                if(k1 != k2 and v1["goal"] == v2["goal"] and v1["left"] == v2["left"] and v1["comment"][1] == v2["comment"][1] and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                     awards[category][k1]["double"] = True
                     awards[category][k2]["double"] = True
 
                     if typeOfAwards == "crimes":
                         awards[category][k1]["left"] /= 2.0
                         awards[category][k2]["left"] /= 2.0
+                        awards[category][k1]["comment"][1] += " (nerve /2)"
+                        awards[category][k2]["comment"][1] += " (nerve /2)"
 
                     doubled.append(k1)
-                    
+
             if typeOfAwards == "crimes":
                 if category != "Busts" and int(v1["left"]):
                     if int(v1["left"]) < nextNerve:
                         nextCrime = [(category, k1)]
                         nextNerve = int(v1["left"])
                     elif int(v1["left"]) == nextNerve:
-                        nextCrime.append((category, k1))
                         nextNerve = int(v1["left"])
+                        nextCrime.append((category, k1))
 
     if typeOfAwards == "crimes":
         for (c, k) in nextCrime:
