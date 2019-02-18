@@ -1425,8 +1425,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-1])
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
-                    vp["left"] = max(vp["goal"] - vp["current"], 0)
-                    vp["comment"] = ["level left", ""]
+                    # vp["left"] = max(vp["goal"] - vp["current"], 0)
+                    # vp["comment"] = ["level left", ""]
                     awards[type]["h_" + k] = vp
 
         for k, v in allAwards["medals"].items():
@@ -1477,8 +1477,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = str2int[" ".join(v["description"].split(" ")[2:])]
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
-                    vp["left"] = max(vp["goal"] - vp["current"], 0)
-                    vp["comment"] = ["level left", ""]
+                    # vp["left"] = max(vp["goal"] - vp["current"], 0)
+                    # vp["comment"] = ["level left", ""]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]:
