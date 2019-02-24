@@ -1103,7 +1103,7 @@ def updateKey(request):
         if 'apiError' in user:
             return render(request, 'chain/{}.html'.format(p['html']), user)
 
-        if user['faction']['faction_id'] in [33241, 23952]:
+        if user['faction']['faction_id'] in [33241, 23952, 42435]:
             AArights = 'chains' in apiCall('faction', user['faction']['faction_id'], 'chains', p.get('keyValue'))
             request.session['chainer'] = {'keyValue': p['keyValue'],
                                           'name': user['name'],
