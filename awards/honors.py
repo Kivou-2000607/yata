@@ -362,7 +362,8 @@ d = {
     8: 602403620,  # Loan Shark
     546: 543547927,  # Dividend
     19: 890959235,  # Stock Analyst
-
+    520: 415521967,  # Pious
+    
     # 15
     367: 474813486,  # Clotted
     406: 534029106,  # Vampire

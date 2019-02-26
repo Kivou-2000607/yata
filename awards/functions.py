@@ -1208,7 +1208,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [8]:
+                elif int(k) in [8, 520]:
                     # 8 {'name': 'Loan Shark', 'description': 'Achieve a high credit score with Duke', 'type': 14, 'circulation': 10499, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 602403620, 'title': 'Loan Shark [8]: Limited (10499)'}
                     type = "Other money"
                     vp["goal"] = 1
