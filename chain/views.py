@@ -212,6 +212,8 @@ def createList(request):  # no context
                                                  end=v['end'], endDate=timestampToDate(v['end']))
                     else:
                         print('[VIEW createList] chain {} updated'.format(k))
+                        chain.start = v['start']
+                        chain.end - v['end']
                         chain.nHits = v['chain']
                         chain.respect = v['respect']
                         chain.save()

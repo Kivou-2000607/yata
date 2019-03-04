@@ -90,13 +90,16 @@ def fillReport(faction, members, chain, report, attacks):
         # 5: groupAttack
         # 6: overseas
         # 7: chainBonus
-        # 8:respect_gain
+        # 8: respect_gain
         # 9: daysInFaction
         # 10: tId
-        attackers[m.name] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.tId]
+        # 11: sum(time(hit)-time(lasthit))
+        attackers[m.name] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.tId, 0]
 
     # loop over attacks
-    for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+    lastTS = 0
+    for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=False):
+
         attackerID = int(v['attacker_id'])
         attackerName = v['attacker_name']
         # if attacker part of the faction at the time of the chain
@@ -104,7 +107,7 @@ def fillReport(faction, members, chain, report, attacks):
             # if attacker not part of the faction at the time of the call
             if attackerName not in attackers:
                 print('[FUNCTION fillReport] hitter out of faction: {}'.format(attackerName))
-                attackers[attackerName] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerID]  # add out of faction attackers on the fly
+                attackers[attackerName] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerID, 0]  # add out of faction attackers on the fly
 
             attackers[attackerName][0] += 1
             nWRA[2] += 1
@@ -112,6 +115,15 @@ def fillReport(faction, members, chain, report, attacks):
             # if it's a hit
             respect = float(v['respect_gain'])
             if respect > 0.0:
+                # print("Time stamp:", v['timestamp_ended'])
+
+                # init lastTS for the first iteration of the loop
+                lastTS = v['timestamp_ended'] if lastTS == 0 else lastTS
+
+                # compute chain watcher version 2
+                attackers[attackerName][11] += (v['timestamp_ended'] - lastTS)
+                lastTS = v['timestamp_ended']
+
                 attacksForHisto.append(v['timestamp_ended'])
                 if attackerName in attackersHisto:
                     attackersHisto[attackerName].append(v['timestamp_ended'])
@@ -133,13 +145,15 @@ def fillReport(faction, members, chain, report, attacks):
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
-
+                
     print('[FUNCTION fillReport] It took {:.02f} seconds to build the attacker array'.format(time.time() - tip))
     tip = time.time()
 
     # create histogram
-    chain.start = int(attacksForHisto[-1])
+    chain.start = int(attacksForHisto[0])
+    chain.end = int(attacksForHisto[-1])
     chain.startDate = timestampToDate(chain.start)
+    chain.endDate = timestampToDate(chain.end)
     diff = int(chain.end - chain.start)
     binsGapMinutes = 5
     while diff / (binsGapMinutes * 60) > 256:
@@ -175,7 +189,8 @@ def fillReport(faction, members, chain, report, attacks):
         beenThere = True if (delta < 0 or v[9] < 0) else False
         if k in attackersHisto:
             histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
-            watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
+            # watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
+            watcher = v[11] / float(diff)
             graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
         else:
             graphTmp = ''
@@ -191,6 +206,7 @@ def fillReport(faction, members, chain, report, attacks):
         # 8:respect_gain
         # 9: daysInFaction
         # 10: tId
+        print("watcher for ", k, watcher)
         report.count_set.create(attackerId=v[10],
                                 name=k,
                                 hits=v[0],

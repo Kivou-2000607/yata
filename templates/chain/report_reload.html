@@ -194,12 +194,12 @@
                                     <form style="display: inline;" method="post">{% csrf_token %}
                                         <a class="chain-ireport" href="{% url 'chain:renderIndividualReport' chain.tId c.attackerId %}">
                                             <!-- <i class="fas fa-chart-bar" title="See individal report"></i> -->
-                                            {{c.watcher|mul:100|floatformat:0}}%
+                                            {{c.watcher|mul:100|floatformat:2}}%
                                         </a>
                                     </form>
                                 </td>
                             {% else %}
-                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="Need AA permission too see individual reports"></i></td>
+                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="No graph found"></i></td>
                             {% endif %}
                         {% endif %}
 
