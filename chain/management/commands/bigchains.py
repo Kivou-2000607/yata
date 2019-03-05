@@ -17,7 +17,7 @@ class Command(BaseCommand):
             # get api key
             if faction.apiString == "0":
                 print("[COMMAND bigChains] no api key found")
-                break
+                continue
             factionId = faction.tId
             keyHolder, key = faction.get_random_key()
 

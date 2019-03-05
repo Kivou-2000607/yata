@@ -1209,7 +1209,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [8]:
+                elif int(k) in [8, 520]:
                     # 8 {'name': 'Loan Shark', 'description': 'Achieve a high credit score with Duke', 'type': 14, 'circulation': 10499, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 602403620, 'title': 'Loan Shark [8]: Limited (10499)'}
                     type = "Other money"
                     vp["goal"] = 1
@@ -1426,8 +1426,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[-1])
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
-                    vp["left"] = max(vp["goal"] - vp["current"], 0)
-                    vp["comment"] = ["level left", ""]
+                    # vp["left"] = max(vp["goal"] - vp["current"], 0)
+                    # vp["comment"] = ["level left", ""]
                     awards[type]["h_" + k] = vp
 
         for k, v in allAwards["medals"].items():
@@ -1478,8 +1478,8 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = str2int[" ".join(v["description"].split(" ")[2:])]
                     vp["current"] = None2Zero(myAwards.get("level"))
                     vp["achieve"] = min(1, vp["current"] / float(vp["goal"]))
-                    vp["left"] = max(vp["goal"] - vp["current"], 0)
-                    vp["comment"] = ["level left", ""]
+                    # vp["left"] = max(vp["goal"] - vp["current"], 0)
+                    # vp["comment"] = ["level left", ""]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]:
@@ -1556,7 +1556,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [229]:
+                elif int(k) in [229, 606]:
                     # 229 {'name': 'Seeker', 'description': 'Achieve 250 total awards', 'type': 0, 'circulation': 5633, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 486362984, 'title': 'Seeker [229]: Limited (5633)'}
                     type = "Other miscellaneous"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
