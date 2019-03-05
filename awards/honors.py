@@ -301,6 +301,7 @@ d = {
     708: 374066101,  # Conditioned
     629: 371761723,  # Alpinist
     679: 102732935,  # Pumped
+    721: 168540409,  # Jacked
 
     # 11
     163: 431464057,  # Fascination

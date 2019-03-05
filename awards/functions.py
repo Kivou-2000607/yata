@@ -1140,7 +1140,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
-                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679]:
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679, 721]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1148,6 +1148,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["current"] = None2Zero(myAwards.get(key)).split(".")[0]
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
+
                 elif int(k) in [233, 234, 235]:
                     # 233 {'name': 'Bronze Belt', 'description': 'Own all lightweight gym memberships', 'type': 10, 'circulation': 61239, 'rarity': 'Common', 'awardType': 'Honor', 'img': 439667520, 'title': 'Bronze Belt [233]: Common (61239)'}
                     type = "Memberships"
