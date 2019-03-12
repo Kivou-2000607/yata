@@ -1642,6 +1642,18 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["days left", "current ratio of {:.02f} contracts / day".format(ratio)]
                     awards[type]["h_" + k] = vp
+                elif int(k) in [636]:
+                    # "636": {"name": "Task Master", "description": "Earn 10,000 mission credits", "type": 17, "circulation": 3, "rarity": "Unknown Rarity"},
+                    type = "Missions"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = None2Zero(myAwards["personalstats"].get("missioncreditsearned"))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / float(max(myAwards["personalstats"].get("contractscompleted"), 1))
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    vp["comment"] = ["days left", "current ratio of {:.01f} credits / contract".format(ratio)]
+                    awards[type]["h_" + k] = vp
+
+
 
     # create summary
     awardsSummary = dict()
