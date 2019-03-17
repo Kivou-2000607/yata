@@ -145,7 +145,7 @@ def fillReport(faction, members, chain, report, attacks):
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
-                
+
     print('[FUNCTION fillReport] It took {:.02f} seconds to build the attacker array'.format(time.time() - tip))
     tip = time.time()
 
@@ -186,7 +186,7 @@ def fillReport(faction, members, chain, report, attacks):
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
         delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
-        beenThere = True if (delta < 0 or v[9] < 0) else False
+        beenThere = True if (delta <= 0 or v[9] <= 0) else False
         if k in attackersHisto:
             histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
             # watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0

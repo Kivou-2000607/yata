@@ -382,27 +382,27 @@ td.not-okay:hover { background:#ea9999!important; }
 }
 
 .refresh > span {
-    animation: refresh 10s linear;
-    -webkit-animation: refresh 10s linear;
+    animation: refresh 30s linear;
+    -webkit-animation: refresh 30s linear;
 }
 
 @keyframes refresh-content {
-    0%   {content: "10s"}
-    10%   {content: "9s"}
-    20%   {content: "8s"}
-    30%   {content: "7s"}
-    40%   {content: "6s"}
-    50%   {content: "5s"}
-    60%   {content: "4s"}
-    70%   {content: "3s"}
-    80%   {content: "2s"}
-    90%   {content: "1s"}
+    0%   {content: "30s"}
+    10%   {content: "27s"}
+    20%   {content: "24s"}
+    30%   {content: "21s"}
+    40%   {content: "18s"}
+    50%   {content: "15s"}
+    60%   {content: "12s"}
+    70%   {content: "9s"}
+    80%   {content: "6s"}
+    90%   {content: "3s"}
     100%   {content: "0s"}
 }
 
 .refresh > span.strips:after {
-    animation: refresh-content 10s linear;
-    -webkit-animation: refresh-content 10s linear;
+    animation: refresh-content 30s linear;
+    -webkit-animation: refresh-content 30s linear;
 }
 
 @keyframes move-strips {
@@ -411,8 +411,8 @@ td.not-okay:hover { background:#ea9999!important; }
 }
 
 .move-strips > span.strips:after {
-    animation: move-strips 10s linear;
-    -webkit-animation: move-strips 10s linear;
+    animation: move-strips 30s linear;
+    -webkit-animation: move-strips 30s linear;
 }
 
 /* table.chain-report th { background:#99999922; cursor: pointer; } */
