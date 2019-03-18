@@ -213,7 +213,7 @@ def createList(request):  # no context
                     else:
                         print('[VIEW createList] chain {} updated'.format(k))
                         chain.start = v['start']
-                        chain.end - v['end']
+                        chain.end = v['end']
                         chain.nHits = v['chain']
                         chain.respect = v['respect']
                         chain.save()
@@ -457,12 +457,12 @@ def createReport(request, chainId):
         print('[VIEW createReport] new report created')
 
         # get members (no refresh)
-        # members = faction.member_set.all()
+        members = faction.member_set.all()
 
         # update members
-        members = updateMembers(faction, key)
-        if 'apiError' in members:
-            return render(request, 'errorPage.html', members)
+        # members = updateMembers(faction, key)
+        # if 'apiError' in members:
+        #     return render(request, 'errorPage.html', members)
 
         # case of live chain
         if int(chainId) == 0:
@@ -478,6 +478,7 @@ def createReport(request, chainId):
             chain.startDate = timestampToDate(chain.start)
             chain.save()
 
+        print(chain)
         attacks = apiCallAttacks(factionId, chain.start, chain.end, key=key)
 
         chain, report, (binsCenter, histo) = fillReport(faction, members, chain, report, attacks)

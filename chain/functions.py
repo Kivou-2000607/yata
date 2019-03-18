@@ -35,6 +35,9 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
     # get all faction keys
     keys = Faction.objects.filter(tId=factionId)[0].get_all_pairs()
 
+    # add + 2 s to the endTS
+    endTS += 1
+
     # init
     chain = dict({})
     feedAttacks = True
@@ -51,16 +54,23 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
         print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key=" + keyToUse, "")))
         attacks = requests.get(url).json()["attacks"]
 
+        tableTS = []
         if len(attacks):
-            for j, (k, v)in enumerate(attacks.items()):
+            for j, (k, v) in enumerate(attacks.items()):
                 chain[k] = v
-                beginTS = max(v["timestamp_ended"] + 1, beginTS)
+                tableTS.append(v["timestamp_started"])
+                # beginTS = max(beginTS, v["timestamp_started"])
+                # feedattacks = True if int(v["timestamp_started"])-beginTS else False
 
-            if(len(attacks) < 2):
-                feedAttacks = False
+            # if(len(attacks) < 2):
+                # feedAttacks = False
 
+            feedAttacks = not max(tableTS) == beginTS
+            print(v["chain"], max(tableTS), beginTS, max(tableTS)-beginTS, max(tableTS) ==  beginTS, feedAttacks)
+            beginTS = max(tableTS)
             print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             i += 1
+
         else:
             print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False
@@ -96,10 +106,13 @@ def fillReport(faction, members, chain, report, attacks):
         # 11: sum(time(hit)-time(lasthit))
         attackers[m.name] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.tId, 0]
 
+    #  for debug
+    # PRINT_NAME = {"Thiirteen": 0,}
+    # chainIterator = []
+
     # loop over attacks
     lastTS = 0
     for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=False):
-
         attackerID = int(v['attacker_id'])
         attackerName = v['attacker_name']
         # if attacker part of the faction at the time of the chain
@@ -115,6 +128,7 @@ def fillReport(faction, members, chain, report, attacks):
             # if it's a hit
             respect = float(v['respect_gain'])
             if respect > 0.0:
+                # chainIterator.append(v["chain"])
                 # print("Time stamp:", v['timestamp_ended'])
 
                 # init lastTS for the first iteration of the loop
@@ -145,6 +159,22 @@ def fillReport(faction, members, chain, report, attacks):
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerName, respect, r))
+            # else:
+            #     print("[FUNCTION fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
+            # if(v["attacker_name"] in PRINT_NAME):
+            #     if respect > 0.0:
+            #         PRINT_NAME[v["attacker_name"]] += 1
+            #         print("[FUNCTION fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+            #     else:
+            #         print("[FUNCTION fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+
+
+    # for k, v in PRINT_NAME.items():
+    #     print("[FUNCTION fillReport] {}: {}".format(k, v))
+    #
+    # for i in range(1001):
+    #     if i not in chainIterator:
+    #         print(i, "not in chain")
 
     print('[FUNCTION fillReport] It took {:.02f} seconds to build the attacker array'.format(time.time() - tip))
     tip = time.time()
@@ -186,7 +216,7 @@ def fillReport(faction, members, chain, report, attacks):
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
         delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
-        beenThere = True if (delta <= 0 or v[9] <= 0) else False
+        beenThere = True if (delta < 0 or v[9] < 0) else False
         if k in attackersHisto:
             histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
             # watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
@@ -206,7 +236,6 @@ def fillReport(faction, members, chain, report, attacks):
         # 8:respect_gain
         # 9: daysInFaction
         # 10: tId
-        print("watcher for ", k, watcher)
         report.count_set.create(attackerId=v[10],
                                 name=k,
                                 hits=v[0],

@@ -127,7 +127,7 @@
         <table class="chain-report center-large">
             <thead>
                 <tr><th style="text-align: center;">
-                    <div id="toggle-kicked-members" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show kicked members</div>
+                    <div id="toggle-kicked-members" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show players not in faction</div>
                     Hit count &nbsp; <div id="toggle-zero-hits" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="zero-hits-icon" class="fas fa-toggle-off"></i> Show inactive members</div>
                 </th></tr>
             </thead>
@@ -160,7 +160,7 @@
                             <td style="text-align: center;">{{ forloop.counter }}</td>
                             <td><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
 
-                            {% if c.beenThere %}
+
                                 <td style="text-align: center;">{{c.wins}}</td>
                                 <td style="text-align: center;">{{c.hits}}</td>
                                 {% if c.wins %}
@@ -184,9 +184,6 @@
                                     <td style="text-align: center;">0.00</td>
                                 {% endif %}
                                 <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
-                        {% else %}
-                            <td style="text-align: center;" colspan="5"><i class="fas fa-child"></i> &nbsp; &nbsp; <i>New recruit, was not in the faction for this</i></td>
-                        {% endif %}
 
                         {% if chain.tId > -1 %}
                             {% if c.graph|length %}
@@ -204,9 +201,13 @@
                         {% endif %}
 
                         {% if c.daysInFaction < 0 %}
-                            <td style="text-align: center;"><i class="fas fa-sign-out-alt" title="kicked"></i></td>
+                            <td style="text-align: center;"><i class="fas fa-sign-out-alt" title="not in the faction anymore"></i></td>
                         {% else %}
-                            <td style="text-align: center;">{{c.daysInFaction}}</td>
+                            {% if c.beenThere %}
+                                <td style="text-align: center;">{{c.daysInFaction}}</td>
+                            {% else %}
+                                <td style="text-align: center;"><i class="fas fa-child" title="Recruted during or after this chain"></i> {{c.daysInFaction}}</td>
+                            {% endif %}
                         {% endif %}
 
 
