@@ -7,8 +7,10 @@
                 <th>Chain [ID]</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Elapsed time</th>
                 <th>Hits</th>
                 <th>Respect</th>
+                <th>Respect / hit</th>
                 <th>Report</th>
         </thead>
         <tbody>
@@ -26,8 +28,10 @@
                 <td>-</td>
             {% endif %}
 
+            <td>{{chain.end|sub:chain.start|div:3600|floatformat:1}} hours</td>
             <td><b>{{chain.nHits}}</b></td>
             <td><b>{{chain.respect|floatformat:2}}</b></td>
+            <td><b>{{chain.respect|div:chain.nHits|floatformat:2}}</b></td>
             <td>
                 <div id="catch-buttons-{{chain.tId}}">
                     {% include "chain/list_reload_buttons.html" %}
