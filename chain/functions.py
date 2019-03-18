@@ -45,13 +45,13 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
     while feedAttacks:
         if key is None:
             keyToUse = keys[i % len(keys)][1]
-            print("[FUNCTION apiCallAttacks] call number {}: using {} key".format(i, keys[i % len(keys)][0]))
+            print("[FUNCTION apiCallAttacks] call #{}: using {} key".format(i, keys[i % len(keys)][0]))
         else:
             keyToUse = key
-            print("[FUNCTION apiCallAttacks] call number {}: using personal key".format(i))
+            print("[FUNCTION apiCallAttacks] call #{}: using personal key".format(i))
 
         url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, keyToUse, beginTS, endTS)
-        print("[FUNCTION apiCallAttacks] call number {}: {}".format(i, url.replace("&key=" + keyToUse, "")))
+        print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
         attacks = requests.get(url).json()["attacks"]
 
         tableTS = []
@@ -66,9 +66,8 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
                 # feedAttacks = False
 
             feedAttacks = not max(tableTS) == beginTS
-            print(v["chain"], max(tableTS), beginTS, max(tableTS)-beginTS, max(tableTS) ==  beginTS, feedAttacks)
             beginTS = max(tableTS)
-            print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
+            print("[FUNCTION apiCallAttacks] \tattacks={} count={} maxTS={} beginTS={} feed={}".format(len(attacks), v["chain"], max(tableTS), beginTS, feedAttacks))
             i += 1
 
         else:
@@ -127,7 +126,12 @@ def fillReport(faction, members, chain, report, attacks):
 
             # if it's a hit
             respect = float(v['respect_gain'])
-            if respect > 0.0:
+            chainCount = int(v['chain'])
+            if respect > 0.0 and chainCount == 0:
+                print("[FUNCTION fillReport] Attack with respect but no hit {}:".format(k))
+                for kk, vv in v.items():
+                    print("[FUNCTION fillReport] \t{}: {}".format(kk, vv))
+            if chainCount:
                 # chainIterator.append(v["chain"])
                 # print("Time stamp:", v['timestamp_ended'])
 
