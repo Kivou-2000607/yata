@@ -853,6 +853,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
         awards = dict({
             "Destinations": dict(),
             "Time": dict(),
+            "Import items": dict(),
             "Hunting": dict()})
 
         pilot = 0.7 if "+ Access to airstrip" in None2EmptyList(myAwards["property_perks"]) else 1.0
@@ -946,6 +947,15 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                             vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 164800
                             vp["comment"] = ["energy needed", "to go from 0 to 100"]
 
+                elif int(k) in [541]:
+                    # "541": { "name": "Mule", "description": "Import 100 items from abroad", "type": 7},
+                    type = "Import items"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = int(None2Zero(myAwards["personalstats"].get("itemsboughtabroad")))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / float(max(myAwards.get("age"), 1))
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    vp["comment"] = ["days left", "current ratio of {:.02f} items / day".format(ratio)]
                     awards[type]["h_" + k] = vp
 
         for k, v in allAwards["medals"].items():

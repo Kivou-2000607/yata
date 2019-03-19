@@ -232,6 +232,7 @@ d = {
     134: 759640199,  # The Rising Sun
     165: 317282935,  # There And Back
     557: 980280221,  # Globetrotter
+    541: 456129092,  # Mule
 
     # 8
     20: 778719620,  # Precision
