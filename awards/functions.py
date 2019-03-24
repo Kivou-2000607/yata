@@ -946,6 +946,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                         else:
                             vp["left"] = 0 if int(k) in myAwards["honors_awarded"] else 164800
                             vp["comment"] = ["energy needed", "to go from 0 to 100"]
+                    awards[type]["h_" + k] = vp
 
                 elif int(k) in [541]:
                     # "541": { "name": "Mule", "description": "Import 100 items from abroad", "type": 7},
