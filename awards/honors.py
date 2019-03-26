@@ -391,6 +391,9 @@ d = {
     538: 590698912,  # Sodaholic
     527: 268017015,  # Worth it
     539: 429058435,  # Bibliophile
+    678: 124870896,  # Stinker
+    716: 877813810,  # Wipeout
+    717: 254193787,  # Foul Play
 
     # 17
     371: 668653618,  # Protege

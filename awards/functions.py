@@ -667,6 +667,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "City": dict(),
             "Medical items": dict(),
             "Other items": dict(),
+            "Pranks": dict(),
             "Consume": dict()})
 
         for k, v in allAwards["honors"].items():
@@ -817,6 +818,16 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(31 * (vp["goal"] - vp["current"]) - currentBook, 0)
                     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "currently read {:.02f} days of a book".format(currentBook)]
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [678, 716, 717]:
+                    # "678": {"name": "Stinker", "description": "Successfully prank someone with Stink Bombs", "type": 16}
+                    # "716": {"name": "Wipeout", "description": "Successfully prank someone with Toilet Paper", "type": 16,
+                    # "717": { "name": "Foul Play", "description": "Successfully prank someone with Dog Poop", "type": 16 }
+                    type = "Pranks"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
+                    vp["achieve"] = 1 if int(k) in myAwards["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
         for k, v in allAwards["medals"].items():
