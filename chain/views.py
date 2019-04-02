@@ -360,7 +360,7 @@ def jointReport(request):
         print('[VIEW jointReport] faction {} found'.format(factionId))
 
         # get chains
-        chains = faction.chain_set.filter(jointReport=True)
+        chains = faction.chain_set.filter(jointReport=True).order_by('start')
         print('[VIEW jointReport] {} chains for the joint report'.format(len(chains)))
         if len(chains) < 1:
             return HttpResponseRedirect(reverse('chain:list'))
@@ -387,7 +387,7 @@ def jointReport(request):
                     bonuses[bonus.name][1] += bonus.respect
                 else:
                     bonuses[bonus.name] = [[bonus.hit], bonus.respect]
-            print(bonuses)
+
             for count in chainCounts:
                 if count.attackerId in counts:
                     counts[count.attackerId]['hits'] += count.hits
@@ -416,7 +416,7 @@ def jointReport(request):
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
-        arrayBonuses = [[name, ", ".join([str(h) for h in hits]), respect] for name, (hits, respect) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
+        arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect] for name, (hits, respect) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # context
         context = dict({'chainsReport': chains,  # chains of joint report
