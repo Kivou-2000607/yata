@@ -389,8 +389,6 @@ def jointReport(request):
                     bonuses[bonus.name] = [[bonus.hit], bonus.respect, 0]
 
             for count in chainCounts:
-                if count.name in bonuses:
-                    bonuses[count.name][2] += count.wins
 
                 if count.attackerId in counts:
                     counts[count.attackerId]['hits'] += count.hits
@@ -416,6 +414,11 @@ def jointReport(request):
                                                 'beenThere': count.beenThere,
                                                 'attackerId': count.attackerId}
             print('[VIEW jointReport] {} counts for {}'.format(len(counts), chain))
+
+
+        for k, v in counts.items():
+            if v["name"] in bonuses:
+                bonuses[v["name"]][2] = v["wins"]
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
