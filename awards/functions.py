@@ -188,9 +188,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebusted"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
-                    vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["<i>nerve needed</i>", "current ratio of {:,.2f} people busted / bust".format(ratio)]
+                    # ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
+                    # vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    # vp["comment"] = ["<i>nerve needed</i>", "current ratio of {:,.2f} people busted / bust".format(ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [252]:
@@ -230,9 +230,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(myAwards["personalstats"].get("peoplebusted"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
-                    vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["<i>nerve needed</i>", "current ratio of {:,.2f} people busted / bust".format(ratio)]
+                    # ratio = vp["current"] / float(max(totalNumberOfBusts, 1))
+                    # vp["left"] = max(5 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    # vp["comment"] = ["<i>nerve needed</i>", "current ratio of {:,.2f} people busted / bust".format(ratio)]
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "drugs":
@@ -1069,7 +1069,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["comment"] = ["days left", "with {:.0f}% education length reducion".format((1. - educationTimeReduction) * 100.)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [653, 659]:
+                elif int(k) in [653, 659, 651]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1704,10 +1704,13 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     awards[category][k2]["double"] = True
 
                     if typeOfAwards == "crimes":
-                        awards[category][k1]["left"] /= 2.0
-                        awards[category][k2]["left"] /= 2.0
-                        awards[category][k1]["comment"][1] += " (nerve /2)"
-                        awards[category][k2]["comment"][1] += " (nerve /2)"
+                        try:
+                            awards[category][k1]["left"] /= 2.0
+                            awards[category][k2]["left"] /= 2.0
+                            awards[category][k1]["comment"][1] += " (nerve /2)"
+                            awards[category][k2]["comment"][1] += " (nerve /2)"
+                        except:
+                            pass
 
                     doubled.append(k1)
 

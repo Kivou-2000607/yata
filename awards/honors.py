@@ -184,7 +184,8 @@ d = {
     533: 730040877,  # Tough
     653: 355071632,  # Smart Alec
     659: 494666789,  # Clever Dick
-
+    651: 693932389,  # Wise Guy
+    
     # 5
     25: 566282329,  # Candy Man
     157: 486487597,  # Smile, You're On Camera
