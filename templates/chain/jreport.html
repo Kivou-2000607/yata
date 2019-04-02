@@ -4,8 +4,6 @@
 <div>
     <h2 class="title">Joint report</h2>
 
-
-
     <div class="module whiteBG justxt">
 
         <br>
@@ -38,6 +36,24 @@
                 </tr>
             </tbody>
         </table>
+        <br>
+
+        <table class="center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="3">Summary of the bonus</th></tr>
+                <tr>
+                    <th>User</th>
+                    <th>Bonus</th>
+                    <th>Total respect</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for bonus in bonuses%}
+                    <tr><td>{{bonus.0}}</td><td>{{bonus.1}}</td><td>{{bonus.2|floatformat:0}}</td></tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
 
         {% include "chain/report_reload.html" %}
 

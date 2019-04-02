@@ -367,6 +367,7 @@ def jointReport(request):
 
         # loop over chains
         counts = dict({})
+        bonuses = dict({})
         total = {'nHits': 0, 'respect': 0.0}
         for chain in chains:
             print('[VIEW jointReport] chain {} found'.format(chain.tId))
@@ -379,6 +380,14 @@ def jointReport(request):
             print('[VIEW jointReport] report of {} found'.format(chain))
             # loop over counts
             chainCounts = report.count_set.all()
+            chainBonuses = report.bonus_set.all()
+            for bonus in chainBonuses:
+                if bonus.name in bonuses:
+                    bonuses[bonus.name][0].append(bonus.hit)
+                    bonuses[bonus.name][1] += bonus.respect
+                else:
+                    bonuses[bonus.name] = [[bonus.hit], bonus.respect]
+            print(bonuses)
             for count in chainCounts:
                 if count.attackerId in counts:
                     counts[count.attackerId]['hits'] += count.hits
@@ -407,11 +416,13 @@ def jointReport(request):
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
+        arrayBonuses = [[name, ", ".join([str(h) for h in hits]), respect] for name, (hits, respect) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # context
         context = dict({'chainsReport': chains,  # chains of joint report
                         'total': total,  # for general info
                         'counts': arrayCounts,  # counts for report
+                        'bonuses': arrayBonuses,  # bonuses for report
                         'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                         'view': {'jointReport': True, 'list': True}})  # view
 
