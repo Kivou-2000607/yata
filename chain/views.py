@@ -386,9 +386,12 @@ def jointReport(request):
                     bonuses[bonus.name][0].append(bonus.hit)
                     bonuses[bonus.name][1] += bonus.respect
                 else:
-                    bonuses[bonus.name] = [[bonus.hit], bonus.respect]
+                    bonuses[bonus.name] = [[bonus.hit], bonus.respect, 0]
 
             for count in chainCounts:
+                if count.name in bonuses:
+                    bonuses[count.name][2] += count.wins
+
                 if count.attackerId in counts:
                     counts[count.attackerId]['hits'] += count.hits
                     counts[count.attackerId]['wins'] += count.wins
@@ -416,7 +419,7 @@ def jointReport(request):
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
-        arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect] for name, (hits, respect) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
+        arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for name, (hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # context
         context = dict({'chainsReport': chains,  # chains of joint report

@@ -44,12 +44,18 @@
                 <tr>
                     <th>User</th>
                     <th>Bonus</th>
-                    <th>Total respect</th>
+                    <th>Total bonus respect</th>
+                    <th>Hits / bonus respect</th>
                 </tr>
             </thead>
             <tbody>
                 {%for bonus in bonuses%}
-                    <tr><td>{{bonus.0}}</td><td>{{bonus.1}}</td><td>{{bonus.2|floatformat:0}}</td></tr>
+                    <tr>
+                        <td>{{bonus.0}}</td>
+                        <td>{{bonus.1}}</td>
+                        <td>{{bonus.2|floatformat:0}}</td>
+                        <td>{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                    </tr>
                 {%endfor%}
             </tbody>
         </table>
