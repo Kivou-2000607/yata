@@ -147,9 +147,7 @@
                         <th style="text-align: center;" title="Average of all modifier over all hits">modifiers<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
                         <th style="text-align: center;" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-                        {% if chain.tId > -1 %}
-                            <th style="text-align: center;">Chain<br>watcher</th>
-                        {% endif %}
+                        <th style="text-align: center;">Chain<br>watcher</th>
                         <th style="text-align: center;">days in<br>faction</th>
                     </tr>
                 </thead>
@@ -185,19 +183,17 @@
                                 {% endif %}
                                 <td style="text-align: center;">{{c.respect|floatformat:2}}</td>
 
-                        {% if chain.tId > -1 %}
-                            {% if c.graph|length %}
-                                <td style="text-align: center;">
-                                    <form style="display: inline;" method="post">{% csrf_token %}
-                                        <a class="chain-ireport" href="{% url 'chain:renderIndividualReport' chain.tId c.attackerId %}">
-                                            <!-- <i class="fas fa-chart-bar" title="See individal report"></i> -->
-                                            {{c.watcher|mul:100|floatformat:2}}%
-                                        </a>
-                                    </form>
-                                </td>
-                            {% else %}
-                                <td style="text-align: center;"><i class="fas fa-times-circle" style="color: #ea9999;" title="No graph found"></i></td>
-                            {% endif %}
+                        {% if c.graph|length %}
+                            <td style="text-align: center;">
+                                <form style="display: inline;" method="post">{% csrf_token %}
+                                    <a class="chain-ireport" href="{% url 'chain:renderIndividualReport' chain.tId c.attackerId %}">
+                                        <!-- <i class="fas fa-chart-bar" title="See individal report"></i> -->
+                                        {{c.watcher|mul:100|floatformat:2}}%
+                                    </a>
+                                </form>
+                            </td>
+                        {% else %}
+                            <td style="text-align: center;">{{c.watcher|mul:100|floatformat:2}}%</td>
                         {% endif %}
 
                         {% if c.daysInFaction < 0 %}
