@@ -2,6 +2,17 @@
 {% load mathfilters %}
 
 <div>
+
+    <script>
+
+    $(document).ready(function() {
+        $("#joint-report-bonus").tablesorter();
+
+        $("#joint-report-bonus").bind("sortStart",function() {});
+    });
+
+    </script>
+
     <h2 class="title">Joint report</h2>
 
     <div class="module whiteBG justxt">
@@ -38,9 +49,9 @@
         </table>
         <br>
 
-        <table class="center">
+        <table id="joint-report-bonus" class="center">
             <thead>
-                <tr><th style="text-align: center;" colspan="3">Summary of the bonus</th></tr>
+                <tr><th style="text-align: center;" colspan="4">Summary of the bonus</th></tr>
                 <tr>
                     <th>User</th>
                     <th>Bonus</th>
