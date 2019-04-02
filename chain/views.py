@@ -399,7 +399,7 @@ def jointReport(request):
                     counts[count.attackerId]['retaliation'] += count.retaliation
                     counts[count.attackerId]['groupAttack'] += count.groupAttack
                     counts[count.attackerId]['overseas'] += count.overseas
-                    counts[count.attackerId]['watcher'] += count.watcher
+                    counts[count.attackerId]['watcher'] += count.watcher /  float(len(chains))
                     counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere']  # been present to at least one chain
                 else:
                     counts[count.attackerId] = {'name': count.name,
@@ -411,7 +411,7 @@ def jointReport(request):
                                                 'retaliation': count.retaliation,
                                                 'groupAttack': count.groupAttack,
                                                 'overseas': count.overseas,
-                                                'watcher': count.watcher,
+                                                'watcher': count.watcher / float(len(chains)),
                                                 'daysInFaction': count.daysInFaction,
                                                 'beenThere': count.beenThere,
                                                 'attackerId': count.attackerId}
@@ -419,7 +419,6 @@ def jointReport(request):
 
 
         for k, v in counts.items():
-            count.watcher /= float(len(chains))
             if v["name"] in bonuses:
                 bonuses[v["name"]][2] = v["wins"]
 
