@@ -54,7 +54,7 @@
                         <td>{{bonus.0}}</td>
                         <td>{{bonus.1}}</td>
                         <td>{{bonus.2|floatformat:0}}</td>
-                        <td>{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                        <td title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
                     </tr>
                 {%endfor%}
             </tbody>
