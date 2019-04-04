@@ -422,9 +422,12 @@ def jointReport(request):
         # bonuses ["name", [[bonus1, bonus2, bonus3, ...], respect, nwins]]
         smallHit = 999999999
         for k, v in counts.items():
-            if v["name"] in bonuses and v["daysInFaction"] >= 0:
-                bonuses[v["name"]][2] = v["wins"]
-                smallHit = min(int(v["wins"]), smallHit)
+            if v["name"] in bonuses:
+                if v["daysInFaction"] >= 0:
+                    bonuses[v["name"]][2] = v["wins"]
+                    smallHit = min(int(v["wins"]), smallHit)
+                else:
+                    del bonuses[v["name"]]
 
         for k, v in counts.items():
             if v["name"] not in bonuses and int(v["wins"]) >= smallHit and v["daysInFaction"] >= 0:
