@@ -51,12 +51,13 @@
 
         <table id="joint-report-bonus" class="center">
             <thead>
-                <tr><th style="text-align: center;" colspan="4">Summary of the bonus</th></tr>
+                <tr><th style="text-align: center;" colspan="5">Summary of the bonus</th></tr>
                 <tr>
                     <th>User</th>
                     <th>Bonus</th>
                     <th>Total bonus respect</th>
-                    <th>Hits / bonus respect</th>
+                    <th>Total Hits</th>
+                    <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Next Bonus Score</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,7 +66,12 @@
                         <td>{{bonus.0}}</td>
                         <td>{{bonus.1}}</td>
                         <td>{{bonus.2|floatformat:0}}</td>
-                        <td title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                        <td>{{bonus.3|floatformat:0}}</td>
+                        {% if bonus.2 %}
+                            <td title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                        {% else %}
+                            <td title="{{bonus.3}}">{{bonus.3|floatformat:2}}</td>
+                        {% endif %}
                     </tr>
                 {%endfor%}
             </tbody>

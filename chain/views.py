@@ -418,9 +418,22 @@ def jointReport(request):
             print('[VIEW jointReport] {} counts for {}'.format(len(counts), chain))
 
 
+        # order the Bonuses
+        # bonuses ["name", [[bonus1, bonus2, bonus3, ...], respect, nwins]]
+        smallHit = 999999999
         for k, v in counts.items():
             if v["name"] in bonuses:
                 bonuses[v["name"]][2] = v["wins"]
+                smallHit = min(int(v["wins"]), smallHit)
+
+        for k, v in counts.items():
+            if v["name"] not in bonuses and int(v["wins"]) >= smallHit:
+                bonuses[v["name"]] = [[], 0, v["wins"]]
+
+            # else:
+            #     if int(v["wins"]) >= int(smallestNwins):
+            #         bonuses.append([[v["name"]], [[], 1, v["wins"]]])
+
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
