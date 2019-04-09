@@ -185,7 +185,7 @@ d = {
     653: 355071632,  # Smart Alec
     659: 494666789,  # Clever Dick
     651: 693932389,  # Wise Guy
-    
+
     # 5
     25: 566282329,  # Candy Man
     157: 486487597,  # Smile, You're On Camera
@@ -280,6 +280,7 @@ d = {
     276: 494694037,  # Lucky Break
     275: 689389128,  # Jackpot
     237: 446331026,  # Poker King
+    519: 478776463,  # Foot Soldier
 
     # 10
     687: 835636011,  # Lean

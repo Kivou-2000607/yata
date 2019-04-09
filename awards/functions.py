@@ -1264,7 +1264,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [237, 269, 275, 276, 326, 327, 338, 427, 431, 437, 513]:
+                elif int(k) in [237, 269, 275, 276, 326, 327, 338, 427, 431, 437, 513, 519]:
                     # 237 {'name': 'Poker King', 'description': 'Earn a poker score of 10,000,000', 'type': 9, 'circulation': 2267, 'rarity': 'Rare', 'awardType': 'Honor', 'img': '/static/honors/tsimg/NQ5Yy.png', 'title': 'Poker King [237]: Rare (2267)'}
                     type = "Casino"
                     vp["goal"] = 1
