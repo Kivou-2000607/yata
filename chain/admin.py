@@ -9,6 +9,19 @@ from .models import Report
 from .models import Count
 from .models import Bonus
 from .models import Target
+from .models import Attacks
+
+
+class AttacksInline(admin.TabularInline):
+    model = Attacks
+    extra = 0
+
+
+class AttacksAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'tss', 'tse']
+
+
+admin.site.register(Attacks, AttacksAdmin)
 
 
 class BonusInline(admin.TabularInline):
@@ -100,6 +113,7 @@ admin.site.register(Member, MemberAdmin)
 class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'number_of_chains', 'hitsThreshold']
     # inlines = [ChainInline, MemberInline]
+    inlines = [AttacksInline]
 
     def number_of_chains(self, instance):
         return(len(instance.chain_set.all()))

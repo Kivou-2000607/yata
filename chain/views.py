@@ -478,7 +478,7 @@ def createReport(request, chainId):
         print('[VIEW createReport] chain {} found'.format(chainId))
 
         print('[VIEW createReport] number of hits: {}'.format(chain.nHits))
-        if chain.nHits > 2550:
+        if chain.nHits > 80:
             print('[VIEW createReport] chain too big. Set on crontab.')
             chain.createReport = True
             # chain.report_set.create()

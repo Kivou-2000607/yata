@@ -8,6 +8,7 @@ from chain.models import Faction
 import requests
 import time
 import numpy
+import json
 
 
 # global bonus hits
@@ -32,8 +33,11 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
     # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
     tip = time.time()
 
+    # get faction
+    faction = Faction.objects.filter(tId=factionId)[0]
+
     # get all faction keys
-    keys = Faction.objects.filter(tId=factionId)[0].get_all_pairs()
+    keys = faction.get_all_pairs()
 
     # add + 2 s to the endTS
     endTS += 1
@@ -42,22 +46,39 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
     chain = dict({})
     feedAttacks = True
     i = 1
+    sleep = False
+    key = None
     while feedAttacks:
-        if key is None:
-            keyToUse = keys[i % len(keys)][1]
-            print("[FUNCTION apiCallAttacks] call #{}: using {} key".format(i, keys[i % len(keys)][0]))
-        else:
-            keyToUse = key
-            print("[FUNCTION apiCallAttacks] call #{}: using personal key".format(i))
+        # try to get req from database
+        tryReq = faction.attacks_set.filter(tss=beginTS).first()
 
-        url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, keyToUse, beginTS, endTS)
-        print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
-        attacks = requests.get(url).json()["attacks"]
+        if tryReq is None:
+            if key is None:
+                keyToUse = keys[i % len(keys)][1]
+                print("[FUNCTION apiCallAttacks] iteration #{}: API call using {} key".format(i, keys[i % len(keys)][0]))
+            else:
+                keyToUse = key
+                print("[FUNCTION apiCallAttacks] iteration #{}: API call using personal key".format(i))
+
+            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, keyToUse, beginTS, endTS)
+            if sleep > 0:
+                print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds".format(url))
+                time.sleep(30)
+            print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
+            # print("[FUNCTION apiCallAttacks] \t{}".format(url))
+            attacks = requests.get(url).json()["attacks"]
+            sleep = True
+            faction.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
+
+        else:
+            print("[FUNCTION apiCallAttacks] iteration #{} from database".format(i))
+            attacks = json.loads(tryReq.req)[0]
 
         tableTS = []
         if len(attacks):
             for j, (k, v) in enumerate(attacks.items()):
                 chain[k] = v
+                # print(v["timestamp_started"])
                 tableTS.append(v["timestamp_started"])
                 # beginTS = max(beginTS, v["timestamp_started"])
                 # feedattacks = True if int(v["timestamp_started"])-beginTS else False
@@ -69,7 +90,6 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
             beginTS = max(tableTS)
             print("[FUNCTION apiCallAttacks] \tattacks={} count={} maxTS={} beginTS={} feed={}".format(len(attacks), v["chain"], max(tableTS), beginTS, feedAttacks))
             i += 1
-
         else:
             print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False

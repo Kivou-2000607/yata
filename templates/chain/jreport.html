@@ -64,7 +64,11 @@
                 {%for bonus in bonuses%}
                     <tr>
                         <td>{{bonus.0}}</td>
-                        <td>{{bonus.1}}</td>
+                        {% if bonus.2 %}
+                            <td>{{bonus.1}}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
                         <td>{{bonus.2|floatformat:0}}</td>
                         <td>{{bonus.3|floatformat:0}}</td>
                         {% if bonus.2 %}
