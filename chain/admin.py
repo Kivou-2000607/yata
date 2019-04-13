@@ -12,14 +12,18 @@ from .models import Target
 from .models import Attacks
 
 
+from yata.handy import timestampToDate
+
 class AttacksInline(admin.TabularInline):
     model = Attacks
     extra = 0
 
 
 class AttacksAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tss', 'tse']
+    list_display = ['date_start', 'tss', 'tse']
 
+    def date_start(self, instance):
+        return timestampToDate(instance.tss)
 
 admin.site.register(Attacks, AttacksAdmin)
 
