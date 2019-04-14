@@ -214,6 +214,8 @@ def createList(request):  # no context
                         print('[VIEW createList] chain {} updated'.format(k))
                         chain.start = v['start']
                         chain.end = v['end']
+                        chain.startDate = timestampToDate(v['start'])
+                        chain.endDate = timestampToDate(v['end'])
                         chain.nHits = v['chain']
                         chain.respect = v['respect']
                         chain.save()
@@ -481,17 +483,20 @@ def createReport(request, chainId):
         if chain.nHits > 80:
             print('[VIEW createReport] chain too big. Set on crontab.')
             chain.createReport = True
-            chain.attacks_set.all().delete()
+            # chain.attacks_set.all().delete()
             # chain.report_set.create()
             chain.save()
             subcontext = {"chain": chain}
             return render(request, 'chain/{}.html'.format(request.POST.get('html')), subcontext)
 
-        # delete old report and create new
-        chain.report_set.all().delete()
-        # chain.attacks_set.all().delete()
-        report = chain.report_set.create()
-        print('[VIEW createReport] new report created')
+        # get old report or create a new one
+        report = chain.report_set.first()
+        if report is None:
+            report = chain.report_set.create()
+            print('[VIEW createReport] new report created')
+        else:
+            print('[VIEW createReport] report found')
+        # chain.report_set.all().delete()
 
         # get members (no refresh)
         members = faction.member_set.all()
@@ -515,8 +520,7 @@ def createReport(request, chainId):
             chain.startDate = timestampToDate(chain.start)
             chain.save()
 
-        print(chain)
-        attacks = apiCallAttacks(faction, chain, chain.start, chain.end, key=key)
+        attacks = apiCallAttacks(faction, chain, key=key)
 
         chain, report, (binsCenter, histo) = fillReport(faction, members, chain, report, attacks)
 

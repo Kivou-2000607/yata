@@ -27,9 +27,12 @@ class Command(BaseCommand):
             for chain in chains:
                 # delete old report and create new
                 print('[COMMAND bigChains] create big chain report: {}'.format(chain))
-                chain.report_set.all().delete()
-                report = chain.report_set.create()
-                print('[COMMAND bigChains] new report created')
+                report = chain.report_set.first()
+                if report is None:
+                    report = chain.report_set.create()
+                    print('[COMMAND bigChains] new report created')
+                else:
+                    print('[COMMAND bigChains] report found')
 
                 # get members (no refresh)
                 # members = faction.member_set.all()
@@ -40,7 +43,7 @@ class Command(BaseCommand):
                     print("[COMMAND bigChains] error in API continue to next chain: {}", members['apiError'])
                     continue
 
-                attacks = apiCallAttacks(faction, chain, chain.start, chain.end)
+                attacks = apiCallAttacks(faction, chain)
 
                 fillReport(faction, members, chain, report, attacks)
 

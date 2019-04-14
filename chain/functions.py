@@ -28,13 +28,16 @@ def getBonusHits(hitNumber, ts):
         return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
 
 
-def apiCallAttacks(faction, chain, beginTS, endTS, key=None):
+def apiCallAttacks(faction, chain, key=None):
     # WARNING no fallback for this method if api crashed. Will yeld server error.
     # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
     tip = time.time()
 
     # get faction
-    # faction = Faction.objects.filter(tId=factionId)[0]
+    factionId = faction.tId
+    beginTS = chain.start
+    endTS = chain.end
+    report = chain.report_set.first()
 
     # get all faction keys
     keys = faction.get_all_pairs()
@@ -48,9 +51,10 @@ def apiCallAttacks(faction, chain, beginTS, endTS, key=None):
     i = 1
     sleep = False
     key = None
+    tmp = ""
     while feedAttacks:
         # try to get req from database
-        tryReq = chain.attacks_set.filter(tss=beginTS).first()
+        tryReq = report.attacks_set.filter(tss=beginTS).first()
 
         if tryReq is None:
             if key is None:
@@ -68,26 +72,37 @@ def apiCallAttacks(faction, chain, beginTS, endTS, key=None):
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
             sleep = True
-            chain.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
+            report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 
         else:
             print("[FUNCTION apiCallAttacks] iteration #{} from database".format(i))
             attacks = json.loads(tryReq.req)[0]
 
+        if json.dumps([attacks]) == tmp:
+            print("Warning same response as before")
+            report.attacks_set.filter(tss=beginTS).first().delete()
+            break
+        else:
+            tmp = json.dumps([attacks])
+
         tableTS = []
+        maxHit = 0
         if len(attacks):
             for j, (k, v) in enumerate(attacks.items()):
-                chainDict[k] = v
-                # print(v["timestamp_started"])
-                tableTS.append(v["timestamp_started"])
-                # beginTS = max(beginTS, v["timestamp_started"])
-                # feedattacks = True if int(v["timestamp_started"])-beginTS else False
-
+                if v["defender_faction"] != factionId:
+                    chainDict[k] = v
+                    maxHit = max(v["chain"], maxHit)
+                    # print(v["timestamp_started"])
+                    tableTS.append(v["timestamp_started"])
+                    # beginTS = max(beginTS, v["timestamp_started"])
+                    # feedattacks = True if int(v["timestamp_started"])-beginTS else False
+                    # print(chain.nHits, v["chain"])
+                print(v["chain"], maxHit, chain.nHits)
             # if(len(attacks) < 2):
                 # feedAttacks = False
 
             # feedAttacks = not max(tableTS) == beginTS
-            feedAttacks = not chain.nHits == v["chain"]
+            feedAttacks = not chain.nHits == maxHit
             beginTS = max(tableTS)
             print("[FUNCTION apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
             i += 1
@@ -242,6 +257,7 @@ def fillReport(faction, members, chain, report, attacks):
 
     # fill the database with counts
     print('[FUNCTION fillReport] fill database with counts')
+    report.count_set.all().delete()
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
         delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
@@ -287,6 +303,7 @@ def fillReport(faction, members, chain, report, attacks):
 
     # fill the database with bonus
     print('[FUNCTION fillReport] fill database with bonus')
+    report.bonus_set.all().delete()
     for b in bonus:
         report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
 

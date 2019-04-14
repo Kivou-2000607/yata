@@ -61,7 +61,7 @@ class Command(BaseCommand):
             report = chain.report_set.create()
 
             keyHolder, key = faction.get_random_key()
-            attacks = apiCallAttacks(faction, chain, chain.start, chain.end, key)
+            attacks = apiCallAttacks(faction, chain, key=key)
             print('[COMMAND live] new report created')
 
             # update members
