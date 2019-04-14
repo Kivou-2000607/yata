@@ -134,11 +134,11 @@ class Count(models.Model):
         return("Count of {}".format(self.report.chain))
 
 
-class Attacks(models.Model):
-    faction = models.ForeignKey(Chain, on_delete=models.CASCADE)
-    tss = models.IntegerField(default=0)
-    tse = models.IntegerField(default=0)
-    req = models.TextField()
+# class Attacks(models.Model):
+#     faction = models.ForeignKey(Chain, on_delete=models.CASCADE)
+#     tss = models.IntegerField(default=0)
+#     tse = models.IntegerField(default=0)
+#     req = models.TextField()
 
 
 class Target(models.Model):
