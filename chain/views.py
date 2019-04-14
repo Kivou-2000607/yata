@@ -636,8 +636,26 @@ def deleteReport(request, chainId):
         chain.report_set.all().delete()
         chain.jointReport = False
         chain.createReport = False
+
+        # update times and respects with API data
+
+        if chain.tId:
+            key = request.session['chainer'].get('keyValue')
+            chains = apiCall('faction', faction.tId, 'chains', key, sub='chains')
+            if 'apiError' in chains:
+                return render(request, 'errorPage.html', chains)
+            v = chains[str(chain.tId)]
+            chain.start = v['start']
+            chain.end = v['end']
+            chain.startDate = timestampToDate(v['start'])
+            chain.endDate = timestampToDate(v['end'])
+            chain.nHits = v['chain']
+            chain.respect = v['respect']
+        else:
+            faction.chain_set.filter(tId=0)
+            print('[VIEW deleteReport] chain deleted')
+
         chain.save()
-        print('[VIEW deleteReport] report deleted')
 
         # render for on the fly modification
         if request.method == "POST":

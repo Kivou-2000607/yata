@@ -8,7 +8,7 @@ def apiCall(section, id, selections, key, sub=None):
     #                             "timeout": 65,
     #                             "modifier": 0.75,
     #                             "cooldown": 0,
-    #                             "start": timezone.now().timestamp()-36000
+    #                             "start": 1555211268
     #                             }})
     #     return chain[sub] if sub is not None else chain
 
@@ -17,7 +17,8 @@ def apiCall(section, id, selections, key, sub=None):
 
     try:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-        print("[FUNCTION apiCall] {}".format(url.replace("&key=" + key, "")))
+        # print("[FUNCTION apiCall] {}".format(url.replace("&key=" + key, "")))
+        print("[FUNCTION apiCall] {}".format(url))
         r = requests.get(url)
         r.raise_for_status()
 

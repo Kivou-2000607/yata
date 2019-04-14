@@ -45,9 +45,12 @@ class Command(BaseCommand):
 
                 attacks = apiCallAttacks(faction, chain)
 
-                fillReport(faction, members, chain, report, attacks)
+                if "error" in attacks:
+                    print("[COMMAND bigChains] error apiCallAttacks: {}".format(attacks["error"]))
+                else:
+                    fillReport(faction, members, chain, report, attacks)
+                    chain.createReport = False
 
-                chain.createReport = False
                 chain.save()
 
                 break  # do just one chain report / call

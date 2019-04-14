@@ -54,22 +54,33 @@ class Command(BaseCommand):
             chain.endDate = timestampToDate(chain.end)
             chain.start = int(chainInfo.get("start"))
             chain.startDate = timestampToDate(chain.start)
+            chain.nHits = 1
+            chain.createReport = True
             chain.save()
 
-            # delete old report and create new
-            chain.report_set.all().delete()
-            report = chain.report_set.create()
-
-            keyHolder, key = faction.get_random_key()
-            attacks = apiCallAttacks(faction, chain, key=key)
-            print('[COMMAND live] new report created')
-
-            # update members
-            members = updateMembers(faction)
-            if 'apiError' in members:
-                print("[COMMAND live] error in API continue to next chain: {}", members['apiError'])
-                continue
-
-            fillReport(faction, members, chain, report, attacks)
+            # # delete old report and create new
+            # report = chain.report_set.first()
+            # if report is None:
+            #     report = chain.report_set.create()
+            #     print('[COMMAND live] new report created')
+            # else:
+            #     print('[COMMAND live] report found')
+            #
+            # # get members (no refresh)
+            # # members = faction.member_set.all()
+            #
+            # # update members
+            # members = updateMembers(faction)
+            # if 'apiError' in members:
+            #     print("[COMMAND live] error in API continue to next chain: {}", members['apiError'])
+            #     continue
+            #
+            # attacks = apiCallAttacks(faction, chain)
+            #
+            # if "error" in attacks:
+            #     print("[COMMAND live] error apiCallAttacks: {}".format(attacks["error"]))
+            # else:
+            #     fillReport(faction, members, chain, report, attacks)
+            #     # chain.createReport = False
 
             print("[COMMAND live] end")
