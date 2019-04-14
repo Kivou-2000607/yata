@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chain', '0026_auto_20190414_0028'),
+        ('chain', '0024_attacks'),
     ]
 
     operations = [
