@@ -6,7 +6,7 @@
     <script>
 
     $(document).ready(function() {
-        $("#joint-report-bonus").tablesorter();
+        $("#joint-report-bonus").tablesorter({sortList: [[4,1]]});
 
         $("#joint-report-bonus").bind("sortStart",function() {});
     });
