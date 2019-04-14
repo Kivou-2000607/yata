@@ -135,7 +135,7 @@ class Count(models.Model):
 
 
 class Attacks(models.Model):
-    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    faction = models.ForeignKey(Chain, on_delete=models.CASCADE)
     tss = models.IntegerField(default=0)
     tse = models.IntegerField(default=0)
     req = models.TextField()

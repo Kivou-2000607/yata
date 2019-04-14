@@ -56,12 +56,12 @@ class Command(BaseCommand):
             chain.startDate = timestampToDate(chain.start)
             chain.save()
 
-            keyHolder, key = faction.get_random_key()
-            attacks = apiCallAttacks(factionId, chain.start, chain.end, key)
-
             # delete old report and create new
             chain.report_set.all().delete()
             report = chain.report_set.create()
+
+            keyHolder, key = faction.get_random_key()
+            attacks = apiCallAttacks(faction, chain, chain.start, chain.end, key)
             print('[COMMAND live] new report created')
 
             # update members

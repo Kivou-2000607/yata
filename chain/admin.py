@@ -59,7 +59,6 @@ class ReportInline(admin.TabularInline):
 
 class ReportAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'date']
-    inlines = [CountInline]
 
 
 admin.site.register(Report, ReportAdmin)
@@ -81,7 +80,7 @@ class ChainInline(admin.TabularInline):
 class ChainAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'tId', 'nHits', 'startDate', 'endDate', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
-    inlines = [ReportInline]
+    inlines = [ReportInline, AttacksInline]
 
 
 admin.site.register(Chain, ChainAdmin)
@@ -117,7 +116,7 @@ admin.site.register(Member, MemberAdmin)
 class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'number_of_chains', 'hitsThreshold']
     # inlines = [ChainInline, MemberInline]
-    inlines = [AttacksInline]
+    # inlines = [AttacksInline]
 
     def number_of_chains(self, instance):
         return(len(instance.chain_set.all()))

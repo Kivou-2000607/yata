@@ -28,13 +28,13 @@ def getBonusHits(hitNumber, ts):
         return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
 
 
-def apiCallAttacks(factionId, beginTS, endTS, key=None):
+def apiCallAttacks(faction, chain, beginTS, endTS, key=None):
     # WARNING no fallback for this method if api crashed. Will yeld server error.
     # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
     tip = time.time()
 
     # get faction
-    faction = Faction.objects.filter(tId=factionId)[0]
+    # faction = Faction.objects.filter(tId=factionId)[0]
 
     # get all faction keys
     keys = faction.get_all_pairs()
@@ -43,32 +43,32 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
     endTS += 1
 
     # init
-    chain = dict({})
+    chainDict = dict({})
     feedAttacks = True
     i = 1
     sleep = False
     key = None
     while feedAttacks:
         # try to get req from database
-        tryReq = faction.attacks_set.filter(tss=beginTS).first()
+        tryReq = chain.attacks_set.filter(tss=beginTS).first()
 
         if tryReq is None:
             if key is None:
                 keyToUse = keys[i % len(keys)][1]
                 print("[FUNCTION apiCallAttacks] iteration #{}: API call using {} key".format(i, keys[i % len(keys)][0]))
             else:
-                keyToUse = key
                 print("[FUNCTION apiCallAttacks] iteration #{}: API call using personal key".format(i))
+                keyToUse = key
 
-            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(factionId, keyToUse, beginTS, endTS)
-            if sleep > 0:
+            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
+            if sleep:
                 print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds".format(url))
                 time.sleep(30)
             print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
             sleep = True
-            faction.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
+            chain.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 
         else:
             print("[FUNCTION apiCallAttacks] iteration #{} from database".format(i))
@@ -77,7 +77,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
         tableTS = []
         if len(attacks):
             for j, (k, v) in enumerate(attacks.items()):
-                chain[k] = v
+                chainDict[k] = v
                 # print(v["timestamp_started"])
                 tableTS.append(v["timestamp_started"])
                 # beginTS = max(beginTS, v["timestamp_started"])
@@ -86,9 +86,10 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
             # if(len(attacks) < 2):
                 # feedAttacks = False
 
-            feedAttacks = not max(tableTS) == beginTS
+            # feedAttacks = not max(tableTS) == beginTS
+            feedAttacks = not chain.nHits == v["chain"]
             beginTS = max(tableTS)
-            print("[FUNCTION apiCallAttacks] \tattacks={} count={} maxTS={} beginTS={} feed={}".format(len(attacks), v["chain"], max(tableTS), beginTS, feedAttacks))
+            print("[FUNCTION apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
             i += 1
         else:
             print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
@@ -96,7 +97,7 @@ def apiCallAttacks(factionId, beginTS, endTS, key=None):
 
     print('[FUNCTION apiCallAttacks] It took {:.02f} seconds to make all the API calls'.format(time.time() - tip))
 
-    return chain
+    return chainDict
 
 
 def fillReport(faction, members, chain, report, attacks):

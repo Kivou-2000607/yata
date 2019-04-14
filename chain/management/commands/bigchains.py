@@ -40,7 +40,7 @@ class Command(BaseCommand):
                     print("[COMMAND bigChains] error in API continue to next chain: {}", members['apiError'])
                     continue
 
-                attacks = apiCallAttacks(factionId, chain.start, chain.end)
+                attacks = apiCallAttacks(faction, chain, chain.start, chain.end)
 
                 fillReport(faction, members, chain, report, attacks)
 
