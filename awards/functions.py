@@ -85,7 +85,7 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "Busts": dict(),
             "Total": dict()})
 
-        totalNumberOfBusts = None2Zero(myAwards["personalstats"].get("peoplebusted")) + None2Zero(myAwards["personalstats"].get("failedbusts"))
+        # totalNumberOfBusts = None2Zero(myAwards["personalstats"].get("peoplebusted")) + None2Zero(myAwards["personalstats"].get("failedbusts"))
 
         for k, v in allAwards["honors"].items():
             if v["type"] in [5, 15]:
@@ -462,8 +462,9 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max(25 * (vp["goal"] - vp["current"]), 0)
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [639]:
+                elif int(k) in [639, 665]:
                     # 639 {'name': 'Double Dragon', 'description': 'Assist in a single attack', 'type': 8, 'circulation': 5413, 'rarity': 'Rare', 'awardType': 'Honor'}
+                    # "665": { "name": "Boss Fight", "description": "Participate in the defeat of Duke",
                     type = "Assists"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in myAwards["honors_awarded"] else 0
@@ -1674,8 +1675,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["days left", "current ratio of {:.01f} credits / contract".format(ratio)]
                     awards[type]["h_" + k] = vp
-
-
 
     # create summary
     awardsSummary = dict()
