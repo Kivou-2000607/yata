@@ -235,7 +235,7 @@ def fillReport(faction, members, chain, report, attacks):
     chain.end = int(attacksForHisto[-1])
     chain.startDate = timestampToDate(chain.start)
     chain.endDate = timestampToDate(chain.end)
-    diff = int(chain.end - chain.start)
+    diff = max(int(chain.end - chain.start), 1)
     binsGapMinutes = 5
     while diff / (binsGapMinutes * 60) > 256:
         binsGapMinutes += 5
