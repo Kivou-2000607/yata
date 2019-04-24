@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "torn-yata.herokuapp.com"]
 INSTALLED_APPS = [
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
+    'awards.apps.AwardsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,6 +57,7 @@ MIDDLEWARE = [
 ]
 
 # SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 MIDDLEWARE_CLASSES = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
