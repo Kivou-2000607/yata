@@ -73,10 +73,12 @@ def apiCallAttacks(faction, chain, key=None):
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
             sleep = True
-            report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
+            if len(attack):
+                report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 
         else:
             print("[FUNCTION apiCallAttacks] iteration #{} from database".format(i))
+            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             attacks = json.loads(tryReq.req)[0]
 
         if json.dumps([attacks]) == tmp:
