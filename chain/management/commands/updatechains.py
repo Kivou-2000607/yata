@@ -24,32 +24,32 @@ class Command(BaseCommand):
             factionId = faction.tId
             keyHolder, key = faction.get_random_key()
 
-            # lice chains
-            liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
-            if 'apiError' in liveChain:
-                print('[COMMAND updatechains] api key error: {}'.format((liveChain['apiError'])))
-                continue
-
-            if not bool(liveChain["current"]):
-                print("[COMMAND updatechains] no active chain")
-                faction.chain_set.filter(tId=0).delete()
-                print("[COMMAND updatechains] report 0 deleted")
-            else:
-                # get chain
-                print('[COMMAND updatechains] this is a live report')
-                chain = faction.chain_set.filter(tId=0).first()
-                if chain is None:
-                    print('[COMMAND updatechains] create chain 0')
-                    chain = faction.chain_set.create(tId=0)
-
-                chain.status = True
-                chain.end = int(timezone.now().timestamp())
-                chain.endDate = timestampToDate(chain.end)
-                chain.start = int(liveChain.get("start"))
-                chain.startDate = timestampToDate(chain.start)
-                chain.nHits = 1
-                chain.createReport = True
-                chain.save()
+            # # live chains
+            # liveChain = apiCall("faction", factionId, "chain", key, sub="chain")
+            # if 'apiError' in liveChain:
+            #     print('[COMMAND updatechains] api key error: {}'.format((liveChain['apiError'])))
+            #     continue
+            #
+            # if not bool(liveChain["current"]):
+            #     print("[COMMAND updatechains] no active chain")
+            #     faction.chain_set.filter(tId=0).delete()
+            #     print("[COMMAND updatechains] report 0 deleted")
+            # else:
+            #     # get chain
+            #     print('[COMMAND updatechains] this is a live report')
+            #     chain = faction.chain_set.filter(tId=0).first()
+            #     if chain is None:
+            #         print('[COMMAND updatechains] create chain 0')
+            #         chain = faction.chain_set.create(tId=0)
+            #
+            #     chain.status = True
+            #     chain.end = int(timezone.now().timestamp())
+            #     chain.endDate = timestampToDate(chain.end)
+            #     chain.start = int(liveChain.get("start"))
+            #     chain.startDate = timestampToDate(chain.start)
+            #     chain.nHits = int(liveChain.get("current"))
+            #     # chain.createReport = True
+            #     chain.save()
 
 
             # get all chain
