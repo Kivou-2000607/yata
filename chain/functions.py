@@ -80,7 +80,7 @@ def apiCallAttacks(faction, chain, key=None):
 
         if json.dumps([attacks]) == tmp:
             print("[FUNCTION apiCallAttacks] \tWarning same response as before")
-            report.attacks_set.filter(tss=beginTS).first().delete()
+            report.attacks_set.filter(tss=beginTS).all().delete()
             chainDict["error"] = "same response"
             break
         else:
