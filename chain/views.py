@@ -651,6 +651,8 @@ def deleteReport(request, chainId):
             chain.startDate = timestampToDate(v['start'])
             chain.endDate = timestampToDate(v['end'])
             chain.nHits = v['chain']
+            chain.reportNHits = 0
+            chain.graph = ""
             chain.respect = v['respect']
         else:
             faction.chain_set.filter(tId=0)

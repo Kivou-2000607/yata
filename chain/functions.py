@@ -49,7 +49,7 @@ def apiCallAttacks(faction, chain, key=None):
     chainDict = dict({})
     feedAttacks = True
     i = 1
-    sleep = True
+    # sleep = True
     OneAPICall = False
     key = None
     tmp = ""
@@ -67,15 +67,25 @@ def apiCallAttacks(faction, chain, key=None):
 
             url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
             print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
-            if sleep:
-                print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds")
-                time.sleep(30)
+            # if sleep:
+                # print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds")
             print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
+            tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
+            print("[FUNCTION apiCallAttacks] \tLast API call: {}s ago".format(tsDiff))
+            while tsDiff < 31:
+                sleepTime = 31 - tsDiff
+                print("[FUNCTION apiCallAttacks] \tLast API call: {}s ago, sleeping for {} seconds".format(tsDiff, sleepTime))
+                time.sleep(sleepTime)
+                tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
+
             attacks = requests.get(url).json()["attacks"]
+            faction.lastAPICall = int(timezone.now().timestamp())
+            faction.save()
+
             if chain.tId:
                 OneAPICall = True
-            sleep = True
+            # sleep = True
             if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 

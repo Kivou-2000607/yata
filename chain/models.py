@@ -7,7 +7,8 @@ class Faction(models.Model):
     name = models.CharField(default="MyFaction", max_length=200)
     hitsThreshold = models.IntegerField(default=100)
     # apiKey = models.CharField(default="0", max_length=16)
-
+    lastAPICall = models.IntegerField(default=0)
+    
     # "login1:key1,login2:key2,login3:key3"
     apiString = models.CharField(default="0", max_length=330)  # for 10 pairs login(15):key(16)
 
