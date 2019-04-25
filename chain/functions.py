@@ -50,10 +50,10 @@ def apiCallAttacks(faction, chain, key=None):
     feedAttacks = True
     i = 1
     # sleep = True
-    OneAPICall = False
+    nAPICall = 0
     key = None
     tmp = ""
-    while feedAttacks and not OneAPICall:
+    while feedAttacks and nAPICall < 2:
         # try to get req from database
         tryReq = report.attacks_set.filter(tss=beginTS).first()
 
@@ -65,11 +65,6 @@ def apiCallAttacks(faction, chain, key=None):
                 print("[FUNCTION apiCallAttacks] iteration #{}: API call using personal key".format(i))
                 keyToUse = key
 
-            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
-            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
-            # if sleep:
-                # print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds")
-            print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
             print("[FUNCTION apiCallAttacks] \tLast API call: {}s ago".format(tsDiff))
@@ -79,12 +74,17 @@ def apiCallAttacks(faction, chain, key=None):
                 time.sleep(sleepTime)
                 tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
 
+            nAPICall += 1
+            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
+            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
+            # if sleep:
+            # print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds")
+            print("[FUNCTION apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
             attacks = requests.get(url).json()["attacks"]
             faction.lastAPICall = int(timezone.now().timestamp())
             faction.save()
 
-            if chain.tId:
-                OneAPICall = True
+            # if chain.tId:
             # sleep = True
             if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
