@@ -49,7 +49,7 @@ def apiCallAttacks(faction, chain, key=None):
     chainDict = dict({})
     feedAttacks = True
     i = 1
-    sleep = False
+    sleep = True
     key = None
     tmp = ""
     while feedAttacks:
@@ -65,8 +65,9 @@ def apiCallAttacks(faction, chain, key=None):
                 keyToUse = key
 
             url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
+            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             if sleep:
-                print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds".format(url))
+                print("[FUNCTION apiCallAttacks] \tsleeping for 30 seconds")
                 time.sleep(30)
             print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
