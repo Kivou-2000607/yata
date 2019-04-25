@@ -1,18 +1,14 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from django.conf import settings
 
 from chain.models import Faction
 from yata.handy import apiCall
-from yata.handy import apiCallAttacks
-from yata.handy import timestampToDate
-
-from yata.handy import fillReport
 
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -49,8 +45,8 @@ class Command(BaseCommand):
 
             tmp = "{} perks".format(faction["name"])
             txt = "{}\n".format(tmp)
-            txt += "{}\n".format("-"*len(tmp))
-            txt += " {}\n\n".format("-"*(len(tmp)-2))
+            txt += "{}\n".format("-" * len(tmp))
+            txt += " {}\n\n".format("-" * (len(tmp) - 2))
             for branch, upgrades in tree.items():
                 txt += "* {}\n".format(branch)
                 for k, v in upgrades.items():
@@ -59,14 +55,14 @@ class Command(BaseCommand):
 
                 print('[VIEW tree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
-            txt = txt[:-2] # delete last \n
+            txt = txt[:-2]  # delete last \n
 
-            img = Image.new('RGB', (5000, 5000), color = (0, 0, 0))
-
-            fnt = ImageFont.truetype(settings.STATIC_ROOT+'/perso/font/CourierPolski1941.ttf', 25)
+            img = Image.new('RGB', (5000, 5000), color=(0, 0, 0))
+            print(settings.STATIC_ROOT + '/perso/font/CourierPolski1941.ttf')
+            fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/CourierPolski1941.ttf', 25)
             d = ImageDraw.Draw(img)
-            d.text((10,10), txt, font=fnt)
+            d.text((10, 10), txt, font=fnt)
             x, y = d.textsize(txt, font=fnt)
 
-            img.crop((0, 0, x+10+10, y+10+10)).save("{}/trees/{}.png".format(settings.STATIC_ROOT, factionId))
+            img.crop((0, 0, x + 10 + 10, y + 10 + 10)).save("{}/trees/{}.png".format(settings.STATIC_ROOT, factionId))
             print('[VIEW tree] image saved')
