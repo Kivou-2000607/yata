@@ -29,7 +29,7 @@
             {% endif %}
 
             <td>{{chain.end|sub:chain.start|div:3600|floatformat:1}} hours</td>
-            <td><b>{{chain.nHits}}</b></td>
+            <td title="{{chain.reportNHits}}/{{chain.nHits}}"><b>{{chain.nHits}}</b></td>
             <td><b>{{chain.respect|floatformat:2}}</b></td>
             <td><b>{{chain.respect|div:chain.nHits|floatformat:2}}</b></td>
             <td>

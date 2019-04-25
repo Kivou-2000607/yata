@@ -1,3 +1,5 @@
+{% load mathfilters %}
+
 {% if chain %}
     {% if chain.have_report %}
         {% if request.session.chainer.AA %}
@@ -31,7 +33,7 @@
         {% endif %}
 
         {% if chain.createReport %}
-            - <i class="fas fa-clock" style="color: #ea9999;" title="A new report will be created in a couple of minutes."></i>
+            - <i class="fas fa-clock" style="color: #ea9999;" title="A new report will be created in a couple of minutes."> ({{chain.reportNHits|div:chain.nHits|mul:100|floatformat:0}}%)</i>
         {% endif %}
 
 

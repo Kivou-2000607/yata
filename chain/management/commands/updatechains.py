@@ -79,8 +79,9 @@ class Command(BaseCommand):
                 if "error" in attacks:
                     print("[COMMAND updatechains] error apiCallAttacks: {}".format(attacks["error"]))
                 else:
-                    fillReport(faction, members, chain, report, attacks)
-                    chain.createReport = False
+                    _, _, _, finished = fillReport(faction, members, chain, report, attacks)
+                    print("[COMMAND updatechains] report finished: {}".format(finished))
+                    chain.createReport = not finished
 
                 chain.save()
 

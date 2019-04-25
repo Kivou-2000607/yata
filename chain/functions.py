@@ -73,7 +73,8 @@ def apiCallAttacks(faction, chain, key=None):
             print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
-            OneAPICall = True
+            if chain.tId:
+                OneAPICall = True
             sleep = True
             if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
@@ -236,10 +237,10 @@ def fillReport(faction, members, chain, report, attacks):
     tip = time.time()
 
     # create histogram
-    chain.start = int(attacksForHisto[0])
-    chain.end = int(attacksForHisto[-1])
-    chain.startDate = timestampToDate(chain.start)
-    chain.endDate = timestampToDate(chain.end)
+    # chain.start = int(attacksForHisto[0])
+    # chain.end = int(attacksForHisto[-1])
+    # chain.startDate = timestampToDate(chain.start)
+    # chain.endDate = timestampToDate(chain.end)
     diff = max(int(chain.end - chain.start), 1)
     binsGapMinutes = 5
     while diff / (binsGapMinutes * 60) > 256:
@@ -258,8 +259,10 @@ def fillReport(faction, members, chain, report, attacks):
     print('[FUNCTION fillReport] histogram number of bins: {}'.format(len(bins) - 1))
     histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
     binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
-    chain.nHits = nWRA[0]
-    chain.respect = nWRA[1]
+    chain.reportNHits = nWRA[0]
+    if not chain.tId:
+        chain.nHits = nWRA[0]  # update for live chains
+        chain.respect = nWRA[1]  # update for live chains
     chain.nAttacks = nWRA[2]
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.save()
@@ -322,42 +325,42 @@ def fillReport(faction, members, chain, report, attacks):
     print('[FUNCTION fillReport] It took {:.02f} seconds to fill the bonus'.format(time.time() - tip))
     tip = time.time()
 
-    return chain, report, (binsCenter, histo)
+    return chain, report, (binsCenter, histo), chain.nHits == nWRA[0]
 
 
 def updateMembers(faction, key=None):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
 
-    # get key
-    if key is None:
-        name, key = faction.get_random_key()
-        print("[FUNCTION updateMembers] using {} key".format(name))
-    else:
-        print("[FUNCTION updateMembers] using personal key")
-
-    # call members
-    membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
-    if 'apiError' in membersAPI:
-        return membersAPI
-
-    membersDB = faction.member_set.all()
-    for m in membersAPI:
-        memberDB = membersDB.filter(tId=m).first()
-        if memberDB is not None:
-            print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
-            memberDB.name = membersAPI[m]['name']
-            memberDB.lastAction = membersAPI[m]['last_action']
-            memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-            memberDB.save()
-        else:
-            print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
-
-    # delete old members
-    for m in membersDB:
-        if membersAPI.get(str(m.tId)) is None:
-            print('[VIEW members] member {} deleted'.format(m))
-            m.delete()
+    # # get key
+    # if key is None:
+    #     name, key = faction.get_random_key()
+    #     print("[FUNCTION updateMembers] using {} key".format(name))
+    # else:
+    #     print("[FUNCTION updateMembers] using personal key")
+    #
+    # # call members
+    # membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
+    # if 'apiError' in membersAPI:
+    #     return membersAPI
+    #
+    # membersDB = faction.member_set.all()
+    # for m in membersAPI:
+    #     memberDB = membersDB.filter(tId=m).first()
+    #     if memberDB is not None:
+    #         print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
+    #         memberDB.name = membersAPI[m]['name']
+    #         memberDB.lastAction = membersAPI[m]['last_action']
+    #         memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+    #         memberDB.save()
+    #     else:
+    #         print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+    #         faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
+    #
+    # # delete old members
+    # for m in membersDB:
+    #     if membersAPI.get(str(m.tId)) is None:
+    #         print('[VIEW members] member {} deleted'.format(m))
+    #         m.delete()
 
     return faction.member_set.all()

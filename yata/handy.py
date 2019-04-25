@@ -1,16 +1,16 @@
 def apiCall(section, id, selections, key, sub=None):
     import requests
     # DEBUG live chain
-    # if selections == "chain" and section == "faction":
-    #     from django.utils import timezone
-    #     print("[FUNCTION apiCall] DEBUG chain/faction")
-    #     chain = dict({"chain": {"current": 3,
-    #                             "timeout": 65,
-    #                             "modifier": 0.75,
-    #                             "cooldown": 0,
-    #                             "start": 1555211268
-    #                             }})
-    #     return chain[sub] if sub is not None else chain
+    if selections == "chain" and section == "faction":
+        from django.utils import timezone
+        print("[FUNCTION apiCall] DEBUG chain/faction")
+        chain = dict({"chain": {"current": 3,
+                                "timeout": 65,
+                                "modifier": 0.75,
+                                "cooldown": 0,
+                                "start": 1555211268
+                                }})
+        return chain[sub] if sub is not None else chain
 
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
