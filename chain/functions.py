@@ -73,7 +73,7 @@ def apiCallAttacks(faction, chain, key=None):
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
             sleep = True
-            if len(attack):
+            if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 
         else:
