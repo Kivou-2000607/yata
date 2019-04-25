@@ -50,9 +50,10 @@ def apiCallAttacks(faction, chain, key=None):
     feedAttacks = True
     i = 1
     sleep = True
+    OneAPICall = False
     key = None
     tmp = ""
-    while feedAttacks:
+    while feedAttacks and not OneAPICall:
         # try to get req from database
         tryReq = report.attacks_set.filter(tss=beginTS).first()
 
@@ -72,6 +73,7 @@ def apiCallAttacks(faction, chain, key=None):
             print("[FUNCTION apiCallAttacks] \t{}".format(url.replace("&key=" + keyToUse, "")))
             # print("[FUNCTION apiCallAttacks] \t{}".format(url))
             attacks = requests.get(url).json()["attacks"]
+            OneAPICall = True
             sleep = True
             if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
