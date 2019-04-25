@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
             txt = txt[:-2]  # delete last \n
 
-            img = Image.new('RGB', (5000, 5000), color=(0, 0, 0))
+            img = Image.new('RGBA', (5000, 5000), color=(255, 0, 0, 0))
             print(settings.STATIC_ROOT + '/perso/font/CourierPolski1941.ttf')
             fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/CourierPolski1941.ttf', 25)
             d = ImageDraw.Draw(img)
