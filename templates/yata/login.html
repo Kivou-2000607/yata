@@ -1,0 +1,34 @@
+{% load app_filters %}
+
+<div id="yata-login">
+    {% if request.session.player %}
+        <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
+        <div class="module">
+            <p class="no-margin">
+                <b>Bazaar: </b>{% if player.bazaarInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
+
+                <b>Faction: </b>{% if player.factionInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
+
+                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span>
+
+                <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
+            </p>
+        </div>
+
+    {% else %}
+
+        <h2 class="title">Hello unkown user</h2>
+        <div class="module">
+            <form method="post">
+                Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start using <b>YATA</b>&nbsp;
+                {% csrf_token %}
+                <input id="yata-login-key" placeholder="API key" type=text>
+                <input id="yata-login-submit" type="submit" value="Login">
+                {% if apiError %}<a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a>{% endif %}
+                &nbsp;
+                <input id="yata-login-remember" type="checkbox" value="Remember me">
+                <label for="yata-login-remember">Remember me</label>
+            </form>
+        </div>
+    {% endif %}
+</div>

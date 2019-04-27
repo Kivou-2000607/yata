@@ -1,0 +1,84 @@
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+
+{% if liveChain.current %}
+<div class="module whiteBG">
+    <br>
+    <table class="center">
+        <!-- <thead>
+            <tr><th colspan="2"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Summary of the current chain</a></th></tr>
+        </thead> -->
+        <tbody>
+            <tr>
+                <td style="width: 200px">Chain progress to next bonus</td>
+                <td style="width: 150px">
+                    <div class="progress-bar">
+                        <span style="width: {{liveChain.current|div:liveChain.nextBonus|mul:100|floatformat:0}}%;"></span>
+                    </div>
+                </td>
+                <td>
+                    {{liveChain.current}} / {{liveChain.nextBonus}} &nbsp; &nbsp; (x{{liveChain.modifier|floatformat:2}})
+                </td>
+            </tr>
+
+            {% with minutes=liveChain.timeout|intdiv:60 %}
+
+            <tr>
+                <td>Chain timeout</td>
+                <td>
+                    <div class="progress-bar">
+                        <span style="width: {{liveChain.timeout|div:3|floatformat:0}}%;"></span>
+                    </div>
+                </td>
+                <td>
+                    {% if minutes %}
+                        {{minutes}} minute{{minutes|pluralize}} and {{liveChain.timeout|mod:60}} seconds
+                    {% else %}
+                        <span style="color: #FF4444; font-weight: bold;">{{liveChain.timeout|mod:60}} seconds<span>
+                    {% endif %}
+                </td>
+            </tr>
+
+            {% endwith %}
+
+            {% if liveChain.cooldown %}
+            <tr>
+                <td>Cooldown</td>
+
+                <td>
+                    <div class="progress-bar move-strips violet">
+                        <span class="strips" style="width: {{100|mul:liveChain.cooldown|div:10|div:liveChain.current|floatformat:0}}%;"></span>
+                    </div>
+                </td>
+
+                {% with minutes=liveChain.cooldown|intdiv:60 %}
+                <td>
+                    {% if minutes %}
+                        {{minutes}} minute{{minutes|pluralize}} and {{liveChain.cooldown|mod:60}} seconds
+                    {% else %}
+                        <span style="color: #FF4444; font-weight: bold;">{{liveChain.cooldown|mod:60}} seconds<span>
+                    {% endif %}
+                </td>
+                {% endwith %}
+            </tr>
+            {% endif %}
+
+            <tr>
+                <td>Next refresh</td>
+                <td>
+                    <div class="progress-bar refresh">
+                        <span class="strips" style="width: 100%;"></span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+</div>
+{% else %}
+<div class="module whiteBG justTxt">
+    No active chain
+</div>
+{% endif %}

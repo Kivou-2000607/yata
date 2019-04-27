@@ -1,0 +1,46 @@
+{% load static %}
+
+{% if counts|length %}
+    {% if chain.tId > 0 %}
+        <h2 id="chain-report" class="title">Report of chain number {{chain.tId}}</h2>
+    {% else %}
+        <h2 id="chain-report" class="title">Live chain report (last update: {{chain.endDate}})</h2>
+    {% endif %}
+
+    <div class="module whiteBG">
+        {% include "chain/report_reload.html" %}
+        <!-- <div class="submit-row">
+            {% if request.session.chainer.AA %}
+                {% if chain.nHits <= 2550 %}
+                    <form style="display: inline;" method="post">{% csrf_token %}
+                        <input id="chain-report-id" type="hidden" value="{{chain.tId}}">
+                        <a><input id="chain-report-refresh" type="submit" class="update-type" value="Refresh report"></a>
+                    </form>
+                {% else %}
+                    <a><input type="submit" class="update-type" value="The chain is to big to create a chain report manually"></a>
+                {% endif %}
+                <a href={% url 'chain:deleteReport' chain.tId %}><input id="chain-report-delete" type="submit" class="update-type" value="Delete report"></a>
+            {% else %}
+                <a><input type="submit" class="update-type" value="You need AA permission to refresh the report"></a>
+            {% endif %}
+        </div> -->
+    </div>
+{% else %}
+    <h2 class="title">Report not yet created</h2>
+    <div class="module whiteBG just">
+        <br>
+        <p>It will be automatically update in a couple of minutes</p>
+        <br>
+        <!-- <div class="submit-row">
+            {% if request.session.chainer.AA %}
+                {% if chain.nHits <= 2550 %}
+                    <a href={% url 'chain:createReport' chain.tId %}><input type="submit" class="update-type" value="Create report"></a>
+                {% else %}
+                    <a><input type="submit" class="update-type" value="The chain is to big to create a chain report manually"></a>
+                {% endif %}
+            {% else %}
+                <a><input type="submit" class="update-type" value="You need AA permission to create the report"></a>
+            {% endif %}
+        </div> -->
+    </div>
+{% endif  %}

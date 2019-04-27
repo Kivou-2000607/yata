@@ -1,0 +1,9 @@
+<h2 class="title">Members of the faction</h2>
+<div class="module whiteBG">
+    {% include "chain/members_reload.html" %}
+    <div class="submit-row">
+        <form method="post">{% csrf_token %}
+            <a href={% url 'chain:createMembers' %}><input id="chain-members-refresh" type="submit" class="update-type" value="Refresh member list"></a>
+        </form>
+    </div>
+</div>

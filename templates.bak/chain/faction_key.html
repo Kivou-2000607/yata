@@ -1,0 +1,22 @@
+{% load static %}
+
+<div>
+    <h2 class="title greyTitle"><img src="{% static "images/tutorial.png" %}" alt="help"> Live reports</h2>
+    <div class="module whiteBG justTxt">
+
+    <p>Live reports are automatically created/updated every 10 minutes if at least one faction member with AA permission enters its API key.</p>
+
+        <div id="toggle-faction-key">
+            {% include "chain/faction_key_reload.html" %}
+        </div>
+
+        {%if request.session.chainer.AA %}
+            <br>
+
+            <p>Validity of each key is checked daily. If an API server error is encontered, the API key is deleted.
+                A maximum of 10 keys can be entered.
+            Keys are randomly chosen for the calls.</p>
+        {% endif %}
+
+    </div>
+</div>

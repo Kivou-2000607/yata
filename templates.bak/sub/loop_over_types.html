@@ -1,0 +1,45 @@
+<!-- <p>byType: {{ view.byType }}</p> -->
+<!-- <p>refreshAll: {{ view.refreshAll}}</p> -->
+
+{% if view.byType %}
+
+    {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
+    {% if view.hideType %}
+        <h2 class="title toggleDisplay side">{{v.0.display_thumb}} {{k}}<i class="title-arrow"></i></h2>
+        {% else %}
+        <h2 class="title toggleDisplay down">{{v.0.display_thumb}} {{k}}<i class="title-arrow"></i></h2>
+    {% endif %}
+        <div class="module whiteBG">
+            <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay {% if view.hideType %}hide{% endif %}">
+                {% include "sub/loop_over_item_sell_table.html" with itemType=k items=v %}
+            </div>
+            <div id="loading-div"></div>
+        </div>
+    {% endfor %}
+
+{% else %}
+
+    <h2>On market</h2>
+    <div class="module">
+        <div id="loading-div"></div>
+        <div id="loop-over-item-sell-table-all">
+            {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
+                {% include "sub/loop_over_item_sell_table.html" with items=v %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endif %}
+
+{% if view.refreshAll %}
+    <div class="module">
+        <div class="submit-row">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" class="refreshAll" name="refreshAll" value="refreshAll">
+                <p class="deletelink-box"><input type="submit" class="update-all default" value="Refresh All"></p>
+                <p class="deletelink-box"><a class="deletelink" href='admin/sets/item/' target="_blank">Modify items</a></p>
+            </form>
+        </div>
+    </div>
+{% endif %}

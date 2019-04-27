@@ -22,17 +22,18 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = os.environ['SECRET_KEY']
 
-ALLOWED_HOSTS = ["torn-yata.herokuapp.com"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'player.apps.PlayerConfig',
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
     'awards.apps.AwardsConfig',

@@ -1,0 +1,89 @@
+{% load humanize %}
+{% load mathfilters %}
+
+<div>
+
+    <script>
+
+    $(document).ready(function() {
+        $("#joint-report-bonus").tablesorter({sortList: [[4,1]]});
+
+        $("#joint-report-bonus").bind("sortStart",function() {});
+    });
+
+    </script>
+
+    <h2 class="title">Joint report</h2>
+
+    <div class="module whiteBG justxt">
+
+        <br>
+        <table class="center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="5">Summary of the joint report made of the following chain{{chainsReport|length|pluralize}}</th></tr>
+                <tr>
+                    <th colspan="2">Chain</th>
+                    <th>Hits</th>
+                    <th>Respect</th>
+                    <th>See report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chain in chainsReport %}
+                    <tr><td style="text-align: center;">{{ forloop.counter }}</td>
+                        {% if chain.start == 1 %}
+                            <td>current chain</td>
+                        {% else %}
+                            <td>Chain of {{chain.startDate}}</td>
+                        {% endif %}
+                        <td><b>{{chain.nHits}}</b> hits</td>
+                        <td><b>{{chain.respect|floatformat:2}}</b> respects</td>
+                        <td><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>
+                    </tr>
+                {% endfor %}
+                <tr><td colspan="2"><b>Total</b></td>
+                    <td><b>{{total.nHits}}</b> hits</td>
+                    <td><b>{{total.respect|floatformat:2}}</b> respects</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+
+        <table id="joint-report-bonus" class="center">
+            <thead>
+                <tr><th style="text-align: center;" colspan="5">Summary of the bonus</th></tr>
+                <tr>
+                    <th>User</th>
+                    <th>Bonus</th>
+                    <th>Total bonus respect</th>
+                    <th>Total Hits</th>
+                    <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Next Bonus Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for bonus in bonuses%}
+                    <tr>
+                        <td>{{bonus.0}}</td>
+                        {% if bonus.2 %}
+                            <td>{{bonus.1}}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                        <td>{{bonus.2|floatformat:0}}</td>
+                        <td>{{bonus.3|floatformat:0}}</td>
+                        {% if bonus.2 %}
+                            <td title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                        {% else %}
+                            <td title="{{bonus.3}}">{{bonus.3|floatformat:2}}</td>
+                        {% endif %}
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+
+        {% include "chain/report_reload.html" %}
+
+        <br>
+    </div>
+</div>

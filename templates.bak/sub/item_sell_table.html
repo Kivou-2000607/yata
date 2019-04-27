@@ -1,0 +1,77 @@
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+
+<thead>
+    <tr class="imag">
+    <th colspan="2" id="form-update-item-{{item.tId}}">
+        <form method="post">{% csrf_token %}
+            <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+            {% if apiError %}
+                <a class="deletelink" href="">{{ apiError }}</a>
+            {% else %}
+                <button class="update-item" value="update">{{item.display_image}}</button>
+            {% endif %}
+        </form>
+    </th>
+    </tr>
+    <tr>
+    <th colspan="2" id="form-update-item-{{item.tId}}">
+        <form method="post">{% csrf_token %}
+            <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+            <a href="" class="delete-item">{{item.last_update}}</a>
+        </form>
+        <!-- {{item.last_update}} -->
+    </th>
+    </tr>
+    <tr>
+        <tr class="name"><th colspan="2">
+            <form method="post">{% csrf_token %}
+                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+                <a href="" class="show-details">{{item.tName|truncatechars:25}}</a>
+
+                <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "bazaar:index" %}>{{item.tName|truncatechars:25}}</a> -->
+            </from>
+        </th></tr>
+    {% if request.session.user %}
+        <tr><th class="{% if not item.stock %}lack{% endif %}" colspan="2">stock: {{item.stock}}</th></tr>
+    {% endif %}
+    <tr><th colspan="2"><a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a></th></tr>
+</thead>
+<tbody>
+    {% for data in item.get_bazaar %}
+        {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ignore ggt "   title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="ignore gt "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="ignore llt"    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="ignore lt "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% else %}                                             <tr class="ignore eq "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% endif %}
+        {% else %}
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ggt "   title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="gt "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="llt"    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="lt "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% else %}                                             <tr class="eq "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% endif %}
+        {% endif %}
+        <td class="A">{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+        </tr>
+    {% endfor %}
+
+    {% if request.session.user %}
+    <tr>
+        <th colspan="2" id="form-update-item-{{item.tId}}">
+            <form method="post">{% csrf_token %}
+                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
+                {% if toggleMessage %}
+                    <a href="" class="toggle-item">{{toggleMessage}}</a>
+                {% else %}
+                    <a href="" class="toggle-item">Add / remove</a>
+                {% endif %}
+            </form>
+        </th>
+    </tr>
+    {% endif %}
+
+</tbody>

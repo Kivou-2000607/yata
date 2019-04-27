@@ -1,0 +1,43 @@
+<div id="api-key">
+    {% include "awards/login.html" %}
+</div>
+
+{% if awards %}
+    <div id="awards-tables">
+
+        <script>
+
+            $(document).ready(function() {
+                $.tablesorter.addParser({
+                  // set a unique id
+                  id: "bignumbers",
+                  is: function(s) {
+                    return /^[0-9]?[0-9,\.]*$/.test(s);
+                  },
+                  format: function(s) {
+                    return $.tablesorter.formatFloat( s.replace(/,/g,'').replace(/\$/g,'').replace(/^0{1}/,'') );
+                  },
+
+                  type: "numeric"
+                });
+
+                $("#award-list").tablesorter({
+                    headers: {
+                        2: { sorter: "bignumbers" },
+                        4: { sorter: "bignumbers" },
+                        5: { sorter: "bignumbers" },
+                        7: { sorter: "bignumbers" },
+                    },
+                    cssAsc: 'up',
+                    cssDesc: 'down',
+                    // cssNone: 'none',
+
+                    sortList: [[0,0], [4,1], [5,0]],
+                });
+            });
+
+        </script>
+
+        {% include "awards/awards-list.html" %}
+    </div>
+{% endif %}

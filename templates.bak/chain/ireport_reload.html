@@ -1,0 +1,43 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% if graph.data|length %}
+<td colspan="9">
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
+            {% for a,b,c in graph.data %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+             {% endfor %}
+          ]);
+
+          var options = {
+            // bar: {groupWidth: "100%"},
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
+          var view = new google.visualization.DataView(data);
+          view.setColumns([0, 1]);
+
+          var chart = new google.visualization.ComboChart(document.getElementById('ihistogram-{{memberId}}'));
+
+          chart.draw(data, options);
+        }
+    </script>
+
+    <div id="ihistogram-{{memberId}}"></div>
+</td>
+<!-- <td style="text-align: center;" id="ihistogram-close-{{memberId}}"><a href=""><i class="far fa-times-circle"></i></a></td> -->
+{% endif %}

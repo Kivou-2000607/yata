@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+{% load mathfilters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+
+    <!-- load fontawesome -->
+    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+    {% block css%}{% endblock %}
+
+    <!-- load jquery from https://code.jquery.com/ -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    	    crossorigin="anonymous"></script>
+
+    {% block script %}{% endblock %}
+
+    <!-- scripts jquery perso -->
+    {% block jquery %}{% endblock %}
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+
+    <title>YATA{% block title%}{% endblock%}</title>
+</head>
+
+<body>
+    <div id="details"></div>
+
+    <div id="container">
+        <div id="content">
+            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp &nbsp; &nbsp; &nbsp; &nbsp;  <a href="{% url 'bazaar:index' %}"><b>bazaar</b></a> - <a href="{% url 'chain:index' %}"><b>chain</b></a> - <a href="{% url 'awards:index' %}"><b>awards</b></a></h1>
+            <br />
+
+            {% include "yata/login.html" %}
+
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>

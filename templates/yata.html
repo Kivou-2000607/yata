@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/yata.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Login
+{% endblock %}
+
+{% block jquery %}
+<script>
+    $(document).on('click', '#yata-login-submit', function(e){
+        e.preventDefault();
+        var reload = $("#yata-login");
+        $( "#yata-login" ).load( "{% url 'login' %}", {
+            key: $("#yata-login-key").val(),
+            check: $("#yata-login-remember").is(':checked'),
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
+    });
+</script>
+{% endblock %}

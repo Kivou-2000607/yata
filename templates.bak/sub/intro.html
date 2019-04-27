@@ -1,0 +1,31 @@
+
+{% if request.session.user %}
+    <h2 class="title">Hello {{request.session.user.name}}</h2>
+{% else %}
+    <h2 class="title">Hello unkown user</h2>
+{% endif %}
+
+<div class="module whiteBG justTxt">
+    <p>This website shows, for every items, some basic information along with the current bazaars sales. Browse the following links for different selections of items.<p>
+    <p> 
+        <a href="{% url 'bazaar:default' %}">List of the default items</a> - 
+        <a href="{% url 'bazaar:sets' %}">List the flower and plushie sets</a> - 
+        <a href="{% url 'bazaar:fullList' %}">List of all the items</a>
+        {% if request.session.user %}
+             - <a href="{% url 'bazaar:custom' %}">Custom list of items</a>
+        {% endif %}
+    </p>
+    {% if request.session.user %}
+        <h3><a class="deletelink" href="{% url 'bazaar:logout' %}">Logout</a></h3>
+    {% else %}
+        <p>Enter your API key to refresh data and create your custom list of items</p>
+        <form method="post">
+            {% csrf_token %}
+            <input id="key-value" placeholder="API key" type=text>
+            <input id="key-check-remember" type="checkbox" value="Remember me">
+            <label for="key-check-remember">Remember me</label>
+            <input type="submit" class="update-key" value="Login">
+            {% if apiError %}<label for="key-value"><a class="deletelink" href="">{{ apiError }}</a></label>{% endif %}
+        </form>
+    {% endif %}
+</div>
