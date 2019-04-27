@@ -445,6 +445,14 @@ def jointReport(request):
         arrayCounts = [v for k, v in counts.items()]
         arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for name, (hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
+        # add last time connected
+        # updateMembers(faction, key=request.session['chainer'].get('keyValue'))
+        for i, bonus in enumerate(arrayBonuses):
+            try:
+                arrayBonuses[i].append(faction.member_set.filter(name=bonus[0]).first().lastAction)
+            except:
+                arrayBonuses[i].append("-")
+
         # context
         context = dict({'chainsReport': chains,  # chains of joint report
                         'total': total,  # for general info

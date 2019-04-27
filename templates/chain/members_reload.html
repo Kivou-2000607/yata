@@ -12,14 +12,13 @@
                   format: function(s, table, cell, cellIndex) {
                     // format your data for normalization
                     var ret = s.toLowerCase()
-                              .replace(/days/,6)
-                              .replace(/day/,5)
-                              .replace(/hours/,4)
-                              .replace(/hour/,3)
-                              .replace(/minutes/,2)
-                              .replace(/minute/,1)
-                              .replace(/ago/,0).split(' ');
-                    return ret[1]+String('00000' + ret[0]).slice(-5);
+                              .replace(/days/,86400)
+                              .replace(/day/,86400)
+                              .replace(/hours/,3600)
+                              .replace(/hour/,3600)
+                              .replace(/minutes/,60)
+                              .replace(/minute/,60).split(' ');
+                    return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
                   },
                   // set type, either numeric or text
                   type: 'numeric'
