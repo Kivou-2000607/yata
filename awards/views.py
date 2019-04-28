@@ -1,40 +1,111 @@
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import timezone
 
 import json
+
 from yata.handy import apiCall
 from awards.functions import createAwards
+from player.models import Player
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
 
 def index(request):
-    if request.session.get('awards'):
-        try:
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards = request.session['awards'].get('awards')
-            out = {"awards": awards, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
+    if request.session.get('player'):
+        print('[view.awards.index] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        context = {"player": player}
 
-    return render(request, 'awards.html')
+        print('[view.awards.index] Player.awardsInfo = {}'.format(player.awardsInfo))
+        print('[view.awards.index] Player.awardsJson = {}'.format(len(json.loads(player.awardsJson))))
+
+        if player.awardsInfo == "N/A" and not len(json.loads(player.awardsJson)):
+            print("[view.awards.index] No awards found -> update")
+
+        else:
+            print("[view.awards.index] Awards found")
+            for k, v in json.loads(player.awardsJson).items():
+                context[k] = v
+
+        return render(request, "awards.html", context)
+
+    return HttpResponseRedirect(reverse('logout'))
+
+
+def update(request):
+    if request.session.get('player'):
+        print('[view.awards.update] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        key = player.key
+
+        allAwards = apiCall('torn', '', 'honors,medals', key)
+        if 'apiError' in allAwards:
+            return render(request, 'errorPage.html', allAwards)
+
+        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', key)
+        if 'apiError' in myAwards:
+            return render(request, 'errorPage.html', myAwards)
+
+        medals = allAwards["medals"]
+        honors = allAwards["honors"]
+        remove = [k for k, v in honors.items() if v["type"] == 1]
+        for k in remove:
+            del honors[k]
+        myMedals = myAwards["medals_awarded"]
+        myHonors = myAwards["honors_awarded"]
+
+        awards = dict()
+        summaryByType = dict({})
+        for type in AWARDS_CAT:
+            awardsTmp, awardsSummary = createAwards(allAwards, myAwards, type)
+            summaryByType[type.title()] = awardsSummary["All awards"]
+            awards.update(awardsTmp)
+
+        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
+        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
+
+        # request.session['awards']['allAwards'] = allAwards
+        # request.session['awards']['myAwards'] = myAwards
+        # request.session['awards']['awards'] = awards
+        # request.session['awards']['summaryByType'] = dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
+
+        print("[view.awards.update] awards in database")
+        awardsJson = {"allAwards": allAwards,
+                      "myAwards": myAwards,
+                      "awards": awards,
+                      "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
+                      }
+
+        player.awardsJson = json.dumps(awardsJson)
+        player.awardsInfo = int(timezone.now().timestamp())
+        player.save()
+        print("[view.awards.update] awards done")
+
+        return HttpResponseRedirect(reverse('awards:index'))
+
+    return HttpResponseRedirect(reverse('logout'))
 
 
 def crimes(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "crimes")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            print("[view.crimes] error while rendering")
-            return HttpResponseRedirect(reverse('awards:logout'))
+    if request.session.get('player'):
+        print('[view.awards.crimes] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        awardsJson = json.loads(player.awardsJson)
 
-    print("[view.crimes] no active session")
+        allAwards = awardsJson.get('allAwards')
+        myAwards = awardsJson.get('myAwards')
+        summaryByType = awardsJson.get('summaryByType')
+        awards, awardsSummary = createAwards(allAwards, myAwards, "crimes")
+
+        context = {"player": player, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
+        return render(request, 'awards.html', context)
+
+    print("[view.awards.crimes] no active session")
     return render(request, 'awards.html')
 
 
@@ -202,113 +273,3 @@ def commitment(request):
             return HttpResponseRedirect(reverse('awards:logout'))
 
     return render(request, 'awards.html')
-
-
-# UPDATE ON THE FLY
-def updateKey(request):
-    print('[updateKey] in')
-    if request.method == 'POST':
-        p = request.POST
-        allAwards = apiCall('torn', '', 'honors,medals', p.get('keyValue'))
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', p.get('keyValue'))
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
-
-        medals = allAwards["medals"]
-        honors = allAwards["honors"]
-        remove = [k for k, v in honors.items() if v["type"] == 1]
-        for k in remove:
-            del honors[k]
-        myMedals = myAwards["medals_awarded"]
-        myHonors = myAwards["honors_awarded"]
-
-        awards = dict()
-        summaryByType = dict()
-        for type in AWARDS_CAT:
-            awardsTmp, awardsSummary = createAwards(allAwards, myAwards, type)
-            summaryByType[type.title()] = awardsSummary["All awards"]
-            awards.update(awardsTmp)
-
-        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
-        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
-        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
-
-        request.session['awards'] = {'keyValue': p['keyValue'],
-                                     'name': myAwards['name'],
-                                     'playerId': myAwards['player_id'],
-                                     'allAwards': allAwards,
-                                     'myAwards': myAwards,
-                                     'awards': awards,
-                                     'summaryByType': dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)}),
-                                     }
-
-        check = json.loads(p.get('rememberSession'))
-        if check:
-            request.session.set_expiry(31536000)  # 1 year
-        else:
-            request.session.set_expiry(0)  # logout when close browser
-        out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT}
-        return render(request, 'awards/{}.html'.format(p['html']), out)
-
-    else:
-        return HttpResponse('Don\'t try to be a smart ass, you need to post.')
-
-
-def updateData(request):
-    if request.method == 'POST':
-        key = request.session['awards'].get('keyValue')
-
-        allAwards = apiCall('torn', '', 'honors,medals', key)
-        if 'apiError' in allAwards:
-            return render(request, 'errorPage.html', allAwards)
-
-        myAwards = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', key)
-        if 'apiError' in myAwards:
-            return render(request, 'errorPage.html', myAwards)
-
-        medals = allAwards["medals"]
-        honors = allAwards["honors"]
-        remove = [k for k, v in honors.items() if v["type"] == 1]
-        for k in remove:
-            del honors[k]
-        myMedals = myAwards["medals_awarded"]
-        myHonors = myAwards["honors_awarded"]
-
-        awards = dict()
-        summaryByType = dict({})
-        for type in AWARDS_CAT:
-            awardsTmp, awardsSummary = createAwards(allAwards, myAwards, type)
-            summaryByType[type.title()] = awardsSummary["All awards"]
-            awards.update(awardsTmp)
-
-        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
-        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
-        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
-
-        request.session['awards']['allAwards'] = allAwards
-        request.session['awards']['myAwards'] = myAwards
-        request.session['awards']['awards'] = awards
-        request.session['awards']['summaryByType'] = dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
-        request.session.cycle_key()
-
-        if request.POST['type'] in AWARDS_CAT:
-            awards, awardsSummary = createAwards(allAwards, myAwards, request.POST['type'])
-            out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT, "awards": awards, "awardsSummary": awardsSummary}
-        else:
-            out = {"summaryByType": summaryByType, "awardsCategories": AWARDS_CAT, "awards": awards}
-
-        return render(request, 'awards/{}.html'.format(request.POST['html']), out)
-
-    else:
-        return HttpResponse('Don\'t try to be a smart ass, you need to post.')
-
-
-def logout(request):
-    try:
-        del request.session['awards']
-    except:
-        pass
-
-    return HttpResponseRedirect(reverse('awards:index'))

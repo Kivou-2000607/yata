@@ -5,11 +5,11 @@
         <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
             <p class="no-margin">
-                <b>Bazaar: </b>{% if player.bazaarInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
+                <b>Bazaar: </b>{% if player.bazaarInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.bazaarInfo}}{% endif %}</span> -
 
                 <b>Faction: </b>{% if player.factionInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
 
-                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span>
+                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.awardsInfo}}{% endif %}</span>
 
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
             </p>

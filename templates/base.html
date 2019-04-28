@@ -12,7 +12,7 @@
     <!-- load fontawesome -->
     <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-    
+
     <!-- css -->
     <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
     <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
@@ -48,6 +48,8 @@
             <br />
 
             {% include "yata/login.html" %}
+
+            {% block content %}{% endblock %}
 
         </div> <!--end of content-->
     </div> <!--end of container-->
