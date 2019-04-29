@@ -66,7 +66,6 @@ h2.title {
     height: 30px;
     line-height: 30px;
     border-radius: 6px 6px 0 0;
-    margin-top:0;
 }
 
 h2.grey {
@@ -95,7 +94,7 @@ span.nok {
 }
 
 span.ok {
-    color: #3434CC;
+    color: #0B8E14;
 }
 
 span.flush-right,
@@ -107,3 +106,44 @@ a.flush-right {
 p.no-margin {
     margin:0px;
 }
+
+table.center {
+  width:50%;
+  margin-left:25%;
+  margin-right:25%;
+}
+
+table.center-large {
+  width:95%;
+  margin-left:2.5%;
+  margin-right:2.5%;
+}
+
+table.center th,
+table.center-large th {
+    text-align: center!important;
+}
+
+table.hline tr:hover  {
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px #888;
+    box-shadow: inner 0 0 5px #888;
+}
+
+thead th.up:after {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0de";
+    display: block;
+}
+
+thead th.down:after {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0dd";
+    display: block;
+}
+/*
+thead th.none:after {
+    font-family: "Font Awesome 5 Free";
+    content: "c";
+    padding-left: 10px;
+} */

@@ -1,0 +1,176 @@
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+
+<script>
+
+        $(document).ready(function() {
+            $.tablesorter.addParser({
+              // set a unique id
+              id: "bignumbers",
+              is: function(s) {
+                return /^[0-9]?[0-9,\.]*$/.test(s);
+              },
+              format: function(s) {
+                return $.tablesorter.formatFloat( s.replace(/,/g,'').replace(/\$/g,'').replace(/^0{1}/,'') );
+              },
+
+              type: "numeric"
+            });
+
+            $("#awards-list").tablesorter({
+                headers: {
+                    2: { sorter: "bignumbers" },
+                    4: { sorter: "bignumbers" },
+                    5: { sorter: "bignumbers" },
+                    7: { sorter: "bignumbers" },
+                },
+                cssAsc: 'up',
+                cssDesc: 'down',
+                // cssNone: 'none',
+
+                sortList: [[0,0], [4,1], [5,0]],
+            });
+        });
+
+</script>
+
+<h2 class="title">Awards tracker <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span></h2>
+<div class="module">
+
+
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center awards-categories">
+    <thead>
+        <tr>
+            <th colspan="4">
+                Categories
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'awards:list' type="crimes" %}">Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="drugs" %}">Drugs ({{summaryByType.Drugs.nAwarded}}/{{summaryByType.Drugs.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="attacks" %}">Attacks ({{summaryByType.Attacks.nAwarded}}/{{summaryByType.Attacks.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="faction" %}">Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="{% url 'awards:list' type="items" %}">Items ({{summaryByType.Items.nAwarded}}/{{summaryByType.Items.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="travel" %}">Travel ({{summaryByType.Travel.nAwarded}}/{{summaryByType.Travel.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="work" %}">Work ({{summaryByType.Work.nAwarded}}/{{summaryByType.Work.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="gym" %}">Gym ({{summaryByType.Gym.nAwarded}}/{{summaryByType.Gym.nAwards}})</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="{% url 'awards:list' type="money" %}">Money ({{summaryByType.Money.nAwarded}}/{{summaryByType.Money.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="competitions" %}">Competitions ({{summaryByType.Competitions.nAwarded}}/{{summaryByType.Competitions.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="commitment" %}">Commitment ({{summaryByType.Commitment.nAwarded}}/{{summaryByType.Commitment.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="miscellaneous" %}">Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <a href="{% url 'awards:list' type="all" %}">All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>
+
+<!-- summary for a categories -->
+
+{% if awardsSummary %}
+    <table class="center awards-summary">
+        <thead>
+            <tr>
+                <th colspan="4">Summary by award category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for awardType, awards in awardsSummary.items %}
+                {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                    <td class="{% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}" >
+                        <span id="award-category-{{awardType|cut:" "}}" style="cursor: pointer;">&nbsp; &nbsp; <i id="award-category-{{awardType|cut:" "}}" class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i> {{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}</span>
+                    </td>
+                {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+           {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% endif %}
+
+<!-- list -->
+
+<table id="awards-list" class="tablesorter center hline awards-list">
+    <thead>
+        <tr>
+            <th class="a" >Category</th>
+            <th class="b" >Name</th>
+            <th class="c" >Rarity</th>
+            <th class="d" >Description</th>
+            <th class="e" >State</th>
+            <th class="e" >Goal</th>
+            <th class="f" >Achieve</th>
+            <th class="g" colspan="2" >Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for awardType, awardsList in awards.items %}
+        {% for awardId, award in awardsList.items %}
+            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
+                <td class="a"><span title="{{awardType}}">{{awardType}}</span></td>
+                {% if award.awardType == "Honor" %}
+                    {% if award.img == None %}
+                        <td class="b"><span title="{{award.name}}">{{award.name}}</span></td>
+                    {% else %}
+                        <td class="b award-todo"><img src="{{award.img}}" title="{{award.name}}" style="margin:0px, padding:0px">
+                        </td>
+                    {% endif %}
+                {% else %}
+                    {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
+                        <td class="b"><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
+                    {% endwith %}
+                {% endif %}
+                <td class="c"><span title="{{award.rarity}} ({{award.circulation|intcomma}})">{{award.circulation|intcomma}}</span></td>
+                <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
+                <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
+                <td class="f {% if award.achieve == 1 %}done{% else %}todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
+                {% if award.left|floatformat:0|intcomma %}
+                    <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
+                {% else %}
+                    <td class="g"><span title="{{award.left|safe}}">{{award.left|safe}}</span></td>
+                {% endif %}
+                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1}}">{{award.comment.0|safe}}</span><span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i></span>{% endif %}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+
+</div>

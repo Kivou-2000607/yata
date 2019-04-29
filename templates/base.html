@@ -24,7 +24,8 @@
     		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     	    crossorigin="anonymous"></script>
 
-    {% block script %}{% endblock %}
+    <!-- load table sorter  -->
+    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
 
     <!-- scripts jquery perso -->
     {% block jquery %}{% endblock %}

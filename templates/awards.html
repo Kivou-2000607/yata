@@ -11,43 +11,74 @@
 
 {% block jquery %}
     <script>
-
-        $(document).ready(function() {
-            $.tablesorter.addParser({
-              // set a unique id
-              id: "bignumbers",
-              is: function(s) {
-                return /^[0-9]?[0-9,\.]*$/.test(s);
-              },
-              format: function(s) {
-                return $.tablesorter.formatFloat( s.replace(/,/g,'').replace(/\$/g,'').replace(/^0{1}/,'') );
-              },
-
-              type: "numeric"
+        $(document).on('click', '#awards-update', function(e){
+            e.preventDefault();
+            $( "#container" ).load( "{% url 'awards:update' %}", {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
+            $("#content-update").hide()
+        });
 
-            $("#award-list").tablesorter({
-                headers: {
-                    2: { sorter: "bignumbers" },
-                    4: { sorter: "bignumbers" },
-                    5: { sorter: "bignumbers" },
-                    7: { sorter: "bignumbers" },
-                },
-                cssAsc: 'up',
-                cssDesc: 'down',
-                // cssNone: 'none',
-
-                sortList: [[0,0], [4,1], [5,0]],
+        $(document).on('click', '#toggle-awards-done', function(e){
+            e.preventDefault();
+            var cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
+            $("tr.award-done").promise().done(function() {
+                var icon = $("#awards-done-icon");
+                if (icon.hasClass("fas fa-toggle-on")) {
+                    icon.removeClass("fas fa-toggle-on");
+                    icon.addClass("fas fa-toggle-off");
+                    $('#toggle-awards-done-txt').html("Show");
+                    $("tr.award-done").slideUp('fast', function() {});
+                } else {
+                    icon.removeClass("fas fa-toggle-off");
+                    icon.addClass("fas fa-toggle-on");
+                    $('#toggle-awards-done-txt').html("Hide");
+                    if(cat.attr('id') == null) {
+                        $("tr.award-done").slideDown('fast', function() {});
+                    } else {
+                        $("tr.award-done."+cat.attr('id')).slideDown('fast', function() {});
+                    }
+                }
             });
         });
 
+        $(document).on('click', 'span[id^="award-category-"]', function(e){
+            e.preventDefault();
+            $("tr.award-todo").show('fast', function() {});
+            $('[id^="award-category-"]').children("i").removeClass("fas fa-toggle-on");
+            $('[id^="award-category-"]').children("i").addClass("fas fa-toggle-off");
+            var id = $(this).attr("id");
+            var icon = $("#awards-done-icon");
+            var localIcon = $("#"+id).children("i");
+            if (icon.hasClass("fas fa-toggle-on")) {
+                $("tr.award-done").show('fast', function() {});
+                $('tr[class^="award-"]:not(.'+id+')').hide();
+            } else {
+                $('tr.award-todo:not(.'+id+')').hide();
+            }
+            localIcon.removeClass("fas fa-toggle-off");
+            localIcon.addClass("fas fa-toggle-on");
+        });
+
+        $(document).on('click', 'table.awards-categories a', function(e){
+            e.preventDefault();
+            $( "#content-update" ).load( $(this).attr("href").split("/")[2]+"/", {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $("#content-update h2").addClass("grey");
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading crimes')
+        });
+
     </script>
+
 {% endblock %}
 
 {% block content %}
     {% if awards %}
-        {% include "awards/categories.html" %}
-        {% include "awards/awards-list.html" %}
+        <div id="content-update">
+            {% include "awards/list.html" %}
+        </div>
     {% else %}
         {% include "awards/no-data.html" %}
     {% endif %}

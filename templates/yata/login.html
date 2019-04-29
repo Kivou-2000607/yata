@@ -4,15 +4,16 @@
     {% if request.session.player %}
         <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
+            <form style="display:inline">{% csrf_token %}
             <p class="no-margin">
                 <b>Bazaar: </b>{% if player.bazaarInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.bazaarInfo}}{% endif %}</span> -
 
                 <b>Faction: </b>{% if player.factionInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
 
-                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.awardsInfo}}{% endif %}</span>
-
+                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.awardsInfo}}{% endif %}</span>&nbsp;&nbsp;{% if awards %}<a id="awards-update" href="{% url 'awards:update' %}" title="Update awards"><i class="fas fa-sync-alt"></i></a>{% else %}<a href="{% url 'awards:index' %}" title="Go to awards"><i class="fas fa-eye"></a></i>{% endif %}
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
             </p>
+            <form>
         </div>
 
     {% else %}

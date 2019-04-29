@@ -35,10 +35,11 @@ def index(request):
 
 
 def update(request):
-    if request.session.get('player'):
+    if request.session.get('player') and request.method == 'POST':
         print('[view.awards.update] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        context = {"player": player}
         key = player.key
 
         allAwards = apiCall('torn', '', 'honors,medals', key)
@@ -81,195 +82,42 @@ def update(request):
                       }
 
         player.awardsJson = json.dumps(awardsJson)
-        player.awardsInfo = int(timezone.now().timestamp())
+        player.awardsInfo = "{}/{}".format(summaryByType["AllAwards"]["nAwarded"], summaryByType["AllAwards"]["nAwards"])
         player.save()
         print("[view.awards.update] awards done")
 
-        return HttpResponseRedirect(reverse('awards:index'))
+
+        for k, v in json.loads(player.awardsJson).items():
+            context[k] = v
+
+
+        # return render(request, "awards.html", context)
+        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(reverse('index'))
 
     return HttpResponseRedirect(reverse('logout'))
 
 
-def crimes(request):
-    if request.session.get('player'):
-        print('[view.awards.crimes] get player id from session')
+def list(request, type):
+    if request.session.get('player') and request.method == 'POST':
+        print('[view.awards.awards] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         awardsJson = json.loads(player.awardsJson)
+        print('[view.awards.awards] award type: {}'.format(type))
 
         allAwards = awardsJson.get('allAwards')
         myAwards = awardsJson.get('myAwards')
         summaryByType = awardsJson.get('summaryByType')
-        awards, awardsSummary = createAwards(allAwards, myAwards, "crimes")
 
-        context = {"player": player, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-        return render(request, 'awards.html', context)
+        if type in AWARDS_CAT:
+            awards, awardsSummary = createAwards(allAwards, myAwards, type)
+            context = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
+        else:
+            awards = awardsJson.get('awards')
+            context = {"awards": awards, "summaryByType": summaryByType}
 
-    print("[view.awards.crimes] no active session")
-    return render(request, 'awards.html')
+        return render(request, 'awards/list.html', context)
 
-
-def drugs(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "drugs")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def attacks(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "attacks")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def faction(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "faction")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def items(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "items")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def travel(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "travel")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def work(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "work")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def gym(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "gym")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def money(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "money")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def competitions(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "competitions")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def miscellaneous(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "miscellaneous")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
-
-
-def commitment(request):
-    if request.session.get('awards'):
-        try:
-            allAwards = request.session['awards'].get('allAwards')
-            myAwards = request.session['awards'].get('myAwards')
-            summaryByType = request.session['awards'].get('summaryByType')
-            awards, awardsSummary = createAwards(allAwards, myAwards, "commitment")
-            out = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType}
-            return render(request, 'awards.html', out)
-        except:
-            return HttpResponseRedirect(reverse('awards:logout'))
-
-    return render(request, 'awards.html')
+    print("[view.awards.crimes] no active session or wrong type or not post")
+    return HttpResponseRedirect(reverse('logout'))
