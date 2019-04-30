@@ -2,18 +2,21 @@
 
 <div id="yata-login">
     {% if request.session.player %}
+
         <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
-            <form style="display:inline">{% csrf_token %}
             <p class="no-margin">
-                <b>Bazaar: </b>{% if player.bazaarInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.bazaarInfo}}{% endif %}</span> -
+                <a href="{% url 'index' %}" class="yata-link-bazaar" title="Go to bazaar"><b><i class="fas fa-store"></i> Bazaar overview:</b></a> {{player.bazaarInfo}}<span class="sep"></span>
 
-                <b>Faction: </b>{% if player.factionInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.factionInfo}}{% endif %}</span> -
+                <a href="{% url 'index' %}" class="yata-link-chain" title="Go to chain"><b><i class="fas fa-link"></i> Chain reports:</b></a> {{player.chainInfo}}<span class="sep"></span>
 
-                <b>Awards: </b>{% if player.awardsInfo == "N/A" %}<span class="nok">Not available{% else %}<span class="ok">{{player.awardsInfo}}{% endif %}</span>&nbsp;&nbsp;{% if awards %}<a id="awards-update" href="{% url 'awards:update' %}" title="Update awards"><i class="fas fa-sync-alt"></i></a>{% else %}<a href="{% url 'awards:index' %}" title="Go to awards"><i class="fas fa-eye"></a></i>{% endif %}
+                <a href="{% url 'index' %}" class="yata-link-targets" title="Go to chain"><b><i class="fas fa-fist-raised"></i> Target list:</b></a> {{player.targetsInfo}}<span class="sep"></span>
+
+                <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards"><b><i class="fas fa-medal"></i> Awards tracker:</b></a> {{player.awardsInfo}}
+
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
+                <a class="valid flush-right" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>
             </p>
-            <form>
         </div>
 
     {% else %}
@@ -25,10 +28,10 @@
                 {% csrf_token %}
                 <input id="yata-login-key" placeholder="API key" type=text>
                 <input id="yata-login-submit" type="submit" value="Login">
-                {% if apiError %}<a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a>{% endif %}
                 &nbsp;
                 <input id="yata-login-remember" type="checkbox" value="Remember me">
                 <label for="yata-login-remember">Remember me</label>
+                {% if apiError %}<p class="no-margin"><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></p>{% endif %}
             </form>
         </div>
     {% endif %}

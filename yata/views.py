@@ -28,7 +28,8 @@ def login(request):
         user = apiCall('user', '', 'profile', p.get('key'))
         if 'apiError' in user:
             print('[view.yata.login] API error: {}'.format(user))
-            return render(request, 'yata/{}.html'.format(p['html']), user)
+            context = user
+            return render(request, 'yata/login.html', context)
 
         # create/update player in the database
         player = Player.objects.filter(tId=user.get('player_id')).first()

@@ -11,15 +11,6 @@
 
 {% block jquery %}
     <script>
-        $(document).on('click', '#awards-update', function(e){
-            e.preventDefault();
-            $( "#container" ).load( "{% url 'awards:update' %}", {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
-            $("#content-update").hide()
-        });
-
         $(document).on('click', '#toggle-awards-done', function(e){
             e.preventDefault();
             var cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
@@ -75,11 +66,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if awards %}
-        <div id="content-update">
-            {% include "awards/list.html" %}
-        </div>
-    {% else %}
-        {% include "awards/no-data.html" %}
-    {% endif %}
+    <div id="content-update">
+        {% include "awards/list.html" %}
+    </div>
 {% endblock %}

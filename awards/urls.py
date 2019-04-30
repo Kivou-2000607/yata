@@ -5,7 +5,7 @@ from . import views
 app_name = "awards"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
-    re_path(r'^update/$', views.update, name='update'),
+    # re_path(r'^update/$', views.update, name='update'),
     re_path(r'^(?P<type>\w+)/$', views.list, name='list'),
 
     # re_path(r'^crimes/$', views.crimes, name='crimes'),

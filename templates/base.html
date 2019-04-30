@@ -29,6 +29,13 @@
 
     <!-- scripts jquery perso -->
     {% block jquery %}{% endblock %}
+    <script>
+
+        $(document).on('click', 'a.yata-link-awards', function(e){
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
+        });
+
+    </script>
 
     <!-- favicon -->
     <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
@@ -45,10 +52,10 @@
 
     <div id="container">
         <div id="content">
-            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp &nbsp; &nbsp; &nbsp; &nbsp;  <a href="{% url 'bazaar:index' %}"><b>bazaar</b></a> - <a href="{% url 'chain:index' %}"><b>chain</b></a> - <a href="{% url 'awards:index' %}"><b>awards</b></a></h1>
-            <br />
+            <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1>
 
             {% include "yata/login.html" %}
+            {% include "yata/error.html" %}
 
             {% block content %}{% endblock %}
 

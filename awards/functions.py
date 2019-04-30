@@ -8,10 +8,10 @@ def honorId2Img(i):
     id = d.get(i)
     if id is None:
         url = None
-        print("honor number {}: not in dictionnary".format(i))
+        # print("honor number {}: not in dictionnary".format(i))
     elif not id:
         url = None
-        print("honor number {}: value 0".format(i))
+        # print("honor number {}: value 0".format(i))
     else:
         url = "https://awardimages.torn.com/{}.png".format(id)
 
@@ -1539,8 +1539,6 @@ def createAwards(allAwards, myAwards, typeOfAwards):
             "Missions": dict(),
             "Maximum": dict(),
             "Events": dict()})
-
-        print(awards)
 
         for k, v in allAwards["honors"].items():
             if int(v["type"]) in [0, 11, 14, 17]:

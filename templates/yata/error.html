@@ -1,0 +1,15 @@
+{% if apiError %}
+    <div class="module error">
+        <span><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiError}}</span>
+    </div>
+{% endif %}
+
+{% if errorMessage %}
+    <h2 class="title">Error</h2>
+    <div class="module">
+        <div class="errornote">
+            {{errorMessage}}
+            <br><a href="..">Go back</a>
+        </div>
+    </div>
+{% endif %}

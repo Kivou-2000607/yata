@@ -6,4 +6,7 @@ register = template.Library()
 def ts2date(timestamp):
     import datetime
     import pytz
-    return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+    try:
+        return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+    except:
+        return datetime.datetime.fromtimestamp(0, tz=pytz.UTC)

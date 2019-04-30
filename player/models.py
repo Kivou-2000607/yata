@@ -9,14 +9,22 @@ class Player(models.Model):
 
     lastUpdateTS = models.IntegerField(default=0)
 
-    factionInfo = models.CharField(default="N/A", max_length=255)
-    factionJson = models.TextField(default="{}")
+    chainInfo = models.CharField(default="N/A", max_length=255)
+    chainJson = models.TextField(default="{}")
+    chainUpda = models.IntegerField(default=0)
+
+    targetsInfo = models.CharField(default="N/A", max_length=255)
+    targetsJson = models.TextField(default="{}")
+    targetsUpda = models.IntegerField(default=0)
+
 
     bazaarInfo = models.CharField(default="N/A", max_length=255)
     bazaarJson = models.TextField(default="{}")
+    bazaarUpda = models.IntegerField(default=0)
 
     awardsInfo = models.CharField(default="N/A", max_length=255)
     awardsJson = models.TextField(default="{}")
+    awardsUpda = models.IntegerField(default=0)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)

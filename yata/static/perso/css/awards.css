@@ -6,12 +6,6 @@ table.awards-categories td {
 table.awards-categories td a:hover,
 table.awards-categories td a:focus,
 table.awards-categories td a:active { text-decoration: none; color: #447e9b; }
-table.awards-categories td:hover  {
-    -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px #888;
-    box-shadow: inner 0 0 5px #888;
-    font-weight: bold;
-}
 
 table td.award-done { color: #0B8E14; font-weight: bold; }
 table td.award-todo { color: #8E0B14; font-weight: bold; }
@@ -45,11 +39,5 @@ table.awards-list tr.next  {
     -moz-box-shadow: inset 0 0 5px #aa0000;
     -webkit-box-shadow: inset 0 0 5px #aa0000;
     box-shadow: inner 0 0 5px #aa0000;
-    background-color: #ff00000E;
-}
-table.awards-list tr.next:hover  {
-    -moz-box-shadow: inset 0 0 5px #ff0000;
-    -webkit-box-shadow: inset 0 0 5px #ff0000;
-    box-shadow: inner 0 0 5px #ff0000;
     background-color: #ff00000E;
 }
