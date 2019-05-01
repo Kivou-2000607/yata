@@ -34,9 +34,10 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'player.apps.PlayerConfig',
+    'awards.apps.AwardsConfig',
+    'target.apps.TargetConfig',
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
-    'awards.apps.AwardsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

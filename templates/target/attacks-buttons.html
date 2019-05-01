@@ -1,7 +1,7 @@
 <!-- toggle -->
 <form style="display: inline;">{% csrf_token %}
-    <a class="attack-list-toggle" href={% url 'chain:toggleTarget' target.defender_id %}>
-        {% if target.defender_id in allDefenders %}
+    <a class="attack-list-toggle" href={% url 'target:toggleTarget' target.defender_id %}>
+        {% if target.defender_id in targets %}
            <i class="fas fa-toggle-on" title="Remove target"></i>
        {% else %}
            <i class="fas fa-toggle-off" title="Add target"></i>

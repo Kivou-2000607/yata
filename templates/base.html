@@ -32,7 +32,11 @@
     <script>
 
         $(document).on('click', 'a.yata-link-awards', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
+        });
+
+        $(document).on('click', 'a.yata-link-target', function(e){
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
         });
 
     </script>
@@ -54,8 +58,8 @@
         <div id="content">
             <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1>
 
-            {% include "yata/login.html" %}
             {% include "yata/error.html" %}
+            {% include "yata/login.html" %}
 
             {% block content %}{% endblock %}
 

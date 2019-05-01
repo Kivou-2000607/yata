@@ -1,0 +1,20 @@
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow target-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'target:targets' %}">Targets</a>
+        </td>
+        <td>
+            <a href="{% url 'target:attacks' %}">Attacks</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>

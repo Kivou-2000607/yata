@@ -1,0 +1,66 @@
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if apiError %}
+    <td colspan="11"><span class="error">{{apiError}}</span></td>
+{% elif target %}
+    <td>{{target.endTS|ts2date}}</td>
+    <td><b {% if not target.respect %}style="color: #ff1111;"{% endif %}>{{target.result}}</b></td>
+    <!-- <td><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->
+    <td><a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank"> {{target.targetName}} [{{targetId}}]</a></td>
+    <td style="text-align: center;">{{target.level}}</td>
+    <!-- <td>{{target.rank}}</td> -->
+    <td>{{target.lastAction}}</td>
+    <td style="text-align: center;">{{target.fairFight|floatformat:2}}</td>
+    <td style="text-align: center;">{{target.respect|floatformat:2}}</td>
+    <td style="text-align: center;">{{target.respect|mul:target.fairFight|floatformat:2}}</td>
+    <td class='{% if target.status.0 != "O" %}not-okay{% endif %}'>{{target.status}}</td>
+    <td>
+        <div class="life-bar" title="{{target.life}}/{{target.lifeMax}}">
+            <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
+        </div>
+    </td>
+    <td style="text-align: center;">
+        {% now "U" as ts %}
+        {% with seconds=ts|sub:target.lastUpdate%}
+            {% with minutes=seconds|intdiv:60 %}
+                {% with hours=minutes|intdiv:60 %}
+                    {% if hours %}
+                        > 1h
+                    {% elif minutes %}
+                        {{minutes}} min
+                    {% else %}
+                        {{ts|sub:target.lastUpdate|mod:60}} s
+                    {% endif %}
+                {% endwith %}
+            {% endwith %}
+        {% endwith %}
+    </td>
+    <td style="text-align: center;">
+        {% if target.status.0 != "O" %}
+            <i class="fas fa-fist-raised" style="color: #ea9999;" title="Attack target"></i>
+        {% else %}
+            <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class="fas fa-fist-raised" title="Attack target"></i></a>
+        {% endif %}
+    </td>
+        <!-- <a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank" alt="profile"><i class="fas fa-user" title="Target profile"></i></a> - -->
+    <td style="text-align: center;">
+        <!-- refresh -->
+        <form style="display: inline;">{% csrf_token %}
+            <a class="target-list-toggle" href={% url 'target:refresh' targetId %}>
+               <i class="fas fa-sync-alt" title="Refresh target"></i>
+            </a>
+        </form>
+    </td>
+    <td style="text-align: center;">
+        <!-- delete -->
+        <form style="display: inline;">{% csrf_token %}
+            <a class="target-list-delete" href={% url 'target:delete' targetId %}><i class="fas fa-trash-alt" title="Delete target"></i></a>
+        </form>
+    </td>
+
+
+    <td>
+        coucou
+    <td>
+{% endif %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/target.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Target
+{% endblock %}
+
+{% block jquery %}
+<script>
+    $(document).on('click', 'table.target-categories td', function(e){
+        e.preventDefault();
+        var l = $(this).children("a").attr("href").split("/")[2];
+        $( "#content-update" ).load( l+"/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+    });
+
+    // toggle target from attack list button
+    $(document).on('click', '.attack-list-toggle', function(e){
+        e.preventDefault();
+        var targetId = this.href.split("/").pop();
+        var reload = $(".catch-buttons-attack-"+targetId);
+        reload.load( "/target/toggleTarget/"+targetId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
+
+    // refresh target from target list button
+    $(document).on('click', 'a.target-list-toggle', function(e){
+        e.preventDefault();
+        var targetId = $(this).attr("href").split("/").pop();
+        var reload = $("#catch-line-target-"+targetId);
+        reload.load( "/target/refresh/"+targetId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="15" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+    // delete target from target list button
+    $(document).on('click', 'a.target-list-delete', function(e){
+        e.preventDefault();
+        var targetId = $(this).attr("href").split("/").pop();
+        var reload = $("#catch-line-target-"+targetId);
+        reload.load( "/target/delete/"+targetId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="15" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-update">
+        {% include "target/targets.html" %}
+        {% include "target/attacks.html" %}
+    </div>
+{% endblock %}

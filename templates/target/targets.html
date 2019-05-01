@@ -1,0 +1,47 @@
+
+<script>
+        $(document).ready(function() {
+            $("#target-targets").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[7,1]]});
+        });
+</script>
+
+
+<h2 class="title">List of targets</h2>
+<div class="module">
+
+{% if targets %}
+    <table id="target-targets" class="tablesorter center-large">
+        <thead>
+            <tr>
+                <th>Last attack</th>
+                <th>Result</th>
+                <!-- <th>Attacker</th> -->
+                <th>Defender</th>
+                <th>Level</th>
+                <!-- <th>Rank</th> -->
+                <th>Last action</th>
+                <th>Fair fight</th>
+                <th>Flat respect</th>
+                <th title="Score = (fair fight) x (flat respect)">Score</th>
+                <th>Status</th>
+                <th>Life</th>
+                <th>Update</th>
+                <th title="Attack">A</th>
+                <th title="Refresh">R</th>
+                <th title="Delete">D</th>
+                <th>List</th>
+        </thead>
+        <tbody>
+        {% for targetId, target in targets.items %}
+        <tr id="catch-line-target-{{targetId}}">
+            {% include "target/targets-line.html" %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% else %}
+    <p class="no-margin">You don't have any target saved. Look at your last attacks to start building your target list.</p>
+{% endif %}
+
+</div>

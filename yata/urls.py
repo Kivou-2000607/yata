@@ -26,11 +26,13 @@ urlpatterns = [
     re_path(r'^bazaar/', include('bazaar.urls')),
     re_path(r'^chain/', include('chain.urls')),
     re_path(r'^awards/', include('awards.urls')),
+    re_path(r'^target/', include('target.urls')),
     path('admin/', admin.site.urls),
 
     # site
     path('', views.index, name="index"),
     path('login', views.login, name="login"),
     path('logout', views.logout, name="logout"),
+    path('delete', views.delete, name="delete"),
 
     ]

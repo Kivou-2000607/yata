@@ -6,7 +6,7 @@
 {% endblock%}
 
 {% block title%}
-    - Login
+    - Home
 {% endblock %}
 
 {% block jquery %}
@@ -19,7 +19,14 @@
             check: $("#yata-login-remember").is(':checked'),
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><div class="loader"></div></div>');
+        reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
+    });
+
+    $(document).on('click', '#yata-delete-submit', function(e){
+        var r = confirm("Are you sure you want to delete your account? All data will be lost.");
+        if (r == false) {
+            e.preventDefault();
+        }
     });
 
 </script>
@@ -30,7 +37,13 @@
     <div class="module">
         <p><a class="yata-link-bazaar" href="{% url 'index' %}"><i class="fas fa-store"></i>  <b>Bazaar overview</b></a>: Coming soon.</p>
         <p><a class="yata-link-chain" href="{% url 'index' %}"><i class="fas fa-link"></i>  <b>Chain reports</b></a>: Coming soon.</p>
-        <p><a class="yata-link-targets" href="{% url 'index' %}"><i class="fas fa-fist-raised"></i>  <b>Target list</b></a>: Coming soon.</p>
+        <p><a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-fist-raised"></i>  <b>Target list</b></a>: Remember your good targets and maximize your respect gains during chains.</p>
         <p><a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>  <b>Awards tracker</b></a>: track the next merits you can get.</p>
+        {% if player %}
+            <br>
+            <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i></i>&nbsp; Delete account:</a> All your data will be removed from the database.</p>
+        {% endif %}
     </div>
+
+
 {% endblock %}

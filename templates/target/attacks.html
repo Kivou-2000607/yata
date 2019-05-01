@@ -1,14 +1,11 @@
 {% load mathfilters %}
+{% load app_filters %}
 
-<div id="target-list-reload">
+{% if attacks %}
 
-    <script>
-            $(document).ready(function() {
-                $("#attack-list-table").tablesorter();
-            });
-    </script>
-
-    <table id="attack-list-table" class="tablesorter chain-report center-large">
+<h2 class="title">List of recent attacks<span class="flush-right">Last update on {{player.targetUpda|ts2date}}</span></h2>
+<div class="module">
+    <table class="center-large trshadow target-attacks">
         <thead>
             <tr>
                 <th>Time</th>
@@ -23,7 +20,7 @@
         <tbody>
         {% for k, v in attacks.items %}
         <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.modifiers.fairFight == 3 %}max-fair-fight{% elif v.modifiers.fairFight|div:2 > 1 %}good-fair-fight{% endif %} {% if v.bonus %}bonus-attack{% endif %}">
-            <td>{{v.endDate}}</td>
+            <td>{{v.endTS|ts2date}}</td>
             <!-- <td><a href="https://www.torn.com/profiles.php?XID={{v.attacker_id}}" target="_blank"> {{v.attacker_name}} [{{v.attacker_id}}]</a></td> -->
             <td><a href="https://www.torn.com/profiles.php?XID={{v.defender_id}}" target="_blank"> {{v.defender_name}} [{{v.defender_id}}]</a></td>
             <td>{{v.result}}</td>
@@ -36,7 +33,7 @@
             {% endif %}
             <td style="text-align: center;">
                 <div class="catch-buttons-attack-{{v.defender_id}}">
-                    {% include "chain/attacks_reload_buttons.html" with target=v %}
+                    {% include "target/attacks-buttons.html" with target=v %}
                 </div>
             </td>
         </tr>
@@ -44,3 +41,4 @@
         </tbody>
     </table>
 </div>
+{% endif %}

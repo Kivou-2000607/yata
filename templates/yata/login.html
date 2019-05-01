@@ -10,7 +10,7 @@
 
                 <a href="{% url 'index' %}" class="yata-link-chain" title="Go to chain"><b><i class="fas fa-link"></i> Chain reports:</b></a> {{player.chainInfo}}<span class="sep"></span>
 
-                <a href="{% url 'index' %}" class="yata-link-targets" title="Go to chain"><b><i class="fas fa-fist-raised"></i> Target list:</b></a> {{player.targetsInfo}}<span class="sep"></span>
+                <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain"><b><i class="fas fa-fist-raised"></i> Target list:</b></a> {{player.targetInfo}}<span class="sep"></span>
 
                 <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards"><b><i class="fas fa-medal"></i> Awards tracker:</b></a> {{player.awardsInfo}}
 
@@ -22,6 +22,10 @@
                 <hr class="sep">
                 <p>Welcome to the awards tracker. Browse throught the following categories...</p>
                 {% include "awards/categories.html" %}
+            {% elif target %}
+                <hr class="sep">
+                <p>Welcome to the target list. You can look at your last attacks to add a new targets.</p>
+                {% include "target/categories.html" %}
             {% endif %}
 
         </div>

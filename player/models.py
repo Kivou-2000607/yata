@@ -13,9 +13,9 @@ class Player(models.Model):
     chainJson = models.TextField(default="{}")
     chainUpda = models.IntegerField(default=0)
 
-    targetsInfo = models.CharField(default="N/A", max_length=255)
-    targetsJson = models.TextField(default="{}")
-    targetsUpda = models.IntegerField(default=0)
+    targetInfo = models.CharField(default="N/A", max_length=255)
+    targetJson = models.TextField(default="{}")
+    targetUpda = models.IntegerField(default=0)
 
 
     bazaarInfo = models.CharField(default="N/A", max_length=255)

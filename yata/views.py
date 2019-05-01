@@ -86,3 +86,13 @@ def logout(request):
         pass
     print('[view.yata.logout] redirect to index')
     return HttpResponseRedirect(reverse('index'))
+
+
+def delete(request):
+    if request.session.get('player'):
+        print('[view.yata.delete] delete account')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first().delete()
+
+    print('[view.yata.delete] redirect to logout')
+    return HttpResponseRedirect(reverse('logout'))
