@@ -1,8 +1,10 @@
 table.awards-categories td {
     text-align: center!important;
-    width: 25%;
+    width: 14.29%;
     cursor: pointer;
+    border: 0;
 }
+
 table.awards-categories td a:hover,
 table.awards-categories td a:focus,
 table.awards-categories td a:active { text-decoration: none; color: #447e9b; }

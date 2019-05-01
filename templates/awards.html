@@ -52,9 +52,9 @@
             localIcon.addClass("fas fa-toggle-on");
         });
 
-        $(document).on('click', 'table.awards-categories a', function(e){
+        $(document).on('click', 'table.awards-categories td', function(e){
             e.preventDefault();
-            $( "#content-update" ).load( $(this).attr("href").split("/")[2]+"/", {
+            $( "#content-update" ).load( $(this).children("a").attr("href").split("/")[2]+"/", {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             $("#content-update h2").addClass("grey");

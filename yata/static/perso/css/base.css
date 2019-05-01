@@ -112,6 +112,15 @@ p.no-margin {
     margin:0px;
 }
 
+hr.sep {
+    display: block;
+    clear: both;
+    text-align: center;
+    margin: 15px 80px;
+    height: 1px;
+    background-color: #CCC;
+}
+
 table.center {
   width:50%;
   margin-left:25%;

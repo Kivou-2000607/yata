@@ -17,6 +17,13 @@
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
                 <a class="valid flush-right" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>
             </p>
+
+            {% if awards %}
+                <hr class="sep">
+                <p>Welcome to the awards tracker. Browse throught the following categories...</p>
+                {% include "awards/categories.html" %}
+            {% endif %}
+
         </div>
 
     {% else %}
@@ -34,5 +41,6 @@
                 {% if apiError %}<p class="no-margin"><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></p>{% endif %}
             </form>
         </div>
+
     {% endif %}
 </div>

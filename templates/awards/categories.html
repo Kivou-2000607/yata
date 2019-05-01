@@ -1,0 +1,62 @@
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center-large tdshadow awards-categories">
+    <!-- <thead>
+        <tr>
+             <th colspan="7">
+                Browse through the awards categories
+            </th>
+        </tr>
+    </thead> -->
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'awards:list' type="crimes" %}">Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="drugs" %}">Drugs ({{summaryByType.Drugs.nAwarded}}/{{summaryByType.Drugs.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="attacks" %}">Attacks ({{summaryByType.Attacks.nAwarded}}/{{summaryByType.Attacks.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="faction" %}">Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="items" %}">Items ({{summaryByType.Items.nAwarded}}/{{summaryByType.Items.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="travel" %}">Travel ({{summaryByType.Travel.nAwarded}}/{{summaryByType.Travel.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="work" %}">Work ({{summaryByType.Work.nAwarded}}/{{summaryByType.Work.nAwards}})</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="{% url 'awards:list' type="gym" %}">Gym ({{summaryByType.Gym.nAwarded}}/{{summaryByType.Gym.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="money" %}">Money ({{summaryByType.Money.nAwarded}}/{{summaryByType.Money.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="competitions" %}">Competitions ({{summaryByType.Competitions.nAwarded}}/{{summaryByType.Competitions.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="commitment" %}">Commitment ({{summaryByType.Commitment.nAwarded}}/{{summaryByType.Commitment.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="miscellaneous" %}">Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
+        </td>
+        <td colspan="2">
+            <a href="{% url 'awards:list' type="all" %}">All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>
