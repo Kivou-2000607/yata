@@ -1,5 +1,5 @@
 table.target-categories td {
-    text-align: center!important;
+    text-align: center;
     width: 14.29%;
     cursor: pointer;
     border: 0;
@@ -10,15 +10,28 @@ table.target-categories td a:focus,
 table.target-categories td a:active { text-decoration: none; color: #447e9b; }
 
 
-table.target-attacks tr.zero-respect       { background:#f4cccc!important; }
-table.target-attacks tr.zero-respect:hover { background:#ea9999!important; }
-table.target-attacks tr.max-fair-fight       { background:#b6d7a8!important; }
-table.target-attacks tr.max-fair-fight:hover { background:#93c47d!important; }
-table.target-attacks tr.good-fair-fight       { background:#d9ead3!important; }
-table.target-attacks tr.good-fair-fight:hover { background:#b6d7a8!important; }
-table.target-attacks tr.bonus-attack       { background:#a8b6d7!important; }
-table.target-attacks tr.bonus-attack:hover { background:#7d93c4!important; }
+table.target-attacks tr.zero-respect       { background:#f4cccc; }
+table.target-attacks tr.zero-respect:hover { background:#ea9999; }
+table.target-attacks tr.max-fair-fight       { background:#b6d7a8; }
+table.target-attacks tr.max-fair-fight:hover { background:#93c47d; }
+table.target-attacks tr.good-fair-fight       { background:#d9ead3; }
+table.target-attacks tr.good-fair-fight:hover { background:#b6d7a8; }
+table.target-attacks tr.bonus-attack       { background:#a8b6d7; }
+table.target-attacks tr.bonus-attack:hover { background:#7d93c4; }
 
+table.target-targets td.a { width: 8%; text-align: left; } /* x2 */
+table.target-targets td.b { width: 12%; text-align: left; }
+table.target-targets td.c { width: 4%; text-align: center; } /* x7 */
+table.target-targets td.d { width: 15%; text-align: left; }
+table.target-targets td.e { width: 10%; text-align: center; }
+table.target-targets td.f { width: 5%; text-align: center; }
+table.target-targets td.g { width: 2%; text-align: center; }
+
+table.target-targets tr.not-okay       { background:#f4cccc; }
+table.target-targets tr.not-okay:hover { background:#ea9999; }
+table.target-targets td.not-okay       { background:#f4cccc; }
+table.target-targets td.not-okay:hover { background:#ea9999; }
+table.target-targets i.not-okay       { color:#ea9999; }
 
 div.life-bar {
     background-color: lightgray;

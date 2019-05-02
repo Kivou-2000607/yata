@@ -121,6 +121,7 @@ hr.sep {
     background-color: #CCC;
 }
 
+
 table.center {
   width:50%;
   margin-left:25%;
@@ -133,9 +134,16 @@ table.center-large {
   margin-right:2.5%;
 }
 
+table.center td,
+table.center-large td {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 table.center th,
-table.center-large th {
-    text-align: center!important;
+table.center-large th { text-align: center; }
 }
 
 table.trshadow tr:hover  {

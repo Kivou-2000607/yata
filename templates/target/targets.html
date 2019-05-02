@@ -10,26 +10,26 @@
 <div class="module">
 
 {% if targets %}
-    <table id="target-targets" class="tablesorter center-large">
+    <table id="target-targets" class="tablesorter center-large target-targets">
         <thead>
             <tr>
-                <th>Last attack</th>
-                <th>Result</th>
-                <!-- <th>Attacker</th> -->
-                <th>Defender</th>
-                <th>Level</th>
-                <!-- <th>Rank</th> -->
-                <th>Last action</th>
-                <th>Fair fight</th>
-                <th>Flat respect</th>
+                <th title="Last attack result">Last attack</th>
+                <!-- <th title="">Result</th> -->
+                <!-- <th title="">Attacker</th> -->
+                <th title="Name of the target">Name</th>
+                <th title="Level of the target">Lvl</th>
+                <!-- <th title="">Rank</th> -->
+                <th title="Last action of the target">Last action</th>
+                <th title="Fair fight bonus of the last attack">FF</th>
+                <th title="Falt respect (without counting the chain multipliers)">FR</th>
                 <th title="Score = (fair fight) x (flat respect)">Score</th>
-                <th>Status</th>
-                <th>Life</th>
-                <th>Update</th>
-                <th title="Attack">A</th>
-                <th title="Refresh">R</th>
-                <th title="Delete">D</th>
-                <th>List</th>
+                <th title="Life of the target">Life</th>
+                <th title="Status of the target">Status</th>
+                <th title="Time since last update">Update</th>
+                <th title="Attack target">A</th>
+                <th title="Refresh information">R</th>
+                <th title="Delete target">D</th>
+                <th title="Notes about the target">Notes</th>
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}

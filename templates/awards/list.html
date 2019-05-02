@@ -45,7 +45,7 @@
     <table class="center awards-summary">
         <thead>
             <tr>
-                <th colspan="4">Summary by award category</th>
+                <th colspan="8">Summary by award category</th>
             </tr>
         </thead>
         <tbody>
@@ -63,7 +63,7 @@
 
 <!-- list -->
 
-<table id="awards-list" class="tablesorter center trshadow awards-list">
+<table id="awards-list" class="tablesorter center-large trshadow awards-list">
     <thead>
         <tr>
             <th class="a" >Category</th>
@@ -74,6 +74,7 @@
             <th class="e" >Goal</th>
             <th class="f" >Achieve</th>
             <th class="g" colspan="2" >Comment</th>
+            <th class="i"></th>
         </tr>
     </thead>
     <tbody>
@@ -97,13 +98,16 @@
                 <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
-                <td class="f {% if award.achieve == 1 %}done{% else %}todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
+                <td class="f {% if award.achieve == 1 %}award-done{% else %}award-todo{% endif %}"><span title="{{award.achieve|mul:100|floatformat:0}}%">{{award.achieve|mul:100|floatformat:0}}%</span></td>
                 {% if award.left|floatformat:0|intcomma %}
                     <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
                 {% else %}
                     <td class="g"><span title="{{award.left|safe}}">{{award.left|safe}}</span></td>
                 {% endif %}
-                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1}}">{{award.comment.0|safe}}</span><span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i></span>{% endif %}</td>
+                <td class="h" style="cursor: pointer"><span title="{{award.comment.1}}">{{award.comment.0|safe}}</span></td>
+                <td class="i">
+                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i></span>{% endif %}</span>
+                </td>
             </tr>
         {% endfor %}
     {% endfor %}
