@@ -27,11 +27,17 @@ table.target-targets td.e { width: 10%; text-align: center; }
 table.target-targets td.f { width: 5%; text-align: center; }
 table.target-targets td.g { width: 2%; text-align: center; }
 
-table.target-targets tr.not-okay       { background:#f4cccc; }
-table.target-targets tr.not-okay:hover { background:#ea9999; }
-table.target-targets td.not-okay       { background:#f4cccc; }
-table.target-targets td.not-okay:hover { background:#ea9999; }
-table.target-targets i.not-okay       { color:#ea9999; }
+table.target-targets td.okay        { color:#0B8E14; }
+table.target-targets td.not-okay    { color:#CC3434; }
+table.target-targets i.not-okay    { color:#aaa; }
+
+input.target-list-note {
+    height: 100%;
+    width: 120px;
+    margin: 0px 5px;
+    border: 0px;
+    background: #00000000;
+}
 
 div.life-bar {
     background-color: lightgray;

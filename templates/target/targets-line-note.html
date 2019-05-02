@@ -1,0 +1,10 @@
+
+<form>
+    {% csrf_token %}
+    {% if target.note %}
+        <input class="target-list-note" type="text" Value="{{target.note}}" maxlength="16">
+    {% else %}
+        <input class="target-list-note" type="text" placeholder="Enter a note here" maxlength="16">
+    {% endif %}
+    <input type="hidden" value="{{targetId}}">
+</form>

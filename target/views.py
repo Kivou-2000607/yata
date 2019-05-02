@@ -100,7 +100,7 @@ def toggleTarget(request, targetId):
                                          "status": "Okay",
                                          "lastAction": "Who knows",
                                          "lastUpdate": 0,
-                                         "list": 0 }
+                                         "note": "" }
                     break
         else:
             print('[view.target.toggleTarget] delete target {}'.format(targetId))
@@ -176,6 +176,28 @@ def refresh(request, targetId):
         return render(request, 'target/targets-line.html', subcontext)
 
     return HttpResponseRedirect(reverse('logout'))
+
+
+def updateNote(request):
+    if request.session.get('player') and request.method == "POST":
+        print('[view.target.updateNote] get player id from session and check POST')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        targetId = request.POST.get("targetId")
+        note = request.POST.get("note")
+        print('[view.target.updateNote] {}: {}'.format(targetId, note))
+
+        targetJson = json.loads(player.targetJson)
+        targetJson["targets"][targetId]["note"] = note
+        player.targetJson = json.dumps(targetJson)
+        player.save()
+
+        subcontext = {"target": {"note": note}, "targetId": targetId}
+
+        return render(request, 'target/targets-line-note.html', subcontext)
+
+    return HttpResponseRedirect(reverse('logout'))
+
 
 
 def delete(request, targetId):

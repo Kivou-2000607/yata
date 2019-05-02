@@ -144,7 +144,6 @@ table.center-large td {
 
 table.center th,
 table.center-large th { text-align: center; }
-}
 
 table.trshadow tr:hover  {
     -moz-box-shadow: inset 0 0 5px #888;

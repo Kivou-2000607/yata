@@ -18,7 +18,7 @@
             <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
         </div>
     </td>
-    <td class='d {% if target.status.0 != "O" %}not-okay{% endif %}'>{{target.status}}</td>
+    <td class='d {% if target.status.0 != "O" %}not-{% endif %}okay'>{{target.status}}</td>
     <td class="f">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}
@@ -59,7 +59,7 @@
     </td>
 
 
-    <td class="a">
-        coucou
+    <td class="a" style="padding: 2px 5px 0px 10px; text-align: center;">
+        {% include "target/targets-line-note.html" %}
     </td>
 {% endif %}
