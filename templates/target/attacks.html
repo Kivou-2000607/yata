@@ -3,9 +3,15 @@
 
 {% if attacks %}
 
+<script>
+        $(document).ready(function() {
+            $("#target-attacks").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+        });
+</script>
+
 <h2 class="title">List of recent attacks<span class="flush-right">Last update on {{player.targetUpda|ts2date}}</span></h2>
 <div class="module">
-    <table class="center-large trshadow target-attacks">
+    <table id="target-attacks" class="center trshadow target-attacks">
         <thead>
             <tr>
                 <th>Time</th>
@@ -14,24 +20,22 @@
                 <th>Result</th>
                 <th style="text-align: center;">Fair fight</th>
                 <th style="text-align: center;">Flat respect</th>
-                <th style="text-align: center;">Score</th>
-                <th style="text-align: center;">Save target</th>
+                <th style="text-align: center;">Save</th>
         </thead>
         <tbody>
         {% for k, v in attacks.items %}
         <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.modifiers.fairFight == 3 %}max-fair-fight{% elif v.modifiers.fairFight|div:2 > 1 %}good-fair-fight{% endif %} {% if v.bonus %}bonus-attack{% endif %}">
-            <td>{{v.endTS|ts2date}}</td>
+            <td class="a">{{v.endTS|ts2date}}</td>
             <!-- <td><a href="https://www.torn.com/profiles.php?XID={{v.attacker_id}}" target="_blank"> {{v.attacker_name}} [{{v.attacker_id}}]</a></td> -->
-            <td><a href="https://www.torn.com/profiles.php?XID={{v.defender_id}}" target="_blank"> {{v.defender_name}} [{{v.defender_id}}]</a></td>
-            <td>{{v.result}}</td>
+            <td class="b"><a href="https://www.torn.com/profiles.php?XID={{v.defender_id}}" target="_blank"> {{v.defender_name}} [{{v.defender_id}}]</a></td>
+            <td class="c">{{v.result}}</td>
             {% if v.bonus == 0 %}
-                <td style="text-align: center;">{{v.modifiers.fairFight|floatformat:2}}</td>
-                <td style="text-align: center;">{{v.flatRespect|floatformat:2}}</td>
-                <td style="text-align: center;">{{v.flatRespect|mul:v.modifiers.fairFight|floatformat:2}}</td>
+                <td class="d">{{v.modifiers.fairFight|floatformat:2}}</td>
+                <td class="d">{{v.flatRespect|floatformat:2}}</td>
             {% else %}
-                <td style="text-align: center;" colspan="3">Bonus: {{v.bonus}}</td>
+                <td colspan="3">Bonus: {{v.bonus}}</td>
             {% endif %}
-            <td style="text-align: center;">
+            <td class="e">
                 <div class="catch-buttons-attack-{{v.defender_id}}">
                     {% include "target/attacks-buttons.html" with target=v %}
                 </div>

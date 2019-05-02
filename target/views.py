@@ -259,7 +259,6 @@ def add(request):
 
                 if not added:
                     print('[view.target.add] create target {} from  nothing'.format(targetId))
-                    print(targetInfo)
                     targets[targetId] = {"targetName": targetInfo["name"],
                                          "result": "???",
                                          "endTS": 0,

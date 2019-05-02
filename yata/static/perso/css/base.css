@@ -108,8 +108,12 @@ span.sep {
     content:" -";
 } */
 
-p.no-margin {
-    margin:0px;
+.no-margin {
+    margin: 0px;
+}
+
+.no-padding {
+    padding: 0px;
 }
 
 hr.sep {
