@@ -94,11 +94,10 @@ def toggleTarget(request, targetId):
                                          "fairFight": float(v['modifiers']['fairFight']),
                                          "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
                                          "level": 0,
-                                         "rank": "Nub",
                                          "lifeMax": 100,
                                          "life": 100,
-                                         "status": "Okay",
-                                         "lastAction": "Who knows",
+                                         "status": "Okay?",
+                                         "lastAction": "???",
                                          "lastUpdate": 0,
                                          "note": "" }
                     break
@@ -157,7 +156,6 @@ def refresh(request, targetId):
             target["lastAction"] = targetInfo["last_action"]["relative"]
             target["lastUpdate"] = int(timezone.now().timestamp())
             target["level"] = targetInfo["level"]
-            target["rank"] = targetInfo["rank"]
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     print('[view.target.refresh] refresh traget last attack info')
@@ -214,5 +212,74 @@ def delete(request, targetId):
 
         subcontext = dict({})
         return render(request, 'target/targets-line.html', subcontext)
+
+    return HttpResponseRedirect(reverse('logout'))
+
+
+def add(request):
+    if request.session.get('player') and request.method == "POST":
+        print('[view.target.add] get player id from session and check POST')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        key = player.key
+        targetJson = json.loads(player.targetJson)
+
+        targetId = request.POST.get("targetId")
+        print('[view.target.add] target id {}'.format(targetId))
+
+        # call for target info
+        context = dict({})
+        targetInfo = apiCall('user', targetId, '', key)
+        if 'apiError' in targetInfo:
+            context.update(targetInfo)
+
+        else:
+            attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
+            targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+
+            if targetId not in targets:
+                added = False
+                for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+                    if v["defender_id"] == targetId:
+                        print('[view.target.add] create target {} from attacks'.format(targetId))
+                        targets[targetId] = {"targetName": targetInfo["name"],
+                                             "result": v["result"],
+                                             "endTS": int(v["timestamp_ended"]),
+                                             "fairFight": float(v['modifiers']['fairFight']),
+                                             "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
+                                             "level": targetInfo["level"],
+                                             "lifeMax": 100,
+                                             "life": 100,
+                                             "status": "Okay?",
+                                             "lastAction": "???",
+                                             "lastUpdate": 0,
+                                             "note": "" }
+                        added=True
+                        break
+
+                if not added:
+                    print('[view.target.add] create target {} from  nothing'.format(targetId))
+                    print(targetInfo)
+                    targets[targetId] = {"targetName": targetInfo["name"],
+                                         "result": "???",
+                                         "endTS": 0,
+                                         "fairFight": 1,
+                                         "respect": 0,
+                                         "level": targetInfo["level"],
+                                         "lifeMax": 100,
+                                         "life": 100,
+                                         "status": "Okay?",
+                                         "lastAction": "???",
+                                         "lastUpdate": 0,
+                                         "note": ""}
+
+                targetJson["targets"] = targets
+                player.targetJson = json.dumps(targetJson)
+                player.save()
+            else:
+                print('[view.target.add] target {} already exists'.format(targetId))
+
+        context.update({"targets": targetJson["targets"]})
+        return render(request, 'target/targets.html', context)
 
     return HttpResponseRedirect(reverse('logout'))

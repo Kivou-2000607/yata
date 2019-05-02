@@ -14,6 +14,8 @@ urlpatterns = [
     re_path(r'^refresh/(?P<targetId>\w+)$', views.refresh, name='refresh'),
     re_path(r'^delete/(?P<targetId>\w+)$', views.delete, name='delete'),
 
+    re_path(r'^add/$', views.add, name='add'),
+
     # re_path(r'^refreshTargets/(?P<select>\w+)$', views.refreshTargets, name='refreshTargets'),
     # re_path(r'^reloadAllTargets/$', views.reloadAllTargets, name='reloadAllTargets'),
     # re_path(r'^toggleTargetRefreshStatus/(?P<targetId>\w+)$', views.toggleTargetRefreshStatus, name='toggleTargetRefreshStatus'),

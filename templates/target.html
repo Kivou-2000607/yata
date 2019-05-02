@@ -40,7 +40,7 @@
         reload.load( "/target/refresh/"+targetId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        reload.html('<td colspan="15" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        reload.html('<td colspan="14" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
     // delete target from target list button
@@ -51,7 +51,7 @@
         reload.load( "/target/delete/"+targetId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        reload.html('<td colspan="15" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        reload.html('<td colspan="14" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
 
@@ -69,6 +69,26 @@
         });
         reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
     });
+
+    // add key
+    $(document).on('click', '#target-add-submit', function(e){
+        e.preventDefault();
+        var id = $("#target-add-id").val();
+        $( "#content-update" ).load( "/target/add/", {
+            targetId: id,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Adding target id '+id+' (1 API call)')
+
+        // $( "#yata-login" ).load( "{% url 'login' %}", {
+        //     key: $("#yata-login-key").val(),
+        //     check: $("#yata-login-remember").is(':checked'),
+        //     csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        // });
+        // reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
+    });
+
 
     // refresh target list
     // window.setInterval(function(){

@@ -43,5 +43,16 @@
 {% else %}
     <p class="no-margin">You don't have any target saved. Look at your last attacks to start building your target list.</p>
 {% endif %}
+    <hr class="sep">
 
+    <p>
+        <form method="post" style="margin-left:10px;">
+            Enter the ID of the target you want to add:
+            {% csrf_token %}
+            <input id="target-add-id" placeholder="Torn ID" type=text>
+            <input id="target-add-submit" type="submit" value="Add">
+            &nbsp;
+            {% if apiError %}<p class="no-margin"><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></p>{% endif %}
+        </form>
+    </p>
 </div>
