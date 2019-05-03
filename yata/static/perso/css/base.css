@@ -155,7 +155,8 @@ table.trshadow tr:hover  {
     box-shadow: inner 0 0 5px #888;
 }
 
-table.tdshadow td:hover  {
+table.tdshadow td:hover,
+td.tdshadow:hover  {
     -moz-box-shadow: inset 0 0 5px #888;
     -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
@@ -178,3 +179,12 @@ thead th.none:after {
     content: "c";
     padding-left: 10px;
 } */
+
+
+td a {
+  display: block;
+  margin:0px;
+  padding:0px;
+  height:100%;
+  width:100%;
+}

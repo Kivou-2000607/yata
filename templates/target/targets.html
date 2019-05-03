@@ -26,14 +26,14 @@
                 <th title="Life of the target">Life</th>
                 <th title="Status of the target">Status</th>
                 <th title="Time since last update">Update</th>
-                <th title="Attack target">A</th>
-                <th title="Refresh information">R</th>
-                <th title="Delete target">D</th>
                 <th title="Notes about the target">Notes</th>
+                <th title="Attack target">Attack</th>
+                <!-- <th title="Refresh information">R</th> -->
+                <th title="Delete target">Delete</th>
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}
-        <tr id="catch-line-target-{{targetId}}">
+        <tr id="target-list-refresh-{{targetId}}">
             {% include "target/targets-line.html" %}
         </tr>
         {% endfor %}

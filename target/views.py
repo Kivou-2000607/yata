@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 
 import json
+import math
 
 from yata.handy import apiCall
 from player.models import Player
@@ -80,9 +81,29 @@ def toggleTarget(request, targetId):
         print('[view.target.toggleTarget] get player id from session and check POST')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        key = player.key
         targetJson = json.loads(player.targetJson)
         attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+
+        # call for target info
+        targetInfo = apiCall('user', targetId, '', key)
+        if 'apiError' in targetInfo:
+            level = "?"
+            lifeMax = 1
+            life = 0
+            status = "?"
+            lastAction = "?"
+            lastUpdate = 0
+            note = "API error"
+        else:
+            level = targetInfo["level"]
+            lifeMax = int(targetInfo["life"]["maximum"])
+            life = int(targetInfo["life"]["current"])
+            status = targetInfo["status"][0].replace("In hospital", "Hosp")
+            lastAction = targetInfo["last_action"]["relative"]
+            lastUpdate = int(timezone.now().timestamp())
+            note = ""
 
         if targetId not in targets:
             print('[view.target.toggleTarget] create target {}'.format(targetId))
@@ -93,13 +114,14 @@ def toggleTarget(request, targetId):
                                          "endTS": int(v["timestamp_ended"]),
                                          "fairFight": float(v['modifiers']['fairFight']),
                                          "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
-                                         "level": 0,
-                                         "lifeMax": 100,
-                                         "life": 100,
-                                         "status": "Okay?",
-                                         "lastAction": "???",
-                                         "lastUpdate": 0,
-                                         "note": "" }
+                                         "level": level,
+                                         "lifeMax": lifeMax,
+                                         "life": life,
+                                         "status": status,
+                                         "lastAction": lastAction,
+                                         "lastUpdate": lastUpdate,
+                                         "note": note
+                                         }
                     break
         else:
             print('[view.target.toggleTarget] delete target {}'.format(targetId))
@@ -115,6 +137,7 @@ def toggleTarget(request, targetId):
         return render(request, 'target/attacks-buttons.html', context)
 
     return HttpResponseRedirect(reverse('logout'))
+
 
 def targets(request):
     if request.session.get('player'):
@@ -143,7 +166,6 @@ def refresh(request, targetId):
 
         # call for target info
         targetInfo = apiCall('user', targetId, '', key)
-        error = False
         if 'apiError' in targetInfo:
             subcontext = targetInfo
 
@@ -197,13 +219,11 @@ def updateNote(request):
     return HttpResponseRedirect(reverse('logout'))
 
 
-
 def delete(request, targetId):
     if request.session.get('player') and request.method == "POST":
         print('[view.target.delete] get player id from session and check POST')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
         targetJson = json.loads(player.targetJson)
 
         del targetJson["targets"][targetId]
@@ -248,28 +268,29 @@ def add(request):
                                              "fairFight": float(v['modifiers']['fairFight']),
                                              "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
                                              "level": targetInfo["level"],
-                                             "lifeMax": 100,
-                                             "life": 100,
-                                             "status": "Okay?",
-                                             "lastAction": "???",
-                                             "lastUpdate": 0,
-                                             "note": "" }
-                        added=True
+                                             "lifeMax": int(targetInfo["life"]["maximum"]),
+                                             "life": int(targetInfo["life"]["current"]),
+                                             "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                             "lastAction": targetInfo["last_action"]["relative"],
+                                             "lastUpdate": int(timezone.now().timestamp()),
+                                             "note": ""
+                                             }
+                        added = True
                         break
 
                 if not added:
                     print('[view.target.add] create target {} from  nothing'.format(targetId))
                     targets[targetId] = {"targetName": targetInfo["name"],
-                                         "result": "???",
-                                         "endTS": 0,
+                                         "result": "No recent attack",
+                                         "endTS": int(v["timestamp_ended"]),
                                          "fairFight": 1,
                                          "respect": 0,
                                          "level": targetInfo["level"],
-                                         "lifeMax": 100,
-                                         "life": 100,
-                                         "status": "Okay?",
-                                         "lastAction": "???",
-                                         "lastUpdate": 0,
+                                         "lifeMax": int(targetInfo["life"]["maximum"]),
+                                         "life": int(targetInfo["life"]["current"]),
+                                         "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                         "lastAction": targetInfo["last_action"]["relative"],
+                                         "lastUpdate": int(timezone.now().timestamp()),
                                          "note": ""}
 
                 targetJson["targets"] = targets

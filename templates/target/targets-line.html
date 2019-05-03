@@ -6,7 +6,7 @@
 {% elif target %}
     <td class="a" title="Last attack on {{target.endTS|ts2date}}"><b {% if not target.respect %}class="error"{% endif %}>{{target.result}}</b></td>
     <!-- <td class="a"><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->
-    <td class="b"><a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank"> {{target.targetName}} [{{targetId}}]</a></td>
+    <td class="b dont-touch-me"><a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank"> {{target.targetName}} [{{targetId}}]</a></td>
     <td class="c">{{target.level}}</td>
     <!-- <td class="a">{{target.rank}}</td> -->
     <td class="a">{{target.lastAction}}</td>
@@ -35,7 +35,12 @@
             {% endwith %}
         {% endwith %}
     </td>
-    <td class="g">
+
+    <td class="h no-padding dont-touch-me">
+        {% include "target/targets-line-note.html" %}
+    </td>
+
+    <td class="g dont-touch-me">
         {% if target.status.0 != "O" %}
             <i class="fas fa-fist-raised not-okay" title="Can't attack target"></i>
         {% else %}
@@ -43,15 +48,14 @@
         {% endif %}
     </td>
         <!-- <a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank" alt="profile"><i class="fas fa-user" title="Target profile"></i></a> - -->
-    <td class="g">
-        <!-- refresh -->
+    <!-- <td class="g">
         <form style="display: inline;">{% csrf_token %}
             <a class="target-list-toggle" href={% url 'target:refresh' targetId %}>
                <i class="fas fa-sync-alt" title="Refresh target"></i>
             </a>
         </form>
-    </td>
-    <td class="g">
+    </td> -->
+    <td class="g dont-touch-me">
         <!-- delete -->
         <form style="display: inline;">{% csrf_token %}
             <a class="target-list-delete" href={% url 'target:delete' targetId %}><i class="fas fa-trash-alt" title="Delete target"></i></a>
@@ -59,7 +63,4 @@
     </td>
 
 
-    <td class="h no-padding">
-        {% include "target/targets-line-note.html" %}
-    </td>
 {% endif %}
