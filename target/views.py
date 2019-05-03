@@ -95,7 +95,7 @@ def toggleTarget(request, targetId):
             status = "?"
             lastAction = "?"
             lastUpdate = 0
-            note = "API error"
+
         else:
             level = targetInfo["level"]
             lifeMax = int(targetInfo["life"]["maximum"])
@@ -103,7 +103,6 @@ def toggleTarget(request, targetId):
             status = targetInfo["status"][0].replace("In hospital", "Hosp")
             lastAction = targetInfo["last_action"]["relative"]
             lastUpdate = int(timezone.now().timestamp())
-            note = ""
 
         if targetId not in targets:
             print('[view.target.toggleTarget] create target {}'.format(targetId))
@@ -113,14 +112,14 @@ def toggleTarget(request, targetId):
                                          "result": v["result"],
                                          "endTS": int(v["timestamp_ended"]),
                                          "fairFight": float(v['modifiers']['fairFight']),
-                                         "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
+                                         "respect": float(v['modifiers']['fairFight'])*0.25*(math.log(level)+1),
                                          "level": level,
                                          "lifeMax": lifeMax,
                                          "life": life,
                                          "status": status,
                                          "lastAction": lastAction,
                                          "lastUpdate": lastUpdate,
-                                         "note": note
+                                         "note": ""
                                          }
                     break
         else:
@@ -178,6 +177,7 @@ def refresh(request, targetId):
             target["lastAction"] = targetInfo["last_action"]["relative"]
             target["lastUpdate"] = int(timezone.now().timestamp())
             target["level"] = targetInfo["level"]
+            target["respect"] = 0.25*(math.log(targetInfo["level"])+1)
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     print('[view.target.refresh] refresh traget last attack info')
@@ -185,7 +185,7 @@ def refresh(request, targetId):
                     target["result"] = v["result"]
                     target["endTS"] = int(v["timestamp_ended"])
                     target["fairFight"] = float(v['modifiers']['fairFight'])
-                    target["respect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                    target["respect"] = float(v['modifiers']['fairFight'])*0.25*(math.log(target["level"])+1)
                     break
 
             targetJson["targets"][targetId] = target
@@ -266,7 +266,7 @@ def add(request):
                                              "result": v["result"],
                                              "endTS": int(v["timestamp_ended"]),
                                              "fairFight": float(v['modifiers']['fairFight']),
-                                             "respect": float(v["respect_gain"]) / float(v['modifiers']['chainBonus']),
+                                             "respect": float(v['modifiers']['fairFight'])*0.25*(math.log(targetInfo["level"])+1),
                                              "level": targetInfo["level"],
                                              "lifeMax": int(targetInfo["life"]["maximum"]),
                                              "life": int(targetInfo["life"]["current"]),
@@ -284,7 +284,7 @@ def add(request):
                                          "result": "No recent attack",
                                          "endTS": int(v["timestamp_ended"]),
                                          "fairFight": 1,
-                                         "respect": 0,
+                                         "respect": 0.25*(math.log(targetInfo["level"])+1),
                                          "level": targetInfo["level"],
                                          "lifeMax": int(targetInfo["life"]["maximum"]),
                                          "life": int(targetInfo["life"]["current"]),

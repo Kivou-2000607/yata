@@ -1,7 +1,7 @@
 
 <script>
         $(document).ready(function() {
-            $("#target-targets").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[5,1]]});
+            $("#target-targets").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[5,1], [2,1], [1,0]]});
         });
 </script>
 
@@ -21,7 +21,7 @@
                 <!-- <th title="">Rank</th> -->
                 <th title="Last action of the target">Last action</th>
                 <th title="Fair fight bonus of the last attack">Fair Fight</th>
-                <th title="Flat respect (without counting the chain multipliers)">Flat Respect</th>
+                <th title="Flat respect (fair fight) x (base respect) = (fair fight) x 0.25(ln(level) + 1)">Flat Respect</th>
                 <!-- <th title="Score = (fair fight) x (flat respect)">Score</th> -->
                 <th title="Life of the target">Life</th>
                 <th title="Status of the target">Status</th>
