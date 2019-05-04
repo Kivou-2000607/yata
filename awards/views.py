@@ -77,7 +77,7 @@ def index(request):
                             if int(achieve) == 1:
                                 popPerso += 1./float(circulation)
 
-            player.awardsInfo = "{}% honor rarity score".format(int(popPerso/popTotal*100))
+            player.awardsInfo = "{:.2f}% honor rarity score".format(popPerso/popTotal*100.0)
             player.awardsUpda = int(timezone.now().timestamp())
             player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
@@ -96,11 +96,11 @@ def index(request):
 
 def list(request, type):
     if request.session.get('player') and request.method == 'POST':
-        print('[view.awards.awards] get player id from session')
+        print('[view.awards.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         awardsJson = json.loads(player.awardsJson)
-        print('[view.awards.awards] award type: {}'.format(type))
+        print('[view.awards.list] award type: {}'.format(type))
 
         allAwards = awardsJson.get('allAwards')
         myAwards = awardsJson.get('myAwards')
@@ -115,5 +115,29 @@ def list(request, type):
 
         return render(request, 'awards/list.html', context)
 
-    print("[view.awards.crimes] no active session or wrong type or not post")
+    print("[view.awards.list] no active session or wrong type or not post")
     return HttpResponseRedirect(reverse('logout'))
+
+
+def hof(request):
+    if request.session.get('player'):
+        print('[view.awards.hof] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+
+        # get all hof
+        hof = dict({})
+        players = Player.objects.exclude(awardsInfo = "N/A").all()
+        for p in players:
+            n = json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"]
+            s = float(p.awardsInfo.split("%")[0])
+            hof.update({p: {"score": s, "nAwards": n}})
+            print(p)
+
+
+        context = {"player": player, "hof": hof}
+        return render(request, 'awards.html', context)
+
+    print("[view.awards.hof] no active session")
+    return render(request, 'awards/hof.html')
+    # return HttpResponseRedirect(reverse('logout'))

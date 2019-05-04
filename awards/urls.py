@@ -6,7 +6,8 @@ app_name = "awards"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
     # re_path(r'^update/$', views.update, name='update'),
-    re_path(r'^(?P<type>\w+)/$', views.list, name='list'),
+    re_path(r'^l/(?P<type>\w+)/$', views.list, name='list'),
+    re_path(r'^hof/$', views.hof, name='hof'),
 
     # re_path(r'^crimes/$', views.crimes, name='crimes'),
     # re_path(r'^drugs/$', views.drugs, name='drugs'),

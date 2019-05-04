@@ -1,0 +1,31 @@
+
+<script>
+        $(document).ready(function() {
+            $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1]]});
+        });
+</script>
+
+<h2 class="title">Hall of fame</h2>
+<div class="module">
+
+<!-- hof -->
+<table id="awards-hof" class="center trshadow">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>#Awards</th>
+            <th>Rarity score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for k, v in hof.items %}
+        <tr>
+            <td>{{k}}</td>
+            <td>{{v.nAwards}}</td>
+            <td>{{v.score}}%</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>

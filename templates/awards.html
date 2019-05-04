@@ -54,7 +54,7 @@
 
         $(document).on('click', 'table.awards-categories td', function(e){
             e.preventDefault();
-            $( "#content-update" ).load( $(this).children("a").attr("href").split("/")[2]+"/", {
+            $( "#content-update" ).load( "l/"+$(this).children("a").attr("href").split("/")[3]+"/", {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             $("#content-update h2").addClass("grey");
@@ -67,6 +67,10 @@
 
 {% block content %}
     <div id="content-update">
-        {% include "awards/list.html" %}
+        {% if hof %}
+            {% include "awards/hof.html" %}
+        {% else %}
+            {% include "awards/list.html" %}
+        {% endif %}
     </div>
 {% endblock %}

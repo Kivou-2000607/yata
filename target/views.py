@@ -108,11 +108,12 @@ def toggleTarget(request, targetId):
             print('[view.target.toggleTarget] create target {}'.format(targetId))
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if v["defender_id"] == targetId:
+                    respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
                     targets[targetId] = {"targetName": v["defender_name"],
                                          "result": v["result"],
                                          "endTS": int(v["timestamp_ended"]),
                                          "fairFight": float(v['modifiers']['fairFight']),
-                                         "respect": float(v['modifiers']['fairFight'])*0.25*(math.log(level)+1),
+                                         "respect": respect,
                                          "level": level,
                                          "lifeMax": lifeMax,
                                          "life": life,
@@ -176,8 +177,9 @@ def refresh(request, targetId):
             target["status"] = targetInfo["status"][0].replace("In hospital", "Hosp")
             target["lastAction"] = targetInfo["last_action"]["relative"]
             target["lastUpdate"] = int(timezone.now().timestamp())
-            target["level"] = targetInfo["level"]
-            target["respect"] = 0.25*(math.log(targetInfo["level"])+1)
+            level = targetInfo["level"]
+            target["level"] = level
+            target["respect"] = 0.25 * (math.log(level) + 1) if level else 0
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     print('[view.target.refresh] refresh traget last attack info')
@@ -185,7 +187,8 @@ def refresh(request, targetId):
                     target["result"] = v["result"]
                     target["endTS"] = int(v["timestamp_ended"])
                     target["fairFight"] = float(v['modifiers']['fairFight'])
-                    target["respect"] = float(v['modifiers']['fairFight'])*0.25*(math.log(target["level"])+1)
+                    target["respect"] = float(v['modifiers']['fairFight']) * target["respect"]
+
                     break
 
             targetJson["targets"][targetId] = target
@@ -262,12 +265,14 @@ def add(request):
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if v["defender_id"] == targetId:
                         print('[view.target.add] create target {} from attacks'.format(targetId))
+                        level = targetInfo["level"]
+                        respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
                         targets[targetId] = {"targetName": targetInfo["name"],
                                              "result": v["result"],
                                              "endTS": int(v["timestamp_ended"]),
                                              "fairFight": float(v['modifiers']['fairFight']),
-                                             "respect": float(v['modifiers']['fairFight'])*0.25*(math.log(targetInfo["level"])+1),
-                                             "level": targetInfo["level"],
+                                             "respect": respect,
+                                             "level": level,
                                              "lifeMax": int(targetInfo["life"]["maximum"]),
                                              "life": int(targetInfo["life"]["current"]),
                                              "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
@@ -280,12 +285,15 @@ def add(request):
 
                 if not added:
                     print('[view.target.add] create target {} from  nothing'.format(targetId))
+                    level = targetInfo["level"]
+                    respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
+
                     targets[targetId] = {"targetName": targetInfo["name"],
                                          "result": "No recent attack",
                                          "endTS": int(v["timestamp_ended"]),
                                          "fairFight": 1,
-                                         "respect": 0.25*(math.log(targetInfo["level"])+1),
-                                         "level": targetInfo["level"],
+                                         "respect": respect,
+                                         "level": level,
                                          "lifeMax": int(targetInfo["life"]["maximum"]),
                                          "life": int(targetInfo["life"]["current"]),
                                          "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
