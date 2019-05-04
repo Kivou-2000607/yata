@@ -1,31 +1,36 @@
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
 
 <script>
         $(document).ready(function() {
-            $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1]]});
+            $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,1]]});
         });
 </script>
 
 <h2 class="title">Hall of fame</h2>
 <div class="module">
 
-<!-- hof -->
-<table id="awards-hof" class="center trshadow">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>#Awards</th>
-            <th>Rarity score</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for k, v in hof.items %}
-        <tr>
-            <td>{{k}}</td>
-            <td>{{v.nAwards}}</td>
-            <td>{{v.score}}%</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- hof -->
+    <table id="awards-hof" class="center trshadow awards-hof">
+        <thead>
+            <tr>
+                <th>rank</th>
+                <th>Name</th>
+                <th>Honors awarded</th>
+                <th>Rarity score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for k, v in hof.items %}
+            <tr>
+                <td class="a">#{{ forloop.counter }}</td>
+                <td class="b"><a href="https://www.torn.com/profiles.php?XID={{k.tId}}" target="_blank">{{k}}</a></td>
+                <td class="c" title="{{v.nAwarded}} / {{v.nAwards}}">{{v.nAwarded|div:v.nAwards|mul:100|floatformat:2}}%</td>
+                <td class="c">{{v.score|mul:100|floatformat:2}}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 </div>

@@ -37,3 +37,7 @@ table.awards-list tr.next  {
     box-shadow: inner 0 0 5px #aa0000;
     background-color: #ff00000E;
 }
+
+table.awards-hof td.a { width: 10%; text-align: center;}
+table.awards-hof td.b { width: 50%; }
+table.awards-hof td.c { width: 20%; text-align: center;} /* x2 */

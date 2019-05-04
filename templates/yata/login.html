@@ -1,3 +1,4 @@
+{% load mathfilters %}
 {% load app_filters %}
 
 <div id="yata-login">
@@ -12,7 +13,7 @@
 
                 <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain"><b><i class="fas fa-fist-raised"></i> Target list:</b></a> {{player.targetInfo}}<span class="sep"></span>
 
-                <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards"><b><i class="fas fa-medal"></i> Awards tracker:</b></a> {{player.awardsInfo}}
+                <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards"><b><i class="fas fa-medal"></i> Awards tracker:</b></a> {{player.awardsInfo|mul:100|floatformat:2}} % honor rarity score
 
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
                 <a class="valid flush-right" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>

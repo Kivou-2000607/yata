@@ -53,8 +53,11 @@
         <td>
             <a href="{% url 'awards:list' type="miscellaneous" %}">Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
         </td>
-        <td colspan="2">
+        <td>
             <a href="{% url 'awards:list' type="all" %}">All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
+        </td>
+        <td>
+            <a href="{% url 'awards:list' type="hof" %}">Hall of Fame</a>
         </td>
     </tr>
     </tbody>

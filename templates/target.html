@@ -83,24 +83,37 @@
         $("#content-update h2").addClass("grey");
         $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Adding target id '+id+' (1 API call)')
 
-        // $( "#yata-login" ).load( "{% url 'login' %}", {
-        //     key: $("#yata-login-key").val(),
-        //     check: $("#yata-login-remember").is(':checked'),
-        //     csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        // });
-        // reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
     });
 
 
-    // refresh target list
-    // window.setInterval(function(){
-    //     $( "#content-update" ).load( "/target/targets/", {
-    //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    //     });
-    //     $("#content-update h2").addClass("grey");
-    //     $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading targets')
-    //     // reload.html('<div class="loader"></div>');
-    // }, 5000);
+    // refresh timer target update
+    window.setInterval(function(){
+        $(".update-timer").each(function() {
+            var updatetime = $.trim($(this).text());
+            if ( updatetime.search("s")!=-1 ) {
+                var seconds = parseInt(updatetime.replace(" ", "").replace("s", ""));
+                if ( seconds > 599 ) {
+                    $(this).html("10 min");
+                } else {
+                    $(this).html((seconds+1).toString()+" s");
+                }
+            }
+        });
+    }, 1000);
+
+    window.setInterval(function(){
+        $(".update-timer").each(function() {
+            var updatetime = $.trim($(this).text());
+            if ( updatetime.search("min")!=-1 ) {
+                var minutes = parseInt(updatetime.replace(" ", "").replace("min", ""));
+                if ( minutes > 59 ) {
+                    $(this).html("> 1h");
+                } else {
+                    $(this).html((minutes+1).toString()+" min");
+                }
+            }
+        });
+    }, 60000);
 
 
 </script>

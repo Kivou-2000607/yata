@@ -69,7 +69,7 @@
                         <td class="b"><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
                     {% endwith %}
                 {% endif %}
-                <td class="c"><span {% if award.circulation%}title="Rarity score: {{award.circulation|rarity}} ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
+                <td class="c"><span {% if award.circulation%}title="Rarity score: {{100|div:award.circulation|div:popTotal|format:"{:.2g}"}}% ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
                 <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>

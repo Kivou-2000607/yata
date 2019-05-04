@@ -19,17 +19,17 @@
         </div>
     </td>
     <td class='e {% if target.status.0 != "O" %}not-{% endif %}okay'>{{target.status}}</td>
-    <td class="f">
+    <td class="f update-timer">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}
             {% with minutes=seconds|intdiv:60 %}
                 {% with hours=minutes|intdiv:60 %}
                     {% if hours %}
                         > 1h
-                    {% elif minutes %}
+                    {% elif minutes > 9 %}
                         {{minutes}} min
                     {% else %}
-                        {{ts|sub:target.lastUpdate|mod:60}} s
+                        {{ts|sub:target.lastUpdate|mod:600}} s
                     {% endif %}
                 {% endwith %}
             {% endwith %}
