@@ -35,9 +35,17 @@ def index(request):
                     attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                     attacks[k]["bonus"] = int(v["chain"])
                 else:
+                    allModifiers = 1.0
+                    for mod, val in v['modifiers'].items():
+                        allModifiers *= float(val)
+                    if v["result"] == "Mugged":
+                        allModifiers *= 0.75
+                    baseRespect = float(v["respect_gain"]) / allModifiers
+                    level = int(math.exp(4.*baseRespect-1))
                     attacks[k]["endTS"] = int(v["timestamp_ended"])
-                    attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+                    attacks[k]["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
                     attacks[k]["bonus"] = 0
+                    attacks[k]["level"] = level
 
             for k in remove:
                 del attacks[k]

@@ -13,6 +13,18 @@ def ts2date(timestamp):
         return datetime.datetime.fromtimestamp(0, tz=pytz.UTC)
 
 
+@register.filter(name='ts2hhmmss')
+def ts2mmss(timestamp):
+    m = timestamp // 60
+    s = (timestamp - 60*m) % 60
+    if m:
+        return "{} mins {:02d} s".format(m, s)
+    else:
+        return "{} s".format(s)
+
+
+
+
 @register.filter(name='format')
 def format(value, fmt):
     return fmt.format(value)

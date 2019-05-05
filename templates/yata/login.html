@@ -7,13 +7,40 @@
         <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
             <p class="no-margin">
-                <a href="{% url 'index' %}" class="yata-link-bazaar" title="Go to bazaar"><b><i class="fas fa-store"></i> Bazaar overview:</b></a> {{player.bazaarInfo}}<span class="sep"></span>
+                <a href="{% url 'index' %}" class="yata-link-bazaar" title="Go to bazaar">
+                    <b><i class="fas fa-store"></i> Bazaar overview:</b></a>
+                    {% if player.bazaarInfo == "N/A" %}
+                        &empty;
+                    {% else %}
+                        {{player.bazaarInfo}}
+                    {% endif %}
+                    <span class="sep"></span>
 
-                <a href="{% url 'index' %}" class="yata-link-chain" title="Go to chain"><b><i class="fas fa-link"></i> Chain reports:</b></a> {{player.chainInfo}}<span class="sep"></span>
+                <a href="{% url 'index' %}" class="yata-link-chain" title="Go to chain">
+                    <b><i class="fas fa-link"></i> Chain reports:</b></a>
+                    {% if player.chainInfo == "N/A" %}
+                        &empty;
+                    {% else %}
+                        {{player.chainInfo}}
+                    {% endif %}
+                    <span class="sep"></span>
 
-                <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain"><b><i class="fas fa-fist-raised"></i> Target list:</b></a> {{player.targetInfo}}<span class="sep"></span>
+                <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain">
+                    <b><i class="fas fa-fist-raised"></i> Target list:</b></a>
+                    {% if player.targetInfo == "N/A" %}
+                        &empty;
+                    {% else %}
+                        {{player.targetInfo}}
+                    {% endif %}
+                    <span class="sep"></span>
 
-                <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards"><b><i class="fas fa-medal"></i> Awards tracker:</b></a> {{player.awardsInfo|mul:100|floatformat:2}} % honor rarity score
+                <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards">
+                    <b><i class="fas fa-medal"></i> Awards tracker:</b></a>
+                    {% if player.awardsInfo == "N/A" %}
+                        &empty;
+                    {% else %}
+                        {{player.awardsInfo|mul:100|floatformat:2}}% honor rarity score
+                    {% endif %}
 
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
                 <a class="valid flush-right" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>
