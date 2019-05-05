@@ -32,35 +32,35 @@
     <!-- scripts jquery perso -->
     <script>
 
-        $(document).on('click', '#toggle-zero-hits', function(e){
-            e.preventDefault();
-            $(".zero-hits").slideToggle('fast', function() {});
-            $(".zero-hits").promise().done(function() {
-                var icon = $("#zero-hits-icon");
-                if (icon.hasClass("fas fa-toggle-on")) {
-                    icon.removeClass("fas fa-toggle-on");
-                    icon.addClass("fas fa-toggle-off");
-                } else {
-                    icon.removeClass("fas fa-toggle-off");
-                    icon.addClass("fas fa-toggle-on");
-                }
-            });
-        });
-
-        $(document).on('click', '#toggle-kicked-members', function(e){
-            e.preventDefault();
-            $(".kicked-members").slideToggle('fast', function() {});
-            $(".kicked-members").promise().done(function() {
-                var icon = $("#kicked-members-icon");
-                if (icon.hasClass("fas fa-toggle-on")) {
-                    icon.removeClass("fas fa-toggle-on");
-                    icon.addClass("fas fa-toggle-off");
-                } else {
-                    icon.removeClass("fas fa-toggle-off");
-                    icon.addClass("fas fa-toggle-on");
-                }
-            });
-        });
+        // $(document).on('click', '#toggle-zero-hits', function(e){
+        //     e.preventDefault();
+        //     $(".zero-hits").slideToggle('fast', function() {});
+        //     $(".zero-hits").promise().done(function() {
+        //         var icon = $("#zero-hits-icon");
+        //         if (icon.hasClass("fas fa-toggle-on")) {
+        //             icon.removeClass("fas fa-toggle-on");
+        //             icon.addClass("fas fa-toggle-off");
+        //         } else {
+        //             icon.removeClass("fas fa-toggle-off");
+        //             icon.addClass("fas fa-toggle-on");
+        //         }
+        //     });
+        // });
+        //
+        // $(document).on('click', '#toggle-kicked-members', function(e){
+        //     e.preventDefault();
+        //     $(".kicked-members").slideToggle('fast', function() {});
+        //     $(".kicked-members").promise().done(function() {
+        //         var icon = $("#kicked-members-icon");
+        //         if (icon.hasClass("fas fa-toggle-on")) {
+        //             icon.removeClass("fas fa-toggle-on");
+        //             icon.addClass("fas fa-toggle-off");
+        //         } else {
+        //             icon.removeClass("fas fa-toggle-off");
+        //             icon.addClass("fas fa-toggle-on");
+        //         }
+        //     });
+        // });
 
         $(document).on('click', '.update-key', function(e){
             e.preventDefault();
@@ -111,31 +111,32 @@
         //     reload.html('<div class="loader"></div>');
         // });
 
-        // refresh/create report from list button
-        $(document).on('click', '.chain-report-refresh-list', function(e){
-            e.preventDefault();
-            var chainId = this.href.split("/").pop();;
-            var reload = $("#catch-buttons-"+chainId);
-            reload.load( "/chain/createReport/"+chainId, {
-                html: "list_reload_buttons",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
+        // // refresh/create report from list button
+        // $(document).on('click', '.chain-report-refresh-list', function(e){
+        //     e.preventDefault();
+        //     var chainId = this.href.split("/").pop();;
+        //     var reload = $("#catch-buttons-"+chainId);
+        //     reload.load( "/chain/createReport/"+chainId, {
+        //         html: "list_reload_buttons",
+        //         chainId: chainId,
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
 
-        // delete report from list button
-        $(document).on('click', '.chain-report-delete-list', function(e){
-            e.preventDefault();
-            var chainId = this.href.split("/").pop();;
-            var reload = $("#catch-buttons-"+chainId);
-            reload.load( "/chain/deleteReport/"+chainId, {
-                html: "list_reload_buttons",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
+        // // delete report from list button
+        // $(document).on('click', '.chain-report-delete-list', function(e){
+        //     e.preventDefault();
+        //     var chainId = this.href.split("/").pop();;
+        //     var reload = $("#catch-buttons-"+chainId);
+        //     reload.load( "/chain/deleteReport/"+chainId, {
+        //         html: "list_reload_buttons",
+        //         chainId: chainId,
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
+
 
         // toggle report from list button
         $(document).on('click', '.chain-report-toggle-list', function(e){
@@ -150,91 +151,91 @@
             reload.html('<div class="loader"></div>');
         });
 
-        // toggle target from attack list button
-        $(document).on('click', '.attack-list-toggle', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $(".catch-buttons-attack-"+targetId);
-            reload.load( "/chain/toggleTarget/"+targetId, {
-                html: "attacks_reload_buttons",
-                targetId: targetId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // target list button
-        $(document).on('click', '.target-list-toggle', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/refreshTarget/"+targetId, {
-                html: "targets_reload_line",
-                targetId: targetId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<td colspan="12" style="text-align: center;"><div class="loader"></div></td>');
-        });
-
-        // delete target from target list button
-        $(document).on('click', '.target-list-delete', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/deleteTarget/"+targetId, {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // delete target from target list button
-        $(document).on('click', '.target-list-list', function(e){
-            e.preventDefault();
-            var url = this.href.split("/")
-            var list = url.pop();
-            var targetId = url.pop();
-            var reload = $(this).closest("td");
-            // alert("coucou");
-            reload.load( "/chain/changeTargetList/"+targetId+"/"+list, {
-                html: "targets_reload_list_inline",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            // reload.html('<div class="loader"></div>');
-        });
-
-        // toggle target refresh status from target list button
-        $(document).on('click', '.target-list-toggle-refresh-status', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/toggleTargetRefreshStatus/"+targetId, {
-                html: "targets_reload_line",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // refresh all targets
-        $(document).on('click', '#targets-refresh-all', function(e){
-            e.preventDefault();
-            var reload = $("#targets-reload");
-            reload.load( "/chain/refreshTargets/0", {
-                html: "targets_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // refresh selected targets
-        $(document).on('click', '#targets-refresh-selected', function(e){
-            e.preventDefault();
-            var reload = $("#targets-reload");
-            reload.load( "/chain/refreshTargets/1", {
-                html: "targets_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
+        // // toggle target from attack list button
+        // $(document).on('click', '.attack-list-toggle', function(e){
+        //     e.preventDefault();
+        //     var targetId = this.href.split("/").pop();
+        //     var reload = $(".catch-buttons-attack-"+targetId);
+        //     reload.load( "/chain/toggleTarget/"+targetId, {
+        //         html: "attacks_reload_buttons",
+        //         targetId: targetId,
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
+        //
+        // // target list button
+        // $(document).on('click', '.target-list-toggle', function(e){
+        //     e.preventDefault();
+        //     var targetId = this.href.split("/").pop();
+        //     var reload = $("#catch-line-target-"+targetId);
+        //     reload.load( "/chain/refreshTarget/"+targetId, {
+        //         html: "targets_reload_line",
+        //         targetId: targetId,
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<td colspan="12" style="text-align: center;"><div class="loader"></div></td>');
+        // });
+        //
+        // // delete target from target list button
+        // $(document).on('click', '.target-list-delete', function(e){
+        //     e.preventDefault();
+        //     var targetId = this.href.split("/").pop();
+        //     var reload = $("#catch-line-target-"+targetId);
+        //     reload.load( "/chain/deleteTarget/"+targetId, {
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
+        //
+        // // delete target from target list button
+        // $(document).on('click', '.target-list-list', function(e){
+        //     e.preventDefault();
+        //     var url = this.href.split("/")
+        //     var list = url.pop();
+        //     var targetId = url.pop();
+        //     var reload = $(this).closest("td");
+        //     // alert("coucou");
+        //     reload.load( "/chain/changeTargetList/"+targetId+"/"+list, {
+        //         html: "targets_reload_list_inline",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     // reload.html('<div class="loader"></div>');
+        // });
+        //
+        // // toggle target refresh status from target list button
+        // $(document).on('click', '.target-list-toggle-refresh-status', function(e){
+        //     e.preventDefault();
+        //     var targetId = this.href.split("/").pop();
+        //     var reload = $("#catch-line-target-"+targetId);
+        //     reload.load( "/chain/toggleTargetRefreshStatus/"+targetId, {
+        //         html: "targets_reload_line",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
+        //
+        // // refresh all targets
+        // $(document).on('click', '#targets-refresh-all', function(e){
+        //     e.preventDefault();
+        //     var reload = $("#targets-reload");
+        //     reload.load( "/chain/refreshTargets/0", {
+        //         html: "targets_reload",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
+        //
+        // // refresh selected targets
+        // $(document).on('click', '#targets-refresh-selected', function(e){
+        //     e.preventDefault();
+        //     var reload = $("#targets-reload");
+        //     reload.load( "/chain/refreshTargets/1", {
+        //         html: "targets_reload",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<div class="loader"></div>');
+        // });
 
 
         // toggle faction key
@@ -248,35 +249,35 @@
             // reload.html('<div class="loader"></div>');
         });
 
-        // show individual report
-        $(document).on('click', '.chain-ireport', function(e){
-            e.preventDefault();
-            var splt = this.href.split("/");
-            var memberId = splt.pop();
-            var chainId = splt.pop();
-            if( !$( "#individal-report-"+memberId ).length ) {
-                $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
-            }
-            var reload = $("#individal-report-"+memberId);
-            reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
-                html: "ireport_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
-        });
+        // // show individual report
+        // $(document).on('click', '.chain-ireport', function(e){
+        //     e.preventDefault();
+        //     var splt = this.href.split("/");
+        //     var memberId = splt.pop();
+        //     var chainId = splt.pop();
+        //     if( !$( "#individal-report-"+memberId ).length ) {
+        //         $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+        //     }
+        //     var reload = $("#individal-report-"+memberId);
+        //     reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
+        //         html: "ireport_reload",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
+        // });
+        //
+        // // close individual report
+        // $(document).on('click', '[id^="individal-report-"]', function(e){
+        //     e.preventDefault();
+        //     $(this).html("");
+        // });
 
-        // close individual report
-        $(document).on('click', '[id^="individal-report-"]', function(e){
-            e.preventDefault();
-            $(this).html("");
-        });
 
-
-        // close individual report
-        $(document).on('click', '[id^="individal-report-"]', function(e){
-            e.preventDefault();
-            $(this).html("");
-        });
+        // // close individual report
+        // $(document).on('click', '[id^="individal-report-"]', function(e){
+        //     e.preventDefault();
+        //     $(this).html("");
+        // });
 
         window.setInterval(function(){
             var reload = $("#live-chain-status");

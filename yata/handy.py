@@ -1,10 +1,10 @@
 def apiCall(section, id, selections, key, sub=None):
     import requests
-    # DEBUG live chain
+    # # DEBUG live chain
     # if selections == "chain" and section == "faction":
     #     from django.utils import timezone
     #     print("[FUNCTION apiCall] DEBUG chain/faction")
-    #     chain = dict({"chain": {"current": 3,
+    #     chain = dict({"chain": {"current": 4,
     #                             "timeout": 65,
     #                             "modifier": 0.75,
     #                             "cooldown": 0,

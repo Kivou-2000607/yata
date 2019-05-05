@@ -7,6 +7,9 @@ class Player(models.Model):
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
 
+    factionId = models.IntegerField(default=0)
+    factionAA = models.BooleanField(default=False)
+
     lastUpdateTS = models.IntegerField(default=0)
 
     chainInfo = models.CharField(default="N/A", max_length=255)

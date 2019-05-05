@@ -5,11 +5,7 @@
 {% endif %}
 
 {% if errorMessage %}
-    <h2 class="title">Error</h2>
-    <div class="module">
-        <div class="errornote">
-            {{errorMessage}}
-            <br><a href="..">Go back</a>
-        </div>
+    <div class="module error">
+        <span><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{errorMessage}}</span>
     </div>
 {% endif %}

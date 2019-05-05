@@ -1,0 +1,207 @@
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+
+<script>
+
+$(document).ready(function() {
+    $("#chain-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[3,1],[6,1]]});
+
+    $("#chain-report").bind("sortStart",function() {
+        $('[id^="individal-report-"]').remove();
+    });
+});
+
+{% if graph.data|length %}
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+    {% if graph.info.reg|length == 2 %}
+      var data = google.visualization.arrayToDataTable([
+        ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'Current hit rate', 'Global hit rate', 'total hit count'],
+        {% for a,b,c,d in graph.data %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{graph.info.regLast.0|mul:d|add:graph.info.regLast.1}}, {{graph.info.reg.0|mul:d|add:graph.info.reg.1}}, {{c}}],
+         {% endfor %}
+      ]);
+
+      var options = {
+        // bar: {groupWidth: "100%"},
+        legend: {position: 'top', textStyle: {fontSize: 14}},
+        seriesType: 'bars',
+        vAxis: {
+            viewWindowMode:'explicit',
+            viewWindow: {min:0}
+        },
+        series: {
+                  0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                  1: {type: 'line', targetAxisIndex: 1, color: '#cccc00'},
+                  2: {type: 'line', targetAxisIndex: 1, color: '#55cc00'},
+                  3: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                 },
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      {% else %}
+          var data = google.visualization.arrayToDataTable([
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
+            {% for a,b,c in graph.data %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+             {% endfor %}
+          ]);
+
+          var options = {
+            // bar: {groupWidth: "100%"},
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
+      {% endif %}
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1]);
+
+      var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
+
+      chart.draw(data, options);
+    }
+{% endif %}
+</script>
+
+
+{% if chain %}
+    <table class="center trshadow">
+        <thead>
+            {% if chain.tId > 0 %}
+                <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+            {% else %}
+                <tr><th tyle="text-align: center;" colspan="2">Summary of live chain</th></tr>
+            {% endif %}
+        </thead>
+        <tbody>
+            <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
+            <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
+            <tr><td>Hits / attacks done</td><td><b>{{chain.nHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
+            <tr><td>Respect earnt &nbsp; (respect / hits)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.respect|div:chain.nAttacks|floatformat:2}})</b></td></tr>
+            {% for b in bonus %}
+            <tr>
+                <td>Bonus #{{b.hit}}</td>
+                <td>{{b.name}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr class="sep">
+{% endif %}
+
+
+{% if counts|length %}
+<table class="center-large">
+    <thead>
+        <tr><th style="text-align: center;">
+            <div id="toggle-kicked-members" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show players not in faction</div>
+            Hit count &nbsp; <div id="toggle-zero-hits" style="display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="zero-hits-icon" class="fas fa-toggle-off"></i> Show inactive members</div>
+        </th></tr>
+    </thead>
+</table>
+<table id="chain-report" class="tablesorter center-large trshadow chain-report">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Name [id]</th>
+            <th>Number<br> of hits</th>
+            <th>Number<br> of attacks</th>
+            <!-- <th title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
+            <th title="Average of war modifier over all hits">modifiers<br>(war)</th>
+            <th title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
+            <th title="Average of groupe attack modifier over all hits">modifiers<br>(groupe attack)</th>
+            <th title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th> -->
+            <th title="Average of all modifier over all hits">modifiers<br>(average)</th>
+            <th title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
+            <th title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
+            <th>Chain<br>watcher</th>
+            <th>days in<br>faction</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
+            {% if c.daysInFaction > -1 or c.wins > 0 %}
+            <tr {% if c.graph|length %}id="chain-ireport-{{chain.tId}}-{{c.attackerId}}"{% endif %} class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
+                <td class="a">{{ forloop.counter }}</td>
+                <td class="b dont-touch-me"><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
+
+
+                <td class="c">{{c.wins}}</td>
+                <td class="c">{{c.hits}}</td>
+                {% if c.wins %}
+                    <!-- <td class="c">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.war|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.retaliation|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.groupAttack|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.overseas|div:c.wins|floatformat:2}}</td> -->
+                    <td class="c">{{c.fairFight|div:c.wins|mul:c.war|div:c.wins|mul:c.retaliation|div:c.wins|mul:c.groupAttack|div:c.wins|mul:c.overseas|div:c.wins|floatformat:2}}</td>
+                {% else %}
+                    <!-- <td class="c">0.00</td>
+                    <td class="c">0.00</td>
+                    <td class="c">0.00</td>
+                    <td class="c">0.00</td> -->
+                    <td class="c">0.00</td>
+                {% endif %}
+                <!-- <td class="c">{{c.fairFight|floatformat:2}}</td> -->
+                {% if c.wins %}
+                    <td class="c">{{c.respect|div:c.wins|floatformat:2}}</td>
+                {% else %}
+                    <td class="c">0.00</td>
+                {% endif %}
+                <td class="c">{{c.respect|floatformat:2}}</td>
+
+
+            <td class="c">
+                {{c.watcher|mul:100|floatformat:2}}%
+            </td>
+
+            {% if c.daysInFaction < 0 %}
+                <td class="c"><i class="fas fa-sign-out-alt" title="not in the faction anymore"></i></td>
+            {% else %}
+                {% if c.beenThere %}
+                    <td class="c">{{c.daysInFaction}}</td>
+                {% else %}
+                    <td class="c"><i class="fas fa-child" title="Recruted during or after this chain"></i> {{c.daysInFaction}}</td>
+                {% endif %}
+            {% endif %}
+
+
+            </tr>
+            {% endif %}
+            <!-- <tr id="individal-report-{{c.attackerId}}"></tr> -->
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if graph.data|length %}
+    <hr class="sep">
+    <table class="center-large">
+        <thead>
+            <tr><th>Number of hits over time</th></tr>
+        </thead>
+        <tbody>
+            <tr class="white"><td><div id="histogram"></div></td></tr>
+        </tbody>
+        <tr><td style="text-align: center;">Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.
+            Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).
+            Hit rate: {{graph.info.speedRate|floatformat:1}} hits every 5 minutes.
+            {% if graph.info.reg|length == 2 %}
+            With the current hit rate, next bonus will be on {{graph.info.ETALast}}
+            With the global hit rate, next bonus will be on {{graph.info.ETA}}
+            {% endif %}
+        </td></tr>
+    </table>
+{% endif %}
+{% endif %}

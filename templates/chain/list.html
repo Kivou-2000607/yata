@@ -1,13 +1,50 @@
-<h2 id="chain-list" class="title">List of chains</h2>
-<div class="module whiteBG">
-    {% include "chain/list_reload.html" %}
-    <div class="submit-row">
-    {% if request.session.chainer.AA %}
-        <form method="post">{% csrf_token %}
-            <a href={% url 'chain:createList' %}><input id=chain-list-refresh type="submit" class="update-type" value="Refresh chain list"></a>
-        </form>
-    {% else %}
-        <a><input type="submit" class="update-type" value="You need AA permission to refresh the list"></a>
-    {% endif %}
-    </div>
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+{% include "yata/error.html" %}
+
+<h2 class="title">List of chains</h2>
+<div class="module">
+    <table class="tablesorter center-large chain-list">
+        <thead>
+            <tr>
+                <th>Chain [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Hits</th>
+                <th>Respect</th>
+                <th>Respect / hit</th>
+                <th>Report</th>
+        </thead>
+        <tbody>
+        {% for chain in chains %}
+        <tr>
+            {% if chain.tId > 0 %}
+                <td class="a"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
+            {% else %}
+                <td class="a"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
+            {% endif %}
+            <td class="b">{{chain.start|ts2date}}</td>
+            {% if chain.tId > 0 %}
+                <td class="b">{{chain.end|ts2date}}</td>
+            {% else %}
+                <td class="b">-</td>
+            {% endif %}
+
+            <td class="c">{{chain.end|sub:chain.start|div:3600|floatformat:1}} hrs</td>
+            <td class="d" title="{{chain.reportNHits}}/{{chain.nHits}}"><b>{{chain.nHits}}</b></td>
+            <td class="d" ><b>{{chain.respect|floatformat:2}}</b></td>
+            <td class="d" ><b>{{chain.respect|div:chain.nHits|floatformat:2}}</b></td>
+            <td class="e" >
+                <div id="catch-buttons-{{chain.tId}}">
+                    {% include "chain/list-buttons.html" %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>

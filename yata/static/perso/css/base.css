@@ -11,6 +11,9 @@ a, th {
     outline: none;
 }
 
+a.form-inline,
+form.form-inline { display: inline; }
+
 div.module {
     background-color: #cccccc00;
     /* padding:0 10px 0 10px; */

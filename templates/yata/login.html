@@ -16,7 +16,7 @@
                     {% endif %}
                     <span class="sep"></span>
 
-                <a href="{% url 'index' %}" class="yata-link-chain" title="Go to chain">
+                <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
                     <b><i class="fas fa-link"></i> Chain reports:</b></a>
                     {% if player.chainInfo == "N/A" %}
                         &empty;
@@ -54,6 +54,10 @@
                 <hr class="sep">
                 <p>Welcome to the target list. You can look at your last attacks to add a new targets. You can refresh the information by clicking on the target line.</p>
                 {% include "target/categories.html" %}
+            {% elif chain or chains %}
+                <hr class="sep">
+                <p>Welcome to the chain reports.</p>
+                {% include "chain/categories.html" %}
             {% endif %}
 
         </div>

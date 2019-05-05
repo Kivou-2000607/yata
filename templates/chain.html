@@ -1,346 +1,132 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-{% load i18n %}
-{% load humanize %}
-{% load mathfilters %}
-{% get_current_language as LANGUAGE_CODE %}
 
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/chain.css" %} />
+{% endblock%}
 
-    <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+{% block title%}
+    - Chain
+{% endblock %}
 
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-
-    <!-- load jquery from https://code.jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    	    crossorigin="anonymous"></script>
-
-    <!-- jquery module to sort tables from http://tablesorter.com -->
-    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
-
-    <!-- google charts -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-    <!-- scripts jquery perso -->
-    <script>
-
-        $(document).on('click', '#toggle-zero-hits', function(e){
-            e.preventDefault();
-            $(".zero-hits").slideToggle('fast', function() {});
-            $(".zero-hits").promise().done(function() {
-                var icon = $("#zero-hits-icon");
-                if (icon.hasClass("fas fa-toggle-on")) {
-                    icon.removeClass("fas fa-toggle-on");
-                    icon.addClass("fas fa-toggle-off");
-                } else {
-                    icon.removeClass("fas fa-toggle-off");
-                    icon.addClass("fas fa-toggle-on");
-                }
-            });
+{% block jquery %}
+<script>
+    $(document).on('click', 'table.chain-categories td', function(e){
+        e.preventDefault();
+        var l = $(this).children("a").attr("href").split("/")[2];
+        $( "#content-update" ).load( "/chain/"+l+"/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+    });
 
-        $(document).on('click', '#toggle-kicked-members', function(e){
-            e.preventDefault();
-            $(".kicked-members").slideToggle('fast', function() {});
-            $(".kicked-members").promise().done(function() {
-                var icon = $("#kicked-members-icon");
-                if (icon.hasClass("fas fa-toggle-on")) {
-                    icon.removeClass("fas fa-toggle-on");
-                    icon.addClass("fas fa-toggle-off");
-                } else {
-                    icon.removeClass("fas fa-toggle-off");
-                    icon.addClass("fas fa-toggle-on");
-                }
-            });
+    // see report from list button
+    $(document).on('click', '.chain-report-see-list', function(e){
+        e.preventDefault();
+        var chainId = this.href.split("/").pop();
+        $( "#content-update" ).load( "/chain/report/"+chainId, {
+            chainId: chainId,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading report '+chainId)
+    });
 
-        $(document).on('click', '.update-key', function(e){
-            e.preventDefault();
-            var key = $("#key-value").val();
-            var check = $("#key-check-remember").is(':checked');
-            var reload = $("#api-key");
-            $( "#api-key" ).load( "{% url 'chain:updateKey' %}", {
-                keyValue: key,
-                html: "login",
-                rememberSession: check,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><div class="loader"></div></div>');
+    // refresh/create report from list button
+    $(document).on('click', '.chain-report-refresh-list', function(e){
+        e.preventDefault();
+        var chainId = this.href.split("/").pop();;
+        var reload = $("#catch-buttons-"+chainId);
+        reload.load( "/chain/createReport/"+chainId, {
+            chainId: chainId,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        // refresh members
-        $(document).on('click', '#chain-members-refresh', function(e){
-            e.preventDefault();
-            var reload = $("#chain-members-reload");
-            reload.load( "{% url 'chain:createMembers' %}", {
-                html: "members_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
+    // delete report from list button
+    $(document).on('click', '.chain-report-delete-list', function(e){
+        e.preventDefault();
+        var chainId = this.href.split("/").pop();;
+        var reload = $("#catch-buttons-"+chainId);
+        reload.load( "/chain/deleteReport/"+chainId, {
+            chainId: chainId,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        // refresh chain list
-        $(document).on('click', '#chain-list-refresh', function(e){
-            e.preventDefault();
-            var reload = $("#chain-list-reload");
-            reload.load( "{% url 'chain:createList' %}", {
-                html: "list_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
+    // toggle report from list button
+    $(document).on('click', '.chain-report-toggle-list', function(e){
+        e.preventDefault();
+        var chainId = this.href.split("/").pop();;
+        var reload = $("#catch-buttons-"+chainId);
+        reload.load( "/chain/toggleReport/"+chainId, {
+            chainId: chainId,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        // refresh report from report button
-        // $(document).on('click', '#chain-report-refresh', function(e){
-        //     e.preventDefault();
-        //     var reload = $("#chain-report-reload");
-        //     var chainId = $("#chain-report-id").val();
-        //     reload.load( "/chain/createReport/"+chainId, {
-        //         html: "report_reload",
-        //         chainId: chainId,
-        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        //     });
-        //     reload.html('<div class="loader"></div>');
-        // });
-
-        // refresh/create report from list button
-        $(document).on('click', '.chain-report-refresh-list', function(e){
-            e.preventDefault();
-            var chainId = this.href.split("/").pop();;
-            var reload = $("#catch-buttons-"+chainId);
-            reload.load( "/chain/createReport/"+chainId, {
-                html: "list_reload_buttons",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // delete report from list button
-        $(document).on('click', '.chain-report-delete-list', function(e){
-            e.preventDefault();
-            var chainId = this.href.split("/").pop();;
-            var reload = $("#catch-buttons-"+chainId);
-            reload.load( "/chain/deleteReport/"+chainId, {
-                html: "list_reload_buttons",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // toggle report from list button
-        $(document).on('click', '.chain-report-toggle-list', function(e){
-            e.preventDefault();
-            var chainId = this.href.split("/").pop();;
-            var reload = $("#catch-buttons-"+chainId);
-            reload.load( "/chain/toggleReport/"+chainId, {
-                html: "list_reload_buttons",
-                chainId: chainId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // toggle target from attack list button
-        $(document).on('click', '.attack-list-toggle', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $(".catch-buttons-attack-"+targetId);
-            reload.load( "/chain/toggleTarget/"+targetId, {
-                html: "attacks_reload_buttons",
-                targetId: targetId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // target list button
-        $(document).on('click', '.target-list-toggle', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/refreshTarget/"+targetId, {
-                html: "targets_reload_line",
-                targetId: targetId,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<td colspan="12" style="text-align: center;"><div class="loader"></div></td>');
-        });
-
-        // delete target from target list button
-        $(document).on('click', '.target-list-delete', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/deleteTarget/"+targetId, {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // delete target from target list button
-        $(document).on('click', '.target-list-list', function(e){
-            e.preventDefault();
-            var url = this.href.split("/")
-            var list = url.pop();
-            var targetId = url.pop();
-            var reload = $(this).closest("td");
-            // alert("coucou");
-            reload.load( "/chain/changeTargetList/"+targetId+"/"+list, {
-                html: "targets_reload_list_inline",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            // reload.html('<div class="loader"></div>');
-        });
-
-        // toggle target refresh status from target list button
-        $(document).on('click', '.target-list-toggle-refresh-status', function(e){
-            e.preventDefault();
-            var targetId = this.href.split("/").pop();
-            var reload = $("#catch-line-target-"+targetId);
-            reload.load( "/chain/toggleTargetRefreshStatus/"+targetId, {
-                html: "targets_reload_line",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // refresh all targets
-        $(document).on('click', '#targets-refresh-all', function(e){
-            e.preventDefault();
-            var reload = $("#targets-reload");
-            reload.load( "/chain/refreshTargets/0", {
-                html: "targets_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-        // refresh selected targets
-        $(document).on('click', '#targets-refresh-selected', function(e){
-            e.preventDefault();
-            var reload = $("#targets-reload");
-            reload.load( "/chain/refreshTargets/1", {
-                html: "targets_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<div class="loader"></div>');
-        });
-
-
-        // toggle faction key
-        $(document).on('click', '.faction-key-toggle', function(e){
-            e.preventDefault();
-            var reload = $("#toggle-faction-key");
-            reload.load( "{% url 'chain:toggleFactionKey' %}", {
-                html: "faction_key_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            // reload.html('<div class="loader"></div>');
-        });
-
-        // show individual report
-        $(document).on('click', '.chain-ireport', function(e){
-            e.preventDefault();
-            var splt = this.href.split("/");
-            var memberId = splt.pop();
-            var chainId = splt.pop();
-            if( !$( "#individal-report-"+memberId ).length ) {
-                $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+    $(document).on('click', '#toggle-zero-hits', function(e){
+        e.preventDefault();
+        $(".zero-hits").slideToggle('fast', function() {});
+        $(".zero-hits").promise().done(function() {
+            var icon = $("#zero-hits-icon");
+            if (icon.hasClass("fas fa-toggle-on")) {
+                icon.removeClass("fas fa-toggle-on");
+                icon.addClass("fas fa-toggle-off");
+            } else {
+                icon.removeClass("fas fa-toggle-off");
+                icon.addClass("fas fa-toggle-on");
             }
-            var reload = $("#individal-report-"+memberId);
-            reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
-                html: "ireport_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
         });
+    });
 
-        // close individual report
-        $(document).on('click', '[id^="individal-report-"]', function(e){
-            e.preventDefault();
-            $(this).html("");
+    $(document).on('click', '#toggle-kicked-members', function(e){
+        e.preventDefault();
+        $(".kicked-members").slideToggle('fast', function() {});
+        $(".kicked-members").promise().done(function() {
+            var icon = $("#kicked-members-icon");
+            if (icon.hasClass("fas fa-toggle-on")) {
+                icon.removeClass("fas fa-toggle-on");
+                icon.addClass("fas fa-toggle-off");
+            } else {
+                icon.removeClass("fas fa-toggle-off");
+                icon.addClass("fas fa-toggle-on");
+            }
         });
+    });
 
-
-        // close individual report
-        $(document).on('click', '[id^="individal-report-"]', function(e){
-            e.preventDefault();
-            $(this).html("");
+    // show individual report
+    $(document).on('click', 'tr[id^="chain-ireport-"] > td:not(.dont-touch-me)', function(e){
+        e.preventDefault();
+        var splt = $(this).closest("tr").attr("id").split("-");
+        var memberId = splt.pop();
+        var chainId = splt.pop();
+        if( !$( "#individal-report-"+memberId ).length ) {
+            $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+        }
+        var reload = $("#individal-report-"+memberId);
+        reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        reload.html('<td colspan="9" style="text-align: center;"><div class="loader"></div></td>');
+    });
 
-        window.setInterval(function(){
-            var reload = $("#live-chain-status");
-            reload.load( "{% url 'chain:updateLive' %}", {
-                html: "live_reload",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            // reload.html('<div class="loader"></div>');
-        }, 30000);
-
-        // window.setInterval(function(){
-        //     $("#targets-reload").load("{% url 'chain:reloadAllTargets' %}");
-        // }, 60000);
-
-    </script>
+    // close individual report
+    $(document).on('click', '[id^="individal-report-"]', function(e){
+        e.preventDefault();
+        $(this).html("");
+    });
 
 
-    <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+</script>
+{% endblock %}
 
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>Yet Another Torn App</title>
-</head>
-
-<body>
-    <div id="details"></div>
-
-    <div id="container">
-        <div id="content">
-            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp &nbsp; &nbsp; &nbsp; &nbsp;  <a href="{% url 'bazaar:index' %}"><b>bazaar</b></a> - <a href="{% url 'chain:index' %}"><b>chain</b></a> - <a href="{% url 'awards:index' %}"><b>awards</b></a></h1>
-            <p><b>Chain tools</b>: look at chain reports to see who's been a good chainer and build up your target list to max your respect gains</p>
-            <br />
-
-            <div id="api-key">
-                {% include "chain/login.html" %}
-            </div>
-
-
-            {% if view.liveReport %}{% include "chain/live.html" %}{% endif %}
-
-            {% if view.report %}{% include "chain/report.html" %}{% endif %}
-
-            {% if view.jointReport %}{% include "chain/jreport.html" %}{% endif %}
-
-            {% if view.list %}{% include "chain/list.html" %}{% endif %}
-
-            {% if view.members %}{% include "chain/members.html" %}{% endif %}
-
-            {% if view.targets %}{% include "chain/targets.html" %}{% endif %}
-
-            {% if view.tree %}
-                <div id="chain-tree">
-                    {% include "chain/tree.html" %}
-                </div>
-            {% endif %}
-
-            {% if view.liveReport and view.report %}
-                {% include "chain/faction_key.html" %}
-            {% endif %}
-
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+{% block content %}
+    <div id="content-update">
+        {% include "chain/content-reload.html" %}
+    </div>
+{% endblock %}

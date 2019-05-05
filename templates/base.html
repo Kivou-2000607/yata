@@ -27,6 +27,9 @@
     <!-- load table sorter  -->
     <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
 
+    <!-- google charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
     <!-- scripts jquery perso -->
     {% block jquery %}{% endblock %}
     <script>
@@ -38,6 +41,11 @@
         $(document).on('click', 'a.yata-link-target', function(e){
             $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
         });
+
+        $(document).on('click', 'a.yata-link-chain', function(e){
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (3 API calls)</h2><div class="module"><div class="loader"></div></div>');
+        });
+
 
     </script>
 
@@ -58,8 +66,8 @@
         <div id="content">
             <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1>
 
-            {% include "yata/error.html" %}
             {% include "yata/login.html" %}
+            {% include "yata/error.html" %}
 
             {% block content %}{% endblock %}
 

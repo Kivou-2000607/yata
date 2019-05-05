@@ -5,49 +5,44 @@
 
     <script>
 
-    $(document).ready(function() {
-        $(document).ready(function() {
-            $.tablesorter.addParser({
-              // set a unique id
-              id: 'since',
-              is: function(s, table, cell, $cell) {
+    $(function() {
+        $.tablesorter.addParser({
+            // set a unique id
+            id: 'since',
+            is: function(s, table, cell, $cell) {
                 // return false so this parser is not auto detected
                 return false;
-              },
-              format: function(s, table, cell, cellIndex) {
+            },
+            format: function(s, table, cell, cellIndex) {
                 // format your data for normalization
                 var ret = s.toLowerCase()
-                          .replace(/days/,86400)
-                          .replace(/day/,86400)
-                          .replace(/hours/,3600)
-                          .replace(/hour/,3600)
-                          .replace(/minutes/,60)
-                          .replace(/minute/,60).split(' ');
+                .replace(/days/,86400)
+                .replace(/day/,86400)
+                .replace(/hours/,3600)
+                .replace(/hour/,3600)
+                .replace(/minutes/,60)
+                .replace(/minute/,60).split(' ');
                 return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
-              },
-              // set type, either numeric or text
-              type: 'numeric'
-            });
-
-            $("#joint-report-bonus").tablesorter({
-                headers: {
-                    5: { sorter: "since" }
-                },
-                sortList: [[4,1]],
-            });
+            },
+            // set type, either numeric or text
+            type: 'numeric',
         });
 
-        $("#joint-report-bonus").bind("sortStart",function() {});
+        $("#chain-jbonus").tablesorter({
+            headers: { 5: { sorter: 'since' } },
+            cssAsc: 'up', cssDesc: 'down', sortList: [[4,1]],
+        });
+        // $("#chain-jbonus").bind("sortStart",function() {});
     });
 
     </script>
 
     <h2 class="title">Joint report</h2>
 
-    <div class="module whiteBG justxt">
+    <div class="module">
 
         <br>
-        <table class="center">
+        <table id="chain-jsummary" class="center trshadow chain-jsummary">
             <thead>
                 <tr><th style="text-align: center;" colspan="5">Summary of the joint report made of the following chain{{chainsReport|length|pluralize}}</th></tr>
                 <tr>
@@ -59,62 +54,61 @@
             </thead>
             <tbody>
                 {% for chain in chainsReport %}
-                    <tr><td style="text-align: center;">{{ forloop.counter }}</td>
+                    <tr><td class="a">{{ forloop.counter }}</td>
                         {% if chain.start == 1 %}
-                            <td>current chain</td>
+                            <td class="b">current chain</td>
                         {% else %}
-                            <td>Chain of {{chain.startDate}}</td>
+                            <td class="b">Chain of {{chain.startDate}}</td>
                         {% endif %}
-                        <td><b>{{chain.nHits}}</b> hits</td>
-                        <td><b>{{chain.respect|floatformat:2}}</b> respects</td>
-                        <td><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>
+                        <td class="c"><b>{{chain.nHits}}</b> hits</td>
+                        <td class="c"><b>{{chain.respect|floatformat:2}}</b> respects</td>
+                        <td class="d"><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>
                     </tr>
                 {% endfor %}
-                <tr><td colspan="2"><b>Total</b></td>
-                    <td><b>{{total.nHits}}</b> hits</td>
-                    <td><b>{{total.respect|floatformat:2}}</b> respects</td>
+                <tr><td style="text-align: right;" colspan="2"><b>Total</b></td>
+                    <td class="c"><b>{{total.nHits}}</b> hits</td>
+                    <td class="c"><b>{{total.respect|floatformat:2}}</b> respects</td>
                 </tr>
             </tbody>
         </table>
         <br>
 
-        <table id="joint-report-bonus" class="center">
+        <table id="chain-jbonus" class="tablesorter center trshadow chain-jbonus">
             <thead>
-                <tr><th style="text-align: center;" colspan="5">Summary of the bonus</th></tr>
+                <!-- <tr><th style="text-align: center;" colspan="6">Summary of the bonus</th></tr> -->
                 <tr>
                     <th>User</th>
                     <th>Bonus</th>
-                    <th>Total bonus respect</th>
-                    <th>Total Hits</th>
-                    <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Next Bonus Score</th>
+                    <th>Respect</th>
+                    <th>Hits</th>
+                    <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Score</th>
                     <th>Last action</th>
                 </tr>
             </thead>
             <tbody>
                 {%for bonus in bonuses%}
                     <tr>
-                        <td>{{bonus.0}}</td>
+                        <td class="a">{{bonus.0}}</td>
                         {% if bonus.2 %}
-                            <td>{{bonus.1}}</td>
+                            <td class="b">{{bonus.1}}</td>
                         {% else %}
-                            <td>-</td>
+                            <td class="b">-</td>
                         {% endif %}
-                        <td>{{bonus.2|floatformat:0}}</td>
-                        <td>{{bonus.3|floatformat:0}}</td>
+                        <td class="c">{{bonus.2|floatformat:0}}</td>
+                        <td class="c">{{bonus.3|floatformat:0}}</td>
                         {% if bonus.2 %}
-                            <td title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                            <td class="c" title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
                         {% else %}
-                            <td title="{{bonus.3}}">{{bonus.3|floatformat:2}}</td>
+                            <td class="c" title="{{bonus.3}}">{{bonus.3|floatformat:2}}</td>
                         {% endif %}
-                        <td>{{bonus.4}}</td>
+                        <td class="d">{{bonus.4}}</td>
                     </tr>
                 {%endfor%}
             </tbody>
         </table>
 
-
-        {% include "chain/report_reload.html" %}
-
         <br>
+        {% include "chain/report-table.html" %}
     </div>
+
 </div>

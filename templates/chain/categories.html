@@ -1,0 +1,19 @@
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow chain-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'chain:live' %}">Live report</a>
+        </td>
+        <td>
+            <a href="{% url 'chain:list' %}">List of chains</a>
+        </td>
+        <td>
+            <a href="{% url 'chain:jointReport' %}">Joint report</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>

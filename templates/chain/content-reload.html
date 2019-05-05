@@ -1,0 +1,12 @@
+{% if view.liveReport %}
+    {% include "chain/live.html" %}
+{% endif %}
+{% if view.report %}
+    {% include "chain/report.html" %}
+{% endif %}
+{% if view.jointReport %}
+    {% include "chain/jreport.html" %}
+{% endif %}
+{% if view.list %}
+    {% include "chain/list.html" %}
+{% endif %}
