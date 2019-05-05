@@ -258,7 +258,7 @@ def list(request):
                             chain.startDate = timestampToDate(v['start'])
                             chain.endDate = timestampToDate(v['end'])
                             chain.nHits = v['chain']
-                            chain.reportNHits = 0
+                            # chain.reportNHits = 0
                             chain.respect = v['respect']
                             chain.save()
 
