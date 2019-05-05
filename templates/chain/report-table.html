@@ -88,7 +88,7 @@ $(document).ready(function() {
         <tbody>
             <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
             <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-            <tr><td>Hits / attacks done</td><td><b>{{chain.nHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
+            <tr><td>Hits / attacks done</td><td><b>{{chain.reportNHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
             <tr><td>Respect earnt &nbsp; (respect / hits)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.respect|div:chain.nAttacks|floatformat:2}})</b></td></tr>
             {% for b in bonus %}
             <tr>
