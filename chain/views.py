@@ -205,7 +205,7 @@ def list(request):
             print('[view.chain.list] faction {} found'.format(factionId))
 
         # update chains if AA
-        if player.factionAA and False:
+        if player.factionAA:
             chains = apiCall('faction', faction.tId, 'chains', key, sub='chains')
             if 'apiError' in chains:
                 context.update(chains)
