@@ -6,7 +6,7 @@ table.chain-categories td {
 }
 
 table.chain-list td.a { width: 10%; }
-table.chain-list td.b { width: 15%; } /* x2 */
+table.chain-list td.b { width: 15%; text-align: center;} /* x2 */
 table.chain-list td.c { width: 10%; text-align: center;}
 table.chain-list td.d { width: 10%; text-align: center;} /* x3 */
 table.chain-list td.e { width: 20%; }
@@ -19,8 +19,8 @@ table.chain-jbonus td.b { width: 20%; text-align: left; }
 table.chain-jbonus td.c { width: 12%; text-align: center; }  /* x3 */
 table.chain-jbonus td.d { width: 20%; text-align: right; }
 
-table.chain-jsummary td.a { width: 10%; text-align: center; }
-table.chain-jsummary td.b { width: 30%; text-align: left; }
+table.chain-jsummary td.a { width: 20%; text-align: left; }
+table.chain-jsummary td.b { width: 20%; text-align: left; }
 table.chain-jsummary td.c { width: 20%; text-align: center; } /* x2 */
 table.chain-jsummary td.d { width: 20%; text-align: center; }
 

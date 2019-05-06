@@ -2,6 +2,10 @@ from django.db import models
 from django.utils import timezone
 
 
+class Preference(models.Model):
+    allowedFactions = models.TextField(default="{}")
+
+
 class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
@@ -58,6 +62,26 @@ class Faction(models.Model):
 
         return True
 
+    def add_key(self, name, key):
+        print("[models.chain.add_key] "+name)
+        keys = self.get_all_keys()
+        if key not in keys:
+            if len(keys)<11:
+                print("[models.chain.add_key] add key")
+                pairs.append([name, key])
+            else:
+                print("[models.chain.add_key] too many key saved")
+                return False
+        else:
+            print("[models.chain.add_key] kee already saved")
+            return False
+
+        string = ",".join([p[0]+":"+p[1] for p in pairs])
+        self.apiString = string if string else 0
+        self.save()
+
+        return True
+
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -67,9 +91,7 @@ class Chain(models.Model):
     nAttacks = models.IntegerField(default=1)
     respect = models.FloatField(default=0)
     start = models.IntegerField(default=0)
-    startDate = models.DateTimeField(default=timezone.now)
     end = models.IntegerField(default=0)
-    endDate = models.DateTimeField(default=timezone.now)
     status = models.BooleanField(default=True)
     createReport = models.BooleanField(default=False)
     jointReport = models.BooleanField(default=False)

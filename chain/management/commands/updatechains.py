@@ -46,7 +46,6 @@ class Command(BaseCommand):
             #     chain.end = int(timezone.now().timestamp())
             #     chain.endDate = timestampToDate(chain.end)
             #     chain.start = int(liveChain.get("start"))
-            #     chain.startDate = timestampToDate(chain.start)
             #     chain.nHits = int(liveChain.get("current"))
             #     # chain.createReport = True
             #     chain.save()

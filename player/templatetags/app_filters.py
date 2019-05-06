@@ -8,9 +8,12 @@ def ts2date(timestamp):
     import datetime
     import pytz
     try:
-        return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+        d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
     except:
-        return datetime.datetime.fromtimestamp(0, tz=pytz.UTC)
+        d = datetime.datetime.fromtimestamp(0, tz=pytz.UTC)
+
+    # return "{:04d}/{:02d}/{:02d} {:02d}:{:02d}".format(d.year, d.month, d.day, d.hour, d.minute)
+    return d.strftime("%Y/%m/%d %I:%M %p")
 
 
 @register.filter(name='ts2hhmmss')

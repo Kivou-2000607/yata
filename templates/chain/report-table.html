@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load mathfilters %}
+{% load app_filters %}
 
 <script>
 
@@ -80,22 +81,22 @@ $(document).ready(function() {
     <table class="center trshadow">
         <thead>
             {% if chain.tId > 0 %}
-                <tr><th tyle="text-align: center;" colspan="2">Summary of the chain {{chain.tId}}</th></tr>
+                <tr><th tyle="text-align: center;" colspan="4">Summary of the chain [{{chain.tId}}]</th></tr>
             {% else %}
-                <tr><th tyle="text-align: center;" colspan="2">Summary of live chain</th></tr>
+                <tr><th tyle="text-align: center;" colspan="4">Summary of live chain</th></tr>
             {% endif %}
         </thead>
         <tbody>
-            <tr><td>Started on</td><td>{{chain.startDate}}</td></tr>
-            <tr><td>Ended on</td><td>{{chain.endDate}}</td></tr>
-            <tr><td>Hits / attacks done</td><td><b>{{chain.reportNHits}} / {{chain.nAttacks}} &nbsp; ({{chain.nHits|div:chain.nAttacks|mul:"100"|floatformat:0}}% of wins)</b></td></tr>
-            <tr><td>Respect earnt &nbsp; (respect / hits)</td><td><b>{{chain.respect|floatformat:0}} &nbsp; ({{chain.respect|div:chain.nAttacks|floatformat:2}})</b></td></tr>
-            {% for b in bonus %}
+            <tr><td><b>Duration</b></td><td colspan="3">From {{chain.start|ts2date}} to {{chain.end|ts2date}}</td></tr>
             <tr>
-                <td>Bonus #{{b.hit}}</td>
-                <td>{{b.name}}</td>
+                <td><b>Hits / Attacks done:</b> {{chain.reportNHits}} / {{chain.nAttacks}}</td><td><b>% of wins:</b> {{chain.reportNHits|div:chain.nAttacks|mul:"100"|floatformat:0}}%</td>
+                <td><b>Respect earnt:</b> {{chain.respect|floatformat:0}}</td><td><b>Respect / hit:</b>{{chain.respect|div:chain.nAttacks|floatformat:2}}</td>
             </tr>
-            {% endfor %}
+                {% for b in bonus %}
+                    {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                        <td><b>Bonus #{{b.hit}}:</b> {{b.name}}</td>
+                    {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+                {% endfor %}
         </tbody>
     </table>
     <hr class="sep">

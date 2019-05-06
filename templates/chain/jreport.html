@@ -1,5 +1,6 @@
 {% load humanize %}
 {% load mathfilters %}
+{% load app_filters %}
 
 <div>
 
@@ -46,7 +47,8 @@
             <thead>
                 <tr><th style="text-align: center;" colspan="5">Summary of the joint report made of the following chain{{chainsReport|length|pluralize}}</th></tr>
                 <tr>
-                    <th colspan="2">Chain</th>
+                    <th>Chain [ID]</th>
+                    <th>Date</th>
                     <th>Hits</th>
                     <th>Respect</th>
                     <th>See report</th>
@@ -54,12 +56,8 @@
             </thead>
             <tbody>
                 {% for chain in chainsReport %}
-                    <tr><td class="a">{{ forloop.counter }}</td>
-                        {% if chain.start == 1 %}
-                            <td class="b">current chain</td>
-                        {% else %}
-                            <td class="b">Chain of {{chain.startDate}}</td>
-                        {% endif %}
+                    <tr><td class="a">Chain #{{ forloop.counter }} [{{chain.tId}}]</td>
+                        <td class="b">{{chain.start|ts2date}}</td>
                         <td class="c"><b>{{chain.nHits}}</b> hits</td>
                         <td class="c"><b>{{chain.respect|floatformat:2}}</b> respects</td>
                         <td class="d"><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>

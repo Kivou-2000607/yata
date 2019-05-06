@@ -45,7 +45,7 @@
                 <a class="chain-report-delete-list" href={% url 'chain:deleteReport' chain.tId %}><i class="fas fa-trash-alt" title="Delete report"></i></a> -
             </form>
 
-            <i class="fas fa-clock" style="color: #ea9999;" title="Chain is to big. A new report will be created in a couple of minutes."></i>
+            <i class="fas fa-clock" style="color: #ea9999;" title="A new report will be created in a couple of minutes."></i>
         {% else %}
             {% if player.factionAA %}
                 <form>{% csrf_token %}

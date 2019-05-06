@@ -18,7 +18,9 @@ from chain.functions import updateMembers
 
 from chain.models import Faction
 from chain.models import Member
+from chain.models import Preference
 
+preferences = Preference.objects.first()
 
 # render view
 def index(request):
@@ -36,8 +38,10 @@ def index(request):
             error = user
 
         if not error:
-            try:
-                factionId = int(user.get("faction")["faction_id"])
+            # try:
+            factionId = int(user.get("faction")["faction_id"])
+            allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
+            if factionId in allowedFactions:
                 player.chainInfo = user.get("faction")["faction_name"]
                 player.factionId = factionId
                 if 'chains' in apiCall('faction', factionId, 'chains', key):
@@ -46,14 +50,19 @@ def index(request):
                 player.lastUpdateTS = int(timezone.now().timestamp())
                 player.save()
                 print('[view.chain.index] player in faction {}'.format(player.chainInfo))
-            except:
-                player.chainInfo = "N/A"
-                player.factionId = 0
-                player.factionAA = False
-                player.save()
-                context.update({"errorMessage": "You're not in any faction"})
-                print('[view.chain.index] player without faction')
+            else:
+                print('[view.chain.index] player in non registered faction {}'.format(user.get("faction")["faction_name"]))
+                context = {"player": player, "errorMessage": "Faction not registered. PM Kivou [2000607] for details."}
                 return render(request, 'chain.html', context)
+
+            # except:
+            #     player.chainInfo = "N/A"
+            #     player.factionId = 0
+            #     player.factionAA = False
+            #     player.save()
+            #     context.update({"errorMessage": "You're not in any faction"})
+            #     print('[view.chain.index] player without faction')
+            #     return render(request, 'chain.html', context)
 
             # get /create faction
             faction = Faction.objects.filter(tId=factionId).first()
@@ -64,6 +73,11 @@ def index(request):
                 faction.name = user.get("faction")["faction_name"]
                 faction.save()
                 print('[view.chain.index] faction {} found'.format(factionId))
+
+            if player.factionAA:
+                print('[view.chain.index] save AA key'.format(factionId))
+                faction.add_key(player.name, player.key)
+                faction.save()
 
         else:
             print("[view.chain.index] api error {}".format(error))
@@ -217,14 +231,12 @@ def list(request):
                         if chain is None:
                             print('[view.chain.list] chain {} created'.format(k))
                             faction.chain_set.create(tId=k, nHits=v['chain'], respect=v['respect'],
-                                                     start=v['start'], startDate=timestampToDate(v['start']),
-                                                     end=v['end'], endDate=timestampToDate(v['end']))
+                                                     start=v['start'],
+                                                     end=v['end'])
                         else:
                             print('[view.chain.list] chain {} updated'.format(k))
                             chain.start = v['start']
                             chain.end = v['end']
-                            chain.startDate = timestampToDate(v['start'])
-                            chain.endDate = timestampToDate(v['end'])
                             chain.nHits = v['chain']
                             # chain.reportNHits = 0
                             chain.respect = v['respect']
@@ -420,7 +432,7 @@ def jointReport(request):
         arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for name, (hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # add last time connected
-        # updateMembers(faction, key=request.session['chainer'].get('keyValue'))
+        updateMembers(faction, key=player.key)
         for i, bonus in enumerate(arrayBonuses):
             try:
                 arrayBonuses[i].append(faction.member_set.filter(name=bonus[0]).first().lastAction)
@@ -599,7 +611,7 @@ def toggleReport(request, chainId):
     return HttpResponseRedirect(reverse('logout'))
 
 
-# action view
+# # action view
 # def toggleFactionKey(request):
 #     if request.session.get('chainer') and request.session['chainer'].get('AA'):
 #         # get session info

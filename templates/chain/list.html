@@ -5,9 +5,15 @@
 
 {% include "yata/error.html" %}
 
+<script>
+    $(document).ready(function() {
+        $("#chain-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    });
+</script>
+
 <h2 class="title">List of chains</h2>
 <div class="module">
-    <table class="tablesorter center-large chain-list">
+    <table id="chain-list" class="tablesorter center-large chain-list">
         <thead>
             <tr>
                 <th>Chain [ID]</th>
@@ -24,13 +30,11 @@
         <tr>
             {% if chain.tId > 0 %}
                 <td class="a"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
-            {% else %}
-                <td class="a"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
-            {% endif %}
-            <td class="b">{{chain.start|ts2date}}</td>
-            {% if chain.tId > 0 %}
+                <td class="b">{{chain.start|ts2date}}</td>
                 <td class="b">{{chain.end|ts2date}}</td>
             {% else %}
+                <td class="a"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
+                <td class="b">{{chain.start|ts2date}}</td>
                 <td class="b">-</td>
             {% endif %}
 

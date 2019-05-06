@@ -10,9 +10,16 @@ from .models import Count
 from .models import Bonus
 from .models import Target
 from .models import Attacks
+from .models import Preference
 
 
 from yata.handy import timestampToDate
+
+class PreferenceAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+admin.site.register(Preference, PreferenceAdmin)
+
 
 class AttacksInline(admin.TabularInline):
     model = Attacks
@@ -86,7 +93,7 @@ class ChainInline(admin.TabularInline):
 
 
 class ChainAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tId', 'nHits', 'startDate', 'endDate', 'respect', 'status']
+    list_display = ['__str__', 'tId', 'nHits', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
     inlines = [ReportInline]
 
