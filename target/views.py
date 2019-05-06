@@ -135,7 +135,7 @@ def toggleTarget(request, targetId):
             lifeMax = int(targetInfo["life"]["maximum"])
             life = int(targetInfo["life"]["current"])
             status = targetInfo["status"][0].replace("In hospital", "Hosp")
-            statusFull = " ".join(targetInfo["status"]),
+            statusFull = " ".join(targetInfo["status"])
             lastAction = targetInfo["last_action"]["relative"]
             lastUpdate = int(timezone.now().timestamp())
 
