@@ -1,5 +1,4 @@
-from django.shortcuts import render, reverse
-from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
@@ -20,7 +19,7 @@ def index(request):
         targetJson = json.loads(player.targetJson)
 
         # call for attacks
-        error=False
+        error = False
         attacks = apiCall('user', "", 'attacks', key, sub='attacks')
         if 'apiError' in attacks:
             error = attacks
@@ -42,7 +41,7 @@ def index(request):
                     if v["result"] == "Mugged":
                         allModifiers *= 0.75
                     baseRespect = float(v["respect_gain"]) / allModifiers
-                    level = int(math.exp(4.*baseRespect-1))
+                    level = int(math.exp(4. * baseRespect - 1))
                     attacks[k]["endTS"] = int(v["timestamp_ended"])
                     attacks[k]["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
                     attacks[k]["bonus"] = 0
