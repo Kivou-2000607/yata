@@ -29,7 +29,16 @@ def index(request):
             for k, v in attacks.items():
                 v["defender_id"] = str(v["defender_id"])  # have to string for json key
                 if v["defender_id"] == str(tId):
-                    remove.append(k)
+                    print(v)
+                    if v.get("attacker_id") is not None:
+                        attacks[k]["defender_id"] = v.get("attacker_id")
+                        attacks[k]["defender_name"] = v.get("attacker_name")
+                        attacks[k]["bonus"] = 0
+                        attacks[k]["result"] += " you"
+                        attacks[k]["endTS"] = int(v["timestamp_ended"])
+                    else:
+                        remove.append(k)
+
                 elif int(v["chain"]) in BONUS_HITS:
                     attacks[k]["endTS"] = int(v["timestamp_ended"])
                     attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
@@ -116,7 +125,7 @@ def toggleTarget(request, targetId):
         if targetId not in targets:
             print('[view.target.toggleTarget] create target {}'.format(targetId))
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-                if v["defender_id"] == targetId:
+                if int(v["defender_id"]) == int(targetId):
                     respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
                     targets[targetId] = {"targetName": v["defender_name"],
                                          "result": v["result"],

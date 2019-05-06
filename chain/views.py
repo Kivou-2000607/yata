@@ -56,15 +56,6 @@ def index(request):
                 context = {"player": player, "errorMessage": "Faction not registered. PM Kivou [2000607] for details."}
                 return render(request, 'chain.html', context)
 
-            # except:
-            #     player.chainInfo = "N/A"
-            #     player.factionId = 0
-            #     player.factionAA = False
-            #     player.save()
-            #     context.update({"errorMessage": "You're not in any faction"})
-            #     print('[view.chain.index] player without faction')
-            #     return render(request, 'chain.html', context)
-
             # get /create faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:

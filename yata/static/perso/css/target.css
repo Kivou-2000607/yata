@@ -10,14 +10,10 @@ table.target-categories td a:focus,
 table.target-categories td a:active { text-decoration: none; color: #447e9b; }
 
 
-table.target-attacks tr.zero-respect       { background:#f4cccc; }
-table.target-attacks tr.zero-respect:hover { background:#ea9999; }
-table.target-attacks tr.max-fair-fight       { background:#b6d7a8; }
-table.target-attacks tr.max-fair-fight:hover { background:#93c47d; }
-table.target-attacks tr.good-fair-fight       { background:#d9ead3; }
-table.target-attacks tr.good-fair-fight:hover { background:#b6d7a8; }
-table.target-attacks tr.bonus-attack       { background:#a8b6d7; }
-table.target-attacks tr.bonus-attack:hover { background:#7d93c4; }
+table.target-attacks tr.zero-respect       { background:#ff00001e; }
+table.target-attacks tr.max-fair-fight       { background:#d9ead3ee; }
+table.target-attacks tr.good-fair-fight       { background:#d9ead3ae; }
+table.target-attacks tr.bonus-attack       { background:#a8b6d73e; }
 
 table.target-attacks td.a { width: 25%; text-align: left; }
 table.target-attacks td.b { width: 25%; text-align: left; }
