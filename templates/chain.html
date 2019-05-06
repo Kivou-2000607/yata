@@ -18,7 +18,14 @@
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+        apiCalls = "";
+        if (l == "jointReport" || l == "live") {
+            apiCalls = " (1 API call)";
+        } else if (l == "list") {
+            apiCalls = " (1 API call if AA)";
+        }
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l+apiCalls)
+        $("div.error").hide();
     });
 
     // see report from list button

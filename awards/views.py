@@ -1,6 +1,5 @@
-from django.shortcuts import render, reverse
-from django.http import HttpResponseRedirect
-from django.utils import timezone
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
 
 import json
 
@@ -16,39 +15,34 @@ def index(request):
         print('[view.awards.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        context = {"player": player}
         key = player.key
-        # key = ""
 
         error = False
         tornAwards = apiCall('torn', '', 'honors,medals', key)
         if 'apiError' in tornAwards:
             error = tornAwards
-            # return render(request, 'errorPage.html', tornAwards)
 
         userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', key)
         if 'apiError' in userInfo:
             error = userInfo
-            # return render(request, 'errorPage.html', userInfo)
 
         if not error:
+            print("[view.awards.index] update awards")
             updatePlayerAwards(player, tornAwards, userInfo)
-            print("[view.awards.index] awards done")
 
-        else:
-            print("[view.awards.index] api error {}".format(error))
-            context["apiError"] = error["apiError"]
-
+        context = {"player": player, "awardscat": True, "view": {"awards": True}}
         for k, v in json.loads(player.awardsJson).items():
             context[k] = v
-
+        if error:
+            context.update(error)
         return render(request, "awards.html", context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 def list(request, type):
-    if request.session.get('player') and request.method == 'POST':
+    if request.session.get('player'):
         print('[view.awards.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
@@ -60,16 +54,17 @@ def list(request, type):
         summaryByType = awardsJson.get('summaryByType')
         popTotal = awardsJson.get('popTotal')
 
-        print(type)
         if type in AWARDS_CAT:
             awards, awardsSummary = createAwards(tornAwards, userInfo, type)
-            context = {"awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "popTotal": popTotal }
-            return render(request, 'awards/list.html', context)
+            context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "popTotal": popTotal}
+            page = 'awards/list.html' if request.method == 'POST' else "awards.html"
+            return render(request, page, context)
 
         elif type == "all":
             awards = awardsJson.get('awards')
-            context = {"awards": awards, "summaryByType": summaryByType, "popTotal": popTotal }
-            return render(request, 'awards/list.html', context)
+            context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "popTotal": popTotal}
+            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+            return render(request, page, context)
 
         elif type == "hof":
             hof = dict({})
@@ -79,9 +74,9 @@ def list(request, type):
                                 "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
                                 }})
 
-            context = {"player": player, "hof": hof}
-            return render(request, 'awards/hof.html', context)
+            context = {"player": player, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
+            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+            return render(request, page, context)
 
-
-    print("[view.awards.list] no active session or wrong type or not post")
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")

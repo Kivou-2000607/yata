@@ -3,8 +3,6 @@
 {% load static %}
 {% load app_filters %}
 
-{% include "yata/error.html" %}
-
 <script>
     $(document).ready(function() {
         $("#chain-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
@@ -13,7 +11,7 @@
 
 <h2 class="title">List of chains</h2>
 <div class="module">
-    <table id="chain-list" class="tablesorter center-large chain-list">
+    <table id="chain-list" class="tablesorter center-large trshadow chain-list">
         <thead>
             <tr>
                 <th>Chain [ID]</th>
@@ -38,7 +36,7 @@
                 <td class="b">-</td>
             {% endif %}
 
-            <td class="c">{{chain.end|sub:chain.start|div:3600|floatformat:1}} hrs</td>
+            <td class="c">{{chain.end|sub:chain.start|ts2hhmmss}}</td>
             <td class="d" title="{{chain.reportNHits}}/{{chain.nHits}}"><b>{{chain.nHits}}</b></td>
             <td class="d" ><b>{{chain.respect|floatformat:2}}</b></td>
             <td class="d" ><b>{{chain.respect|div:chain.nHits|floatformat:2}}</b></td>

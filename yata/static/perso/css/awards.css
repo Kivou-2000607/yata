@@ -4,6 +4,11 @@ table.awards-categories td {
     cursor: pointer;
     border: 0;
 }
+table.awards-summary td {
+    width: 25%;
+    cursor: pointer;
+    border: 0;
+}
 
 table.awards-categories td a:hover,
 table.awards-categories td a:focus,

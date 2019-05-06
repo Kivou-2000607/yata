@@ -33,9 +33,9 @@
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}
-        <tr id="target-list-refresh-{{targetId}}">
-            {% include "target/targets-line.html" %}
-        </tr>
+            <tr id="target-list-refresh-{{targetId}}">
+                {% include "target/targets-line.html" %}
+            </tr>
         {% endfor %}
         </tbody>
     </table>

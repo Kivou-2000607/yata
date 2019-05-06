@@ -1,3 +1,9 @@
+{% if apiErrorSub %}
+    {% include "yata/error.html" with apiError=apiErrorSub %}
+{% endif %}
+{% if errorMessageSub %}
+    {% include "yata/error.html" with errorMessage=errorMessageSub %}
+{% endif %}
 {% if view.liveReport %}
     {% include "chain/live.html" %}
 {% endif %}

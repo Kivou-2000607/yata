@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load mathfilters %}
+{% load app_filters %}
 
 {% if counts|length %}
 
@@ -8,7 +9,7 @@
     {% if chain.tId > 0 %}
         <h2 class="title">Report of {{chain}}</h2>
     {% else %}
-        <h2 class="title">Live chain report (last update: {{chain.endDate}})</h2>
+        <h2 class="title">Live chain report (last update: {{chain.end|ts2date}})</h2>
     {% endif %}
 
     <div class="module">

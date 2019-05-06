@@ -35,9 +35,9 @@
             <div class="module error">
                 <span><a class="error" href="{% url 'index' %}">
                     {% if exception %}
-                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: {{exception}}
+                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: Permission Denied. {{exception}}
                     {% else %}
-                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: Permission Denied
+                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: Permission Denied.
                     {% endif %}
                 </a></span>
             </div>

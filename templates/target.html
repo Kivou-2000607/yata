@@ -19,6 +19,7 @@
         });
         $("#content-update h2").addClass("grey");
         $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+        $("div.error").hide();
     });
 
     // toggle target from attack list button
@@ -37,7 +38,7 @@
         e.preventDefault();
         var reload = $(this).closest("tr");
         var targetId = reload.attr("id").split("-").pop();
-        // alert(targetId);
+        reload.removeClass("old-refresh");
         reload.load( "/target/refresh/"+targetId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
@@ -89,6 +90,7 @@
     // refresh timer target update
     window.setInterval(function(){
         $(".update-timer").each(function() {
+            tr = $(this).closest("tr");
             var updatetime = $.trim($(this).text());
             if ( updatetime.search(" s")!=-1 ) {
                 var splt = updatetime.split(" ");
@@ -98,11 +100,12 @@
                 } else if (splt.length == 4) {
                     seconds = parseInt(splt[2]) + 60 * parseInt(splt[0]);
                 }
-                if ( seconds > 3600*2 ) {
+                if ( seconds > 7199 ) {
                     $(this).html("> 2 hrs");
+                    tr.addClass("old-refresh");
                 } else {
                     seconds ++;
-                    minutes = Math.floor(seconds / 60) % 60;
+                    minutes = Math.floor(seconds / 60);
                     seconds = seconds % 60;
                     if (minutes) {
                         spad = ("0"+seconds.toString()).slice(-2);
@@ -110,6 +113,10 @@
                     } else {
                         $(this).html(seconds.toString()+" s");
                     }
+                }
+            } else {
+                if (!tr.hasClass('old-refresh')) {
+                    tr.addClass('old-refresh');
                 }
             }
         });
@@ -121,12 +128,7 @@
 
 {% block content %}
     <div id="content-update">
-        {% if view.targets %}
-            {% include "target/targets.html" %}
-        {% endif %}
-        {% if view.attacks %}
-            {% include "target/attacks.html" %}
-        {% endif %}
+        {% include "target/content-reload.html" %}
     </div>
     {% include "target/tutorial.html" %}
 {% endblock %}

@@ -60,7 +60,11 @@
                         <td class="b">{{chain.start|ts2date}}</td>
                         <td class="c"><b>{{chain.nHits}}</b> hits</td>
                         <td class="c"><b>{{chain.respect|floatformat:2}}</b> respects</td>
-                        <td class="d"><a href={% url 'chain:report' chain.tId %}><i class="fas fa-eye" title="see report"></i></a></td>
+                        <td class="d">
+                            <form>{% csrf_token %}
+                                <a  class="chain-report-see-list" href="{% url 'chain:report' chain.tId %}"><i class="fas fa-eye" title="See report"></i></a>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
                 <tr><td style="text-align: right;" colspan="2"><b>Total</b></td>

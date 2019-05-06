@@ -22,7 +22,7 @@
     <td class="f update-timer">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}
-            {% if seconds > 7200 %}
+            {% if seconds > 7199 %}
                 > 2 hrs
             {% else %}
                 {{seconds|ts2hhmmss}}

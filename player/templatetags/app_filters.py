@@ -18,9 +18,15 @@ def ts2date(timestamp):
 
 @register.filter(name='ts2hhmmss')
 def ts2mmss(timestamp):
-    m = timestamp // 60
+    d = timestamp // 86400
+    h = (timestamp - 86400*d) // 3600 % 24
+    m = (timestamp - 3600*h) // 60 % 60
     s = (timestamp - 60*m) % 60
-    if m:
+    if d:
+        return "{} days {:02d} hrs {:02d} mins {:02d} s".format(d, h, m, s)
+    elif h:
+        return "{} hrs {:02d} mins {:02d} s".format(h, m, s)
+    elif m:
         return "{} mins {:02d} s".format(m, s)
     else:
         return "{} s".format(s)

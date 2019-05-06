@@ -4,12 +4,16 @@ table.chain-categories td {
     cursor: pointer;
     border: 0;
 }
+table.chain-summary td {
+    width: 25%;
+    border: 0;
+}
 
 table.chain-list td.a { width: 10%; }
 table.chain-list td.b { width: 15%; text-align: center;} /* x2 */
-table.chain-list td.c { width: 10%; text-align: center;}
+table.chain-list td.c { width: 15%; text-align: right;}
 table.chain-list td.d { width: 10%; text-align: center;} /* x3 */
-table.chain-list td.e { width: 20%; }
+table.chain-list td.e { width: 15%; }
 table.chain-list td.e a { display: inline; }
 table.chain-list td.e form { display: inline; }
 
@@ -34,7 +38,7 @@ table.chain-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.chain-report tr.zero-hits:hover { background:#ea9999; }
 table.chain-report tr.not-there       { background:#b6d7a8; }
 table.chain-report tr.not-there:hover { background:#93c47d; }
-table.chain-report tr.kicked-members       { color:#aaaaaa; }
+table.chain-report tr.kicked-members       { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 /* table.chain-report tr.kicked-members:hover { background:#ddddddaa; } */
 
 table.chain-report tr.zero-respect       { background:#f4cccc; }

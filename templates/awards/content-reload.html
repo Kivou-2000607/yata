@@ -1,0 +1,5 @@
+{% if view.hof %}
+    {% include "awards/hof.html" %}
+{% elif view.awards %}
+    {% include "awards/list.html" %}
+{% endif %}

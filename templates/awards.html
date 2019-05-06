@@ -54,11 +54,12 @@
 
         $(document).on('click', 'table.awards-categories td', function(e){
             e.preventDefault();
-            $( "#content-update" ).load( "l/"+$(this).children("a").attr("href").split("/")[3]+"/", {
+            $( "#content-update" ).load( "/awards/"+$(this).children("a").attr("href").split("/")[2]+"/", {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             $("#content-update h2").addClass("grey");
             $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading awards')
+            $("div.error").hide();
         });
 
     </script>
@@ -67,10 +68,6 @@
 
 {% block content %}
     <div id="content-update">
-        {% if hof %}
-            {% include "awards/hof.html" %}
-        {% else %}
-            {% include "awards/list.html" %}
-        {% endif %}
+        {% include "awards/content-reload.html" %}
     </div>
 {% endblock %}

@@ -29,7 +29,6 @@ def index(request):
             for k, v in attacks.items():
                 v["defender_id"] = str(v["defender_id"])  # have to string for json key
                 if v["defender_id"] == str(tId):
-                    print(v)
                     if v.get("attacker_id") is not None:
                         attacks[k]["defender_id"] = v.get("attacker_id")
                         attacks[k]["defender_name"] = v.get("attacker_name")
@@ -74,7 +73,7 @@ def index(request):
         return render(request, 'target.html', context)
 
     else:
-        raise PermissionDenied
+        raise PermissionDenied("You might want to log in.")
 
 
 def attacks(request):
@@ -87,11 +86,27 @@ def attacks(request):
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
         context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
-        page = 'target/attacks.html' if request.method == "POST" else 'target.html'
+        page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
         return render(request, page, context)
 
     else:
-        raise PermissionDenied
+        raise PermissionDenied("You might want to log in.")
+
+
+def targets(request):
+    if request.session.get('player'):
+        print('[view.awards.attacks] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        targetJson = json.loads(player.targetJson)
+        targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+
+        context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
+        page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
+        return render(request, page, context)
+
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 def toggleTarget(request, targetId):
@@ -155,23 +170,8 @@ def toggleTarget(request, targetId):
         return render(request, 'target/attacks-buttons.html', context)
 
     else:
-        raise PermissionDenied
-
-
-def targets(request):
-    if request.session.get('player'):
-        print('[view.awards.attacks] get player id from session')
-        tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
-        targetJson = json.loads(player.targetJson)
-        targets = targetJson.get("targets") if "targets" in targetJson else dict({})
-
-        context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
-        page = 'target/targets.html' if request.method == "POST" else 'target.html'
-        return render(request, page, context)
-
-    else:
-        raise PermissionDenied
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 def refresh(request, targetId):
@@ -223,7 +223,8 @@ def refresh(request, targetId):
         return render(request, 'target/targets-line.html', context)
 
     else:
-        raise PermissionDenied
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 def updateNote(request):
@@ -244,7 +245,8 @@ def updateNote(request):
         return render(request, 'target/targets-line-note.html', context)
 
     else:
-        raise PermissionDenied
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 def delete(request, targetId):
@@ -261,7 +263,8 @@ def delete(request, targetId):
         return render(request, 'target/targets-line.html')
 
     else:
-        raise PermissionDenied
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 def add(request):
@@ -335,7 +338,8 @@ def add(request):
         context = {"targets": targetJson["targets"]}
         if error:
             context.update({"apiErrorAdd": error["apiError"]})
-        return render(request, 'target/targets.html', context)
+        return render(request, 'target/content-reload.html', context)
 
     else:
-        raise PermissionDenied
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)

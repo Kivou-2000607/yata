@@ -1,5 +1,6 @@
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
 import numpy
@@ -29,60 +30,56 @@ def index(request):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         key = player.key
-        context = {"player": player, "chain": True}
 
         # get user info
-        error = False
         user = apiCall('user', '', 'profile', key)
         if 'apiError' in user:
-            error = user
-
-        if not error:
-            # try:
-            factionId = int(user.get("faction")["faction_id"])
-            allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
-            print("allowedFactions: {}".format(allowedFactions))
-            if str(factionId) in allowedFactions:
-                player.chainInfo = user.get("faction")["faction_name"]
-                player.factionId = factionId
-                if 'chains' in apiCall('faction', factionId, 'chains', key):
-                    player.chainInfo += " [AA]"
-                    player.factionAA = True
-                player.lastUpdateTS = int(timezone.now().timestamp())
-                player.save()
-                print('[view.chain.index] player in faction {}'.format(player.chainInfo))
-            else:
-                print('[view.chain.index] player in non registered faction {}'.format(user.get("faction")["faction_name"]))
-                context = {"player": player, "errorMessage": "Faction not registered. PM Kivou [2000607] for details."}
-                return render(request, 'chain.html', context)
-
-            # get /create faction
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                faction = Faction.objects.create(tId=factionId, name=user.get("faction")["faction_name"])
-                print('[view.chain.index] faction {} created'.format(factionId))
-            else:
-                faction.name = user.get("faction")["faction_name"]
-                faction.save()
-                print('[view.chain.index] faction {} found'.format(factionId))
-
-            if player.factionAA:
-                print('[view.chain.index] save AA key'.format(factionId))
-                faction.add_key(player.name, player.key)
-                faction.save()
-
-        else:
-            print("[view.chain.index] api error {}".format(error))
-            context.update(error)
+            context = {'player': player, 'apiError': user["apiError"]+" We can't check your faction so you don't have access to this section."}
+            player.chainInfo = "N/A"
+            player.factionId = 0
+            player.factionAA = False
+            player.lastUpdateTS = int(timezone.now().timestamp())
+            player.save()
             return render(request, 'chain.html', context)
 
-        # render if logged
+        factionId = int(user.get("faction")["faction_id"])
+        allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
+        print("[view.chain.index] allowedFactions: {}".format(allowedFactions))
+        if str(factionId) in allowedFactions:
+            player.chainInfo = user.get("faction")["faction_name"]
+            player.factionId = factionId
+            if 'chains' in apiCall('faction', factionId, 'chains', key):
+                player.chainInfo += " [AA]"
+                player.factionAA = True
+            player.lastUpdateTS = int(timezone.now().timestamp())
+            player.save()
+            print('[view.chain.index] player in faction {}'.format(player.chainInfo))
+        else:
+            print('[view.chain.index] player in non registered faction {}'.format(user.get("faction")["faction_name"]))
+            context = {"player": player, "errorMessage": "Faction not registered. PM Kivou [2000607] for details."}
+            return render(request, 'chain.html', context)
+
+        # get /create faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=factionId, name=user.get("faction")["faction_name"])
+            print('[view.chain.index] faction {} created'.format(factionId))
+        else:
+            faction.name = user.get("faction")["faction_name"]
+            faction.save()
+            print('[view.chain.index] faction {} found'.format(factionId))
+
+        if player.factionAA:
+            print('[view.chain.index] save AA key'.format(factionId))
+            faction.add_key(player.name, player.key)
+            faction.save()
+
         chains = faction.chain_set.filter(status=True).order_by('-end')
-        context.update({'chains': chains, 'view': {'list': True}})
+        context = {'player': player, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
         return render(request, 'chain.html', context)
 
-    # logout if no session
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 def live(request):
@@ -92,13 +89,19 @@ def live(request):
         player = Player.objects.filter(tId=tId).first()
         factionId = player.factionId
         key = player.key
-        context = {"player": player, "chain": True}
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
         # get live chain and next bonus
         liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
         if 'apiError' in liveChain:
-            context.update(liveChain)
-            return render(request, 'chain.html', context)
+            player.chainInfo = "N/A"
+            player.factionId = 0
+            player.factionAA = False
+            player.lastUpdateTS = int(timezone.now().timestamp())
+            player.save()
+            selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+            context = {'player': player, selectError: liveChain["apiError"]+" We can't check your faction so you don't have access to this section."}
+            return render(request, page, context)
 
         activeChain = bool(liveChain['current'])
         print("[view.chain.index] live chain: {}".format(activeChain))
@@ -109,6 +112,11 @@ def live(request):
                 break
 
         faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
+
         if activeChain:
             print('[view.chain.index] chain active')
             chain = faction.chain_set.filter(tId=0).first()
@@ -170,7 +178,7 @@ def live(request):
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
             # context
-            context.update({'faction': faction, 'chain': chain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph})
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph}
 
         # no active chain
         else:
@@ -178,18 +186,12 @@ def live(request):
             if chain is not None:
                 chain.delete()
                 print('[view.chain.index] chain 0 deleted')
-            context.update({'faction': faction, 'chain': True, 'view': {'report': True, 'liveReport': True}})  #  set chain to True to display category links
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'view': {'liveReport': True}}  #  set chain to True to display category links
 
-        # context
-        context.update({'faction': faction, 'liveChain': liveChain})
-        if request.method == 'POST':
-            return render(request, 'chain/content-reload.html', context)
-        else:
-            return render(request, 'chain.html', context)
+        return render(request, page, context)
 
-
-
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 # render view
@@ -200,21 +202,21 @@ def list(request):
         player = Player.objects.filter(tId=tId).first()
         key = player.key
         factionId = player.factionId
-        context = {"player": player}
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
         # get faction
         faction = Faction.objects.filter(tId=factionId).first()
         if faction is None:
-            print('[view.chain.list] faction {} not found'.format(factionId))
-            return HttpResponseRedirect(reverse('logout'))
-        else:
-            print('[view.chain.list] faction {} found'.format(factionId))
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
 
         # update chains if AA
+        error = False
         if player.factionAA:
             chains = apiCall('faction', faction.tId, 'chains', key, sub='chains')
             if 'apiError' in chains:
-                context.update(chains)
+                error = chains
 
             else:
                 for k, v in chains.items():
@@ -242,14 +244,14 @@ def list(request):
         # get chains
         chains = faction.chain_set.filter(status=True).order_by('-end')
 
-        # context
-        context.update({'chains': chains, 'view': {'list': True}})
-        if request.method == 'POST':
-            return render(request, 'chain/content-reload.html', context)
-        else:
-            return render(request, 'chain.html', context)
+        context = {'player': player, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
+        if error:
+            selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+            context.update({selectError: error["apiError"]+" List of chain not updated."})
+        return render(request, page, context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 # render view
@@ -259,38 +261,39 @@ def report(request, chainId):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         factionId = player.factionId
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
         # get faction
         faction = Faction.objects.filter(tId=factionId).first()
         if faction is None:
-            return render(request, 'chain.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId), "player": player, "chain": True})
-        print('[VIEW report] faction {} found'.format(factionId))
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
+
+        chains = faction.chain_set.filter(status=True).order_by('-end')
 
         # get chain
         chain = faction.chain_set.filter(tId=chainId).first()
         if chain is None:
-            return render(request, 'chain.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId), "player": player, "chain": True})
-        print('[VIEW report] chain {} found'.format(chainId))
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
+
+        print('[view.chain.report] chain {} found'.format(chainId))
 
         # get report
         report = chain.report_set.filter(chain=chain).first()
         if report is None:
-            # context
-            print('[VIEW report] report of {} not found'.format(chain))
-            context = dict({"player": player,
-                            'chain': chain,  # for general info
-                            'view': {'report': True}})  # views
-            if request.method == 'POST':
-                return render(request, 'chain/content-reload.html', context)
-            else:
-                return render(request, 'chain.html', context)
+            print('[view.chain.report] report of {} not found'.format(chain))
+            context = dict({"player": player, 'chaincat': True, 'chain': chain, 'chains': chains, 'view': {'report': True, 'list': True}})
+            return render(request, page, context)
 
-        print('[VIEW report] report of {} found'.format(chain))
+        print('[view.chain.report] report of {} found'.format(chain))
 
         # create graph
         graphSplit = chain.graph.split(',')
         if len(graphSplit) > 1:
-            print('[VIEW report] data found for graph of length {}'.format(len(graphSplit)))
+            print('[view.chain.report] data found for graph of length {}'.format(len(graphSplit)))
             # compute average time for one bar
             bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
             graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
@@ -302,25 +305,23 @@ def report(request, chainId):
                 speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
         else:
-            print('[VIEW report] no data found for graph')
+            print('[view.chain.report] no data found for graph')
             graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
         # context
         context = dict({"player": player,
+                        'chaincat': True,
                         'chain': chain,  # for general info
-                        'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
+                        'chains': chains,  # for chain list after report
                         'counts': report.count_set.all(),  # for report
                         'bonus': report.bonus_set.all(),  # for report
                         'graph': graph,  # for report
-                        'view': {'report': True}})  # views
+                        'view': {'list': True, 'report': True}})  # views
 
-        # render if logged
-        if request.method == 'POST':
-            return render(request, 'chain/content-reload.html', context)
-        else:
-            return render(request, 'chain.html', context)
+        return render(request, page, context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 # render view
@@ -329,22 +330,26 @@ def jointReport(request):
         print('[view.chain.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        key = player.key
         factionId = player.factionId
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
         # get faction
         faction = Faction.objects.filter(tId=factionId).first()
         if faction is None:
-            return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-        print('[VIEW jointReport] faction {} found'.format(factionId))
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
 
         # get chains
         chains = faction.chain_set.filter(jointReport=True).order_by('start')
         print('[VIEW jointReport] {} chains for the joint report'.format(len(chains)))
         if len(chains) < 1:
-            context = {'errorMessage': 'No chains found for the joint report.',
-                          'chains': faction.chain_set.filter(status=True).order_by('-end'),
-                          'player': player}
-            return render(request, 'chain/list.html', context)
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {selectError: 'No chains found for the joint report.',
+                       'chains': faction.chain_set.filter(status=True).order_by('-end'),
+                       'player': player, 'chaincat': True, 'view': {'list': True}}
+            return render(request, page, context)
 
         # loop over chains
         counts = dict({})
@@ -424,7 +429,11 @@ def jointReport(request):
         arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for name, (hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # add last time connected
-        updateMembers(faction, key=player.key)
+        error = False
+        update = updateMembers(faction, key=key)
+        if 'apiError' in update:
+            error = update
+
         for i, bonus in enumerate(arrayBonuses):
             try:
                 arrayBonuses[i].append(faction.member_set.filter(name=bonus[0]).first().lastAction)
@@ -438,14 +447,13 @@ def jointReport(request):
                         'bonuses': arrayBonuses,  # bonuses for report
                         'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                         'player': player,
-                        # 'chain': True, # to display categories
+                        'chaincat': True, # to display categories
                         'view': {'jointReport': True, 'list': True}})  # view
 
-        # render if logged
-        if request.method == 'POST':
-            return render(request, 'chain/content-reload.html', context)
-        else:
-            return render(request, 'chain.html', context)
+        if error:
+            selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+            context.update({selectError: error["apiError"]+" List of members not updated."})
+        return render(request, page, context)
 
     return HttpResponseRedirect(reverse('logout'))
 
@@ -477,7 +485,9 @@ def createReport(request, chainId):
         context = {"player": player, "chain": chain}
         return render(request, 'chain/list-buttons.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 # action view
@@ -523,7 +533,7 @@ def renderIndividualReport(request, chainId, memberId):
                 speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                 graph['info']['speedRate'] = speedRate
         else:
-            print('[VIEW report] no data found for graph')
+            print('[view.chain.report] no data found for graph')
             graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
         # context
@@ -534,8 +544,8 @@ def renderIndividualReport(request, chainId, memberId):
         return render(request, 'chain/ireport.html', context)
 
     else:
-        print('[view.chain.renderIndividualReport] render error')
-        return render(request, 'yata/error.html', {'errorMessage': 'You need to be logged.'})
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 # action view
@@ -567,7 +577,9 @@ def deleteReport(request, chainId):
         context = {"player": player, "chain": chain}
         return render(request, 'chain/list-buttons.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 # action view
@@ -600,7 +612,9 @@ def toggleReport(request, chainId):
         context.update({"chain": chain})
         return render(request, 'chain/list-buttons.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 # # action view
