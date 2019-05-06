@@ -1,8 +1,8 @@
 {% load mathfilters %}
 {% load app_filters %}
 
-{% if apiError %}
-    <td colspan="13" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiError}}</span></td>
+{% if apiErrorLine %}
+    <td colspan="13" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorLine}}</span></td>
 {% elif target %}
     <td class="a" title="Last attack on {{target.endTS|ts2date}}"><b {% if not target.respect %}class="error"{% endif %}>{{target.result}}</b></td>
     <!-- <td class="a"><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->

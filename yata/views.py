@@ -1,6 +1,7 @@
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
 
 import json
 
@@ -42,18 +43,6 @@ def login(request):
         player.key = p.get('key')
         player.lastUpdateTS = int(timezone.now().timestamp())
 
-        # if user['faction']['faction_id'] in [33241, 23952, 42435]:
-        # if user['faction']['faction_id'] in [2]:
-        #     print('[view.yata.login] faction allowed: {}'.format(user['faction']['faction_id']))
-        #     AArights = 'chains' in apiCall('faction', user['faction']['faction_id'], 'chains', p.get('key'))
-        #     factionInfo = {'factionName': user['faction']['faction_name'],
-        #                    'factionId': user['faction']['faction_id'],
-        #                    'AA': AArights,
-        #                    }
-        # else:
-        #     factionInfo = {}
-        # player.factionInfo = json.dumps(factionInfo)
-
         print('[view.yata.login] save player')
         player.save()
 
@@ -72,8 +61,9 @@ def login(request):
         context = {"player": player}
         return render(request, 'yata/login.html', context)
 
+    # if not post
     else:
-        return HttpResponse('Don\'t try to be a smart ass, you need to post.')
+        raise PermissionDenied
 
 
 def logout(request):

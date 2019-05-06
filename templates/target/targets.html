@@ -46,13 +46,13 @@
     <hr class="sep">
 
     <p>
-        <form method="post" style="margin-left:10px;">
+        <form method="post" style="margin-left:10px; display: inline;">
             Enter the ID of the target you want to add:
             {% csrf_token %}
             <input id="target-add-id" placeholder="Torn ID" type=text>
             <input id="target-add-submit" type="submit" value="Add">
             &nbsp;
-            {% if apiError %}<p class="no-margin"><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></p>{% endif %}
+            {% if apiErrorAdd %}<span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiErrorAdd }}</a></span>{% endif %}
         </form>
     </p>
 </div>

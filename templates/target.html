@@ -14,7 +14,7 @@
     $(document).on('click', 'table.target-categories td', function(e){
         e.preventDefault();
         var l = $(this).children("a").attr("href").split("/")[2];
-        $( "#content-update" ).load( l+"/", {
+        $( "#content-update" ).load( "/target/"+l+"/", {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $("#content-update h2").addClass("grey");
@@ -121,8 +121,12 @@
 
 {% block content %}
     <div id="content-update">
-        {% include "target/targets.html" %}
-        {% include "target/attacks.html" %}
+        {% if view.targets %}
+            {% include "target/targets.html" %}
+        {% endif %}
+        {% if view.attacks %}
+            {% include "target/attacks.html" %}
+        {% endif %}
     </div>
     {% include "target/tutorial.html" %}
 {% endblock %}

@@ -46,15 +46,15 @@
                 <a class="valid flush-right" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>
             </p>
 
-            {% if awards %}
+            {% if awardscat %}
                 <hr class="sep">
                 <p>Welcome to the awards tracker. Browse throught the following categories...</p>
                 {% include "awards/categories.html" %}
-            {% elif target %}
+            {% elif targetcat %}
                 <hr class="sep">
                 <p>Welcome to the target list. You can look at your last attacks to add a new targets. You can refresh the information by clicking on the target line.</p>
                 {% include "target/categories.html" %}
-            {% elif chain or chains %}
+            {% elif chaincat %}
                 <hr class="sep">
                 <p>Welcome to the chain reports.</p>
                 {% include "chain/categories.html" %}

@@ -1,5 +1,6 @@
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
 import json
@@ -16,15 +17,15 @@ def index(request):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         key = player.key
-        context = {"player": player, "target": True}
+        targetJson = json.loads(player.targetJson)
 
         # call for attacks
-        error = False
+        error=False
         attacks = apiCall('user', "", 'attacks', key, sub='attacks')
         if 'apiError' in attacks:
             error = attacks
 
-        if not error:
+        else:
             remove = []
             for k, v in attacks.items():
                 v["defender_id"] = str(v["defender_id"])  # have to string for json key
@@ -50,7 +51,6 @@ def index(request):
             for k in remove:
                 del attacks[k]
 
-            targetJson = json.loads(player.targetJson)
             targetJson["attacks"] = attacks
             player.targetJson = json.dumps(targetJson)
             nTargets = 0 if "targets" not in targetJson else len(targetJson["targets"])
@@ -58,16 +58,15 @@ def index(request):
             player.targetUpda = int(timezone.now().timestamp())
             player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
-        else:
-            print("[view.target.index] api error {}".format(error))
-            context.update(error)
 
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
-        context["targets"] = targets
-
+        context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
+        if error:
+            context.update(error)
         return render(request, 'target.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def attacks(request):
@@ -78,10 +77,13 @@ def attacks(request):
         targetJson = json.loads(player.targetJson)
         attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
-        context = {"player": player, "target": True, "attacks": attacks, "targets": targets}
-        return render(request, 'target/attacks.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+        context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
+        page = 'target/attacks.html' if request.method == "POST" else 'target.html'
+        return render(request, page, context)
+
+    else:
+        raise PermissionDenied
 
 
 def toggleTarget(request, targetId):
@@ -141,10 +143,11 @@ def toggleTarget(request, targetId):
 
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
-        context = dict({"target": {"defender_id": targetId}, "targets": targets})
+        context = {"target": {"defender_id": targetId}, "targets": targets}
         return render(request, 'target/attacks-buttons.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def targets(request):
@@ -153,13 +156,14 @@ def targets(request):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         targetJson = json.loads(player.targetJson)
-        # attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
-        context = {"player": player, "target": True, "attacks": attacks, "targets": targets}
 
-        return render(request, 'target/targets.html', context)
+        context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
+        page = 'target/targets.html' if request.method == "POST" else 'target.html'
+        return render(request, page, context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def refresh(request, targetId):
@@ -173,9 +177,10 @@ def refresh(request, targetId):
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
         # call for target info
+        error = False
         targetInfo = apiCall('user', targetId, '', key)
         if 'apiError' in targetInfo:
-            subcontext = targetInfo
+            error = targetInfo
 
         else:
             # get latest attack to target id
@@ -202,11 +207,15 @@ def refresh(request, targetId):
             targetJson["targets"][targetId] = target
             player.targetJson = json.dumps(targetJson)
             player.save()
-            subcontext = {"targetId": targetId, "target": target}
 
-        return render(request, 'target/targets-line.html', subcontext)
+        if error:
+            context = {"apiErrorLine": error["apiError"]}
+        else:
+            context = {"targetId": targetId, "target": target}
+        return render(request, 'target/targets-line.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def updateNote(request):
@@ -223,11 +232,11 @@ def updateNote(request):
         player.targetJson = json.dumps(targetJson)
         player.save()
 
-        subcontext = {"target": {"note": note}, "targetId": targetId}
+        context = {"target": {"note": note}, "targetId": targetId}
+        return render(request, 'target/targets-line-note.html', context)
 
-        return render(request, 'target/targets-line-note.html', subcontext)
-
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def delete(request, targetId):
@@ -241,10 +250,10 @@ def delete(request, targetId):
         player.targetJson = json.dumps(targetJson)
         player.save()
 
-        subcontext = dict({})
-        return render(request, 'target/targets-line.html', subcontext)
+        return render(request, 'target/targets-line.html')
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied
 
 
 def add(request):
@@ -259,10 +268,10 @@ def add(request):
         print('[view.target.add] target id {}'.format(targetId))
 
         # call for target info
-        context = dict({})
+        error = False
         targetInfo = apiCall('user', targetId, '', key)
         if 'apiError' in targetInfo:
-            context.update(targetInfo)
+            error = targetInfo
 
         else:
             attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
@@ -315,7 +324,10 @@ def add(request):
             else:
                 print('[view.target.add] target {} already exists'.format(targetId))
 
-        context.update({"targets": targetJson["targets"]})
+        context = {"targets": targetJson["targets"]}
+        if error:
+            context.update({"apiErrorAdd": error["apiError"]})
         return render(request, 'target/targets.html', context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        raise PermissionDenied

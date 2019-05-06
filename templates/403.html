@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+
+    <!-- load fontawesome -->
+    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+
+    <title>YATA - Error 403</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1>
+
+            <div class="module error">
+                <span><a class="error" href="{% url 'index' %}">
+                    {% if exception %}
+                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: {{exception}}
+                    {% else %}
+                        <i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 403: Permission Denied
+                    {% endif %}
+                </a></span>
+            </div>
+
+
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>
