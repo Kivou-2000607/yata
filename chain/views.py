@@ -41,7 +41,8 @@ def index(request):
             # try:
             factionId = int(user.get("faction")["faction_id"])
             allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
-            if factionId in allowedFactions:
+            print("allowedFactions: {}".format(allowedFactions))
+            if str(factionId) in allowedFactions:
                 player.chainInfo = user.get("faction")["faction_name"]
                 player.factionId = factionId
                 if 'chains' in apiCall('faction', factionId, 'chains', key):
