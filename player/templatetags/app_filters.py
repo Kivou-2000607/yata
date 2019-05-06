@@ -45,3 +45,13 @@ def rarity(circulation):
         return "{:.2g}%".format(100 / float(circulation))
     except:
         return ""
+
+
+
+@register.filter(name='cleanhtml')
+def cleanhtml(raw_html):
+    import re
+
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext

@@ -448,7 +448,7 @@ def jointReport(request):
                         'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                         'player': player,
                         'chaincat': True, # to display categories
-                        'view': {'jointReport': True, 'list': True}})  # view
+                        'view': {'jointReport': True}})  # view
 
         if error:
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'

@@ -88,12 +88,12 @@ $(document).ready(function() {
         </thead>
         <tbody>
             <tr>
-                <td colspan="2"><b>Duration:</b> from {{chain.start|ts2date}} to {{chain.end|ts2date}}</td>
-                <td colspan="2"><b>Elapsed time:</b> {{chain.end|sub:chain.start|ts2hhmmss}}</td>
+                <td colspan="2"><b>From</b> {{chain.start|ts2date}} <b>to</b> {{chain.end|ts2date}}</td>
+                <td colspan="2"><b>Chain time:</b> {{chain.end|sub:chain.start|ts2hhmmss}}</td>
             </tr>
             <tr>
-                <td><b>Hits / Attacks done:</b> {{chain.reportNHits}} / {{chain.nAttacks}}</td><td><b>% of wins:</b> {{chain.reportNHits|div:chain.nAttacks|mul:"100"|floatformat:0}}%</td>
-                <td><b>Respect earnt:</b> {{chain.respect|floatformat:0}}</td><td><b>Respect / hit:</b>{{chain.respect|div:chain.nAttacks|floatformat:2}}</td>
+                <td colspan="2"><b>Hits / Attacks:</b> {{chain.reportNHits}} / {{chain.nAttacks}} &nbsp;&nbsp; ( {{chain.reportNHits|div:chain.nAttacks|mul:"100"|floatformat:0}}%)</td>
+                <td><b>Respect earnt:</b> {{chain.respect|floatformat:0}}</td><td><b>Respect / hit:</b> {{chain.respect|div:chain.nAttacks|floatformat:2}}</td>
             </tr>
                 {% for b in bonus %}
                     {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}

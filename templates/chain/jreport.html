@@ -56,7 +56,7 @@
             </thead>
             <tbody>
                 {% for chain in chainsReport %}
-                    <tr><td class="a">Chain #{{ forloop.counter }} [{{chain.tId}}]</td>
+                    <tr><td class="a">#{{ forloop.counter }} Chain [{{chain.tId}}]</td>
                         <td class="b">{{chain.start|ts2date}}</td>
                         <td class="c"><b>{{chain.nHits}}</b> hits</td>
                         <td class="c"><b>{{chain.respect|floatformat:2}}</b> respects</td>
@@ -73,14 +73,11 @@
                 </tr>
             </tbody>
         </table>
-        <br>
-
         <table id="chain-jbonus" class="tablesorter center trshadow chain-jbonus">
             <thead>
-                <!-- <tr><th style="text-align: center;" colspan="6">Summary of the bonus</th></tr> -->
                 <tr>
                     <th>User</th>
-                    <th>Bonus</th>
+                    <th>Bonus taken</th>
                     <th>Respect</th>
                     <th>Hits</th>
                     <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Score</th>

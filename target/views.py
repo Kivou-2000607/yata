@@ -29,7 +29,7 @@ def index(request):
             for k, v in attacks.items():
                 v["defender_id"] = str(v["defender_id"])  # have to string for json key
                 if v["defender_id"] == str(tId):
-                    if v.get("attacker_id") is not None:
+                    if v.get("attacker_name") is not None:
                         attacks[k]["defender_id"] = v.get("attacker_id")
                         attacks[k]["defender_name"] = v.get("attacker_name")
                         attacks[k]["bonus"] = 0
@@ -126,6 +126,7 @@ def toggleTarget(request, targetId):
             lifeMax = 1
             life = 0
             status = "?"
+            statusFull = "?"
             lastAction = "?"
             lastUpdate = 0
 
@@ -134,6 +135,7 @@ def toggleTarget(request, targetId):
             lifeMax = int(targetInfo["life"]["maximum"])
             life = int(targetInfo["life"]["current"])
             status = targetInfo["status"][0].replace("In hospital", "Hosp")
+            statusFull = " ".join(targetInfo["status"]),
             lastAction = targetInfo["last_action"]["relative"]
             lastUpdate = int(timezone.now().timestamp())
 
@@ -151,6 +153,7 @@ def toggleTarget(request, targetId):
                                          "lifeMax": lifeMax,
                                          "life": life,
                                          "status": status,
+                                         "status": statusFull,
                                          "lastAction": lastAction,
                                          "lastUpdate": lastUpdate,
                                          "note": ""
@@ -196,6 +199,7 @@ def refresh(request, targetId):
             target["life"] = int(targetInfo["life"]["current"])
             target["lifeMax"] = int(targetInfo["life"]["maximum"])
             target["status"] = targetInfo["status"][0].replace("In hospital", "Hosp")
+            target["statusFull"] = " ".join(targetInfo["status"])
             target["lastAction"] = targetInfo["last_action"]["relative"]
             target["lastUpdate"] = int(timezone.now().timestamp())
             level = targetInfo["level"]
@@ -304,6 +308,7 @@ def add(request):
                                              "lifeMax": int(targetInfo["life"]["maximum"]),
                                              "life": int(targetInfo["life"]["current"]),
                                              "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                             "statusFull": " ".join(targetInfo["status"]),
                                              "lastAction": targetInfo["last_action"]["relative"],
                                              "lastUpdate": int(timezone.now().timestamp()),
                                              "note": ""
@@ -312,7 +317,7 @@ def add(request):
                         break
 
                 if not added:
-                    print('[view.target.add] create target {} from  nothing'.format(targetId))
+                    print('[view.target.add] create target {} from nothing'.format(targetId))
                     level = targetInfo["level"]
                     respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
 
@@ -325,6 +330,7 @@ def add(request):
                                          "lifeMax": int(targetInfo["life"]["maximum"]),
                                          "life": int(targetInfo["life"]["current"]),
                                          "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                         "statusFull": " ".join(targetInfo["status"]),
                                          "lastAction": targetInfo["last_action"]["relative"],
                                          "lastUpdate": int(timezone.now().timestamp()),
                                          "note": ""}
@@ -335,7 +341,7 @@ def add(request):
             else:
                 print('[view.target.add] target {} already exists'.format(targetId))
 
-        context = {"targets": targetJson["targets"]}
+        context = {"targets": targetJson["targets"], "view": {"targets": True}}
         if error:
             context.update({"apiErrorAdd": error["apiError"]})
         return render(request, 'target/content-reload.html', context)

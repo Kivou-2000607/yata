@@ -9,7 +9,7 @@
     <td class="b dont-touch-me"><a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank"> {{target.targetName}} [{{targetId}}]</a></td>
     <td class="c">{{target.level}}</td>
     <!-- <td class="a">{{target.rank}}</td> -->
-    <td class="a">{{target.lastAction}}</td>
+    <td class="f">{{target.lastAction}}</td>
     <td class="c">{{target.fairFight|floatformat:2}}</td>
     <td class="c"><b title="{{target.fairFight|floatformat:2}} x 0.25 x (ln({{target.level}}) + 1)">{{target.respect|floatformat:2}}</b></td>
     <!-- <td class="c">{{target.respect|mul:target.fairFight|floatformat:2}}</td> -->
@@ -18,7 +18,7 @@
             <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
         </div>
     </td>
-    <td class='e {% if target.status.0 != "O" %}not-{% endif %}okay'>{{target.status}}</td>
+    <td class='e {% if target.status.0 != "O" %}not-{% endif %}okay' title="{{target.statusFull|cleanhtml}}">{{target.status}}</td>
     <td class="f update-timer">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}
