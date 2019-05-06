@@ -64,7 +64,7 @@ def login(request):
         if check:
             print('[view.yata.login] set session to expirate in 1 month')
             # request.session.set_expiry(31536000)  # 1 year
-            request.session.set_expiry(111600)  # 1 month
+            request.session.set_expiry(2592000)  # 1 month
         else:
             print('[view.yata.login] set session to expirate when browser closes')
             request.session.set_expiry(0)  # logout when close browser
