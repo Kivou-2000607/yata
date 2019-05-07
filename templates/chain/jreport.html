@@ -87,20 +87,20 @@
             <tbody>
                 {%for bonus in bonuses%}
                     <tr>
-                        <td class="a">{{bonus.0}}</td>
-                        {% if bonus.2 %}
-                            <td class="b">{{bonus.1}}</td>
+                        <td class="a"><a href="https://www.torn.com/profiles.php?XID={{bonus.0}}" target="_blank">{{bonus.1}} [{{bonus.0}}]</a></td>
+                        {% if bonus.3 %}
+                            <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
                         {% else %}
                             <td class="b">-</td>
                         {% endif %}
-                        <td class="c">{{bonus.2|floatformat:0}}</td>
                         <td class="c">{{bonus.3|floatformat:0}}</td>
-                        {% if bonus.2 %}
-                            <td class="c" title="{{bonus.3}} / {{bonus.2|floatformat:0}}">{{bonus.3|div:bonus.2|floatformat:2}}</td>
+                        <td class="c">{{bonus.2|floatformat:0}}</td>
+                        {% if bonus.3 %}
+                            <td class="c" title="{{bonus.4}} / {{bonus.3|floatformat:0}}">{{bonus.4|div:bonus.3|floatformat:2}}</td>
                         {% else %}
-                            <td class="c" title="{{bonus.3}}">{{bonus.3|floatformat:2}}</td>
+                            <td class="c" title="{{bonus.3}}">{{bonus.4|floatformat:2}}</td>
                         {% endif %}
-                        <td class="d">{{bonus.4}}</td>
+                        <td class="d">{{bonus.5}}</td>
                     </tr>
                 {%endfor%}
             </tbody>

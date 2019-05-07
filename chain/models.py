@@ -129,6 +129,7 @@ class Report(models.Model):
 
 class Bonus(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    tId = models.IntegerField(default=0)
     name = models.CharField(default="Duke", max_length=64)
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)

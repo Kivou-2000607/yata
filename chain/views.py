@@ -368,11 +368,11 @@ def jointReport(request):
             chainCounts = report.count_set.all()
             chainBonuses = report.bonus_set.all()
             for bonus in chainBonuses:
-                if bonus.name in bonuses:
-                    bonuses[bonus.name][0].append(bonus.hit)
-                    bonuses[bonus.name][1] += bonus.respect
+                if bonus.tId in bonuses:
+                    bonuses[bonus.tId][1].append(bonus.hit)
+                    bonuses[bonus.tId][2] += bonus.respect
                 else:
-                    bonuses[bonus.name] = [[bonus.hit], bonus.respect, 0]
+                    bonuses[bonus.tId] = [bonus.name, [bonus.hit], bonus.respect, 0]
 
             for count in chainCounts:
 
@@ -408,16 +408,16 @@ def jointReport(request):
         # bonuses ["name", [[bonus1, bonus2, bonus3, ...], respect, nwins]]
         smallHit = 999999999
         for k, v in counts.items():
-            if v["name"] in bonuses:
+            if k in bonuses:
                 if v["daysInFaction"] >= 0:
-                    bonuses[v["name"]][2] = v["wins"]
+                    bonuses[k][3] = v["wins"]
                     smallHit = min(int(v["wins"]), smallHit)
                 else:
-                    del bonuses[v["name"]]
+                    del bonuses[k]
 
         for k, v in counts.items():
-            if v["name"] not in bonuses and int(v["wins"]) >= smallHit and v["daysInFaction"] >= 0:
-                bonuses[v["name"]] = [[], 0, v["wins"]]
+            if k not in bonuses and int(v["wins"]) >= smallHit and v["daysInFaction"] >= 0:
+                bonuses[k] = [v["name"], [], 0, v["wins"]]
 
             # else:
             #     if int(v["wins"]) >= int(smallestNwins):
@@ -426,17 +426,17 @@ def jointReport(request):
 
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
-        arrayBonuses = [[name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for name, (hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
+        arrayBonuses = [[tId, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for tId, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # add last time connected
         error = False
-        update = updateMembers(faction, key=key)
-        if 'apiError' in update:
-            error = update
+        # update = updateMembers(faction, key=key)
+        # if 'apiError' in update:
+        #     error = update
 
         for i, bonus in enumerate(arrayBonuses):
             try:
-                arrayBonuses[i].append(faction.member_set.filter(name=bonus[0]).first().lastAction)
+                arrayBonuses[i].append(faction.member_set.filter(tId=bonus[0]).first().lastAction)
             except:
                 arrayBonuses[i].append("-")
 
@@ -573,6 +573,7 @@ def deleteReport(request, chainId):
         chain.report_set.all().delete()
         chain.jointReport = False
         chain.createReport = False
+        chain.save()
 
         context = {"player": player, "chain": chain}
         return render(request, 'chain/list-buttons.html', context)

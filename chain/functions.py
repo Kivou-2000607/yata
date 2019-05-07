@@ -210,7 +210,7 @@ def fillReport(faction, members, chain, report, attacks):
                     attackers[attackerName][12] += 1
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
-                    bonus.append((v['chain'], attackerName, respect, r))
+                    bonus.append((v['chain'], attackerID, attackerName, respect, r))
                 else:
                     attackers[attackerName][1] += 1
                     attackers[attackerName][2] += float(v['modifiers']['fairFight'])
@@ -323,7 +323,7 @@ def fillReport(faction, members, chain, report, attacks):
     print('[FUNCTION fillReport] fill database with bonus')
     report.bonus_set.all().delete()
     for b in bonus:
-        report.bonus_set.create(hit=b[0], name=b[1], respect=b[2], respectMax=b[3])
+        report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
 
     print('[FUNCTION fillReport] It took {:.02f} seconds to fill the bonus'.format(time.time() - tip))
     tip = time.time()
