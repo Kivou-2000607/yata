@@ -1165,7 +1165,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 vp["awardType"] = "Honor"
                 vp["img"] = honorId2Img(int(k))
 
-                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679, 721]:
+                if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679, 721, 647]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1574,7 +1574,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in userInfo["honors_awarded"] else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [316, 520]:
+                elif int(k) in [316, 520, 521]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
                     # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
                     type = "Church"
