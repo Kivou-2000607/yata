@@ -158,7 +158,7 @@ def fillReport(faction, members, chain, report, attacks):
         # 10: tId
         # 11: sum(time(hit)-time(lasthit))
         # 12: #bonuses
-        attackers[m.name] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.tId, 0, 0]
+        attackers[m.tId] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.name, 0, 0]
 
     #  for debug
     # PRINT_NAME = {"Thiirteen": 0,}
@@ -172,11 +172,11 @@ def fillReport(faction, members, chain, report, attacks):
         # if attacker part of the faction at the time of the chain
         if(int(v['attacker_faction']) == faction.tId):
             # if attacker not part of the faction at the time of the call
-            if attackerName not in attackers:
-                print('[FUNCTION fillReport] hitter out of faction: {}'.format(attackerName))
-                attackers[attackerName] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerID, 0, 0]  # add out of faction attackers on the fly
+            if attackerID not in attackers:
+                print('[FUNCTION fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
+                attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0]  # add out of faction attackers on the fly
 
-            attackers[attackerName][0] += 1
+            attackers[attackerID][0] += 1
             nWRA[2] += 1
 
             # if it's a hit
@@ -194,32 +194,32 @@ def fillReport(faction, members, chain, report, attacks):
                 lastTS = v['timestamp_ended'] if lastTS == 0 else lastTS
 
                 # compute chain watcher version 2
-                attackers[attackerName][11] += (v['timestamp_ended'] - lastTS)
+                attackers[attackerID][11] += (v['timestamp_ended'] - lastTS)
                 lastTS = v['timestamp_ended']
 
                 attacksForHisto.append(v['timestamp_ended'])
-                if attackerName in attackersHisto:
-                    attackersHisto[attackerName].append(v['timestamp_ended'])
+                if attackerID in attackersHisto:
+                    attackersHisto[attackerID].append(v['timestamp_ended'])
                 else:
-                    attackersHisto[attackerName] = [v['timestamp_ended']]
+                    attackersHisto[attackerID] = [v['timestamp_ended']]
 
                 nWRA[0] += 1
                 nWRA[1] += respect
 
                 if v['chain'] in BONUS_HITS:
-                    attackers[attackerName][12] += 1
+                    attackers[attackerID][12] += 1
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerID, attackerName, respect, r))
                 else:
-                    attackers[attackerName][1] += 1
-                    attackers[attackerName][2] += float(v['modifiers']['fairFight'])
-                    attackers[attackerName][3] += float(v['modifiers']['war'])
-                    attackers[attackerName][4] += float(v['modifiers']['retaliation'])
-                    attackers[attackerName][5] += float(v['modifiers']['groupAttack'])
-                    attackers[attackerName][6] += float(v['modifiers']['overseas'])
-                    attackers[attackerName][7] += float(v['modifiers']['chainBonus'])
-                    attackers[attackerName][8] += respect / float(v['modifiers']['chainBonus'])
+                    attackers[attackerID][1] += 1
+                    attackers[attackerID][2] += float(v['modifiers']['fairFight'])
+                    attackers[attackerID][3] += float(v['modifiers']['war'])
+                    attackers[attackerID][4] += float(v['modifiers']['retaliation'])
+                    attackers[attackerID][5] += float(v['modifiers']['groupAttack'])
+                    attackers[attackerID][6] += float(v['modifiers']['overseas'])
+                    attackers[attackerID][7] += float(v['modifiers']['chainBonus'])
+                    attackers[attackerID][8] += respect / float(v['modifiers']['chainBonus'])
 
             # else:
             #     print("[FUNCTION fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
@@ -301,8 +301,8 @@ def fillReport(faction, members, chain, report, attacks):
         # 10: tId
         # 11: for chain watch
         # 12: #bonuses
-        report.count_set.create(attackerId=v[10],
-                                name=k,
+        report.count_set.create(attackerId=k,
+                                name=v[10],
                                 hits=v[0],
                                 wins=v[1],
                                 fairFight=v[2],

@@ -38,7 +38,7 @@ table.chain-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.chain-report tr.zero-hits:hover { background:#ea9999; }
 table.chain-report tr.not-there       { background:#b6d7a8; }
 table.chain-report tr.not-there:hover { background:#93c47d; }
-table.chain-report tr.kicked-members       { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
+table.chain-report tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 /* table.chain-report tr.kicked-members:hover { background:#ddddddaa; } */
 
 table.chain-report tr.zero-respect       { background:#f4cccc; }
