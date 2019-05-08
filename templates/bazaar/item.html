@@ -1,43 +1,60 @@
 {% load humanize %}
 {% load mathfilters %}
 {% load static %}
+{% load app_filters %}
 
 <thead>
-    <tr class="imag">
-    <th colspan="2" id="form-update-item-{{item.tId}}">
-        <form method="post">{% csrf_token %}
-            <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
-            {% if apiError %}
-                <a class="deletelink" href="">{{ apiError }}</a>
-            {% else %}
-                <button class="update-item" value="update">{{item.display_image}}</button>
-            {% endif %}
-        </form>
-    </th>
-    </tr>
     <tr>
-    <th colspan="2" id="form-update-item-{{item.tId}}">
-        <form method="post">{% csrf_token %}
-            <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
-            <a href="" class="delete-item">{{item.last_update}}</a>
-        </form>
-        <!-- {{item.last_update}} -->
-    </th>
-    </tr>
-    <tr>
-        <tr class="name"><th colspan="2">
+        <th colspan="2">
             <form method="post">{% csrf_token %}
-                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
-                <a href="" class="show-details">{{item.tName|truncatechars:25}}</a>
+                {% if apiError %}
+                    <a href="">{{ apiError }}</a>
+                {% else %}
+                    <a href="{% url 'bazaar:updateItem' item.tId %}" class="update-item"><button>{{item.display_large}}</button></a>
+                {% endif %}
+            </form>
+        </th>
+    </tr>
 
-                <!-- <a id="details-id-{{item.tId}}" class="show-details" href={% url "bazaar:index" %}>{{item.tName|truncatechars:25}}</a> -->
-            </from>
-        </th></tr>
-    {% if request.session.user %}
-        <tr><th class="{% if not item.stock %}lack{% endif %}" colspan="2">stock: {{item.stock}}</th></tr>
+    {% if view.timer %}
+    <tr>
+        <th colspan="2" >
+            <form method="post">{% csrf_token %}
+                <span class="update-timer">
+                {% now "U" as ts %}
+                {% with seconds=ts|sub:item.lastUpdateTS%}
+                    {% if seconds > 599 %}
+                        > 10 mins
+                    {% else %}
+                        {{seconds|ts2hhmmss}}
+                    {% endif %}
+                {% endwith %}
+                </span>
+                <!-- <a href="{% url 'bazaar:deleteItem' item.tId %}" class="delete-item">{{item.lastUpdateTS}}</a> -->
+            </form>
+        </th>
+    </tr>
     {% endif %}
-    <tr><th colspan="2"><a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a></th></tr>
+
+    <tr>
+        <th colspan="2">
+            <div class="item-name">
+                <a href="" class="show-details" title="{{item.tName}}">{{item.tName}}</a>
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th class="{% if not item.stock %}lack{% endif %}" colspan="2">
+            stock: {{item.stock}}
+        </th>
+    </tr>
+    <tr>
+        <th colspan="2">
+            <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
+        </th>
+    </tr>
 </thead>
+
 <tbody>
     {% for data in item.get_bazaar %}
         {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
@@ -59,19 +76,16 @@
         </tr>
     {% endfor %}
 
-    {% if request.session.user %}
     <tr>
-        <th colspan="2" id="form-update-item-{{item.tId}}">
+        <th colspan="2">
             <form method="post">{% csrf_token %}
-                <input type="hidden" class="tId" name="tId" value="{{item.tId}}">
                 {% if toggleMessage %}
-                    <a href="" class="toggle-item">{{toggleMessage}}</a>
+                    <a class="toggle-item" href="{% url 'bazaar:updateItem' item.tId %}" class="toggle-item">{{toggleMessage}}</a>
                 {% else %}
-                    <a href="" class="toggle-item">Add / remove</a>
+                    <a class="toggle-item" href="{% url 'bazaar:updateItem' item.tId %}" class="toggle-item">Add / Remove</a>
                 {% endif %}
             </form>
         </th>
     </tr>
-    {% endif %}
 
 </tbody>

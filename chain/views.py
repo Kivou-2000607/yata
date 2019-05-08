@@ -430,9 +430,9 @@ def jointReport(request):
 
         # add last time connected
         error = False
-        # update = updateMembers(faction, key=key)
-        # if 'apiError' in update:
-        #     error = update
+        update = updateMembers(faction, key=key)
+        if 'apiError' in update:
+            error = update
 
         for i, bonus in enumerate(arrayBonuses):
             try:

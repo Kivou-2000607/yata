@@ -24,8 +24,8 @@ class ItemUpdateInline(admin.TabularInline):
 
 
 class ItemUpdateAdmin(admin.ModelAdmin):
-    list_display = ['item', 'date']
-    list_filter = ['date']
+    list_display = ['item', 'lastUpdateTS']
+    list_filter = ['lastUpdateTS']
 
 
 admin.site.register(ItemUpdate, ItemUpdateAdmin)
@@ -52,17 +52,17 @@ def put_on_market(modeladmin, request, queryset):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tType', 'date', 'tMarketValue', 'tImage', 'onMarket']
+    list_display = ['__str__', 'tType', 'lastUpdateTS', 'tMarketValue', 'tImage', 'onMarket']
     inlines = [MarketDataInline]
     actions = [remove_from_market, put_on_market]
-    list_filter = ['tType', 'date']
+    list_filter = ['tType', 'lastUpdateTS']
 
 
 admin.site.register(Item, ItemAdmin)
 
 
 class ConfigAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nItems', 'autorisedId', 'lastScan', 'apiKey']
+    list_display = ['id', 'nItems', 'autorisedId']
 
 
 admin.site.register(Config, ConfigAdmin)

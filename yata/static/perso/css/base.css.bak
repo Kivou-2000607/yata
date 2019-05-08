@@ -38,12 +38,7 @@ div.modal {
     z-index: 11; /* 1px higher than the overlay layer */
 }
 
-img.thumb{
-    height: 26px;
-    margin:0 10px 2px -7px ;
-    background:#ccc url("/static/images/bg_hospital.jpg") left top repeat;
-    border-radius: 4px;
-}
+
 
 .module {
     background-color: #cccccc00;
@@ -194,113 +189,6 @@ table.tablehover tr:hover {
     background:#AAA;
 }
 
-td.notOnMarket {
-    background:#FD6431;
-}
-td.onMarket {
-    background:#79C732;
-}
-
-
-table.item-sell-table  {
-    display: inline-table;
-    width:120px;
-    box-sizing: border-box;
-}
-
-table.item-sell-table img {
-    width:100%;
-}
-
-table.item-sell-table a:hover {
-    text-decoration: underline;
-}
-
-
-table.item-sell-table td.A,
-table.item-sell-table th.A {
-    padding:2px;
-    max-width:45px;
-    width:55px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-table.item-sell-table td.B,
-table.item-sell-table th.B {
-    padding:2px;
-    max-width:75px;
-    width:66px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-table.item-sell-table th {
-    text-align:center;
-}
-
-table.item-sell-table tr {
-    text-align:center;
-}
-
-table.item-sell-table tr.imag th {
-    max-height:65px;
-}
-
-table.item-sell-table div.time {
-    max-height:15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-table.item-sell-table tr.name th {
-    height:35px;
-    vertical-align:middle;
-}
-table.item-sell-table tr.name div {
-    max-height:30px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-table.item-sell-table.scale {
-    width:375px;
-}
-
-table.item-sell-table.scale td {
-    height:10px!important;
-    width:75px!important;
-    text-align:center;
-
-}
-
-table.item-sell-table th img {
-    cursor:pointer;
-}
-table.item-sell-table td {
-    text-align:right;
-}
-
-td.llt      ,tr.llt       { background:#d9ead3; }
-td.lt       ,tr.lt        { background:#b6d7a8; }
-td.eq       ,tr.eq        { background:#9fc5e8; }
-td.gt       ,tr.gt        { background:#f9cb9c; }
-td.ggt      ,tr.ggt       { background:#fce5cd; }
-/* td.ignore   ,tr.ignore    { background:#eeeeee; color:#aaaaaa; } */
-
-td.llt:hover,tr.llt:hover { background:#b6d7a8; color:#000000; }
-td.lt:hover ,tr.lt:hover  { background:#93c47d; color:#000000; }
-td.eq:hover ,tr.eq:hover  { background:#6fa8dc; color:#000000; }
-td.gt:hover ,tr.gt:hover  { background:#f6b26b; color:#000000; }
-td.ggt:hover,tr.ggt:hover { background:#f9cb9c; color:#000000; }
-
-tr.llt { animation: blinker 1s linear infinite; }
-@keyframes blinker {  50% { opacity: 0.5; } }
-
-table.item-sell-table th.lack       { background:#f4cccc!important; }
-table.item-sell-table th.lack:hover { background:#ea9999!important; }
 
 tr.zero-hits       { background:#f4cccc!important; display: none;}
 tr.zero-hits:hover { background:#ea9999!important; }

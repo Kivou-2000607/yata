@@ -35,8 +35,6 @@ table.target-targets td.okay        { color:#0B8E14; }
 table.target-targets td.not-okay    { color:#CC3434; }
 table.target-targets i.not-okay    { color:#aaa; }
 
-table.target-targets tr.old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
-
 input.target-list-note {
     height: 16px;
     width: 120px;

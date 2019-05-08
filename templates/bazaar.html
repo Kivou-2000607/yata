@@ -1,253 +1,110 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-{% load i18n %}
-{% load humanize %}
-{% get_current_language as LANGUAGE_CODE %}
 
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/bazaar.css" %} />
+{% endblock%}
 
-    <!-- load jquery from https://code.jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+{% block title%}
+    - Bazaar
+{% endblock %}
 
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-
-    <!-- jquery module to sort tables from http://tablesorter.com -->
-    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
-
-    <!-- scripts jquery perso -->
-    <script>
-        $(document).on('click', 'a.show-details', function(e){
-            e.preventDefault();
-            var td = $(this).closest('th');
-            var tId = td.find(".tId").val();
-            $( "#details" ).load( "{% url 'bazaar:details' %}", {
-                tId: tId,
-                html: "details",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
+{% block jquery %}
+<script>
+    $(document).on('click', 'table.bazaar-categories td', function(e){
+        e.preventDefault();
+        var l = $(this).children("a").attr("href").split("/")[2];
+        $( "#content-update" ).load( "/bazaar/"+l+"/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading prices')
+        $("#content-update h2").addClass("grey");
+        $("div.error").hide();
+    });
 
-        $(document).on('click', '.close', function(e){
-            e.preventDefault();
-            $(this).parent("div.container").css("display", "none");
+    // update item
+    $(document).on('click', '.update-item', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#item-sell-table-" + tId ).load( "/bazaar/update/item/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $(this).children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        $(document).on('click', '.update-item', function(e){
-            e.preventDefault();
-            var td = $(this).closest('th');
-            var tId = td.find(".tId").val();
-            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:updateItemBazaar' %}", {
-                tId: tId,
-                html: "item_sell_table",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
+    // update type
+    $(document).on('click', '.update-type', function(e){
+        e.preventDefault();
+        var tType = $(this).attr("href").split("/").pop();
+        var reload = $("#loop-over-item-sell-table-"+tType);
+        reload.load( "/bazaar/update/type/"+tType, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        // reload.html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Updating '+tType)
+        reload.find(".update-item").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        $(document).on('click', '.toggle-item', function(e){
-            e.preventDefault();
-            var td = $(this).closest('th');
-            var tId = td.find(".tId").val();
-            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:toggleItem' %}", {
-                tId: tId,
-                html: "item_sell_table",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
+    // delete item
+    $(document).on('click', '.delete-item', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#item-sell-table-" + tId ).load( "/bazaar/delete/item/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        $(document).on('click', '.update-type', function(e){
-            e.preventDefault();
-            var tType = $(this).prev('.tType').val();
-            var csrf = $( "#update-type-csrf-" + tType ).val();
-            $( "#loop-over-item-sell-table-" + tType ).html('<div class="justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
-            $( "#loop-over-item-sell-table-" + tType ).load( "{% url 'bazaar:updateTypeBazaar' %}", {
-                tType: tType,
-                html: "loop_over_item_sell_table",
-                csrfmiddlewaretoken: csrf,
-            });
+    // delete item
+    $(document).on('click', '.toggle-item', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#item-sell-table-" + tId ).load( "/bazaar/toggle/item/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
+        $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
 
-        $(document).on('click', '.delete-item', function(e){
-            e.preventDefault();
-            var td = $(this).closest('th');
-            var tId = td.find(".tId").val();
-            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:deleteItemBazaar' %}", {
-                tId: tId,
-                html: "item_sell_table",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-        });
-
-        $(document).on('click', '.update-key', function(e){
-            e.preventDefault();
-            var key = $("#key-value").val();
-            var check = $("#key-check-remember").is(':checked');
-            $( "#api-key" ).html('<h2 class="title">Connecting to API</h2><div class="module whiteBG justTxt"><img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/></div>');
-            $( "#api-key" ).load( "{% url 'bazaar:updateKey' %}", {
-                keyValue: key,
-                html: "intro",
-                rememberSession: check,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-        });
-
-        $(document).on('click', 'h2.toggleDisplay', function(e){
-            e.preventDefault();
-            var title = $(this);
-            var arrow = title.find("i.title-arrow");
-            var mainDiv = title.next("div");
-            var divToToggle = mainDiv.find("div.toggleDisplay");
-            if(divToToggle.css("display") == "none") {
-                title.removeClass("side");
-                title.addClass("down");
-            }
-            divToToggle.slideToggle("fast", function(){
-                if(divToToggle.css("display") == "none") {
-                    title.removeClass("down");
-                    title.addClass("side");
+    // refresh timer target update
+    window.setInterval(function(){
+        $(".update-timer").each(function() {
+            table = $(this).closest("table");
+            var updatetime = $.trim($(this).text());
+            if ( updatetime.search(" s")!=-1 ) {
+                var splt = updatetime.split(" ");
+                var seconds = 0;
+                if (splt.length == 2) {
+                    seconds = parseInt(splt[0]);
+                } else if (splt.length == 4) {
+                    seconds = parseInt(splt[2]) + 60 * parseInt(splt[0]);
                 }
-            });
+                if ( seconds > 599 ) {
+                    $(this).html("> 10 mins");
+                    table.addClass("old-refresh");
+                } else {
+                    seconds ++;
+                    minutes = Math.floor(seconds / 60);
+                    seconds = seconds % 60;
+                    if (minutes) {
+                        spad = ("0"+seconds.toString()).slice(-2);
+                        $(this).html(minutes.toString()+" mins "+spad+" s");
+                    } else {
+                        $(this).html(seconds.toString()+" s");
+                    }
+                    table.removeClass("old-refresh");
+                }
+            } else {
+                if (!table.hasClass('old-refresh')) {
+                    table.addClass('old-refresh');
+                }
+            }
         });
+    }, 1000);
 
-    </script>
+</script>
+{% endblock %}
 
-
-    <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>Yet Another Torn App</title>
-</head>
-
-<body>
-    <div id="details"></div>
-
-    <div id="container">
-        <div id="content">
-            <h1><b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp &nbsp; &nbsp; &nbsp; &nbsp;  <a href="{% url 'bazaar:index' %}"><b>bazaar</b></a> - <a href="{% url 'chain:index' %}"><b>chain</b></a> - <a href="{% url 'awards:index' %}"><b>awards</b></a></h1>
-            <p><b>Bazaar overview</b>: buy and sell at the right price!</p>
-            <input type="hidden" id="view-byType" value="{{view.byType}}">
-            <input type="hidden" id="view-refreshAll" value="{{view.refreshAll}}">
-            <div id="api-key">
-                {% include "sub/intro.html" %}
-            </div>
-
-            {% if view.lastScan %}
-            <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Last scan update</h2>
-            <div class="module whiteBG">
-                <div class="justTxt">
-                    Last scan of the object list has been made on {{ view.lastScan }}
-                </div>
-            </div>
-            {% endif %}
-
-            <div id="loop-over-types">
-                {% include "sub/loop_over_types.html" %}
-            </div> <!--end of loop over types-->
-
-            {% if view.help %}
-            <h2 class="title greyTitle toggleDisplay side"><img src={% static "images/tutorial.png" %} alt="help"> Help<i class="title-arrow"></i></h2>
-            <div class="module whiteBG">
-                <div class="justTxt toggleDisplay hide">
-                    <h3>How does it work?</h3>
-                    <ul>
-                        <li>Enter your API key. If you don't see your <b>name [id]</b>, it means that either the API key is wrong or that the API server is down (1 API call).</li>
-                        <li>Click on the item type to show the tables.</li>
-                        <li>Click on an icon to refresh the bazaar prices of the object (1 API call).</li>
-                        <li>Click on the refresh buttons to refresh the items information and bazaar prices (1 API call + 1/item). This feature is not available for the full list.</li>
-                        <li>API key are not stored. Sensible personal information are not even looked at. The only information stored (if you enter your API key) are your name and user id. Your personal stocks are not stored but computed on the fly (1 API call).</li>
-                        <li>If you entered your API key, the session expires when your browser is closed. If you clicked "remember me" the session will expire in one year.</li>
-                    </ul>
-
-                    <h3>What does the tables mean?</h3>
-                    <p>Each tables contains:</p>
-                    <ul>
-                        <li> Row 1: icon / refresh button</li>
-                        <li> Row 2: time since last update / click to delete bazaar data (because why not?) </li>
-                        <li> Row 3: item name / link to its description</li>
-                        <li> Row 3+1: personal stock of the item if you entered your API key and only on the custom list page (refresh is needed to see changes)</li>
-                        <li> Row 4: current market price / link to the torn item market of this item</li>
-                        <li> The colored rows are information of the users bazaars. Each row corresponds to a bazaar
-                            <ul>
-                                <li> Column 1: the number of item to sell</li>
-                                <li> Column 2: the selling price of one item</li>
-                                <i>If you let the cursor hover it, you can see the cummulative price</i>
-                            </ul>
-                        </li>
-                        <li>The colors correspond to the prices compared to the current market price
-                        <div class="module" style="margin-bottom:0px">
-                            <table class="item-sell-table scale">
-                                <tr >
-                                    <td  class="llt"> < 3%    </td>
-                                    <td  class="lt" > < 1%    </td>
-                                    <td  class="eq" > &plusmn; 1% </td>
-                                    <td  class="gt" > > 1%    </td>
-                                    <td  class="ggt"> > 3%    </td>
-                                </tr>
-                            </table>
-                        </div></li>
-                        <li>The last row <a href=""><b>Add / remove</b></a> only appears if you entered your API key. It allows you to select the items you want in your custom page.</li>
-                    </ul>
-
-
-                    <h3>About the project</h3>
-                    <ul>
-                        <li>The code is open source and hosted on <a href="https://github.com/Kivou-2000607/yata" target="_blank">github</a> and is currently maintained by <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>. Feel free to do whatever you want with it and post issues if you find some bugs.</li>
-                        <li>Fill free to bump, rate and comment the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16051010&b=0&a=0&start=0&to=18616946" target="_blank">forum thread</a>.</i></li>
-                        <li> log
-                            <ul>
-                                <li><b>v1.2 (2018-08-28)</b>: Personal stocks</li>
-                                <ul>
-                                    <li>add personal stock for all items of the custom list</li>
-                                    <li>refresh button for the custom list</li>
-                                    <li>daily scan to get market prices of all items fresh</li>
-                                </ul>
-                                <li><b>v1.1 (2018-08-18)</b>: Custom list</li>
-                                <ul>
-                                    <li>add custom list</li>
-                                    <li>show details of objects on the same page</li>
-                                    <li>display last full scan</li>
-                                </ul>
-                                <li><b>v1.0 (2018-07-31)</b>: Stable release</li>
-                                <ul>
-                                    <li>add torn style</li>
-                                    <li>add full list and sets</li>
-                                    <li>hide tables by default</li>
-                                </ul>
-                                <li><b>beta (2018-07-03)</b>: First public release</li>
-                            </ul>
-                        </li>
-                    <ul>
-                </div>
-                <div id="loading-div"></div>
-            </div> <!--  end of help -->
-            {% endif %}
-            <h2 class="title greyTitle"><img src={% static "images/tutorial.png" %} alt="help"> Last 24h stats as for {{nUpdate.3}}<i class="title-arrow"></i></h2>
-            <div class="module whiteBG">
-                <div class="justTxt">
-                    <ul>
-                    <li><b>{{nUpdate.0}}</b> item{{nUpdate.0|pluralize}} has been updated by <b>{{nUpdate.1}}</b> {{nUpdate.1|pluralize:"user,different users"}}.</li>
-                    {% if nUpdate.2 %}
-                    <li>Top {{nUpdate.2|length}} item updates:
-                        {% for item in nUpdate.2 %}
-                            <b>{{item.0}}</b> ({{item.1}}){% if not forloop.last %}, {% endif %}
-                        {% endfor %}</li>
-                    {% endif %}
-                    </ul>
-                </div>
-            </div>
-
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+{% block content %}
+    <div id="content-update">
+        {% include "bazaar/content-reload.html" %}
+    </div>
+{% endblock %}

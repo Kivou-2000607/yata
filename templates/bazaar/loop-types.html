@@ -1,0 +1,41 @@
+<!-- <p>byType: {{ view.byType }}</p> -->
+<!-- <p>refreshAll: {{ view.refreshAll}}</p> -->
+
+{% if view.byType %}
+
+    {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
+        <h2 class="title {% if view.hideType %}toggleDisplay{% else %}toggleDisplay{% endif %} side">{{v.0.display_small}} {{k}}<i class="title-arrow"></i>
+            {% if view.refreshType %}
+                <form class="form-inline"><a href="{% url 'bazaar:updateType' k %}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
+            {% endif %}
+        </h2>
+
+        <div class="module">
+            <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay {% if view.hideType %}hide{% endif %}">
+                {% include "bazaar/loop-items.html" with itemType=k items=v %}
+            </div>
+            <div id="loading-div"></div>
+        </div>
+    {% endfor %}
+
+{% else %}
+
+    <h2>On market</h2>
+    <div class="module">
+        <div id="loading-div"></div>
+        <div id="loop-over-item-sell-table-all">
+            {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
+                {% include "bazaar/loop-items.html" with items=v %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endif %}
+<!-- {% if view.refreshType %}
+    <form method="post">
+        <input type="hidden" id="update-type-csrf-{{itemType}}" value="{{csrf_token}}">
+        <p class="deletelink-box">
+        <input type="hidden" class="tType" name="tType" value="{{itemType}}">
+        <input type="submit" class="update-type" value="Refresh {{itemType}}"></p>
+    </form>
+{% endif %} -->

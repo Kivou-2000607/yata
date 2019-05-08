@@ -37,17 +37,17 @@
             $(this).parent("div.container").css("display", "none");
         });
 
-        $(document).on('click', '.update-item', function(e){
-            e.preventDefault();
-            var td = $(this).closest('th');
-            var tId = td.find(".tId").val();
-            td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
-            $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:updateItemBazaar' %}", {
-                tId: tId,
-                html: "item_sell_table",
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-        });
+        // $(document).on('click', '.update-item', function(e){
+        //     e.preventDefault();
+        //     var td = $(this).closest('th');
+        //     var tId = td.find(".tId").val();
+        //     td.html('<img src="https://www.torn.com/images/v2/main/ajax-loader.gif" alt="loader"/>');
+        //     $( "#item-sell-table-" + tId ).load( "{% url 'bazaar:updateItemBazaar' %}", {
+        //         tId: tId,
+        //         html: "item_sell_table",
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        // });
 
         $(document).on('click', '.toggle-item', function(e){
             e.preventDefault();

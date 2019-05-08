@@ -1,0 +1,20 @@
+{% load humanize %}
+{% load mathfilters %}
+
+{% if apiError %}
+<div class="justTxt">
+    <a class="deletelink" href="">{{ apiError }}</a>
+</div>
+{% else %}
+
+{% for item in items|dictsort:"tName" %}
+    <table id="item-sell-table-{{item.tId}}" class="item-sell-table">
+        {% include "bazaar/item.html" with item=item%}
+    </table>
+{% empty %}
+    <div class="justTxt">
+        No item here.
+    </div>
+{% endfor %}
+
+{% endif %}

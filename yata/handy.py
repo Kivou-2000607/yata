@@ -49,6 +49,9 @@ def None2Zero(a):
 def None2EmptyList(a):
     return [] if a is None else a
 
+def None2EmptyDict(a):
+    return dict({}) if a is None else a
+
 
 def timestampToDate(timestamp):
     import datetime

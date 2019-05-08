@@ -2,13 +2,13 @@ from django.db import models
 from django.utils import timezone
 
 import requests
-from .handy import apiCall
+from yata.handy import apiCall
 
 class Config(models.Model):
     autorisedId = models.CharField(default="", max_length=200)
     apiKey = models.CharField(default="", max_length=16)
     nItems = models.IntegerField(default=10)
-    lastScan = models.DateTimeField(default=timezone.now)
+    lastScanTS = models.IntegerField(default=0)
 
     def list_autorised_id(self):
         # split string by ","
@@ -19,10 +19,10 @@ class Config(models.Model):
             list = [-1]
         return list
 
-    def update_last_scan(self):
-        self.lastScan = timezone.now()
-        self.save()
-        return self.lastScan
+    # def update_last_scan(self):
+    #     self.lastScan = int(timezone.now().timestamp())
+    #     self.save()
+    #     return self.lastScanTS
 
 
 class Item(models.Model):
@@ -38,7 +38,7 @@ class Item(models.Model):
     tCirculation = models.BigIntegerField(default=0)
     tImage = models.URLField(max_length=500)
     onMarket = models.BooleanField(default=False)
-    date = models.DateTimeField(default=timezone.now)
+    lastUpdateTS = models.IntegerField(default=0)
     stock = models.IntegerField(default=0)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class Item(models.Model):
 
     @classmethod
     def create(cls, k, v):
-        print("[MODEL Item] create", k, v['name'], v['type'], v['market_value'])
+        print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
         item = cls(tId=int(k),
                    tName=v['name'],
                    tType=v['type'].replace(" ", ""),
@@ -58,7 +58,7 @@ class Item(models.Model):
                    tImage=v['image'])
         return item
 
-    def update(self, k, v):
+    def update(self, v):
         # v = {'name': 'Kitchen Knife',
         #      'description': 'Do your attempts to prepare food like your favourite TV chef end up more like hack and saw than slice and dice? If so, a sharp new knife could be your saviour.',
         #      'type': 'Melee',
@@ -67,8 +67,7 @@ class Item(models.Model):
         #      'market_value': 2094,
         #      'circulation': 68911,
         #      'image': 'http://www.torn.com/images/items/6/large.png'}
-        print("[MODEL Item] update", k, v['name'], v['type'], v['market_value'])
-        self.tId = int(k)
+        print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
         self.tName = v['name']
         self.tType = v['type'].replace(" ", "")
         self.tMarketValue = int(v['market_value'])
@@ -80,21 +79,26 @@ class Item(models.Model):
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
 
-    def display_image(self):
-        from urllib.parse import urlparse
+    def display_small(self):
         from django.utils.html import format_html
-        from django.contrib.staticfiles.templatetags.staticfiles import static
-        return format_html("<img src=\"{}\" alt=\"{} [{}]\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
+        # from urllib.parse import urlparse
+        # from django.contrib.staticfiles.templatetags.staticfiles import static
+        # return format_html("<img src=\"{}\" alt=\"{} [{}]\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
+        return format_html("<img src='https://www.torn.com/images/items/{id}/small.png' alt='{name} [{id}]' />".format(id=self.tId, name=self.tName))
 
-    def display_thumb(self):
-        from urllib.parse import urlparse
+    def display_large(self):
         from django.utils.html import format_html
-        from django.contrib.staticfiles.templatetags.staticfiles import static
-        return format_html("<img src=\"{}\" alt=\"{} [{}]\" class=\"thumb\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
+        # from urllib.parse import urlparse
+        # from django.contrib.staticfiles.templatetags.staticfiles import static
+        # return format_html("<img src=\"{}\" alt=\"{} [{}]\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
+        return format_html("<img src='https://www.torn.com/images/items/{id}/large.png' alt='{name} [{id}]' />".format(id=self.tId, name=self.tName))
 
-    def last_update(self):
-        list = [s for s in str(timezone.now() - self.date).split(".")[0].split(':')]
-        return "{}h {:02.0f}m".format(list[0], float(list[1]))
+    # def display_thumb(self):
+    #     from django.utils.html import format_html
+    #     # from urllib.parse import urlparse
+    #     # from django.contrib.staticfiles.templatetags.staticfiles import static
+    #     # return format_html("<img src=\"{}\" alt=\"{} [{}]\" class=\"thumb\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
+    #     return format_html("<img src='https://www.torn.com/images/items/{id}/small.png' alt='{name} [{id}]' class='thumb' />".format(id=self.tId, name=self.tName))
 
     def get_bazaar(self, n=10):
         bData = self.marketdata_set.all().order_by('cost')
@@ -114,23 +118,22 @@ class Item(models.Model):
     def update_bazaar(self, key="", n=10):
         # API Call
         baz = apiCall("market", self.tId, "bazaar", key, sub="bazaar")
+        baz = dict({}) if baz is None else baz
 
-        if baz is not None:
-            if "apiError" in baz:
-                pass
-            else:
-                self.marketdata_set.all().delete()
-                if baz is not None:
-                    for i, r in enumerate(baz):
-                        print("[MODEL Item] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
-                        self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
-                        if i >= n - 1:
-                            break
-                self.date = timezone.now()
-                self.itemupdate_set.create()
-                self.save()
-
-        return baz
+        if 'apiError' in baz:
+            return baz
+        else:
+            self.marketdata_set.all().delete()
+            if baz is not None:
+                for i, r in enumerate(baz):
+                    print("[model.bazaar.update_bazaar] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
+                    self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
+                    if i >= n - 1:
+                        break
+            self.lastUpdateTS = int(timezone.now().timestamp())
+            self.itemupdate_set.create()
+            self.save()
+            return baz
 
 
 class MarketData(models.Model):
@@ -145,7 +148,7 @@ class MarketData(models.Model):
 
 class ItemUpdate(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now)
+    lastUpdateTS = models.IntegerField(default=0)
 
 
 class Player(models.Model):

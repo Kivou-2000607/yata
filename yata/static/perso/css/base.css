@@ -191,3 +191,5 @@ td a {
   height:100%;
   width:100%;
 }
+
+.old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }

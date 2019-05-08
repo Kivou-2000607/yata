@@ -7,14 +7,14 @@
         <h2 class="title">Hello {{request.session.player.name}} <span class="flush-right">Last update on {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
             <p class="no-margin">
-                <!-- <a href="{% url 'index' %}" class="yata-link-bazaar" title="Go to bazaar">
+                <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Go to bazaar">
                     <b><i class="fas fa-store"></i> Bazaar overview:</b></a>
                     {% if player.bazaarInfo == "N/A" %}
                         &empty;
                     {% else %}
                         {{player.bazaarInfo}}
                     {% endif %}
-                    <span class="sep"></span> -->
+                    <span class="sep"></span>
 
                 <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
                     <b><i class="fas fa-link"></i> Chain reports:</b></a>
@@ -58,6 +58,10 @@
                 <hr class="sep">
                 <p>Welcome to the chain reports.</p>
                 {% include "chain/categories.html" %}
+            {% elif bazaarcat %}
+                <hr class="sep">
+                <p>Welcome to the bazaar overview.</p>
+                {% include "bazaar/categories.html" %}
             {% endif %}
 
         </div>

@@ -1,0 +1,22 @@
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow bazaar-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'bazaar:default' %}">Default items</a>
+        </td>
+        <td>
+            <a href="{% url 'bazaar:sets' %}">Flowers and Plushies</a>
+        </td>
+        <td>
+            <a href="{% url 'bazaar:custom' %}">Custom items</a>
+        </td>
+        <td>
+            <a href="{% url 'bazaar:all' %}">All items</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>
