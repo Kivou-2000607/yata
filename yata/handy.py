@@ -3,7 +3,7 @@ def apiCall(section, id, selections, key, sub=None):
     # # DEBUG live chain
     # if selections == "chain" and section == "faction":
     #     from django.utils import timezone
-    #     print("[FUNCTION apiCall] DEBUG chain/faction")
+    #     print("[yata.function.apiCall] DEBUG chain/faction")
     #     chain = dict({"chain": {"current": 10,
     #                             "timeout": 65,
     #                             "modifier": 0.75,
@@ -17,8 +17,8 @@ def apiCall(section, id, selections, key, sub=None):
 
     try:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-        # print("[FUNCTION apiCall] {}".format(url.replace("&key=" + key, "")))
-        print("[FUNCTION apiCall] {}".format(url))
+        print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
+        # print("[yata.function.apiCall] {}".format(url))
         r = requests.get(url)
         r.raise_for_status()
 
@@ -36,7 +36,7 @@ def apiCall(section, id, selections, key, sub=None):
                 return rjson
 
     except requests.exceptions.HTTPError as e:
-        print("[FUNCTION apiCall] API HTTPError {}".format(e))
+        print("[yata.function.apiCall] API HTTPError {}".format(e))
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})

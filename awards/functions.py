@@ -1752,7 +1752,6 @@ def updatePlayerAwards(player, tornAwards, userInfo):
     summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
     summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
 
-    print("[function.awards.updatePlayerAwards] awards in database")
     awardsJson = {"tornAwards": tornAwards,
                   "userInfo": userInfo,
                   "awards": awards,
@@ -1775,7 +1774,6 @@ def updatePlayerAwards(player, tornAwards, userInfo):
     player.awardsJson = json.dumps(awardsJson)
     player.awardsInfo = "{}".format(popPerso / float(popTotal))
     player.awardsUpda = int(timezone.now().timestamp())
-    player.lastUpdateTS = int(timezone.now().timestamp())
     player.save()
 
     return awardsJson
