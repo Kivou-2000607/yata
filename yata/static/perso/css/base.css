@@ -73,17 +73,14 @@ h2.title {
 
 h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left top repeat; }
 
-a.error { color: #CC3434; font-weight: bold; }
-a.valid { color: #0B8E14; font-weight: bold; }
-a.error:hover,
-a.error:active,
-a.error:focus { color: #AA3434; }
-a.valid:hover,
-a.valid:active,
-a.valid:focus { color: #0B6C14; }
-
-span.error { font-weight: bold; color: #CC3434; }
-span.valid { font-weight: bold; color: #0B8E14; }
+.error { color: #CC3434!important; font-weight: bold; }
+.valid { color: #0B8E14!important; font-weight: bold; }
+.error:hover,
+.error:active,
+.error:focus { color: #AA3434; }
+.valid:hover,
+.valid:active,
+.valid:focus { color: #0B6C14; }
 
 div.error {
     font-weight: bold;

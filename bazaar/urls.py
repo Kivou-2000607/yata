@@ -10,11 +10,12 @@ urlpatterns = [
     re_path(r'^sets/$', views.sets, name='sets'),
     re_path(r'^all/$', views.all, name='all'),
 
-    re_path(r'^update/item/(?P<itemId>\w+)$', views.updateItem, name='updateItem'),
+    re_path(r'^update/(?P<itemId>\w+)$', views.update, name='update'),
     re_path(r'^update/type/(?P<tType>\w+)$', views.updateType, name='updateType'),
-    re_path(r'^delete/item/(?P<itemId>\w+)$', views.deleteItem, name='deleteItem'),
+    re_path(r'^delete/(?P<itemId>\w+)$', views.delete, name='delete'),
 
-    re_path(r'^toggle/item/(?P<itemId>\w+)$', views.toggleItem, name='toggleItem'),
+    re_path(r'^toggle/(?P<itemId>\w+)$', views.toggle, name='toggle'),
+    re_path(r'^details/(?P<itemId>\w+)$', views.details, name='details'),
 
     # re_path(r'^logout/$', views.logout, name='logout'),
     # re_path(r'^updateKey/$', views.updateKey, name='updateKey'),

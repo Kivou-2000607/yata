@@ -1,28 +1,14 @@
 from django.db import models
 from django.utils import timezone
 
-import requests
 from yata.handy import apiCall
 
-class Config(models.Model):
-    autorisedId = models.CharField(default="", max_length=200)
-    apiKey = models.CharField(default="", max_length=16)
+
+class Preference(models.Model):
+    # autorisedId = models.CharField(default="", max_length=200)
+    key = models.CharField(default="", max_length=16)
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
-
-    def list_autorised_id(self):
-        # split string by ","
-        try:
-            list = [int(id.strip()) for id in self.autorisedId.split(',')]
-        except:
-            print("[MODEL CONFIG]: WARNING autorised id couldn't be parsed", self.autorisedId)
-            list = [-1]
-        return list
-
-    # def update_last_scan(self):
-    #     self.lastScan = int(timezone.now().timestamp())
-    #     self.save()
-    #     return self.lastScanTS
 
 
 class Item(models.Model):
@@ -76,6 +62,7 @@ class Item(models.Model):
         self.tCirculation = int(v['circulation'])
         self.tDescription = v['description']
         self.tImage = v['image']
+        # self.lastUpdateTS = int(timezone.now().timestamp())
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
 
@@ -131,7 +118,6 @@ class Item(models.Model):
                     if i >= n - 1:
                         break
             self.lastUpdateTS = int(timezone.now().timestamp())
-            self.itemupdate_set.create()
             self.save()
             return baz
 
@@ -144,54 +130,3 @@ class MarketData(models.Model):
 
     def __str__(self):
         return "{} ({}): {} x {}".format(self.item, self.sellId, self.quantity, self.cost)
-
-
-class ItemUpdate(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    lastUpdateTS = models.IntegerField(default=0)
-
-
-class Player(models.Model):
-    name = models.CharField(default="Duke", max_length=100)
-    playerId = models.BigIntegerField(default=4)
-    date = models.DateTimeField(default=timezone.now)
-    nLog = models.IntegerField(default=1)
-    itemsId = models.TextField(default="", blank=True)
-
-    def __str__(self):
-        return "{} [{}]".format(self.name, self.playerId)
-
-    def torn_url_page(self):
-        return "https://www.torn.com/profiles.php?XID={}".format(self.playerId)
-
-    def get_items_id(self):
-        if self.itemsId:
-            return self.itemsId.strip().replace(" ", "").split(',')
-        else:
-            return []
-
-    def toggle_item(self, id):
-        list_id = self.get_items_id()
-        if id in list_id:
-            del list_id[list_id.index(id)]
-            self.itemsId = ",".join(list_id)
-            self.save()
-            return False
-        else:
-            list_id.append(id)
-            self.itemsId = ",".join(list_id)
-            self.save()
-            return True
-
-
-class Stat(models.Model):
-        firstThree = models.CharField(default="Nothing", max_length=100)
-        numberUpdates = models.IntegerField(default=0)
-        numberPlayers = models.IntegerField(default=0)
-        date = models.DateTimeField(default=timezone.now)
-
-        def getStats(self):
-            try:
-                return self.numberUpdates, self.numberPlayers, [t.split(",") for t in self.firstThree.split(';')], self.date
-            except:
-                return False

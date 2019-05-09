@@ -6,13 +6,15 @@
 <thead>
     <tr>
         <th colspan="2">
-            <form method="post">{% csrf_token %}
-                {% if apiError %}
-                    <a href="">{{ apiError }}</a>
-                {% else %}
-                    <a href="{% url 'bazaar:updateItem' item.tId %}" class="update-item"><button>{{item.display_large}}</button></a>
-                {% endif %}
-            </form>
+            <div class="item-image">
+                <form method="post">{% csrf_token %}
+                    {% if apiErrorSub %}
+                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item" title="{{ apiErrorSub }}"><button><i class="fas fa-skull-crossbones error"></i></button></a>
+                    {% else %}
+                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button>{{item.display_large}}</button></a>
+                    {% endif %}
+                </form>
+            </div>
         </th>
     </tr>
 
@@ -20,17 +22,16 @@
     <tr>
         <th colspan="2" >
             <form method="post">{% csrf_token %}
-                <span class="update-timer">
-                {% now "U" as ts %}
-                {% with seconds=ts|sub:item.lastUpdateTS%}
-                    {% if seconds > 599 %}
-                        > 10 mins
-                    {% else %}
-                        {{seconds|ts2hhmmss}}
-                    {% endif %}
-                {% endwith %}
-                </span>
-                <!-- <a href="{% url 'bazaar:deleteItem' item.tId %}" class="delete-item">{{item.lastUpdateTS}}</a> -->
+                <a href="{% url 'bazaar:delete' item.tId %}" class="update-timer delete-item">
+                    {% now "U" as ts %}
+                    {% with seconds=ts|sub:item.lastUpdateTS%}
+                        {% if seconds > 599 %}
+                            > 10 mins
+                        {% else %}
+                            {{seconds|ts2hhmmss}}
+                        {% endif %}
+                    {% endwith %}
+                </a>
             </form>
         </th>
     </tr>
@@ -39,7 +40,7 @@
     <tr>
         <th colspan="2">
             <div class="item-name">
-                <a href="" class="show-details" title="{{item.tName}}">{{item.tName}}</a>
+                <a href="{% url 'bazaar:details' item.tId %}" class="details-item" title="{{item.tName}}">{{item.tName}}</a>
             </div>
         </th>
     </tr>
@@ -80,9 +81,9 @@
         <th colspan="2">
             <form method="post">{% csrf_token %}
                 {% if toggleMessage %}
-                    <a class="toggle-item" href="{% url 'bazaar:updateItem' item.tId %}" class="toggle-item">{{toggleMessage}}</a>
+                    <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item">{{toggleMessage}}</a>
                 {% else %}
-                    <a class="toggle-item" href="{% url 'bazaar:updateItem' item.tId %}" class="toggle-item">Add / Remove</a>
+                    <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item">Add / Remove</a>
                 {% endif %}
             </form>
         </th>

@@ -1,27 +1,15 @@
-from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
+# from django.utils import timezone
 
-from django.utils import timezone
 
 import json
-from .models import Config
-from .models import Item
-from .models import ItemUpdate
-from .models import Player
-from .models import Stat
-from yata.handy import apiCall
-from yata.handy import None2EmptyDict
+import time
 
+from bazaar.models import Preference
+from bazaar.models import Item
 from player.models import Player
-
-# out["view"] = {"byType": True,
-#                "refreshAll": False,
-#                "refreshType": True,
-#                "hideType": False,
-#                "lastScan": Config.objects.all()[0].lastScan,
-#                "stock": False,
-#                "help": True}
+from yata.handy import apiCall
 
 
 def index(request):
@@ -33,7 +21,7 @@ def index(request):
         bazaarJson = json.loads(player.bazaarJson)
 
         # update inventory of bazaarJson
-        error=False
+        error = False
         invtmp = apiCall("user", "", "inventory", key, sub="inventory")
         if 'apiError' in invtmp:
             error = invtmp
@@ -52,7 +40,7 @@ def index(request):
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
         print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType:[] for tType in tTypes}
+        items = {tType: [] for tType in tTypes}
 
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
@@ -60,8 +48,7 @@ def index(request):
                 items[tType].append(item)
                 # item.save()
 
-
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"byType": True, "refreshType": True, "timer": True} }
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -75,7 +62,7 @@ def custom(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
+        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
         playerList = bazaarJson.get("list", [])
@@ -91,23 +78,22 @@ def custom(request):
             items["Custom"].append(item)
             # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"byType": True, "refreshType": True, "timer": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:
         raise PermissionDenied("You might want to log in.")
 
-    raise PermissionDenied("You might want to log in.")
 
 def default(request):
     if request.session.get('player'):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
+        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
-        playerList = bazaarJson.get("list", [])
+        # playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
         itemsOnMarket = Item.objects.filter(onMarket=True)
@@ -115,7 +101,7 @@ def default(request):
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
         print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType:[] for tType in tTypes}
+        items = {tType: [] for tType in tTypes}
 
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
@@ -123,21 +109,22 @@ def default(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"byType": True, "refreshType": True, "timer": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:
         raise PermissionDenied("You might want to log in.")
+
 
 def sets(request):
     if request.session.get('player'):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
+        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
-        playerList = bazaarJson.get("list", [])
+        # playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
         itemsOnMarket = Item.objects.filter(onMarket=True)
@@ -145,7 +132,7 @@ def sets(request):
         tTypes = ["Flower", "Plushie"]
         print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType:[] for tType in tTypes}
+        items = {tType: [] for tType in tTypes}
 
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
@@ -154,7 +141,7 @@ def sets(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"byType": True, "refreshType": True, "timer": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:
@@ -166,10 +153,10 @@ def all(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
+        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
-        playerList = bazaarJson.get("list", [])
+        # playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
         itemsOnMarket = Item.objects.all()
@@ -177,7 +164,7 @@ def all(request):
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
         print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType:[] for tType in tTypes}
+        items = {tType: [] for tType in tTypes}
 
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
@@ -185,14 +172,26 @@ def all(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"byType": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": False}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:
         raise PermissionDenied("You might want to log in.")
 
 
-def updateItem(request, itemId):
+def details(request, itemId):
+    if request.session.get('player') and request.method == "POST":
+        item = Item.objects.filter(tId=itemId).first()
+
+        context = {'item': item}
+        return render(request, 'bazaar/details.html', context)
+
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
+
+
+def update(request, itemId):
     if request.session.get('player') and request.method == "POST":
         print('[view.bazaar.updateItem] get player id from session')
         tId = request.session["player"].get("tId")
@@ -204,16 +203,16 @@ def updateItem(request, itemId):
         item = Item.objects.filter(tId=itemId).first()
         print('[view.bazaar.updateItem] {}'.format(item))
 
-        baz = item.update_bazaar(key=key, n=Config.objects.first().nItems)
+        baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
         error = False
         if "apiError" in baz:
             error = baz
 
         # update inventory of bazaarJson
-        error=False
+        error = False
         invtmp = apiCall("user", "", "inventory", key, sub="inventory")
         if 'apiError' in invtmp:
-            error = invtmp
+            error = {"apiErrorSub": invtmp["apiError"]}
         else:
             # modify user
             for i in invtmp:
@@ -223,14 +222,31 @@ def updateItem(request, itemId):
 
                     # modify item for display
                     item.stock = i["quantity"]
-                    item.save()
+                    saveSuccess = False
+                    while saveSuccess is False:
+                        try:
+                            print("[view.bazaar.updateItem] save item")
+                            item.save()
+                            saveSuccess = True
+                        except:
+                            print("[view.bazaar.updateItem] db locked sleep 1s before saving item")
+                            time.sleep(1)
                     break
 
         player.bazaarJson = json.dumps(bazaarJson)
-        player.save()
-
+        saveSuccess = False
+        while saveSuccess is False:
+            try:
+                print("[view.bazaar.updateItem] save player")
+                player.save()
+                saveSuccess = True
+            except:
+                print("[view.bazaar.updateItem] db locked sleep 1s before saving player")
+                time.sleep(1)
 
         context = {'item': item, "view": {"timer": True}}
+        if error:
+            context.update(error)
         return render(request, "bazaar/item.html", context)
 
     else:
@@ -244,32 +260,36 @@ def updateType(request, tType):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         key = player.key
-        nItems = Config.objects.all()[0].nItems
+        nItems = Preference.objects.all()[0].nItems
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
         playerList = bazaarJson.get("list", [])
-
-        itemsAPI = apiCall("torn", "", "items", key, sub='items')
-        error = False
-        if "apiError" in itemsAPI:
-            error = itemAPI
 
         if tType == "Custom":
             items = Item.objects.filter(tId__in=playerList)
         else:
             items = Item.objects.filter(onMarket=True).filter(tType=tType)
 
-        for item in items:
-            print("[VIEW updateTypeBazaar]: update ", item)
-            item.update(itemsAPI[str(item.tId)])
-            item.update_bazaar(key=key, n=nItems)
-            item.save()
-            item.stock = inventory.get(item.tId, 0)
+        itemsAPI = apiCall("torn", "", "items", key, sub='items')
+        error = False
+        if 'apiError' in itemsAPI:
+            error = {"apiErrorSub": itemsAPI["apiError"]}
+            for item in items:
+                item.stock = inventory.get(item.tId, 0)
+        else:
+            for item in items:
+                print("[VIEW updateTypeBazaar]: update ", item)
+                item.update(itemsAPI[str(item.tId)])
+                item.update_bazaar(key=key, n=nItems)
+                item.save()
+                item.stock = inventory.get(item.tId, 0)
 
-        # player.bazaarJson = json.dumps(bazaarJson)
-        # player.save()
+        player.bazaarJson = json.dumps(bazaarJson)
+        player.save()
 
-        context = {"itemType": tType, "items": items, "view": {"byType": True, "refreshType": True, "timer": True}}
+        context = {"itemType": tType, "items": items, "view": {"refreshType": True, "timer": True}}
+        if error:
+            context.update(error)
         return render(request, "bazaar/loop-items.html", context)
 
     else:
@@ -277,7 +297,7 @@ def updateType(request, tType):
         raise PermissionDenied(message)
 
 
-def deleteItem(request, itemId):
+def delete(request, itemId):
     if request.session.get('player') and request.method == "POST":
 
         print('[view.bazaar.deleteItem] delete item')
@@ -294,13 +314,13 @@ def deleteItem(request, itemId):
         raise PermissionDenied(message)
 
 
-def toggleItem(request, itemId):
+def toggle(request, itemId):
     if request.session.get('player') and request.method == "POST":
         print('[view.bazaar.updateItem] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
-        nItems = Config.objects.all()[0].nItems
+        # key = player.key
+        # nItems = Preference.objects.all()[0].nItems
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -316,225 +336,9 @@ def toggleItem(request, itemId):
         player.bazaarJson = json.dumps(bazaarJson)
         player.save()
 
-        context = {'item': item, 'toggleMessage': message, "view": {"timer": True} }
+        context = {'item': item, 'toggleMessage': message, "view": {"timer": True}}
         return render(request, "bazaar/item.html", context)
 
     else:
         message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
         raise PermissionDenied(message)
-
-
-
-#
-# def custom(request):
-#     try:
-#         playerId = request.session["user"].get("playerId")
-#         user = Player.objects.filter(playerId=playerId)[0]
-#         out = dict({"allItemsOnMarket": dict()})
-#         allItems = Item.objects
-#         try:
-#             out["allItemsOnMarket"]["Custom"] = []
-#             # get dictionary of stocks
-#             inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-#             id_stock = {id: 0 for id in user.get_items_id()}
-#             for inv in inventory:
-#                 if str(inv["ID"]) in id_stock:
-#                     id_stock[str(inv["ID"])] = inv["quantity"]
-#             for item in [allItems.filter(tId=int(id))[0] for id in id_stock]:
-#                 item.stock = id_stock[str(item.tId)]
-#                 out["allItemsOnMarket"]["Custom"].append(item)
-#         except:
-#             out["allItemsOnMarket"]["Custom"] = []
-#         out["view"] = {"byType": True, "refreshType": True, "help": True, "stock": True}
-#         out["nUpdate"] = Stat.objects.all()[0].getStats()
-#
-#         return render(request, 'bazaar.html', out)
-#
-#     except:
-#
-#         return HttpResponseRedirect(reverse('bazaar:default'))
-#
-#
-# def default(request):
-    # # allItems = Item.objects.filter( onMarket=True ).exclude( tType="Flower" ).exclude( tType="Plushie" )
-    # allItems = Item.objects.filter(onMarket=True)
-    #
-    # if request.session.get("user"):  # if log
-    #     inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-    #     if "apiError" in inventory:
-    #         id_stock = dict({})
-    #     else:
-    #         id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
-    # else:
-    #     id_stock = dict({})
-    #
-    # out = dict({"allItemsOnMarket": dict()})
-    # for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
-    #     out["allItemsOnMarket"][tType] = []
-    #     for item in allItems.filter(tType=tType):
-    #         item.stock = id_stock.get(item.tId, 0)
-    #         out["allItemsOnMarket"][tType].append(item)
-    #
-    # out["view"] = {"byType": True, "refreshType": True, "hideType": True, "help": True}
-    # out["nUpdate"] = Stat.objects.all()[0].getStats()
-    #
-    # return render(request, 'bazaar.html', out)
-#
-#
-# def fullList(request):
-#     allItems = Item.objects
-#
-#     if request.session.get("user"):  # if log
-#         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-#         if "apiError" in inventory:
-#             id_stock = dict({})
-#         else:
-#             id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
-#     else:
-#         id_stock = dict({})
-#
-#     out = dict({"allItemsOnMarket": dict()})
-#     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
-#         out["allItemsOnMarket"][tType] = []
-#         for item in allItems.filter(tType=tType):
-#             item.stock = id_stock.get(item.tId, 0)
-#             out["allItemsOnMarket"][tType].append(item)
-#
-#     out["view"] = {"byType": True, "hideType": True, "lastScan": Config.objects.all()[0].lastScan}
-#     out["nUpdate"] = Stat.objects.all()[0].getStats()
-#
-#     return render(request, 'bazaar.html', out)
-#
-#
-# def sets(request):
-#     allItems = Item.objects.filter(onMarket=True)
-#
-#     if request.session.get("user"):  # if log
-#         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-#         if "apiError" in inventory:
-#             id_stock = dict({})
-#         else:
-#             id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
-#     else:
-#         id_stock = dict({})
-#
-#     out = dict({"allItemsOnMarket": dict()})
-#     acceptedTypes = ["Flower", "Plushie"]
-#     for tType in [r["tType"] for r in allItems.values("tType").distinct()]:
-#         if tType in acceptedTypes:
-#             out["allItemsOnMarket"][tType] = []
-#             for item in allItems.filter(tType=tType):
-#                 item.stock = id_stock.get(item.tId, 0)
-#                 out["allItemsOnMarket"][tType].append(item)
-#
-#     out["view"] = {"byType": True, "refreshAll": False, "refreshType": True, "hideType": False, "help": True}
-#     out["nUpdate"] = Stat.objects.all()[0].getStats()
-#
-#     return render(request, 'bazaar.html', out)
-#
-#
-# # UPDATE ON THE FLY
-# def logout(request):
-#     try:
-#         del request.session["user"]
-#     except:
-#         pass
-#     return HttpResponseRedirect(reverse('bazaar:index'))
-#
-#
-# def updateKey(request):
-#
-#     # request.session["user"] = {'keyValue': "myKeyForDebug",
-#     #                            'name': "Kivou",
-#     #                            'playerId': 2000607,
-#     #                            }
-#     # request.session.set_expiry(0)  # logout when close browser
-#     # return render(request, "sub/intro.html")
-#
-#     if request.method == "POST":
-#         p = request.POST
-#
-#         user = apiCall("user", "", "basic", p.get("keyValue"))
-#         if "apiError" in user:
-#             return render(request, "sub/{}.html".format(p["html"]), user)
-#
-#         name = "{} [{}]".format(user["name"], user["player_id"])
-#         request.session["user"] = {'keyValue': p["keyValue"], 'name': name, 'playerId': user["player_id"]}
-#         check = json.loads(p.get("rememberSession"))
-#         if check:
-#             print("[Login]: log for 1 year")
-#             request.session.set_expiry(31536000)  # 1 year
-#         else:
-#             print("[Login]: log for the session")
-#             request.session.set_expiry(0)  # logout when close browser
-#         # log
-#         findLog = Player.objects.filter(playerId=user["player_id"])
-#         if len(findLog):
-#             log = findLog[0]
-#             log.nLog += 1
-#         else:
-#             log = Player.objects.create(name=user["name"], playerId=user["player_id"])
-#         log.save()
-#         return render(request, "sub/{}.html".format(p["html"]))
-#
-#     else:
-#         return HttpResponse("Don't try to be a smart ass, you need to post.")
-
-
-#
-
-#
-##
-#
-# def updateTypeBazaar(request):
-#     if request.method == "POST":
-#         p = request.POST
-#         nItems = Config.objects.all()[0].nItems
-#         apiKey = ""
-#         try:
-#             apiKey = request.session["user"]["keyValue"]
-#         except:
-#             pass
-#
-#         itemsAPI = apiCall("torn", "", "items", apiKey, sub='items')
-#         if "apiError" in itemsAPI:
-#             return render(request, "sub/{}.html".format(p["html"]), itemsAPI)
-#
-#         inventory = apiCall("user", "", "inventory", request.session["user"].get("keyValue"), sub="inventory")
-#         if "apiError" in inventory:
-#             return render(request, "sub/{}.html".format(p["html"]), inventory)
-#         id_stock = {inv["ID"]: inv["quantity"] for inv in inventory}
-#
-#         if tType == "Custom":
-#             playerId = request.session["user"].get("playerId")
-#             user = Player.objects.filter(playerId=playerId)[0]
-#             items = Item.objects.filter(tId__in=user.get_items_id())
-#         else:
-#             items = Item.objects.filter(onMarket=True).filter(tType=p["tType"])
-#
-#         for item in items:
-#             print("[VIEW updateTypeBazaar]: update ", item)
-#             item.update(item.tId, itemsAPI[str(item.tId)])
-#             item.update_bazaar(key=request.session["user"]["keyValue"], n=nItems)
-#             item.save()
-#             item.stock = id_stock.get(item.tId, 0)
-#
-#         out = dict({"itemType": p["tType"], "items": items})
-#         out["view"] = {"byType": True, "refreshType": True}
-#
-#         user = Player.objects.filter(playerId=request.session["user"].get("playerId"))[0]
-#         user.date = timezone.now()
-#         user.save()
-#
-#         return render(request, "sub/{}.html".format(p["html"]), out)
-#     else:
-#         return HttpResponse("Don't try to be a smart ass, you need to post.")
-#
-#
-# def details(request):
-#     if request.method == "POST":
-#         p = request.POST
-#         item = Item.objects.filter(tId=p["tId"])[0]
-#         return render(request, 'sub/details.html', {'item': item})
-#     else:
-#         return HttpResponse("Don't try to be a smart ass, you need to post.")

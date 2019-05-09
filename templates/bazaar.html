@@ -22,43 +22,68 @@
         $("div.error").hide();
     });
 
+    // show/hide details item
+    $(document).on('click', '.details-item', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#details-item" ).load( "/bazaar/details/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+    });
+    $(document).on('click', '.close', function(e){
+        e.preventDefault();
+        $(this).parent("div.container").css("display", "none");
+    });
+
+
     // update item
     $(document).on('click', '.update-item', function(e){
         e.preventDefault();
         var tId = $(this).attr("href").split("/").pop();
-        $( "#item-sell-table-" + tId ).load( "/bazaar/update/item/"+tId, {
+        $( "#item-sell-table-" + tId ).load( "/bazaar/update/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $(this).children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
     // update type
+    // $(document).on('click', '.update-type', function(e){
+    //     e.preventDefault();
+    //     var tType = $(this).attr("href").split("/").pop();
+    //     var reload = $("#loop-over-item-sell-table-"+tType);
+    //     reload.load( "/bazaar/update/type/"+tType, {
+    //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    //     });
+    //     // reload.html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Updating '+tType)
+    //     reload.find(".update-item").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+    // });
     $(document).on('click', '.update-type', function(e){
         e.preventDefault();
         var tType = $(this).attr("href").split("/").pop();
-        var reload = $("#loop-over-item-sell-table-"+tType);
-        reload.load( "/bazaar/update/type/"+tType, {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        $('table[id^="item-sell-table-"]').each(function() {
+            var tId = $(this).attr("id").split("-").pop();
+            $(this).load( "/bazaar/update/"+tId, {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $(this).find("button").html('<i class="fas fa-spinner fa-pulse"></i>');
         });
-        // reload.html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Updating '+tType)
-        reload.find(".update-item").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
     // delete item
     $(document).on('click', '.delete-item', function(e){
         e.preventDefault();
         var tId = $(this).attr("href").split("/").pop();
-        $( "#item-sell-table-" + tId ).load( "/bazaar/delete/item/"+tId, {
+        $( "#item-sell-table-" + tId ).load( "/bazaar/delete/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
-    // delete item
+    // toggle item
     $(document).on('click', '.toggle-item', function(e){
         e.preventDefault();
         var tId = $(this).attr("href").split("/").pop();
-        $( "#item-sell-table-" + tId ).load( "/bazaar/toggle/item/"+tId, {
+        $( "#item-sell-table-" + tId ).load( "/bazaar/toggle/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
@@ -66,7 +91,7 @@
 
     // refresh timer target update
     window.setInterval(function(){
-        $(".update-timer").each(function() {
+        $("a.update-timer").each(function() {
             table = $(this).closest("table");
             var updatetime = $.trim($(this).text());
             if ( updatetime.search(" s")!=-1 ) {
@@ -79,7 +104,7 @@
                 }
                 if ( seconds > 599 ) {
                     $(this).html("> 10 mins");
-                    table.addClass("old-refresh");
+                    // table.addClass("old-refresh");
                 } else {
                     seconds ++;
                     minutes = Math.floor(seconds / 60);
@@ -90,13 +115,14 @@
                     } else {
                         $(this).html(seconds.toString()+" s");
                     }
-                    table.removeClass("old-refresh");
-                }
-            } else {
-                if (!table.hasClass('old-refresh')) {
-                    table.addClass('old-refresh');
+                    // table.removeClass("old-refresh");
                 }
             }
+            // else {
+            //     if (!table.hasClass('old-refresh')) {
+            //         table.addClass('old-refresh');
+            //     }
+            // }
         });
     }, 1000);
 
@@ -104,6 +130,8 @@
 {% endblock %}
 
 {% block content %}
+    <div id="details-item"></div>
+
     <div id="content-update">
         {% include "bazaar/content-reload.html" %}
     </div>
