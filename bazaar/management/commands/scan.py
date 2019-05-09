@@ -12,7 +12,8 @@ class Command(BaseCommand):
 
         preference = Preference.objects.all()[0]
 
-        items = apiCall("torn", "", "items", preference.key, sub="items")
+        key = preference.get_random_key()[1]
+        items = apiCall("torn", "", "items", key, sub="items")
 
         if items is None:
             print("[command.bazaar.scan] item is None")
@@ -28,7 +29,8 @@ class Command(BaseCommand):
                     item = req[0]
                     item.update(v)
                     if item.onMarket:
-                        item.update_bazaar(key=preference.key)
+                        key = preference.get_random_key()[1]
+                        item.update_bazaar(key=key)
                     item.save()
                 else:
                     print("[command.bazaar.scan]: request found more than one item id", len(req))
