@@ -1,5 +1,4 @@
-from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 
@@ -12,16 +11,12 @@ from player.models import Player
 from yata.handy import apiCall
 from yata.handy import timestampToDate
 
-from chain.functions import apiCallAttacks
-from chain.functions import fillReport
 from chain.functions import BONUS_HITS
 from chain.functions import updateMembers
 
 from chain.models import Faction
-from chain.models import Member
 from chain.models import Preference
 
-preferences = Preference.objects.first()
 
 # render view
 def index(request):
@@ -43,6 +38,7 @@ def index(request):
             return render(request, 'chain.html', context)
 
         factionId = int(user.get("faction")["faction_id"])
+        preferences = Preference.objects.first()
         allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
         print("[view.chain.index] allowedFactions: {}".format(allowedFactions))
         if str(factionId) in allowedFactions:
@@ -186,7 +182,7 @@ def live(request):
             if chain is not None:
                 chain.delete()
                 print('[view.chain.index] chain 0 deleted')
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'view': {'liveReport': True}}  #  set chain to True to display category links
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'view': {'liveReport': True}}  # set chain to True to display category links
 
         return render(request, page, context)
 
@@ -385,7 +381,7 @@ def jointReport(request):
                     counts[count.attackerId]['retaliation'] += count.retaliation
                     counts[count.attackerId]['groupAttack'] += count.groupAttack
                     counts[count.attackerId]['overseas'] += count.overseas
-                    counts[count.attackerId]['watcher'] += count.watcher /  float(len(chains))
+                    counts[count.attackerId]['watcher'] += count.watcher / float(len(chains))
                     counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere']  # been present to at least one chain
                 else:
                     counts[count.attackerId] = {'name': count.name,
@@ -402,7 +398,6 @@ def jointReport(request):
                                                 'beenThere': count.beenThere,
                                                 'attackerId': count.attackerId}
             print('[VIEW jointReport] {} counts for {}'.format(len(counts), chain))
-
 
         # order the Bonuses
         # bonuses ["name", [[bonus1, bonus2, bonus3, ...], respect, nwins]]
@@ -423,10 +418,9 @@ def jointReport(request):
             #     if int(v["wins"]) >= int(smallestNwins):
             #         bonuses.append([[v["name"]], [[], 1, v["wins"]]])
 
-
         # aggregate counts
         arrayCounts = [v for k, v in counts.items()]
-        arrayBonuses = [[tId, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for tId, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
+        arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
         # add last time connected
         error = False
@@ -447,7 +441,7 @@ def jointReport(request):
                         'bonuses': arrayBonuses,  # bonuses for report
                         'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                         'player': player,
-                        'chaincat': True, # to display categories
+                        'chaincat': True,  # to display categories
                         'view': {'jointReport': True}})  # view
 
         if error:
@@ -455,7 +449,9 @@ def jointReport(request):
             context.update({selectError: error["apiError"]+" List of members not updated."})
         return render(request, page, context)
 
-    return HttpResponseRedirect(reverse('logout'))
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        raise PermissionDenied(message)
 
 
 # action view
@@ -464,7 +460,6 @@ def createReport(request, chainId):
         print('[view.chain.createReport] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
         factionId = player.factionId
         context = {"player": player}
 
@@ -538,7 +533,7 @@ def renderIndividualReport(request, chainId, memberId):
 
         # context
         context = dict({'graph': graph,  # for report
-                           'memberId': memberId})  # for selecting to good div
+                        'memberId': memberId})  # for selecting to good div
 
         print('[view.chain.renderIndividualReport] render')
         return render(request, 'chain/ireport.html', context)
@@ -554,7 +549,6 @@ def deleteReport(request, chainId):
         print('[view.chain.deleteReport] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
         factionId = player.factionId
         context = {"player": player}
 
@@ -589,7 +583,6 @@ def toggleReport(request, chainId):
         print('[view.chain.deleteReport] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
         factionId = player.factionId
         context = {"player": player}
 

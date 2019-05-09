@@ -51,7 +51,7 @@ class Faction(models.Model):
             pairs.remove([name, key])
         else:
             print("[MODEL toggle_key] add key")
-            if len(pairs)<11:
+            if len(pairs) < 11:
                 pairs.append([name, key])
             else:
                 return False
@@ -64,9 +64,9 @@ class Faction(models.Model):
 
     def add_key(self, name, key):
         print("[models.chain.add_key] "+name)
-        keys = self.get_all_keys()
-        if key not in keys:
-            if len(keys)<11:
+        pairs = self.get_all_pairs()
+        if key not in pairs:
+            if len(pairs) < 11:
                 print("[models.chain.add_key] add key")
                 pairs.append([name, key])
             else:
