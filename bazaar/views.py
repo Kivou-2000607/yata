@@ -193,55 +193,47 @@ def details(request, itemId):
 
 def update(request, itemId):
     if request.session.get('player') and request.method == "POST":
-        print('[view.bazaar.updateItem] get player id from session')
-        tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
-        key = player.key
-        bazaarJson = json.loads(player.bazaarJson)
-
-        print('[view.bazaar.updateItem] get item')
-        item = Item.objects.filter(tId=itemId).first()
-        print('[view.bazaar.updateItem] {}'.format(item))
-
-        baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
-        error = False
-        if "apiError" in baz:
-            error = baz
-
-        # update inventory of bazaarJson
-        error = False
-        invtmp = apiCall("user", "", "inventory", key, sub="inventory")
-        if 'apiError' in invtmp:
-            error = {"apiErrorSub": invtmp["apiError"]}
-        else:
-            # modify user
-            for i in invtmp:
-                if i["ID"] == int(itemId):
-                    print('[view.bazaar.updateItem] personal stock: {}'.format(i["quantity"]))
-                    bazaarJson["inventory"][itemId] = i["quantity"]
-
-                    # modify item for display
-                    item.stock = i["quantity"]
-                    saveSuccess = False
-                    while saveSuccess is False:
-                        try:
-                            print("[view.bazaar.updateItem] save item")
-                            item.save()
-                            saveSuccess = True
-                        except:
-                            print("[view.bazaar.updateItem] db locked sleep 1s before saving item")
-                            time.sleep(1)
-                    break
-
-        player.bazaarJson = json.dumps(bazaarJson)
         saveSuccess = False
-        while saveSuccess is False:
+        while not saveSuccess:
             try:
-                print("[view.bazaar.updateItem] save player")
+                print('[view.bazaar.updateItem] get player id from session')
+                tId = request.session["player"].get("tId")
+                player = Player.objects.filter(tId=tId).first()
+                key = player.key
+                bazaarJson = json.loads(player.bazaarJson)
+
+                print('[view.bazaar.updateItem] get item')
+                item = Item.objects.filter(tId=itemId).first()
+                print('[view.bazaar.updateItem] {}'.format(item))
+
+                baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
+                error = False
+                if "apiError" in baz:
+                    error = baz
+
+                # update inventory of bazaarJson
+                error = False
+                invtmp = apiCall("user", "", "inventory", key, sub="inventory")
+                if 'apiError' in invtmp:
+                    error = {"apiErrorSub": invtmp["apiError"]}
+                else:
+                    # modify user
+                    for i in invtmp:
+                        if i["ID"] == int(itemId):
+                            print('[view.bazaar.updateItem] personal stock: {}'.format(i["quantity"]))
+                            bazaarJson["inventory"][itemId] = i["quantity"]
+
+                            # modify item for display
+                            item.stock = i["quantity"]
+                            item.save()
+                            break
+
+                player.bazaarJson = json.dumps(bazaarJson)
                 player.save()
                 saveSuccess = True
+                print("[view.bazaar.updateItem] update success")
             except:
-                print("[view.bazaar.updateItem] db locked sleep 1s before saving player")
+                print("[view.bazaar.updateItem] update failed, sleep 1 second and try again")
                 time.sleep(1)
 
         context = {'item': item, "view": {"timer": True}}

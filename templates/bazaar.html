@@ -60,7 +60,7 @@
     $(document).on('click', '.update-type', function(e){
         e.preventDefault();
         var tType = $(this).attr("href").split("/").pop();
-        $('table[id^="item-sell-table-"]').each(function() {
+        $("#loop-over-item-sell-table-"+tType).find('table[id^="item-sell-table-"]').each(function() {
             var tId = $(this).attr("id").split("-").pop();
             $(this).load( "/bazaar/update/"+tId, {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
