@@ -99,6 +99,8 @@
                     seconds = parseInt(splt[0]);
                 } else if (splt.length == 4) {
                     seconds = parseInt(splt[2]) + 60 * parseInt(splt[0]);
+                } else if (splt.length == 6) {
+                    seconds = parseInt(splt[4]) + 60 * parseInt(splt[2]) + 3600 * parseInt(splt[0]);
                 }
                 if ( seconds > 7199 ) {
                     $(this).html("> 2 hrs");
