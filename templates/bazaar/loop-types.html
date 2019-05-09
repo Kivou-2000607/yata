@@ -1,14 +1,14 @@
 {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
-    <h2 class="title {% if view.hideType %}toggleDisplay{% else %}toggleDisplay{% endif %} side">{{v.0.display_small}} {{k}}<i class="title-arrow"></i>
+<div class="catch-me">
+    <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}">{{v.0.display_small}} {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
         {% if view.refreshType %}
             <form class="form-inline"><a href="{% url 'bazaar:updateType' k %}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
         {% endif %}
     </h2>
 
-    <div class="module">
-        <div id="loop-over-item-sell-table-{{k}}" class="toggleDisplay {% if view.hideType %}hide{% endif %}">
-            {% include "bazaar/loop-items.html" with itemType=k items=v %}
-        </div>
-        <div id="loading-div"></div>
+    <div id="loop-over-item-sell-table-{{k}}" class="module" {% if view.hideType %}style="display: none;"{% endif %}>
+        {% include "bazaar/loop-items.html" with itemType=k items=v %}
     </div>
+    {% if view.hideType %}<br>{% endif %}
+</div>
 {% endfor %}

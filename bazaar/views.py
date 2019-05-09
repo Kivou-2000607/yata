@@ -48,7 +48,7 @@ def index(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -109,7 +109,7 @@ def default(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:
@@ -172,7 +172,7 @@ def all(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": False}}
+        context = {"player": player, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
     else:

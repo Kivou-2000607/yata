@@ -190,3 +190,5 @@ td a {
 }
 
 .old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
+
+h2.rounded { border-radius: 6px; cursor: pointer; }

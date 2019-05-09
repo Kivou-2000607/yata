@@ -89,6 +89,25 @@
         $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
+    // show/hide
+    $(document).on('click', 'h2.toggle-display', function(e){
+        e.preventDefault();
+        h = $(this);
+        i = h.find("i.fas");
+        div = h.closest(".catch-me").children("div");
+        if(div.css("display") == "none") {
+            h.removeClass("rounded");
+            i.addClass("fa-rotate-90");
+        }
+        div.slideToggle("fast", function(){
+            if(div.css("display") == "none") {
+                h.addClass("rounded");
+                i.removeClass("fa-rotate-90");
+            }
+        });
+    });
+
+
     // refresh timer target update
     window.setInterval(function(){
         $("a.update-timer").each(function() {
