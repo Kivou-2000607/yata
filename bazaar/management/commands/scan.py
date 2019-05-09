@@ -30,7 +30,7 @@ class Command(BaseCommand):
                     item.update(v)
                     if item.onMarket:
                         key = preference.get_random_key()[1]
-                        item.update_bazaar(key=key)
+                        item.update_bazaar(key=key, n=preference.nItems)
                     item.save()
                 else:
                     print("[command.bazaar.scan]: request found more than one item id", len(req))
