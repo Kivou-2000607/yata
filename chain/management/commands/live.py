@@ -31,7 +31,8 @@ class Command(BaseCommand):
                 print('[COMMAND live] api key error: {}'.format((liveChain['apiError'])))
                 continue
 
-            if not bool(liveChain["current"]):
+            # if not bool(liveChain["current"]):
+            if int(liveChain["current"]) < 10:
                 print("[COMMAND live] no active chain")
                 faction.chain_set.filter(tId=0).delete()
                 print("[COMMAND live] report 0 deleted")

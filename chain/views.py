@@ -99,7 +99,7 @@ def live(request):
             context = {'player': player, selectError: liveChain["apiError"]+" We can't check your faction so you don't have access to this section."}
             return render(request, page, context)
 
-        activeChain = bool(liveChain['current'])
+        activeChain = bool(int(liveChain['current']) > 9)
         print("[view.chain.index] live chain: {}".format(activeChain))
         liveChain["nextBonus"] = 10
         for i in BONUS_HITS:
@@ -182,7 +182,7 @@ def live(request):
             if chain is not None:
                 chain.delete()
                 print('[view.chain.index] chain 0 deleted')
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'view': {'liveReport': True}}  # set chain to True to display category links
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'liveChain': liveChain, 'view': {'liveReport': True}}  # set chain to True to display category links
 
         return render(request, page, context)
 
