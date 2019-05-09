@@ -57,7 +57,6 @@ class Player(models.Model):
         self.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
 
         # update chain info
-        self.factionId = 0
         if self.factionId:
             chains = apiCall("faction", "", "chains", self.key)
             self.factionAA = True if chains.get("chains") is not None else False
