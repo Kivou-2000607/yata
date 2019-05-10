@@ -26,11 +26,10 @@ def index(request):
         if 'apiError' in invtmp:
             error = invtmp
         else:
-            bazaarJson["inventory"] = {v["ID"]: v["quantity"] for v in invtmp}
+            bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp}
             player.bazaarJson = json.dumps(bazaarJson)
 
         playerList = bazaarJson.get("list", [])
-        inventory = bazaarJson.get("inventory", dict({}))
         player.bazaarInfo = "{} items".format(len(playerList))
         player.save()
 
@@ -42,6 +41,7 @@ def index(request):
         print('[view.bazaar.default] create output items')
         items = {tType: [] for tType in tTypes}
 
+        inventory = bazaarJson.get("inventory", dict({}))
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
                 item.stock = inventory.get(str(item.tId), 0)
@@ -92,7 +92,6 @@ def default(request):
         player = Player.objects.filter(tId=tId).first()
         # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
-        inventory = bazaarJson.get("inventory", dict({}))
         # playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
@@ -103,6 +102,7 @@ def default(request):
         print('[view.bazaar.default] create output items')
         items = {tType: [] for tType in tTypes}
 
+        inventory = bazaarJson.get("inventory", dict({}))
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
                 item.stock = inventory.get(str(item.tId), 0)
@@ -214,12 +214,12 @@ def update(request, itemId):
                 # update inventory of bazaarJson
                 error = False
                 invtmp = apiCall("user", "", "inventory", key, sub="inventory")
-                bazaarJson["inventory"] = {v["ID"]: v["quantity"] for v in invtmp}
+                bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp}
                 if 'apiError' in invtmp:
                     error = {"apiErrorSub": invtmp["apiError"]}
                 else:
                     # modify user
-                    item.stock = bazaarJson["inventory"].get(int(itemId), 0)
+                    item.stock = bazaarJson["inventory"].get(str(itemId), 0)
                     item.save()
 
                 player.bazaarJson = json.dumps(bazaarJson)
