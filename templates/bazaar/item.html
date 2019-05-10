@@ -9,9 +9,9 @@
             <div class="item-image">
                 <form method="post">{% csrf_token %}
                     {% if apiErrorSub %}
-                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item" title="{{ apiErrorSub }}"><button><i class="fas fa-skull-crossbones error"></i></button></a>
+                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
                     {% else %}
-                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button>{{item.display_large}}</button></a>
+                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}">{{item.display_large}}</button></a>
                     {% endif %}
                 </form>
             </div>

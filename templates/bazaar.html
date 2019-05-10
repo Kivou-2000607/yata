@@ -35,7 +35,6 @@
         $(this).parent("div.container").css("display", "none");
     });
 
-
     // update item
     $(document).on('click', '.update-item', function(e){
         e.preventDefault();
@@ -47,16 +46,6 @@
     });
 
     // update type
-    // $(document).on('click', '.update-type', function(e){
-    //     e.preventDefault();
-    //     var tType = $(this).attr("href").split("/").pop();
-    //     var reload = $("#loop-over-item-sell-table-"+tType);
-    //     reload.load( "/bazaar/update/type/"+tType, {
-    //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    //     });
-    //     // reload.html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Updating '+tType)
-    //     reload.find(".update-item").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
-    // });
     $(document).on('click', '.update-type', function(e){
         e.preventDefault();
         var tType = $(this).attr("href").split("/").pop();
@@ -92,19 +81,21 @@
     // show/hide
     $(document).on('click', 'h2.toggle-display', function(e){
         e.preventDefault();
-        h = $(this);
-        i = h.find("i.fas");
-        div = h.closest(".catch-me").children("div");
-        if(div.css("display") == "none") {
-            h.removeClass("rounded");
-            i.addClass("fa-rotate-90");
-        }
-        div.slideToggle("fast", function(){
+        var h = $(this);
+        if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
+            var i = h.find("i.fa-caret-right");
+            var div = h.closest(".catch-me").children("div");
             if(div.css("display") == "none") {
-                h.addClass("rounded");
-                i.removeClass("fa-rotate-90");
+                h.removeClass("rounded");
+                i.addClass("fa-rotate-90");
             }
-        });
+            div.slideToggle("fast", function(){
+                if(div.css("display") == "none") {
+                    h.addClass("rounded");
+                    i.removeClass("fa-rotate-90");
+                }
+            });
+        }
     });
 
 

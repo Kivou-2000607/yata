@@ -30,7 +30,7 @@ def index(request):
             player.bazaarJson = json.dumps(bazaarJson)
 
         playerList = bazaarJson.get("list", [])
-        inventory = bazaarJson.get("inventory", [])
+        inventory = bazaarJson.get("inventory", dict({}))
         player.bazaarInfo = "{} items".format(len(playerList))
         player.save()
 
@@ -214,19 +214,13 @@ def update(request, itemId):
                 # update inventory of bazaarJson
                 error = False
                 invtmp = apiCall("user", "", "inventory", key, sub="inventory")
+                bazaarJson["inventory"] = {v["ID"]: v["quantity"] for v in invtmp}
                 if 'apiError' in invtmp:
                     error = {"apiErrorSub": invtmp["apiError"]}
                 else:
                     # modify user
-                    for i in invtmp:
-                        if i["ID"] == int(itemId):
-                            print('[view.bazaar.updateItem] personal stock: {}'.format(i["quantity"]))
-                            bazaarJson["inventory"][itemId] = i["quantity"]
-
-                            # modify item for display
-                            item.stock = i["quantity"]
-                            item.save()
-                            break
+                    item.stock = bazaarJson["inventory"].get(int(itemId), 0)
+                    item.save()
 
                 player.bazaarJson = json.dumps(bazaarJson)
                 player.save()
