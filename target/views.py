@@ -8,6 +8,7 @@ import math
 from yata.handy import apiCall
 from player.models import Player
 from chain.functions import BONUS_HITS
+from target.functions import updateAttacks
 
 
 def index(request):
@@ -15,58 +16,10 @@ def index(request):
         print('[view.awards.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        key = player.key
-        targetJson = json.loads(player.targetJson)
 
-        # call for attacks
-        error = False
-        attacks = apiCall('user', "", 'attacks', key, sub='attacks')
-        if 'apiError' in attacks:
-            error = attacks
+        error = updateAttacks(player)
 
-        else:
-            remove = []
-            for k, v in attacks.items():
-                v["defender_id"] = str(v["defender_id"])  # have to string for json key
-                if v["defender_id"] == str(tId):
-                    if v.get("attacker_name") is not None:
-                        attacks[k]["defender_id"] = v.get("attacker_id")
-                        attacks[k]["defender_name"] = v.get("attacker_name")
-                        attacks[k]["bonus"] = 0
-                        attacks[k]["result"] += " you"
-                        attacks[k]["endTS"] = int(v["timestamp_ended"])
-                    else:
-                        remove.append(k)
-
-                elif int(v["chain"]) in BONUS_HITS:
-                    attacks[k]["endTS"] = int(v["timestamp_ended"])
-                    attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
-                    attacks[k]["bonus"] = int(v["chain"])
-                else:
-                    allModifiers = 1.0
-                    for mod, val in v['modifiers'].items():
-                        allModifiers *= float(val)
-                    if v["result"] == "Mugged":
-                        allModifiers *= 0.75
-                    baseRespect = float(v["respect_gain"]) / allModifiers
-                    level = int(math.exp(4. * baseRespect - 1))
-                    attacks[k]["endTS"] = int(v["timestamp_ended"])
-                    attacks[k]["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
-                    attacks[k]["bonus"] = 0
-                    attacks[k]["level"] = level
-
-            for k in remove:
-                del attacks[k]
-
-            targetJson["attacks"] = attacks
-            player.targetJson = json.dumps(targetJson)
-            nTargets = 0 if "targets" not in targetJson else len(targetJson["targets"])
-            player.targetInfo = "{} targets".format(nTargets)
-            player.targetUpda = int(timezone.now().timestamp())
-            player.lastUpdateTS = int(timezone.now().timestamp())
-            player.save()
-
-        targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+        targets = json.loads(player.targetJson).get("targets", dict({}))
         context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
         if error:
             context.update(error)
@@ -85,7 +38,12 @@ def attacks(request):
         attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
+        error = updateAttacks(player)
+
         context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
+        if error:
+            context.update(error)
+
         page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
         return render(request, page, context)
 
@@ -153,7 +111,7 @@ def toggleTarget(request, targetId):
                                          "lifeMax": lifeMax,
                                          "life": life,
                                          "status": status,
-                                         "status": statusFull,
+                                         "statusFull": statusFull,
                                          "lastAction": lastAction,
                                          "lastUpdate": lastUpdate,
                                          "note": ""
