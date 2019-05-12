@@ -118,12 +118,17 @@
                         sStatus += parseInt(splitStatus[i]);
                     }
                 }
+                if (sStatus == 0) {
+                    sStatus = 7200;
+                }
 
                 console.log(sStatus+" "+sRefresh);
                 if(sStatus < sRefresh) {
                     status.addClass('need-refresh');
+                    $(this).addClass('need-refresh');
                 } else {
                     status.removeClass('need-refresh');
+                    $(this).removeClass('need-refresh');
                 }
 
                 if ( sRefresh > 7199 ) {
