@@ -90,30 +90,54 @@
     // refresh timer target update
     window.setInterval(function(){
         $(".update-timer").each(function() {
-            tr = $(this).closest("tr");
-            var updatetime = $.trim($(this).text());
-            if ( updatetime.search(" s")!=-1 ) {
-                var splt = updatetime.split(" ");
-                var seconds = 0;
-                if (splt.length == 2) {
-                    seconds = parseInt(splt[0]);
-                } else if (splt.length == 4) {
-                    seconds = parseInt(splt[2]) + 60 * parseInt(splt[0]);
-                } else if (splt.length == 6) {
-                    seconds = parseInt(splt[4]) + 60 * parseInt(splt[2]) + 3600 * parseInt(splt[0]);
+            var tr = $(this).closest("tr");
+            var status = tr.find(".status");
+
+            var timeRefresh = $.trim($(this).text());
+            var timeStatus = $.trim(status.text());
+            if ( timeRefresh.search(" s")!=-1 ) {
+                var splitRefresh = timeRefresh.split(" ");
+                var sRefresh = 0;
+                if (splitRefresh.length == 2) {
+                    sRefresh = parseInt(splitRefresh[0]);
+                } else if (splitRefresh.length == 4) {
+                    sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
+                } else if (splitRefresh.length == 6) {
+                    sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
                 }
-                if ( seconds > 7199 ) {
+
+                var splitStatus = timeStatus.split(" ");
+                var sStatus = 0;
+                var i;
+                for ( i=2; i < splitStatus.length; i=i+2 ){
+                    if (splitStatus[i+1] == "hrs") {
+                        sStatus += 3600 * parseInt(splitStatus[i]);
+                    } else if (splitStatus[i+1] == "mins") {
+                        sStatus += 60 * parseInt(splitStatus[i]);
+                    } else if (splitStatus[i+1] == "secs") {
+                        sStatus += parseInt(splitStatus[i]);
+                    }
+                }
+
+                console.log(sStatus+" "+sRefresh);
+                if(sStatus < sRefresh) {
+                    status.addClass('need-refresh');
+                } else {
+                    status.removeClass('need-refresh');
+                }
+
+                if ( sRefresh > 7199 ) {
                     $(this).html("> 2 hrs");
                     tr.addClass("old-refresh");
                 } else {
-                    seconds ++;
-                    minutes = Math.floor(seconds / 60);
-                    seconds = seconds % 60;
-                    if (minutes) {
-                        spad = ("0"+seconds.toString()).slice(-2);
-                        $(this).html(minutes.toString()+" mins "+spad+" s");
+                    sRefresh ++;
+                    mRefresh = Math.floor(sRefresh / 60);
+                    sRefresh = sRefresh % 60;
+                    if (mRefresh) {
+                        spad = ("0"+sRefresh.toString()).slice(-2);
+                        $(this).html(mRefresh.toString()+" mins "+spad+" s");
                     } else {
-                        $(this).html(seconds.toString()+" s");
+                        $(this).html(sRefresh.toString()+" s");
                     }
                 }
             } else {

@@ -18,7 +18,7 @@
             <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
         </div>
     </td>
-    <td class='e {% if target.status.0 != "O" %}not-{% endif %}okay' title="{{target.statusFull|cleanhtml}}">{{target.status}}</td>
+    <td class='e status {% if target.status.0 != "O" %}not-{% endif %}okay' title="{{target.statusFull|cleanhtml}}">{{target.status}}</td>
     <td class="f update-timer">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}

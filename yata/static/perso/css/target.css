@@ -26,7 +26,7 @@ table.target-targets td.a { width: 10%; text-align: left; } /* x2 */
 table.target-targets td.b { width: 10%; text-align: left; }
 table.target-targets td.c { width: 7%; text-align: center; } /* x3 */
 table.target-targets td.d { width: 12%; text-align: center; }
-table.target-targets td.e { width: 11%; text-align: left; cursor: pointer; }
+table.target-targets td.e { width: 11%; text-align: left; }
 table.target-targets td.f { width: 8%; text-align: center; }
 table.target-targets td.g { width: 3%; text-align: center; } /* x2  */
 table.target-targets td.h { width: 12%; text-align: center; }
@@ -34,6 +34,7 @@ table.target-targets td.h { width: 12%; text-align: center; }
 table.target-targets td.okay        { color:#0B8E14; }
 table.target-targets td.not-okay    { color:#CC3434; }
 table.target-targets i.not-okay    { color:#aaa; }
+table.target-targets td.status { cursor: default; }
 
 input.target-list-note {
     height: 16px;
@@ -71,4 +72,32 @@ div.life-bar > span {
   line-height:14px;
   font-weight: bold;
   background-color: #7d93c4;
+}
+
+
+@-webkit-keyframes need-refresh {
+  0% { background-color: #ff00001e; }
+  50% { background-color: inherit; }
+  100% { background-color: #ff00001e; }
+}
+@-moz-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@-o-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+.need-refresh {
+  -webkit-animation: need-refresh 2s infinite; /* Safari 4+ */
+  -moz-animation:    need-refresh 2s infinite; /* Fx 5+ */
+  -o-animation:      need-refresh 2s infinite; /* Opera 12+ */
+  animation:         need-refresh 2s infinite; /* IE 10+ */
 }
