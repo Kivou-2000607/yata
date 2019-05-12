@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
+import json
 
 class Preference(models.Model):
     allowedFactions = models.TextField(default="{}")
@@ -15,73 +16,94 @@ class Faction(models.Model):
     nAPICall = models.IntegerField(default=2)
 
     # "login1:key1,login2:key2,login3:key3"
-    apiString = models.CharField(default="0", max_length=330)  # for 10 pairs login(15):key(16)
+    apiString = models.TextField(default="{}")  # for 10 pairs login(15):key(16)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
+    #
+    # def get_n_chains(self):
+    #     return(len(self.chain_set.all()))
+    #
+    # def get_random_key(self):
+    #     from numpy.random import randint
+    #     pairs = self.apiString.split(",")
+    #     i = randint(0, len(pairs))
+    #     return pairs[i].split(":")
+    #
+    # def get_all_pairs(self):
+    #     if str(self.apiString) == "0" or self.apiString == "":
+    #         return []
+    #     else:
+    #         pairs = self.apiString.split(",")
+    #         return [pair.split(":") for pair in pairs]
+    #
+    # def get_all_keys(self):
+    #     if str(self.apiString) == "0" or self.apiString == "":
+    #         return []
+    #     else:
+    #         pairs = self.apiString.split(",")
+    #         return [pair.split(":")[1] for pair in pairs]
+    #
+    # def toggle_key(self, name, key):
+    #     print("[MODEL toggle_key] " + name)
+    #     pairs = self.get_all_pairs()
+    #     if key in self.get_all_keys():
+    #         print("[MODEL toggle_key] remove key")
+    #         pairs.remove([name, key])
+    #     else:
+    #         print("[MODEL toggle_key] add key")
+    #         if len(pairs) < 11:
+    #             pairs.append([name, key])
+    #         else:
+    #             return False
+    #
+    #     string = ",".join([p[0] + ":" + p[1] for p in pairs])
+    #     self.apiString = string if string else 0
+    #     self.save()
+    #
+    #     return True
+    #
+    # def add_key(self, name, key):
+    #     print("[models.chain.add_key] " + name)
+    #     pairs = self.get_all_pairs()
+    #     if key not in pairs:
+    #         if len(pairs) < 11:
+    #             print("[models.chain.add_key] add key")
+    #             pairs.append([name, key])
+    #         else:
+    #             print("[models.chain.add_key] too many key saved")
+    #             return False
+    #     else:
+    #         print("[models.chain.add_key] kee already saved")
+    #         return False
+    #
+    #     string = ",".join([p[0] + ":" + p[1] for p in pairs])
+    #     self.apiString = string if string else 0
+    #     self.save()
+    #
+    #     return True
 
-    def get_n_chains(self):
-        return(len(self.chain_set.all()))
-
-    def get_random_key(self):
-        from numpy.random import randint
-        pairs = self.apiString.split(",")
-        i = randint(0, len(pairs))
-        return pairs[i].split(":")
-
-    def get_all_pairs(self):
-        if str(self.apiString) == "0" or self.apiString == "":
-            return []
-        else:
-            pairs = self.apiString.split(",")
-            return [pair.split(":") for pair in pairs]
-
-    def get_all_keys(self):
-        if str(self.apiString) == "0" or self.apiString == "":
-            return []
-        else:
-            pairs = self.apiString.split(",")
-            return [pair.split(":")[1] for pair in pairs]
-
-    def toggle_key(self, name, key):
-        print("[MODEL toggle_key] "+name)
-        pairs = self.get_all_pairs()
-        if key in self.get_all_keys():
-            print("[MODEL toggle_key] remove key")
-            pairs.remove([name, key])
-        else:
-            print("[MODEL toggle_key] add key")
-            if len(pairs) < 11:
-                pairs.append([name, key])
-            else:
-                return False
-
-        string = ",".join([p[0]+":"+p[1] for p in pairs])
-        self.apiString = string if string else 0
+    def addKey(self, id, key):
+        keys = json.loads(self.apiString)
+        keys[str(id)] = key
+        self.apiString = json.dumps(keys)
         self.save()
 
-        return True
-
-    def add_key(self, name, key):
-        print("[models.chain.add_key] "+name)
-        pairs = self.get_all_pairs()
-        if key not in pairs:
-            if len(pairs) < 11:
-                print("[models.chain.add_key] add key")
-                pairs.append([name, key])
-            else:
-                print("[models.chain.add_key] too many key saved")
-                return False
-        else:
-            print("[models.chain.add_key] kee already saved")
-            return False
-
-        string = ",".join([p[0]+":"+p[1] for p in pairs])
-        self.apiString = string if string else 0
+    def delKey(self, id):
+        keys = json.loads(self.apiString)
+        if str(id) in keys:
+            del keys[str(id)]
+        self.apiString = json.dumps(keys)
         self.save()
 
-        return True
+    def getRadomKey(self):
+        import random
+        keys = json.loads(self.apiString)
+        return random.choice(list(keys.items()))
 
+    def getAllPairs(self):
+        keys = json.loads(self.apiString)
+        return list(keys.items())
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -167,29 +189,9 @@ class Attacks(models.Model):
     req = models.TextField()
 
 
-class Target(models.Model):
-    member = models.ForeignKey(Member, on_delete=models.CASCADE)
-    targetId = models.IntegerField(default=0)
-    targetName = models.CharField(default="Duke", max_length=64)
-    result = models.CharField(default="Poutrage", max_length=64)
-    respect = models.FloatField(default=0)
-    fairFight = models.FloatField(default=0)
-    endDate = models.DateTimeField(default=timezone.now)
-
-    level = models.IntegerField(default=0)
-    rank = models.CharField(default="Nub", max_length=64)
-    life = models.IntegerField(default=100)
-    lifeMax = models.IntegerField(default=100)
-    status = models.CharField(default="Okay", max_length=100)
-    lastAction = models.CharField(default="Who knows", max_length=64)
-    lastUpdate = models.IntegerField(default=0)
-
-    list = models.IntegerField(default=0)
-    refreshStatus = models.BooleanField(default=True)
+class Crontab(models.Model):
+    id = models.AutoField(primary_key=True)
+    faction = models.ManyToManyField(Faction)
 
     def __str__(self):
-        return("Target of {}".format(self.member))
-
-    def toggleRefreshStatus(self):
-        self.refreshStatus = not self.refreshStatus
-        return self.refreshStatus
+        return "Crontab #{}".format(self.id)

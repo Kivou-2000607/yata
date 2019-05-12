@@ -67,7 +67,7 @@ def index(request):
 
         if player.factionAA:
             print('[view.chain.index] save AA key'.format(factionId))
-            faction.add_key(player.name, player.key)
+            faction.addKey(player.tId, player.key)
             faction.save()
 
         chains = faction.chain_set.filter(status=True).order_by('-end')

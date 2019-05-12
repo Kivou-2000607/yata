@@ -8,15 +8,16 @@ from .models import Member
 from .models import Report
 from .models import Count
 from .models import Bonus
-from .models import Target
 from .models import Attacks
 from .models import Preference
-
+from .models import Crontab
 
 from yata.handy import timestampToDate
 
+
 class PreferenceAdmin(admin.ModelAdmin):
     list_display = ['__str__']
+
 
 admin.site.register(Preference, PreferenceAdmin)
 
@@ -29,7 +30,6 @@ class AttacksInline(admin.TabularInline):
 class AttacksAdmin(admin.ModelAdmin):
     list_display = ['report', 'date_start', 'date_end']
 
-
     def report(self, instance):
         return instance.report
 
@@ -38,6 +38,7 @@ class AttacksAdmin(admin.ModelAdmin):
 
     def date_end(self, instance):
         return timestampToDate(instance.tse)
+
 
 admin.site.register(Attacks, AttacksAdmin)
 
@@ -101,31 +102,12 @@ class ChainAdmin(admin.ModelAdmin):
 admin.site.register(Chain, ChainAdmin)
 
 
-class TargetInline(admin.TabularInline):
-    model = Target
-    extra = 0
-
-
-class TargetAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'targetName', 'targetId']
-
-
-admin.site.register(Target, TargetAdmin)
-
-
 class MemberInline(admin.TabularInline):
     model = Member
     extra = 0
 
 
-class MemberAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'number_of_targets', 'lastAction']
-    inlines = [TargetInline]
-
-    def number_of_targets(self, instance):
-        return(len(instance.target_set.all()))
-
-admin.site.register(Member, MemberAdmin)
+admin.site.register(Member)
 
 
 class FactionAdmin(admin.ModelAdmin):
@@ -136,5 +118,16 @@ class FactionAdmin(admin.ModelAdmin):
     def number_of_chains(self, instance):
         return(len(instance.chain_set.all()))
 
+    # def crontabs(self, instance):
+        # return ", ".join([str(crontab.id) for crontab in instance.crontab.all()])
+
 
 admin.site.register(Faction, FactionAdmin)
+
+
+
+class CrontabAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+
+admin.site.register(Crontab, CrontabAdmin)

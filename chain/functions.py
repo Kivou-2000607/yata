@@ -40,7 +40,7 @@ def apiCallAttacks(faction, chain, key=None):
     report = chain.report_set.first()
 
     # get all faction keys
-    keys = faction.get_all_pairs()
+    keys = faction.getAllPairs()
 
     # add + 2 s to the endTS
     endTS += 1
@@ -337,7 +337,7 @@ def updateMembers(faction, key=None):
 
     # get key
     if key is None:
-        name, key = faction.get_random_key()
+        name, key = faction.getRadomKey()
         print("[FUNCTION updateMembers] using {} key".format(name))
     else:
         print("[FUNCTION updateMembers] using personal key")
@@ -351,19 +351,19 @@ def updateMembers(faction, key=None):
     for m in membersAPI:
         memberDB = membersDB.filter(tId=m).first()
         if memberDB is not None:
-            print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
+            # print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
             memberDB.name = membersAPI[m]['name']
             memberDB.lastAction = membersAPI[m]['last_action']
             memberDB.daysInFaction = membersAPI[m]['days_in_faction']
             memberDB.save()
         else:
-            print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+            # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
             faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
 
     # delete old members
     for m in membersDB:
         if membersAPI.get(str(m.tId)) is None:
-            print('[VIEW members] member {} deleted'.format(m))
+            # print('[VIEW members] member {} deleted'.format(m))
             m.delete()
 
     return faction.member_set.all()
