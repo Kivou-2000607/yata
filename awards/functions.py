@@ -1543,7 +1543,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Events": dict()})
 
         for k, v in tornAwards["honors"].items():
-            if int(v["type"]) in [0, 11, 14, 17]:
+            if int(v["type"]) in [0, 2, 11, 14, 17]:
                 vp = v
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
@@ -1647,8 +1647,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in userInfo["honors_awarded"] else min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [371]:
+                elif int(k) in [371, 491]:
                     # 371 {'name': 'Protege', 'description': 'Complete the mission Introduction: Duke', 'type': 17, 'circulation': 44516, 'rarity': 'Common', 'awardType': 'Honor', 'img': 668653618, 'title': 'Protege [371]: Common (44516)'}
+                    # "491": { "name": "Modded","description": "Equip two high-tier mods to a weapon",
                     type = "Missions"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in userInfo["honors_awarded"] else 0
