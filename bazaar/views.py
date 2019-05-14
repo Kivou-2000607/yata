@@ -30,7 +30,7 @@ def index(request):
             player.bazaarJson = json.dumps(bazaarJson)
 
         playerList = bazaarJson.get("list", [])
-        player.bazaarInfo = "{} items".format(len(playerList))
+        player.bazaarInfo = "{}".format(len(playerList))
         player.save()
 
         print('[view.bazaar.default] get all items on market')

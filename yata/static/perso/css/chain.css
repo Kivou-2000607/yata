@@ -50,6 +50,9 @@ table.chain-report tr.good-fair-fight:hover { background:#b6d7a8; }
 table.chain-report tr.bonus-attack       { background:#a8b6d7; }
 table.chain-report tr.bonus-attack:hover { background:#7d93c4; }
 
+table.chain-crontab td.a { width: 50%; text-align: left; }
+table.chain-crontab td.b { width: 25%; text-align: center; }  /* x2 */
+
 
 .progress-bar {
     background-color: lightgray;

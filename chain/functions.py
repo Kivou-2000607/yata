@@ -31,7 +31,6 @@ def getBonusHits(hitNumber, ts):
 def apiCallAttacks(faction, chain, key=None):
     # WARNING no fallback for this method if api crashed. Will yeld server error.
     # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
-    tip = time.time()
 
     # get faction
     factionId = faction.tId
@@ -60,23 +59,23 @@ def apiCallAttacks(faction, chain, key=None):
         if tryReq is None:
             if key is None:
                 keyToUse = keys[i % len(keys)][1]
-                print("[FUNCTION apiCallAttacks] iteration #{}: API call using {} key".format(i, keys[i % len(keys)][0]))
+                print("[function.chain.apiCallAttacks] iteration #{}: API call using {} key".format(i, keys[i % len(keys)][0]))
             else:
-                print("[FUNCTION apiCallAttacks] iteration #{}: API call using personal key".format(i))
+                print("[function.chain.apiCallAttacks] iteration #{}: API call using personal key".format(i))
                 keyToUse = key
 
             tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
-            print("[FUNCTION apiCallAttacks] \tLast API call: {}s ago".format(tsDiff))
+            print("[function.chain.apiCallAttacks] \tLast API call: {}s ago".format(tsDiff))
             while tsDiff < 32:
                 sleepTime = 32 - tsDiff
-                print("[FUNCTION apiCallAttacks] \tLast API call: {}s ago, sleeping for {} seconds".format(tsDiff, sleepTime))
+                print("[function.chain.apiCallAttacks] \tLast API call: {}s ago, sleeping for {} seconds".format(tsDiff, sleepTime))
                 time.sleep(sleepTime)
                 tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
 
             nAPICall += 1
             url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
-            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
-            print("[FUNCTION apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
+            print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
+            print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
             attacks = requests.get(url).json()["attacks"]
             faction.lastAPICall = int(timezone.now().timestamp())
             faction.save()
@@ -85,12 +84,12 @@ def apiCallAttacks(faction, chain, key=None):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
 
         else:
-            print("[FUNCTION apiCallAttacks] iteration #{} from database".format(i))
-            print("[FUNCTION apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
+            print("[function.chain.apiCallAttacks] iteration #{} from database".format(i))
+            print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             attacks = json.loads(tryReq.req)[0]
 
         if json.dumps([attacks]) == tmp:
-            print("[FUNCTION apiCallAttacks] \tWarning same response as before")
+            print("[function.chain.apiCallAttacks] \tWarning same response as before")
             report.attacks_set.filter(tss=beginTS).all().delete()
             chainDict["error"] = "same response"
             break
@@ -118,23 +117,21 @@ def apiCallAttacks(faction, chain, key=None):
             else:
                 feedAttacks = len(attacks) > 95
             beginTS = max(tableTS)
-            print("[FUNCTION apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
+            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
             i += 1
         else:
-            print("[FUNCTION apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
+            print("[function.chain.apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False
 
-    print('[FUNCTION apiCallAttacks] It took {:.02f} seconds to make all the API calls'.format(time.time() - tip))
 
     if not chain.tId:
-        print('[FUNCTION apiCallAttacks] Delete last attacks for live chains')
+        print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
         report.attacks_set.last().delete()
 
     return chainDict
 
 
 def fillReport(faction, members, chain, report, attacks):
-    tip = time.time()
 
     # initialisation of variables before loop
     nWRA = [0, 0.0, 0]  # number of wins, respect and attacks
@@ -173,7 +170,7 @@ def fillReport(faction, members, chain, report, attacks):
         if(int(v['attacker_faction']) == faction.tId):
             # if attacker not part of the faction at the time of the call
             if attackerID not in attackers:
-                print('[FUNCTION fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
+                print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
                 attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0]  # add out of faction attackers on the fly
 
             attackers[attackerID][0] += 1
@@ -183,9 +180,9 @@ def fillReport(faction, members, chain, report, attacks):
             respect = float(v['respect_gain'])
             chainCount = int(v['chain'])
             if respect > 0.0 and chainCount == 0:
-                print("[FUNCTION fillReport] Attack with respect but no hit {}:".format(k))
+                print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
                 for kk, vv in v.items():
-                    print("[FUNCTION fillReport] \t{}: {}".format(kk, vv))
+                    print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
             if chainCount:
                 # chainIterator.append(v["chain"])
                 # print("Time stamp:", v['timestamp_ended'])
@@ -209,7 +206,7 @@ def fillReport(faction, members, chain, report, attacks):
                 if v['chain'] in BONUS_HITS:
                     attackers[attackerID][12] += 1
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
-                    print('[FUNCTION fillReport] bonus {}: {} respects'.format(v['chain'], r))
+                    print('[function.chain.fillReport] bonus {}: {} respects'.format(v['chain'], r))
                     bonus.append((v['chain'], attackerID, attackerName, respect, r))
                 else:
                     attackers[attackerID][1] += 1
@@ -222,24 +219,22 @@ def fillReport(faction, members, chain, report, attacks):
                     attackers[attackerID][8] += respect / float(v['modifiers']['chainBonus'])
 
             # else:
-            #     print("[FUNCTION fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
+            #     print("[function.chain.fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
             # if(v["attacker_name"] in PRINT_NAME):
             #     if respect > 0.0:
             #         PRINT_NAME[v["attacker_name"]] += 1
-            #         print("[FUNCTION fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+            #         print("[function.chain.fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
             #     else:
-            #         print("[FUNCTION fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+            #         print("[function.chain.fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
 
 
     # for k, v in PRINT_NAME.items():
-    #     print("[FUNCTION fillReport] {}: {}".format(k, v))
+    #     print("[function.chain.fillReport] {}: {}".format(k, v))
     #
     # for i in range(1001):
     #     if i not in chainIterator:
     #         print(i, "not in chain")
 
-    print('[FUNCTION fillReport] It took {:.02f} seconds to build the attacker array'.format(time.time() - tip))
-    tip = time.time()
 
     # create histogram
     # chain.start = int(attacksForHisto[0])
@@ -257,9 +252,9 @@ def fillReport(faction, members, chain, report, attacks):
         bins.append(add)
 
     # bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
-    print('[FUNCTION fillReport] chain delta time: {} second'.format(diff))
-    print('[FUNCTION fillReport] histogram bins delta time: {} second'.format(binsGapMinutes * 60))
-    print('[FUNCTION fillReport] histogram number of bins: {}'.format(len(bins) - 1))
+    print('[function.chain.fillReport] chain delta time: {} second'.format(diff))
+    print('[function.chain.fillReport] histogram bins delta time: {} second'.format(binsGapMinutes * 60))
+    print('[function.chain.fillReport] histogram number of bins: {}'.format(len(bins) - 1))
     histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
     binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
     chain.reportNHits = nWRA[0]
@@ -270,11 +265,8 @@ def fillReport(faction, members, chain, report, attacks):
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.save()
 
-    print('[FUNCTION fillReport] It took {:.02f} seconds to build histogram'.format(time.time() - tip))
-    tip = time.time()
-
     # fill the database with counts
-    print('[FUNCTION fillReport] fill database with counts')
+    print('[function.chain.fillReport] fill database with counts')
     report.count_set.all().delete()
     for k, v in attackers.items():
         # time now - chain end - days old: determine if member was in the fac for the chain
@@ -316,17 +308,12 @@ def fillReport(faction, members, chain, report, attacks):
                                 graph=graphTmp,
                                 watcher=watcher)
 
-    print('[FUNCTION fillReport] It took {:.02f} seconds to fill the count'.format(time.time() - tip))
-    tip = time.time()
-
     # fill the database with bonus
-    print('[FUNCTION fillReport] fill database with bonus')
+    print('[function.chain.fillReport] fill database with bonus')
     report.bonus_set.all().delete()
     for b in bonus:
         report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
 
-    print('[FUNCTION fillReport] It took {:.02f} seconds to fill the bonus'.format(time.time() - tip))
-    tip = time.time()
 
     return chain, report, (binsCenter, histo), chain.nHits == nWRA[0]
 
@@ -335,35 +322,35 @@ def updateMembers(faction, key=None):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
 
-    # get key
-    if key is None:
-        name, key = faction.getRadomKey()
-        print("[FUNCTION updateMembers] using {} key".format(name))
-    else:
-        print("[FUNCTION updateMembers] using personal key")
-
-    # call members
-    membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
-    if 'apiError' in membersAPI:
-        return membersAPI
-
-    membersDB = faction.member_set.all()
-    for m in membersAPI:
-        memberDB = membersDB.filter(tId=m).first()
-        if memberDB is not None:
-            # print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
-            memberDB.name = membersAPI[m]['name']
-            memberDB.lastAction = membersAPI[m]['last_action']
-            memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-            memberDB.save()
-        else:
-            # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
-
-    # delete old members
-    for m in membersDB:
-        if membersAPI.get(str(m.tId)) is None:
-            # print('[VIEW members] member {} deleted'.format(m))
-            m.delete()
+    # # get key
+    # if key is None:
+    #     name, key = faction.getRadomKey()
+    #     print("[function.chain.updateMembers] using {} key".format(name))
+    # else:
+    #     print("[function.chain.updateMembers] using personal key")
+    #
+    # # call members
+    # membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
+    # if 'apiError' in membersAPI:
+    #     return membersAPI
+    #
+    # membersDB = faction.member_set.all()
+    # for m in membersAPI:
+    #     memberDB = membersDB.filter(tId=m).first()
+    #     if memberDB is not None:
+    #         # print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
+    #         memberDB.name = membersAPI[m]['name']
+    #         memberDB.lastAction = membersAPI[m]['last_action']
+    #         memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+    #         memberDB.save()
+    #     else:
+    #         # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+    #         faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
+    #
+    # # delete old members
+    # for m in membersDB:
+    #     if membersAPI.get(str(m.tId)) is None:
+    #         # print('[VIEW members] member {} deleted'.format(m))
+    #         m.delete()
 
     return faction.member_set.all()

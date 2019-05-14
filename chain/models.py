@@ -105,6 +105,12 @@ class Faction(models.Model):
         keys = json.loads(self.apiString)
         return list(keys.items())
 
+    def numberOfReportsToCreate(self):
+        return len(self.chain_set.filter(createReport=True))
+
+    def liveChain(self):
+        return bool(self.chain_set.filter(tId=0))
+
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0)
@@ -195,3 +201,6 @@ class Crontab(models.Model):
 
     def __str__(self):
         return "Crontab #{}".format(self.id)
+
+    def nFactions(self):
+        return len(self.faction.all())

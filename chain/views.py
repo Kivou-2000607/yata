@@ -16,6 +16,7 @@ from chain.functions import updateMembers
 
 from chain.models import Faction
 from chain.models import Preference
+from chain.models import Crontab
 
 
 # render view
@@ -29,7 +30,7 @@ def index(request):
         # get user info
         user = apiCall('user', '', 'profile', key)
         if 'apiError' in user:
-            context = {'player': player, 'apiError': user["apiError"]+" We can't check your faction so you don't have access to this section."}
+            context = {'player': player, 'apiError': user["apiError"] + " We can't check your faction so you don't have access to this section."}
             player.chainInfo = "N/A"
             player.factionId = 0
             player.factionAA = False
@@ -41,12 +42,15 @@ def index(request):
         preferences = Preference.objects.first()
         allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
         print("[view.chain.index] allowedFactions: {}".format(allowedFactions))
-        if str(factionId) in allowedFactions:
+        # if str(factionId) in allowedFactions:
+        if True:
             player.chainInfo = user.get("faction")["faction_name"]
             player.factionId = factionId
             if 'chains' in apiCall('faction', factionId, 'chains', key):
                 player.chainInfo += " [AA]"
                 player.factionAA = True
+            else:
+                player.factionAA = False
             player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
             print('[view.chain.index] player in faction {}'.format(player.chainInfo))
@@ -60,6 +64,13 @@ def index(request):
         if faction is None:
             faction = Faction.objects.create(tId=factionId, name=user.get("faction")["faction_name"])
             print('[view.chain.index] faction {} created'.format(factionId))
+            minBusy = min([c.nFactions() for c in Crontab.objects.all()])
+            for crontab in Crontab.objects.all():
+                if crontab.nFactions() == minBusy:
+                    crontab.faction.add(faction)
+                    crontab.save()
+                    break
+            print('[view.chain.index] attributed to {} '.format(crontab))
         else:
             faction.name = user.get("faction")["faction_name"]
             faction.save()
@@ -68,6 +79,10 @@ def index(request):
         if player.factionAA:
             print('[view.chain.index] save AA key'.format(factionId))
             faction.addKey(player.tId, player.key)
+            faction.save()
+        else:
+            print('[view.chain.index] remove AA key'.format(factionId))
+            faction.delKey(player.tId)
             faction.save()
 
         chains = faction.chain_set.filter(status=True).order_by('-end')
@@ -96,7 +111,7 @@ def live(request):
             player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-            context = {'player': player, selectError: liveChain["apiError"]+" We can't check your faction so you don't have access to this section."}
+            context = {'player': player, selectError: liveChain["apiError"] + " We can't check your faction so you don't have access to this section."}
             return render(request, page, context)
 
         activeChain = bool(int(liveChain['current']) > 9)
@@ -215,16 +230,17 @@ def list(request):
                 error = chains
 
             else:
+                print('[view.chain.list] update chain list')
                 for k, v in chains.items():
                     chain = faction.chain_set.filter(tId=k).first()
                     if v['chain'] >= faction.hitsThreshold:
                         if chain is None:
-                            print('[view.chain.list] chain {} created'.format(k))
+                            # print('[view.chain.list] chain {} created'.format(k))
                             faction.chain_set.create(tId=k, nHits=v['chain'], respect=v['respect'],
                                                      start=v['start'],
                                                      end=v['end'])
                         else:
-                            print('[view.chain.list] chain {} updated'.format(k))
+                            # print('[view.chain.list] chain {} updated'.format(k))
                             chain.start = v['start']
                             chain.end = v['end']
                             chain.nHits = v['chain']
@@ -234,7 +250,7 @@ def list(request):
 
                     else:
                         if chain is not None:
-                            print('[view.chain.list] chain {} deleted'.format(k))
+                            # print('[view.chain.list] chain {} deleted'.format(k))
                             chain.delete()
 
         # get chains
@@ -243,7 +259,7 @@ def list(request):
         context = {'player': player, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
         if error:
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-            context.update({selectError: error["apiError"]+" List of chain not updated."})
+            context.update({selectError: error["apiError"] + " List of chain not updated."})
         return render(request, page, context)
 
     else:
@@ -342,7 +358,7 @@ def jointReport(request):
         print('[VIEW jointReport] {} chains for the joint report'.format(len(chains)))
         if len(chains) < 1:
             selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-            context = {selectError: 'No chains found for the joint report.',
+            context = {selectError: 'No chains found for the joint report. Add reports throught the chain list.',
                        'chains': faction.chain_set.filter(status=True).order_by('-end'),
                        'player': player, 'chaincat': True, 'view': {'list': True}}
             return render(request, page, context)
@@ -446,7 +462,7 @@ def jointReport(request):
 
         if error:
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-            context.update({selectError: error["apiError"]+" List of members not updated."})
+            context.update({selectError: error["apiError"] + " List of members not updated."})
         return render(request, page, context)
 
     else:
@@ -611,35 +627,30 @@ def toggleReport(request, chainId):
         raise PermissionDenied(message)
 
 
-# # action view
-# def toggleFactionKey(request):
-#     if request.session.get('chainer') and request.session['chainer'].get('AA'):
-#         # get session info
-#         factionId = request.session['chainer'].get('factionId')
-#
-#         # get faction
-#         faction = Faction.objects.filter(tId=factionId).first()
-#         if faction is None:
-#             return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-#         print('[VIEW toggleFactionKey] faction {} found'.format(factionId))
-#
-#         faction.toggle_key(request.session['chainer'].get("name"),
-#                            request.session['chainer'].get("keyValue"))
-#
-#         # render for on the fly modification
-#         if request.method == "POST":
-#             print('[VIEW toggleFactionKey] render')
-#             context = dict({"faction": faction})
-#             return render(request, 'chain/{}.html'.format(request.POST.get('html')), context)
-#
-#         # else redirection
-#         else:
-#             print('[VIEW toggleFactionKey] redirect')
-#             return HttpResponseRedirect(reverse('chain:index'))
-#
-#     else:
-#         print('[VIEW toggleFactionKey] render error')
-#         return render(request, 'yata/error.html', {'errorMessage': 'You need to be logged and have AA rights.'})
+def crontab(request):
+    if request.session.get('player'):
+        print('[view.chain.crontab] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+
+        if player.factionAA:
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            print('[view.chain.crontab] player with AA. Faction {}'.format(faction))
+            crontabs = dict({})
+            for crontab in faction.crontab_set.all():
+                print('[view.chain.crontab]     --> {}'.format(crontab))
+                crontabs[crontab.id] = {"crontab": crontab, "factions": []}
+                for f in crontab.faction.all():
+                    crontabs[crontab.id]["factions"].append(f)
+            context = {'player': player, 'chaincat': True, 'crontabs': crontabs, 'view': {'crontab': True}}
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+            return render(request, page, context)
+
+        else:
+            raise PermissionDenied("You need AA rights.")
+
+    else:
+        raise PermissionDenied("You might want to log in.")
 
 
 def tree(request):

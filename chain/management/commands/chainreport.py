@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         crontabId = options['crontab']
-        print("[COMMAND updatechains] open crontab {}".format(crontabId))
+        print("[command.chain.chainreport] open crontab {}".format(crontabId))
 
         # get crontab
         crontab = Crontab.objects.filter(id=crontabId).first()
@@ -25,54 +25,54 @@ class Command(BaseCommand):
         factions = random.sample(factions, n)
 
         for f in factions:
-            print("[COMMAND updatechains] --> {}".format(f))
+            print("[command.chain.chainreport] --> {}".format(f))
 
         for i, faction in enumerate(factions):
-            print("[COMMAND updatechains] #{}: {}".format(i + 1, faction))
+            print("[command.chain.chainreport] #{}: {}".format(i + 1, faction))
 
             # get api key
             if faction.apiString == "0":
-                print("[COMMAND updatechains]     --> no api key found")
+                print("[command.chain.chainreport]    --> no api key found")
 
             else:
                 keyHolder, key = faction.getRadomKey()
 
                 # get all chain
                 chains = faction.chain_set.filter(createReport=True).all()
-                print('[COMMAND updatechains]     --> {} reports to create'.format(len(chains)))
+                print('[command.chain.chainreport]    --> {} reports to create'.format(len(chains)))
                 for chain in chains:
                     # delete old report and create new
-                    print('[COMMAND updatechains]     --> report {}'.format(chain))
+                    print('[command.chain.chainreport]    --> report {}'.format(chain))
                     report = chain.report_set.first()
                     if report is None:
                         report = chain.report_set.create()
-                        print('[COMMAND updatechains]     --> new report')
+                        print('[command.chain.chainreport]    --> new report')
                     else:
-                        print('[COMMAND updatechains]     --> report found')
+                        print('[command.chain.chainreport]    --> report found')
 
                     # update members
-                    print("[COMMAND updatechains]     --> udpate members")
+                    print("[command.chain.chainreport]    --> udpate members")
                     members = updateMembers(faction, key=key)
                     if 'apiError' in members:
-                        print("[COMMAND updatechains]     --> error in API continue to next chain: {}".format(members['apiError']))
+                        print("[command.chain.chainreport]    --> error in API continue to next chain: {}".format(members['apiError']))
                         if members['apiError'].split(":")[0] == "API error code 2":
-                            print("[COMMAND updatechains]     --> deleting {}'s key'".format(keyHolder))
+                            print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey()
                         continue
 
                     attacks = apiCallAttacks(faction, chain)
 
                     if "error" in attacks:
-                        print("[COMMAND updatechains]     --> error apiCallAttacks: {}".format(attacks["error"]))
+                        print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["error"]))
                     else:
                         _, _, _, finished = fillReport(faction, members, chain, report, attacks)
-                        print("[COMMAND updatechains]     --> report finished: {}".format(finished))
+                        print("[command.chain.chainreport]    --> report finished: {}".format(finished))
                         chain.createReport = not finished
 
                     chain.save()
 
-                    print("[COMMAND updatechains] end after report")
+                    print("[command.chain.chainreport] end after report")
                     return
                     # break  # do just one chain report / call
 
-        print("[COMMAND updatechains] end after nothing")
+        print("[command.chain.chainreport] end after nothing")

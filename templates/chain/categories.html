@@ -13,6 +13,11 @@
         <td>
             <a href="{% url 'chain:jointReport' %}">Joint report</a>
         </td>
+        {% if player.factionAA %}
+        <td>
+            <a href="{% url 'chain:crontab' %}">Crontab</a>
+        </td>
+        {% endif %}
     </tr>
     </tbody>
 </table>
