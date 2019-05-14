@@ -197,7 +197,7 @@ class Attacks(models.Model):
 
 class Crontab(models.Model):
     id = models.AutoField(primary_key=True)
-    faction = models.ManyToManyField(Faction)
+    faction = models.ManyToManyField(Faction, blank=True)
 
     def __str__(self):
         return "Crontab #{}".format(self.id)
