@@ -1,6 +1,7 @@
 {% load mathfilters %}
 {% load humanize %}
 {% load static %}
+{% load app_filters %}
 
 <script>
         $(document).ready(function() {
@@ -26,8 +27,8 @@
             {% for k, v in hof.items %}
             <tr>
                 <td class="a">#{{ forloop.counter }}</td>
-                <td class="b"><a href="https://www.torn.com/profiles.php?XID={{k.tId}}" target="_blank">{{k}}</a></td>
-                <td class="b"><a href="https://www.torn.com/factions.php?step=profile&ID={{k.factionId}}" target="_blank">{{k.factionNa}} [{{k.factionId}}]</a></td>
+                <td class="b">{{k.name|playerURL:k.tId|safe}}</a></td>
+                <td class="b">{{k.factionNa|factionURL:k.factionId|safe}}</td>
                 <td class="c" title="{{v.nAwarded}} / {{v.nAwards}}">{{v.nAwarded|div:v.nAwards|mul:100|floatformat:2}}%</td>
                 <td class="c">{{v.score|mul:100|floatformat:2}}%</td>
             </tr>

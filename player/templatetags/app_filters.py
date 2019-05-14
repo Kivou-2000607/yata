@@ -48,13 +48,14 @@ def rarity(circulation):
 
 
 @register.filter(name='factionURL')
-def factionURL(faction):
-    return '<a href="https://www.torn.com/factions.php?step=profile&ID={id}" target="_blank">{faction}</a>'.format(faction=faction, id=faction.tId)
+def factionURL(value, arg):
+    if arg:
+        return '<a href="https://www.torn.com/factions.php?step=profile&ID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+    else:
+        return '-'
 
 @register.filter(name='playerURL')
 def playerURL(value, arg):
-    print(value)
-    print(arg)
     return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
 
 @register.filter(name='cleanhtml')

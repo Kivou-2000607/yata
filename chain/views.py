@@ -639,9 +639,9 @@ def crontab(request):
             crontabs = dict({})
             for crontab in faction.crontab_set.all():
                 print('[view.chain.crontab]     --> {}'.format(crontab))
-                crontabs[crontab.id] = {"crontab": crontab, "factions": []}
+                crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
                 for f in crontab.faction.all():
-                    crontabs[crontab.id]["factions"].append(f)
+                    crontabs[crontab.tabNumber]["factions"].append(f)
             context = {'player': player, 'chaincat': True, 'crontabs': crontabs, 'view': {'crontab': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)

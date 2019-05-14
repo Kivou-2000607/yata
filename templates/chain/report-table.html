@@ -97,7 +97,7 @@ $(document).ready(function() {
             </tr>
                 {% for b in bonus %}
                     {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
-                        <td style="text-align: center;"><b>Bonus #{{b.hit}}</b><br><a href="https://www.torn.com/profiles.php?XID={{b.tId}}" target="_blank">{{b.name}} [{{b.tId}}]</a></td>
+                        <td style="text-align: center;"><b>Bonus #{{b.hit}}</b><br>{{b.name|playerURL:b.tId|safe}}</td>
                     {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
                 {% endfor %}
         </tbody>
@@ -139,7 +139,7 @@ $(document).ready(function() {
             {% if c.daysInFaction > -1 or c.wins > 0 %}
             <tr {% if c.graph|length %}id="chain-ireport-{{chain.tId}}-{{c.attackerId}}"{% endif %} class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                 <td class="a">{{ forloop.counter }}</td>
-                <td class="b dont-touch-me"><a href="https://www.torn.com/profiles.php?XID={{c.attackerId}}" target="_blank">{{c.name}} [{{c.attackerId}}]</a></td>
+                <td class="b dont-touch-me">{{c.name|playerURL:c.attackerId|safe}}</td>
 
 
                 <td class="c">{{c.wins}}</td>

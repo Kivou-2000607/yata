@@ -82,8 +82,8 @@ h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left 
 .error:active,
 .error:focus { color: #A02525!important; }
 .valid:hover,
-.error:active,
-.error:focus { color: #005E00!important; }
+.valid:active,
+.valid:focus { color: #005E00!important; }
 
 div.error {
     font-weight: bold;

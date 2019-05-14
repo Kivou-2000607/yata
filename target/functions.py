@@ -54,7 +54,7 @@ def updateAttacks(player):
         targetJson["attacks"] = attacks
         player.targetJson = json.dumps(targetJson)
         nTargets = 0 if "targets" not in targetJson else len(targetJson["targets"])
-        player.targetInfo = "{} targets".format(nTargets)
+        player.targetInfo = "{}".format(nTargets)
         player.targetUpda = int(timezone.now().timestamp())
         player.lastUpdateTS = int(timezone.now().timestamp())
         player.save()

@@ -5,8 +5,7 @@
     <td colspan="13" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorLine}}</span></td>
 {% elif target %}
     <td class="a" title="Last attack on {{target.endTS|ts2date}}"><b {% if not target.respect %}class="error"{% endif %}>{{target.result}}</b></td>
-    <!-- <td class="a"><a href="https://www.torn.com/profiles.php?XID={{target.attacker_id}}" target="_blank"> {{target.attacker_name}} [{{target.attacker_id}}]</a></td> -->
-    <td class="b dont-touch-me"><a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank"> {{target.targetName}} [{{targetId}}]</a></td>
+    <td class="b dont-touch-me">{{target.targetName|playerURL:targetId|safe}}</td>
     <td class="c">{{target.level}}</td>
     <!-- <td class="a">{{target.rank}}</td> -->
     <td class="f">{{target.lastAction}}</td>
@@ -41,7 +40,6 @@
             <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class="fas fa-fist-raised" title="Attack target"></i></a>
         {% endif %}
     </td>
-        <!-- <a href="https://www.torn.com/profiles.php?XID={{targetId}}" target="_blank" alt="profile"><i class="fas fa-user" title="Target profile"></i></a> - -->
     <!-- <td class="g">
         <form style="display: inline;">{% csrf_token %}
             <a class="target-list-toggle" href={% url 'target:refresh' targetId %}>

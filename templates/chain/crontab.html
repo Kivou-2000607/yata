@@ -17,7 +17,7 @@
             <tbody>
             {% for faction in crontab.factions %}
             <tr>
-                <td class="a">{{faction|factionURL|safe}}</td>
+                <td class="a">{{faction.name|factionURL:faction.tId|safe}}</td>
                 <td class="b">{{faction.numberOfReportsToCreate}}</td>
                 <td class="b">{% if faction.liveChain %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-times"></i>{% endif %}</td>
             {% endfor %}

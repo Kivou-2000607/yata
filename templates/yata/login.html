@@ -35,7 +35,7 @@
                     {% if player.targetInfo == "N/A" %}
                         &empty;
                     {% else %}
-                        {{player.targetInfo}}
+                        {{player.targetInfo}} target{{player.targetInfo|pluralize}}
                     {% endif %}
                     <span class="sep"></span>
 

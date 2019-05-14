@@ -87,7 +87,7 @@
             <tbody>
                 {%for bonus in bonuses%}
                     <tr>
-                        <td class="a"><a href="https://www.torn.com/profiles.php?XID={{bonus.0}}" target="_blank">{{bonus.1}} [{{bonus.0}}]</a></td>
+                        <td class="a">{{bonus.1|playerURL:bonus.0|safe}}</td>
                         {% if bonus.3 %}
                             <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
                         {% else %}
