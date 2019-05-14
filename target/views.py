@@ -170,7 +170,7 @@ def refresh(request, targetId):
                     target["result"] = v["result"]
                     target["endTS"] = int(v["timestamp_ended"])
                     target["fairFight"] = float(v['modifiers']['fairFight'])
-                    target["respect"] = float(v['modifiers']['fairFight']) * target["respect"]
+                    target["respect"] = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
 
                     break
 
