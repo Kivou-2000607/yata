@@ -162,7 +162,7 @@ def refresh(request, targetId):
             target["lastUpdate"] = int(timezone.now().timestamp())
             level = targetInfo["level"]
             target["level"] = level
-            target["respect"] = targetInfo.get("fairFight", 1.0) * 0.25 * (math.log(level) + 1) if level else 0
+            target["respect"] = target.get("fairFight", 1.0) * 0.25 * (math.log(level) + 1) if level else 0
             for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                 if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                     print('[view.target.refresh] refresh traget last attack info')
@@ -257,6 +257,7 @@ def add(request):
                         print('[view.target.add] create target {} from attacks'.format(targetId))
                         level = targetInfo["level"]
                         respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
+                        print(respect)
                         targets[targetId] = {"targetName": targetInfo["name"],
                                              "result": v["result"],
                                              "endTS": int(v["timestamp_ended"]),
@@ -277,7 +278,8 @@ def add(request):
                 if not added:
                     print('[view.target.add] create target {} from nothing'.format(targetId))
                     level = targetInfo["level"]
-                    respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
+                    respect = 0.25 * (math.log(level) + 1) if level else 0
+                    print(respect)
 
                     targets[targetId] = {"targetName": targetInfo["name"],
                                          "result": "No recent attack",
