@@ -33,6 +33,7 @@ def index(request):
             context = {'player': player, 'apiError': user["apiError"] + " We can't check your faction so you don't have access to this section."}
             player.chainInfo = "N/A"
             player.factionId = 0
+            player.factionNa = "-"
             player.factionAA = False
             player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
@@ -45,6 +46,7 @@ def index(request):
         # if str(factionId) in allowedFactions:
         if True:
             player.chainInfo = user.get("faction")["faction_name"]
+            player.factionNa = user.get("faction")["faction_name"]
             player.factionId = factionId
             if 'chains' in apiCall('faction', factionId, 'chains', key):
                 player.chainInfo += " [AA]"
