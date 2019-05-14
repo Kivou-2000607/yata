@@ -1,4 +1,15 @@
-<h2 class="title grey"><i class="far fa-life-ring"></i>&nbsp;&nbsp;Tutorial</h2>
-<div class="module">
-    <p>coucou</p>
-</div>
+<h3>Chain reports</h3>
+<p>AA member is a faction member with the API access permission.</p>
+<p>Live report corresponds to chain reports of a current chain<br />
+    On the chain list you can have access to all reports of previews chains (click on the eye to see the report). By default reports are not created. Only AA members can create it.<br />
+    The Joint report is a concatenation of several chain reports. Only AA members choose which reports are taken into account in the Joint report.
+    On top of it there is a bonus summary table that sorts the most deserving faction members by computing a bonus score \(B\):
+    $$B = N_\text{hits} \, / \, \max(R_\text{b}, 1) $$
+    where \(N_\text{hits}\) is the total number of hits made for all chains of the Joint report and \(R_\text{b}\) is the total respect earnt through bonuses. So the higher the score, the more deserving the player.
+</p>
+
+<p><b>Base respect</b> is the respect you earn without any chain multiplier. It is only based on the target level \(l\). It yields:
+    $$R_\text{b} = (\ln(l)+1)/4$$
+    <b>Flat respect</b> is the respect you earn taking into account only the fair fight bonus \(f_\text{f}\)
+    $$R_\text{f} = f_\text{f} R_\text{b} = f_\text{f}\times(\ln(l)+1)/4$$
+</p>

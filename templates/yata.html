@@ -43,7 +43,8 @@
         <p><a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-fist-raised"></i>  <b>Target list</b></a>: Remember your good targets and maximize your respect gains during chains.</p>
         <p><a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>  <b>Awards tracker</b></a>: track the next award you can get.</p>
         <hr class="sep">
-            <p>This website is developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}. Ingame donations are welcome <i class="far fa-smile-wink"></i>
+            <p>This <a href="https://github.com/Kivou-2000607/yata/tree/unified" target="_blank"><i class="fab fa-github"></i> opensource</a> website is developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}.
+            Ingame donations are welcome <i class="far fa-smile-wink"></i>
         {% if player %}
             <a id="yata-delete-submit" class="error flush-right" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i></i>&nbsp; Delete account</a>
         {% endif %}

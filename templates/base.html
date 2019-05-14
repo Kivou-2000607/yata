@@ -53,6 +53,26 @@
             $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
         });
 
+        // show/hide
+        $(document).on('click', 'h2.toggle-display', function(e){
+            e.preventDefault();
+            var h = $(this);
+            console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
+            if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
+                var i = h.find("i.fa-caret-right");
+                var div = h.closest(".catch-me").children("div");
+                if(div.css("display") == "none") {
+                    h.removeClass("rounded");
+                    i.addClass("fa-rotate-90");
+                }
+                div.slideToggle("fast", function(){
+                    if(div.css("display") == "none") {
+                        h.addClass("rounded");
+                        i.removeClass("fa-rotate-90");
+                    }
+                });
+            }
+        });
 
     </script>
 

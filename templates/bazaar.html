@@ -78,26 +78,6 @@
         $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
-    // show/hide
-    $(document).on('click', 'h2.toggle-display', function(e){
-        e.preventDefault();
-        var h = $(this);
-        if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
-            var i = h.find("i.fa-caret-right");
-            var div = h.closest(".catch-me").children("div");
-            if(div.css("display") == "none") {
-                h.removeClass("rounded");
-                i.addClass("fa-rotate-90");
-            }
-            div.slideToggle("fast", function(){
-                if(div.css("display") == "none") {
-                    h.addClass("rounded");
-                    i.removeClass("fa-rotate-90");
-                }
-            });
-        }
-    });
-
 
     // refresh timer target update
     window.setInterval(function(){
@@ -144,6 +124,13 @@
 
     <div id="content-update">
         {% include "bazaar/content-reload.html" %}
+    </div>
+
+    <div class="catch-me">
+        <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring"></i>&nbsp;&nbsp;Tutorial&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+        <div class="module tutorial" style="display: none;">
+            {% include "bazaar/tutorial.html" %}
+        </div>
     </div>
 
 {% endblock %}
