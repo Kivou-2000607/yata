@@ -3,6 +3,7 @@ from django.utils import timezone
 
 import json
 
+
 class Preference(models.Model):
     allowedFactions = models.TextField(default="{}")
 
@@ -111,6 +112,7 @@ class Faction(models.Model):
     def liveChain(self):
         return bool(self.chain_set.filter(tId=0))
 
+
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0)
@@ -197,10 +199,11 @@ class Attacks(models.Model):
 
 class Crontab(models.Model):
     id = models.AutoField(primary_key=True)
+    tabNumber = models.IntegerField(default=0)
     faction = models.ManyToManyField(Faction, blank=True)
 
     def __str__(self):
-        return "Crontab #{}".format(self.id)
+        return "Crontab #{}".format(self.tabNumber)
 
     def nFactions(self):
         return len(self.faction.all())

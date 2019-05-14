@@ -125,11 +125,14 @@ class FactionAdmin(admin.ModelAdmin):
 admin.site.register(Faction, FactionAdmin)
 
 
-
 class CrontabAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'number_of_factions']
+    list_display = ['__str__', 'number_of_factions', 'list_of_factions']
 
     def number_of_factions(self, instance):
         return len(instance.faction.all())
+
+    def list_of_factions(self, instance):
+        return ", ".join([str(f) for f in instance.faction.all()])
+
 
 admin.site.register(Crontab, CrontabAdmin)

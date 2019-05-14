@@ -20,8 +20,12 @@ class Command(BaseCommand):
         print("[command.chain.livereport] open crontab {}".format(crontabId))
 
         # get crontab
-        crontab = Crontab.objects.filter(id=crontabId).first()
-        factions = [faction for faction in crontab.faction.all()]
+        crontab = Crontab.objects.filter(tabNumber=crontabId).first()
+        try:
+            factions = [faction for faction in crontab.faction.all()]
+        except:
+            print("[command.chain.livereport] no crontab found")
+            return
 
         n = len(factions)
         factions = random.sample(factions, n)
