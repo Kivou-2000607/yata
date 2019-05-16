@@ -50,6 +50,7 @@ class Command(BaseCommand):
                     report = chain.report_set.first()
                     if report is None:
                         report = chain.report_set.create()
+                        chain.hasReport = True
                         print('[command.chain.chainreport]    --> new report')
                     else:
                         print('[command.chain.chainreport]    --> report found')

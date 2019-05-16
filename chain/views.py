@@ -585,6 +585,7 @@ def deleteReport(request, chainId):
         chain.report_set.all().delete()
         chain.jointReport = False
         chain.createReport = False
+        chain.hasReport = False
         chain.save()
 
         context = {"player": player, "chain": chain}

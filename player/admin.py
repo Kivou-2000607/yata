@@ -5,6 +5,9 @@ from yata.handy import timestampToDate
 
 
 class PlayerAdmin(admin.ModelAdmin):
+    class Media:
+        css = { 'all': ('perso/css/admin.css',) }
+
     list_display = ['__str__', 'last_update']
 
     def report(self, instance):

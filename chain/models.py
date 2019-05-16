@@ -124,14 +124,15 @@ class Chain(models.Model):
     end = models.IntegerField(default=0)
     status = models.BooleanField(default=True)
     createReport = models.BooleanField(default=False)
+    hasReport = models.BooleanField(default=False)
     jointReport = models.BooleanField(default=False)
     graph = models.TextField(default="", null=True, blank=True)
 
     def __str__(self):
-        return "chain [{}]".format(self.tId)
+        return "{} - Chain [{}]".format(self.faction, self.tId)
 
-    def have_report(self):
-        return True if len(self.report_set.all()) else False
+    # def have_report(self):
+    #     return True if len(self.report_set.all()) else False
 
     def toggle_report(self):
         self.jointReport = not self.jointReport
@@ -151,10 +152,9 @@ class Member(models.Model):
 
 class Report(models.Model):
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return("Report of {}".format(self.chain))
+        return("{} - Report".format(self.chain))
 
 
 class Bonus(models.Model):

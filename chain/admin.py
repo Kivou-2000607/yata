@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+import json
 
 from .models import Faction
 from .models import Chain
@@ -58,6 +58,7 @@ admin.site.register(Bonus, BonusAdmin)
 class CountInline(admin.TabularInline):
     model = Count
     extra = 0
+    show_change_link = True
 
 
 class CountAdmin(admin.ModelAdmin):
@@ -70,11 +71,14 @@ admin.site.register(Count, CountAdmin)
 class ReportInline(admin.TabularInline):
     model = Report
     extra = 0
+    show_change_link = True
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'date']
-    inlines = [AttacksInline]
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+    list_display = ['__str__']
+    inlines = [BonusInline, CountInline, AttacksInline]
 
 
 admin.site.register(Report, ReportAdmin)
@@ -91,10 +95,14 @@ def chain_off_report(modeladmin, request, queryset):
 class ChainInline(admin.TabularInline):
     model = Chain
     extra = 0
+    show_change_link = True
 
 
 class ChainAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tId', 'nHits', 'respect', 'status']
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['__str__', 'hasReport', 'tId', 'nHits', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
     inlines = [ReportInline]
 
@@ -105,18 +113,34 @@ admin.site.register(Chain, ChainAdmin)
 class MemberInline(admin.TabularInline):
     model = Member
     extra = 0
+    show_change_link = True
 
 
 admin.site.register(Member)
 
 
 class FactionAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'number_of_chains', 'hitsThreshold']
-    # inlines = [ChainInline, MemberInline]
-    # inlines = [AttacksInline]
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
 
-    def number_of_chains(self, instance):
-        return(len(instance.chain_set.all()))
+    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'hitsThreshold']
+    inlines = [ChainInline, MemberInline]
+
+    def live_chain(self, instance):
+        return(bool(len(instance.chain_set.filter(tId=0))))
+    live_chain.boolean = True
+
+    def number_of_reports(self, instance):
+        return("{}/{}".format(len(instance.chain_set.filter(hasReport=True)), len(instance.chain_set.all())))
+
+    def ongoing_reports(self, instance):
+        return("{}/{}".format(len(instance.chain_set.filter(createReport=True)), len(instance.chain_set.all())))
+
+    def number_of_keys(self, instance):
+        return(len(json.loads(instance.apiString)))
+
+    def last_api_call(self, instance):
+        return(timestampToDate(instance.lastAPICall))
 
     # def crontabs(self, instance):
         # return ", ".join([str(crontab.id) for crontab in instance.crontab.all()])
