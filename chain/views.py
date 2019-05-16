@@ -472,6 +472,42 @@ def jointReport(request):
         raise PermissionDenied(message)
 
 
+# render view
+def members(request):
+    if request.session.get('player'):
+        print('[view.chain.members] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        key = player.key
+        factionId = player.factionId
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+            context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+            return render(request, page, context)
+
+        # update chains if AA
+        members = updateMembers(faction, key=key)
+        error = False
+        if 'apiError' in members:
+            error = members
+
+        # get members
+        members = faction.member_set.all()
+
+        context = {'player': player, 'chaincat': True, 'members': members, 'view': {'members': True}}
+        if error:
+            selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+            context.update({selectError: error["apiError"] + " Members not updated."})
+        return render(request, page, context)
+
+    else:
+        raise PermissionDenied("You might want to log in.")
+
+
 # action view
 def createReport(request, chainId):
     if request.session.get('player') and request.method == 'POST':

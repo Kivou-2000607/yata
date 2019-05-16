@@ -342,6 +342,8 @@ def updateMembers(faction, key=None):
             memberDB.name = membersAPI[m]['name']
             memberDB.lastAction = membersAPI[m]['last_action']
             memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+            tmp = [s for s in membersAPI[m]['status'] if s]
+            memberDB.status = ", ".join(tmp)
             memberDB.save()
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))

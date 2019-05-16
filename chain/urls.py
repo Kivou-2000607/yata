@@ -9,6 +9,7 @@ urlpatterns = [
     re_path(r'^live/$', views.live, name='live'),
     re_path(r'^list/$', views.list, name='list'),
     re_path(r'^jointReport/$', views.jointReport, name='jointReport'),
+    re_path(r'^members/$', views.members, name='members'),
     re_path(r'^crontab/$', views.crontab, name='crontab'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
