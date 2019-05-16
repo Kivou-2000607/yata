@@ -4,12 +4,30 @@
     On the chain list you can have access to all reports of previews chains (click on the eye to see the report). By default reports are not created. Only AA members can create it.<br />
     The Joint report is a concatenation of several chain reports. Only AA members choose which reports are taken into account in the Joint report.
     On top of it there is a bonus summary table that sorts the most deserving faction members by computing a bonus score \(B\):
-    $$B = N_\text{hits} \, / \, \max(R_\text{b}, 1) $$
-    where \(N_\text{hits}\) is the total number of hits made for all chains of the Joint report and \(R_\text{b}\) is the total respect earnt through bonuses. So the higher the score, the more deserving the player.
+    $$B = N_\text{hits} \, / \, \max(R_\text{base}, 1) $$
+    where \(N_\text{hits}\) is the total number of hits made for all chains of the Joint report and \(R_\text{base}\) is the total respect earnt through bonuses. So the higher the score, the more deserving the player. In order to add a chain report into the joint report click on to top right icon of corresponding chain in the chain list's last column<br/>
+    The bonuses are not taken into account as hits in order to yield meaningful respect averages.
 </p>
 
-<p><b>Base respect</b> is the respect you earn without any chain multiplier. It is only based on the target level \(l\). It yields:
-    $$R_\text{b} = (\ln(l)+1)/4$$
-    <b>Flat respect</b> is the respect you earn taking into account only the fair fight bonus \(f_\text{f}\)
-    $$R_\text{f} = f_\text{f} R_\text{b} = f_\text{f}\times(\ln(l)+1)/4$$
+<p><b>Base respect</b> is the respect you earn without any multipliers. It is only based on the target level \(l\). It yields:
+    $$R_\text{base} = (\ln(l)+1)/4$$
+</p>
+<p><b>Total respect</b>. There is a couple of chain multipliers that increases your actual respect:
+    $$R_\text{total} = m_\text{scale} \times m_\text{fair} \times m_\text{attack} \times m_\text{retal} \times m_\text{war} \times m_\text{group} \times m_\text{overseas} \times R_\text{base}$$
+    <ul style="margin-left: 50px;">
+        <li>Chain scale: \(m_\text{scale}\) depends on the chain size \(n\).
+            <ul><li>\(m_\text{scale}(n) = \log(n)/4 + 0.75 \quad \text{which gives} \quad m_\text{scale}(0) = 1 \quad \text{and} \quad m_\text{scale}(100,000) = 2\)</li></ul>
+
+        <li>Attacking style: \(m_\text{attack} = 0.75\) in case of a mug, \(1\) otherwise.
+        <li>Retal: \(m_\text{retal} = 1.5\) in case of retal, \(1\) otherwise.
+        <li>Group attack: \(m_\text{group}\) depends on the number of additional friendly attackers \(n\).
+            <ul><li>\(m_\text{group} = 1.5-1/2^{n+1}\)</li></ul>
+        <li>Warrring: \(m_\text{war} = 2\) for Territorial, Competitive or Destructive wars.
+        <li>Overseas: \(m_\text{overseas} = 1.25\) if the attack is made in onother country.
+        <li>Fair fight: \(m_\text{Fair}\) depends on your battle stats and your opponent stats.
+            <ul><li>\(1 \le m_\text{Fair} \le 3\)</li></ul>
+    </ul>
+</p>
+<p><b>Flat respect</b> is the respect you earn not taking into account the chain scale multiplier \(m_\text{scale}\)
+    $$R_\text{flat} = R_\text{total} / m_\text{scale} = m_\text{fair} \times m_\text{attack} \times m_\text{retal} \times m_\text{war} \times m_\text{group} \times m_\text{overseas} \times R_\text{base}$$
 </p>

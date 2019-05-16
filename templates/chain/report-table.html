@@ -199,10 +199,11 @@ $(document).ready(function() {
             <tr class="white"><td><div id="histogram"></div></td></tr>
         </tbody>
         <tr><td style="text-align: center;">Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.
-            Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).
+            Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).<br>
             Hit rate: {{graph.info.speedRate|floatformat:1}} hits every 5 minutes.
             {% if graph.info.reg|length == 2 %}
-            With the current hit rate, next bonus will be on {{graph.info.ETALast}}
+            <br>
+            With the current hit rate, next bonus will be on {{graph.info.ETALast}}<br>
             With the global hit rate, next bonus will be on {{graph.info.ETA}}
             {% endif %}
         </td></tr>
