@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
-from django.views.decorators.cache import never_cache
 
 import numpy
 from scipy import stats
@@ -695,8 +694,8 @@ def crontab(request):
         raise PermissionDenied("You might want to log in.")
 
 
-@never_cache
 def tree(request):
+    import random
     if request.session.get('player'):
         print('[view.chain.tree] get player id from session')
         tId = request.session["player"].get("tId")
@@ -733,7 +732,7 @@ def tree(request):
             factionTree(faction)
 
             posterOpt = json.loads(faction.posterOpt)
-            context = {'player': player, 'chaincat': True, 'faction': faction, "posterOpt": posterOpt, 'view': {'tree': True}}
+            context = {'player': player, 'chaincat': True, 'faction': faction, "posterOpt": posterOpt, 'random': random.randint(0, 65535), 'view': {'tree': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 
