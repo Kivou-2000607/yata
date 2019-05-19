@@ -11,6 +11,7 @@ urlpatterns = [
     re_path(r'^jointReport/$', views.jointReport, name='jointReport'),
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^crontab/$', views.crontab, name='crontab'),
+    re_path(r'^tree/$', views.tree, name='tree'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),

@@ -13,6 +13,7 @@ from yata.handy import timestampToDate
 
 from chain.functions import BONUS_HITS
 from chain.functions import updateMembers
+from chain.functions import factionTree
 
 from chain.models import Faction
 from chain.models import Preference
@@ -694,38 +695,48 @@ def crontab(request):
 
 
 def tree(request):
-    if request.session.get('chainer') and request.session['chainer'].get('AA'):
-        # get session info
-        factionId = request.session['chainer'].get('factionId')
-        key = request.session['chainer'].get('keyValue')
+    if request.session.get('player'):
+        print('[view.chain.tree] get player id from session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
 
-        # get faction
-        faction = Faction.objects.filter(tId=factionId).first()
-        if faction is None:
-            return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-        print('[VIEW tree] faction {} found'.format(factionId))
+        if player.factionAA:
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            print('[view.chain.tree] player with AA. Faction {}'.format(faction))
 
-        # call for upgrades
-        upgrades = apiCall('faction', factionId, 'upgrades', key, sub='upgrades')
-        if 'apiError' in upgrades:
-            return render(request, 'yata/error.html', upgrades)
+            if request.method == "POST":
+                t = request.POST.get("t", False)
+                p = int(request.POST.get("p", False))
+                v = int(request.POST.get("v", False))
+                print('[view.chain.tree] {}[{}] = {}'.format(t, p, v))
+                posterOpt = json.loads(faction.posterOpt)
+                if posterOpt.get(t, False):
+                    posterOpt[t][p] = v
+                else:
+                    if t == "fontColor":
+                        option = [0, 0, 0, 255]
+                        option[p] = v
+                    elif t == "fontFamily":
+                        option = [0]
+                        option[p] = v
+                    elif t == "iconType":
+                        option = [0]
+                        option[p] = v
 
-        # building upgrades tree
-        tree = dict({})
-        for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]['branchorder'], reverse=False):
-            if upgrade['branch'] != 'Core':
-                if tree.get(upgrade['branch']) is None:
-                    tree[upgrade['branch']] = dict({})
-                tree[upgrade['branch']][upgrade['name']] = upgrade
+                    posterOpt[t] = option
 
-        for k, upgrade in tree.items():
-            print('[VIEW tree] {} ({} upgrades)'.format(k, len(upgrade)))
+                faction.posterOpt = json.dumps(posterOpt)
+                faction.save()
 
-        # context
-        context = dict({'tree': tree, 'view': {'tree': True}})
+            factionTree(faction)
 
-        # render if logged
-        return render(request, 'chain.html', context)
+            posterOpt = json.loads(faction.posterOpt)
+            context = {'player': player, 'chaincat': True, 'faction': faction, "posterOpt": posterOpt, 'view': {'tree': True}}
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+            return render(request, page, context)
+
+        else:
+            raise PermissionDenied("You need AA rights.")
+
     else:
-        # render if not logged
-        return render(request, 'yata/error.html', {'errorMessage': 'You shouldn\'t be here. You need to enter valid API key.'})
+        raise PermissionDenied("You might want to log in.")

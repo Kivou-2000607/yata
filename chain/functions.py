@@ -3,8 +3,6 @@ from django.utils import timezone
 from yata.handy import apiCall
 from yata.handy import timestampToDate
 
-from chain.models import Faction
-
 import requests
 import time
 import numpy
@@ -81,7 +79,7 @@ def apiCallAttacks(faction, chain, key=None):
             faction.save()
 
             if len(attacks):
-                report.attacks_set.create(tss=beginTS, tse=endTS, req = json.dumps([attacks]))
+                report.attacks_set.create(tss=beginTS, tse=endTS, req=json.dumps([attacks]))
 
         else:
             print("[function.chain.apiCallAttacks] iteration #{} from database".format(i))
@@ -122,7 +120,6 @@ def apiCallAttacks(faction, chain, key=None):
         else:
             print("[function.chain.apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False
-
 
     if not chain.tId:
         print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
@@ -227,14 +224,12 @@ def fillReport(faction, members, chain, report, attacks):
             #     else:
             #         print("[function.chain.fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
 
-
     # for k, v in PRINT_NAME.items():
     #     print("[function.chain.fillReport] {}: {}".format(k, v))
     #
     # for i in range(1001):
     #     if i not in chainIterator:
     #         print(i, "not in chain")
-
 
     # create histogram
     # chain.start = int(attacksForHisto[0])
@@ -314,7 +309,6 @@ def fillReport(faction, members, chain, report, attacks):
     for b in bonus:
         report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
 
-
     return chain, report, (binsCenter, histo), chain.nHits == nWRA[0]
 
 
@@ -347,7 +341,8 @@ def updateMembers(faction, key=None):
             memberDB.save()
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'])
+            tmp = [s for s in membersAPI[m]['status'] if s]
+            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'], status=", ".join(tmp))
 
     # delete old members
     for m in membersDB:
@@ -356,3 +351,102 @@ def updateMembers(faction, key=None):
             m.delete()
 
     return faction.member_set.all()
+
+
+
+def factionTree(faction, key=None):
+    from django.conf import settings
+
+    from PIL import Image
+    from PIL import ImageDraw
+    from PIL import ImageFont
+
+    url = "{}/trees/{}.png".format(settings.STATIC_ROOT, faction.tId)
+    bridge = {"Criminality": 0,
+              "Fortitude": 1,
+              "Voracity": 2,
+              "Toleration": 3,
+              "Excursion": 4,
+              "Steadfast": 5,
+              "Aggression": 6,
+              "Suppression": 7,
+            }
+
+
+    # img = Image.new('RGB', (1, 1)).save(url)
+
+    posterOpt = json.loads(faction.posterOpt)
+
+    # get key
+    if key is None:
+        name, key = faction.getRadomKey()
+        print("[function.chain.updateMembers] using {} key".format(name))
+    else:
+        print("[function.chain.updateMembers] using personal key")
+
+
+    # call for upgrades
+    upgrades = apiCall('faction', faction.tId, 'upgrades', key, sub='upgrades')
+    if 'apiError' in upgrades:
+        print('[function.chain.factionTree] api key error: {}'.format((upgrades['apiError'])))
+        return 0
+
+    faction = apiCall('faction', faction.tId, 'basic', key)
+    if 'apiError' in faction:
+        print('[function.chain.factionTree] api key error: {}'.format((faction['apiError'])))
+        return 0
+
+    # building upgrades tree
+    tree = dict({})
+    for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]['branchorder'], reverse=False):
+        if upgrade['branch'] != 'Core':
+            if tree.get(upgrade['branch']) is None:
+                tree[upgrade['branch']] = dict({})
+            tree[upgrade['branch']][upgrade['name']] = upgrade
+
+
+    # create image background
+    # background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
+    background = (0, 0, 0, 0)
+    print("[function.chain.factionTree] background color: {}".format(background))
+    img = Image.new('RGBA', (5000, 5000), color=background)
+
+    # choose font
+    fontFamily =  posterOpt.get('fontFamily', [0])[0]
+    fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
+    print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
+    fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily], 25)
+    d = ImageDraw.Draw(img)
+
+    fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
+    print("[function.chain.factionTree] fontColor: {}".format(fontColor))
+
+    # add title
+    tmp = "{} upgrades".format(faction["name"])
+    txt = "{}\n".format(tmp)
+    # txt += "{}\n".format("-" * len(tmp))
+    # txt += " {}\n\n".format("-" * (len(tmp) - 2))
+    d.text((10, 10), txt, font=fnt, fill=fontColor)
+    x, y = d.textsize(txt, font=fnt)
+
+    iconType = posterOpt.get('iconType', [0])[0]
+    print("[function.chain.factionTree] iconType: {}".format(iconType))
+    for branch, upgrades in tree.items():
+        icon = Image.open(settings.STATIC_ROOT + '/trees/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
+        img.paste(icon, (10, y+10))
+
+        txt = ""
+        txt += "  {}\n".format(branch)
+        for k, v in upgrades.items():
+         txt += "    {}: {}\n".format(k, v["ability"])
+        txt += "\n"
+
+        d.text((90, 10+y), txt, font=fnt, fill=fontColor)
+        xTmp, yTmp = d.textsize(txt, font=fnt)
+        x = max(xTmp, x)
+        y += yTmp
+
+        print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
+
+    img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
+    print('[function.chain.factionTree] image saved {}'.format(url))

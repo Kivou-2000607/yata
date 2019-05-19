@@ -129,6 +129,22 @@
     });
 
 
+    $(document).on('click', '[id^="chain-tree-"]', function(e){
+        e.preventDefault();
+        var v = $(this).val();
+        var id = $(this).attr("id").split("-");
+        var p = id.pop();
+        var t = id.pop();
+        $( "#content-update" ).load( "/chain/tree/", {
+            t: t, p: p, v: v,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Creating new image')
+    });
+
+
+
 </script>
 {% endblock %}
 

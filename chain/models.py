@@ -17,7 +17,8 @@ class Faction(models.Model):
     nAPICall = models.IntegerField(default=2)
 
     # "login1:key1,login2:key2,login3:key3"
-    apiString = models.TextField(default="{}")  # for 10 pairs login(15):key(16)
+    apiString = models.TextField(default="{}")  
+    posterOpt = models.TextField(default="{}")
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)

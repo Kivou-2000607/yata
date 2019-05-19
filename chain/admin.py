@@ -96,6 +96,8 @@ class ChainInline(admin.TabularInline):
     model = Chain
     extra = 0
     show_change_link = True
+    can_delete = False
+    readonly_fields = ('tId', 'reportNHits', 'nHits', 'nAttacks', 'respect', 'start', 'end', 'status', 'createReport', 'hasReport', 'jointReport', 'graph')
 
 
 class ChainAdmin(admin.ModelAdmin):
@@ -114,7 +116,8 @@ class MemberInline(admin.TabularInline):
     model = Member
     extra = 0
     show_change_link = True
-
+    can_delete = False
+    readonly_fields = ('tId', 'name', 'daysInFaction', 'lastAction', 'status')
 
 admin.site.register(Member)
 

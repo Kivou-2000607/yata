@@ -20,69 +20,34 @@ bridge = {"Criminality": 0,
           "Suppression": 7,
         }
 
+posterOpt = dict({})
+
 #
-def createImage(background, fontColor, tail, faction, upgrades, tree):
-    # create image background
-    img = Image.new('RGBA', (5000, 5000), color=background)
-    # img = Image.new('RGB', (5000, 5000), color=(0, 0, 0))
-    fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/CourierPolski1941.ttf', 25)
-    d = ImageDraw.Draw(img)
-
-    # add title
-    tmp = "{} perks".format(faction["name"])
-    txt = "{}\n".format(tmp)
-    txt += "{}\n".format("-" * len(tmp))
-    txt += " {}\n\n".format("-" * (len(tmp) - 2))
-    d.text((10, 10), txt, font=fnt, fill=fontColor)
-    x, y = d.textsize(txt, font=fnt)
-    print(x, y)
-    for branch, upgrades in tree.items():
-
-        icon = Image.open(settings.STATIC_ROOT + '/trees/tier_unlocks_b{}_t2.png'.format(bridge[branch]))
-        img.paste(icon, (10, y+10))
-
-        txt = ""
-        txt += "  {}\n".format(branch)
-        for k, v in upgrades.items():
-            txt += "    {}: {}\n".format(k, v["ability"])
-        txt += "\n"
-
-        d.text((90, 10+y), txt, font=fnt, fill=fontColor)
-        xTmp, yTmp = d.textsize(txt, font=fnt)
-        x = max(xTmp, x)
-        y += yTmp
-        print(x, y)
-
-        print('[VIEW tree] {} ({} upgrades)'.format(branch, len(upgrades)))
-
-    img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save("{}/trees/{}_{}.png".format(settings.STATIC_ROOT, faction["ID"], tail))
-    # img.save("{}/trees/{}.png".format(settings.STATIC_ROOT, factionId))
-    print('[VIEW tree] image saved')
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[COMMAND tree] start")
+        print("[command.chain.tree] start")
 
         for faction in Faction.objects.all():
-            print("[COMMAND tree] faction {}".format(faction))
+            print("[command.chain.tree] faction {}".format(faction))
 
             # get api key
             if faction.apiString == "0":
-                print("[COMMAND tree] no api key found")
+                print("[command.chain.tree] no api key found")
                 break
             factionId = faction.tId
-            keyHolder, key = faction.get_random_key()
+            keyHolder, key = faction.getRadomKey()
 
             # call for upgrades
             upgrades = apiCall('faction', factionId, 'upgrades', key, sub='upgrades')
             if 'apiError' in upgrades:
-                print('[COMMAND tree] api key error: {}'.format((upgrades['apiError'])))
+                print('[command.chain.tree] api key error: {}'.format((upgrades['apiError'])))
                 break
 
             faction = apiCall('faction', factionId, 'basic', key)
             if 'apiError' in faction:
-                print('[COMMAND tree] api key error: {}'.format((faction['apiError'])))
+                print('[command.chain.tree] api key error: {}'.format((faction['apiError'])))
                 break
 
             # building upgrades tree
@@ -93,6 +58,4 @@ class Command(BaseCommand):
                         tree[upgrade['branch']] = dict({})
                     tree[upgrade['branch']][upgrade['name']] = upgrade
 
-
-            createImage((0, 0, 0, 0), (255, 255, 255, 255), "light", faction, upgrades, tree)
-            createImage((0, 0, 0, 0), (0, 0, 0, 255), "dark", faction, upgrades, tree)
+            factionTree(faction, upgrades, tree)

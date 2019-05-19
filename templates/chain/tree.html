@@ -1,16 +1,29 @@
 {% load humanize %}
 {% load mathfilters %}
+{% load static %}
+{% static "" as baseUrl %}
 
 <div>
     <h2 class="title">Faction upgrade tree</h2>
-        <div class="module whiteBG justTxt">
-            {% for branch, upgrades in tree.items %}
-                <h3>{{branch}}</h3>
-                <ul>
-                    {% for upgrade, description in upgrades.items %}
-                        <li>{{upgrade}}: {{description.ability}}</li>
-                    {% endfor %}
-                </ul>
-            {% endfor %}
+        <div class="module">
+
+            <form id="chain-tree">
+                Font color
+                <input id="chain-tree-fontColor-0" type="range" min="0" max="255" value="{{posterOpt.fontColor.0}}">
+                <input id="chain-tree-fontColor-1" type="range" min="0" max="255" value="{{posterOpt.fontColor.1}}">
+                <input id="chain-tree-fontColor-2" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
+                <input id="chain-tree-fontColor-3" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}"><br />
+                <!-- Background color
+                <input id="chain-tree-background-0" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
+                <input id="chain-tree-background-1" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
+                <input id="chain-tree-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
+                <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br /> -->
+                Icon type
+                <input id="chain-tree-iconType-0" type="range" min="0" max="4" value="{{posterOpt.iconType.0}}">
+                Font family
+                <input id="chain-tree-fontFamily-0" type="range" min="0" max="1" value="{{posterOpt.fontFamily.0}}">
+            </form>
+
+            <img src="{{baseUrl}}trees/{{faction.tId}}.png">
         </div>
 </div>
