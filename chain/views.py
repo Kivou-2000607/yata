@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 
 import numpy
 from scipy import stats
@@ -694,6 +695,7 @@ def crontab(request):
         raise PermissionDenied("You might want to log in.")
 
 
+@never_cache
 def tree(request):
     if request.session.get('player'):
         print('[view.chain.tree] get player id from session')
