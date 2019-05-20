@@ -695,7 +695,9 @@ def crontab(request):
 
 
 def tree(request):
-    import random
+    import random, os
+    from django.conf import settings
+
     if request.session.get('player'):
         print('[view.chain.tree] get player id from session')
         tId = request.session["player"].get("tId")
@@ -731,8 +733,9 @@ def tree(request):
 
             factionTree(faction)
 
+            fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
             posterOpt = json.loads(faction.posterOpt)
-            context = {'player': player, 'chaincat': True, 'faction': faction, "posterOpt": posterOpt, 'random': random.randint(0, 65535), 'view': {'tree': True}}
+            context = {'player': player, 'chaincat': True, 'faction': faction, "posterOpt": posterOpt, 'random': random.randint(0, 65535), 'fonts': fntId, 'view': {'tree': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 

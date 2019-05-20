@@ -21,7 +21,12 @@
                 Icon type
                 <input id="chain-tree-iconType-0" type="range" min="0" max="4" value="{{posterOpt.iconType.0}}">
                 Font family
-                <input id="chain-tree-fontFamily-0" type="range" min="0" max="1" value="{{posterOpt.fontFamily.0}}">
+                <select id="chain-tree-fontFamily-0">
+                    {% for k, v in fonts.items %}
+                        <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>{{v.0}}</option>
+                     {% endfor %}
+                </select>
+                <!-- <input type="range" min="0" max="1" value="{{posterOpt.fontFamily.0}}"> -->
             </form>
 
             <img src="{{baseUrl}}trees/{{faction.tId}}.png?cache={{random}}">
