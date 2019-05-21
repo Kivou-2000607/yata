@@ -20,10 +20,13 @@ This file is part of yata.
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
+from django.conf import settings
 
-import numpy
 from scipy import stats
+import numpy
 import json
+import random
+import os
 
 from player.models import Player
 
@@ -714,9 +717,6 @@ def crontab(request):
 
 
 def tree(request):
-    import random, os
-    from django.conf import settings
-
     if request.session.get('player'):
         print('[view.chain.tree] get player id from session')
         tId = request.session["player"].get("tId")
