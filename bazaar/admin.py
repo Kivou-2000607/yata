@@ -1,5 +1,5 @@
 """
-Copyright 2019 Kivou-2000607@gmail.com
+Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
 
