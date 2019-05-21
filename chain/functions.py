@@ -455,7 +455,7 @@ def factionTree(faction, key=None):
         txt += "  {}\n".format(branch)
         for k, v in upgrades.items():
             txt += "    {}: {}\n".format(k, v["ability"])
-            txt += "\n"
+        txt += "\n"
 
         d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
         xTmp, yTmp = d.textsize(txt, font=fnt)
