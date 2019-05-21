@@ -6,29 +6,54 @@
 <div>
     <h2 class="title">Faction upgrade tree</h2>
         <div class="module">
+            <div style="width: 55%; margin: 0 auto;">
 
             <form id="chain-tree">
-                Font color
-                <input id="chain-tree-fontColor-0" type="range" min="0" max="255" value="{{posterOpt.fontColor.0}}">
-                <input id="chain-tree-fontColor-1" type="range" min="0" max="255" value="{{posterOpt.fontColor.1}}">
-                <input id="chain-tree-fontColor-2" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
-                <input id="chain-tree-fontColor-3" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}"><br />
+                <p>
+                    <label for="chain-tree-fontColor-0">Font color: red </label>
+                    <input id="chain-tree-fontColor-0" type="range" min="0" max="255" value="{{posterOpt.fontColor.0}}">
+                    <label for="chain-tree-fontColor-1">green </label>
+                    <input id="chain-tree-fontColor-1" type="range" min="0" max="255" value="{{posterOpt.fontColor.1}}">
+                    <label for="chain-tree-fontColor-2">blue </label>
+                    <input id="chain-tree-fontColor-2" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
+                    <label for="chain-tree-fontColor-3">transparency </label>
+                    <input id="chain-tree-fontColor-3" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}"><br />
+                </p>
+                <p>
+                    <label for="chain-tree-background-0">Background: red </label>
+                    <input id="chain-tree-background-0" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
+                    <label for="chain-tree-background-1">green </label>
+                    <input id="chain-tree-background-1" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
+                    <label for="chain-tree-background-2">blue </label>
+                    <input id="chain-tree-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
+                    <label for="chain-tree-background-3">transparency </label>
+                    <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br />
+                </p>
                 <!-- Background color
                 <input id="chain-tree-background-0" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
                 <input id="chain-tree-background-1" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
                 <input id="chain-tree-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
                 <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br /> -->
-                Icon type
-                <input id="chain-tree-iconType-0" type="range" min="0" max="4" value="{{posterOpt.iconType.0}}">
-                Font family
-                <select id="chain-tree-fontFamily-0">
-                    {% for k, v in fonts.items %}
-                        <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>{{v.0}}</option>
-                     {% endfor %}
-                </select>
+
+                <p>
+                    <label for="chain-tree-iconType-0">Icon type: </label>
+                    <select id="chain-tree-iconType-0">
+                        <option value="0" {% if 0 == posterOpt.iconType.0 %}selected{% endif %}>Green</option>
+                        <option value="1" {% if 1 == posterOpt.iconType.0 %}selected{% endif %}>Light Green</option>
+                        <option value="2" {% if 2 == posterOpt.iconType.0 %}selected{% endif %}>Grey</option>
+                        <option value="3" {% if 3 == posterOpt.iconType.0 %}selected{% endif %}>Blue</option>
+                    </select>
+                    <label for="chain-tree-fontFamily-0">Font family: </label>
+                    <select id="chain-tree-fontFamily-0">
+                        {% for k, v in fonts.items %}
+                            <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>{{v.0}}</option>
+                         {% endfor %}
+                    </select>
+                </p>
                 <!-- <input type="range" min="0" max="1" value="{{posterOpt.fontFamily.0}}"> -->
             </form>
 
-            <img src="{{baseUrl}}trees/{{faction.tId}}.png?cache={{random}}">
+            <img src="{{baseUrl}}trees/{{faction.tId}}.png?cache={{random}}" width="100%">
+        </div>
         </div>
 </div>

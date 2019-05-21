@@ -725,6 +725,9 @@ def tree(request):
                     elif t == "iconType":
                         option = [0]
                         option[p] = v
+                    elif t == "background":
+                        option = [0, 0, 0, 0]
+                        option[p] = v
 
                     posterOpt[t] = option
 

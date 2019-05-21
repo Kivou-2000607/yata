@@ -406,8 +406,7 @@ def factionTree(faction, key=None):
 
 
     # create image background
-    # background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    background = (0, 0, 0, 0)
+    background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
     print("[function.chain.factionTree] background color: {}".format(background))
     img = Image.new('RGBA', (5000, 5000), color=background)
 
@@ -416,6 +415,7 @@ def factionTree(faction, key=None):
     fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
+    fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1]+10)
     fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
     d = ImageDraw.Draw(img)
 
@@ -423,18 +423,20 @@ def factionTree(faction, key=None):
     print("[function.chain.factionTree] fontColor: {}".format(fontColor))
 
     # add title
-    tmp = "{} upgrades".format(faction["name"])
-    txt = "{}\n".format(tmp)
-    # txt += "{}\n".format("-" * len(tmp))
-    # txt += " {}\n\n".format("-" * (len(tmp) - 2))
-    d.text((10, 10), txt, font=fnt, fill=fontColor)
-    x, y = d.textsize(txt, font=fnt)
+    txt = "{}".format(faction["name"])
+    d.text((10, 10), txt, font=fntBig, fill=fontColor)
+    x, y = d.textsize(txt, font=fntBig)
+
+    txt = "{:,} respect\n".format(faction["respect"])
+    d.text((x+20, 20), txt, font=fnt, fill=fontColor)
+    x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
     print("[function.chain.factionTree] iconType: {}".format(iconType))
     for branch, upgrades in tree.items():
         icon = Image.open(settings.STATIC_ROOT + '/trees/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
-        img.paste(icon, (10, y))
+        icon = icon.convert("RGBA")
+        img.paste(icon, (10, y), mask=icon)
 
         txt = ""
         txt += "  {}\n".format(branch)
@@ -449,5 +451,6 @@ def factionTree(faction, key=None):
 
         print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
-    img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
+    # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
+    img.crop((0, 0, x + 90 + 10, y)).save(url)
     print('[function.chain.factionTree] image saved {}'.format(url))
