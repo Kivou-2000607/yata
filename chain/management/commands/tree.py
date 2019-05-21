@@ -24,18 +24,13 @@ from chain.functions import factionTree
 
 import json
 
+
 class Command(BaseCommand):
     def handle(self, **options):
         print("[command.chain.tree] start")
-
         for faction in Faction.objects.all():
             print("[command.chain.tree] faction {}".format(faction))
-
-            # get api key
-            if faction.apiString == "0":
-                print("[command.chain.tree] no api key found")
-                break
-            factionId = faction.tId
-            keyHolder, key = faction.getRadomKey()
             if len(json.loads(faction.posterOpt)):
                 factionTree(faction)
+
+        print("[command.chain.tree] end")

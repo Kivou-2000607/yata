@@ -730,28 +730,29 @@ def tree(request):
                 t = request.POST.get("t", False)
                 p = int(request.POST.get("p", False))
                 v = int(request.POST.get("v", False))
-                print('[view.chain.tree] {}[{}] = {}'.format(t, p, v))
-                posterOpt = json.loads(faction.posterOpt)
-                if posterOpt.get(t, False):
-                    posterOpt[t][p] = v
-                else:
-                    if t == "fontColor":
-                        option = [0, 0, 0, 255]
-                        option[p] = v
-                    elif t == "fontFamily":
-                        option = [0]
-                        option[p] = v
-                    elif t == "iconType":
-                        option = [0]
-                        option[p] = v
-                    elif t == "background":
-                        option = [0, 0, 0, 0]
-                        option[p] = v
+                if t:
+                    print('[view.chain.tree] {}[{}] = {}'.format(t, p, v))
+                    posterOpt = json.loads(faction.posterOpt)
+                    if posterOpt.get(t, False):
+                        posterOpt[t][p] = v
+                    else:
+                        if t == "fontColor":
+                            option = [0, 0, 0, 255]
+                            option[p] = v
+                        elif t == "fontFamily":
+                            option = [0]
+                            option[p] = v
+                        elif t == "iconType":
+                            option = [0]
+                            option[p] = v
+                        elif t == "background":
+                            option = [0, 0, 0, 0]
+                            option[p] = v
 
-                    posterOpt[t] = option
+                        posterOpt[t] = option
 
-                faction.posterOpt = json.dumps(posterOpt)
-                faction.save()
+                    faction.posterOpt = json.dumps(posterOpt)
+                    faction.save()
 
             factionTree(faction)
 
