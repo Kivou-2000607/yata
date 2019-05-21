@@ -219,7 +219,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     type = "Busts"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(userInfo["personalstats"].get("peoplebought"))
-                    vp["achieve"] = 1 if int(k) in userInfo["honors_awarded"] else 0
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(None2Zero(userInfo["personalstats"].get("peopleboughtspent")), 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["$ needed", "current ratio of {:,.2g} k$ / people bought".format(0.001 / ratio if ratio > 0 else 0)]
