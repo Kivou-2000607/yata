@@ -7,7 +7,13 @@
     <h2 class="title">Faction upgrade tree</h2>
         <div class="module">
             <div style="width: 55%; margin: 0 auto;">
+            <h3 class="title">Click on the image and copy/paste the address where you want</h3>
+            <p><a href="{{baseUrl}}trees/{{faction.tId}}.png" target="_blank" atl="faction upgrade tree">
+                <img src="{{baseUrl}}trees/{{faction.tId}}.png?cache={{random}}" style="border: solid 1px;" width="100%">
+            </a></p>
 
+            <br />
+            <h3 class="title">Change the style of your faction upgrade tree</h3>
             <form id="chain-tree">
                 <p>
                     <label for="chain-tree-fontColor-0">Font color: red </label>
@@ -29,12 +35,6 @@
                     <label for="chain-tree-background-3">transparency </label>
                     <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br />
                 </p>
-                <!-- Background color
-                <input id="chain-tree-background-0" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
-                <input id="chain-tree-background-1" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
-                <input id="chain-tree-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
-                <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br /> -->
-
                 <p>
                     <label for="chain-tree-iconType-0">Icon type: </label>
                     <select id="chain-tree-iconType-0">
@@ -50,10 +50,8 @@
                          {% endfor %}
                     </select>
                 </p>
-                <!-- <input type="range" min="0" max="1" value="{{posterOpt.fontFamily.0}}"> -->
             </form>
 
-            <img src="{{baseUrl}}trees/{{faction.tId}}.png?cache={{random}}" width="100%">
         </div>
         </div>
 </div>
