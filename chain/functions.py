@@ -353,7 +353,6 @@ def updateMembers(faction, key=None):
     return faction.member_set.all()
 
 
-
 def factionTree(faction, key=None):
     from django.conf import settings
     import os
@@ -370,10 +369,7 @@ def factionTree(faction, key=None):
               "Steadfast": 5,
               "Aggression": 6,
               "Suppression": 7,
-            }
-
-
-    # img = Image.new('RGB', (1, 1)).save(url)
+              }
 
     posterOpt = json.loads(faction.posterOpt)
 
@@ -383,7 +379,6 @@ def factionTree(faction, key=None):
         print("[function.chain.updateMembers] using {} key".format(name))
     else:
         print("[function.chain.updateMembers] using personal key")
-
 
     # call for upgrades
     upgrades = apiCall('faction', faction.tId, 'upgrades', key, sub='upgrades')
@@ -404,18 +399,17 @@ def factionTree(faction, key=None):
                 tree[upgrade['branch']] = dict({})
             tree[upgrade['branch']][upgrade['name']] = upgrade
 
-
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
     print("[function.chain.factionTree] background color: {}".format(background))
     img = Image.new('RGBA', (5000, 5000), color=background)
 
     # choose font
-    fontFamily =  posterOpt.get('fontFamily', [0])[0]
+    fontFamily = posterOpt.get('fontFamily', [0])[0]
     fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
-    fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1]+10)
+    fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
     fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
     d = ImageDraw.Draw(img)
 
@@ -428,7 +422,7 @@ def factionTree(faction, key=None):
     x, y = d.textsize(txt, font=fntBig)
 
     txt = "{:,} respect\n".format(faction["respect"])
-    d.text((x+20, 20), txt, font=fnt, fill=fontColor)
+    d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
@@ -441,10 +435,10 @@ def factionTree(faction, key=None):
         txt = ""
         txt += "  {}\n".format(branch)
         for k, v in upgrades.items():
-         txt += "    {}: {}\n".format(k, v["ability"])
-        txt += "\n"
+            txt += "    {}: {}\n".format(k, v["ability"])
+            txt += "\n"
 
-        d.text((90, 10+y), txt, font=fnt, fill=fontColor)
+        d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
         xTmp, yTmp = d.textsize(txt, font=fnt)
         x = max(xTmp, x)
         y += yTmp
