@@ -1,3 +1,22 @@
+"""
+Copyright 2019 Kivou-2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+"""
+
 from django.db import models
 from django.utils import timezone
 
@@ -17,7 +36,7 @@ class Faction(models.Model):
     nAPICall = models.IntegerField(default=2)
 
     # "login1:key1,login2:key2,login3:key3"
-    apiString = models.TextField(default="{}")  
+    apiString = models.TextField(default="{}")
     posterOpt = models.TextField(default="{}")
 
     def __str__(self):
