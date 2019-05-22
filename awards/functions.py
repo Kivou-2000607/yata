@@ -1691,7 +1691,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = None2Zero(userInfo["personalstats"].get("missioncreditsearned"))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / float(max(userInfo["personalstats"].get("contractscompleted"), 1))
+                    ratio = vp["current"] / float(max(userInfo["personalstats"].get("contractscompleted", 0), 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
                     vp["comment"] = ["days left", "current ratio of {:.2g} credits / contract".format(ratio)]
                     awards[type]["h_" + k] = vp
