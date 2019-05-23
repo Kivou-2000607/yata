@@ -88,12 +88,13 @@ class Player(models.Model):
         # update awards info
         tornAwards = apiCall('torn', '', 'honors,medals', self.key)
         if 'apiError' in tornAwards:
-            self.awardsJson = json.dumps(awardsJson)
+            self.awardsJson = json.dumps(tornAwards)
             self.awardsInfo = "0"
         else:
             updatePlayerAwards(self, tornAwards, user)
         self.awardsUpda = int(timezone.now().timestamp())
 
-
         self.lastUpdateTS = int(timezone.now().timestamp())
         self.save()
+
+        print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
