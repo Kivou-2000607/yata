@@ -17,6 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
+
 def apiCall(section, id, selections, key, sub=None):
     import requests
     # # DEBUG live chain
@@ -59,17 +60,6 @@ def apiCall(section, id, selections, key, sub=None):
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
-
-
-def None2Zero(a):
-    return 0 if a is None else a
-
-
-def None2EmptyList(a):
-    return [] if a is None else a
-
-def None2EmptyDict(a):
-    return dict({}) if a is None else a
 
 
 def timestampToDate(timestamp):
