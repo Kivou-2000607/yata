@@ -328,7 +328,7 @@ def fillReport(faction, members, chain, report, attacks):
     for b in bonus:
         report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
 
-    return chain, report, (binsCenter, histo), chain.nHits == nWRA[0]
+    return chain, report, (binsCenter, histo), chain.nHits <= nWRA[0]
 
 
 def updateMembers(faction, key=None):

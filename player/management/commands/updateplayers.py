@@ -17,11 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
+
 from django.core.management.base import BaseCommand
-from django.conf import settings
-
-import json
-
 from player.models import Player
 
 class Command(BaseCommand):

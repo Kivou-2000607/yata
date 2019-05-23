@@ -88,10 +88,13 @@ def list(request, type):
         elif type == "hof":
             hof = dict({})
             for p in Player.objects.exclude(awardsInfo="N/A").all().order_by('-awardsInfo'):
-                hof.update({p: {"score": float(p.awardsInfo),
-                                "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
-                                "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
-                                }})
+                try:
+                    hof.update({p: {"score": float(p.awardsInfo),
+                                    "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
+                                    "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
+                                    }})
+                except:
+                    print('[view.awards.list] error getting info on {}'.format(p))
 
             context = {"player": player, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
             page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
