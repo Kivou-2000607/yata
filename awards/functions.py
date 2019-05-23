@@ -1308,6 +1308,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[6].replace(",", "").replace("$", ""))
                     vp["current"] = userInfo.get("networth", dict({})).get("total", 0)
                     vp["achieve"] = 1 if int(k) in userInfo.get("medals_awarded", []) else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["wait"] = 1 if int(k) in userInfo.get("mqedals_awarded", []) else 0
                     vp["head"] = "$"
                     awards[type]["m_" + k] = vp
 
