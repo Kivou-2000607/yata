@@ -56,7 +56,7 @@ class Command(BaseCommand):
             print("[command.chain.livereport] #{}: {}".format(i + 1, faction))
 
             # get api key
-            if faction.apiString == "0":
+            if faction.apiString in ["0", "{}", ""]:
                 print("[command.chain.livereport]    --> no api key found")
 
             else:
@@ -102,14 +102,16 @@ class Command(BaseCommand):
                         print("[command.chain.livereport]    --> error in API continue to next chain: {}".format(members['apiError']))
                         if members['apiError'].split(":")[0] == "API error code 2":
                             print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
-                            faction.delKey()
+                            faction.delKey(keyHolder)
                         continue
 
-                    print(chain)
                     attacks = apiCallAttacks(faction, chain)
 
                     if "error" in attacks:
                         print("[command.chain.livereport]    --> error apiCallAttacks: {}".format(attacks["error"]))
+                        if attacks['error'] == "Delete api key please...":
+                            print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
+                            faction.delKey(keyHolder)
                     else:
                         fillReport(faction, members, chain, report, attacks)
 
