@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
             # get api key
             if not faction.nKeys():
-                print("[command.chain.chainreport]    --> no api key found: {}".format(apiString))
+                print("[command.chain.livereport]    --> no api key found: {}".format(faction.apiString))
 
             else:
                 keyHolder, key = faction.getRadomKey()
