@@ -277,6 +277,7 @@ def fillReport(faction, members, chain, report, attacks):
         chain.respect = nWRA[1]  # update for live chains
     chain.nAttacks = nWRA[2]
     chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
+    chain.lastUpdate = int(timezone.now().timestamp())
     chain.save()
 
     # fill the database with counts
@@ -358,6 +359,7 @@ def updateMembers(faction, key=None):
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberDB.status = ", ".join(tmp)
             memberDB.save()
+            faction.membersUpda = int(timezone.now().timestamp())
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
             tmp = [s for s in membersAPI[m]['status'] if s]
@@ -369,6 +371,7 @@ def updateMembers(faction, key=None):
             # print('[VIEW members] member {} deleted'.format(m))
             m.delete()
 
+    faction.save()
     return faction.member_set.all()
 
 

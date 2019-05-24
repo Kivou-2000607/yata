@@ -17,8 +17,6 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.utils import timezone
-
 import json
 import math
 
@@ -32,11 +30,13 @@ def updateAttacks(player):
     targetJson = json.loads(player.targetJson)
 
     error = False
-    attacks = apiCall('user', "", 'attacks', key, sub='attacks')
-    if 'apiError' in attacks:
-        error = attacks
-
+    req = apiCall('user', "", 'attacks,timestamp', key)
+    if 'apiError' in req:
+        error = req
     else:
+        attacks = req.get("attacks", dict({}))
+        timestamp = req.get("timestamp", 0)
+
         remove = []
         for k, v in attacks.items():
             v["defender_id"] = str(v["defender_id"])  # have to string for json key
@@ -74,8 +74,9 @@ def updateAttacks(player):
         player.targetJson = json.dumps(targetJson)
         nTargets = 0 if "targets" not in targetJson else len(targetJson["targets"])
         player.targetInfo = "{}".format(nTargets)
-        player.targetUpda = int(timezone.now().timestamp())
-        player.lastUpdateTS = int(timezone.now().timestamp())
+        # player.targetUpda = int(timezone.now().timestamp())
+        player.targetUpda = int(timestamp)
+        # player.lastUpdateTS = int(timezone.now().timestamp())
         player.save()
 
     return error

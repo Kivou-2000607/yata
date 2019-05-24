@@ -58,7 +58,7 @@ def index(request):
             player.factionId = 0
             player.factionNa = "-"
             player.factionAA = False
-            player.lastUpdateTS = int(timezone.now().timestamp())
+            # player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
             return render(request, 'chain.html', context)
 
@@ -76,7 +76,7 @@ def index(request):
                 player.factionAA = True
             else:
                 player.factionAA = False
-            player.lastUpdateTS = int(timezone.now().timestamp())
+            # player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
             print('[view.chain.index] player in faction {}'.format(player.chainInfo))
         else:
@@ -134,7 +134,7 @@ def live(request):
             player.chainInfo = "N/A"
             player.factionId = 0
             player.factionAA = False
-            player.lastUpdateTS = int(timezone.now().timestamp())
+            # player.lastUpdateTS = int(timezone.now().timestamp())
             player.save()
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
             context = {'player': player, selectError: liveChain["apiError"] + " We can't check your faction so you don't have access to this section."}
@@ -522,7 +522,7 @@ def members(request):
         # get members
         members = faction.member_set.all()
 
-        context = {'player': player, 'chaincat': True, 'members': members, 'view': {'members': True}}
+        context = {'player': player, 'chaincat': True, 'faction': faction, 'members': members, 'view': {'members': True}}
         if error:
             selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
             context.update({selectError: error["apiError"] + " Members not updated."})

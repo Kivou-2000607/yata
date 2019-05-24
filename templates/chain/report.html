@@ -26,7 +26,7 @@ This file is part of yata.
 
 
     {% if chain.tId > 0 %}
-        <h2 class="title">Report of {{chain}}</h2>
+        <h2 class="title">Report of {{chain}}<span class="flush-right">Last update: {{chain.lastUpdate|ts2date}}</span></h2>
     {% else %}
         <h2 class="title">Live chain report (last update: {{chain.end|ts2date}})</h2>
     {% endif %}

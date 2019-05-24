@@ -57,10 +57,10 @@ def login(request):
 
         if player is None:
             print('[view.yata.login] create new player')
-            player = Player.objects.create(tId=int(user.get('player_id')), name=user.get('name'))
+            player = Player.objects.create(tId=int(user.get('player_id')))
         print('[view.yata.login] update player')
         player.key = p.get('key')
-        player.lastUpdateTS = int(timezone.now().timestamp())
+        player.update_info()
 
         print('[view.yata.login] save player')
         player.save()

@@ -18,8 +18,6 @@ This file is part of yata.
 """
 
 from django.db import models
-from django.utils import timezone
-
 import json
 
 
@@ -38,6 +36,8 @@ class Faction(models.Model):
     # "login1:key1,login2:key2,login3:key3"
     apiString = models.TextField(default="{}")
     posterOpt = models.TextField(default="{}")
+
+    membersUpda = models.IntegerField(default=0)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
@@ -142,6 +142,7 @@ class Chain(models.Model):
     respect = models.FloatField(default=0)
     start = models.IntegerField(default=0)
     end = models.IntegerField(default=0)
+    lastUpdate = models.IntegerField(default=0)
     status = models.BooleanField(default=True)
     createReport = models.BooleanField(default=False)
     hasReport = models.BooleanField(default=False)
@@ -149,7 +150,7 @@ class Chain(models.Model):
     graph = models.TextField(default="", null=True, blank=True)
 
     def __str__(self):
-        return "{} - Chain [{}]".format(self.faction, self.tId)
+        return "{} chain #{}".format(self.faction, self.tId)
 
     # def have_report(self):
     #     return True if len(self.report_set.all()) else False

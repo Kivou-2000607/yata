@@ -24,7 +24,7 @@ This file is part of yata.
 <div id="yata-login">
     {% if request.session.player %}
 
-        <h2 class="title">Hello {{request.session.player.name}}</h2>
+        <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
             <p class="no-margin">
                 <a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>

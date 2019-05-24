@@ -30,7 +30,10 @@ This file is part of yata.
 
 </script>
 
-<h2 class="title">Awards tracker <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span></h2>
+<h2 class="title">Awards tracker
+    <span class="flush-right">Last update: {{player.awardsUpda|ts2date}}</span>
+    <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span>
+</h2>
 <div class="module">
 
 <!-- summary for a categories -->
