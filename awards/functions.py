@@ -1303,12 +1303,13 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 vp["img"] = k
 
                 if int(k) in [89, 90, 91, 92, 93, 94, 95, 96, 236, 237, 238, 239, 240, 241]:
+                    userInfo["medals_awarded"] = []
                     # 89 {'name': 'Apprentice', 'description': 'Have a recorded networth value of $100,000 for at least 3 days', 'type': 'NTW', 'awardType': 'Medal'}
                     type = "Networth"
                     vp["goal"] = int(v["description"].split(" ")[6].replace(",", "").replace("$", ""))
                     vp["current"] = userInfo.get("networth", dict({})).get("total", 0)
                     vp["achieve"] = 1 if int(k) in userInfo.get("medals_awarded", []) else min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["wait"] = 1 if int(k) in userInfo.get("mqedals_awarded", []) else 0
+                    vp["wait"] = 1 if k in userInfo.get("medals_awarded", []) else 0
                     vp["head"] = "$"
                     awards[type]["m_" + k] = vp
 
