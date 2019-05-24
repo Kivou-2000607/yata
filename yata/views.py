@@ -25,6 +25,7 @@ from django.core.exceptions import PermissionDenied
 import json
 
 from player.models import Player
+from chain.models import Faction
 from yata.handy import apiCall
 
 
@@ -88,6 +89,8 @@ def login(request):
 def logout(request):
     try:
         print('[view.yata.logout] delete session')
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
         del request.session['player']
         print('[view.yata.logout] done')
     except:
@@ -101,7 +104,14 @@ def delete(request):
     if request.session.get('player'):
         print('[view.yata.delete] delete account')
         tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first().delete()
+        factionId = player.factionId
+        faction = Faction.objects.filter(tId=factionId).first()
+        try:
+            faction.delKey(tId)
+            faction.save()
+        except:
+            pass
+        player.delete()
 
     print('[view.yata.delete] redirect to logout')
     return HttpResponseRedirect(reverse('logout'))
