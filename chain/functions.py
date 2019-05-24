@@ -21,6 +21,7 @@ from django.utils import timezone
 
 from yata.handy import apiCall
 from yata.handy import timestampToDate
+from chain.models import Member
 
 import requests
 import time
@@ -363,6 +364,17 @@ def updateMembers(faction, key=None):
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberDB.status = ", ".join(tmp)
             memberDB.save()
+            faction.membersUpda = int(timezone.now().timestamp())
+        elif Member.objects.filter(tId=m).first() is not None:
+            # print('[VIEW members] member {} [{}] change faction'.format(membersAPI[m]['name'], m))
+            memberTmp = Member.objects.filter(tId=m).first()
+            memberTmp.faction = faction
+            memberTmp.name = membersAPI[m]['name']
+            memberTmp.lastAction = membersAPI[m]['last_action']
+            memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
+            tmp = [s for s in membersAPI[m]['status'] if s]
+            memberTmp.status = ", ".join(tmp)
+            memberTmp.save()
             faction.membersUpda = int(timezone.now().timestamp())
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
