@@ -20,7 +20,6 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
-
 class Player(models.Model):
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)
@@ -65,6 +64,7 @@ class Player(models.Model):
         print("[player.models.update_info] {}".format(self))
         from yata.handy import apiCall
         from awards.functions import updatePlayerAwards
+        from chain.models import Faction
         import json
 
         # API Calls
@@ -78,8 +78,14 @@ class Player(models.Model):
         # update chain info
         if self.factionId:
             chains = apiCall("faction", "", "chains", self.key)
-            self.factionAA = True if chains.get("chains") is not None else False
-            self.chainInfo = "{} [AA]".format(self.factionNa) if self.factionAA else self.factionNa
+            if chains.get("chains") is not None:
+                self.factionAA = True
+                self.chainInfo = "{} [AA]".format(self.factionNa)
+                Faction.objects.filter(tId=self.factionId).first().addKey(self.tId, self.key)
+            else:
+                self.factionAA = False
+                self.chainInfo = "{}".format(self.factionNa)
+                Faction.objects.filter(tId=self.factionId).first().delKey(self.tId)
         else:
             self.factionAA = False
             self.chainInfo = "N/A"

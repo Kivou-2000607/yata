@@ -41,68 +41,6 @@ class Faction(models.Model):
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
-    #
-    # def get_n_chains(self):
-    #     return(len(self.chain_set.all()))
-    #
-    # def get_random_key(self):
-    #     from numpy.random import randint
-    #     pairs = self.apiString.split(",")
-    #     i = randint(0, len(pairs))
-    #     return pairs[i].split(":")
-    #
-    # def get_all_pairs(self):
-    #     if str(self.apiString) == "0" or self.apiString == "":
-    #         return []
-    #     else:
-    #         pairs = self.apiString.split(",")
-    #         return [pair.split(":") for pair in pairs]
-    #
-    # def get_all_keys(self):
-    #     if str(self.apiString) == "0" or self.apiString == "":
-    #         return []
-    #     else:
-    #         pairs = self.apiString.split(",")
-    #         return [pair.split(":")[1] for pair in pairs]
-    #
-    # def toggle_key(self, name, key):
-    #     print("[MODEL toggle_key] " + name)
-    #     pairs = self.get_all_pairs()
-    #     if key in self.get_all_keys():
-    #         print("[MODEL toggle_key] remove key")
-    #         pairs.remove([name, key])
-    #     else:
-    #         print("[MODEL toggle_key] add key")
-    #         if len(pairs) < 11:
-    #             pairs.append([name, key])
-    #         else:
-    #             return False
-    #
-    #     string = ",".join([p[0] + ":" + p[1] for p in pairs])
-    #     self.apiString = string if string else 0
-    #     self.save()
-    #
-    #     return True
-    #
-    # def add_key(self, name, key):
-    #     print("[models.chain.add_key] " + name)
-    #     pairs = self.get_all_pairs()
-    #     if key not in pairs:
-    #         if len(pairs) < 11:
-    #             print("[models.chain.add_key] add key")
-    #             pairs.append([name, key])
-    #         else:
-    #             print("[models.chain.add_key] too many key saved")
-    #             return False
-    #     else:
-    #         print("[models.chain.add_key] kee already saved")
-    #         return False
-    #
-    #     string = ",".join([p[0] + ":" + p[1] for p in pairs])
-    #     self.apiString = string if string else 0
-    #     self.save()
-    #
-    #     return True
 
     def addKey(self, id, key):
         keys = json.loads(self.apiString)
@@ -120,7 +58,7 @@ class Faction(models.Model):
     def getRadomKey(self):
         import random
         keys = json.loads(self.apiString)
-        return random.choice(list(keys.items()))
+        return random.choice(list(keys.items())) if len(keys) else ("0", "")
 
     def getAllPairs(self):
         keys = json.loads(self.apiString)
@@ -132,6 +70,8 @@ class Faction(models.Model):
     def liveChain(self):
         return bool(self.chain_set.filter(tId=0))
 
+    def nKeys(self):
+        return len(json.loads(self.apiString))
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

@@ -24,6 +24,7 @@ from chain.models import Crontab
 from chain.functions import apiCallAttacks
 from chain.functions import fillReport
 from chain.functions import updateMembers
+from chain.functions import API_CODE_DELETE
 
 import random
 
@@ -54,8 +55,8 @@ class Command(BaseCommand):
             print("[command.chain.chainreport] #{}: {}".format(i + 1, faction))
 
             # get api key
-            if faction.apiString in ["0", "{}", ""]:
-                print("[command.chain.chainreport]    --> no api key found")
+            if not faction.nKeys():
+                print("[command.chain.chainreport]    --> no api key found: {}".format(apiString))
 
             else:
                 keyHolder, key = faction.getRadomKey()
@@ -77,18 +78,19 @@ class Command(BaseCommand):
                     # update members
                     print("[command.chain.chainreport]    --> udpate members")
                     members = updateMembers(faction, key=key)
+                    # members = faction.member_set.all()
                     if 'apiError' in members:
                         print("[command.chain.chainreport]    --> error in API continue to next chain: {}".format(members['apiError']))
-                        if members['apiError'].split(":")[0] == "API error code 2":
+                        if members['apiErrorCode'] in API_CODE_DELETE:
                             print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
                         continue
 
                     attacks = apiCallAttacks(faction, chain)
 
-                    if "error" in attacks:
-                        print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["error"]))
-                        if attacks['error'] == "Delete api key please...":
+                    if "apiError" in attacks:
+                        print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["apiError"]))
+                        if attacks['apiErrorCode'] in API_CODE_DELETE:
                             print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
                     else:

@@ -21,7 +21,6 @@ from django.utils import timezone
 
 from yata.handy import apiCall
 from yata.handy import timestampToDate
-from chain.models import Member
 
 import requests
 import time
@@ -31,7 +30,7 @@ import json
 
 # global bonus hits
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
-
+API_CODE_DELETE = [2, 7]
 
 def getBonusHits(hitNumber, ts):
     # new report timestamp based on ched annoncement date
@@ -96,8 +95,10 @@ def apiCallAttacks(faction, chain, key=None):
             print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
             req = requests.get(url).json()
             if 'error' in req:
-                chainDict["error"] = "Delete api key please..."
+                chainDict["apiError"] = "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])
+                chainDict["apiErrorCode"] = int(req["error"]["code"])
                 break
+
             attacks = req.get("attacks", dict({}))
             faction.lastAPICall = int(timezone.now().timestamp())
             faction.save()
@@ -146,8 +147,11 @@ def apiCallAttacks(faction, chain, key=None):
             feedAttacks = False
 
     if not chain.tId:
-        print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
-        report.attacks_set.last().delete()
+        try:
+            report.attacks_set.last().delete()
+            print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
+        except:
+            pass
 
     return chainDict
 
@@ -364,17 +368,6 @@ def updateMembers(faction, key=None):
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberDB.status = ", ".join(tmp)
             memberDB.save()
-            faction.membersUpda = int(timezone.now().timestamp())
-        elif Member.objects.filter(tId=m).first() is not None:
-            # print('[VIEW members] member {} [{}] change faction'.format(membersAPI[m]['name'], m))
-            memberTmp = Member.objects.filter(tId=m).first()
-            memberTmp.faction = faction
-            memberTmp.name = membersAPI[m]['name']
-            memberTmp.lastAction = membersAPI[m]['last_action']
-            memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
-            tmp = [s for s in membersAPI[m]['status'] if s]
-            memberTmp.status = ", ".join(tmp)
-            memberTmp.save()
             faction.membersUpda = int(timezone.now().timestamp())
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))

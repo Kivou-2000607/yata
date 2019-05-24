@@ -25,6 +25,7 @@ from chain.models import Crontab
 from chain.functions import apiCallAttacks
 from chain.functions import fillReport
 from chain.functions import updateMembers
+from chain.functions import API_CODE_DELETE
 from yata.handy import apiCall
 
 import random
@@ -56,8 +57,8 @@ class Command(BaseCommand):
             print("[command.chain.livereport] #{}: {}".format(i + 1, faction))
 
             # get api key
-            if faction.apiString in ["0", "{}", ""]:
-                print("[command.chain.livereport]    --> no api key found")
+            if not faction.nKeys():
+                print("[command.chain.livereport]    --> no api key found: {}".format(faction.apiString))
 
             else:
                 keyHolder, key = faction.getRadomKey()
@@ -66,6 +67,9 @@ class Command(BaseCommand):
                 liveChain = apiCall("faction", faction.tId, "chain", key, sub="chain")
                 if 'apiError' in liveChain:
                     print('[command.chain.livereport] api key error: {}'.format((liveChain['apiError'])))
+                    if liveChain['apiErrorCode'] in API_CODE_DELETE:
+                        print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
+                        faction.delKey(keyHolder)
 
                 elif int(liveChain["current"]) < 10:
                     print('[command.chain.livereport]    --> no live report')
@@ -98,19 +102,20 @@ class Command(BaseCommand):
                     # update members
                     print("[command.chain.livereport]    --> udpate members")
                     members = updateMembers(faction, key=key)
+                    # members = faction.member_set.all()
                     if 'apiError' in members:
                         print("[command.chain.livereport]    --> error in API continue to next chain: {}".format(members['apiError']))
-                        if members['apiError'].split(":")[0] == "API error code 2":
+                        if members['apiErrorCode'] in API_CODE_DELETE:
                             print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
                         continue
 
                     attacks = apiCallAttacks(faction, chain)
 
-                    if "error" in attacks:
-                        print("[command.chain.livereport]    --> error apiCallAttacks: {}".format(attacks["error"]))
-                        if attacks['error'] == "Delete api key please...":
-                            print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
+                    if "apiError" in attacks:
+                        print("[command.chain.livereport]    --> error apiCallAttacks: {}".format(attacks["apiError"]))
+                        if attacks['apiErrorCode'] in API_CODE_DELETE:
+                            print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
                     else:
                         fillReport(faction, members, chain, report, attacks)

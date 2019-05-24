@@ -59,7 +59,8 @@ def apiCall(section, id, selections, key, sub=None):
         print("[yata.function.apiCall] API HTTPError {}".format(e))
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
-    return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"])})
+    return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"]),
+                 "apiErrorCode": int(err["error"]["code"])})
 
 
 def timestampToDate(timestamp):
