@@ -93,8 +93,11 @@ def apiCallAttacks(faction, chain, key=None):
             url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
-            print(attacks)
-            attacks = requests.get(url).json().get("attacks", dict({}))
+            req = requests.get(url).json()
+            if 'error' in req:
+                chainDict["error"] = "Delete api key please..."
+                break
+            attacks = req.get("attacks", dict({}))
             faction.lastAPICall = int(timezone.now().timestamp())
             faction.save()
 

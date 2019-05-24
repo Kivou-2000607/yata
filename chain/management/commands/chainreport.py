@@ -81,13 +81,16 @@ class Command(BaseCommand):
                         print("[command.chain.chainreport]    --> error in API continue to next chain: {}".format(members['apiError']))
                         if members['apiError'].split(":")[0] == "API error code 2":
                             print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
-                            faction.delKey()
+                            faction.delKey(keyHolder)
                         continue
 
                     attacks = apiCallAttacks(faction, chain)
 
                     if "error" in attacks:
                         print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["error"]))
+                        if attacks['error'] == "Delete api key please...":
+                            print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
+                            faction.delKey(keyHolder)
                     else:
                         _, _, _, finished = fillReport(faction, members, chain, report, attacks)
                         print("[command.chain.chainreport]    --> report finished: {}".format(finished))
