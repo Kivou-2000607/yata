@@ -90,7 +90,6 @@ def logout(request):
     try:
         print('[view.yata.logout] delete session')
         tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
         del request.session['player']
         print('[view.yata.logout] done')
     except:
@@ -104,6 +103,7 @@ def delete(request):
     if request.session.get('player'):
         print('[view.yata.delete] delete account')
         tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
         factionId = player.factionId
         faction = Faction.objects.filter(tId=factionId).first()
         try:
