@@ -45,6 +45,10 @@ div.module {
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
 }
 
+div.module p:last-child {
+    margin: 0px;
+}
+
 div.module input[type="submit"] {
     display: inline-block;
     /* align:left; */
@@ -211,5 +215,5 @@ td a {
 
 .old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 
-h2.rounded { border-radius: 6px; }
+h2.rounded, div.rounded { border-radius: 6px; }
 h2.toggle-display { cursor: pointer; }

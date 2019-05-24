@@ -22,11 +22,9 @@ This file is part of yata.
 
 
 {% for item in items|dictsort:"tName" %}
-    <table id="item-sell-table-{{item.tId}}" class="item-sell-table">
+    <table id="item-sell-table-{{item.tId}}" class="trshadow item-sell-table">
         {% include "bazaar/item.html" with item=item%}
     </table>
 {% empty %}
-    <div class="justTxt">
-        No item here.
-    </div>
+    <p>No item here.</p>
 {% endfor %}

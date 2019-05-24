@@ -36,21 +36,31 @@
 
 {% block content %}
 
-    <h2 class="title">The sections of YATA</h2>
-    <div class="module">
+    <!-- <h2 class="title">What is YATA</h2> -->
+    <div class="module rounded">
+        <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
+            It has been designed to enhance your gameplay using information from the <a href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
+            To see what's in there, sign in and browse through the following categories.
+        </p>
         <p><a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><i class="fas fa-store"></i>  <b>Bazaar overview</b></a>: Look at the current bazzar prices to sell or buy at the best prices.</p>
         <p><a class="yata-link-chain" href="{% url 'chain:index' %}"><i class="fas fa-link"></i>  <b>Chain reports</b></a>: Build your chain reports and join them together.</p>
         <p><a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-fist-raised"></i>  <b>Target list</b></a>: Remember your good targets and maximize your respect gains during chains.</p>
-        <p><a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>  <b>Awards tracker</b></a>: track the next award you can get.</p>
-        <hr class="sep">
-            <p>This <a href="https://github.com/Kivou-2000607/yata/tree/unified" target="_blank"><i class="fab fa-github"></i> opensource</a> website is developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}.
-            Ingame donations are welcome <i class="far fa-smile-wink"></i>
+        <p><a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>  <b>Awards tracker</b></a>: Track the next award you can get.</p>
         {% if player %}
-            <a id="yata-delete-submit" class="error flush-right" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i></i>&nbsp; Delete account</a>
+            <hr class="sep">
+            <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i></i>&nbsp; Delete account: </a> All your information will be removed from the database.</p>
         {% endif %}
-    </p>
     </div>
+    <div class="module rounded">
+        <p>
+            <a href="https://github.com/Kivou-2000607/yata" target="_blank"><img src="https://img.shields.io/github/tag-date/kivou-2000607/yata.svg" alt="tag" /></a>
+            <a href="https://github.com/Kivou-2000607/yata/commits/master" target="_blank"><img src="https://img.shields.io/github/commits-since/kivou-2000607/yata/v1.0.svg" alt="release" /></a>
+            <a href="https://discord.gg/tZaYpbG" target="_blank"><img src="https://img.shields.io/discord/581227228537421825.svg?logo=DISCORD" alt="release" /></a>
+        </p>
+        <p><b>YATA</b> is an open source website developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}.
+            Sources can be found <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i> here</a>.<br />
+            For suggestions and bug reports you can either <a href="https://github.com/Kivou-2000607/yata/issues" target="_blank">post an issue</a>, join the <a href="https://discord.gg/tZaYpbG" target="_blank">discord</a> or use the <a href="" target="_blank">forum thread</a>.
 
-    {% include "yata/tutorial.html" %}
-
+        </p>
+    </div>
 {% endblock %}

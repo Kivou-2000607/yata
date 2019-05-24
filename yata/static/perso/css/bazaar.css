@@ -89,11 +89,6 @@ table.item-sell-table .lt  { background:#b6d7a8; }
 table.item-sell-table .eq  { background:#9fc5e8; }
 table.item-sell-table .gt  { background:#f9cb9c; }
 table.item-sell-table .ggt { background:#fce5cd; }
-table.item-sell-table .llt:hover { background:#b6d7a8; color:#000000; }
-table.item-sell-table .lt:hover  { background:#93c47d; color:#000000; }
-table.item-sell-table .eq:hover  { background:#6fa8dc; color:#000000; }
-table.item-sell-table .gt:hover  { background:#f6b26b; color:#000000; }
-table.item-sell-table .ggt:hover { background:#f9cb9c; color:#000000; }
 
 table.item-sell-table tr.llt { animation: blinker 1s linear infinite; }
 @keyframes blinker {  50% { opacity: 0.5; } }
@@ -101,7 +96,7 @@ table.item-sell-table tr.llt { animation: blinker 1s linear infinite; }
 table.item-sell-table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
 
 table.item-sell-table.scale { width: 250px;}
-table.item-sell-table.scale td { text-align: center; padding: 5px;}
+table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: default;}
 
 table.item-sell-table td.A { width:40%; cursor: default; }
 table.item-sell-table td.B { width:60%; cursor: default;}
