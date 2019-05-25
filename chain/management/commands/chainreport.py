@@ -93,6 +93,12 @@ class Command(BaseCommand):
                         if attacks['apiErrorCode'] in API_CODE_DELETE:
                             print("[command.chain.chainreport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
+                    elif "error" in attacks:
+                        print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["error"]))
+                        print("[command.chain.chainreport]    --> deleting report")
+                        chain.report_set.all().delete()
+                        chain.hasReport = False
+                        chain.createReport = False
                     else:
                         _, _, _, finished = fillReport(faction, members, chain, report, attacks)
                         print("[command.chain.chainreport]    --> report finished: {}".format(finished))
