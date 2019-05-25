@@ -204,10 +204,10 @@ def fillReport(faction, members, chain, report, attacks):
             # if it's a hit
             respect = float(v['respect_gain'])
             chainCount = int(v['chain'])
-            if respect > 0.0 and chainCount == 0:
-                print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
-                for kk, vv in v.items():
-                    print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
+            # if respect > 0.0 and chainCount == 0:
+            #     print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
+            #     for kk, vv in v.items():
+            #         print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
             if chainCount:
                 # chainIterator.append(v["chain"])
                 # print("Time stamp:", v['timestamp_ended'])
