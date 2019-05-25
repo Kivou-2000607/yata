@@ -60,6 +60,7 @@
                     reload.load( "/target/refresh/"+targetId, {
                         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
                     });
+                    reload.removeClass('old-refresh');
                     reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
                  }, wait);
             })(i);
