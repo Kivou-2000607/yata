@@ -71,11 +71,6 @@ class Command(BaseCommand):
                         print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
                         faction.delKey(keyHolder)
 
-                elif "error" in attacks:
-                    print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["error"]))
-                    print("[command.chain.chainreport]    --> deleting report")
-                    faction.chain_set.filter(tId=0).delete()
-
                 elif int(liveChain["current"]) < 10:
                     print('[command.chain.livereport]    --> no live report')
                     faction.chain_set.filter(tId=0).delete()
@@ -122,6 +117,12 @@ class Command(BaseCommand):
                         if attacks['apiErrorCode'] in API_CODE_DELETE:
                             print("[command.chain.livereport]    --> deleting {}'s key'".format(keyHolder))
                             faction.delKey(keyHolder)
+
+                    elif "error" in attacks:
+                        print("[command.chain.livereport]    --> error apiCallAttacks: {}".format(attacks["error"]))
+                        print("[command.chain.livereport]    --> deleting report")
+                        faction.chain_set.filter(tId=0).delete()
+
                     else:
                         fillReport(faction, members, chain, report, attacks)
 
