@@ -124,6 +124,10 @@ a.flush-right {
     padding-left: 16px;
 }
 
+span.title-link { cursor: pointer; }
+span.title-link:hover { text-decoration: underline; }
+span.title-link:active { color: #BBB; }
+
 span.sep {
     margin-left: 5px;
     margin-right: 5px;

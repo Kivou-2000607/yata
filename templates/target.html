@@ -45,6 +45,27 @@
         reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
+    // refresh all targets from target list by clicking on title refresh button
+    $(document).on('click', '#target-refresh', function(e){
+        e.preventDefault();
+        console.log($(this));
+        var i = 1;
+        $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
+            // if(i % 5 == 0) { setTimeout( function(){console.log("coucou")}, 5000); }
+            var reload = $(this);
+            var targetId = reload.attr("id").split("-").pop();
+            var wait = i*500 + parseInt(i/10)*3000;
+            (function(index) {
+                setTimeout(function() {
+                    reload.load( "/target/refresh/"+targetId, {
+                        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    });
+                    reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+                 }, wait);
+            })(i);
+            i++;
+        });
+    });
 
     // delete target from target list button
     $(document).on('click', 'a.target-list-delete', function(e){
