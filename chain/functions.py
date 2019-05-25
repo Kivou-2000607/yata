@@ -94,14 +94,14 @@ def apiCallAttacks(faction, chain, key=None):
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
             req = requests.get(url).json()
+            faction.lastAPICall = int(timezone.now().timestamp())
+            faction.save()
             if 'error' in req:
                 chainDict["apiError"] = "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])
                 chainDict["apiErrorCode"] = int(req["error"]["code"])
                 break
 
             attacks = req.get("attacks", dict({}))
-            faction.lastAPICall = int(timezone.now().timestamp())
-            faction.save()
 
             if len(attacks):
                 report.attacks_set.create(tss=beginTS, tse=endTS, req=json.dumps([attacks]))
