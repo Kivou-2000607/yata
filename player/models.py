@@ -76,16 +76,25 @@ class Player(models.Model):
         self.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
 
         # update chain info
+        print(Faction.objects.filter(tId=self.factionId).first())
         if self.factionId:
+            faction = Faction.objects.filter(tId=self.factionId).first()
+            if faction is None:
+                faction = Faction.objects.create(tId=self.factionId)
+            faction.name = self.factionNa
+
             chains = apiCall("faction", "", "chains", self.key)
             if chains.get("chains") is not None:
                 self.factionAA = True
                 self.chainInfo = "{} [AA]".format(self.factionNa)
-                Faction.objects.filter(tId=self.factionId).first().addKey(self.tId, self.key)
+                faction.addKey(self.tId, self.key)
             else:
                 self.factionAA = False
                 self.chainInfo = "{}".format(self.factionNa)
-                Faction.objects.filter(tId=self.factionId).first().delKey(self.tId)
+                faction.delKey(self.tId)
+
+            faction.save()
+        
         else:
             self.factionAA = False
             self.chainInfo = "N/A"
