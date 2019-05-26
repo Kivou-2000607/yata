@@ -75,6 +75,9 @@ class Command(BaseCommand):
                     print('[command.chain.livereport]    --> no live report')
                     faction.chain_set.filter(tId=0).delete()
 
+                elif int(liveChain["cooldown"]) > 0:
+                    print('[command.chain.livereport]    --> chain in cooldown')
+                    
                 else:
                     # get chain
                     print('[command.chain.livereport]    --> live report')
