@@ -24,7 +24,11 @@ This file is part of yata.
     <td colspan="13" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorLine}}</span></td>
 {% elif target %}
     <td class="a" title="Last attack on {{target.endTS|ts2date}}"><b {% if not target.respect %}class="error"{% endif %}>{{target.result}}</b></td>
-    <td class="b dont-touch-me">{{target.targetName|playerURL:targetId|safe}}</td>
+    {% if targetId %}
+        <td class="b dont-touch-me">{{target.targetName|playerURL:targetId|safe}}</td>
+    {% else %}
+        <td class="b dont-touch-me">{{target.targetName}} [<span class="error"><i class="far fa-dizzy"></i></span>]</td>
+    {% endif %}
     <td class="c">{{target.level}}</td>
     <!-- <td class="a">{{target.rank}}</td> -->
     <td class="f">{{target.lastAction}}</td>
@@ -47,31 +51,28 @@ This file is part of yata.
             {% endif %}
         {% endwith %}
     </td>
+    
+    {% if targetId %}
+        <td class="h no-padding dont-touch-me">
+            {% include "target/targets-line-note.html" %}
+        </td>
+        <td class="g dont-touch-me">
+            {% if target.status.0 != "O" %}
+                <i class="fas fa-fist-raised not-okay" title="Can't attack target"></i>
+            {% else %}
+                <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class="fas fa-fist-raised" title="Attack target"></i></a>
+            {% endif %}
+        </td>
+        <td class="g dont-touch-me">
+            <!-- delete -->
+            <form style="display: inline;">{% csrf_token %}
+                <a class="target-list-delete" href='target/delete/{{targetId}}'><i class="fas fa-trash-alt" title="Delete target"></i></a>
+            </form>
+        </td>
+    {% else %}
+        <td colspan="3"><span class="error"><i class="far fa-dizzy"></i>&nbsp;&nbsp;No recorded id. Will be deleted soon.</span></td>
+    {% endif %}
 
-    <td class="h no-padding dont-touch-me">
-        {% include "target/targets-line-note.html" %}
-    </td>
-
-    <td class="g dont-touch-me">
-        {% if target.status.0 != "O" %}
-            <i class="fas fa-fist-raised not-okay" title="Can't attack target"></i>
-        {% else %}
-            <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class="fas fa-fist-raised" title="Attack target"></i></a>
-        {% endif %}
-    </td>
-    <!-- <td class="g">
-        <form style="display: inline;">{% csrf_token %}
-            <a class="target-list-toggle" href={% url 'target:refresh' targetId %}>
-               <i class="fas fa-sync-alt" title="Refresh target"></i>
-            </a>
-        </form>
-    </td> -->
-    <td class="g dont-touch-me">
-        <!-- delete -->
-        <form style="display: inline;">{% csrf_token %}
-            <a class="target-list-delete" href={% url 'target:delete' targetId %}><i class="fas fa-trash-alt" title="Delete target"></i></a>
-        </form>
-    </td>
-
+    
 
 {% endif %}

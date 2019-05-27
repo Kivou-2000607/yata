@@ -109,6 +109,18 @@ class Player(models.Model):
             updatePlayerAwards(self, tornAwards, user)
         self.awardsUpda = int(timezone.now().timestamp())
 
+        # clean '' targets
+        targetsAttacks = json.loads(self.targetJson)
+        if len(targetsAttacks):
+            targets = targetsAttacks.get("targets", dict({}))
+            for k, v in targets.items():
+                if k == '':
+                    print("[player.models.update_info] delete target of player {}: {}".format(self, v))
+            del targets[k]
+            targetsAttacks["targets"] = targets
+            self.targetJson = json.dumps(targetsAttacks)
+
+
         self.lastUpdateTS = int(timezone.now().timestamp())
         self.save()
 

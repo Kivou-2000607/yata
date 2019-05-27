@@ -32,7 +32,7 @@ from target.functions import updateAttacks
 
 def index(request):
     if request.session.get('player'):
-        print('[view.awards.index] get player id from session')
+        print('[view.traget.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
 
@@ -50,7 +50,7 @@ def index(request):
 
 def attacks(request):
     if request.session.get('player'):
-        print('[view.awards.attacks] get player id from session')
+        print('[view.traget.attacks] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         targetJson = json.loads(player.targetJson)
@@ -72,7 +72,7 @@ def attacks(request):
 
 def targets(request):
     if request.session.get('player'):
-        print('[view.awards.attacks] get player id from session')
+        print('[view.traget.attacks] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         targetJson = json.loads(player.targetJson)
