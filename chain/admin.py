@@ -145,7 +145,7 @@ class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'lastAPICall']
+    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'lastAPICall', 'crontabs']
     inlines = [ChainInline, MemberInline]
     # list_filter = ['ongoing_reports', 'number_of_keys']
 
@@ -165,8 +165,8 @@ class FactionAdmin(admin.ModelAdmin):
     def last_api_call(self, instance):
         return(timestampToDate(instance.lastAPICall))
 
-    # def crontabs(self, instance):
-        # return ", ".join([str(crontab.id) for crontab in instance.crontab.all()])
+    def crontabs(self, instance):
+        return ", ".join([str(crontab) for crontab in instance.crontab_set.all()])
 
 
 admin.site.register(Faction, FactionAdmin)
