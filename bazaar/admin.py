@@ -36,6 +36,9 @@ from .models import Preference
 class MarketDataInline(admin.TabularInline):
     model = MarketData
     extra = 0
+    show_change_link = True
+    readonly_fields = ('sellId', 'quantity', 'cost')
+
 
 
 class MarketDataAdmin(admin.ModelAdmin):
@@ -54,10 +57,13 @@ def put_on_market(modeladmin, request, queryset):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tType', 'lastUpdateTS', 'tMarketValue', 'tImage', 'onMarket']
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['tName', 'tId', 'tType', 'lastUpdateTS', 'tMarketValue', 'onMarket']
     inlines = [MarketDataInline]
     actions = [remove_from_market, put_on_market]
-    list_filter = ['tType', 'lastUpdateTS']
+    list_filter = ['onMarket', 'tType']
 
 
 admin.site.register(Item, ItemAdmin)

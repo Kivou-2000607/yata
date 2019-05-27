@@ -145,8 +145,9 @@ class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'hitsThreshold']
+    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'lastAPICall']
     inlines = [ChainInline, MemberInline]
+    # list_filter = ['ongoing_reports', 'number_of_keys']
 
     def live_chain(self, instance):
         return(bool(len(instance.chain_set.filter(tId=0))))

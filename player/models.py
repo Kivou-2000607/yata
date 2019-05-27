@@ -94,7 +94,7 @@ class Player(models.Model):
                 faction.delKey(self.tId)
 
             faction.save()
-        
+
         else:
             self.factionAA = False
             self.chainInfo = "N/A"
