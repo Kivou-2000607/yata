@@ -70,10 +70,10 @@ class Player(models.Model):
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', self.key)
 
-        if user.get('apiErrorCode') == 2:
-            print("delete player")
-            self.delete()
-            return 0
+        # if user.get('apiErrorCode') == 2:
+        #    print("delete player")
+        #    self.delete()
+        #    return 0
         
         # update basic info (and chain)
         self.name = user.get("name", "?")
