@@ -70,6 +70,11 @@ class Player(models.Model):
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', self.key)
 
+        if user.get('apiErrorCode') == 2:
+            print("delete player")
+            self.delete()
+            return 0
+        
         # update basic info (and chain)
         self.name = user.get("name", "?")
         self.factionId = user.get("faction", dict({})).get("faction_id", 0)
@@ -116,7 +121,8 @@ class Player(models.Model):
             for k, v in targets.items():
                 if k == '':
                     print("[player.models.update_info] delete target of player {}: {}".format(self, v))
-            del targets[k]
+            if targets.get('') is not None:
+                del targets['']
             targetsAttacks["targets"] = targets
             self.targetJson = json.dumps(targetsAttacks)
 
