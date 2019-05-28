@@ -255,6 +255,7 @@ d = {
     165: 317282935,  # There And Back
     557: 980280221,  # Globetrotter
     541: 456129092,  # Mule
+    542: 500114722,  # Smuggler
 
     # 8
     20: 778719620,  # Precision
