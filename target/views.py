@@ -259,28 +259,57 @@ def add(request):
         targetId = request.POST.get("targetId")
         print('[view.target.add] target id {}'.format(targetId))
 
-        # call for target info
         error = False
-        targetInfo = apiCall('user', targetId, '', key)
-        if 'apiError' in targetInfo:
-            error = targetInfo
+        try:
+            tragetId = int(targetId)
+        except Exception as e:
+            # error = "{}. Please enter a player ID".format(e)
+            error = "Please enter a player ID".format(e)
 
-        else:
-            attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
-            targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+        if not error:
+            # call for target info
+            targetInfo = apiCall('user', targetId, '', key)
+            if 'apiError' in targetInfo:
+                error = targetInfo.get("apiError", "error")
 
-            if targetId not in targets:
-                added = False
-                for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-                    if v["defender_id"] == targetId:
-                        print('[view.target.add] create target {} from attacks'.format(targetId))
+            else:
+                attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
+                targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+
+                if targetId not in targets:
+                    added = False
+                    for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
+                        if v["defender_id"] == targetId:
+                            print('[view.target.add] create target {} from attacks'.format(targetId))
+                            level = targetInfo["level"]
+                            respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
+                            targets[targetId] = {"targetName": targetInfo["name"],
+                                                 "result": v["result"],
+                                                 "endTS": int(v["timestamp_ended"]),
+                                                 "fairFight": float(v['modifiers']['fairFight']),
+                                                 "respect": respect,
+                                                 "level": level,
+                                                 "lifeMax": int(targetInfo["life"]["maximum"]),
+                                                 "life": int(targetInfo["life"]["current"]),
+                                                 "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                                 "statusFull": " ".join(targetInfo["status"]),
+                                                 "lastAction": targetInfo["last_action"]["relative"],
+                                                 "lastUpdate": int(timezone.now().timestamp()),
+                                                 "note": ""
+                                                 }
+                            added = True
+                            break
+
+                    if not added:
+                        print('[view.target.add] create target {} from nothing'.format(targetId))
                         level = targetInfo["level"]
-                        respect = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
+                        respect = 0.25 * (math.log(level) + 1) if level else 0
                         print(respect)
+
                         targets[targetId] = {"targetName": targetInfo["name"],
-                                             "result": v["result"],
+                                             "result": "No recent attack",
                                              "endTS": int(v["timestamp_ended"]),
-                                             "fairFight": float(v['modifiers']['fairFight']),
+                                             "fairFight": 1,
                                              "respect": respect,
                                              "level": level,
                                              "lifeMax": int(targetInfo["life"]["maximum"]),
@@ -289,40 +318,17 @@ def add(request):
                                              "statusFull": " ".join(targetInfo["status"]),
                                              "lastAction": targetInfo["last_action"]["relative"],
                                              "lastUpdate": int(timezone.now().timestamp()),
-                                             "note": ""
-                                             }
-                        added = True
-                        break
+                                             "note": ""}
 
-                if not added:
-                    print('[view.target.add] create target {} from nothing'.format(targetId))
-                    level = targetInfo["level"]
-                    respect = 0.25 * (math.log(level) + 1) if level else 0
-                    print(respect)
-
-                    targets[targetId] = {"targetName": targetInfo["name"],
-                                         "result": "No recent attack",
-                                         "endTS": int(v["timestamp_ended"]),
-                                         "fairFight": 1,
-                                         "respect": respect,
-                                         "level": level,
-                                         "lifeMax": int(targetInfo["life"]["maximum"]),
-                                         "life": int(targetInfo["life"]["current"]),
-                                         "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
-                                         "statusFull": " ".join(targetInfo["status"]),
-                                         "lastAction": targetInfo["last_action"]["relative"],
-                                         "lastUpdate": int(timezone.now().timestamp()),
-                                         "note": ""}
-
-                targetJson["targets"] = targets
-                player.targetJson = json.dumps(targetJson)
-                player.save()
-            else:
-                print('[view.target.add] target {} already exists'.format(targetId))
+                    targetJson["targets"] = targets
+                    player.targetJson = json.dumps(targetJson)
+                    player.save()
+                else:
+                    print('[view.target.add] target {} already exists'.format(targetId))
 
         context = {"targets": targetJson["targets"], "view": {"targets": True}}
         if error:
-            context.update({"apiErrorAdd": error["apiError"]})
+            context.update({"apiErrorAdd": error})
         return render(request, 'target/content-reload.html', context)
 
     else:
