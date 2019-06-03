@@ -35,6 +35,8 @@ def index(request):
         print('[view.traget.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
 
         error = updateAttacks(player)
 
@@ -53,6 +55,8 @@ def attacks(request):
         print('[view.traget.attacks] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
         targetJson = json.loads(player.targetJson)
         attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
@@ -75,6 +79,8 @@ def targets(request):
         print('[view.traget.attacks] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
         targetJson = json.loads(player.targetJson)
         targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 

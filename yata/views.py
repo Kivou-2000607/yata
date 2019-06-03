@@ -33,7 +33,12 @@ def index(request):
     if request.session.get('player'):
         print('[view.yata.index] get player id from session')
         tId = request.session["player"].get("tId")
-        context = {"player": Player.objects.filter(tId=tId).first()}
+        player = Player.objects.filter(tId=tId).first()
+        lastActions = dict({})
+        t = int(timezone.now().timestamp())
+        lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
+        lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+        context = {"player": player, "lastActions": lastActions}
     else:
         context = None
 
@@ -62,6 +67,7 @@ def login(request):
         print('[view.yata.login] update player')
         player.key = p.get('key')
         player.update_info()
+        player.lastActionTS = int(timezone.now().timestamp())
 
         print('[view.yata.login] save player')
         player.save()

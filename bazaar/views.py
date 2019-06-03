@@ -19,8 +19,7 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
-# from django.utils import timezone
-
+from django.utils import timezone
 
 import json
 import time
@@ -36,6 +35,8 @@ def index(request):
         print('[view.bazaar.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+
         key = player.key
         bazaarJson = json.loads(player.bazaarJson)
 
@@ -81,6 +82,9 @@ def custom(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
@@ -92,7 +96,6 @@ def custom(request):
         items = {"Custom": []}
 
         for item in itemsOnMarket:
-            print(item)
             item.stock = inventory.get(str(item.tId), 0)
             items["Custom"].append(item)
             # item.save()
@@ -109,6 +112,9 @@ def default(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         # playerList = bazaarJson.get("list", [])
@@ -140,6 +146,9 @@ def sets(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))
@@ -172,6 +181,9 @@ def all(request):
         print('[view.bazaar.default] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         inventory = bazaarJson.get("inventory", dict({}))

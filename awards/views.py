@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
+from django.utils import timezone
 
 import json
 
@@ -34,6 +35,9 @@ def index(request):
         print('[view.awards.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         key = player.key
 
         error = False
@@ -65,6 +69,9 @@ def list(request, type):
         print('[view.awards.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         awardsJson = json.loads(player.awardsJson)
         print('[view.awards.list] award type: {}'.format(type))
 

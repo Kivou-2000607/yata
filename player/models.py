@@ -33,6 +33,7 @@ class Player(models.Model):
 
     # user last update
     lastUpdateTS = models.IntegerField(default=0)
+    lastActionTS = models.IntegerField(default=0)
 
     # info for chain APP
     chainInfo = models.CharField(default="N/A", max_length=255)
@@ -74,7 +75,7 @@ class Player(models.Model):
         #    print("delete player")
         #    self.delete()
         #    return 0
-        
+
         # update basic info (and chain)
         self.name = user.get("name", "?")
         self.factionId = user.get("faction", dict({})).get("faction_id", 0)

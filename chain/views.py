@@ -48,6 +48,7 @@ def index(request):
         print('[view.chain.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
         key = player.key
 
         # get user info
@@ -124,6 +125,9 @@ def live(request):
         print('[view.chain.index] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         factionId = player.factionId
         key = player.key
         page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
@@ -237,6 +241,9 @@ def list(request):
         print('[view.chain.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         key = player.key
         factionId = player.factionId
         page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
@@ -298,6 +305,9 @@ def report(request, chainId):
         print('[view.chain.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         factionId = player.factionId
         page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
@@ -368,6 +378,9 @@ def jointReport(request):
         print('[view.chain.list] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         key = player.key
         factionId = player.factionId
         page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
@@ -502,6 +515,9 @@ def members(request):
         print('[view.chain.members] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
+
         key = player.key
         factionId = player.factionId
         page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
@@ -538,6 +554,7 @@ def createReport(request, chainId):
         print('[view.chain.createReport] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+
         factionId = player.factionId
         context = {"player": player}
 
@@ -695,6 +712,8 @@ def crontab(request):
         print('[view.chain.crontab] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
 
         if player.factionAA:
             faction = Faction.objects.filter(tId=player.factionId).first()
@@ -721,6 +740,8 @@ def tree(request):
         print('[view.chain.tree] get player id from session')
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        player.save()
 
         if player.factionAA:
             faction = Faction.objects.filter(tId=player.factionId).first()
