@@ -429,7 +429,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["energy needed", "current ratio of {:,.2g} rounds/attack".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615]:
+                elif int(k) in [230, 254, 481, 500, 615, 608]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
@@ -1783,13 +1783,13 @@ def updatePlayerAwards(player, tornAwards, userInfo):
     popPerso = 0
     for k, v in tornAwards["honors"].items():
         circulation = v.get("circulation")
-        if circulation is not None:
-            if circulation > 30:
-                popTotal += 1. / float(circulation)
-                achieve = v.get("achieve")
-                if achieve is not None:
-                    if int(achieve) == 1:
-                        popPerso += 1. / float(circulation)
+        rarity = v.get("rarity")
+        if circulation is not None and rarity not in ["Unknown Rarity"]:
+            popTotal += 1. / float(circulation)
+            achieve = v.get("achieve")
+            if achieve is not None:
+                if int(achieve) == 1:
+                    popPerso += 1. / float(circulation)
 
     awardsJson.update({"popTotal": popTotal})
     player.awardsJson = json.dumps(awardsJson)
