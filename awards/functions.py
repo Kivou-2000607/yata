@@ -1793,7 +1793,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
 
     awardsJson.update({"popTotal": popTotal})
     player.awardsJson = json.dumps(awardsJson)
-    player.awardsInfo = "{}".format(popPerso / float(popTotal))
+    player.awardsInfo = "{:.9f}".format(popPerso / float(popTotal))
     player.awardsUpda = int(timezone.now().timestamp())
     player.save()
 
