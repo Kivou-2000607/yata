@@ -20,6 +20,7 @@ This file is part of yata.
 <!DOCTYPE html>
 {% load static %}
 {% load i18n %}
+{% load app_filters %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -43,7 +44,7 @@ This file is part of yata.
     <meta name="robots" content="NONE,NOARCHIVE" />
     <meta charset="UTF-8">
 
-    <title>YATA - Error 403</title>
+    <title>YATA - Error 500</title>
 </head>
 
 <body>
@@ -51,13 +52,12 @@ This file is part of yata.
         <div id="content">
             <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</h1>
 
-            <h2 class="title"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 403: Permission Denied</h2>
+            <h2 class="title"><i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 500: Server Error</h2>
             <div class="module">
-                {% if exception %}
-                    <p>{{exception}}</p>
-                {% else %}
-                    <p>You're not supposed to be here...</p>
-                {% endif %}
+                <p>This is not normal.
+                Please contact {{"Kivou"|playerURL:"2000607"|safe}} and copy paste this message:</p>
+                <pre>{{exception}}</pre>
+                <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
             </div>
 
         </div> <!--end of content-->
