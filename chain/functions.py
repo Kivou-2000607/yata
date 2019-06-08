@@ -92,11 +92,11 @@ def apiCallAttacks(faction, chain, key=None):
                 tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
 
             nAPICall += 1
-            url = "https://api.torn.com/faction/{}?selections=attacks&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
+            url = "https://api.torn.com/faction/{}?selections=attacks,timestamp&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
             req = requests.get(url).json()
-            faction.lastAPICall = int(timezone.now().timestamp())
+            faction.lastAPICall = int(req.get("timestamp", timezone.now().timestamp()))
             faction.save()
             if 'error' in req:
                 chainDict["apiError"] = "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])
