@@ -106,20 +106,22 @@ This file is part of yata.
             <tbody>
                 {%for bonus in bonuses%}
                     <tr>
-                        <td class="a">{{bonus.1|playerURL:bonus.0|safe}}</td>
-                        {% if bonus.3 %}
-                            <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
-                        {% else %}
-                            <td class="b">-</td>
+                        {% if bonus.5 %}
+                            <td class="a">{{bonus.1|playerURL:bonus.0|safe}}</td>
+                            {% if bonus.3 %}
+                                <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
+                            {% else %}
+                                <td class="b">-</td>
+                            {% endif %}
+                            <td class="c">{{bonus.3|floatformat:0}}</td>
+                            <td class="c">{{bonus.4|floatformat:0}}</td>
+                            {% if bonus.3 %}
+                                <td class="c" title="{{bonus.4}} / {{bonus.3|floatformat:0}}">{{bonus.4|div:bonus.3|floatformat:2}}</td>
+                            {% else %}
+                                <td class="c" title="{{bonus.3}}">{{bonus.4|floatformat:2}}</td>
+                            {% endif %}
+                            <td class="d">{{bonus.5}}</td>
                         {% endif %}
-                        <td class="c">{{bonus.3|floatformat:0}}</td>
-                        <td class="c">{{bonus.4|floatformat:0}}</td>
-                        {% if bonus.3 %}
-                            <td class="c" title="{{bonus.4}} / {{bonus.3|floatformat:0}}">{{bonus.4|div:bonus.3|floatformat:2}}</td>
-                        {% else %}
-                            <td class="c" title="{{bonus.3}}">{{bonus.4|floatformat:2}}</td>
-                        {% endif %}
-                        <td class="d">{{bonus.5}}</td>
                     </tr>
                 {%endfor%}
             </tbody>

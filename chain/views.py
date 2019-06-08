@@ -511,7 +511,7 @@ def jointReport(request):
                 try:
                     arrayBonuses[i].append(faction.member_set.filter(tId=bonus[0]).first().lastAction)
                 except:
-                    arrayBonuses[i].append("-")
+                    arrayBonuses[i].append(False)
 
             # context
             context = dict({'chainsReport': chains,  # chains of joint report
