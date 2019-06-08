@@ -51,7 +51,7 @@ def index(request):
             return render(request, 'target.html', context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -80,7 +80,7 @@ def attacks(request):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -103,7 +103,7 @@ def targets(request):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -176,7 +176,7 @@ def toggleTarget(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -235,7 +235,7 @@ def refresh(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -262,7 +262,7 @@ def updateNote(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -285,7 +285,7 @@ def delete(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -378,7 +378,7 @@ def add(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))

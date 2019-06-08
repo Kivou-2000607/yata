@@ -78,7 +78,7 @@ def index(request):
             return render(request, 'bazaar.html', context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -113,7 +113,7 @@ def custom(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -152,7 +152,7 @@ def default(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -192,7 +192,7 @@ def sets(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -231,7 +231,7 @@ def all(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -248,7 +248,7 @@ def details(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -294,7 +294,7 @@ def update(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -342,7 +342,7 @@ def updateType(request, tType):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -364,7 +364,7 @@ def delete(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -399,7 +399,7 @@ def toggle(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))

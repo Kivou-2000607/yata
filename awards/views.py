@@ -65,7 +65,7 @@ def index(request):
             return render(request, "awards.html", context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -117,7 +117,7 @@ def list(request, type):
                 return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))

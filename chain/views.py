@@ -121,7 +121,7 @@ def index(request):
             return render(request, 'chain.html', context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -241,7 +241,7 @@ def live(request):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -310,7 +310,7 @@ def list(request):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -388,7 +388,7 @@ def report(request, chainId):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -530,7 +530,7 @@ def jointReport(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -574,7 +574,7 @@ def members(request):
             return render(request, page, context)
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -611,7 +611,7 @@ def createReport(request, chainId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -674,7 +674,7 @@ def renderIndividualReport(request, chainId, memberId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -714,7 +714,7 @@ def deleteReport(request, chainId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -753,7 +753,7 @@ def toggleReport(request, chainId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            raise PermissionDenied(message)
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -786,7 +786,7 @@ def crontab(request):
                 raise PermissionDenied("You need AA rights.")
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
@@ -846,7 +846,7 @@ def tree(request):
                 raise PermissionDenied("You need AA rights.")
 
         else:
-            raise PermissionDenied("You might want to log in.")
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
