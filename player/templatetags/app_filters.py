@@ -44,9 +44,9 @@ def ts2date(timestamp, fmt=None):
 @register.filter(name='ts2hhmmss')
 def ts2mmss(timestamp):
     d = timestamp // 86400
-    h = (timestamp - 86400*d) // 3600 % 24
-    m = (timestamp - 3600*h) // 60 % 60
-    s = (timestamp - 60*m) % 60
+    h = (timestamp - 86400 * d) // 3600 % 24
+    m = (timestamp - 3600 * h) // 60 % 60
+    s = (timestamp - 60 * m) % 60
     if d:
         return "{} days {:02d} hrs {:02d} mins {:02d} s".format(d, h, m, s)
     elif h:
@@ -55,8 +55,6 @@ def ts2mmss(timestamp):
         return "{} mins {:02d} s".format(m, s)
     else:
         return "{} s".format(s)
-
-
 
 
 @register.filter(name='format')
@@ -81,9 +79,11 @@ def factionURL(value, arg=0):
     else:
         return '-'
 
+
 @register.filter(name='playerURL')
 def playerURL(value, arg):
     return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+
 
 @register.filter(name='cleanhtml')
 def cleanhtml(raw_html):
@@ -93,18 +93,16 @@ def cleanhtml(raw_html):
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
 
+
 @register.filter(name='string2List')
 def string2List(string):
-    # print(string)
-    # print([s.replace('(\'', '') for s in string.split('\',')])
     string = string.replace("\"", "\'")
     string = string[1:-1]
-    print(string)
-    print(len(string))
     if len(string) != 3:
         return [s[1:] for s in string.split('\',') if s]
     else:
         return []
+
 
 @register.filter(name='badge')
 def badge(value, arg):
