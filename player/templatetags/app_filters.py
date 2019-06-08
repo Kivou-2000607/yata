@@ -93,6 +93,18 @@ def cleanhtml(raw_html):
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
 
+@register.filter(name='string2List')
+def string2List(string):
+    # print(string)
+    # print([s.replace('(\'', '') for s in string.split('\',')])
+    string = string.replace("\"", "\'")
+    string = string[1:-1]
+    print(string)
+    print(len(string))
+    if len(string) != 3:
+        return [s[1:] for s in string.split('\',') if s]
+    else:
+        return []
 
 @register.filter(name='badge')
 def badge(value, arg):

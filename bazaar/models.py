@@ -44,6 +44,8 @@ class Item(models.Model):
     tName = models.CharField(max_length=200)
     tType = models.CharField(max_length=200)
     tDescription = models.TextField(default="")
+    tEffect = models.TextField(default="")
+    tRequirement = models.TextField(default="")
     tMarketValue = models.BigIntegerField(default=0)
     tSellPrice = models.BigIntegerField(default=0)
     tBuyPrice = models.BigIntegerField(default=0)
@@ -67,6 +69,8 @@ class Item(models.Model):
                    tBuyPrice=int(v['buy_price']),
                    tCirculation=int(v['circulation']),
                    tDescription=v['description'],
+                   tEffect=v['effect'],
+                   tRequirement=v['requirement'],
                    tImage=v['image'])
         return item
 
@@ -87,6 +91,8 @@ class Item(models.Model):
         self.tBuyPrice = int(v['buy_price'])
         self.tCirculation = int(v['circulation'])
         self.tDescription = v['description']
+        self.tEffect = v['effect'],
+        self.tRequirement = v['requirement'],
         self.tImage = v['image']
         # self.lastUpdateTS = int(timezone.now().timestamp())
         # self.date = timezone.now() # don't update time since bazaar are not updated

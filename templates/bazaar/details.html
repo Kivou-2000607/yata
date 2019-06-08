@@ -18,6 +18,7 @@ This file is part of yata.
 {% endcomment %}
 
 {% load humanize %}
+{% load app_filters %}
 
 <div class="container">
     <div class="overlay close"></div>
@@ -32,6 +33,24 @@ This file is part of yata.
             <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
             <h3>Description:</h3>
             <p>{{item.tDescription}}</p>
+            {% if item.tEffect|string2List|length %}
+                <h3>Effect{{item.tEffect|string2List|length|pluralize}}:</h3>
+                <p>
+                    {% for s in item.tEffect|string2List %}
+                        <span class="valid">{{s}}</span>
+                        {% if forloop.last %}{% else %}<br>{% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
+            {% if item.tRequirement|string2List|length %}
+                <h3>Requirement{{item.tRequirement|string2List|length|pluralize}}:</h3>
+                <p>
+                    {% for s in item.tRequirement|string2List %}
+                    <span class="error">{{s}}</span>
+                    {% if forloop.last %}{% else %}<br>{% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
         </div>
     </div>
 </div>
