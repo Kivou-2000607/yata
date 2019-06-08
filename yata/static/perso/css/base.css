@@ -209,7 +209,7 @@ thead th.none:after {
 } */
 
 
-td a {
+.dont-touch-me a {
   display: block;
   margin:0px;
   padding:0px;

@@ -21,9 +21,9 @@ This file is part of yata.
 <form>
     {% csrf_token %}
     {% if target.note %}
-        <input class="target-list-note" type="text" Value="{{target.note}}" maxlength="16">
+        <input class="target-list-note" type="text" Value="{{target.note}}">
     {% else %}
-        <input class="target-list-note" type="text" placeholder="Enter a note here" maxlength="16">
+        <input class="target-list-note" type="text" placeholder="Enter a note here">
     {% endif %}
     <input type="hidden" value="{{targetId}}">
 </form>
