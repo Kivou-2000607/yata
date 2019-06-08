@@ -258,42 +258,34 @@ def details(request, itemId):
 def update(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
-            saveSuccess = False
-            while not saveSuccess:
-                try:
-                    print('[view.bazaar.updateItem] get player id from session')
-                    tId = request.session["player"].get("tId")
-                    player = Player.objects.filter(tId=tId).first()
-                    key = player.key
-                    bazaarJson = json.loads(player.bazaarJson)
+            print('[view.bazaar.updateItem] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            key = player.key
+            bazaarJson = json.loads(player.bazaarJson)
 
-                    print('[view.bazaar.updateItem] get item')
-                    item = Item.objects.filter(tId=itemId).first()
-                    print('[view.bazaar.updateItem] {}'.format(item))
+            print('[view.bazaar.updateItem] get item')
+            item = Item.objects.filter(tId=itemId).first()
+            print('[view.bazaar.updateItem] {}'.format(item))
 
-                    baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
-                    error = False
-                    if "apiError" in baz:
-                        error = baz
+            baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
+            error = False
+            if 'apiError' in baz:
+                error = baz
 
-                    # update inventory of bazaarJson
-                    error = False
-                    invtmp = apiCall("user", "", "inventory", key, sub="inventory")
-                    bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp}
-                    if 'apiError' in invtmp:
-                        error = {"apiErrorSub": invtmp["apiError"]}
-                    else:
-                        # modify user
-                        item.stock = bazaarJson["inventory"].get(str(itemId), 0)
-                        item.save()
+            # update inventory of bazaarJson
+            error = False
+            invtmp = apiCall("user", "", "inventory", key, sub="inventory")
+            if 'apiError' in invtmp:
+                error = {"apiErrorSub": invtmp["apiError"]}
+            else:
+                # modify user
+                bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp}
+                item.stock = bazaarJson["inventory"].get(str(itemId), 0)
+                item.save()
 
-                    player.bazaarJson = json.dumps(bazaarJson)
-                    player.save()
-                    saveSuccess = True
-                    print("[view.bazaar.updateItem] update success")
-                except:
-                    print("[view.bazaar.updateItem] update failed, sleep 1 second and try again")
-                    time.sleep(1)
+            player.bazaarJson = json.dumps(bazaarJson)
+            player.save()
 
             context = {'item': item, "view": {"timer": True}}
             if error:

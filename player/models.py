@@ -82,7 +82,6 @@ class Player(models.Model):
         self.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
 
         # update chain info
-        print(Faction.objects.filter(tId=self.factionId).first())
         if self.factionId:
             faction = Faction.objects.filter(tId=self.factionId).first()
             if faction is None:

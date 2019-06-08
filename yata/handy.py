@@ -60,6 +60,7 @@ def apiCall(section, id, selections, key, sub=None):
         err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"]),
+                 "apiErrorString": err["error"]["error"],
                  "apiErrorCode": int(err["error"]["code"])})
 
 

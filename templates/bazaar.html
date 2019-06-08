@@ -49,12 +49,20 @@
     $(document).on('click', '.update-type', function(e){
         e.preventDefault();
         var tType = $(this).attr("href").split("/").pop();
+        var i = 1;
         $("#loop-over-item-sell-table-"+tType).find('table[id^="item-sell-table-"]').each(function() {
+            var reload = $(this);
             var tId = $(this).attr("id").split("-").pop();
-            $(this).load( "/bazaar/update/"+tId, {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $(this).find("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+            var wait = i*500 + parseInt(i/10)*3000;
+            (function(index) {
+                setTimeout(function() {
+                    reload.load( "/bazaar/update/"+tId, {
+                        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    });
+                    reload.find("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+                 }, wait);
+            })(i);
+            i++;
         });
     });
 

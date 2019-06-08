@@ -116,7 +116,7 @@ def toggleTarget(request, targetId):
             print('[view.target.toggleTarget] get player id from session and check POST')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key+"f"
+            key = player.key
             targetJson = json.loads(player.targetJson)
             attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
@@ -124,12 +124,12 @@ def toggleTarget(request, targetId):
             # call for target info
             targetInfo = apiCall('user', targetId, '', key)
             if 'apiError' in targetInfo:
-                level = "?"
+                level = 0
                 lifeMax = 1
-                life = 0
-                status = "?"
-                statusFull = "?"
-                lastAction = "?"
+                life = 1
+                status = targetInfo.get('apiErrorString')
+                statusFull = targetInfo.get('apiErrorString')
+                lastAction = targetInfo.get('apiErrorString')
                 lastUpdate = 0
 
             else:
