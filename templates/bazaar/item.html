@@ -92,7 +92,7 @@ This file is part of yata.
             {% else %}                                             <tr class="eq "    title="cumulative: ${{data.cumulative|intcomma}}">
             {% endif %}
         {% endif %}
-        <td class="A">{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+        <td class="A">{% if data.itemmarket %}*{%endif%}{{data.quantity}}{% if data.quantity == 100 %}+{%endif%}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
         </tr>
     {% endfor %}
 

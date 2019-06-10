@@ -37,12 +37,12 @@ class MarketDataInline(admin.TabularInline):
     model = MarketData
     extra = 0
     show_change_link = True
-    readonly_fields = ('sellId', 'quantity', 'cost')
+    readonly_fields = ('quantity', 'cost')
 
 
 
 class MarketDataAdmin(admin.ModelAdmin):
-    list_display = ['item', 'sellId', 'quantity', 'cost']
+    list_display = ['item', 'quantity', 'cost', 'itemmarket']
 
 
 admin.site.register(MarketData, MarketDataAdmin)

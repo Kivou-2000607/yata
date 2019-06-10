@@ -127,6 +127,7 @@ class Item(models.Model):
             for i in range(len(bData)):
                 cData.append({'cost': bData[i].cost,
                               'quantity': bData[i].quantity,
+                              'itemmarket': bData[i].itemmarket,
                               'cumulative': int(float(bData[i].quantity) * float(bData[i].cost)) + tmp}
                              )
                 tmp = cData[i]["cumulative"]
@@ -136,29 +137,50 @@ class Item(models.Model):
 
     def update_bazaar(self, key="", n=10):
         # API Call
-        baz = apiCall("market", self.tId, "bazaar", key, sub="bazaar")
-        baz = dict({}) if baz is None else baz
+        req = apiCall("market", self.tId, "bazaar,itemmarket", key)
+        bazaar = req.get("bazaar") if req.get("bazaar") else dict({})
+        itemmarket = req.get("itemmarket") if req.get("itemmarket") else dict({})
 
-        if 'apiError' in baz:
-            return baz
+        if 'apiError' in bazaar:
+            return bazaar
+        if 'apiError' in itemmarket:
+            return itemmarket
         else:
+            # fuse both
+            marketData = []
+            for k, v in bazaar.items():
+                marketData.append({"cost": v["cost"], "quantity": v["quantity"], "itemmarket": False})
+
+            pp = 0 # previews price
+            q = 0 # quantity
+            for i, (k, v) in enumerate(itemmarket.items()):
+                pp = v["cost"] if i == 0 else pp
+                if v["cost"] == pp:
+                    q += 1
+                else:
+                    marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
+                    q = 1
+                    pp = v["cost"]
+            if len(itemmarket):
+                marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
+
+            marketData = sorted(marketData, key=lambda x: x['cost'], reverse=False)
             self.marketdata_set.all().delete()
-            if baz is not None:
-                for i, r in enumerate(baz):
-                    print("[model.bazaar.update_bazaar] update_bazaar: {} (q:{}, c:{})".format(r, baz[r]["quantity"], baz[r]["cost"]))
-                    self.marketdata_set.create(sellId=r, quantity=baz[r]["quantity"], cost=baz[r]["cost"])
-                    if i >= n - 1:
-                        break
+            for i, (v) in enumerate(marketData):
+                # print("[model.bazaar.update_bazaar] update_bazaar: (q:{}, c:{})".format(v["quantity"], v["cost"]))
+                self.marketdata_set.create(quantity=v["quantity"], cost=v["cost"], itemmarket=v["itemmarket"])
+                if i >= n - 1:
+                    break
             self.lastUpdateTS = int(timezone.now().timestamp())
             self.save()
-            return baz
+            return marketData
 
 
 class MarketData(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    sellId = models.BigIntegerField(default=0)
     quantity = models.BigIntegerField(default=1)
     cost = models.BigIntegerField(default=0)
+    itemmarket = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} ({}): {} x {}".format(self.item, self.sellId, self.quantity, self.cost)
