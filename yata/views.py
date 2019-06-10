@@ -18,11 +18,13 @@ This file is part of yata.
 """
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect
 from django.utils import timezone
-from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseServerError
+from django.template.loader import render_to_string
 
 import json
+import traceback
 
 from player.models import Player
 from chain.models import Faction
@@ -30,95 +32,109 @@ from yata.handy import apiCall
 
 
 def index(request):
-    lastActions = dict({})
-    t = int(timezone.now().timestamp())
-    lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
-    lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+    try:
+        lastActions = dict({})
+        t = int(timezone.now().timestamp())
+        lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
+        lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
 
-    if request.session.get('player'):
-        print('[view.yata.index] get player id from session')
-        tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
-        context = {"player": player, "lastActions": lastActions}
-    else:
-        context = {"lastActions": lastActions}
+        if request.session.get('player'):
+            print('[view.yata.index] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            context = {"player": player, "lastActions": lastActions}
+        else:
+            context = {"lastActions": lastActions}
 
-    return render(request, 'yata.html', context)
+        return render(request, 'yata.html', context)
+
+    except Exception:
+        print("[ERROR] {}".format(traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
 def login(request):
-    print('[view.yata.login] START')
+    try:
+        print('[view.yata.login] START')
 
-    if request.method == 'POST':
-        p = request.POST
-        print('[view.yata.login] API call with key: {}'.format(p.get('key')))
-        user = apiCall('user', '', 'profile', p.get('key'))
-        if 'apiError' in user:
-            print('[view.yata.login] API error: {}'.format(user))
-            context = user
+        if request.method == 'POST':
+            p = request.POST
+            print('[view.yata.login] API call with key: {}'.format(p.get('key')))
+            user = apiCall('user', '', 'profile', p.get('key'))
+            if 'apiError' in user:
+                print('[view.yata.login] API error: {}'.format(user))
+                context = user
+                return render(request, 'yata/login.html', context)
+
+            # create/update player in the database
+            player = Player.objects.filter(tId=user.get('player_id')).first()
+            print('[view.yata.login] get player from database: {}'.format(player))
+
+            if player is None:
+                print('[view.yata.login] create new player')
+                player = Player.objects.create(tId=int(user.get('player_id')))
+            print('[view.yata.login] update player')
+            player.key = p.get('key')
+            player.update_info()
+            player.lastActionTS = int(timezone.now().timestamp())
+
+            print('[view.yata.login] save player')
+            player.save()
+
+            print('[view.yata.login] create session')
+            request.session['player'] = {'tId': player.tId, 'name': str(player), 'login': True}
+
+            check = json.loads(p.get('check'))
+            if check:
+                print('[view.yata.login] set session to expirate in 1 month')
+                # request.session.set_expiry(31536000)  # 1 year
+                request.session.set_expiry(2592000)  # 1 month
+            else:
+                print('[view.yata.login] set session to expirate when browser closes')
+                request.session.set_expiry(0)  # logout when close browser
+
+            context = {"player": player}
             return render(request, 'yata/login.html', context)
 
-        # create/update player in the database
-        player = Player.objects.filter(tId=user.get('player_id')).first()
-        print('[view.yata.login] get player from database: {}'.format(player))
-
-        if player is None:
-            print('[view.yata.login] create new player')
-            player = Player.objects.create(tId=int(user.get('player_id')))
-        print('[view.yata.login] update player')
-        player.key = p.get('key')
-        player.update_info()
-        player.lastActionTS = int(timezone.now().timestamp())
-
-        print('[view.yata.login] save player')
-        player.save()
-
-        print('[view.yata.login] create session')
-        request.session['player'] = {'tId': player.tId, 'name': str(player), 'login': True}
-
-        check = json.loads(p.get('check'))
-        if check:
-            print('[view.yata.login] set session to expirate in 1 month')
-            # request.session.set_expiry(31536000)  # 1 year
-            request.session.set_expiry(2592000)  # 1 month
+        # if not post
         else:
-            print('[view.yata.login] set session to expirate when browser closes')
-            request.session.set_expiry(0)  # logout when close browser
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You need to post. Don\'t try to be a smart ass."}))
+            # return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
-        context = {"player": player}
-        return render(request, 'yata/login.html', context)
-
-    # if not post
-    else:
-        raise PermissionDenied
+    except Exception:
+        print("[ERROR] {}".format(traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
 def logout(request):
     try:
         print('[view.yata.logout] delete session')
-        tId = request.session["player"].get("tId")
         del request.session['player']
-        print('[view.yata.logout] done')
-    except:
-        print('[view.yata.logout] error while deleting the session')
-        pass
-    print('[view.yata.logout] redirect to index')
-    return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse('index'))
+
+    except Exception:
+        print("[ERROR] {}".format(traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
 def delete(request):
-    if request.session.get('player'):
-        print('[view.yata.delete] delete account')
-        tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
-        factionId = player.factionId
-        faction = Faction.objects.filter(tId=factionId).first()
-        try:
-            faction.delKey(tId)
-            faction.save()
-        except:
-            pass
-        player.delete()
+    try:
+        if request.session.get('player'):
+            print('[view.yata.delete] delete account')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+            faction = Faction.objects.filter(tId=factionId).first()
+            try:
+                faction.delKey(tId)
+                faction.save()
+            except:
+                pass
+            player.delete()
 
-    print('[view.yata.delete] redirect to logout')
-    return HttpResponseRedirect(reverse('logout'))
+        print('[view.yata.delete] redirect to logout')
+        return HttpResponseRedirect(reverse('logout'))
+
+    except Exception:
+        print("[ERROR] {}".format(traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))

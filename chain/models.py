@@ -43,13 +43,19 @@ class Faction(models.Model):
         return "{} [{}]".format(self.name, self.tId)
 
     def addKey(self, id, key):
-        keys = json.loads(self.apiString)
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
         keys[str(id)] = key
         self.apiString = json.dumps(keys)
         self.save()
 
     def delKey(self, id):
-        keys = json.loads(self.apiString)
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
         if str(id) in keys:
             del keys[str(id)]
         self.apiString = json.dumps(keys)
@@ -57,11 +63,17 @@ class Faction(models.Model):
 
     def getRadomKey(self):
         import random
-        keys = json.loads(self.apiString)
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
         return random.choice(list(keys.items())) if len(keys) else ("0", "")
 
     def getAllPairs(self):
-        keys = json.loads(self.apiString)
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
         return list(keys.items())
 
     def numberOfReportsToCreate(self):
@@ -72,6 +84,7 @@ class Faction(models.Model):
 
     def nKeys(self):
         return len(json.loads(self.apiString))
+
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
