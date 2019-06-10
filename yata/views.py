@@ -18,7 +18,7 @@ This file is part of yata.
 """
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 from django.http import HttpResponseServerError
 from django.template.loader import render_to_string
@@ -37,6 +37,7 @@ def index(request):
         t = int(timezone.now().timestamp())
         lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
         lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+        lastActions["total"] = len(Player.objects.all())
 
         if request.session.get('player'):
             print('[view.yata.index] get player id from session')
@@ -138,3 +139,14 @@ def delete(request):
     except Exception:
         print("[ERROR] {}".format(traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+def api(request):
+    lastActions = dict({})
+    t = int(timezone.now().timestamp())
+    lastActions["hour"] = len(Player.objects.filter(lastActionTS__gte=(t - (3600))))
+    lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
+    lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+    lastActions["total"] = len(Player.objects.all())
+
+    return HttpResponse(json.dumps(lastActions), content_type="application/json")
