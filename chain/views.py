@@ -454,6 +454,7 @@ def jointReport(request):
                     if count.attackerId in counts:
                         counts[count.attackerId]['hits'] += count.hits
                         counts[count.attackerId]['wins'] += count.wins
+                        counts[count.attackerId]['bonus'] += count.bonus
                         counts[count.attackerId]['respect'] += count.respect
                         counts[count.attackerId]['fairFight'] += count.fairFight
                         counts[count.attackerId]['war'] += count.war
@@ -466,6 +467,7 @@ def jointReport(request):
                         counts[count.attackerId] = {'name': count.name,
                                                     'hits': count.hits,
                                                     'wins': count.wins,
+                                                    'bonus': count.bonus,
                                                     'respect': count.respect,
                                                     'fairFight': count.fairFight,
                                                     'war': count.war,
