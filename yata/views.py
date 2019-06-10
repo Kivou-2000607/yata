@@ -136,12 +136,16 @@ def delete(request):
 
 
 def api(request):
-    lastActions = dict({})
-    t = int(timezone.now().timestamp())
-    lastActions["hour"] = len(Player.objects.filter(lastActionTS__gte=(t - (3600))))
-    lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
-    lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
-    lastActions["total"] = len(Player.objects.all())
-    lastActions["string"] = "{} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["daily"])
+    try:
+        lastActions = dict({})
+        t = int(timezone.now().timestamp())
+        lastActions["hour"] = len(Player.objects.filter(lastActionTS__gte=(t - (3600))))
+        lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
+        lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+        lastActions["total"] = len(Player.objects.all())
+        lastActions["string"] = "{} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"])
 
-    return HttpResponse(json.dumps(lastActions), content_type="application/json")
+        return HttpResponse(json.dumps(lastActions), content_type="application/json")
+    except:
+
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
