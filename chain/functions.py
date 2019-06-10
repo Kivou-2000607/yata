@@ -323,6 +323,7 @@ def fillReport(faction, members, chain, report, attacks):
                                 name=v[10],
                                 hits=v[0],
                                 wins=v[1],
+                                bonus=v[12],
                                 fairFight=v[2],
                                 war=v[3],
                                 retaliation=v[4],

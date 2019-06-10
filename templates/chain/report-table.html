@@ -161,7 +161,7 @@ $(document).ready(function() {
                 <td class="b dont-touch-me">{{c.name|playerURL:c.attackerId|safe}}</td>
 
 
-                <td class="c">{{c.wins}}</td>
+                <td class="c">{{c.wins|add:c.bonus}}</td>
                 <td class="c">{{c.hits}}</td>
                 {% if c.wins %}
                     <!-- <td class="c">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->

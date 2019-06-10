@@ -149,6 +149,7 @@ class Count(models.Model):
     attackerId = models.IntegerField(default=0)
     name = models.CharField(default="Duke", max_length=64)
     hits = models.IntegerField(default=0)
+    bonus = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     fairFight = models.FloatField(default=0)
