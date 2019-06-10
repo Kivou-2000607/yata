@@ -33,19 +33,13 @@ from yata.handy import apiCall
 
 def index(request):
     try:
-        lastActions = dict({})
-        t = int(timezone.now().timestamp())
-        lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
-        lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
-        lastActions["total"] = len(Player.objects.all())
-
         if request.session.get('player'):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            context = {"player": player, "lastActions": lastActions}
+            context = {"player": player}
         else:
-            context = {"lastActions": lastActions}
+            context = {}
 
         return render(request, 'yata.html', context)
 
@@ -148,5 +142,6 @@ def api(request):
     lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
     lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
     lastActions["total"] = len(Player.objects.all())
+    lastActions["string"] = "{} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["daily"])
 
     return HttpResponse(json.dumps(lastActions), content_type="application/json")
