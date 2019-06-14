@@ -94,14 +94,6 @@ def index(request):
             if faction is None:
                 faction = Faction.objects.create(tId=factionId, name=user.get("faction")["faction_name"])
                 print('[view.chain.index] faction {} created'.format(factionId))
-                if player.factionAA:
-                    minBusy = min([c.nFactions() for c in Crontab.objects.all()])
-                    for crontab in Crontab.objects.all():
-                        if crontab.nFactions() == minBusy:
-                            crontab.faction.add(faction)
-                            crontab.save()
-                            break
-                    print('[view.chain.index] attributed to {} '.format(crontab))
             else:
                 faction.name = user.get("faction")["faction_name"]
                 faction.save()
@@ -111,6 +103,15 @@ def index(request):
                 print('[view.chain.index] save AA key'.format(factionId))
                 faction.addKey(player.tId, player.key)
                 faction.save()
+                if not len(faction.crontab_set.all()):
+                    minBusy = min([c.nFactions() for c in Crontab.objects.all()])
+                    for crontab in Crontab.objects.all():
+                        if crontab.nFactions() == minBusy:
+                            crontab.faction.add(faction)
+                            crontab.save()
+                            break
+                    print('[view.chain.index] attributed to {} '.format(crontab))
+
             else:
                 print('[view.chain.index] remove AA key'.format(factionId))
                 faction.delKey(player.tId)
