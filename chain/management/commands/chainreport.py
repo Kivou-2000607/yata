@@ -73,6 +73,7 @@ class Command(BaseCommand):
                         chain.hasReport = True
                         print('[command.chain.chainreport]    --> new report')
                     else:
+                        chain.hasReport = True
                         print('[command.chain.chainreport]    --> report found')
 
                     # update members

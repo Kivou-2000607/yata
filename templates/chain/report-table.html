@@ -137,19 +137,20 @@ $(document).ready(function() {
 <table id="chain-report" class="tablesorter center-large trshadow chain-report">
     <thead>
         <tr>
-            <th>Rank</th>
-            <th>Name [id]</th>
-            <th>Number<br> of hits</th>
-            <th>Number<br> of attacks</th>
+            <th title="Rank based on the number of hits">Rank</th>
+            <th title="Torn Name and id and like to the torn profile">Name [id]</th>
+            <th title="Number of attacks that counted for the chain">Number<br> of hits</th>
+            <th title="Total number of attacks including losses, assists, friendly fires...">Number<br> of attacks</th>
             <!-- <th title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
             <th title="Average of war modifier over all hits">modifiers<br>(war)</th>
             <th title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
             <th title="Average of groupe attack modifier over all hits">modifiers<br>(groupe attack)</th>
             <th title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th> -->
-            <th title="Average of all modifier over all hits">modifiers<br>(average)</th>
+            <th title="Average of all modifiers over all hits">modifiers<br>(average)</th>
             <th title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
             <th title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
-            <th>Chain<br>watcher</th>
+            <th title="Number of hits / Chain hit length">Chain<br>contribution</th>
+            <th title="Sum over hits of time elapsed since last hit / Chain time length">Chain<br>watcher</th>
             <th>days in<br>faction</th>
         </tr>
     </thead>
@@ -186,6 +187,9 @@ $(document).ready(function() {
                 <td class="c">{{c.respect|floatformat:2}}</td>
 
 
+            <td class="c">
+                {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
+            </td>
             <td class="c">
                 {{c.watcher|mul:100|floatformat:2}}%
             </td>

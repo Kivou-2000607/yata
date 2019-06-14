@@ -92,12 +92,20 @@ This file is part of yata.
                 </tr>
             </tbody>
         </table>
+        <br>
+        {% include "chain/report-table.html" with totalHits=total.nHits %}
+    </div>
+    <h2 class="title">Bonus Score</h2>
+    <div class="module">
+        <table class="center">
+            <thead><tr><th>Summary of all the bonus taken over the chains of the joint report</th></tr></thead>
+        </table>
         <table id="chain-jbonus" class="tablesorter center trshadow chain-jbonus">
             <thead>
                 <tr>
-                    <th>User</th>
+                    <th>Name [id]</th>
                     <th>Bonus taken</th>
-                    <th>Respect</th>
+                    <th>Respect earned<br>with bonus </th>
                     <th>Hits</th>
                     <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Score</th>
                     <th>Last action</th>
@@ -111,7 +119,7 @@ This file is part of yata.
                             {% if bonus.3 %}
                                 <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
                             {% else %}
-                                <td class="b">-</td>
+                                <td class="b">&empty;</td>
                             {% endif %}
                             <td class="c">{{bonus.3|floatformat:0}}</td>
                             <td class="c">{{bonus.4|floatformat:0}}</td>
@@ -126,9 +134,5 @@ This file is part of yata.
                 {%endfor%}
             </tbody>
         </table>
-
-        <br>
-        {% include "chain/report-table.html" %}
     </div>
-
 </div>
