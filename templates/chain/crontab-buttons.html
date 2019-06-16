@@ -43,9 +43,9 @@ This file is part of yata.
         <form>{% csrf_token %}
             <a class="chain-crontab-toggle-key" href={% url 'chain:toggleKey' p.tId %}>
                {% if k|length == 16 %}
-                   <i class="fas fa-toggle-on" title="Remove my key"></i>
+                   <i class="fas fa-toggle-on" title="Disable my key"></i>
                {% else %}
-                   <i class="fas fa-toggle-off" title="Remove my key"></i>
+                   <i class="fas fa-toggle-off" title="Enable my key"></i>
                {% endif %}
             </a>
         </form>

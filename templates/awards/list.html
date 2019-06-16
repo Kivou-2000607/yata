@@ -95,7 +95,7 @@ This file is part of yata.
                 <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
-                <td class="f {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% endif %}"><span title="{{award.achieve|intdiv:0.01|floatformat:0}}%">{{award.achieve|intdiv:0.01|floatformat:0}}%</span></td>
+                <td class="f {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% endif %}"><span title="{{award.achieve|mul:100|intdiv:1|floatformat:0}}%">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
                 {% if award.left|floatformat:0|intcomma %}
                     <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
                 {% else %}
