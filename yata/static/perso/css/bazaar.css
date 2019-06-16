@@ -131,3 +131,8 @@ div.modal {
 div.modal > div.module {
     margin-bottom: 0px;
 }
+
+/* for torn style in items description */
+span.italic { font-style: italic; }
+span.bold { font-weight: bold; }
+span.t-gray-9 { color: #999; }

@@ -32,7 +32,7 @@ This file is part of yata.
             <h3>Buy Price: ${{item.tBuyPrice|intcomma}}</h3>
             <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
             <h3>Description:</h3>
-            <p>{{item.tDescription}}</p>
+            <p>{{item.tDescription|safe}}</p>
             {% if item.tEffect|string2List|length %}
                 <h3>Effect{{item.tEffect|string2List|length|pluralize}}:</h3>
                 <p>
