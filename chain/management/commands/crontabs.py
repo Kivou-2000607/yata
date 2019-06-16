@@ -31,13 +31,16 @@ class Command(BaseCommand):
             print("[command.chain.crontab] {} cleared".format(crontab))
             crontab.faction.clear()
 
-        for faction in Faction.objects.exclude(apiString="{}"):
-            minBusy = min([c.nFactions() for c in Crontab.objects.all()])
-            for crontab in Crontab.objects.all():
-                if crontab.nFactions() == minBusy:
-                    crontab.faction.add(faction)
-                    crontab.save()
-                    break
-            print("[command.chain.crontab] faction {} added to {}".format(faction, crontab))
+        for faction in Faction.objects.all():
+            if faction.nKeys():
+                minBusy = min([c.nFactions() for c in Crontab.objects.all()])
+                for crontab in Crontab.objects.all():
+                    if crontab.nFactions() == minBusy:
+                        crontab.faction.add(faction)
+                        crontab.save()
+                        break
+                print("[command.chain.crontab] faction {} added to {}".format(faction, crontab))
+            else:
+                print("[command.chain.crontab] faction {} ignored (no keys)".format(faction))
 
         print("[command.chain.crontab] end")

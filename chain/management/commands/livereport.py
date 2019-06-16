@@ -58,10 +58,10 @@ class Command(BaseCommand):
 
             # get api key
             if not faction.nKeys():
-                print("[command.chain.livereport]    --> no api key found: {}".format(faction.apiString))
+                print("[command.chain.livereport]    --> no api key found")
 
             else:
-                keyHolder, key = faction.getRadomKey()
+                keyHolder, key = faction.getRandomKey()
 
                 # live chains
                 liveChain = apiCall("faction", faction.tId, "chain", key, sub="chain")
@@ -77,7 +77,7 @@ class Command(BaseCommand):
 
                 elif int(liveChain["cooldown"]) > 0:
                     print('[command.chain.livereport]    --> chain in cooldown')
-                    
+
                 else:
                     # get chain
                     print('[command.chain.livereport]    --> live report')

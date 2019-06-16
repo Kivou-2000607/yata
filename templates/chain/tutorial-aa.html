@@ -24,5 +24,5 @@ This file is part of yata.
     During one job a maximum of 200 new attacks are analysed, for a random faction of the crontab, for a random report of the faction, using a random API key of their AA members.<br />
     Live and old reports are treated on different schedulers. AA members can see their crontab details on a specific page (only available to them). <br />
     Consistency measures insure that two API calls <tt>faction/?selections=attacks</tt> are at least 32s appart to avoid cached responses and which would lead to wrong output, even using the <tt>to</tt> and <tT>from</tt> keys.<br />
-    If one AA member use this request ouside during the creation of a report, it can lead to errors in the report. In this case just delete the report and create it again.
+    If a AA member uses this request outside during the creation of a report, it can lead to cached responses. The report should be fine since it compares Torn serve timestamp to current timestamp.
 </p>

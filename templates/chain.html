@@ -128,6 +128,17 @@
         $(this).html("");
     });
 
+    // toggle key from crontab list of keys
+    $(document).on('click', '.chain-crontab-toggle-key', function(e){
+        e.preventDefault();
+        var id = this.href.split("/").pop();
+        var reload = $(this).parents("tr");
+        reload.load( "/chain/toggleKey/"+id, {
+            id: id,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
 
     $(document).on('change', '[id^="chain-tree-"]', function(e){
         e.preventDefault();

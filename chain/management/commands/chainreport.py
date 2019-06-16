@@ -56,10 +56,10 @@ class Command(BaseCommand):
 
             # get api key
             if not faction.nKeys():
-                print("[command.chain.livereport]    --> no api key found: {}".format(faction.apiString))
+                print("[command.chain.livereport]    --> no api key found")
 
             else:
-                keyHolder, key = faction.getRadomKey()
+                keyHolder, key = faction.getRandomKey()
 
                 # get all chain
                 chains = faction.chain_set.filter(createReport=True).all()
@@ -87,7 +87,8 @@ class Command(BaseCommand):
                             faction.delKey(keyHolder)
                         continue
 
-                    attacks = apiCallAttacks(faction, chain)
+                    keyHolder, key = faction.getRandomKey()
+                    attacks = apiCallAttacks(faction, chain, key=key)
 
                     if "apiError" in attacks:
                         print("[command.chain.chainreport]    --> error apiCallAttacks: {}".format(attacks["apiError"]))

@@ -17,6 +17,7 @@ urlpatterns = [
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),
     re_path(r'^deleteReport/(?P<chainId>\w+)$', views.deleteReport, name='deleteReport'),
     re_path(r'^toggleReport/(?P<chainId>\w+)$', views.toggleReport, name='toggleReport'),
+    re_path(r'^toggleKey/(?P<id>\w+)$', views.toggleKey, name='toggleKey'),
     re_path(r'^renderIndividualReport/(?P<chainId>\w+)/(?P<memberId>\w+)$', views.renderIndividualReport, name='renderIndividualReport'),
 
     re_path(r'^tree/$', views.tree, name='tree'),

@@ -59,6 +59,10 @@ table.chain-report td.b { width: 15%; text-align: left; }
 table.chain-report td.c { width: 10%; text-align: center; }  /* x8 */
 /* table.chain-report tr:hover { font-weight: bold; } */
 
+table.chain-keys td { line-height: 28px; }
+table.chain-keys td.a { width: 50%; text-align: left; }
+table.chain-keys td.b { width: 25%; text-align: center; }  /* x2 */
+
 table.chain-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.chain-report tr.zero-hits:hover { background:#ea9999; }
 table.chain-report tr.not-there       { background:#b6d7a8; }

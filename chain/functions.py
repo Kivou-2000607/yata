@@ -58,7 +58,7 @@ def apiCallAttacks(faction, chain, key=None):
     report = chain.report_set.first()
 
     # get all faction keys
-    keys = faction.getAllPairs()
+    keys = faction.getAllPairs(enabledKeys=True)
 
     # add + 2 s to the endTS
     endTS += 1
@@ -69,7 +69,7 @@ def apiCallAttacks(faction, chain, key=None):
     i = 1
 
     nAPICall = 0
-    key = None
+    # key = None
     tmp = ""
     while feedAttacks and nAPICall < faction.nAPICall:
         # try to get req from database
@@ -350,7 +350,7 @@ def updateMembers(faction, key=None):
 
     # # get key
     if key is None:
-        name, key = faction.getRadomKey()
+        name, key = faction.getRandomKey()
         print("[function.chain.updateMembers] using {} key".format(name))
     else:
         print("[function.chain.updateMembers] using personal key")
@@ -420,7 +420,7 @@ def factionTree(faction, key=None):
 
     # get key
     if key is None:
-        name, key = faction.getRadomKey()
+        name, key = faction.getRandomKey()
         print("[function.chain.updateMembers] using {} key".format(name))
     else:
         print("[function.chain.updateMembers] using personal key")

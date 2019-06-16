@@ -101,6 +101,7 @@ h2.title {
 h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left top repeat; }
 
 .error { color: #CC3434!important; font-weight: bold; }
+.warning { color: #FF8C00!important; font-weight: bold; }
 .valid { color: #0B8E14!important; font-weight: bold; }
 .error:hover,
 .error:active,

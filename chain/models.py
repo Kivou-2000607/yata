@@ -33,7 +33,6 @@ class Faction(models.Model):
     lastAPICall = models.IntegerField(default=0)
     nAPICall = models.IntegerField(default=2)
 
-    # "login1:key1,login2:key2,login3:key3"
     apiString = models.TextField(default="{}")
     posterOpt = models.TextField(default="{}")
 
@@ -47,9 +46,36 @@ class Faction(models.Model):
             keys = json.loads(self.apiString)
         except:
             keys = {}
-        keys[str(id)] = key
+        if str(id) in keys:
+            if keys[str(id)][:16] == key:
+                print("[model.faction.addKey] same key, nothing changed")
+            else:
+                print("[model.faction.addKey] key changed")
+                keys[str(id)] = key
+        else:
+            print("[model.faction.addKey] new key")
+            keys[str(id)] = key
+
         self.apiString = json.dumps(keys)
         self.save()
+
+    def toggleKey(self, id):
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
+        if str(id) in keys:
+            if len(keys[str(id)]) == 16:
+                keys[str(id)] += "0"
+            elif len(keys[str(id)]) == 17:
+                keys[str(id)] = keys[str(id)][:16]
+            key = keys[str(id)]
+        else:
+            key = "0"
+            pass
+        self.apiString = json.dumps(keys)
+        self.save()
+        return id, keys[str(id)]
 
     def delKey(self, id):
         try:
@@ -61,19 +87,32 @@ class Faction(models.Model):
         self.apiString = json.dumps(keys)
         self.save()
 
-    def getRadomKey(self):
+    def getRandomKey(self):
         import random
         try:
             keys = json.loads(self.apiString)
         except:
             keys = {}
+        ignore = []
+        for k, v in keys.items():
+            if len(v) != 16:
+                ignore.append(k)
+        for k in ignore:
+            del keys[k]
         return random.choice(list(keys.items())) if len(keys) else ("0", "")
 
-    def getAllPairs(self):
+    def getAllPairs(self, enabledKeys=False):
         try:
             keys = json.loads(self.apiString)
         except:
             keys = {}
+        if enabledKeys:
+            ignore = []
+            for k, v in keys.items():
+                if len(v) != 16:
+                    ignore.append(k)
+            for k in ignore:
+                del keys[k]
         return list(keys.items())
 
     def numberOfReportsToCreate(self):
@@ -83,7 +122,17 @@ class Faction(models.Model):
         return bool(self.chain_set.filter(tId=0))
 
     def nKeys(self):
-        return len(json.loads(self.apiString))
+        try:
+            keys = json.loads(self.apiString)
+        except:
+            keys = {}
+        ignore = []
+        for k, v in keys.items():
+            if len(v) != 16:
+                ignore.append(k)
+        for k in ignore:
+            del keys[k]
+        return len(keys)
 
 
 class Chain(models.Model):

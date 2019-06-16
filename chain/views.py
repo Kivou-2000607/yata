@@ -776,12 +776,13 @@ def crontab(request):
                 faction = Faction.objects.filter(tId=player.factionId).first()
                 print('[view.chain.crontab] player with AA. Faction {}'.format(faction))
                 crontabs = dict({})
+                keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
                 for crontab in faction.crontab_set.all():
                     print('[view.chain.crontab]     --> {}'.format(crontab))
                     crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
                     for f in crontab.faction.all():
                         crontabs[crontab.tabNumber]["factions"].append(f)
-                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, 'view': {'crontab': True}}
+                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "faction": faction, 'keys': keys, 'view': {'crontab': True}}
                 page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                 return render(request, page, context)
 
@@ -795,6 +796,33 @@ def crontab(request):
         print("[ERROR] {}".format(traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
+# action view
+def toggleKey(request, id):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleKey] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.toggleKey] faction {} found'.format(factionId))
+
+            id, key = faction.toggleKey(player.tId)
+
+            context = {"player": player, "p": player, "k": key}
+            return render(request, 'chain/crontab-buttons.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+
+    except Exception:
+        print("[ERROR] {}".format(traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 def tree(request):
     try:
