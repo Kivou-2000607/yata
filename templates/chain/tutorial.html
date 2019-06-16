@@ -16,6 +16,7 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
+{% load app_filters %}
 
 <h3>Chain reports</h3>
 <p>AA member is a faction member with the API access permission.</p>
@@ -40,6 +41,7 @@ This file is part of yata.
         <li>Fair fight: \(m_\text{fair}\) depends on your battle stats and your opponent stats.
             <ul><li>\(1 \le m_\text{fair} \le 3\)</li></ul>
     </ul>
+    Credit for the math goes to {{"Proxima"|playerURL:1879587|safe}}. More details can be found in the <a href="https://www.torn.com/wiki/Chaining_2.0" target="_blank">wiki</a>.
 </p>
 <p><b>Flat respect</b> is the respect you earn not taking into account the chain scale multiplier \(m_\text{scale}\):
     $$R_\text{flat} = R_\text{total} / m_\text{scale} = m_\text{fair} \times m_\text{attack} \times m_\text{retal} \times m_\text{war} \times m_\text{group} \times m_\text{overseas} \times R_\text{base}$$
