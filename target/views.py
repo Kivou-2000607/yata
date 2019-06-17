@@ -191,8 +191,8 @@ def refresh(request, targetId):
             player = Player.objects.filter(tId=tId).first()
             key = player.key
             targetJson = json.loads(player.targetJson)
-            attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
-            targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+            attacks = targetJson.get("attacks", dict({}))
+            targets = targetJson.get("targets", dict({}))
 
             # call for target info
             error = False
@@ -202,7 +202,7 @@ def refresh(request, targetId):
 
             else:
                 # get latest attack to target id
-                target = targets.get(targetId)
+                target = targets.get(targetId, dict({}))
                 target["life"] = int(targetInfo["life"]["current"])
                 target["lifeMax"] = int(targetInfo["life"]["maximum"])
                 target["status"] = targetInfo["status"][0].replace("In hospital", "Hosp")
@@ -318,8 +318,8 @@ def add(request):
                     error = targetInfo.get("apiError", "error")
 
                 else:
-                    attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
-                    targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+                    attacks = targetJson.get("attacks", dict({}))
+                    targets = targetJson.get("targets", dict({}))
 
                     if targetId not in targets:
                         added = False
@@ -371,6 +371,7 @@ def add(request):
                     else:
                         print('[view.target.add] target {} already exists'.format(targetId))
 
+            targetJson = json.loads(player.targetJson)
             context = {"targets": targetJson["targets"], "view": {"targets": True}}
             if error:
                 context.update({"apiErrorAdd": error})
