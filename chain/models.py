@@ -38,6 +38,8 @@ class Faction(models.Model):
 
     membersUpda = models.IntegerField(default=0)
 
+    numberOfKeys = models.IntegerField(default=0)
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
@@ -57,6 +59,7 @@ class Faction(models.Model):
             keys[str(id)] = key
 
         self.apiString = json.dumps(keys)
+        self.numberOfKeys = self.nKeys()
         self.save()
 
     def toggleKey(self, id):
@@ -73,7 +76,9 @@ class Faction(models.Model):
         else:
             key = "0"
             pass
+
         self.apiString = json.dumps(keys)
+        self.numberOfKeys = self.nKeys()
         self.save()
         return id, keys[str(id)]
 
@@ -84,7 +89,9 @@ class Faction(models.Model):
             keys = {}
         if str(id) in keys:
             del keys[str(id)]
+
         self.apiString = json.dumps(keys)
+        self.numberOfKeys = self.nKeys()
         self.save()
 
     def getRandomKey(self):

@@ -48,7 +48,6 @@ from chain.models import Crontab
 # render view
 def index(request):
     try:
-        caca
         if request.session.get('player'):
             print('[view.chain.index] get player id from session')
             tId = request.session["player"].get("tId")
@@ -776,6 +775,17 @@ def crontab(request):
             if player.factionAA:
                 faction = Faction.objects.filter(tId=player.factionId).first()
                 print('[view.chain.crontab] player with AA. Faction {}'.format(faction))
+                faction.addKey(player.tId, player.key)
+                faction.save()
+                if not len(faction.crontab_set.all()):
+                    minBusy = min([c.nFactions() for c in Crontab.objects.all()])
+                    for crontab in Crontab.objects.all():
+                        if crontab.nFactions() == minBusy:
+                            crontab.faction.add(faction)
+                            crontab.save()
+                            break
+                    print('[view.chain.crontab] attributed to {} '.format(crontab))
+
                 crontabs = dict({})
                 keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
                 for crontab in faction.crontab_set.all():

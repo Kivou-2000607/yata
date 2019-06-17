@@ -39,7 +39,7 @@ This file is part of yata.
             {% for p, k in keys %}
                 <tr>{% include "chain/crontab-buttons.html" %}</tr>
             {% endfor %}
-            {% if not faction.nKeys %}
+            {% if not faction.numberOfKeys %}
                 <tr><td colspan="3"><span class="warning"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;You don't have any key enabled. Your reports will never be updated.</td></tr>
             {% endif %}
         </tbody>
@@ -71,6 +71,6 @@ This file is part of yata.
         </table>
     {% endfor %}
     {% else %}
-        <div class="error"><i class="fas fa-bug"></i>  You have no crontab associated to your faction. {% if faction.nKeys %} If you just enabled one key click <a href={% url 'chain:index' %}>here</a>. If the problem persist please PM <a>{{"Kivou"|playerURL:"2000607"|safe}}</a> for details.{% else %}You need at least one AA key enabled.{% endif %}</div>
+        <p><span class="warning"><i class="fas fa-bug"></i>  You have no crontab associated to your faction. {% if faction.numberOfKeys %} If you just enabled one key click <a href={% url 'chain:index' %}>here</a>. If the problem persist please PM <a>{{"Kivou"|playerURL:"2000607"|safe}}</a> for details.{% else %}You need at least one AA key enabled.{% endif %}</span></p>
     {% endif %}
 </div>
