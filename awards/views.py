@@ -111,7 +111,8 @@ def list(request, type):
                                         }})
                     except:
                         print('[view.awards.list] error getting info on {}'.format(p))
-
+                
+                print(sorted(hof.items(), key=lambda x: (x[1]["score"], x[1]["nAwarded"]), reverse=True))
                 context = {"player": player, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
