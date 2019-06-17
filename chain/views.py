@@ -48,6 +48,7 @@ from chain.models import Crontab
 # render view
 def index(request):
     try:
+        caca
         if request.session.get('player'):
             print('[view.chain.index] get player id from session')
             tId = request.session["player"].get("tId")
@@ -125,7 +126,7 @@ def index(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -245,7 +246,7 @@ def live(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -314,7 +315,7 @@ def list(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -392,7 +393,7 @@ def report(request, chainId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -536,7 +537,7 @@ def jointReport(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -580,7 +581,7 @@ def members(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -617,7 +618,7 @@ def createReport(request, chainId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -680,7 +681,7 @@ def renderIndividualReport(request, chainId, memberId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -720,7 +721,7 @@ def deleteReport(request, chainId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -759,7 +760,7 @@ def toggleReport(request, chainId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -793,8 +794,9 @@ def crontab(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
 
 # action view
 def toggleKey(request, id):
@@ -821,8 +823,9 @@ def toggleKey(request, id):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
 
 def tree(request):
     try:
@@ -880,5 +883,5 @@ def tree(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))

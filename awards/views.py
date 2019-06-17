@@ -68,7 +68,7 @@ def index(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -120,5 +120,5 @@ def list(request, type):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
