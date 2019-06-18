@@ -46,6 +46,9 @@ def index(request):
             # update inventory of bazaarJson
             error = False
             invtmp = apiCall("user", "", "inventory,display,bazaar", key)
+            for k, v in invtmp.items():
+                if v is None:
+                    invtmp[k] = dict({})
             if 'apiError' in invtmp:
                 error = invtmp
             else:
@@ -300,6 +303,9 @@ def update(request, itemId):
             # update inventory of bazaarJson
             error = False
             invtmp = apiCall("user", "", "inventory,display,bazaar", key)
+            for k, v in invtmp.items():
+                if v is None:
+                    invtmp[k] = dict({})
             if 'apiError' in invtmp:
                 error = {"apiErrorSub": invtmp["apiError"]}
             else:
