@@ -28,14 +28,16 @@ DEBUG = True
 # SECRET_KEY set in config variables
 SECRET_KEY = os.environ['SECRET_KEY']
 
-ALLOWED_HOSTS = ["127.0.0.1", "torn-yata.herokuapp.com"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'player.apps.PlayerConfig',
+    'awards.apps.AwardsConfig',
+    'target.apps.TargetConfig',
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
-    'awards.apps.AwardsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
