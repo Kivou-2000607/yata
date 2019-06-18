@@ -1361,7 +1361,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in userInfo.get("honors_awarded", []) else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [215, 281, 283, 284, 294, 297, 298, 308, 313, 315, 318, 321]:
+                elif int(k) in [215, 281, 283, 284, 294, 297, 298, 308, 313, 315, 318, 321, 729, 730]:
                     # 215 {'name': 'Labyrinth', 'description': 'Purchased from the Token Shop', 'type': 13, 'circulation': 4542, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 431217843, 'title': 'Labyrinth [215]: Rare (4542)'}
                     type = "Token shop"
                     vp["goal"] = 1
@@ -1381,11 +1381,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Supernova": 12,
                         "Pepperoni": 13,
                         "Electric Dream": 15,
+                        "Hairy": 5,
+                        "Backdrop": 5,
                         }
 
                     vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
                     vp["comment"] = ["token needed", "cost {} tokens".format(token[v["name"]])]
-
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [221, 277]:

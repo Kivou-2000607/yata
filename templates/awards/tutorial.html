@@ -16,6 +16,7 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
+{% load app_filters %}
 
 <h3>Awards Tracker</h3>
 <p>All awards data are updated upon refresh of the page.<br />
@@ -27,4 +28,5 @@ with \(n(a)\), the number of player having the award \(a\)</li>, \(r(a)=1/n(a)\)
 If you put your cursor hover the column rarity you'll have the contribution of each honor to this score.<br />
 HoF is updated daily and considers only players who went to the Awards Tracker page.</p>
 
-<p>For the devs, a honors dictionary linking API and banner IDs can be found <a href="https://yata.alwaysdata.net/static/honors/bannersId.json" target="_blank">here</a>.</p>
+<p>For the devs, a honors dictionary linking API and banner IDs can be found <a href="https://yata.alwaysdata.net/static/honors/bannersId.json" target="_blank">here</a>.<br />
+After a tedious work for the initial banners, when in need I take the image id from <a href="https://www.tornstats.com/awards.php" target="_blank">Torn Stats</a>. {{"IceBlueFire"|playerURL:776|safe}} is updating them at an amazing speed, thanks.</p>
