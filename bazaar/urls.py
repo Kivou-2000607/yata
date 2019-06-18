@@ -11,7 +11,7 @@ urlpatterns = [
     re_path(r'^all/$', views.all, name='all'),
 
     re_path(r'^update/(?P<itemId>\w+)$', views.update, name='update'),
-    re_path(r'^update/type/(?P<tType>\w+)$', views.updateType, name='updateType'),
+    # re_path(r'^update/type/(?P<tType>\w+)$', views.updateType, name='updateType'),
     re_path(r'^delete/(?P<itemId>\w+)$', views.delete, name='delete'),
 
     re_path(r'^toggle/(?P<itemId>\w+)$', views.toggle, name='toggle'),

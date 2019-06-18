@@ -73,7 +73,7 @@
         $( "#item-sell-table-" + tId ).load( "/bazaar/delete/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+        $(this).closest("thead").children("tr:first-child").children("th").children("div").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
     // toggle item
@@ -83,7 +83,7 @@
         $( "#item-sell-table-" + tId ).load( "/bazaar/toggle/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        $(this).closest("thead").children("tr:first-child").children("th").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
+        $(this).closest("thead").children("tr:first-child").children("th").children("div").children("form").children("a").children("button").html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
 

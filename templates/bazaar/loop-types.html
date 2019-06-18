@@ -21,7 +21,7 @@ This file is part of yata.
 <div class="catch-me">
     <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}">{{v.0.display_small}} {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
         {% if view.refreshType %}
-            <form class="form-inline"><a href="{% url 'bazaar:updateType' k %}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
+            <form class="form-inline"><a href="bazaar/updateType/{{k}}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
         {% endif %}
     </h2>
 

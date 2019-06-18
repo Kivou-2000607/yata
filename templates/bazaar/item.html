@@ -64,10 +64,19 @@ This file is part of yata.
         </th>
     </tr>
     <tr>
-        <th class="{% if not item.stock %}lack{% endif %}" colspan="2">
-            stock: {{item.stock}}
+        <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title="Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to add {{item.tName}} to your custom list">
+            <form method="post">{% csrf_token %}
+                <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item"> stock: {{item.stock}}&nbsp;&nbsp;
+                {% if item.tId|stringformat:"i" in list %}
+                    <i class="fas fa-toggle-on"></i>
+                {% else %}
+                    <i class="fas fa-toggle-off"></i>
+                {% endif %}
+                </a>
+            </form>
         </th>
     </tr>
+
     <tr>
         <th colspan="2">
             <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
@@ -92,20 +101,8 @@ This file is part of yata.
             {% else %}                                             <tr class="eq "    title="cumulative: ${{data.cumulative|intcomma}}">
             {% endif %}
         {% endif %}
-        <td class="A">{% if data.itemmarket %}*{%endif%}{{data.quantity}}{% if data.quantity == 100 %}+{%endif%}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+        <td class="A">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
         </tr>
     {% endfor %}
-
-    <tr>
-        <th colspan="2">
-            <form method="post">{% csrf_token %}
-                {% if toggleMessage %}
-                    <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item">{{toggleMessage}}</a>
-                {% else %}
-                    <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item">Add / Remove</a>
-                {% endif %}
-            </form>
-        </th>
-    </tr>
 
 </tbody>

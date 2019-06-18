@@ -54,6 +54,9 @@ class Item(models.Model):
     onMarket = models.BooleanField(default=False)
     lastUpdateTS = models.IntegerField(default=0)
     stock = models.IntegerField(default=0)
+    stockI = models.IntegerField(default=0)
+    stockD = models.IntegerField(default=0)
+    stockB = models.IntegerField(default=0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)
