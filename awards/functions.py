@@ -1139,7 +1139,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     # 164 {'name': 'Keen', 'description': 'Spy on people while in the army 100 times', 'type': 0, 'circulation': 2066, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Keen [164]: Extraordinary (2066)'}
                     type = "City jobs"
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("spy", 0)
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("spydone", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"] - vp["current"]), 0)
                     vp["comment"] = ["days left", "as General in the army"]
@@ -1793,7 +1793,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
 
     awardsJson.update({"popTotal": popTotal})
     player.awardsJson = json.dumps(awardsJson)
-    player.awardsInfo = "{:.9f}".format(popPerso / float(popTotal))
+    player.awardsInfo = "{:.4f}".format(popPerso / float(popTotal))
     player.awardsUpda = int(timezone.now().timestamp())
     player.save()
 

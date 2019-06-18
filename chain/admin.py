@@ -126,6 +126,7 @@ class ChainAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'hasReport', 'tId', 'nHits', 'respect', 'status']
     actions = [chain_on_report, chain_off_report]
     inlines = [ReportInline]
+    search_fields = ['tId']
 
 
 admin.site.register(Chain, ChainAdmin)
@@ -145,9 +146,10 @@ class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'number_of_keys', 'last_api_call', 'lastAPICall', 'crontabs']
+    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'numberOfKeys', 'last_api_call', 'lastAPICall', 'crontabs']
     inlines = [ChainInline, MemberInline]
-    # list_filter = ['ongoing_reports', 'number_of_keys']
+    list_filter = ['numberOfKeys']
+    search_fields = ['name', 'tId']
 
     def live_chain(self, instance):
         return(bool(len(instance.chain_set.filter(tId=0))))
@@ -159,8 +161,8 @@ class FactionAdmin(admin.ModelAdmin):
     def ongoing_reports(self, instance):
         return("{}/{}".format(len(instance.chain_set.filter(createReport=True)), len(instance.chain_set.all())))
 
-    def number_of_keys(self, instance):
-        return(len(json.loads(instance.apiString)))
+    # def number_of_keys(self, instance):
+    #     return(len(json.loads(instance.apiString)))
 
     def last_api_call(self, instance):
         return(timestampToDate(instance.lastAPICall))

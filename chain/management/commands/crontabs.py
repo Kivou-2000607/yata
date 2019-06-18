@@ -32,7 +32,7 @@ class Command(BaseCommand):
             crontab.faction.clear()
 
         for faction in Faction.objects.all():
-            if faction.nKeys():
+            if faction.numberOfKeys:
                 minBusy = min([c.nFactions() for c in Crontab.objects.all()])
                 for crontab in Crontab.objects.all():
                     if crontab.nFactions() == minBusy:

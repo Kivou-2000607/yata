@@ -55,7 +55,7 @@ class Command(BaseCommand):
             print("[command.chain.chainreport] #{}: {}".format(i + 1, faction))
 
             # get api key
-            if not faction.nKeys():
+            if not faction.numberOfKeys:
                 print("[command.chain.livereport]    --> no api key found")
 
             else:

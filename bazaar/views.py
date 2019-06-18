@@ -85,7 +85,7 @@ def index(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -125,7 +125,7 @@ def custom(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -169,7 +169,7 @@ def default(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -213,7 +213,7 @@ def sets(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -257,7 +257,7 @@ def all(request):
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -274,7 +274,7 @@ def details(request, itemId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -326,7 +326,7 @@ def update(request, itemId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -348,7 +348,7 @@ def delete(request, itemId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
@@ -384,5 +384,5 @@ def toggle(request, itemId):
             return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
