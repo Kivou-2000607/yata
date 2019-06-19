@@ -40,7 +40,7 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             context = {"player": player, 'allNews': News.objects.all().order_by("-date")}
         else:
-            context = {'allNews': News.objects.all().order_by("-timestamp")}
+            context = {'allNews': News.objects.all().order_by("-date")}
 
         return render(request, 'yata.html', context)
 
