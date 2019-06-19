@@ -135,7 +135,7 @@ class Player(models.Model):
 
 class News(models.Model):
     player = models.ManyToManyField(Player, blank=True)
-    type = models.CharField(default="News", max_length=16)
+    type = models.CharField(default="Update", max_length=16)
     text = models.TextField()
     authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
     authorName = models.CharField(default="Kivou", max_length=32)
