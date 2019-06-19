@@ -63,4 +63,18 @@
             For suggestions and bug reports you can either <a href="https://github.com/Kivou-2000607/yata/issues" target="_blank">post an issue</a>, join the <a href="https://discord.gg/tZaYpbG" target="_blank">discord</a> or use the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118&b=0&a=0" target="_blank">forum thread</a>.
         </p>
     </div>
+
+    {% if allNews|length %}
+        <div class="catch-me">
+            <h2 class="title grey toggle-display rounded"><i class="far fa-calendar-check"></i>&nbsp;&nbsp;News feed&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+            <div class="module tutorial" style="display: none;">
+                <ul>
+                {% for news in allNews %}
+                    <li><b>{{ news.type }}</b> of {{ news.timestamp|ts2date:"%Y/%m/%d" }}: {{ news.text|safe }}&nbsp;&nbsp;{{news.authorName|playerURL:news.authorId|safe}}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}

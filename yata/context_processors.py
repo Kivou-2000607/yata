@@ -1,4 +1,4 @@
-{% comment %}
+"""
 Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,20 +15,20 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
+"""
+from player.models import News
+from player.models import Player
 
-<h2 class="title grey"><i class="far fa-life-ring"></i>&nbsp;&nbsp;Tutorial</h2>
-<div class="module tutorial">
-    {% include "bazaar/tutorial.html" %}
-    <hr class="sep"></hr>
 
-    {% include "chain/tutorial.html" %}
-    {% include "chain/tutorial-aa.html" %}
-    <hr class="sep"></hr>
-
-    {% include "target/tutorial.html" %}
-    <hr class="sep"></hr>
-
-    {% include "awards/tutorial.html" %}
-
-</div>
+def news(request):
+    print("[yata.context_processors.news]")
+    if request.session.get('player'):
+        print("[yata.context_processors.news] in")
+        tId = request.session["player"].get("tId")
+        player = Player.objects.filter(tId=tId).first()
+        news = News.objects.last()
+        news = False if news in player.news_set.all() else news
+        return {"lastNews": news}
+    else:
+        print("[yata.context_processors.news] out")
+        return {}

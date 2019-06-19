@@ -118,6 +118,7 @@ div.error {
     border: 1px;
 }
 
+form.flush-right,
 span.flush-right,
 a.flush-right {
     float: right;
@@ -138,11 +139,11 @@ span.sep {
 } */
 
 .no-margin {
-    margin: 0px;
+    margin: 0px!important;
 }
 
 .no-padding {
-    padding: 0px;
+    padding: 0px!important;
 }
 
 hr.sep {
@@ -238,4 +239,51 @@ pre {
     padding: 1em 1.5em;
     display: block;
     word-wrap: break-word;
+}
+
+div.overlay{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+
+div.modal-center {
+    width: 300px;
+    max-height: 80%;
+    line-height: 20px;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    /* margin-top: -100px; */
+    margin-left: -150px;
+    border-radius: 5px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.modal-center > div.module {
+    margin-bottom: 0px;
+}
+
+
+div.modal-topright {
+    /* max-width: 100%; */
+    /* max-height: 67.6px; */
+    line-height: 20px;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    background-color: #f1c40f;
+    border-radius: 0px 0px 0px 5px;
+    padding: 10px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: hidden;
 }

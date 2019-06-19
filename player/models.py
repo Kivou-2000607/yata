@@ -20,6 +20,7 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
+
 class Player(models.Model):
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)
@@ -126,8 +127,16 @@ class Player(models.Model):
             targetsAttacks["targets"] = targets
             self.targetJson = json.dumps(targetsAttacks)
 
-
         self.lastUpdateTS = int(timezone.now().timestamp())
         self.save()
 
         print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
+
+
+class News(models.Model):
+    player = models.ManyToManyField(Player, blank=True)
+    type = models.CharField(default="News", max_length=16)
+    text = models.TextField()
+    authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
+    authorName = models.CharField(default="Kivou", max_length=32)
+    timestamp = models.IntegerField(default=int(timezone.now().timestamp()))

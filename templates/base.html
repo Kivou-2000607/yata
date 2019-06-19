@@ -75,7 +75,15 @@ This file is part of yata.
             $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
         });
 
-        // show/hide
+        $(document).on('click', 'a.news-read', function(e){
+            e.preventDefault();
+            $(this).closest("form").load("/player/readNews/", {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $(this).closest("div").fadeOut(2000);
+        });
+
+        // show/hide module
         $(document).on('click', 'h2.toggle-display', function(e){
             e.preventDefault();
             var h = $(this);

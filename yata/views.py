@@ -27,6 +27,7 @@ import json
 import traceback
 
 from player.models import Player
+from player.models import News
 from chain.models import Faction
 from yata.handy import apiCall
 
@@ -37,9 +38,9 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            context = {"player": player}
+            context = {"player": player, 'allNews': News.objects.all().order_by("-timestamp")}
         else:
-            context = {}
+            context = {'allNews': News.objects.all().order_by("-timestamp")}
 
         return render(request, 'yata.html', context)
 
@@ -144,7 +145,8 @@ def api(request):
         lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
         lastActions["total"] = len(Player.objects.all())
         lastActions["string"] = "{} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"])
-
+        import time
+        time.sleep(10)
         return HttpResponse(json.dumps(lastActions), content_type="application/json")
     except:
 
