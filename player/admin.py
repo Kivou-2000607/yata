@@ -22,11 +22,7 @@ admin.site.register(Player, PlayerAdmin)
 
 
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'date', 'type', 'timestamp']
+    list_display = ['pk', 'date', 'type', 'date']
     search_fields = ['name', 'tId']
-
-    def date(self, instance):
-        return timestampToDate(instance.timestamp)
-
 
 admin.site.register(News, NewsAdmin)

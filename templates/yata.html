@@ -70,7 +70,7 @@
             <div class="module tutorial" style="display: none;">
                 <ul>
                 {% for news in allNews %}
-                    <li><b>{{ news.type }}</b> of {{ news.timestamp|ts2date:"%Y/%m/%d" }}: {{ news.text|safe }}&nbsp;&nbsp;{{news.authorName|playerURL:news.authorId|safe}}</li>
+                    <li><b>{{ news.type }}</b> of {{ news.date }}: {{ news.text|safe }}&nbsp;&nbsp;{{news.authorName|playerURL:news.authorId|safe}}</li>
                 {% endfor %}
                 </ul>
             </div>

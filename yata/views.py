@@ -38,7 +38,7 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            context = {"player": player, 'allNews': News.objects.all().order_by("-timestamp")}
+            context = {"player": player, 'allNews': News.objects.all().order_by("-date")}
         else:
             context = {'allNews': News.objects.all().order_by("-timestamp")}
 

@@ -21,6 +21,6 @@ This file is part of yata.
 {% if lastNews %}
     <div class="modal-topright">
         <b>{{lastNews.type}}</b>: {{ lastNews.text|safe }}<br />
-        <i>{{lastNews.authorName}}, {{lastNews.timestamp|ts2date:"%Y/%m/%d"}}</i><form class="form-inline flush-right no-margin">{% csrf_token %}<a href="" class="news-read"><i class="fas fa-times"></i> Mark as read</a></form>
+        <i>{{lastNews.authorName}}, {{lastNews.date}}</i><form class="form-inline flush-right no-margin">{% csrf_token %}<a href="" class="news-read"><i class="fas fa-times"></i> Mark as read</a></form>
     </div>
 {% endif %}

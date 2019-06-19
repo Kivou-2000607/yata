@@ -26,7 +26,7 @@ def news(request):
         print("[yata.context_processors.news] in")
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
-        news = News.objects.last()
+        news = News.objects.all().order_by("-date").first()
         news = False if news in player.news_set.all() else news
         return {"lastNews": news}
     else:
