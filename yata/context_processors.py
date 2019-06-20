@@ -21,9 +21,7 @@ from player.models import Player
 
 
 def news(request):
-    print("[yata.context_processors.news]")
     if request.session.get('player'):
-        print("[yata.context_processors.news] in")
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         news = News.objects.all().order_by("-date").first()

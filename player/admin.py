@@ -22,7 +22,8 @@ admin.site.register(Player, PlayerAdmin)
 
 
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'date', 'type', 'date']
-    search_fields = ['name', 'tId']
+    list_display = ['__str__', 'date', 'type', 'authorName', 'authorId', 'read']
+    filter_horizontal = ('player',)
+
 
 admin.site.register(News, NewsAdmin)

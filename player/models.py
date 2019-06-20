@@ -140,3 +140,9 @@ class News(models.Model):
     authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
     authorName = models.CharField(default="Kivou", max_length=32)
     date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{} of {:%Y/%M/%d} by {}".format(self.type, self.date, self.authorName)
+
+    def read(self):
+        return len(self.player.all())
