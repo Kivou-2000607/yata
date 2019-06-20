@@ -31,6 +31,10 @@
         }
     });
 
+    $(document).ready(function(){
+        $("#badges").load("badges");
+    });
+
 </script>
 {% endblock %}
 
@@ -52,11 +56,7 @@
         {% endif %}
     </div>
     <div class="module rounded">
-        <p>
-            <a href="https://github.com/Kivou-2000607/yata" target="_blank"><img src="https://img.shields.io/github/tag-date/kivou-2000607/yata.svg?color=%23447e9b&label=Version&logo=github" alt="tag" /></a>
-            <a href="https://github.com/Kivou-2000607/yata/commits/master" target="_blank"><img src="https://img.shields.io/github/last-commit/kivou-2000607/yata.svg?color=%23447e9b&label=Last%20update&logo=github" alt="release" /></a>
-            <img src="https://img.shields.io/badge/dynamic/json.svg?&query=string&url=https%3A%2F%2Fyata.alwaysdata.net%2Fapi&color=%23447e9b&label=Users: total / monthly / daily" alt="Users" />
-        </p>
+        <p id="badges"></p>
 
         <p><b>YATA</b> is an open source website developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}.
             Source code can be found <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i> here</a>.<br />

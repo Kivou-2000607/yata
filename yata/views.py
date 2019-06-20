@@ -151,3 +151,7 @@ def api(request):
     except:
 
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+def badges(request):
+    return render(request, "yata/badges.html")
