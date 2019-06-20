@@ -142,11 +142,19 @@ def apiCallAttacks(faction, chain, key=None):
             else:
                 feedAttacks = len(attacks) > 95
             beginTS = max(tableTS)
-            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
+            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), maxHit, beginTS, endTS, feedAttacks))
             i += 1
         else:
             print("[function.chain.apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False
+
+        # check if attack timestamp out of bound
+        if chain.start > beginTS or chain.end < beginTS:
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(chain.start, beginTS, endTS))
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(timestampToDate(chain.start), timestampToDate(beginTS), timestampToDate(endTS)))
+            report.attacks_set.last().delete()
+            print('[function.chain.apiCallAttacks] Deleting last attacks and exiting')
+            return chainDict
 
     if not chain.tId:
         try:
