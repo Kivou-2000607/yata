@@ -128,8 +128,8 @@
         $(this).html("");
     });
 
-    // toggle key from crontab list of keys
-    $(document).on('click', '.chain-crontab-toggle-key', function(e){
+    // toggle key in aa
+    $(document).on('click', '.chain-aa-toggle-key', function(e){
         e.preventDefault();
         var id = this.href.split("/").pop();
         var reload = $(this).parents("tr");
@@ -140,6 +140,19 @@
         reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
+    // change chain threshold in aa
+    $(document).on('change', '#chain-aa-change-threshold', function(e){
+        e.preventDefault();
+        var reload = $(this);
+        var threshold = reload.children("p").children("select").val();
+        reload.load( "/chain/chainThreshold/", {
+            threshold: threshold,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        // reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+    // faction tree
     $(document).on('change', '[id^="chain-tree-"]', function(e){
         e.preventDefault();
         var v = $(this).val();

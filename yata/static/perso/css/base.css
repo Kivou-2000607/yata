@@ -34,8 +34,7 @@ a, th {
 ul li { list-style-type: disc; }
 ul ul li { list-style-type: circle; }
 
-a.form-inline,
-form.form-inline { display: inline; }
+a.form-inline, form.form-inline { display: inline!important; }
 
 div.module {
     background-color: #cccccc00;

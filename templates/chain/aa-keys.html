@@ -41,7 +41,7 @@ This file is part of yata.
 <td class="b">
     {% if p.tId == player.tId %}
         <form>{% csrf_token %}
-            <a class="chain-crontab-toggle-key" href={% url 'chain:toggleKey' p.tId %}>
+            <a class="chain-aa-toggle-key" href={% url 'chain:toggleKey' p.tId %}>
                {% if k|length == 16 %}
                    <i class="fas fa-toggle-on" title="Disable my key"></i>
                {% else %}

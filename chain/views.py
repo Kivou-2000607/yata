@@ -763,10 +763,10 @@ def toggleReport(request, chainId):
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
 
 
-def crontab(request):
+def aa(request):
     try:
         if request.session.get('player'):
-            print('[view.chain.crontab] get player id from session')
+            print('[view.chain.aa] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
@@ -774,7 +774,7 @@ def crontab(request):
 
             if player.factionAA:
                 faction = Faction.objects.filter(tId=player.factionId).first()
-                print('[view.chain.crontab] player with AA. Faction {}'.format(faction))
+                print('[view.chain.aa] player with AA. Faction {}'.format(faction))
                 faction.addKey(player.tId, player.key)
                 faction.save()
                 if not len(faction.crontab_set.all()):
@@ -784,16 +784,16 @@ def crontab(request):
                             crontab.faction.add(faction)
                             crontab.save()
                             break
-                    print('[view.chain.crontab] attributed to {} '.format(crontab))
+                    print('[view.chain.aa] attributed to {} '.format(crontab))
 
                 crontabs = dict({})
                 keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
                 for crontab in faction.crontab_set.all():
-                    print('[view.chain.crontab]     --> {}'.format(crontab))
+                    print('[view.chain.aa]     --> {}'.format(crontab))
                     crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
                     for f in crontab.faction.all():
                         crontabs[crontab.tabNumber]["factions"].append(f)
-                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "faction": faction, 'keys': keys, 'view': {'crontab': True}}
+                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
                 page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                 return render(request, page, context)
 
@@ -826,7 +826,38 @@ def toggleKey(request, id):
             id, key = faction.toggleKey(player.tId)
 
             context = {"player": player, "p": player, "k": key}
-            return render(request, 'chain/crontab-buttons.html', context)
+            return render(request, 'chain/aa-keys.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+
+    except Exception:
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+# action view
+def chainThreshold(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleKey] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.toggleKey] faction {} found'.format(factionId))
+
+            previousThreshold = faction.hitsThreshold
+            faction.hitsThreshold = int(request.POST.get("threshold", 100))
+            faction.save()
+
+            context = {"player": player, "faction": faction, "bonus": BONUS_HITS, "onChange": True, "previousThreshold": previousThreshold}
+            return render(request, 'chain/aa-threshold.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
