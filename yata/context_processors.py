@@ -18,6 +18,7 @@ This file is part of yata.
 """
 from player.models import News
 from player.models import Player
+from django.utils import timezone
 
 
 def news(request):
@@ -25,7 +26,7 @@ def news(request):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
         news = News.objects.all().order_by("-date").first()
-        news = False if news in player.news_set.all() else news
+        news = False if news in player.news_set.all() or news.date > (timezone.datetime.now(timezone.utc) + timezone.timedelta(weeks=2)) else news
         return {"lastNews": news}
     else:
         print("[yata.context_processors.news] out")
