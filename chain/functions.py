@@ -159,11 +159,12 @@ def apiCallAttacks(faction, chain, key=None):
     if not chain.tId:
         try:
             lastAttacks = report.attacks_set.last()
-            if len(json.loads(lastAttacks)) < 100:
-                report.attacks_set.last().delete()
+            n = len(json.loads(lastAttacks.req)[0])
+            if n < 100:
+                lastAttacks.delete()
                 print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
             else:
-                print('[function.chain.apiCallAttacks] Not delete last attacks for live chains since length = '.format(len(json.loads(lastAttacks))))
+                print('[function.chain.apiCallAttacks] Not delete last attacks for live chains since length = {}'.format(n))
         except:
             pass
 
@@ -360,7 +361,7 @@ def updateMembers(faction, key=None):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
 
-    # # get key
+    # get key
     if key is None:
         name, key = faction.getRandomKey()
         print("[function.chain.updateMembers] using {} key".format(name))
