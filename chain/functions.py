@@ -158,8 +158,12 @@ def apiCallAttacks(faction, chain, key=None):
 
     if not chain.tId:
         try:
-            report.attacks_set.last().delete()
-            print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
+            lastAttacks = report.attacks_set.last()
+            if len(json.loads(lastAttacks)) < 100:
+                report.attacks_set.last().delete()
+                print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
+            else:
+                print('[function.chain.apiCallAttacks] Not delete last attacks for live chains since length = '.format(len(json.loads(lastAttacks))))
         except:
             pass
 
