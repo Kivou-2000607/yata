@@ -787,6 +787,8 @@ def aa(request):
                     print('[view.chain.aa] attributed to {} '.format(crontab))
 
                 crontabs = dict({})
+                # update members before to avoid coming here before having members
+                updateMembers(faction, key=player.key)
                 keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
                 for crontab in faction.crontab_set.all():
                     print('[view.chain.aa]     --> {}'.format(crontab))

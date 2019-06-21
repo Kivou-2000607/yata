@@ -407,6 +407,12 @@ def updateMembers(faction, key=None):
             # print('[VIEW members] member {} deleted'.format(m))
             m.delete()
 
+    # remove old AA keys
+    for id, key in faction.getAllPairs():
+        if not len(faction.member_set.filter(tId=id)):
+            # print("[function.chain.updateMembers] delete AA key {}".format(id))
+            faction.delKey(id)
+
     faction.save()
     return faction.member_set.all()
 
