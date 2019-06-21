@@ -19,8 +19,6 @@ This file is part of yata.
 
 from django.contrib import admin
 
-import json
-
 from .models import Faction
 from .models import Chain
 from .models import Member
@@ -139,6 +137,7 @@ class MemberInline(admin.TabularInline):
     can_delete = False
     readonly_fields = ('tId', 'name', 'daysInFaction', 'lastAction', 'status')
 
+
 admin.site.register(Member)
 
 
@@ -175,7 +174,8 @@ admin.site.register(Faction, FactionAdmin)
 
 
 class CrontabAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'number_of_factions', 'list_of_factions']
+    list_display = ['__str__', 'tabNumber', 'open', 'number_of_factions', 'list_of_factions']
+    filter_horizontal = ('faction',)
 
     def number_of_factions(self, instance):
         return len(instance.faction.all())

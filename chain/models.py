@@ -72,15 +72,13 @@ class Faction(models.Model):
                 keys[str(id)] += "0"
             elif len(keys[str(id)]) == 17:
                 keys[str(id)] = keys[str(id)][:16]
-            key = keys[str(id)]
         else:
-            key = "0"
             pass
 
         self.apiString = json.dumps(keys)
         self.numberOfKeys = self.nKeys()
         self.save()
-        return id, keys[str(id)]
+        return id, keys.get(str(id), "0")
 
     def delKey(self, id):
         try:
@@ -233,6 +231,7 @@ class Crontab(models.Model):
     id = models.AutoField(primary_key=True)
     tabNumber = models.IntegerField(default=0)
     faction = models.ManyToManyField(Faction, blank=True)
+    open = models.BooleanField(default=True)
 
     def __str__(self):
         return "Crontab #{}".format(self.tabNumber)
