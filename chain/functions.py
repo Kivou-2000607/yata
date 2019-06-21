@@ -142,16 +142,29 @@ def apiCallAttacks(faction, chain, key=None):
             else:
                 feedAttacks = len(attacks) > 95
             beginTS = max(tableTS)
-            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), v["chain"], beginTS, endTS, feedAttacks))
+            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), maxHit, beginTS, endTS, feedAttacks))
             i += 1
         else:
             print("[function.chain.apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
             feedAttacks = False
 
+        # check if attack timestamp out of bound
+        if chain.start > beginTS or chain.end < beginTS:
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(chain.start, beginTS, endTS))
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(timestampToDate(chain.start), timestampToDate(beginTS), timestampToDate(endTS)))
+            report.attacks_set.last().delete()
+            print('[function.chain.apiCallAttacks] Deleting last attacks and exiting')
+            return chainDict
+
     if not chain.tId:
         try:
-            report.attacks_set.last().delete()
-            print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
+            lastAttacks = report.attacks_set.last()
+            n = len(json.loads(lastAttacks.req)[0])
+            if n < 100:
+                lastAttacks.delete()
+                print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
+            else:
+                print('[function.chain.apiCallAttacks] Not delete last attacks for live chains since length = {}'.format(n))
         except:
             pass
 
@@ -348,7 +361,7 @@ def updateMembers(faction, key=None):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
 
-    # # get key
+    # get key
     if key is None:
         name, key = faction.getRandomKey()
         print("[function.chain.updateMembers] using {} key".format(name))
