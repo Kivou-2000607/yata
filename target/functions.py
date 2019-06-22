@@ -37,6 +37,10 @@ def updateAttacks(player):
         attacks = req.get("attacks", dict({}))
         timestamp = req.get("timestamp", 0)
 
+        # in case 0 attacks API returns []
+        if not len(attacks):
+            attacks = dict({})
+
         remove = []
         for k, v in attacks.items():
             v["defender_id"] = str(v["defender_id"])  # have to string for json key
