@@ -21,7 +21,7 @@
             check: $("#yata-login-remember").is(':checked'),
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><div class="loader"></div></div>');
+        reload.html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
     });
 
     $(document).on('click', '#yata-delete-submit', function(e){
