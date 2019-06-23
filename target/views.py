@@ -202,7 +202,13 @@ def refresh(request, targetId):
 
             else:
                 # get latest attack to target id
-                target = targets.get(targetId, dict({}))
+                defaultValue = dict({})
+                defaultValue["targetName"] = "?"
+                defaultValue["result"] = "?"
+                defaultValue["endTS"] = 0
+                defaultValue["fairFight"] = 1.0
+
+                target = targets.get(targetId, dict(defaultValue))
                 target["life"] = int(targetInfo["life"]["current"])
                 target["lifeMax"] = int(targetInfo["life"]["maximum"])
                 target["status"] = targetInfo["status"][0].replace("In hospital", "Hosp")
@@ -222,6 +228,7 @@ def refresh(request, targetId):
                         target["respect"] = float(v['modifiers']['fairFight']) * 0.25 * (math.log(level) + 1) if level else 0
 
                         break
+
 
                 targetJson["targets"][targetId] = target
                 player.targetJson = json.dumps(targetJson)
