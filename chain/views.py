@@ -104,8 +104,9 @@ def index(request):
                 faction.addKey(player.tId, player.key)
                 faction.save()
                 if not len(faction.crontab_set.all()):
-                    minBusy = min([c.nFactions() for c in Crontab.objects.all()])
-                    for crontab in Crontab.objects.all():
+                    openCrontab = Crontab.objects.filter(open=True).all()
+                    minBusy = min([c.nFactions() for c in openCrontab])
+                    for crontab in openCrontab:
                         if crontab.nFactions() == minBusy:
                             crontab.faction.add(faction)
                             crontab.save()
@@ -778,8 +779,9 @@ def aa(request):
                 faction.addKey(player.tId, player.key)
                 faction.save()
                 if not len(faction.crontab_set.all()):
-                    minBusy = min([c.nFactions() for c in Crontab.objects.all()])
-                    for crontab in Crontab.objects.all():
+                    openCrontab = Crontab.objects.filter(open=True).all()
+                    minBusy = min([c.nFactions() for c in openCrontab])
+                    for crontab in openCrontab:
                         if crontab.nFactions() == minBusy:
                             crontab.faction.add(faction)
                             crontab.save()

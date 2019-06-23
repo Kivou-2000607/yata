@@ -26,9 +26,9 @@ from chain.models import Faction
 class Command(BaseCommand):
     def handle(self, *args, **options):
         print("[command.chain.crontab] start")
-        openedCrontabs = Crontab.objects.filter(open=True).all()
+        openCrontab = Crontab.objects.filter(open=True).all()
 
-        for crontab in openedCrontabs:
+        for crontab in openCrontab:
             print("[command.chain.crontab] {} cleared".format(crontab))
             crontab.faction.clear()
 
@@ -37,8 +37,8 @@ class Command(BaseCommand):
             if checkCrontab is not None:
                 print("[command.chain.crontab] faction {} already on {}".format(faction, checkCrontab))
             elif faction.numberOfKeys:
-                minBusy = min([c.nFactions() for c in openedCrontabs])
-                for crontab in openedCrontabs:
+                minBusy = min([c.nFactions() for c in openCrontab])
+                for crontab in openCrontab:
                     if crontab.nFactions() == minBusy:
                         crontab.faction.add(faction)
                         crontab.save()
