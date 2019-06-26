@@ -333,6 +333,7 @@ d = {
     647: 470601805,  # Well built
     550: 253616541,  # Arrowshot
     638: 228161802,  # Funambulist
+    498: 914416584,  # Shielded
 
     # 11
     163: 431464057,  # Fascination
