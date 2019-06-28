@@ -79,9 +79,7 @@ $(document).ready(function() {
 
 <h2 class="title">Armory breakdown</h2>
 <div class="module chain-armory">
-    {% if faction.armoryString == "{}"%}
-        <p class="error">The armory database is empty. You need a AA member to fill it.</p>
-    {% elif armory|length %}
+    {% if armory|length %}
         {% for item, members in armory.items %}
         <table class="center chain-armory-toggle-view trshadow">
             <tr>
@@ -110,6 +108,6 @@ $(document).ready(function() {
         {# <br /> #}
         {% endfor %}
     {% else %}
-        <p class="error">Nothing between these dates...</p>
+        <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
     {% endif %}
 </div>
