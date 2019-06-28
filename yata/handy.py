@@ -68,3 +68,10 @@ def timestampToDate(timestamp):
     import datetime
     import pytz
     return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+
+
+def cleanhtml(raw_html):
+    import re
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext

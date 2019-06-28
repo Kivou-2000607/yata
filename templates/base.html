@@ -42,9 +42,11 @@ This file is part of yata.
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
     		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     	    crossorigin="anonymous"></script>
-    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
     		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-    		crossorigin="anonymous"></script> -->
+    		crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 
     <!-- load table sorter  -->
     <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
@@ -87,7 +89,7 @@ This file is part of yata.
         $(document).on('click', 'h2.toggle-display', function(e){
             e.preventDefault();
             var h = $(this);
-            console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
+            // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
             if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
                 var i = h.find("i.fa-caret-right");
                 var div = h.closest(".catch-me").children("div");

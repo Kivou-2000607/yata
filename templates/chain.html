@@ -167,7 +167,40 @@
         $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Creating new image')
     });
 
+    // toggle armory record
+    $(document).on('click', '#chain-armory-record', function(e){
+        e.preventDefault();
+        var reload = $(this).closest("table");
+        reload.load( "/chain/toggleArmoryRecord/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="2" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
 
+    // reset armory record
+    $(document).on('click', '#chain-armory-reset', function(e){
+        e.preventDefault();
+        var reload = $(this).closest("table");
+        reload.load( "/chain/resetArmoryRecord/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="2" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+    // reset armory record
+    $(document).on('click', '.chain-armory-toggle-view', function(e){
+        e.preventDefault();
+        var target = $(this).next("table");
+        console.log(target);
+        var i = $(this).find("i.fa-caret-right");
+        target.slideToggle("fast", function(){
+            if(target.is(':visible')) {
+                i.addClass("fa-rotate-90");
+            } else {
+                i.removeClass("fa-rotate-90");
+            }
+        });
+    });
 
 </script>
 {% endblock %}

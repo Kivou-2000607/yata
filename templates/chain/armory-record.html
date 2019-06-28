@@ -1,0 +1,33 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if faction.armoryRecord %}
+    <td>
+        <a id="chain-armory-record" href=""><i class="far fa-stop-circle"></i>&nbsp;&nbsp;Stop recording</a>
+        &nbsp;&nbsp;
+        <i class="far fa-check-square valid"></i>&nbsp;&nbsp;Recording armory news
+    </td>
+{% else %}
+    <td>
+        <a id="chain-armory-record" href=""><i class="far fa-play-circle"></i>&nbsp;&nbsp;Start recording</a>
+        &nbsp;&nbsp;
+        <i class="far fa-square error"></i>&nbsp;&nbsp;Not recording armory news
+    </td>
+{% endif %}
+<td><a id="chain-armory-reset" href=""><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete records</a><i class="far fa-question-circle flush-right" style="cursor: help;" title="If you start recording, all the current and new events will be saved. &#13;If you stop recording, they will still be available along with the last 1000 events.&#13;If you delete the records, only the last 1000 events will be available. &#13;When recording new events are automatically saved every 5 minutes.&#13;If you have more than 1000 event in 5 minutes some will be lost."></i></td>

@@ -83,6 +83,18 @@ table.chain-crontab td.a { width: 50%; text-align: left; }
 table.chain-crontab td.b { width: 25%; text-align: center; }  /* x2 */
 
 
+table.chain-armory-filter th { width: 50%; text-align: center; }  /* x2 */
+table.chain-armory-record td { width: 50%; text-align: center; }  /* x2 */
+
+table.chain-armory-toggle-view tr { cursor: pointer; }
+table.chain-armory-toggle-view td.a { width: 95%; text-align: left; font-weight: bold; cursor: pointer; }  /* x1 */
+table.chain-armory-toggle-view td.b { width: 5%; text-align: center; cursor: pointer; }  /* x1 */
+
+table.chain-armory-breakdown { display: none; }
+table.chain-armory-breakdown td.a { width: 50%; text-align: left; }  /* x1 */
+table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
+
+
 .progress-bar {
     background-color: lightgray;
     border-radius: 4px;

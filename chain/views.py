@@ -34,6 +34,7 @@ import os
 from player.models import Player
 
 from yata.handy import apiCall
+from yata.handy import cleanhtml
 from yata.handy import timestampToDate
 
 from chain.functions import BONUS_HITS
@@ -926,6 +927,180 @@ def tree(request):
 
         else:
             return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+
+    except Exception:
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+def armory(request):
+    try:
+        if request.session.get('player'):
+            print('[view.armory] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+            faction = Faction.objects.filter(tId=player.factionId).first()
+
+
+            if player.factionAA:
+                print('[view.armory] player with AA. Faction {}'.format(faction))
+                armoryRaw = apiCall('faction', player.factionId, 'armorynewsfull', player.key, sub="armorynews")
+                if 'apiError' in armoryRaw:
+                    context = {'player': player, 'chaincat': True, 'faction': faction, "apiErrorSub": armoryRaw["apiError"]}
+                    page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+                    return render(request, page, context)
+
+                if faction.armoryRecord:
+                    for k, v in json.loads(faction.armoryString).items():
+                        if k not in armoryRaw:
+                            armoryRaw[k] = v
+                    faction.armoryString = json.dumps(armoryRaw)
+                else:
+                    faction.armoryString = "{}"
+
+                faction.save()
+
+            # filter  by date if post
+            armoryRaw = json.loads(faction.armoryString);
+            now = int(timezone.now().timestamp())
+            timestamps = {"start": now, "end": 0, "fstart": now, "fend": 0, "size": 0}
+            toDel = []
+            for k, v in armoryRaw.items():
+                if type(v) is not dict:
+                    toDel.append(k)
+                else:
+                    ts = int(v.get("timestamp", 0))
+                    timestamps["start"] = min(timestamps["start"], ts)
+                    timestamps["end"] = max(timestamps["end"], ts)
+                    if ts < int(request.POST.get("start", 0)) or ts > int(request.POST.get("end", now)):
+                        toDel.append(k)
+
+            for k in toDel:
+                del armoryRaw[k]
+
+            timestamps["fstart"] = request.POST.get("start", timestamps.get("start"))
+            timestamps["fend"] = request.POST.get("end", timestamps.get("end"))
+            timestamps["size"] = len(armoryRaw)
+
+            armory = dict({})
+            timestamps["nObjects"] = 0
+            for k, v in armoryRaw.items():
+                # print(v)
+                ns = cleanhtml(v.get("news", "")).split(" ")
+                # print(ns)
+                if 'used' in ns:
+                    member = ns[0]
+                    item = " ".join(ns[6:-1]).split(":")[0].strip()
+                    timestamps["nObjects"] += 1
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][0] += 1
+                        else:
+                            armory[item][member] = [1, 0]
+                    else:
+                        # new item and new member [taken, given]
+                        armory[item] = {member: [1, 0]}
+
+                elif 'deposited' in ns:
+                    member = ns[0]
+                    n = int(ns[2])
+                    timestamps["nObjects"] += n
+                    item = " ".join(ns[4:]).strip()
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][1] += n
+                        else:
+                            armory[item][member] = [0, n]
+                    else:
+                        # new item and new member [taken, given]
+                        armory[item] = {member: [0, n]}
+                elif 'filled' in ns:
+                    member = ns[0]
+                    item = "Blood Bag"
+                    timestamps["nObjects"] += 1
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][1] += 1
+                        else:
+                            armory[item][member] = [0, 1]
+                    else:
+                        # new item and new member [taken, given]
+                        armory[item] = {member: [0, 1]}
+
+            context = {'player': player, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armory, 'view': {'armory': True}}
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+            return render(request, page, context)
+
+        else:
+            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+
+    except Exception:
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+# action view
+def toggleArmoryRecord(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleArmoryRecord] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.toggleArmoryRecord] faction {} found'.format(factionId))
+
+                faction.armoryRecord = not faction.armoryRecord
+                faction.save()
+
+                context = {"player": player, "faction": faction}
+                return render(request, 'chain/armory-record.html', context)
+
+            else:
+                raise PermissionDenied("You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+
+    except Exception:
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+
+
+# action view
+def resetArmoryRecord(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleArmoryRecord] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.toggleArmoryRecord] faction {} found'.format(factionId))
+
+                faction.armoryString= "{}"
+                faction.save()
+
+                context = {"player": player, "faction": faction}
+                return render(request, 'chain/armory-record.html', context)
+
+            else:
+                raise PermissionDenied("You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
 
     except Exception:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))

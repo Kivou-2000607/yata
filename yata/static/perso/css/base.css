@@ -119,6 +119,7 @@ div.error {
 
 form.flush-right,
 span.flush-right,
+i.flush-right,
 a.flush-right {
     float: right;
     margin-right: 10px;

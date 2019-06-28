@@ -12,12 +12,15 @@ urlpatterns = [
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^aa/$', views.aa, name='aa'),
     re_path(r'^tree/$', views.tree, name='tree'),
+    re_path(r'^armory/$', views.armory, name='armory'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),
     re_path(r'^deleteReport/(?P<chainId>\w+)$', views.deleteReport, name='deleteReport'),
     re_path(r'^toggleReport/(?P<chainId>\w+)$', views.toggleReport, name='toggleReport'),
     re_path(r'^toggleKey/(?P<id>\w+)$', views.toggleKey, name='toggleKey'),
+    re_path(r'^toggleArmoryRecord/$', views.toggleArmoryRecord, name='toggleArmoryRecord'),
+    re_path(r'^resetArmoryRecord/$', views.resetArmoryRecord, name='resetArmoryRecord'),
     re_path(r'^chainThreshold/$', views.chainThreshold, name='chainThreshold'),
     re_path(r'^renderIndividualReport/(?P<chainId>\w+)/(?P<memberId>\w+)$', views.renderIndividualReport, name='renderIndividualReport'),
 

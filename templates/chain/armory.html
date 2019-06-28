@@ -1,0 +1,115 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+$( function() {
+  $( "#date-range" ).slider({
+    range: true,
+    min: {{timestamps.start}},
+    max: {{timestamps.end}},
+    values: [ {{timestamps.fstart}}, {{timestamps.fend}} ],
+    slide: function( event, ui ) {
+      s = new Date(ui.values[ 0 ]*1000).toUTCString().replace("GMT", "");
+      e = new Date(ui.values[ 1 ]*1000).toUTCString().replace("GMT", "");
+      $( "#date-value" ).html( "<th>from: " + s + "</th><th>to: " + e + "</th>");
+    },
+    change: function( event, ui ) {
+        console.log(ui.values[ 0 ] + " " + ui.values[ 1 ]);
+        $( "#content-update" ).load( "/chain/armory/", {
+            start: ui.values[ 0 ],
+            end: ui.values[ 1 ],
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+    }
+  });
+  s = new Date($( "#date-range" ).slider( "values", 0 )*1000).toUTCString().replace("GMT", "");
+  e = new Date($( "#date-range" ).slider( "values", 1 )*1000).toUTCString().replace("GMT", "");
+  $( "#date-value" ).html( "<th>from: " + s + "</th><th>to: " + e + "</th>");
+});
+
+$(document).ready(function() {
+    $(".chain-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+});
+
+</script>
+
+<h2 class="title">Armory settings</h2>
+<div class="module chain-armory">
+    <table class="center chain-armory-filter">
+        <thead>
+            <tr>
+                <th colspan="2">Parsed {{timestamps.nObjects}} objects over {{timestamps.size}} armory events</th>
+            </tr>
+            <tr id="date-value"></tr>
+            <tr>
+                <th colspan="2"><div id="date-range" style="margin: 10px;"></div></th>
+            </tr>
+        </thead>
+    </table>
+    {% if player.factionAA %}
+        <table class="center chain-armory-record">
+            <form>{% csrf_token %}
+                <tr>{% include "chain/armory-record.html" %}</tr>
+            </from>
+        </table>
+    {% endif %}
+</div>
+
+<h2 class="title">Armory breakdown</h2>
+<div class="module chain-armory">
+    {% if faction.armoryString == "{}"%}
+        <p class="error">The armory database is empty. You need a AA member to fill it.</p>
+    {% elif armory|length %}
+        {% for item, members in armory.items %}
+        <table class="center chain-armory-toggle-view trshadow">
+            <tr>
+                <td class="a">{{item}}</td>
+                <td class="b"><i class="fas fa-caret-right"></td>
+            </tr>
+        </table>
+        <table class="center trshadow chain-armory-breakdown">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Taken</th>
+                    <th>Gave</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for k, v in members.items %}
+                    <tr>
+                        <td class="a">{{k}}</td>
+                        <td class="b">{{v.0}}</td>
+                        <td class="b">{{v.1}}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+        {# <br /> #}
+        {% endfor %}
+    {% else %}
+        <p class="error">Nothing between these dates...</p>
+    {% endif %}
+</div>

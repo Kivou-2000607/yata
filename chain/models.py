@@ -40,6 +40,9 @@ class Faction(models.Model):
 
     numberOfKeys = models.IntegerField(default=0)
 
+    armoryRecord = models.BooleanField(default=False)
+    armoryString = models.TextField(default="{}")
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 

@@ -30,6 +30,7 @@ This file is part of yata.
 
 <h2 class="title">List of chains</h2>
 <div class="module">
+    {% if chains|length %}
     <table id="chain-list" class="tablesorter center-large trshadow chain-list">
         <thead>
             <tr>
@@ -68,4 +69,7 @@ This file is part of yata.
         {% endfor %}
         </tbody>
     </table>
+    {% else%}
+        <p class="error">No list recorded. Ask a AA member of your faction.</p>
+    {% endif %}
 </div>
