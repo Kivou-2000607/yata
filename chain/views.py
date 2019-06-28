@@ -962,8 +962,9 @@ def armory(request):
 
                 faction.save()
 
-            # filter  by date if post
-            armoryRaw = json.loads(faction.armoryString);
+            else:
+                armoryRaw = json.loads(faction.armoryString);
+
             now = int(timezone.now().timestamp())
             timestamps = {"start": now, "end": 0, "fstart": now, "fend": 0, "size": 0}
             toDel = []
