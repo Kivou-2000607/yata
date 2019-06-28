@@ -993,22 +993,31 @@ def armory(request):
                 # print(ns)
                 if 'used' in ns:
                     member = ns[0]
-                    item = " ".join(ns[6:-1]).split(":")[0].strip()
-                    timestamps["nObjects"] += 1
+                    if ns[6] in ["points"]:
+                        item = ns[6].title()
+                        n = 25
+                    else:
+                        item = " ".join(ns[6:-1]).split(":")[0].strip()
+                        n = 1
+
+                    timestamps["nObjects"] += n
                     if item in armory:
                         if member in armory[item]:
-                            armory[item][member][0] += 1
+                            armory[item][member][0] += n
                         else:
-                            armory[item][member] = [1, 0]
+                            armory[item][member] = [n, 0]
                     else:
                         # new item and new member [taken, given]
-                        armory[item] = {member: [1, 0]}
+                        armory[item] = {member: [n, 0]}
 
                 elif 'deposited' in ns:
                     member = ns[0]
                     n = int(ns[2])
                     timestamps["nObjects"] += n
-                    item = " ".join(ns[4:]).strip()
+                    if ns[-1] in ["points"]:
+                        item = ns[-1].title()
+                    else:
+                        item = " ".join(ns[4:]).strip()
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][1] += n
@@ -1017,6 +1026,7 @@ def armory(request):
                     else:
                         # new item and new member [taken, given]
                         armory[item] = {member: [0, n]}
+
                 elif 'filled' in ns:
                     member = ns[0]
                     item = "Blood Bag"

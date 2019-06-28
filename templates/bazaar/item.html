@@ -64,7 +64,7 @@ This file is part of yata.
         </th>
     </tr>
     <tr>
-        <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title="Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to add {{item.tName}} to your custom list">
+        <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'>
             <form method="post">{% csrf_token %}
                 <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item"> stock: {{item.stock}}&nbsp;&nbsp;
                 {% if item.tId|stringformat:"i" in list %}
