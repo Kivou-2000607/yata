@@ -17,11 +17,11 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.shortcuts import reverse
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.utils import timezone
-from django.http import HttpResponseServerError
-from django.template.loader import render_to_string
 
 import json
 import traceback
@@ -30,6 +30,7 @@ from player.models import Player
 from player.models import News
 from chain.models import Faction
 from yata.handy import apiCall
+from yata.handy import returnError
 
 
 def index(request):
@@ -45,8 +46,7 @@ def index(request):
         return render(request, 'yata.html', context)
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def login(request):
@@ -94,12 +94,11 @@ def login(request):
 
         # if not post
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You need to post. Don\'t try to be a smart ass."}))
-            # return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+            # return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def logout(request):
@@ -109,8 +108,7 @@ def logout(request):
         return HttpResponseRedirect(reverse('index'))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def delete(request):
@@ -132,8 +130,7 @@ def delete(request):
         return HttpResponseRedirect(reverse('logout'))
 
     except Exception:
-        print("[ERROR] {}".format(traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def api(request):
@@ -149,8 +146,7 @@ def api(request):
         time.sleep(10)
         return HttpResponse(json.dumps(lastActions), content_type="application/json")
     except:
-
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def badges(request):

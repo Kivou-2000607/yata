@@ -20,14 +20,12 @@ This file is part of yata.
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
-from django.http import HttpResponseServerError
-from django.template.loader import render_to_string
 
 import json
-import traceback
 import math
 
 from yata.handy import apiCall
+from yata.handy import returnError
 from player.models import Player
 from chain.functions import BONUS_HITS
 from target.functions import updateAttacks
@@ -51,11 +49,10 @@ def index(request):
             return render(request, 'target.html', context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def attacks(request):
@@ -80,11 +77,10 @@ def attacks(request):
             return render(request, page, context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def targets(request):
@@ -103,11 +99,10 @@ def targets(request):
             return render(request, page, context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def toggleTarget(request, targetId):
@@ -176,11 +171,10 @@ def toggleTarget(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def refresh(request, targetId):
@@ -229,7 +223,6 @@ def refresh(request, targetId):
 
                         break
 
-
                 targetJson["targets"][targetId] = target
                 player.targetJson = json.dumps(targetJson)
                 player.save()
@@ -242,11 +235,10 @@ def refresh(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def updateNote(request):
@@ -269,11 +261,10 @@ def updateNote(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def delete(request, targetId):
@@ -292,11 +283,10 @@ def delete(request, targetId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def add(request):
@@ -386,8 +376,7 @@ def add(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()

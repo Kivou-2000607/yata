@@ -18,15 +18,12 @@ This file is part of yata.
 """
 
 from django.shortcuts import render
-from django.core.exceptions import PermissionDenied
 from django.utils import timezone
-from django.http import HttpResponseServerError
-from django.template.loader import render_to_string
 
 import json
-import traceback
 
 from yata.handy import apiCall
+from yata.handy import returnError
 from awards.functions import createAwards
 from awards.functions import updatePlayerAwards
 from awards.functions import AWARDS_CAT
@@ -65,11 +62,10 @@ def index(request):
             return render(request, "awards.html", context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def list(request, type):
@@ -111,15 +107,14 @@ def list(request, type):
                                         }})
                     except:
                         print('[view.awards.list] error getting info on {}'.format(p))
-                
+
                 print(sorted(hof.items(), key=lambda x: (x[1]["score"], x[1]["nAwarded"]), reverse=True))
                 context = {"player": player, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()

@@ -19,16 +19,14 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.utils import timezone
-from django.http import HttpResponseServerError
-from django.template.loader import render_to_string
 
 import json
-import traceback
 
 from bazaar.models import Preference
 from bazaar.models import Item
 from player.models import Player
 from yata.handy import apiCall
+from yata.handy import returnError
 
 
 def index(request):
@@ -85,11 +83,10 @@ def index(request):
             return render(request, 'bazaar.html', context)
 
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def custom(request):
@@ -125,11 +122,10 @@ def custom(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def default(request):
@@ -169,11 +165,10 @@ def default(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def sets(request):
@@ -213,11 +208,10 @@ def sets(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def all(request):
@@ -257,11 +251,10 @@ def all(request):
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
-            return HttpResponseServerError(render_to_string('403.html', {'exception': "You might want to log in."}))
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def details(request, itemId):
@@ -274,11 +267,10 @@ def details(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def update(request, itemId):
@@ -329,11 +321,10 @@ def update(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def delete(request, itemId):
@@ -351,11 +342,10 @@ def delete(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
 
 
 def toggle(request, itemId):
@@ -387,8 +377,7 @@ def toggle(request, itemId):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return HttpResponseServerError(render_to_string('403.html', {'exception': message}))
+            return returnError(type=403, msg=message)
 
     except Exception:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return returnError()
