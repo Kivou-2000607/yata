@@ -20,17 +20,19 @@ This file is part of yata.
 
 def apiCall(section, id, selections, key, sub=None):
     import requests
-    # # DEBUG live chain
-    # if selections == "chain" and section == "faction":
+    # DEBUG live chain
+    # if selections == "chain,timestamp" and section == "faction":
     #     from django.utils import timezone
     #     print("[yata.function.apiCall] DEBUG chain/faction")
-    #     chain = dict({"chain": {"current": 10,
-    #                             "timeout": 65,
+    #     chain = dict({"timestamp": int(timezone.now().timestamp())-4,
+    #                   "chain": {"current": 76,
+    #                             "timeout": 7,
+    #                             "max": 100,
     #                             "modifier": 0.75,
     #                             "cooldown": 0,
     #                             "start": 1555211268
     #                             }})
-    #     return chain[sub] if sub is not None else chain
+    #     return chain
 
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})

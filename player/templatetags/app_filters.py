@@ -41,8 +41,8 @@ def ts2date(timestamp, fmt=None):
         return d.strftime(fmt)
 
 
-@register.filter(name='ts2hhmmss')
-def ts2mmss(timestamp):
+@register.filter(name='ts2time')
+def ts2time(timestamp):
     d = timestamp // 86400
     h = (timestamp - 86400 * d) // 3600 % 24
     m = (timestamp - 3600 * h) // 60 % 60

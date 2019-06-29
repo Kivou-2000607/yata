@@ -17,17 +17,86 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+// refresh timer target update
+window.setInterval(function(){
+    $(".timeout").each(function() {
+        var timeRefresh = $.trim($(this).text());
+        var splitRefresh = timeRefresh.replace("Timeout: ", "").split(" ");
+        var sRefresh = 0;
+        if (splitRefresh.length == 2) {
+            sRefresh = parseInt(splitRefresh[0]);
+        } else if (splitRefresh.length == 4) {
+            sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
+        } else if (splitRefresh.length == 6) {
+            sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
+        }
+
+        sRefresh = Math.max(sRefresh-1, 0);
+        mRefresh = Math.floor(sRefresh / 60);
+        sRefresh = sRefresh % 60;
+        if (mRefresh) {
+            spad = ("0"+sRefresh.toString()).slice(-2);
+            $(this).html("Timeout: "+mRefresh.toString()+" mins "+spad+" s");
+        } else {
+            $(this).html("Timeout: "+sRefresh.toString()+" s");
+        }
+        if(!sRefresh) {
+            $(this).removeClass("timeout")
+        }
+    });
+}, 1000);
+
+</script>
+
 <div>
-    <h2 class="title">Chain status</h2>
-
-        {% if liveChain.current %}
-            <div class="module">
-                Active chain: {{liveChain.current}} / {{liveChain.nextBonus}}
-            </div>
-        {% else %}
-            <div class="module">
-                No active chain
-            </div>
-        {% endif %}
-
+    {% if liveChain.current %}
+        <div class="module rounded">
+            <table class="center">
+                <thead>
+                    <tr><th colspan="2">Live chain status {{currentTimestamp}}</th></tr>
+                </thead>
+                {% if liveChain.cooldown %}
+                    <tr>
+                        <td>Chain started {{currentTimestamp|sub:liveChain.start|ts2time}} ago</td>
+                        <td>Chain status: <span class="error">cooldown</span></td>
+                    </tr>
+                    <tr>
+                        <td>End of cooldown in {{liveChain.cooldown|ts2time}}</td>
+                        <td>Hits: {{liveChain.current}} / {{liveChain.max}} (x{{liveChain.modifier}})</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="live-bar cooldown" title="{{liveChain.cooldown|ts2time}} left over the {{liveChain.current|mul:10|ts2time}}">
+                                <span class="strips" style="width: {{liveChain.cooldown|div:liveChain.current|mul:10|floatformat:0}}%;"></span>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>Chain started {{currentTimestamp|sub:liveChain.start|ts2time}} ago</td>
+                        <td>Chain status: <span class="valid">active</span></td>
+                    </tr>
+                    <tr>
+                        <td class="timeout">Timeout: {{liveChain.timeout|add:currentTimestamp|sub:liveChain.timestamp|ts2time}}</td>
+                        <td> Hits: {{liveChain.current}} / {{liveChain.max}} (x{{liveChain.modifier}})</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="live-bar" title="{{liveChain.current}} / {{liveChain.max}}">
+                                <span class="strips" style="width: {{liveChain.current|div:liveChain.max|mul:100|floatformat:0}}%;"></span>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    {% else %}
+        <div class="module">
+            No active chain
+        </div>
+    {% endif %}
 </div>

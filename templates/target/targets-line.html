@@ -47,7 +47,7 @@ This file is part of yata.
             {% if seconds > 7199 %}
                 > 2 hrs
             {% else %}
-                {{seconds|ts2hhmmss}}
+                {{seconds|ts2time}}
             {% endif %}
         {% endwith %}
     </td>

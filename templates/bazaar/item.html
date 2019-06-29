@@ -47,7 +47,7 @@ This file is part of yata.
                         {% if seconds > 599 %}
                             > 10 mins
                         {% else %}
-                            {{seconds|ts2hhmmss}}
+                            {{seconds|ts2time}}
                         {% endif %}
                     {% endwith %}
                 </a>

@@ -31,3 +31,7 @@ def news(request):
     else:
         print("[yata.context_processors.news] out")
         return {}
+
+
+def currentTimestamp(request):
+    return {"currentTimestamp": int(timezone.now().timestamp())}

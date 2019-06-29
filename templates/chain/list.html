@@ -56,7 +56,7 @@ This file is part of yata.
                 <td class="b">-</td>
             {% endif %}
 
-            <td class="c">{{chain.end|sub:chain.start|ts2hhmmss}}</td>
+            <td class="c">{{chain.end|sub:chain.start|ts2time}}</td>
             <td class="d" title="{{chain.reportNHits}}/{{chain.nHits}}"><b>{{chain.nHits}}</b></td>
             <td class="d" ><b>{{chain.respect|floatformat:2}}</b></td>
             <td class="d" ><b>{{chain.respect|div:chain.nHits|floatformat:2}}</b></td>

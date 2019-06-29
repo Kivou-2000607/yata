@@ -95,15 +95,15 @@ table.chain-armory-breakdown td.a { width: 50%; text-align: left; }  /* x1 */
 table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
 
 
-.progress-bar {
+.live-bar {
     background-color: lightgray;
     border-radius: 4px;
-    width: 150px;
+    width: 100%;
     height: 14px;
     display: inline-block;
 }
 
-.progress-bar > span {
+.live-bar > span {
   display: block;
   height: 100%;
   border-radius: 4px;
@@ -118,7 +118,7 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
   font-weight: bold;
 }
 
-.progress-bar > span.strips:after {
+.live-bar > span.strips:after {
   content: "";
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
@@ -139,49 +139,6 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
   overflow: hidden;
 }
 
-.blue > span {
-  background-color: #7d93c4;
-}
-
-.violet > span {
+.cooldown > span {
   background-color: #c493c4;
-}
-
-@keyframes refresh {
-    0%   {width: 100%; background-color: #f1a165;}
-    100% {width: 0%; background-color: #ff0000;}
-}
-
-.refresh > span {
-    animation: refresh 30s linear;
-    -webkit-animation: refresh 30s linear;
-}
-
-@keyframes refresh-content {
-    0%   {content: "30s"}
-    10%   {content: "27s"}
-    20%   {content: "24s"}
-    30%   {content: "21s"}
-    40%   {content: "18s"}
-    50%   {content: "15s"}
-    60%   {content: "12s"}
-    70%   {content: "9s"}
-    80%   {content: "6s"}
-    90%   {content: "3s"}
-    100%   {content: "0s"}
-}
-
-.refresh > span.strips:after {
-    animation: refresh-content 30s linear;
-    -webkit-animation: refresh-content 30s linear;
-}
-
-@keyframes move-strips {
-    0%   {width: 100%;}
-    100% {width: 0%;}
-}
-
-.move-strips > span.strips:after {
-    animation: move-strips 30s linear;
-    -webkit-animation: move-strips 30s linear;
 }

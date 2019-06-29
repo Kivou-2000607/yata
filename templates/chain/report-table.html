@@ -108,7 +108,7 @@ $(document).ready(function() {
         <tbody>
             <tr>
                 <td colspan="2"><b>From</b> {{chain.start|ts2date}} <b>to</b> {{chain.end|ts2date}}</td>
-                <td colspan="2"><b>Chain time:</b> {{chain.end|sub:chain.start|ts2hhmmss}}</td>
+                <td colspan="2"><b>Chain time:</b> {{chain.end|sub:chain.start|ts2time}}</td>
             </tr>
             <tr>
                 <td colspan="2"><b>Hits / Attacks:</b> {{chain.reportNHits}} / {{chain.nAttacks}} &nbsp;&nbsp; ( {{chain.reportNHits|div:chain.nAttacks|mul:"100"|floatformat:0}}%)</td>

@@ -141,24 +141,26 @@ def live(request):
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
             # get live chain and next bonus
-            liveChain = apiCall('faction', factionId, 'chain', key, sub='chain')
-            if 'apiError' in liveChain:
+            req = apiCall('faction', factionId, 'chain,timestamp', key)
+            if 'apiError' in req:
                 player.chainInfo = "N/A"
                 player.factionId = 0
                 player.factionAA = False
                 # player.lastUpdateTS = int(timezone.now().timestamp())
                 player.save()
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-                context = {'player': player, selectError: liveChain["apiError"] + " We can't check your faction so you don't have access to this section."}
+                context = {'player': player, selectError: req["apiError"] + " We can't check your faction so you don't have access to this section."}
                 return render(request, page, context)
 
+            liveChain =  req.get("chain")
+            liveChain["timestamp"] = req.get("timestamp", 0)
             activeChain = bool(int(liveChain['current']) > 9)
             print("[view.chain.index] live chain: {}".format(activeChain))
-            liveChain["nextBonus"] = 10
-            for i in BONUS_HITS:
-                liveChain["nextBonus"] = i
-                if i >= int(liveChain["current"]):
-                    break
+            # liveChain["nextBonus"] = 10
+            # for i in BONUS_HITS:
+            #     liveChain["nextBonus"] = i
+            #     if i >= int(liveChain["current"]):
+            #         break
 
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
@@ -213,12 +215,12 @@ def live(request):
                     a, b, _, _, _ = stats.linregress(x[-20:], y[-20:])
                     print("[view.chain.index] linreg a={} b={}".format(a, b))
                     a = max(a, 0.00001)
-                    ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
+                    ETA = timestampToDate(int((liveChain["max"] - b) / a))
                     graph['info']['ETALast'] = ETA
                     graph['info']['regLast'] = [a, b]
 
                     a, b, _, _, _ = stats.linregress(x, y)
-                    ETA = timestampToDate(int((liveChain["nextBonus"] - b) / a))
+                    ETA = timestampToDate(int((liveChain["max"] - b) / a))
                     graph['info']['ETA'] = ETA
                     graph['info']['reg'] = [a, b]
 
