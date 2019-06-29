@@ -20,7 +20,29 @@ This file is part of yata.
 
 <script>
         $(document).ready(function() {
-            $("#target-targets").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[5,1],[2,1],[1,0]]});
+            $.tablesorter.addParser({
+                // set a unique id
+                id: 'since',
+                is: function(s, table, cell, $cell) {
+                    // return false so this parser is not auto detected
+                    return false;
+                },
+                format: function(s, table, cell, cellIndex) {
+                    // format your data for normalization
+                    var ret = s.toLowerCase()
+                    .replace(/days/,86400)
+                    .replace(/day/,86400)
+                    .replace(/hrs/,3600)
+                    .replace(/hr/,3600)
+                    .replace(/mins/,60)
+                    .replace(/min/,60).split(' ');
+                    return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
+                },
+                // set type, either numeric or text
+                type: 'numeric',
+            });
+
+            $("#target-targets").tablesorter({headers: { 0: { sorter: 'since' }, 4: { sorter: 'since' } }, cssAsc: 'up', cssDesc: 'down', sortList: [[6,1],[3,1],[2,0]]});
         });
 </script>
 
@@ -32,7 +54,8 @@ This file is part of yata.
     <table id="target-targets" class="tablesorter center-large trshadow target-targets">
         <thead>
             <tr>
-                <th title="Last attack result">Last attack</th>
+                <th title="Last attack elapsed time">Last attack</th>
+                <th title="Last attack result">Result</th>
                 <!-- <th title="">Result</th> -->
                 <!-- <th title="">Attacker</th> -->
                 <th title="Name of the target">Name</th>

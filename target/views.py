@@ -29,6 +29,7 @@ from yata.handy import returnError
 from player.models import Player
 from chain.functions import BONUS_HITS
 from target.functions import updateAttacks
+from target.functions import convertElaspedString
 
 
 def index(request):
@@ -39,13 +40,16 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
-
-            error = updateAttacks(player)
+            # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
-            context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
-            if error:
-                context.update(error)
+            print(targets)
+            for k, v in targets.items():
+                print(f"{k}: {v}")
+
+            context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
+            # if error:
+            #     context.update(error)
             return render(request, 'target.html', context)
 
         else:
@@ -95,7 +99,7 @@ def targets(request):
             targetJson = json.loads(player.targetJson)
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
-            context = {"player": player, "targetcat": True, "targets": targets, "view": {"targets": True}}
+            context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
             return render(request, page, context)
 
@@ -132,9 +136,9 @@ def toggleTarget(request, targetId):
                 level = targetInfo["level"]
                 lifeMax = int(targetInfo["life"]["maximum"])
                 life = int(targetInfo["life"]["current"])
-                status = targetInfo["status"][0].replace("In hospital", "Hosp")
+                status = targetInfo["status"][0].replace("In hospital", "H")
                 statusFull = " ".join(targetInfo["status"])
-                lastAction = targetInfo["last_action"]["relative"]
+                lastAction = convertElaspedString(targetInfo["last_action"]["relative"])
                 lastUpdate = int(timezone.now().timestamp())
 
             if targetId not in targets:
@@ -167,7 +171,7 @@ def toggleTarget(request, targetId):
 
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
-            context = {"target": {"defender_id": targetId}, "targets": targets}
+            context = {"target": {"defender_id": targetId}, "targets": targets, "ts": int(timezone.now().timestamp())}
             return render(request, 'target/attacks-buttons.html', context)
 
         else:
@@ -206,10 +210,12 @@ def refresh(request, targetId):
                 target = targets.get(targetId, dict(defaultValue))
                 target["life"] = int(targetInfo["life"]["current"])
                 target["lifeMax"] = int(targetInfo["life"]["maximum"])
-                target["status"] = targetInfo["status"][0].replace("In hospital", "Hosp")
+                target["status"] = targetInfo["status"][0].replace("In hospital", "H")
                 target["statusFull"] = " ".join(targetInfo["status"])
-                target["lastAction"] = targetInfo["last_action"]["relative"]
+                target["lastAction"] = convertElaspedString(targetInfo["last_action"]["relative"])
                 target["lastUpdate"] = int(timezone.now().timestamp())
+                target["endTS"] = 0
+                target["result"] = "No recent attack"
                 level = targetInfo["level"]
                 target["level"] = level
                 target["respect"] = target.get("fairFight", 1.0) * 0.25 * (math.log(level) + 1) if level else 0
@@ -231,7 +237,7 @@ def refresh(request, targetId):
             if error:
                 context = {"apiErrorLine": error["apiError"]}
             else:
-                context = {"targetId": targetId, "target": target}
+                context = {"targetId": targetId, "target": target, "ts": int(timezone.now().timestamp())}
             return render(request, 'target/targets-line.html', context)
 
         else:
@@ -334,9 +340,9 @@ def add(request):
                                                      "level": level,
                                                      "lifeMax": int(targetInfo["life"]["maximum"]),
                                                      "life": int(targetInfo["life"]["current"]),
-                                                     "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                                     "status": targetInfo["status"][0].replace("In hospital", "H"),
                                                      "statusFull": " ".join(targetInfo["status"]),
-                                                     "lastAction": targetInfo["last_action"]["relative"],
+                                                     "lastAction": convertElaspedString(targetInfo["last_action"]["relative"]),
                                                      "lastUpdate": int(timezone.now().timestamp()),
                                                      "note": ""
                                                      }
@@ -351,13 +357,13 @@ def add(request):
 
                             targets[targetId] = {"targetName": targetInfo["name"],
                                                  "result": "No recent attack",
-                                                 "endTS": int(v["timestamp_ended"]),
+                                                 "endTS": 0,
                                                  "fairFight": 1,
                                                  "respect": respect,
                                                  "level": level,
                                                  "lifeMax": int(targetInfo["life"]["maximum"]),
                                                  "life": int(targetInfo["life"]["current"]),
-                                                 "status": targetInfo["status"][0].replace("In hospital", "Hosp"),
+                                                 "status": targetInfo["status"][0].replace("In hospital", "H"),
                                                  "statusFull": " ".join(targetInfo["status"]),
                                                  "lastAction": targetInfo["last_action"]["relative"],
                                                  "lastUpdate": int(timezone.now().timestamp()),
@@ -370,7 +376,7 @@ def add(request):
                         print('[view.target.add] target {} already exists'.format(targetId))
 
             targetJson = json.loads(player.targetJson)
-            context = {"targets": targetJson["targets"], "view": {"targets": True}}
+            context = {"targets": targetJson["targets"], "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             if error:
                 context.update({"apiErrorAdd": error})
             return render(request, 'target/content-reload.html', context)
