@@ -43,9 +43,6 @@ def index(request):
             # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
-            print(targets)
-            for k, v in targets.items():
-                print(f"{k}: {v}")
 
             context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             # if error:

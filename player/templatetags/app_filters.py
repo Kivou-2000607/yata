@@ -56,6 +56,7 @@ def ts2mmss(timestamp):
     else:
         return "{} s".format(s)
 
+
 @register.filter(name='ts2ago')
 def ts2ago(timestamp):
     t = timestamp // 86400
@@ -73,6 +74,7 @@ def ts2ago(timestamp):
     t = (timestamp - 60 * t) % 60
     s = "" if t == 1 else "s"
     return f"{t} sec{s} ago"
+
 
 @register.filter(name='format')
 def format(value, fmt):
