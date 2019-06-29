@@ -63,11 +63,12 @@ def attacks(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
+
+            error = updateAttacks(player)
+
             targetJson = json.loads(player.targetJson)
             attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
-
-            error = updateAttacks(player)
 
             context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
             if error:
