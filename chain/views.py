@@ -943,7 +943,6 @@ def armory(request):
             player.save()
             faction = Faction.objects.filter(tId=player.factionId).first()
 
-
             if player.factionAA:
                 print('[view.armory] player with AA. Faction {}'.format(faction))
                 armoryRaw = apiCall('faction', player.factionId, 'armorynewsfull', player.key, sub="armorynews")
@@ -963,7 +962,7 @@ def armory(request):
                 faction.save()
 
             else:
-                armoryRaw = json.loads(faction.armoryString);
+                armoryRaw = json.loads(faction.armoryString)
 
             now = int(timezone.now().timestamp())
             timestamps = {"start": now, "end": 0, "fstart": now, "fend": 0, "size": 0}
@@ -1100,7 +1099,7 @@ def resetArmoryRecord(request):
                     return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
                 print('[view.chain.toggleArmoryRecord] faction {} found'.format(factionId))
 
-                faction.armoryString= "{}"
+                faction.armoryString = "{}"
                 faction.save()
 
                 context = {"player": player, "faction": faction}
