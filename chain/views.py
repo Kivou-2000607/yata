@@ -1011,7 +1011,7 @@ def armory(request):
 
                 elif 'deposited' in ns:
                     member = ns[0]
-                    n = int(ns[2])
+                    n = int(ns[2].replace(",", ""))
                     timestamps["nObjects"] += n
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
