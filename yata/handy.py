@@ -26,7 +26,7 @@ def apiCall(section, id, selections, key, sub=None):
     #     print("[yata.function.apiCall] DEBUG chain/faction")
     #     chain = dict({"timestamp": int(timezone.now().timestamp())-4,
     #                   "chain": {"current": 76,
-    #                             "timeout": 7,
+    #                             "timeout": 8,
     #                             "max": 100,
     #                             "modifier": 0.75,
     #                             "cooldown": 0,

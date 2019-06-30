@@ -33,5 +33,5 @@ def news(request):
         return {}
 
 
-def currentTimestamp(request):
-    return {"currentTimestamp": int(timezone.now().timestamp())}
+# def currentTimestamp(request):
+#     return {"currentTimestamp": int(timezone.now().timestamp())}

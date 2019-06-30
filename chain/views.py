@@ -229,7 +229,7 @@ def live(request):
                     graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
                 # context
-                context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'view': {'report': True, 'liveReport': True}, 'graph': graph}
+                context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'currentTimestamp': int(timezone.now().timestamp()), 'view': {'report': True, 'liveReport': True}, 'graph': graph}
 
             # no active chain
             else:

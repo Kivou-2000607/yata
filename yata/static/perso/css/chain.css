@@ -142,3 +142,47 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
 .cooldown > span {
   background-color: #c493c4;
 }
+
+.refresh > span {
+  /* background-color: #93c4c4; */
+  animation: refresh 25s linear;
+  -webkit-animation: refresh 25s linear;
+}
+
+@keyframes refresh {
+    0%   {width: 100%; background-color: #f1a165;}
+    100% {width: 0%; background-color: #ff0000;}
+}
+
+@keyframes refresh-content {
+    0%    {content: "25s"}
+    4%    {content: "24s"}
+    8%   {content: "23s"}
+    12%   {content: "22s"}
+    16%   {content: "21s"}
+    24%   {content: "20s"}
+    28%   {content: "19s"}
+    32%   {content: "18s"}
+    36%   {content: "17s"}
+    40%   {content: "16s"}
+    44%   {content: "15s"}
+    48%   {content: "14s"}
+    52%   {content: "13s"}
+    56%   {content: "12s"}
+    60%   {content: "11s"}
+    64%   {content: "10s"}
+    68%   {content: "9s"}
+    72%   {content: "8s"}
+    76%   {content: "7s"}
+    80%   {content: "6s"}
+    84%   {content: "5s"}
+    88%   {content: "4s"}
+    92%   {content: "3s"}
+    96%   {content: "2s"}
+    100%   {content: "1s"}
+}
+
+.refresh > span.strips:after {
+    animation: refresh-content 25s linear;
+    -webkit-animation: refresh-content 25s linear;
+}

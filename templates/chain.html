@@ -202,6 +202,49 @@
         });
     });
 
+    // refresh timer target update
+    window.setInterval(function(){
+        $(".timeout").each(function() {
+            var timeRefresh = $.trim($(this).text());
+            var splitRefresh = timeRefresh.replace("Timeout: ", "").split(" ");
+            var sRefresh = 0;
+            if (splitRefresh.length == 2) {
+                sRefresh = parseInt(splitRefresh[0]);
+            } else if (splitRefresh.length == 4) {
+                sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
+            } else if (splitRefresh.length == 6) {
+                sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
+            }
+
+            sRefresh = sRefresh-1;
+            mRefresh = Math.floor(sRefresh / 60);
+            sRefresh = sRefresh % 60;
+            if (mRefresh) {
+                spad = ("0"+sRefresh.toString()).slice(-2);
+                $(this).html("Timeout: "+mRefresh.toString()+" mins "+spad+" s");
+            } else {
+                $(this).html("Timeout: "+sRefresh.toString()+" s");
+                if(!sRefresh) {
+                    $(this).removeClass("timeout")
+                }
+            }
+        });
+    }, 1000);
+
+    // refresh live chain
+    window.setInterval(function(){
+        $("#refresh-live-chain").each(function() {
+            $( "#content-update" ).load( "/chain/live/", {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $("#content-update h2").addClass("grey");
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading live chain (1 API Call)')
+            $("div.error").hide();
+        });
+    }, 25000);
+
+
+
 </script>
 {% endblock %}
 
