@@ -140,6 +140,8 @@ def live(request):
             key = player.key
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
+            cts = int(timezone.now().timestamp())
+
             # get live chain and next bonus
             req = apiCall('faction', factionId, 'chain,timestamp', key)
             if 'apiError' in req:
@@ -149,7 +151,7 @@ def live(request):
                 # player.lastUpdateTS = int(timezone.now().timestamp())
                 player.save()
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-                context = {'player': player, selectError: req["apiError"] + " We can't check your faction so you don't have access to this section."}
+                context = {'player': player, 'currentTimestamp': cts, selectError: req["apiError"] + " We can't check your faction so you don't have access to this section."}
                 return render(request, page, context)
 
             liveChain =  req.get("chain")
@@ -165,7 +167,7 @@ def live(request):
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                context = {'player': player, 'currentTimestamp': cts, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
                 return render(request, page, context)
 
             if activeChain:
@@ -229,7 +231,7 @@ def live(request):
                     graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
                 # context
-                context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'currentTimestamp': int(timezone.now().timestamp()), 'view': {'report': True, 'liveReport': True}, 'graph': graph}
+                context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'currentTimestamp': cts, 'view': {'report': True, 'liveReport': True}, 'graph': graph}
 
             # no active chain
             else:
@@ -237,7 +239,7 @@ def live(request):
                 if chain is not None:
                     chain.delete()
                     print('[view.chain.index] chain 0 deleted')
-                context = {'player': player, 'chaincat': True, 'faction': faction, 'liveChain': liveChain, 'view': {'liveReport': True}}  # set chain to True to display category links
+                context = {'player': player, 'chaincat': True, 'currentTimestamp': cts, 'faction': faction, 'liveChain': liveChain, 'view': {'liveReport': True}}  # set chain to True to display category links
 
             return render(request, page, context)
 
