@@ -29,12 +29,12 @@ This file is part of yata.
         <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2>
         <div class="module">
             <p class="no-margin">
-                <a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a>
+                <a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</a>
                 <span class="sep"></span>
                 <span class="sep"></span>
 
                 <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Go to bazaar">
-                    <b><i class="fas fa-store"></i> Bazaar overview:</b></a>
+                    <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar overview:</b></a>
                     {% if player.bazaarInfo == "N/A" %}
                         &empty;
                     {% else %}
@@ -43,7 +43,7 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
-                    <b><i class="fas fa-fist-raised"></i> Faction:</b></a>
+                    <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction:</b></a>
                     {% if player.chainInfo == "N/A" %}
                         &empty;
                     {% else %}
@@ -52,7 +52,7 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain">
-                    <b><i class="fas fa-crosshairs"></i> Targets:</b></a>
+                    <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets:</b></a>
                     {% if player.targetInfo == "N/A" %}
                         &empty;
                     {% else %}
@@ -61,14 +61,14 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards">
-                    <b><i class="fas fa-medal"></i> Awards:</b></a>
+                    <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards:</b></a>
                     {% if player.awardsInfo == "N/A" %}
                         &empty;
                     {% else %}
                         {{player.awardsInfo|mul:100|floatformat:2}}% honor rarity score
                     {% endif %}
 
-                <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a>
+                <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
             </p>
 
             {% if awardscat %}
