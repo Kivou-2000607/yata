@@ -43,7 +43,7 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
-                    <b><i class="fas fa-link"></i> Chain reports:</b></a>
+                    <b><i class="fas fa-fist-raised"></i> Faction:</b></a>
                     {% if player.chainInfo == "N/A" %}
                         &empty;
                     {% else %}
@@ -52,7 +52,7 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain">
-                    <b><i class="fas fa-fist-raised"></i> Target list:</b></a>
+                    <b><i class="fas fa-crosshairs"></i> Targets:</b></a>
                     {% if player.targetInfo == "N/A" %}
                         &empty;
                     {% else %}
@@ -61,7 +61,7 @@ This file is part of yata.
                     <span class="sep"></span>
 
                 <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards">
-                    <b><i class="fas fa-medal"></i> Awards tracker:</b></a>
+                    <b><i class="fas fa-medal"></i> Awards:</b></a>
                     {% if player.awardsInfo == "N/A" %}
                         &empty;
                     {% else %}
