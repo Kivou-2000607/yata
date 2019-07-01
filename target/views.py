@@ -43,6 +43,8 @@ def index(request):
             # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
+            for k, v in targets.items():
+                print(f"{k}: {v}")
 
             context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             # if error:
@@ -199,12 +201,13 @@ def refresh(request, targetId):
             else:
                 # get latest attack to target id
                 defaultValue = dict({})
-                defaultValue["targetName"] = "?"
                 defaultValue["result"] = "?"
                 defaultValue["endTS"] = 0
                 defaultValue["fairFight"] = 1.0
 
                 target = targets.get(targetId, dict(defaultValue))
+
+                target["targetName"] = targetInfo["name"]
                 target["life"] = int(targetInfo["life"]["current"])
                 target["lifeMax"] = int(targetInfo["life"]["maximum"])
                 target["status"] = targetInfo["status"][0].replace("In hospital", "H")
@@ -350,7 +353,6 @@ def add(request):
                             print('[view.target.add] create target {} from nothing'.format(targetId))
                             level = targetInfo["level"]
                             respect = 0.25 * (math.log(level) + 1) if level else 0
-                            print(respect)
 
                             targets[targetId] = {"targetName": targetInfo["name"],
                                                  "result": "No recent attack",
@@ -372,8 +374,8 @@ def add(request):
                     else:
                         print('[view.target.add] target {} already exists'.format(targetId))
 
-            targetJson = json.loads(player.targetJson)
-            context = {"targets": targetJson["targets"], "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
+            targets = json.loads(player.targetJson).get("targets", dict({}))
+            context = {"targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             if error:
                 context.update({"apiErrorAdd": error})
             return render(request, 'target/content-reload.html', context)

@@ -154,7 +154,7 @@ def live(request):
                 context = {'player': player, 'currentTimestamp': cts, selectError: req["apiError"] + " We can't check your faction so you don't have access to this section."}
                 return render(request, page, context)
 
-            liveChain =  req.get("chain")
+            liveChain = req.get("chain")
             liveChain["timestamp"] = req.get("timestamp", 0)
             activeChain = bool(int(liveChain['current']) > 9)
             print("[view.chain.index] live chain: {}".format(activeChain))
@@ -217,17 +217,27 @@ def live(request):
                     a, b, _, _, _ = stats.linregress(x[-20:], y[-20:])
                     print("[view.chain.index] linreg a={} b={}".format(a, b))
                     a = max(a, 0.00001)
-                    ETA = timestampToDate(int((liveChain["max"] - b) / a))
+                    try:
+                        ETA = timestampToDate(int((liveChain["max"] - b) / a))
+                    except BaseException as e:
+                        print("[view.chain.live] ERROR, unable to compute ETA liveChain[max] = {}, a = {}, b = {}".format(liveChain["max"], a, b))
+                        print(f"[view.chain.live] {e}")
+                        ETA = "unable to compute EAT"
                     graph['info']['ETALast'] = ETA
                     graph['info']['regLast'] = [a, b]
 
                     a, b, _, _, _ = stats.linregress(x, y)
-                    ETA = timestampToDate(int((liveChain["max"] - b) / a))
+                    try:
+                        ETA = timestampToDate(int((liveChain["max"] - b) / a))
+                    except BaseException as e:
+                        print("[view.chain.live] ERROR, unable to compute ETA liveChain[max] = {}, a = {}, b = {}".format(liveChain["max"], a, b))
+                        print(f"[view.chain.live] {e}")
+                        ETA = "unable to compute EAT"
                     graph['info']['ETA'] = ETA
                     graph['info']['reg'] = [a, b]
 
                 else:
-                    print('[view.chain.index] no data found for graph')
+                    print('[view.chain.live] no data found for graph')
                     graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
                 # context

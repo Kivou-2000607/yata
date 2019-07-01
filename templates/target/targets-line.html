@@ -34,7 +34,7 @@ This file is part of yata.
     <td class="f">{{target.lastAction}}</td>
     <td class="c">{{target.fairFight|floatformat:2}}</td>
     <td class="c"><b title="{{target.fairFight|floatformat:2}} x 0.25 x (ln({{target.level}}) + 1)">{{target.respect|floatformat:2}}</b></td>
-    <!-- <td class="c">{{target.respect|mul:target.fairFight|floatformat:2}}</td> -->
+    {# <td class="c">{{target.respect|mul:target.fairFight|floatformat:2}}</td> #}
     <td class="d">
         <div class="life-bar" title="{{target.life}}/{{target.lifeMax}}">
             <span style="width: {{target.life|div:target.lifeMax|mul:100|floatformat:0}}%;"></span>
