@@ -206,7 +206,7 @@
     window.setInterval(function(){
         $(".timeout").each(function() {
             var timeRefresh = $.trim($(this).text());
-            var splitRefresh = timeRefresh.replace("Timeout: ", "").split(" ");
+            var splitRefresh = timeRefresh.split(" ");
             var sRefresh = 0;
             if (splitRefresh.length == 2) {
                 sRefresh = parseInt(splitRefresh[0]);
@@ -221,9 +221,9 @@
             sRefresh = sRefresh % 60;
             if (mRefresh) {
                 spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html("Timeout: "+mRefresh.toString()+" mins "+spad+" s");
+                $(this).html(mRefresh.toString()+" mins "+spad+" s");
             } else {
-                $(this).html("Timeout: "+sRefresh.toString()+" s");
+                $(this).html(sRefresh.toString()+" s");
                 if(!sRefresh) {
                     $(this).removeClass("timeout")
                 }

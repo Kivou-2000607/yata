@@ -53,7 +53,7 @@ This file is part of yata.
                         <td colspan="2">Chain status: <span class="valid">active</span></td>
                     </tr>
                     <tr>
-                        <td colspan="2" class="timeout">Timeout: {{liveChain.timeout|add:currentTimestamp|sub:liveChain.timestamp|ts2time}}</td>
+                        <td colspan="2">Timeout: <span class="timeout">{{liveChain.timeout|ts2time}}</span> <i class="error flush-right">API response off +{{currentTimestamp|sub:liveChain.timestamp}} s</i></td>
                         <td colspan="2"> Hits: {{liveChain.current}} / {{liveChain.max}} (x{{liveChain.modifier}})</td>
                     </tr>
                     <tr>
