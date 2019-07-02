@@ -612,8 +612,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     elif typeOfAwards == "faction":
 
         awards = dict({
-            "Respects": dict(),
+            "Respect": dict(),
             "Chains": dict(),
+            "Other": dict(),
             "Commitment": dict(),
             "Dirty bomb": dict()})
 
@@ -635,7 +636,15 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                 elif int(k) in [256, 477, 478]:
                     # 256 {'name': 'Carnage', 'description': 'Make a single hit that earns your faction 10 or more respect', 'type': 8, 'circulation': 19716, 'rarity': 'Uncommon', 'awardType': 'Honor'}
-                    type = "Respects"
+                    type = "Respect"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in userInfo.get("honors_awarded", []) else 0
+                    vp["achieve"] = 1 if int(k) in userInfo.get("honors_awarded", []) else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [605]:
+                    # "605": {"name": "Friendly Fire", "description": "Defeat a fellow faction member", "type": 8,
+                    type = "Other"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in userInfo.get("honors_awarded", []) else 0
                     vp["achieve"] = 1 if int(k) in userInfo.get("honors_awarded", []) else 0
@@ -661,7 +670,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                 if int(k) in [215, 216, 217, 218, 219, 220, 221, 222, 223, 224]:
                     # 215 {'name': 'Recruit', 'description': 'Earn 100 respect for your faction', 'type': 'ATK', 'awardType': 'Medal'}
-                    type = "Respects"
+                    type = "Respect"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("respectforfaction", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -669,7 +678,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     totalNumberOfAttacks = sum([int(userInfo.get("personalstats", dict({})).get(k, 0)) for k in keysTmp])
                     ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
                     vp["left"] = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["energy needed", "current ratio of {:,.2g} respects / attack".format(ratio)]
+                    vp["comment"] = ["energy needed", "current ratio of {:,.2g} Respect / attack".format(ratio)]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [26, 27, 28, 29, 108, 109, 148, 149, 150, 151]:
@@ -1417,7 +1426,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Age": dict(),
             "Level": dict(),
             "Rank": dict(),
-            "Faction": dict(),
+            # "Faction": dict(),
             "Other commitment": dict()})
 
         for k, v in tornAwards["honors"].items():
@@ -1540,15 +1549,15 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in [int(a) for a in userInfo.get("medals_awarded", [])] else 0
                     awards[type]["m_" + k] = vp
 
-                elif int(k) in [26, 27, 28, 29, 108, 109, 148, 149, 150, 151]:
-                    # 26 {'name': 'Apprentice Faction Member', 'description': 'Serve 100 days in a single faction', 'type': 'CMT', 'awardType': 'Medal'}
-                    type = "Faction"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("faction", dict({})).get("days_in_faction", 0)
-                    vp["achieve"] = 1 if int(k) in userInfo.get("medals_awarded", []) else min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"] - vp["current"]), 0)
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
-                    awards[type]["m_" + k] = vp
+                # elif int(k) in [26, 27, 28, 29, 108, 109, 148, 149, 150, 151]:
+                #     # 26 {'name': 'Apprentice Faction Member', 'description': 'Serve 100 days in a single faction', 'type': 'CMT', 'awardType': 'Medal'}
+                #     type = "Faction"
+                #     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                #     vp["current"] = userInfo.get("faction", dict({})).get("days_in_faction", 0)
+                #     vp["achieve"] = 1 if int(k) in userInfo.get("medals_awarded", []) else min(1, float(vp["current"]) / float(vp["goal"]))
+                #     vp["left"] = max((vp["goal"] - vp["current"]), 0)
+                #     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", ""]
+                #     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "miscellaneous":
 
