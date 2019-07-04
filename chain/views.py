@@ -34,9 +34,9 @@ from yata.handy import cleanhtml
 from yata.handy import timestampToDate
 from yata.handy import returnError
 
-from chain.functions import BONUS_HITS
 from chain.functions import updateMembers
 from chain.functions import factionTree
+from chain.functions import BONUS_HITS
 
 from chain.models import Faction
 from chain.models import Preference
@@ -931,6 +931,8 @@ def tree(request):
 
 
 def armory(request):
+    from bazaar.items import ITEM_TYPE
+
     try:
         if request.session.get('player'):
             print('[view.armory] get player id from session')
@@ -984,9 +986,7 @@ def armory(request):
             armory = dict({})
             timestamps["nObjects"] = 0
             for k, v in armoryRaw.items():
-                # print(v)
                 ns = cleanhtml(v.get("news", "")).split(" ")
-                # print(ns)
                 if 'used' in ns:
                     member = ns[0]
                     if ns[6] in ["points"]:
@@ -1013,7 +1013,7 @@ def armory(request):
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
                     else:
-                        item = " ".join(ns[4:]).strip()
+                        item = " ".join(ns[4:]).split(":")[0].strip()
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][1] += n
@@ -1036,7 +1036,19 @@ def armory(request):
                         # new item and new member [taken, given]
                         armory[item] = {member: [0, 1]}
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armory, 'view': {'armory': True}}
+            armoryType = {t: dict({}) for t in ITEM_TYPE}
+            armoryType["Points"] = dict({})
+
+            for k, v in armory.items():
+                for t, i in ITEM_TYPE.items():
+                    if k in i:
+                        armoryType[t][k] = v
+                        break
+                if k in ["Points"]:
+                    armoryType["Points"][k] = v
+
+            print(armoryType)
+            context = {'player': player, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 

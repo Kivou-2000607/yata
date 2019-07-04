@@ -19,6 +19,10 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.conf import settings
+
+import json
+import os
 
 from bazaar.models import Item
 from bazaar.models import Preference
@@ -34,12 +38,22 @@ class Command(BaseCommand):
         key = preference.get_random_key()[1]
         items = apiCall("torn", "", "items", key, sub="items")
 
+        itemType = dict({})
+
         if items is None:
             print("[command.bazaar.scan] item is None")
         elif 'apiError' in items:
             print("[command.bazaar.scan] api error: {}".format(items["apiError"]))
         else:
             for k, v in items.items():
+                print(k, v)
+                type = v["type"]
+                name = v["name"].split(":")[0].strip()
+                if type in itemType:
+                    if name not in itemType[type]:
+                        itemType[type].append(name)
+                else:
+                    itemType[type] = [name]
                 req = Item.objects.filter(tId=int(k))
                 if len(req) == 0:
                     item = Item.create(k, v)
@@ -62,5 +76,9 @@ class Command(BaseCommand):
         items = Item.objects.filter(onMarket=False).filter(lastUpdateTS__lt=(int(timezone.now().timestamp()) - 86400))
         for item in items:
             item.marketdata_set.all().delete()
+
+        file = os.path.join(settings.PROJECT_ROOT, 'static/items/itemTypes.json')
+        with open(file, 'w') as fp:
+            json.dump(itemType, fp)
 
         print("[command.bazaar.scan] end")
