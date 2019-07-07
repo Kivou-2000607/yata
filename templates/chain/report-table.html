@@ -156,8 +156,7 @@ $(document).ready(function() {
         </tr>
     </thead>
     <tbody>
-        {% for c in counts|dictsortreversed:"wins"|dictsortreversed:"respect" %}
-        {# {% for c in counts %} #}
+        {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
             {% if c.daysInFaction > -1 or c.wins > 0 %}
             <tr {% if c.graph|length %}id="chain-ireport-{{chain.tId}}-{{c.attackerId}}"{% endif %} class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                 <td class="a">{{ forloop.counter }}</td>
