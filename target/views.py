@@ -43,8 +43,6 @@ def index(request):
             # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
-            for k, v in targets.items():
-                print(f"{k}: {v}")
 
             context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             # if error:
@@ -200,12 +198,12 @@ def refresh(request, targetId):
 
             else:
                 # get latest attack to target id
-                defaultValue = dict({})
-                defaultValue["result"] = "?"
-                defaultValue["endTS"] = 0
-                defaultValue["fairFight"] = 1.0
+                # defaultValue = dict({})
+                # defaultValue["result"] = "?"
+                # defaultValue["endTS"] = 0
+                # defaultValue["fairFight"] = 1.0
 
-                target = targets.get(targetId, dict(defaultValue))
+                target = targets.get(targetId, dict({}))
 
                 target["targetName"] = targetInfo["name"]
                 target["life"] = int(targetInfo["life"]["current"])
@@ -214,11 +212,14 @@ def refresh(request, targetId):
                 target["statusFull"] = " ".join(targetInfo["status"])
                 target["lastAction"] = convertElaspedString(targetInfo["last_action"]["relative"])
                 target["lastUpdate"] = int(timezone.now().timestamp())
-                target["endTS"] = 0
-                target["result"] = "No recent attack"
                 level = targetInfo["level"]
                 target["level"] = level
+                # if for some reason there is no entry
+                target["endTS"] = target.get("endTS", 0)
+                target["result"] = target.get("result", "No recent attack")
+                target["fairFight"] = target.get("fairFight", 1.0)
                 target["respect"] = target.get("fairFight", 1.0) * 0.25 * (math.log(level) + 1) if level else 0
+
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
                     if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
                         print('[view.target.refresh] refresh traget last attack info')
