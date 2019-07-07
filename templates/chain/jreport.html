@@ -28,7 +28,7 @@ This file is part of yata.
     $(function() {
         $.tablesorter.addParser({
             // set a unique id
-            id: 'since',
+            id: 'ago-torn',
             is: function(s, table, cell, $cell) {
                 // return false so this parser is not auto detected
                 return false;
@@ -49,7 +49,7 @@ This file is part of yata.
         });
 
         $("#chain-jbonus").tablesorter({
-            headers: { 5: { sorter: 'since' } },
+            headers: { 5: { sorter: 'ago-torn' } },
             cssAsc: 'up', cssDesc: 'down', sortList: [[4,1]],
         });
         // $("#chain-jbonus").bind("sortStart",function() {});
