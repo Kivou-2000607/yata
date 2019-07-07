@@ -54,9 +54,9 @@ table.chain-jsummary td.c { width: 20%; text-align: center; } /* x2 */
 table.chain-jsummary td.d { width: 20%; text-align: center; }
 
 
-table.chain-report td.a { width: 5%; text-align: center; }
+table.chain-report td.a { width: 4%; text-align: center; }
 table.chain-report td.b { width: 15%; text-align: left; }
-table.chain-report td.c { width: 10%; text-align: center; }  /* x8 */
+table.chain-report td.c { width: 9%; text-align: center; }  /* x9 */
 /* table.chain-report tr:hover { font-weight: bold; } */
 
 table.chain-keys td { line-height: 28px; }

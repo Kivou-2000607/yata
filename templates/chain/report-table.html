@@ -25,7 +25,7 @@ This file is part of yata.
 <script>
 
 $(document).ready(function() {
-    $("#chain-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[3,1],[6,1]]});
+    $("#chain-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[3,1],[7,1]]});
 
     $("#chain-report").bind("sortStart",function() {
         $('[id^="individal-report-"]').remove();
@@ -139,8 +139,9 @@ $(document).ready(function() {
         <tr>
             <th title="Rank based on the number of hits">Rank</th>
             <th title="Torn Name and id and like to the torn profile">Name [id]</th>
-            <th title="Number of attacks that counted for the chain">Number<br> of hits</th>
-            <th title="Total number of attacks including losses, assists, friendly fires...">Number<br> of attacks</th>
+            <th title="Number of attacks that counted for the chain.">Number<br>of hits</th>
+            <th title="Total number of attacks including losses, assists, friendly fires...">Number of<br>attacks</th>
+            <th title="Number of attacks that counted for the war.">Number of<br>war hits</th>
             <!-- <th title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
             <th title="Average of war modifier over all hits">modifiers<br>(war)</th>
             <th title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
@@ -155,7 +156,8 @@ $(document).ready(function() {
         </tr>
     </thead>
     <tbody>
-        {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"wins" %}
+        {# {% for c in counts|dictsortreversed:"respect"|dictsortreversed:"hits" %} #}
+        {% for c in counts %}
             {% if c.daysInFaction > -1 or c.wins > 0 %}
             <tr {% if c.graph|length %}id="chain-ireport-{{chain.tId}}-{{c.attackerId}}"{% endif %} class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                 <td class="a">{{ forloop.counter }}</td>
@@ -164,6 +166,7 @@ $(document).ready(function() {
 
                 <td class="c">{{c.wins|add:c.bonus}}</td>
                 <td class="c">{{c.hits}}</td>
+                <td class="c">{{c.warhits}}</td>
                 {% if c.wins %}
                     <!-- <td class="c">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->
                     <!-- <td class="c">{{c.war|div:c.wins|floatformat:2}}</td> -->

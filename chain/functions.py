@@ -195,7 +195,8 @@ def fillReport(faction, members, chain, report, attacks):
         # 10: tId
         # 11: sum(time(hit)-time(lasthit))
         # 12: #bonuses
-        attackers[m.tId] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.name, 0, 0]
+        # 13: #war
+        attackers[m.tId] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.name, 0, 0, 0]
 
     #  for debug
     # PRINT_NAME = {"Thiirteen": 0,}
@@ -211,7 +212,7 @@ def fillReport(faction, members, chain, report, attacks):
             # if attacker not part of the faction at the time of the call
             if attackerID not in attackers:
                 print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
-                attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0]  # add out of faction attackers on the fly
+                attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0, 0]  # add out of faction attackers on the fly
 
             attackers[attackerID][0] += 1
             nWRA[2] += 1
@@ -257,6 +258,8 @@ def fillReport(faction, members, chain, report, attacks):
                     attackers[attackerID][6] += float(v['modifiers']['overseas'])
                     attackers[attackerID][7] += float(v['modifiers']['chainBonus'])
                     attackers[attackerID][8] += respect / float(v['modifiers']['chainBonus'])
+                    if float(v['modifiers']['war']) > 1.0:
+                        attackers[attackerID][13] += 1
 
             # else:
             #     print("[function.chain.fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
@@ -332,6 +335,7 @@ def fillReport(faction, members, chain, report, attacks):
         # 10: tId
         # 11: for chain watch
         # 12: #bonuses
+        # 13: #war
         report.count_set.create(attackerId=k,
                                 name=v[10],
                                 hits=v[0],
@@ -346,7 +350,8 @@ def fillReport(faction, members, chain, report, attacks):
                                 daysInFaction=v[9],
                                 beenThere=beenThere,
                                 graph=graphTmp,
-                                watcher=watcher)
+                                watcher=watcher,
+                                warhits=v[13])
 
     # fill the database with bonus
     print('[function.chain.fillReport] fill database with bonus')

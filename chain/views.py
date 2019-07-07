@@ -468,6 +468,7 @@ def jointReport(request):
                         counts[count.attackerId]['respect'] += count.respect
                         counts[count.attackerId]['fairFight'] += count.fairFight
                         counts[count.attackerId]['war'] += count.war
+                        counts[count.attackerId]['warhits'] += count.warhits
                         counts[count.attackerId]['retaliation'] += count.retaliation
                         counts[count.attackerId]['groupAttack'] += count.groupAttack
                         counts[count.attackerId]['overseas'] += count.overseas
@@ -481,6 +482,7 @@ def jointReport(request):
                                                     'respect': count.respect,
                                                     'fairFight': count.fairFight,
                                                     'war': count.war,
+                                                    'warhits': count.warhits,
                                                     'retaliation': count.retaliation,
                                                     'groupAttack': count.groupAttack,
                                                     'overseas': count.overseas,
@@ -510,7 +512,7 @@ def jointReport(request):
                 #         bonuses.append([[v["name"]], [[], 1, v["wins"]]])
 
             # aggregate counts
-            arrayCounts = [v for k, v in counts.items()]
+            arrayCounts = [v for k, v in sorted(counts.items(), key=lambda x: x[1]["hits"], reverse=True)]
             arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
             # add last time connected

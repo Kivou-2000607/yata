@@ -218,6 +218,7 @@ class Count(models.Model):
     beenThere = models.BooleanField(default=False)
     graph = models.TextField(default="", null=True, blank=True)
     watcher = models.FloatField(default=0)
+    warhits = models.IntegerField(default=0)
 
     def __str__(self):
         return("Count of {}".format(self.report.chain))
