@@ -145,8 +145,8 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
 
 .refresh > span {
   /* background-color: #93c4c4; */
-  animation: refresh 25s linear;
-  -webkit-animation: refresh 25s linear;
+  animation: refresh 60s linear;
+  -webkit-animation: refresh 60s linear;
 }
 
 @keyframes refresh {
@@ -154,8 +154,8 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
     100% {width: 0%; background-color: #ff0000;}
 }
 
-@keyframes refresh-content {
-    0%    {content: "25s"}
+/* @keyframes refresh-content {
+    0%    {content: "60s"}
     4%    {content: "24s"}
     8%   {content: "23s"}
     12%   {content: "22s"}
@@ -180,9 +180,9 @@ table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
     92%   {content: "3s"}
     96%   {content: "2s"}
     100%   {content: "1s"}
-}
+} */
 
-.refresh > span.strips:after {
-    animation: refresh-content 25s linear;
-    -webkit-animation: refresh-content 25s linear;
-}
+/* .refresh > span.strips:after {
+    animation: refresh-content 60s linear;
+    -webkit-animation: refresh-content 60s linear;
+} */
