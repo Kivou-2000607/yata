@@ -387,11 +387,12 @@ def report(request, chainId):
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
             # context
+            counts = report.count_set.extra(select={'fieldsum':'wins + bonus'}, order_by=('-fieldsum','-respect'))
             context = dict({"player": player,
                             'chaincat': True,
                             'chain': chain,  # for general info
                             'chains': chains,  # for chain list after report
-                            'counts': report.count_set.all(),  # for report
+                            'counts': counts,  # for report
                             'bonus': report.bonus_set.all(),  # for report
                             'graph': graph,  # for report
                             'view': {'list': True, 'report': True}})  # views
@@ -512,7 +513,7 @@ def jointReport(request):
                 #         bonuses.append([[v["name"]], [[], 1, v["wins"]]])
 
             # aggregate counts
-            arrayCounts = [v for k, v in sorted(counts.items(), key=lambda x: x[1]["hits"], reverse=True)]
+            arrayCounts = [v for k, v in sorted(counts.items(), key=lambda x: (-x[1]["wins"] - x[1]["bonus"], -x[1]["respect"]))]
             arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
             # add last time connected
