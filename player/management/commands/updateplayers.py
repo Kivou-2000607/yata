@@ -21,8 +21,12 @@ This file is part of yata.
 from django.core.management.base import BaseCommand
 from player.models import Player
 
+
 class Command(BaseCommand):
     def handle(self, **options):
 
         for player in Player.objects.all():
-            player.update_info()
+            try:
+                player.update_info()
+            except BaseException as e:
+                print(f"[UPDATE PLAYER ERROR]: {e}")

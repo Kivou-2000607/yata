@@ -387,7 +387,7 @@ def report(request, chainId):
                 graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
             # context
-            counts = report.count_set.extra(select={'fieldsum':'wins + bonus'}, order_by=('-fieldsum','-respect'))
+            counts = report.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))
             context = dict({"player": player,
                             'chaincat': True,
                             'chain': chain,  # for general info

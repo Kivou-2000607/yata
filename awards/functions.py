@@ -1391,8 +1391,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Pepperoni": 13,
                         "Electric Dream": 15,
                         "Hairy": 5,
-                        "Backdrop": 5,
-                        }
+                        "Backdrop": 3,
+                    }
 
                     vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
                     vp["comment"] = ["token needed", "cost {} tokens".format(token[v["name"]])]
