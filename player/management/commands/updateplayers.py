@@ -21,6 +21,7 @@ This file is part of yata.
 from django.core.management.base import BaseCommand
 from player.models import Player
 
+import traceback
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -30,3 +31,4 @@ class Command(BaseCommand):
                 player.update_info()
             except BaseException as e:
                 print(f"[UPDATE PLAYER ERROR]: {e}")
+                print(traceback.format_exc())

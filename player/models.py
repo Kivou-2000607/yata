@@ -20,6 +20,7 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
+from awards.models import Call
 
 class Player(models.Model):
     # user information: basic
@@ -107,7 +108,8 @@ class Player(models.Model):
         self.chainUpda = int(timezone.now().timestamp())
 
         # update awards info
-        tornAwards = apiCall('torn', '', 'honors,medals', self.key)
+        # tornAwards = apiCall('torn', '', 'honors,medals', self.key)
+        tornAwards = Call.objects.first().load()
         if 'apiError' in tornAwards:
             self.awardsJson = json.dumps(tornAwards)
             self.awardsInfo = "0"
