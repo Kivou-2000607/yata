@@ -335,6 +335,7 @@ d = {
     550: 253616541,  # Arrowshot
     638: 228161802,  # Funambulist
     498: 914416584,  # Shielded
+    690: 662053219,  # Ripped
 
     # 11
     163: 431464057,  # Fascination
