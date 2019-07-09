@@ -26,6 +26,41 @@ This file is part of yata.
 
         $(document).ready(function() {
             $("#awards-list").tablesorter({ cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
+
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+              var data = google.visualization.arrayToDataTable([
+                ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                {% for h, c, s, im in graph %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{100|div:c|div:popTotal|floatformat:4}}%"],
+                 {% endfor %}
+              ]);
+
+              var options = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                         },
+                bar: {groupWidth: '80%'},
+                hAxis: {  textPosition: 'none', title: "Honors" },
+                vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+              var view = new google.visualization.DataView(data);
+              view.setColumns([0, 1]);
+
+              var chart = new google.visualization.ComboChart(document.getElementById('chart'));
+
+              chart.draw(data, options);
+            }
+
         });
 
 </script>
@@ -109,6 +144,12 @@ This file is part of yata.
         {% endfor %}
     {% endfor %}
     </tbody>
+</table>
+
+<table class="center-large">
+    <tr><td>
+        <div id="chart"></div>
+    </tr></td>
 </table>
 
 </div>

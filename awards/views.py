@@ -87,13 +87,25 @@ def list(request, type):
 
             if type in AWARDS_CAT:
                 awards, awardsSummary = createAwards(tornAwards, userInfo, type)
-                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "popTotal": popTotal}
+                graph = []
+                for type, honors in awards.items():
+                    for k, h in honors.items():
+                        if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
+                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img")])
+                graph = sorted(graph, key=lambda x: -x[1])
+                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "popTotal": popTotal, "graph": graph}
                 page = 'awards/list.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
             elif type == "all":
                 awards = awardsJson.get('awards')
-                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "popTotal": popTotal}
+                graph = []
+                honors_awarded = [str(k) for k in userInfo.get("honors_awarded", [])]
+                for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                    if h.get("rarity") not in  ["Unknown Rarity"]:
+                        i = True if k in honors_awarded else False
+                        graph.append([h.get("name", "?"), h.get("circulation", 0), i, h.get("img")])
+                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "popTotal": popTotal, "graph": graph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
@@ -108,8 +120,7 @@ def list(request, type):
                     except:
                         print('[view.awards.list] error getting info on {}'.format(p))
 
-                print(sorted(hof.items(), key=lambda x: (x[1]["score"], x[1]["nAwarded"]), reverse=True))
-                context = {"player": player, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
+                context = {"player": player, "graph": graph, "popTotal": popTotal, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 

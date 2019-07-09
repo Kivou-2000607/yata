@@ -61,3 +61,19 @@ table.awards-hof td.a { width: 10%; text-align: center;}
 table.awards-hof td.b { width: 25%; }  /* x2 */
 table.awards-hof td.c { width: 20%; text-align: center;} /* x2 */
 table.awards-hof tr.its-you {  background:#b6d7a8; }
+
+
+.google-visualization-tooltip {
+    /* position:absolute !important;
+    top:0 !important;
+    left:0% !important; */
+    width: 210px;
+    padding-top: 5px !important;
+    text-align: center;
+    z-index:+1;
+}
+
+.google-visualization-tooltip > * {
+    padding: 0px !important;
+    margin: 0px !important;
+}
