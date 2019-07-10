@@ -120,6 +120,13 @@ def list(request, type):
                     except:
                         print('[view.awards.list] error getting info on {}'.format(p))
 
+                graph = []
+                honors_awarded = [str(k) for k in userInfo.get("honors_awarded", [])]
+                for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                    if h.get("rarity") not in  ["Unknown Rarity"]:
+                        i = True if k in honors_awarded else False
+                        graph.append([h.get("name", "?"), h.get("circulation", 0), i, h.get("img")])
+
                 context = {"player": player, "graph": graph, "popTotal": popTotal, "view": {"hof": True}, "awardscat": True, "hof": hof, "summaryByType": summaryByType}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
