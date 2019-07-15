@@ -24,29 +24,28 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'ago-yata',
-            is: function(s, table, cell, $cell) {
-                // return false so this parser is not auto detected
-                return false;
-            },
-            format: function(s, table, cell, cellIndex) {
-                // format your data for normalization
-                var ret = s.toLowerCase()
-                .replace(/days/,86400)
-                .replace(/day/,86400)
-                .replace(/hrs/,3600)
-                .replace(/hr/,3600)
-                .replace(/mins/,60)
-                .replace(/min/,60).split(' ');
-                return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
-            },
-            // set type, either numeric or text
-            type: 'numeric',
-        });
+      $.tablesorter.addParser({
+          // set a unique id
+          id: 'ago',
+          is: function(s, table, cell, $cell) {
+              // return false so this parser is not auto detected
+              return false;
+          },
+          format: function(s, table, cell, cellIndex) {
+              // format your data for normalization
+              var ret = s.toLowerCase()
+              .replace(/days/,86400).replace(/day/,86400)
+              .replace(/hours/,3600).replace(/hour/,3600)
+              .replace(/hrs/,3600).replace(/hr/,3600)
+              .replace(/minutes/,60).replace(/minute/,60)
+              .replace(/mins/,60).replace(/min/,60).split(' ');
+              return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
+          },
+          // set type, either numeric or text
+          type: 'numeric',
+      });
 
-        $("#chain-list").tablesorter({headers: { 3: { sorter: 'ago-yata' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+        $("#chain-list").tablesorter({headers: { 3: { sorter: 'ago' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
     });
 </script>
 
