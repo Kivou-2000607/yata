@@ -525,7 +525,7 @@ def jointReport(request):
             for i, bonus in enumerate(arrayBonuses):
                 try:
                     arrayBonuses[i].append(faction.member_set.filter(tId=bonus[0]).first().lastAction)
-                except:
+                except BaseException:
                     arrayBonuses[i].append(False)
 
             # context

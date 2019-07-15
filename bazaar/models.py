@@ -134,7 +134,7 @@ class Item(models.Model):
                               'cumulative': int(float(bData[i].quantity) * float(bData[i].cost)) + tmp}
                              )
                 tmp = cData[i]["cumulative"]
-        except:
+        except BaseException:
             cData = []
         return cData
 
@@ -154,8 +154,8 @@ class Item(models.Model):
             for k, v in bazaar.items():
                 marketData.append({"cost": v["cost"], "quantity": v["quantity"], "itemmarket": False})
 
-            pp = 0 # previews price
-            q = 0 # quantity
+            pp = 0  # previews price
+            q = 0  # quantity
             for i, (k, v) in enumerate(itemmarket.items()):
                 pp = v["cost"] if i == 0 else pp
                 if v["cost"] == pp:

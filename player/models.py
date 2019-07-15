@@ -22,6 +22,7 @@ from django.utils import timezone
 
 from awards.models import Call
 
+
 class Player(models.Model):
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)

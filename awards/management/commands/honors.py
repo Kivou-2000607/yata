@@ -25,6 +25,7 @@ import os
 from awards.honors import d
 from awards.models import Call
 
+
 class Command(BaseCommand):
     def handle(self, **options):
         file = os.path.join(settings.PROJECT_ROOT, 'static/honors/bannersId.json')

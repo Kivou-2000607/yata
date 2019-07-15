@@ -122,7 +122,7 @@ def delete(request):
             try:
                 faction.delKey(tId)
                 faction.save()
-            except:
+            except BaseException:
                 pass
             player.delete()
 
@@ -145,7 +145,7 @@ def api(request):
         import time
         time.sleep(10)
         return HttpResponse(json.dumps(lastActions), content_type="application/json")
-    except:
+    except BaseException:
         return returnError()
 
 

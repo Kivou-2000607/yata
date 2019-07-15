@@ -23,6 +23,7 @@ from player.models import Player
 
 import traceback
 
+
 class Command(BaseCommand):
     def handle(self, **options):
 

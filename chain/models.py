@@ -49,7 +49,7 @@ class Faction(models.Model):
     def addKey(self, id, key):
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         if str(id) in keys:
             if keys[str(id)][:16] == key:
@@ -68,7 +68,7 @@ class Faction(models.Model):
     def toggleKey(self, id):
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         if str(id) in keys:
             if len(keys[str(id)]) == 16:
@@ -86,7 +86,7 @@ class Faction(models.Model):
     def delKey(self, id):
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         if str(id) in keys:
             del keys[str(id)]
@@ -99,7 +99,7 @@ class Faction(models.Model):
         import random
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         ignore = []
         for k, v in keys.items():
@@ -112,7 +112,7 @@ class Faction(models.Model):
     def getAllPairs(self, enabledKeys=False):
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         if enabledKeys:
             ignore = []
@@ -132,7 +132,7 @@ class Faction(models.Model):
     def nKeys(self):
         try:
             keys = json.loads(self.apiString)
-        except:
+        except BaseException:
             keys = {}
         ignore = []
         for k, v in keys.items():

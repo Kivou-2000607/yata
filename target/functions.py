@@ -85,5 +85,6 @@ def updateAttacks(player):
 
     return error
 
+
 def convertElaspedString(str):
     return str.replace("minute", "min").replace("hour", "hr").replace("second", "sec")

@@ -40,7 +40,6 @@ class MarketDataInline(admin.TabularInline):
     readonly_fields = ('quantity', 'cost')
 
 
-
 class MarketDataAdmin(admin.ModelAdmin):
     list_display = ['item', 'quantity', 'cost', 'itemmarket']
 

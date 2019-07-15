@@ -43,7 +43,7 @@ class Command(BaseCommand):
         crontab = Crontab.objects.filter(tabNumber=crontabId).first()
         try:
             factions = [faction for faction in crontab.faction.all()]
-        except:
+        except BaseException:
             print("[command.chain.livereport] no crontab found")
             return
 
