@@ -28,6 +28,7 @@ from awards.functions import createAwards
 from awards.functions import updatePlayerAwards
 from awards.functions import AWARDS_CAT
 from player.models import Player
+from awards.models import Call
 
 
 def index(request):
@@ -37,24 +38,32 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
-            player.save()
-
-            key = player.key
+            awardsJson = json.loads(player.awardsJson)
+            userInfo = awardsJson.get('userInfo')
 
             error = False
-            tornAwards = apiCall('torn', '', 'honors,medals', key)
-            if 'apiError' in tornAwards:
-                error = tornAwards
-
-            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', key)
+            tornAwards = Call.objects.first().load()
+            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', player.key)
             if 'apiError' in userInfo:
                 error = userInfo
-
-            if not error:
+            else:
                 print("[view.awards.index] update awards")
+                awardsJson["userInfo"] = userInfo
+                player.awardsJson = json.dumps(awardsJson)
                 updatePlayerAwards(player, tornAwards, userInfo)
+                player.save()
 
-            context = {"player": player, "awardscat": True, "view": {"awards": True}}
+            # get graph data
+            awards = awardsJson.get('awards')
+            popTotal = awardsJson.get('popTotal')
+            graph = []
+            honors_awarded = [str(k) for k in userInfo.get("honors_awarded", [])]
+            for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                if h.get("rarity") not in ["Unknown Rarity"]:
+                    i = True if k in honors_awarded else False
+                    graph.append([h.get("name", "?"), h.get("circulation", 0), i, h.get("img")])
+
+            context = {"player": player, "popTotal": popTotal, "graph": graph, "awardscat": True, "view": {"awards": True}}
             for k, v in json.loads(player.awardsJson).items():
                 context[k] = v
             if error:
@@ -80,7 +89,7 @@ def list(request, type):
             awardsJson = json.loads(player.awardsJson)
             print('[view.awards.list] award type: {}'.format(type))
 
-            tornAwards = awardsJson.get('tornAwards')
+            tornAwards = Call.objects.first().load()
             userInfo = awardsJson.get('userInfo')
             summaryByType = awardsJson.get('summaryByType')
             popTotal = awardsJson.get('popTotal')
@@ -102,7 +111,7 @@ def list(request, type):
                 graph = []
                 honors_awarded = [str(k) for k in userInfo.get("honors_awarded", [])]
                 for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
-                    if h.get("rarity") not in  ["Unknown Rarity"]:
+                    if h.get("rarity") not in ["Unknown Rarity"]:
                         i = True if k in honors_awarded else False
                         graph.append([h.get("name", "?"), h.get("circulation", 0), i, h.get("img")])
                 context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "popTotal": popTotal, "graph": graph}
@@ -117,13 +126,13 @@ def list(request, type):
                                         "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
                                         "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
                                         }})
-                    except:
+                    except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
 
                 graph = []
                 honors_awarded = [str(k) for k in userInfo.get("honors_awarded", [])]
                 for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
-                    if h.get("rarity") not in  ["Unknown Rarity"]:
+                    if h.get("rarity") not in ["Unknown Rarity"]:
                         i = True if k in honors_awarded else False
                         graph.append([h.get("name", "?"), h.get("circulation", 0), i, h.get("img")])
 

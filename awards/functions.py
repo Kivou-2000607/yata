@@ -1392,7 +1392,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Electric Dream": 15,
                         "Hairy": 5,
                         "Backdrop": 3,
-                    }
+                        }
 
                     vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
                     vp["comment"] = ["token needed", "cost {} tokens".format(token[v["name"]])]
@@ -1739,7 +1739,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                             awards[category][k2]["left"] /= 2.0
                             awards[category][k1]["comment"][1] += " (nerve /2)"
                             awards[category][k2]["comment"][1] += " (nerve /2)"
-                        except:
+                        except BaseException:
                             pass
 
                     doubled.append(k1)
@@ -1783,8 +1783,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
     summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
     summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
 
-    awardsJson = {"tornAwards": tornAwards,
-                  "userInfo": userInfo,
+    awardsJson = {"userInfo": userInfo,
                   "awards": awards,
                   "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
                   }
