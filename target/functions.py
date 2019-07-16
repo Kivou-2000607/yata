@@ -46,7 +46,7 @@ def updateAttacks(player):
             v["defender_id"] = str(v["defender_id"])  # have to string for json key
             if v["defender_id"] == str(tId):
                 if v.get("attacker_name") is not None:
-                    attacks[k]["defender_id"] = v.get("attacker_id")
+                    attacks[k]["defender_id"] = str(v.get("attacker_id"))
                     attacks[k]["defender_name"] = v.get("attacker_name")
                     attacks[k]["bonus"] = 0
                     attacks[k]["result"] += " you"

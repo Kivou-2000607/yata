@@ -119,7 +119,7 @@ def toggleTarget(request, targetId):
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
 
             # call for target info
-            targetInfo = apiCall('user', targetId, '', key)
+            targetInfo = apiCall('user', targetId, 'profile,timestamp', key)
             if 'apiError' in targetInfo:
                 level = 0
                 lifeMax = 1
@@ -136,7 +136,7 @@ def toggleTarget(request, targetId):
                 status = targetInfo["status"][0].replace("In hospital", "H")
                 statusFull = " ".join(targetInfo["status"])
                 lastAction = convertElaspedString(targetInfo["last_action"]["relative"])
-                lastUpdate = int(timezone.now().timestamp())
+                lastUpdate = int(targetInfo.get("timestamp", timezone.now().timestamp()))
 
             if targetId not in targets:
                 print('[view.target.toggleTarget] create target {}'.format(targetId))
@@ -164,6 +164,7 @@ def toggleTarget(request, targetId):
 
             targetJson["targets"] = targets
             player.targetJson = json.dumps(targetJson)
+            player.targetInfo = len(targetJson)
             player.save()
 
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
@@ -192,7 +193,7 @@ def refresh(request, targetId):
 
             # call for target info
             error = False
-            targetInfo = apiCall('user', targetId, '', key)
+            targetInfo = apiCall('user', targetId, 'profile,timestamp', key)
             if 'apiError' in targetInfo:
                 error = targetInfo
 
@@ -211,7 +212,7 @@ def refresh(request, targetId):
                 target["status"] = targetInfo["status"][0].replace("In hospital", "H")
                 target["statusFull"] = " ".join(targetInfo["status"])
                 target["lastAction"] = convertElaspedString(targetInfo["last_action"]["relative"])
-                target["lastUpdate"] = int(timezone.now().timestamp())
+                target["lastUpdate"] = int(targetInfo.get("timestamp", timezone.now().timestamp()))
                 level = targetInfo["level"]
                 target["level"] = level
                 # if for some reason there is no entry
@@ -318,7 +319,7 @@ def add(request):
 
             if not error:
                 # call for target info
-                targetInfo = apiCall('user', targetId, '', key)
+                targetInfo = apiCall('user', targetId, 'profile,timestamp', key)
                 if 'apiError' in targetInfo:
                     error = targetInfo.get("apiError", "error")
 
@@ -344,7 +345,7 @@ def add(request):
                                                      "status": targetInfo["status"][0].replace("In hospital", "H"),
                                                      "statusFull": " ".join(targetInfo["status"]),
                                                      "lastAction": convertElaspedString(targetInfo["last_action"]["relative"]),
-                                                     "lastUpdate": int(timezone.now().timestamp()),
+                                                     "lastUpdate": int(targetInfo.get("timestamp", timezone.now().timestamp())),
                                                      "note": ""
                                                      }
                                 added = True
@@ -366,7 +367,7 @@ def add(request):
                                                  "status": targetInfo["status"][0].replace("In hospital", "H"),
                                                  "statusFull": " ".join(targetInfo["status"]),
                                                  "lastAction": targetInfo["last_action"]["relative"],
-                                                 "lastUpdate": int(timezone.now().timestamp()),
+                                                 "lastUpdate": int(targetInfo.get("timestamp", timezone.now().timestamp())),
                                                  "note": ""}
 
                         targetJson["targets"] = targets

@@ -41,7 +41,7 @@ This file is part of yata.
         </div>
     </td>
     <td class='e status {% if target.status.0 != "O" %}not-{% endif %}okay' title="{{target.statusFull|cleanhtml}}">{{target.status}}</td>
-    <td class="f update-timer">
+    <td class="f update-timer" title="Last update on {{target.lastUpdate|ts2date}}">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.lastUpdate%}
             {% if seconds > 7199 %}
