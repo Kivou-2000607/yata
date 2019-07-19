@@ -28,6 +28,7 @@ import traceback
 
 from player.models import Player
 from player.models import News
+from awards.models import Donation
 from chain.models import Faction
 from yata.handy import apiCall
 from yata.handy import returnError
@@ -35,13 +36,15 @@ from yata.handy import returnError
 
 def index(request):
     try:
+        allNews = News.objects.all().order_by("-date")
+        allDonations = Donation.objects.all().order_by("-pk")
         if request.session.get('player'):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            context = {"player": player, 'allNews': News.objects.all().order_by("-date")}
+            context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
         else:
-            context = {'allNews': News.objects.all().order_by("-date")}
+            context = {'allNews': allNews, 'allDonations': allDonations}
 
         return render(request, 'yata.html', context)
 

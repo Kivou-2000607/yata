@@ -25,6 +25,7 @@ import json
 from yata.handy import apiCall
 from awards.honors import d
 
+
 class Call(models.Model):
     timestamp = models.IntegerField(default=0)
     key = models.CharField(max_length=20)
@@ -46,3 +47,24 @@ class Call(models.Model):
 
     def load(self):
         return json.loads(self.a)
+
+
+class Donation(models.Model):
+    event = models.CharField(max_length=512)
+    # You were sent {GIFT} from {SENDER} with the message: {MESSAGE} {DATE}
+
+    def __str__(self):
+        return self.event
+
+    def split(self):
+        spl = self.event.split(": ")
+
+        spl1 = spl[0].split(" from ")
+        gift = " ".join(spl1[0].split(" ")[3:])
+        sender = spl1[1].split(" ")[0]
+
+        spl2 = spl[1].split(" ")
+        message = " ".join(spl2[:-2])
+        date = " ".join(spl2[-2:])
+
+        return {"date": date, "message": message, "sender": sender, "gift": gift}

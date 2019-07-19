@@ -64,6 +64,34 @@
         </p>
     </div>
 
+    {% if allDonations|length %}
+        <div class="catch-me">
+            <h2 class="title grey toggle-display rounded"><i class="fas fa-gift"></i>&nbsp;&nbsp;Donations&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+            <div class="module tutorial" style="display: none;">
+                    <table  style="margin: auto;">
+                        <thead>
+                            <tr>
+                                <th>Sender</th>
+                                <th>Gift</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for donation in allDonations %}
+                        <tr>
+                            <td>{{donation.split.sender}}</td>
+                            <td>{{donation.split.gift}}</td>
+                            <td>{{donation.split.message}}</td>
+                            <td>{{donation.split.date}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    <br />
     {% if allNews|length %}
         <div class="catch-me">
             <h2 class="title grey toggle-display rounded"><i class="far fa-calendar-check"></i>&nbsp;&nbsp;News feed&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
