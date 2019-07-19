@@ -19,6 +19,8 @@ This file is part of yata.
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
+AWARDS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
+
 
 def honorId2Img(i):
     from awards.honors import d
