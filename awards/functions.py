@@ -404,7 +404,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfDefends, 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["defends left", "current ratio of {:,.2g} defends won / defend".format(ratio)]
+                    vp["comment"] = ["assaults left", "current ratio of {:,.2g} defends won / defend".format(ratio)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [27]:
@@ -552,7 +552,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfDefends, 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["defends left", "current ratio of {:,.2g} defends won / defend".format(ratio)]
+                    vp["comment"] = ["assaults left", "current ratio of {:,.2g} defends won / defend".format(ratio)]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [184, 185, 186]:
@@ -573,7 +573,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfDefends, 1))
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["defends left", "current ratio of {:,.2g} escapes / defend".format(ratio)]
+                    vp["comment"] = ["assaults left", "current ratio of {:,.2g} escapes / defend".format(ratio)]
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [190, 191, 192, 193, 194]:
