@@ -43,6 +43,8 @@ def index(request):
             # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
+            player.targetInfo = len(targets)
+            player.save()
 
             context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             # if error:
@@ -92,9 +94,11 @@ def targets(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
-            player.save()
             targetJson = json.loads(player.targetJson)
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
+
+            player.targetInfo = len(targets)
+            player.save()
 
             context = {"player": player, "targetcat": True, "targets": targets, "ts": int(timezone.now().timestamp()), "view": {"targets": True}}
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'

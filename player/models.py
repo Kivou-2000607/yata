@@ -129,6 +129,7 @@ class Player(models.Model):
                 del targets['']
             targetsAttacks["targets"] = targets
             self.targetJson = json.dumps(targetsAttacks)
+            self.targetInfo = len(targets)
 
         self.lastUpdateTS = int(timezone.now().timestamp())
         self.save()
