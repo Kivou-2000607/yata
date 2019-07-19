@@ -23,7 +23,7 @@ from django.utils import timezone
 import json
 
 from yata.handy import apiCall
-
+from awards.honors import d
 
 class Call(models.Model):
     timestamp = models.IntegerField(default=0)
@@ -39,6 +39,8 @@ class Call(models.Model):
             print(req["apiError"])
         else:
             self.timestamp = int(timezone.now().timestamp())
+            for k, v in req["honors"].items():
+                req["honors"][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
             self.a = json.dumps(req)
             self.save()
 
