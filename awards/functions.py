@@ -792,9 +792,32 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     type = "Other items"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("virusescoded", 0)
+                    c = 1.
+                    coding_perks = []
+                    for p in userInfo.get("education_perks", []):
+                        if "virus coding time" == p[6:].lower():
+                            split_perk = p.strip().split(" ")
+                            r = float(split_perk[1].replace("%", "")) / 100.
+                            c *= (1. - r)
+                            coding_perks.append(f"education ({int(r * 100)}%)")
+                            break
+                    for p in userInfo.get("company_perks", []):
+                        if "virus coding time reduction" == p[6:].lower():
+                            c *= 0.5
+                            coding_perks.append("job (50%)")
+                            break
+                    for p in userInfo.get("stock_perks", []):
+                        if "(IIL)" == p.strip().split(" ")[-1]:
+                            c *= 0.5
+                            coding_perks.append("stock (50%)")
+                            break
+                    t = max(1, int(c * 10))
+                    coding_perks = ", ".join(coding_perks) if len(coding_perks) else "no perks"
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(3 * (vp["goal"] - vp["current"]), 0)
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "coding simple viruses with IIL block and education"]
+                    vp["left"] = max(t * (vp["goal"] - vp["current"]), 0)
+                    s1 = "" if vp["left"] == 1 else "s"
+                    s2 = "" if t == 1 else "s"
+                    vp["comment"] = [f"day{s1} left", f"coding simple viruses in {t} day{s2} ({coding_perks})"]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [527]:
