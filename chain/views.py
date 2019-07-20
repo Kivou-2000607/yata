@@ -189,7 +189,7 @@ def live(request):
                     print('[view.chain.index] live counts is {}'.format(counts))
                     print('[view.chain.index] live bonus is {}'.format(bonus))
                 else:
-                    counts = report.count_set.all()
+                    counts = report.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))
                     bonus = report.bonus_set.all()
                     print('[view.chain.index] live counts of length {}'.format(len(counts)))
                     print('[view.chain.index] live bonus of length {}'.format(len(bonus)))
