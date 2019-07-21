@@ -996,7 +996,8 @@ def armory(request):
                         item = ns[6].title()
                         n = 25
                     else:
-                        item = " ".join(ns[6:-1]).split(":")[0].strip()
+                        # item = " ".join(ns[6:-1]).split(":")[0].strip()
+                        item = " ".join(ns[6:-1]).strip()
                         n = 1
 
                     timestamps["nObjects"] += n
@@ -1016,7 +1017,8 @@ def armory(request):
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
                     else:
-                        item = " ".join(ns[4:]).split(":")[0].strip()
+                        # item = " ".join(ns[4:]).split(":")[0].strip()
+                        item = " ".join(ns[4:]).strip()
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][1] += n
@@ -1026,9 +1028,12 @@ def armory(request):
                         # new item and new member [taken, given]
                         armory[item] = {member: [0, n]}
 
+                # elif 'gave' in ns:
+                    # print(ns)
+
                 elif 'filled' in ns:
                     member = ns[0]
-                    item = "Blood Bag"
+                    item = "Empty Blood Bag"
                     timestamps["nObjects"] += 1
                     if item in armory:
                         if member in armory[item]:
@@ -1044,13 +1049,12 @@ def armory(request):
 
             for k, v in armory.items():
                 for t, i in ITEM_TYPE.items():
-                    if k in i:
+                    if k.split(" : ")[0] in i:
                         armoryType[t][k] = v
                         break
                 if k in ["Points"]:
                     armoryType["Points"][k] = v
 
-            print(armoryType)
             context = {'player': player, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
