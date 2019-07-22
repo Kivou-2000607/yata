@@ -57,7 +57,6 @@ class Call(models.Model):
 
             for k, v in req["honors"].items():
                 req["honors"][k]["popTotal"] = popTotal
-                print(req["honors"][k])
 
             self.a = json.dumps(req)
             self.save()
