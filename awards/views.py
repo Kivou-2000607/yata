@@ -118,14 +118,15 @@ def list(request, type):
                 return render(request, page, context)
 
             elif type == "hof":
-                hof = dict({})
+                hof = []
                 hofGraph = []
-                for p in Player.objects.exclude(awardsInfo="N/A").all().order_by('-awardsInfo'):
+                for p in Player.objects.exclude(awardsInfo="N/A").all():
                     try:
-                        hof.update({p: {"rscore": float(p.awardsInfo),
+                        hof.append({"player": p,
+                                        "rscore": float(p.awardsInfo),
                                         "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
                                         "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
-                                        }})
+                                        })
                         hofGraph.append(float(p.awardsInfo))
                     except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
@@ -141,7 +142,7 @@ def list(request, type):
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
                 cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
                 hofGraph = [[x, y] for x, y in zip(cBins, histo)]
-                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": hof, "hofGraph": hofGraph}
+                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 

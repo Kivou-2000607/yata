@@ -105,14 +105,14 @@ This file is part of yata.
             </tr>
         </thead>
         <tbody>
-            {% for k, v in hof.items %}
-                {% if forloop.counter0 < 50 or k.tId == player.tId %}
+            {% for k in hof %}
+                {% if forloop.counter0 < 50 or k.player.tId == player.tId %}
                     <tr {%if k.tId == player.tId %}class="its-you"{% endif %}>
                         <td class="a">#{{ forloop.counter }}</td>
-                        <td class="b">{{k.name|playerURL:k.tId|safe}}</a></td>
-                        <td class="b">{{k.factionNa|factionURL:k.factionId|safe}}</td>
-                        <td class="c" title="{{v.nAwarded}} / {{v.nAwards}}">{{v.nAwarded|div:v.nAwards|mul:100|floatformat:2}}%</td>
-                        <td class="c">{{v.rscore|floatformat:2}}%</td>
+                        <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
+                        <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
+                        <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
+                        <td class="c">{{k.rscore|floatformat:2}}%</td>
                     </tr>
                 {% endif %}
             {% endfor %}
