@@ -21,6 +21,7 @@ from django.shortcuts import render
 from django.utils import timezone
 
 import json
+import numpy
 
 from yata.handy import apiCall
 from yata.handy import returnError
@@ -118,12 +119,14 @@ def list(request, type):
 
             elif type == "hof":
                 hof = dict({})
+                hofGraph = []
                 for p in Player.objects.exclude(awardsInfo="N/A").all().order_by('-awardsInfo'):
                     try:
                         hof.update({p: {"rscore": float(p.awardsInfo),
                                         "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
                                         "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
                                         }})
+                        hofGraph.append(float(p.awardsInfo))
                     except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
 
@@ -134,7 +137,11 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
 
-                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": hof}
+                bins = numpy.linspace(0, 100, num=101)
+                histo, _ = numpy.histogram(hofGraph, bins=bins)
+                cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
+                hofGraph = [[x, y] for x, y in zip(cBins, histo)]
+                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": hof, "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 

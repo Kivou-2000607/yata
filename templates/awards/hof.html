@@ -55,10 +55,38 @@ This file is part of yata.
               var view = new google.visualization.DataView(data);
               view.setColumns([0, 1]);
 
-              var chart = new google.visualization.ComboChart(document.getElementById('chart'));
+              var chart = new google.visualization.ComboChart(document.getElementById('rarityChart'));
 
               chart.draw(data, options);
+
+              var data2 = google.visualization.arrayToDataTable([
+                ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}],
+                {% for x, y in hofGraph %}
+                    [{{x}}, {{y}}, "<h3>Number of players: {{y|intcomma}}</h3>Rarity score between {{x|intdiv:1|floatformat:0}} and {{x|intdiv:1|add:1|floatformat:0}} %"],
+                 {% endfor %}
+              ]);
+
+              var options2 = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},},
+                bar: {groupWidth: '80%'},
+                hAxis: { format: 'short', title: "Rarity score (%)" },
+                vAxis: { format: 'short', title: "#Players" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '60%'},
+              };
+
+              var view2 = new google.visualization.DataView(data2);
+              view2.setColumns([0, 1]);
+
+              var chart2 = new google.visualization.ComboChart(document.getElementById('hofChart'));
+
+              chart2.draw(data2, options2);
             }
+
         });
 </script>
 
@@ -92,7 +120,10 @@ This file is part of yata.
         </tbody>
     </table>
     <table class="center-large">
-      <tr><td><div id="chart"></div></td></tr>
+        <tr><td><div id="hofChart"></div></td></tr>
+    </table>
+    <table class="center-large">
+        <tr><td><div id="rarityChart"></div></td></tr>
     </table>
 
 
