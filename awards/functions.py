@@ -1753,7 +1753,13 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     nextCrime = []  # list of next crime (if same lowest nerve)
     for category, aw in awards.items():
         for k1, v1 in aw.items():
+            # special case for dirty bomb
+            if k1 == "h_14":
+                awards[category]["h_14"]["double"] = True
+                awards[category]["h_156"]["double"] = True
+
             for k2, v2 in aw.items():
+                # if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                 if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                     awards[category][k1]["double"] = True
                     awards[category][k2]["double"] = True
