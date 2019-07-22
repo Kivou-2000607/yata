@@ -107,7 +107,7 @@ This file is part of yata.
         <tbody>
             {% for k in hof %}
                 {% if forloop.counter0 < 50 or k.player.tId == player.tId %}
-                    <tr {%if k.tId == player.tId %}class="its-you"{% endif %}>
+                    <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
                         <td class="a">#{{ forloop.counter }}</td>
                         <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
                         <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
