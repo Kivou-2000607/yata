@@ -25,11 +25,8 @@ import json
 from yata.handy import apiCall
 from awards.honors import d
 from awards.functions import AWARDS_UNREACH
+from awards.functions import computeRarity
 
-def f(c):
-    import math
-    return math.log(c + 1)
-    # return float(c)
 
 class Call(models.Model):
     timestamp = models.IntegerField(default=0)
@@ -53,7 +50,7 @@ class Call(models.Model):
                     to_del.append(k)
                 else:
                     if circulation > 0:
-                        popTotal += 1. / f(circulation)
+                        popTotal += 1. / computeRarity(circulation)
                 req["honors"][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
                 req["honors"][k]["unreach"] = 1 if int(k) in AWARDS_UNREACH else 0
             for k in to_del:
@@ -61,7 +58,7 @@ class Call(models.Model):
 
             for k, v in req["honors"].items():
                 if v["circulation"] > 0:
-                    req["honors"][k]["rScore"] = 100. / f(v["circulation"]) / popTotal
+                    req["honors"][k]["rScore"] = 100. / computeRarity(v["circulation"]) / popTotal
 
             self.a = json.dumps(req)
             self.save()

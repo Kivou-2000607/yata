@@ -33,7 +33,7 @@ This file is part of yata.
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                 {% for h, c, s, im, p, r in graph %}
-                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:2}}%"],
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:3}}%"],
                  {% endfor %}
               ]);
 
@@ -112,7 +112,7 @@ This file is part of yata.
                         <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
                         <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
                         <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
-                        <td class="c">{{k.rscore|floatformat:2}}%</td>
+                        <td class="c">{{k.rscore|floatformat:3}}%</td>
                     </tr>
                 {% endif %}
             {% endfor %}
