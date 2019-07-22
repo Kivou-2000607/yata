@@ -23,7 +23,6 @@ This file is part of yata.
 {% load app_filters %}
 
 <script>
-
         $(document).ready(function() {
             $("#awards-list").tablesorter({ cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
 
@@ -33,8 +32,8 @@ This file is part of yata.
             function drawChart() {
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-                {% for h, c, s, im in graph %}
-                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{100|div:c|div:popTotal|floatformat:4}}%"],
+                {% for h, c, s, im, p in graph %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{100|div:c|div:p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -115,18 +114,13 @@ This file is part of yata.
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
                 <td class="a"><span title="{{awardType}}">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
-                    {% if award.img == None %}
-                        <td class="b"><span title="{{award.name}}">{{award.name}}</span></td>
-                    {% else %}
-                        <td class="b award-todo"><img src="{{award.img}}" title="{{award.name}}" style="margin:0px, padding:0px">
-                        </td>
-                    {% endif %}
+                  <td class="b award-todo">{{award.img|honorBanner:award.name|safe}}</td>
                 {% else %}
                     {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
                         <td class="b"><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
                     {% endwith %}
                 {% endif %}
-                <td class="c"><span {% if award.circulation %}{% if award.rarity != "Unknown Rarity"%}title="Rarity score: {{100|div:award.circulation|div:popTotal|format:"{:.2g}"}}% ({{award.rarity}})"{% else %}title="Unkown Rarity"{% endif %}{% endif %}>{% if award.rarity != "Unknown Rarity"%}{{award.circulation|intcomma}}{% else %}?{% endif %}</span></td>
+                <td class="c"><span {% if award.circulation %}title="Rarity score: {{100|div:award.circulation|div:award.popTotal|format:"{:.2g}"}}% ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
                 <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
                 <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
@@ -147,9 +141,7 @@ This file is part of yata.
 </table>
 
 <table class="center-large">
-    <tr><td>
-        <div id="chart"></div>
-    </tr></td>
+    <tr><td><div id="chart"></div></td></tr>
 </table>
 
 </div>

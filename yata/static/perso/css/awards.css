@@ -79,3 +79,32 @@ table.awards-hof tr.its-you {  background:#b6d7a8; }
     padding: 0px !important;
     margin: 0px !important;
 }
+
+
+div.award-default {
+  position: relative;
+  width: 200px;
+  height: 19px;
+}
+img.award-default {
+  margin:0px;
+  padding:0px;
+}
+
+span.award-default {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #FFF;
+  font-size: 15px;
+  font-family: "Impact";
+  font-weight: bold;
+  font-style: normal;
+  -webkit-text-fill-color: #FFF;
+  -webkit-text-stroke-color: #000;
+  -webkit-text-stroke-width: 1px;
+  text-shadow: 0 0 2px #000; /* horizontal-offset vertical-offset 'blur' colour */
+  -moz-text-shadow: 0 0 2px #000;
+  -webkit-text-shadow: 0 0 2px #000;
+}

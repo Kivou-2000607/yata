@@ -32,8 +32,8 @@ This file is part of yata.
             function drawChart() {
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-                {% for h, c, s, im in graph %}
-                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{100|div:c|div:popTotal|floatformat:4}}%"],
+                {% for h, c, s, im, p in graph %}
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{100|div:c|div:p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -92,9 +92,7 @@ This file is part of yata.
         </tbody>
     </table>
     <table class="center-large">
-        <tr><td>
-            <div id="chart"></div>
-        </tr></td>
+      <tr><td><div id="chart"></div></td></tr>
     </table>
 
 

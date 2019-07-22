@@ -41,9 +41,24 @@ class Call(models.Model):
             print(req["apiError"])
         else:
             self.timestamp = int(timezone.now().timestamp())
+            to_del = []
+            popTotal = 0
             for k, v in req["honors"].items():
+                circulation = int(req["honors"][k].get("circulation", 0))
+                if v.get("type") in [1]:
+                    to_del.append(k)
+                else:
+                    if circulation > 0:
+                        popTotal += 1. / float(circulation)
                 req["honors"][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
                 req["honors"][k]["unreach"] = 1 if int(k) in AWARDS_UNREACH else 0
+            for k in to_del:
+                del req["honors"][k]
+
+            for k, v in req["honors"].items():
+                req["honors"][k]["popTotal"] = popTotal
+                print(req["honors"][k])
+
             self.a = json.dumps(req)
             self.save()
 

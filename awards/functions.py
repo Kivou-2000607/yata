@@ -92,7 +92,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Fraud crimes": [11, 0.95],
             "Other crimes": [2, 1.0],
             "Total": [2, 1.0],
-            }
+        }
 
         awards = dict({
             "Illegal products": dict(),
@@ -937,7 +937,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "chitravel": 242,
             "dubtravel": 271,
             "soutravel": 297,
-            }
+        }
 
         for k, v in tornAwards["honors"].items():
             if int(v["type"]) in [3, 7]:
@@ -1091,7 +1091,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Mathematics": "Mathematics",
                         "Psychology": "Psychological Sciences",
                         "Sports": "Sports Science",
-                        }
+                    }
 
                     eduDic = {
                         "Commerce": list(range(1, 14)),
@@ -1106,7 +1106,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Law": list(range(88, 103)),
                         "Health Sciences": list(range(103, 112)),
                         "General Studies": list(range(112, 124)),
-                        }
+                    }
 
                     name = v["name"].split(" ")[0]
                     educationCompleted = userInfo.get("education_completed", [])
@@ -1417,7 +1417,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Electric Dream": 15,
                         "Hairy": 5,
                         "Backdrop": 3,
-                        }
+                    }
 
                     vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
                     vp["comment"] = ["token needed", "cost {} tokens".format(token[v["name"]])]
@@ -1813,19 +1813,19 @@ def updatePlayerAwards(player, tornAwards, userInfo):
                   "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
                   }
 
-    popTotal = 0
     popPerso = 0
+    popTotal = 1
     for k, v in tornAwards["honors"].items():
         circulation = v.get("circulation")
-        rarity = v.get("rarity")
-        if circulation is not None and rarity not in ["Unknown Rarity"]:
-            popTotal += 1. / float(circulation)
+        popTotal = float(max(v.get("popTotal"), 0.0000000001))
+        # rarity = v.get("rarity")
+        # if circulation is not None and rarity not in ["Unknown Rarity"]:
+        if circulation is not None and circulation > 0:
             achieve = v.get("achieve")
             if achieve is not None:
                 if int(achieve) == 1:
                     popPerso += 1. / float(circulation)
 
-    awardsJson.update({"popTotal": popTotal})
     player.awardsJson = json.dumps(awardsJson)
     player.awardsInfo = "{:.4f}".format(popPerso / float(popTotal))
     player.awardsUpda = int(timezone.now().timestamp())

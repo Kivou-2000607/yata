@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django import template
+from django.conf import settings
 
 register = template.Library()
 
@@ -31,7 +32,7 @@ def ts2date(timestamp, fmt=None):
 
     try:
         d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
-    except:
+    except BaseException:
         d = datetime.datetime.fromtimestamp(0, tz=pytz.UTC)
 
     # return "{:04d}/{:02d}/{:02d} {:02d}:{:02d}".format(d.year, d.month, d.day, d.hour, d.minute)
@@ -85,7 +86,7 @@ def format(value, fmt):
 def rarity(circulation):
     try:
         return "{:.2g}%".format(100 / float(circulation))
-    except:
+    except BaseException:
         return ""
 
 
@@ -129,3 +130,16 @@ def badge(value, arg):
     b = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="112" height="20"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="112" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path fill="#555" d="M0 0h71v20H0z"/><path fill="#447e9b" d="M71 0h41v20H71z"/><path fill="url(#b)" d="M0 0h112v20H0z"/></g><g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110"> <text x="365" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="610">{title}</text><text x="365" y="140" transform="scale(.1)" textLength="610">{title}</text><text x="905" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="310">{value}</text><text x="905" y="140" transform="scale(.1)" textLength="310">{value}</text></g> </svg>'.format(title=value, value=n)
 
     return b
+
+
+@register.filter(name='honorUrl')
+def honorUrl(url):
+    return "https://awardimages.torn.com/435540163.png" if url is None else url
+
+
+@register.filter(name='honorBanner')
+def honorBanner(url, name):
+    if url is None:
+        return f"<div class=\"award-default\"><img class=\"award-default\" src=\"{settings.STATIC_URL}honors/defaultBanner.png\" title=\"{name}\"><span class=\"award-default\">{name}</span></div>"
+    else:
+        return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
