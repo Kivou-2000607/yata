@@ -21,7 +21,7 @@ AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work"
 
 AWARDS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
 
-def computeRariry(c):
+def computeRarity(c):
     import math
     Omega = 0.567143290409783872999968662210
     return math.log(Omega*(c + 1))
