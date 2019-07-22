@@ -1819,21 +1819,13 @@ def updatePlayerAwards(player, tornAwards, userInfo):
                   "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})
                   }
 
-    popPerso = 0
-    popTotal = 1
+    rScorePerso = 0.0
     for k, v in tornAwards["honors"].items():
-        circulation = v.get("circulation")
-        popTotal = float(max(v.get("popTotal"), 0.0000000001))
-        # rarity = v.get("rarity")
-        # if circulation is not None and rarity not in ["Unknown Rarity"]:
-        if circulation is not None and circulation > 0:
-            achieve = v.get("achieve")
-            if achieve is not None:
-                if int(achieve) == 1:
-                    popPerso += 1. / float(circulation)
+        if v.get("achieve", 0) == 1:
+            rScorePerso += v.get("rScore", 0)
 
     player.awardsJson = json.dumps(awardsJson)
-    player.awardsInfo = "{:.4f}".format(popPerso / float(popTotal))
+    player.awardsInfo = "{:.4f}".format(rScorePerso)
     player.awardsUpda = int(timezone.now().timestamp())
     player.save()
 

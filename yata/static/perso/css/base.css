@@ -105,10 +105,14 @@ h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left 
 
 .error { color: #CC3434!important; font-weight: bold; }
 .warning { color: #FF8C00!important; font-weight: bold; }
+.neutral { color: #777!important; font-weight: bold; }
 .valid { color: #0B8E14!important; font-weight: bold; }
 .error:hover,
 .error:active,
 .error:focus { color: #A02525!important; }
+.neutral:hover,
+.neutral:active,
+.neutral:focus { color: #333!important; }
 .valid:hover,
 .valid:active,
 .valid:focus { color: #005E00!important; }

@@ -65,7 +65,7 @@ This file is part of yata.
                     {% if player.awardsInfo == "N/A" %}
                         &empty;
                     {% else %}
-                        {{player.awardsInfo|mul:100|floatformat:2}}% honor rarity score
+                        {{player.awardsInfo|floatformat:2}}% honor rarity score
                     {% endif %}
 
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>

@@ -26,6 +26,10 @@ from yata.handy import apiCall
 from awards.honors import d
 from awards.functions import AWARDS_UNREACH
 
+def f(c):
+    import math
+    return math.log(c + 1)
+    # return float(c)
 
 class Call(models.Model):
     timestamp = models.IntegerField(default=0)
@@ -49,14 +53,15 @@ class Call(models.Model):
                     to_del.append(k)
                 else:
                     if circulation > 0:
-                        popTotal += 1. / float(circulation)
+                        popTotal += 1. / f(circulation)
                 req["honors"][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
                 req["honors"][k]["unreach"] = 1 if int(k) in AWARDS_UNREACH else 0
             for k in to_del:
                 del req["honors"][k]
 
             for k, v in req["honors"].items():
-                req["honors"][k]["popTotal"] = popTotal
+                if v["circulation"] > 0:
+                    req["honors"][k]["rScore"] = 100. / f(v["circulation"]) / popTotal
 
             self.a = json.dumps(req)
             self.save()
