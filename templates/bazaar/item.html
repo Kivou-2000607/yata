@@ -82,6 +82,15 @@ This file is part of yata.
             <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
         </th>
     </tr>
+    <tr>
+        <th colspan="2">
+            {% if item.priceTendancyB > 0 %}
+                <a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy">{{item.priceTendancy|priceTendancy|safe}}</a>
+            {% else %}
+                <a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy">No data</a>
+            {% endif %}
+        </th>
+    </tr>
 </thead>
 
 <tbody>

@@ -36,7 +36,7 @@ class Command(BaseCommand):
         preference = Preference.objects.all()[0]
 
         key = preference.get_random_key()[1]
-        items = apiCall("torn", "", "items", key, sub="items")
+        items = apiCall("torn", "", "items,timestamp", key, sub="items", verbose=False)
 
         itemType = dict({})
 
@@ -46,7 +46,6 @@ class Command(BaseCommand):
             print("[command.bazaar.scan] api error: {}".format(items["apiError"]))
         else:
             for k, v in items.items():
-                print(k, v)
                 type = v["type"]
                 name = v["name"].split(":")[0].strip()
                 if type in itemType:

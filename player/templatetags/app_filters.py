@@ -143,3 +143,16 @@ def honorBanner(url, name):
         return f"<div class=\"award-default\"><img class=\"award-default\" src=\"{settings.STATIC_URL}honors/defaultBanner.png\" title=\"{name}\"><span class=\"award-default\">{name}</span></div>"
     else:
         return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
+
+
+@register.filter(name='priceTendancy')
+def priceTendancy(fl):
+    fl *= 100
+    s = "caret-up" if fl > 0 else "caret-down"
+    s = "sort" if fl == 0 else s
+    if fl >= 0.01:
+        return '<span class="error">High (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)
+    elif fl <= -0.01:
+        return '<span class="valid">Low (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)
+    else:
+        return '<span class="neutral">Steady (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)

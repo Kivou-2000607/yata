@@ -30,6 +30,14 @@
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
     });
+    $(document).on('click', '.prices-item', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        console.log("cpicpu");
+        $( "#prices-item" ).load( "/bazaar/prices/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+    });
     $(document).on('click', '.close', function(e){
         e.preventDefault();
         $(this).parent("div.container").css("display", "none");
@@ -129,6 +137,7 @@
 
 {% block content %}
     <div id="details-item"></div>
+    <div id="prices-item"></div>
 
     <div id="content-update">
         {% include "bazaar/content-reload.html" %}

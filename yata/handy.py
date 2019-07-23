@@ -18,7 +18,7 @@ This file is part of yata.
 """
 
 
-def apiCall(section, id, selections, key, sub=None):
+def apiCall(section, id, selections, key, sub=None, verbose=True):
     import requests
     # DEBUG live chain
     # if selections == "chain,timestamp" and section == "faction":
@@ -39,7 +39,8 @@ def apiCall(section, id, selections, key, sub=None):
 
     try:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-        print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
+        if verbose:
+            print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
         # print("[yata.function.apiCall] {}".format(url))
         r = requests.get(url)
         r.raise_for_status()

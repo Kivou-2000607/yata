@@ -63,7 +63,7 @@ class ItemAdmin(admin.ModelAdmin):
     inlines = [MarketDataInline]
     actions = [remove_from_market, put_on_market]
     list_filter = ['onMarket', 'tType']
-
+    search_fields = ['tName', 'tId', 'tType']
 
 admin.site.register(Item, ItemAdmin)
 

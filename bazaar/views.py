@@ -27,6 +27,7 @@ from bazaar.models import Item
 from player.models import Player
 from yata.handy import apiCall
 from yata.handy import returnError
+from yata.handy import timestampToDate
 
 
 def index(request):
@@ -61,7 +62,7 @@ def index(request):
             itemsOnMarket = Item.objects.filter(onMarket=True)
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-            print('[view.bazaar.default] {}'.format(tTypes))
+            # print('[view.bazaar.default] {}'.format(tTypes))
             print('[view.bazaar.default] create output items')
             items = {tType: [] for tType in tTypes}
 
@@ -145,7 +146,7 @@ def default(request):
             itemsOnMarket = Item.objects.filter(onMarket=True)
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-            print('[view.bazaar.default] {}'.format(tTypes))
+            # print('[view.bazaar.default] {}'.format(tTypes))
             print('[view.bazaar.default] create output items')
             items = {tType: [] for tType in tTypes}
 
@@ -188,7 +189,7 @@ def sets(request):
             itemsOnMarket = Item.objects.filter(onMarket=True)
             print('[view.bazaar.default] get all tTypes')
             tTypes = ["Flower", "Plushie"]
-            print('[view.bazaar.default] {}'.format(tTypes))
+            # print('[view.bazaar.default] {}'.format(tTypes))
             print('[view.bazaar.default] create output items')
             items = {tType: [] for tType in tTypes}
 
@@ -231,7 +232,7 @@ def all(request):
             itemsOnMarket = Item.objects.all()
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-            print('[view.bazaar.default] {}'.format(tTypes))
+            # print('[view.bazaar.default] {}'.format(tTypes))
             print('[view.bazaar.default] create output items')
             items = {tType: [] for tType in tTypes}
 
@@ -264,6 +265,26 @@ def details(request, itemId):
 
             context = {'item': item}
             return render(request, 'bazaar/details.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def prices(request, itemId):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            item = Item.objects.filter(tId=itemId).first()
+
+            # create price histogram
+            priceHistory = sorted(json.loads(item.priceHistory).items(), key=lambda x: x[0])
+            graph = [[timestampToDate(int(t)), p, item.priceTendancyA * float(t) + item.priceTendancyB] for t, p in priceHistory]
+
+            context = {'item': item, "graph": graph}
+            return render(request, 'bazaar/prices.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

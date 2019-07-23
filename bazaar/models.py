@@ -20,6 +20,10 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
+import json
+import math
+from scipy import stats
+
 from yata.handy import apiCall
 
 
@@ -57,6 +61,10 @@ class Item(models.Model):
     stockI = models.IntegerField(default=0)
     stockD = models.IntegerField(default=0)
     stockB = models.IntegerField(default=0)
+    priceHistory = models.TextField(default={})  # dictionary {timestamp: marketValue}
+    priceTendancy = models.FloatField(default=0.0)
+    priceTendancyA = models.FloatField(default=0.0)
+    priceTendancyB = models.FloatField(default=0.0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)
@@ -78,6 +86,8 @@ class Item(models.Model):
         return item
 
     def update(self, v):
+        oneMonth = 3600 * 24 * 31  # 1 week
+        oneWeek = 3600 * 24 * 7
         # v = {'name': 'Kitchen Knife',
         #      'description': 'Do your attempts to prepare food like your favourite TV chef end up more like hack and saw than slice and dice? If so, a sharp new knife could be your saviour.',
         #      'type': 'Melee',
@@ -97,7 +107,46 @@ class Item(models.Model):
         self.tEffect = v['effect'],
         self.tRequirement = v['requirement'],
         self.tImage = v['image']
-        # self.lastUpdateTS = int(timezone.now().timestamp())
+        priceHistory = json.loads(self.priceHistory)
+        ts = int(v.get('timestamps', timezone.now().timestamp()))
+        to_del = []
+        for t, p in priceHistory.items():
+            if ts - int(t) > (oneMonth + 3600 * 23):
+                to_del.append(t)
+            if ts - int(t) < 3600 * 23:  # delete entry the same day
+                to_del.append(t)
+
+        for t in to_del:
+            print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
+            del priceHistory[t]
+
+        priceHistory[ts] = int(v["market_value"])
+        self.priceHistory = json.dumps(priceHistory)
+
+        try:
+            x = []
+            y = []
+            for t, p in priceHistory.items():
+                if ts - int(t) < oneWeek:
+                    x.append(int(t))
+                    y.append(int(p))
+            a, b, _, _, _ = stats.linregress(x, y)
+            print(a, b)
+            if math.isnan(a) or math.isnan(b):
+                self.priceTendancyA = 0.0
+                self.priceTendancyB = 0.0
+                self.priceTendancy = 0.0
+            else:
+                self.priceTendancyA = a  # a is in $/s
+                self.priceTendancyB = b
+                self.priceTendancy = a * oneWeek / float(v['market_value'])
+        except BaseException as e:
+            self.priceTendancyA = 0.0
+            self.priceTendancyB = 0.0
+            self.priceTendancy = 0.0
+        print(self.priceTendancyB)
+        print(self.priceTendancyA)
+        # self.lastUpdateTS =
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
 
@@ -186,4 +235,4 @@ class MarketData(models.Model):
     itemmarket = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{} ({}): {} x {}".format(self.item, self.sellId, self.quantity, self.cost)
+        return "{}: {} x {}".format(self.item, self.quantity, self.cost)

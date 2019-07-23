@@ -105,14 +105,14 @@ h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left 
 
 .error { color: #CC3434!important; font-weight: bold; }
 .warning { color: #FF8C00!important; font-weight: bold; }
-.neutral { color: #777!important; font-weight: bold; }
+.neutral { color: #447e9b!important; font-weight: bold; }
 .valid { color: #0B8E14!important; font-weight: bold; }
 .error:hover,
 .error:active,
 .error:focus { color: #A02525!important; }
 .neutral:hover,
 .neutral:active,
-.neutral:focus { color: #333!important; }
+.neutral:focus { color: #036!important; }
 .valid:hover,
 .valid:active,
 .valid:focus { color: #005E00!important; }
@@ -276,6 +276,26 @@ div.modal-center {
 }
 
 div.modal-center > div.module {
+    margin-bottom: 0px;
+}
+
+div.modal-center-large {
+    width: 80%;
+    max-height: 80%;
+    line-height: 20px;
+    position: fixed;
+    top: 10%;
+    left: 20%;
+    /* margin-top: -100px; */
+    margin-left: -150px;
+    border-radius: 5px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.modal-center-large > div.module {
     margin-bottom: 0px;
 }
 
