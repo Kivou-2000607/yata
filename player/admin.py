@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Player
 from .models import News
+from .models import Message
 from yata.handy import timestampToDate
 
 
@@ -27,3 +28,10 @@ class NewsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(News, NewsAdmin)
+
+
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'date', 'section', 'authorName', 'authorId']
+
+
+admin.site.register(Message, MessageAdmin)

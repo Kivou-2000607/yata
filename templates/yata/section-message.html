@@ -16,11 +16,13 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
 {% load app_filters %}
 
-{% if lastNews %}
-    <div class="modal-topright">
-        <i class="fas fa-info-circle"></i>&nbsp;&nbsp;{{ lastNews.text|safe }}<br />
-        <i>{{lastNews.authorName}}, {{lastNews.date}}</i><form class="form-inline flush-right no-margin">{% csrf_token %}<a href="" class="news-read"><i class="fas fa-times"></i>&nbsp;&nbsp;Mark as read</a></form>
+{% if sectionMessage %}
+    <div class="module rounded">
+        <span class="neutral"><i class="fas fa-info-circle"></i>&nbsp;&nbsp;{{sectionMessage.text|safe}}</span><span class="flush-right"><i>{{sectionMessage.authorName|playerURL:sectionMessage.authorId|safe}},&nbsp;{{sectionMessage.date}}</i></span>
     </div>
 {% endif %}

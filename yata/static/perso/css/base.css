@@ -281,7 +281,7 @@ div.modal-center > div.module {
 
 
 div.modal-topright {
-    /* max-width: 100%; */
+    max-width: 65%;
     /* max-height: 67.6px; */
     line-height: 20px;
     position: fixed;

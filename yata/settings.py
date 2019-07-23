@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'yata.context_processors.news',
+                'yata.context_processors.sectionMessage',
                 # 'yata.context_processors.currentTimestamp',
             ],
         },

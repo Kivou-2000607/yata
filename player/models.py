@@ -22,6 +22,13 @@ from django.utils import timezone
 
 from awards.models import Call
 
+SECTION_CHOICES = (
+    ('B', 'bazaar'),
+    ('F', 'faction'),
+    ('T', 'target'),
+    ('A', 'awards'),
+)
+
 
 class Player(models.Model):
     # user information: basic
@@ -150,3 +157,14 @@ class News(models.Model):
 
     def read(self):
         return len(self.player.all())
+
+
+class Message(models.Model):
+    section = models.CharField(default="B", max_length=16, choices=SECTION_CHOICES)
+    text = models.TextField()
+    authorId = models.IntegerField(default=2000607)
+    authorName = models.CharField(default="Kivou", max_length=32)
+    date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{} of {:%Y/%M/%d} by {}".format(self.section, self.date, self.authorName)

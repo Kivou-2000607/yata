@@ -18,10 +18,13 @@ This file is part of yata.
 """
 from player.models import News
 from player.models import Player
+from player.models import Message
+from player.models import SECTION_CHOICES
 from django.utils import timezone
 
 
 def news(request):
+    print("context processor news")
     if request.session.get('player'):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()
@@ -29,7 +32,22 @@ def news(request):
         news = False if news in player.news_set.all() or news.date > (timezone.datetime.now(timezone.utc) + timezone.timedelta(weeks=2)) else news
         return {"lastNews": news}
     else:
-        print("[yata.context_processors.news] out")
+        return {}
+
+
+def sectionMessage(request):
+    if request.session.get('player'):
+        section = request.get_full_path().split("/")[1]
+        section_short = ""
+        for k, v in SECTION_CHOICES:
+            if v == section:
+                section_short = k
+        sectionMessage = Message.objects.filter(section=section_short).order_by("date").last()
+        if sectionMessage is not None:
+            return {"sectionMessage": sectionMessage}
+        else:
+            return {"sectionMessage": False}
+    else:
         return {}
 
 
