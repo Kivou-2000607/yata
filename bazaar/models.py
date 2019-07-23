@@ -139,13 +139,14 @@ class Item(models.Model):
             else:
                 self.priceTendancyA = a  # a is in $/s
                 self.priceTendancyB = b
-                self.priceTendancy = a * oneWeek / float(v['market_value'])
+                if(float(v['market_value'])):
+                    self.priceTendancy = a * oneWeek / float(v['market_value'])
+                else:
+                    self.priceTendancy = 0.0
         except BaseException as e:
             self.priceTendancyA = 0.0
             self.priceTendancyB = 0.0
             self.priceTendancy = 0.0
-        print(self.priceTendancyB)
-        print(self.priceTendancyA)
         # self.lastUpdateTS =
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()

@@ -38,7 +38,7 @@ This file is part of yata.
         legend: {position: 'none'},
         series: {
                 0: {type: 'line', color: '#787878', pointSize: 4, pointShape: 'circle'},
-                1: {type: 'line', color: {%if item.priceTendancy > 0.01%}'#CC3434'{% elif item.priceTendancy < -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointSize: 0, pointShape: 'none'},
+                1: {type: 'line', color: {%if item.priceTendancy >= 0.01%}'#CC3434'{% elif item.priceTendancy <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointSize: 0, pointShape: 'none'},
                 },
         hAxis: { format: 'M/d/yy' },
         vAxis: { format: 'short', title: 'Market price' },

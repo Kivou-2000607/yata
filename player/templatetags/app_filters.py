@@ -150,9 +150,9 @@ def priceTendancy(fl):
     fl *= 100
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
-    if fl >= 0.01:
+    if fl >= 1:
         return '<span class="error">High (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)
-    elif fl <= -0.01:
+    elif fl <= -1:
         return '<span class="valid">Low (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)
     else:
         return '<span class="neutral">Steady (<i class="fas fa-{}"></i> {:+.1f}%)'.format(s, fl)
