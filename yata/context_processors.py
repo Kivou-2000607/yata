@@ -24,7 +24,6 @@ from django.utils import timezone
 
 
 def news(request):
-    print("context processor news")
     if request.session.get('player'):
         tId = request.session["player"].get("tId")
         player = Player.objects.filter(tId=tId).first()

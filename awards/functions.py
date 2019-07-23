@@ -21,11 +21,13 @@ AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work"
 
 AWARDS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
 
+
 def computeRarity(c):
     import math
     # Omega = 0.567143290409783872999968662210
     # return math.log(Omega*(c + 1))
     return float(c)
+
 
 def honorId2Img(i):
     from awards.honors import d
@@ -436,7 +438,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["energy needed", "current ratio of {:,.2g} rounds/attack".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
