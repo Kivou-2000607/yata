@@ -84,7 +84,7 @@ This file is part of yata.
     </tr>
     <tr>
         <th colspan="2">
-            {% if item.priceTendancyB > 0 %}
+            {% if item.priceTendancyB %}
                 <a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy">{{item.priceTendancy|priceTendancy|safe}}</a>
             {% else %}
                 <a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy">No data</a>

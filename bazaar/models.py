@@ -131,7 +131,7 @@ class Item(models.Model):
                     x.append(int(t))
                     y.append(int(p))
             a, b, _, _, _ = stats.linregress(x, y)
-            print(a, b)
+            # print(a, b)
             if math.isnan(a) or math.isnan(b):
                 self.priceTendancyA = 0.0
                 self.priceTendancyB = 0.0
