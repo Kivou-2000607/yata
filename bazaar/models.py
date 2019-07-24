@@ -62,9 +62,12 @@ class Item(models.Model):
     stockD = models.IntegerField(default=0)
     stockB = models.IntegerField(default=0)
     priceHistory = models.TextField(default={})  # dictionary {timestamp: marketValue}
-    priceTendancy = models.FloatField(default=0.0)
-    priceTendancyA = models.FloatField(default=0.0)
-    priceTendancyB = models.FloatField(default=0.0)
+    weekTendancy = models.FloatField(default=0.0)
+    weekTendancyA = models.FloatField(default=0.0)
+    weekTendancyB = models.FloatField(default=0.0)
+    monthTendancy = models.FloatField(default=0.0)
+    monthTendancyA = models.FloatField(default=0.0)
+    monthTendancyB = models.FloatField(default=0.0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)
@@ -108,7 +111,7 @@ class Item(models.Model):
         self.tRequirement = v['requirement'],
         self.tImage = v['image']
         priceHistory = json.loads(self.priceHistory)
-        ts = int(v.get('timestamps', timezone.now().timestamp()))
+        ts = int(v.get('timestamp', timezone.now().timestamp()))
         to_del = []
         for t, p in priceHistory.items():
             if ts - int(t) > (oneMonth + 3600 * 23):
@@ -123,6 +126,7 @@ class Item(models.Model):
         priceHistory[ts] = int(v["market_value"])
         self.priceHistory = json.dumps(priceHistory)
 
+        # week tendancy
         try:
             x = []
             y = []
@@ -133,20 +137,46 @@ class Item(models.Model):
             a, b, _, _, _ = stats.linregress(x, y)
             # print(a, b)
             if math.isnan(a) or math.isnan(b):
-                self.priceTendancyA = 0.0
-                self.priceTendancyB = 0.0
-                self.priceTendancy = 0.0
+                self.weekTendancyA = 0.0
+                self.weekTendancyB = 0.0
+                self.weekTendancy = 0.0
             else:
-                self.priceTendancyA = a  # a is in $/s
-                self.priceTendancyB = b
+                self.weekTendancyA = a  # a is in $/s
+                self.weekTendancyB = b
                 if(float(v['market_value'])):
-                    self.priceTendancy = a * oneWeek / float(v['market_value'])
+                    self.weekTendancy = a * oneWeek / float(v['market_value'])
                 else:
-                    self.priceTendancy = 0.0
+                    self.weekTendancy = 0.0
         except BaseException as e:
-            self.priceTendancyA = 0.0
-            self.priceTendancyB = 0.0
-            self.priceTendancy = 0.0
+            self.weekTendancyA = 0.0
+            self.weekTendancyB = 0.0
+            self.weekTendancy = 0.0
+
+        # month tendancy
+        try:
+            x = []
+            y = []
+            for t, p in priceHistory.items():
+                if ts - int(t) < oneMonth:
+                    x.append(int(t))
+                    y.append(int(p))
+            a, b, _, _, _ = stats.linregress(x, y)
+            # print(a, b)
+            if math.isnan(a) or math.isnan(b):
+                self.monthTendancyA = 0.0
+                self.monthTendancyB = 0.0
+                self.monthTendancy = 0.0
+            else:
+                self.monthTendancyA = a  # a is in $/s
+                self.monthTendancyB = b
+                if(float(v['market_value'])):
+                    self.monthTendancy = a * oneMonth / float(v['market_value'])
+                else:
+                    self.monthTendancy = 0.0
+        except BaseException as e:
+            self.monthTendancyA = 0.0
+            self.monthTendancyB = 0.0
+            self.monthTendancy = 0.0
         # self.lastUpdateTS =
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
@@ -190,7 +220,7 @@ class Item(models.Model):
 
     def update_bazaar(self, key="", n=10):
         # API Call
-        req = apiCall("market", self.tId, "bazaar,itemmarket", key)
+        req = apiCall("market", self.tId, "bazaar,itemmarket,timestamp", key)
         bazaar = req.get("bazaar") if req.get("bazaar") else dict({})
         itemmarket = req.get("itemmarket") if req.get("itemmarket") else dict({})
 
@@ -224,7 +254,7 @@ class Item(models.Model):
                 self.marketdata_set.create(quantity=v["quantity"], cost=v["cost"], itemmarket=v["itemmarket"])
                 if i >= n - 1:
                     break
-            self.lastUpdateTS = int(timezone.now().timestamp())
+            self.lastUpdateTS = int(req.get('timestamp', timezone.now().timestamp()))
             self.save()
             return marketData
 

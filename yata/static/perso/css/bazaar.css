@@ -68,6 +68,7 @@ table.item-sell-table div.item-name {
 table.item-sell-table div.item-name > a { cursor: help; }
 table.item-sell-table a.prices-item { cursor: help; }
 table.item-sell-table th.item-stock { cursor: default; }
+table.item-sell-table tr.prices-tendancy > th { padding-left: 2px; padding-right: 2px;}
 
 table.item-sell-table th.lack       { background:#f4cccc!important; }
 table.item-sell-table th.lack:hover { background:#ea9999!important; }
