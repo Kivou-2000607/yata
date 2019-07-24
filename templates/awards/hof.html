@@ -33,7 +33,7 @@ This file is part of yata.
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                 {% for h, c, s, im, p, r in graph %}
-                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:3}}%"],
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -61,8 +61,8 @@ This file is part of yata.
 
               var data2 = google.visualization.arrayToDataTable([
                 ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}],
-                {% for x, y in hofGraph %}
-                    [{{x}}, {{y}}, "<h3>Number of players: {{y|intcomma}}</h3>Rarity score between {{x|intdiv:1|floatformat:0}} and {{x|intdiv:1|add:1|floatformat:0}} %"],
+                {% for x, y, xm, xp in hofGraph %}
+                    [{{x}}, {{y}}, "<h3>Number of players: {{y|intcomma}}</h3><span>{{xm|floatformat:4}}% < Rarity score < {{xp|floatformat:4}}%</span>"],
                  {% endfor %}
               ]);
 
@@ -73,7 +73,7 @@ This file is part of yata.
                 seriesType: 'bars',
                 series: {0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},},
                 bar: {groupWidth: '80%'},
-                hAxis: { format: 'short', title: "Rarity score (%)" },
+                hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log' },
                 vAxis: { format: 'short', title: "#Players" },
                 'backgroundColor': 'transparent',
                 'chartArea': {'width': '90%', 'height': '60%'},
@@ -112,7 +112,7 @@ This file is part of yata.
                         <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
                         <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
                         <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
-                        <td class="c">{{k.rscore|floatformat:3}}%</td>
+                        <td class="c">{{k.rscore|floatformat:4}}%</td>
                     </tr>
                 {% endif %}
             {% endfor %}

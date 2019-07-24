@@ -123,10 +123,10 @@ def list(request, type):
                 for p in Player.objects.exclude(awardsInfo="N/A").all():
                     try:
                         hof.append({"player": p,
-                                        "rscore": float(p.awardsInfo),
-                                        "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
-                                        "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
-                                        })
+                                    "rscore": float(p.awardsInfo),
+                                    "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
+                                    "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
+                                    })
                         hofGraph.append(float(p.awardsInfo))
                     except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
@@ -138,10 +138,10 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
 
-                bins = numpy.linspace(0, 100, num=101)
+                bins = numpy.logspace(-3, 2, num=101)
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
                 cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
-                hofGraph = [[x, y] for x, y in zip(cBins, histo)]
+                hofGraph = [[x, y, xm, xp] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
                 context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
