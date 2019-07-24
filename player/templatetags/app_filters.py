@@ -145,8 +145,8 @@ def honorBanner(url, name):
         return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
 
 
-@register.filter(name='priceTendancy')
-def priceTendancy(fl):
+@register.filter(name='priceTendency')
+def priceTendency(fl):
     fl *= 100
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
@@ -158,8 +158,8 @@ def priceTendancy(fl):
         return '<span class="neutral">Steady (<i class="fas fa-{}"></i> {:+.1f}%)</span>'.format(s, fl)
 
 
-@register.filter(name='priceTendancyShort')
-def priceTendancyShort(fl):
+@register.filter(name='priceTendencyShort')
+def priceTendencyShort(fl):
     fl *= 100
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s

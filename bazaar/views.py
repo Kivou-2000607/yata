@@ -281,8 +281,8 @@ def prices(request, itemId):
 
             # create price histogram
             priceHistory = sorted(json.loads(item.priceHistory).items(), key=lambda x: x[0])
-            # plot only last 8 points of the tendancy
-            graph = [[timestampToDate(int(t)), p, item.weekTendancyA * float(t) + item.weekTendancyB, item.monthTendancyA * float(t) + item.monthTendancyB] for t, p in priceHistory]
+            # plot only last 8 points of the Tendency
+            graph = [[timestampToDate(int(t)), p, item.weekTendencyA * float(t) + item.weekTendencyB, item.monthTendencyA * float(t) + item.monthTendencyB] for t, p in priceHistory]
             for i, (_, _, wt, mt) in enumerate(graph):
                 if i < len(graph) - 7 or wt < 0:
                     graph[i][2] = "null"

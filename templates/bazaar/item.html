@@ -83,13 +83,13 @@ This file is part of yata.
             <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
         </th>
     </tr>
-    {% if item.weekTendancyB %}
-      <tr class="prices-tendancy">
-        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy over a week / a month">{{item.weekTendancy|priceTendancyShort|safe}} / {{item.monthTendancy|priceTendancyShort|safe}}</a></th>
+    {% if item.weekTendencyB %}
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">{{item.weekTendency|priceTendencyShort|safe}} / {{item.monthTendency|priceTendencyShort|safe}}</a></th>
       </tr>
     {% else %}
-      <tr class="prices-tendancy">
-        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendancy over a week / a month">No data</a></th>
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">No data</a></th>
       </tr>
     {% endif %}
 </thead>

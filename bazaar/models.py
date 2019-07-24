@@ -62,12 +62,12 @@ class Item(models.Model):
     stockD = models.IntegerField(default=0)
     stockB = models.IntegerField(default=0)
     priceHistory = models.TextField(default={})  # dictionary {timestamp: marketValue}
-    weekTendancy = models.FloatField(default=0.0)
-    weekTendancyA = models.FloatField(default=0.0)
-    weekTendancyB = models.FloatField(default=0.0)
-    monthTendancy = models.FloatField(default=0.0)
-    monthTendancyA = models.FloatField(default=0.0)
-    monthTendancyB = models.FloatField(default=0.0)
+    weekTendency = models.FloatField(default=0.0)
+    weekTendencyA = models.FloatField(default=0.0)
+    weekTendencyB = models.FloatField(default=0.0)
+    monthTendency = models.FloatField(default=0.0)
+    monthTendencyA = models.FloatField(default=0.0)
+    monthTendencyB = models.FloatField(default=0.0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)
@@ -126,7 +126,7 @@ class Item(models.Model):
         priceHistory[ts] = int(v["market_value"])
         self.priceHistory = json.dumps(priceHistory)
 
-        # week tendancy
+        # week Tendency
         try:
             x = []
             y = []
@@ -137,22 +137,22 @@ class Item(models.Model):
             a, b, _, _, _ = stats.linregress(x, y)
             # print(a, b)
             if math.isnan(a) or math.isnan(b):
-                self.weekTendancyA = 0.0
-                self.weekTendancyB = 0.0
-                self.weekTendancy = 0.0
+                self.weekTendencyA = 0.0
+                self.weekTendencyB = 0.0
+                self.weekTendency = 0.0
             else:
-                self.weekTendancyA = a  # a is in $/s
-                self.weekTendancyB = b
+                self.weekTendencyA = a  # a is in $/s
+                self.weekTendencyB = b
                 if(float(v['market_value'])):
-                    self.weekTendancy = a * oneWeek / float(v['market_value'])
+                    self.weekTendency = a * oneWeek / float(v['market_value'])
                 else:
-                    self.weekTendancy = 0.0
+                    self.weekTendency = 0.0
         except BaseException as e:
-            self.weekTendancyA = 0.0
-            self.weekTendancyB = 0.0
-            self.weekTendancy = 0.0
+            self.weekTendencyA = 0.0
+            self.weekTendencyB = 0.0
+            self.weekTendency = 0.0
 
-        # month tendancy
+        # month Tendency
         try:
             x = []
             y = []
@@ -163,20 +163,84 @@ class Item(models.Model):
             a, b, _, _, _ = stats.linregress(x, y)
             # print(a, b)
             if math.isnan(a) or math.isnan(b):
-                self.monthTendancyA = 0.0
-                self.monthTendancyB = 0.0
-                self.monthTendancy = 0.0
+                self.monthTendencyA = 0.0
+                self.monthTendencyB = 0.0
+                self.monthTendency = 0.0
             else:
-                self.monthTendancyA = a  # a is in $/s
-                self.monthTendancyB = b
+                self.monthTendencyA = a  # a is in $/s
+                self.monthTendencyB = b
                 if(float(v['market_value'])):
-                    self.monthTendancy = a * oneMonth / float(v['market_value'])
+                    self.monthTendency = a * oneMonth / float(v['market_value'])
                 else:
-                    self.monthTendancy = 0.0
+                    self.monthTendency = 0.0
         except BaseException as e:
-            self.monthTendancyA = 0.0
-            self.monthTendancyB = 0.0
-            self.monthTendancy = 0.0
+            self.monthTendencyA = 0.0
+            self.monthTendencyB = 0.0
+            self.monthTendency = 0.0
+        # self.lastUpdateTS =
+        # self.date = timezone.now() # don't update time since bazaar are not updated
+        self.save()
+
+    def updateTendencies(self):
+        oneMonth = 3600 * 24 * 31  # 1 week
+        oneWeek = 3600 * 24 * 7
+        print("[model.bazaar.item] update:", self.tId, self.tName)
+        priceHistory = json.loads(self.priceHistory)
+        ts = int(timezone.now().timestamp())
+
+        # week Tendency
+        try:
+            x = []
+            y = []
+            for t, p in priceHistory.items():
+                if ts - int(t) < oneWeek:
+                    x.append(int(t))
+                    y.append(int(p))
+            a, b, _, _, _ = stats.linregress(x, y)
+            # print(a, b)
+            if math.isnan(a) or math.isnan(b):
+                self.weekTendencyA = 0.0
+                self.weekTendencyB = 0.0
+                self.weekTendency = 0.0
+            else:
+                self.weekTendencyA = a  # a is in $/s
+                self.weekTendencyB = b
+                if(float(self.tMarketValue)):
+                    self.weekTendency = a * oneWeek / float(self.tMarketValue)
+                else:
+                    self.weekTendency = 0.0
+        except BaseException as e:
+            self.weekTendencyA = 0.0
+            self.weekTendencyB = 0.0
+            self.weekTendency = 0.0
+
+        # month Tendency
+        try:
+            x = []
+            y = []
+            for t, p in priceHistory.items():
+                if ts - int(t) < oneMonth:
+                    x.append(int(t))
+                    y.append(int(p))
+            a, b, _, _, _ = stats.linregress(x, y)
+            # print(a, b)
+            if math.isnan(a) or math.isnan(b):
+                self.monthTendencyA = 0.0
+                self.monthTendencyB = 0.0
+                self.monthTendency = 0.0
+            else:
+                self.monthTendencyA = a  # a is in $/s
+                self.monthTendencyB = b
+                if(float(self.tMarketValue)):
+                    self.monthTendency = a * oneMonth / float(self.tMarketValue)
+                else:
+                    self.monthTendency = 0.0
+        except BaseException as e:
+            self.monthTendencyA = 0.0
+            self.monthTendencyB = 0.0
+            self.monthTendency = 0.0
+
+        print(self.monthTendency, self.monthTendencyA, self.monthTendencyB)
         # self.lastUpdateTS =
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()

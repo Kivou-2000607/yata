@@ -27,7 +27,7 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Market Price', 'Week Tendancy', 'Month Tendancy'],
+        ['Time', 'Market Price', 'Week Tendency', 'Month Tendency'],
         {% for a, b, c, d in graph %}
             // [{{a}}, {{b}}],
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
@@ -35,11 +35,11 @@ This file is part of yata.
       ]);
 
       var options = {
-        legend: {position: 'none'},
+        legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
-                0: {type: 'line', color: '#787878', pointSize: 4, pointShape: 'circle'},
-                1: {type: 'line', color: {%if item.weekTendancy >= 0.01%}'#CC3434'{% elif item.weekTendancy <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
-                2: {type: 'line', color: {%if item.monthTendancy >= 0.01%}'#CC3434'{% elif item.monthTendancy <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
+                1: {type: 'line', color: {%if item.weekTendency >= 0.01%}'#CC3434'{% elif item.weekTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                2: {type: 'line', color: {%if item.monthTendency >= 0.01%}'#CC3434'{% elif item.monthTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
                 },
         hAxis: { format: 'M/d/yy' },
         vAxis: { format: 'short', title: 'Market price' },
@@ -62,8 +62,8 @@ This file is part of yata.
         <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
         <div class="module">
             <span style="position: absolute; top:30px; right: 10px;"><button>{{item.display_large}}</button></span>
-            <p>Tendancy over last week: {{item.weekTendancy|priceTendancy|safe}}</p>
-            <p>Tendancy over last month: {{item.monthTendancy|priceTendancy|safe}}</p>
+            <p>Tendency over last week: {{item.weekTendency|priceTendency|safe}}</p>
+            <p>Tendency over last month: {{item.monthTendency|priceTendency|safe}}</p>
             <div id="price-history"></div>
         </div>
     </div>
