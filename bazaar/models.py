@@ -143,7 +143,10 @@ class Item(models.Model):
             else:
                 self.weekTendencyA = a  # a is in $/s
                 self.weekTendencyB = b
-                self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
+                if sum(y):
+                    self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
+                else:
+                    self.weekTendency = 0.0
         except BaseException as e:
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
@@ -166,7 +169,10 @@ class Item(models.Model):
             else:
                 self.monthTendencyA = a  # a is in $/s
                 self.monthTendencyB = b
-                self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
+                if sum(y):
+                    self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
+                else:
+                    self.monthTendency = 0.0
         except BaseException as e:
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
@@ -199,7 +205,10 @@ class Item(models.Model):
             else:
                 self.weekTendencyA = a  # a is in $/s
                 self.weekTendencyB = b
-                self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
+                if sum(y):
+                    self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
+                else:
+                    self.weekTendency = 0.0
         except BaseException as e:
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
@@ -222,7 +231,10 @@ class Item(models.Model):
             else:
                 self.monthTendencyA = a  # a is in $/s
                 self.monthTendencyB = b
-                self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
+                if sum(y):
+                    self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
+                else:
+                    self.monthTendency = 0.0
         except BaseException as e:
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
