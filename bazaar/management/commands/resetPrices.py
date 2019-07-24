@@ -33,7 +33,6 @@ class Command(BaseCommand):
     def handle(self, **options):
         print("[command.bazaar.resetPrices] start")
 
-
         for item in Item.objects.all():
             print("[command.bazaar.resetPrices] reset prices of {} to {}".format(item, item.tMarketValue))
             now = int(timezone.now().timestamp())

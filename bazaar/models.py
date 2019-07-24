@@ -143,10 +143,7 @@ class Item(models.Model):
             else:
                 self.weekTendencyA = a  # a is in $/s
                 self.weekTendencyB = b
-                if(float(v['market_value'])):
-                    self.weekTendency = a * oneWeek / float(v['market_value'])
-                else:
-                    self.weekTendency = 0.0
+                self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
         except BaseException as e:
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
@@ -169,10 +166,7 @@ class Item(models.Model):
             else:
                 self.monthTendencyA = a  # a is in $/s
                 self.monthTendencyB = b
-                if(float(v['market_value'])):
-                    self.monthTendency = a * oneMonth / float(v['market_value'])
-                else:
-                    self.monthTendency = 0.0
+                self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
         except BaseException as e:
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
@@ -205,10 +199,7 @@ class Item(models.Model):
             else:
                 self.weekTendencyA = a  # a is in $/s
                 self.weekTendencyB = b
-                if(float(self.tMarketValue)):
-                    self.weekTendency = a * oneWeek / float(self.tMarketValue)
-                else:
-                    self.weekTendency = 0.0
+                self.weekTendency = a * oneWeek / float(sum(y) / float(len(y)))
         except BaseException as e:
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
@@ -231,16 +222,13 @@ class Item(models.Model):
             else:
                 self.monthTendencyA = a  # a is in $/s
                 self.monthTendencyB = b
-                if(float(self.tMarketValue)):
-                    self.monthTendency = a * oneMonth / float(self.tMarketValue)
-                else:
-                    self.monthTendency = 0.0
+                self.monthTendency = a * oneMonth / float(sum(y) / float(len(y)))
         except BaseException as e:
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
             self.monthTendency = 0.0
 
-        print(self.monthTendency, self.monthTendencyA, self.monthTendencyB)
+        # print(self.monthTendency, self.monthTendencyA, self.monthTendencyB)
         # self.lastUpdateTS =
         # self.date = timezone.now() # don't update time since bazaar are not updated
         self.save()
