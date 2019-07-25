@@ -23,6 +23,9 @@ class Stock(models.Model):
     dayTendency = models.FloatField(default=0.0)
     dayTendencyA = models.FloatField(default=0.0)
     dayTendencyB = models.FloatField(default=0.0)
+    weekTendency = models.FloatField(default=0.0)
+    weekTendencyA = models.FloatField(default=0.0)
+    weekTendencyB = models.FloatField(default=0.0)
     timestamp = models.BigIntegerField(default=0)
 
     def __str__(self):
@@ -66,7 +69,7 @@ class Stock(models.Model):
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
         to_del = []
         for t, p in priceHistory.items():
-            if ts - int(t) > (3600 * 24 * 7):
+            if ts - int(t) > (3600 * 24 * 7):  # remove older than 1 week data
                 to_del.append(t)
 
         for t in to_del:
@@ -86,9 +89,9 @@ class Stock(models.Model):
             x = []
             y = []
             for t, p in priceHistory.items():
-                if ts - int(t) < 3600 + 30 and int(p):
+                if ts - int(t) < 3600 * 24 + 30 and int(p):
                     x.append(int(t))
-                    y.append(int(p))
+                    y.append(float(p))
             # print(len(x), x)
             if(len(x) > 1):
                 a, b, _, _, _ = stats.linregress(x, y)
@@ -111,5 +114,36 @@ class Stock(models.Model):
             self.dayTendencyB = 0.0
             self.dayTendency = 0.0
         print("[model.stock.update] day tendancy:", self.dayTendencyA, self.dayTendencyB, self.dayTendency)
+
+        # 24h Tendency
+        try:
+            x = []
+            y = []
+            for t, p in priceHistory.items():
+                if ts - int(t) < 3600 * 24 * 7 + 30 and int(p):
+                    x.append(int(t))
+                    y.append(float(p))
+            # print(len(x), x)
+            if(len(x) > 1):
+                a, b, _, _, _ = stats.linregress(x, y)
+                if math.isnan(a) or math.isnan(b):
+                    self.weekTendencyA = 0.0
+                    self.weekTendencyB = 0.0
+                    self.weekTendency = 0.0
+                else:
+                    self.weekTendencyA = a  # a is in $/s
+                    self.weekTendencyB = b
+                    time = abs(x[0] - x[-1])
+                    mean = abs(0.5 * a * (x[0] + x[-1]) + b)
+                    self.weekTendency = a * time / float(mean)
+            else:
+                self.weekTendencyA = 0.0
+                self.weekTendencyB = 0.0
+                self.weekTendency = 0.0
+        except BaseException as e:
+            self.weekTendencyA = 0.0
+            self.weekTendencyB = 0.0
+            self.weekTendency = 0.0
+        print("[model.stock.update] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
 
         self.save()

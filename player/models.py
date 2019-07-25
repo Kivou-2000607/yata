@@ -27,6 +27,7 @@ SECTION_CHOICES = (
     ('F', 'faction'),
     ('T', 'target'),
     ('A', 'awards'),
+    ('S', 'stock'),
 )
 
 
