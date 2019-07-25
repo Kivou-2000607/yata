@@ -72,7 +72,7 @@ def list(request):
 
             stocks = Stock.objects.all().order_by("tId")
 
-            context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks["timestamp"], 'stockcat': True, 'view': {'list': True}}
+            context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks[0].timestamp, 'stockcat': True, 'view': {'list': True}}
             page = 'stock/content-reload.html' if request.method == 'POST' else 'stock.html'
             return render(request, page, context)
 
