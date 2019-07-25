@@ -23,7 +23,7 @@ class Stock(models.Model):
     dayTendency = models.FloatField(default=0.0)
     dayTendencyA = models.FloatField(default=0.0)
     dayTendencyB = models.FloatField(default=0.0)
-    timestamp = models.IntegerField(default=0)
+    timestamp = models.BigIntegerField(default=0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)
