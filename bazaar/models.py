@@ -91,9 +91,13 @@ class Item(models.Model):
     def updateTendencies(self):
         oneDay = 3600 * 24
         priceHistory = json.loads(self.priceHistory)
+        priceHistoryCopy = dict({})
         ts = 0
         for t, p in priceHistory.items():
+            priceHistoryCopy[int(t) - int(t) % 3600] = p
             ts = max(ts, int(t))
+        self.priceHistory = json.dumps(priceHistoryCopy)
+        priceHistory = json.loads(self.priceHistory)
 
         # week Tendency
         try:
@@ -184,6 +188,7 @@ class Item(models.Model):
         self.tImage = v['image']
         # priceHistory = json.loads(self.priceHistory)
         # ts = int(v.get('timestamp', timezone.now().timestamp()))
+        # ts = int(ts) - int(ts) % 3600  # get the hour rounding
         # to_del = []
         # for t, p in priceHistory.items():
         #     if ts - int(t) > (oneMonth + 3600 * 23):
@@ -194,7 +199,7 @@ class Item(models.Model):
         # for t in to_del:
         #     print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
         #     del priceHistory[t]
-
+        #
         # priceHistory[ts] = int(v["market_value"])
         # self.priceHistory = json.dumps(priceHistory)
         self.updateTendencies()
