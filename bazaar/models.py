@@ -91,13 +91,9 @@ class Item(models.Model):
     def updateTendencies(self):
         oneDay = 3600 * 24
         priceHistory = json.loads(self.priceHistory)
-        priceHistoryCopy = dict({})
         ts = 0
         for t, p in priceHistory.items():
-            priceHistoryCopy[int(t) - int(t) % 3600] = p
             ts = max(ts, int(t))
-        self.priceHistory = json.dumps(priceHistoryCopy)
-        priceHistory = json.loads(self.priceHistory)
 
         # week Tendency
         try:
@@ -107,7 +103,7 @@ class Item(models.Model):
                 if ts - int(t) < oneDay * 6.5 and int(p):
                     x.append(int(t))
                     y.append(int(p))
-            print(len(x), x)
+            # print(len(x), x)
             if(len(x) > 1):
                 a, b, _, _, _ = stats.linregress(x, y)
                 if math.isnan(a) or math.isnan(b):
@@ -186,22 +182,22 @@ class Item(models.Model):
         self.tEffect = v['effect'],
         self.tRequirement = v['requirement'],
         self.tImage = v['image']
-        # priceHistory = json.loads(self.priceHistory)
-        # ts = int(v.get('timestamp', timezone.now().timestamp()))
-        # ts = int(ts) - int(ts) % 3600  # get the hour rounding
-        # to_del = []
-        # for t, p in priceHistory.items():
-        #     if ts - int(t) > (oneMonth + 3600 * 23):
-        #         to_del.append(t)
-        #     if ts - int(t) < 3600 * 23:  # delete entry the same day
-        #         to_del.append(t)
-        #
-        # for t in to_del:
-        #     print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
-        #     del priceHistory[t]
-        #
-        # priceHistory[ts] = int(v["market_value"])
-        # self.priceHistory = json.dumps(priceHistory)
+        priceHistory = json.loads(self.priceHistory)
+        ts = int(v.get('timestamp', timezone.now().timestamp()))
+        ts = int(ts) - int(ts) % 3600  # get the hour rounding
+        to_del = []
+        for t, p in priceHistory.items():
+            if ts - int(t) > (3600 * 24 * 31 + 3600 * 22):
+                to_del.append(t)
+            if ts - int(t) < 3600 * 23:  # delete entry the same day
+                to_del.append(t)
+
+        for t in to_del:
+            print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
+            del priceHistory[t]
+
+        priceHistory[ts] = int(v["market_value"])
+        self.priceHistory = json.dumps(priceHistory)
         self.updateTendencies()
         self.save()
 

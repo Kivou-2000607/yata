@@ -33,7 +33,6 @@
     $(document).on('click', '.prices-item', function(e){
         e.preventDefault();
         var tId = $(this).attr("href").split("/").pop();
-        console.log("cpicpu");
         $( "#prices-item" ).load( "/bazaar/prices/"+tId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });

@@ -21,16 +21,15 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-{% if graph %}
+{% if graphLength > 1 %}
 <script>
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Market Price', 'Week Tendency: {{item.weekTendencyA|floatformat:0|mul:86400|format:"{:+,d}"}} $/day', 'Month Tendency: {{item.monthTendencyA|floatformat:0|mul:86400|format:"{:+,d}"}} $/day'],
+        ['Time', 'Market Price', 'Week Tendency: {{item.weekTendencyA|mul:86400|format:"{:+,.0f}"}} $/day', 'Month Tendency: {{item.monthTendencyA|mul:86400|format:"{:+,.0f}"}} $/day'],
         {% for a, b, c, d in graph %}
-            // [{{a}}, {{b}}],
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
          {% endfor %}
       ]);
@@ -49,11 +48,18 @@ This file is part of yata.
       };
 
       var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1]);
+      columns = [0, 1];
+      {% if item.weekTendencyA or item.weekTendencyB %}
+        columns.push(2);
+      {% endif %}
+      {% if item.monthTendencyA or item.monthTendencyB %}
+        columns.push(3);
+      {% endif %}
+      view.setColumns(columns);
 
       var chart = new google.visualization.ComboChart(document.getElementById('price-history'));
 
-      chart.draw(data, options);
+      chart.draw(view, options);
     }
 </script>
 {% endif %}
@@ -66,7 +72,13 @@ This file is part of yata.
             <span style="position: absolute; top:40px; right: 10px;"><button>{{item.display_large}}</button></span>
             <p>Tendency over last week: {{item.weekTendency|priceTendency|safe}}</p>
             <p>Tendency over last month: {{item.monthTendency|priceTendency|safe}}</p>
-            <div id="price-history"></div>
+            {% if graphLength == 0 %}
+              <p class="warning">No relevent data to plot (most probably because the market price is $0)</p>
+            {% elif graphLength == 1 %}
+              <p class="warning">No relevent data to plot (most probably because the market price used to be $0), come back soon.</p>
+            {% else %}
+              <div id="price-history"></div>
+            {% endif %}
         </div>
     </div>
 </div>
