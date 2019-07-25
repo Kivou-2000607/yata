@@ -11,6 +11,7 @@
 
 {% block jquery %}
 <script>
+    // categories
     $(document).on('click', 'table.stock-categories td', function(e){
         e.preventDefault();
         var l = $(this).children("a").attr("href").split("/")[2];
@@ -21,10 +22,36 @@
         $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
         $("div.error").hide();
     });
+
+    // open details and prices
+    $(document).on('click', '.stock-details', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#stock-details" ).load( "/stock/details/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+    });
+    $(document).on('click', '.stock-prices', function(e){
+        e.preventDefault();
+        var tId = $(this).attr("href").split("/").pop();
+        $( "#stock-prices" ).load( "/stock/prices/"+tId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+    });
+    $(document).on('click', '.close', function(e){
+        e.preventDefault();
+        $(this).parent("div.container").css("display", "none");
+    });
+
+
 </script>
 {% endblock %}
 
 {% block content %}
+    <div id="stock-details"></div>
+    <div id="stock-prices"></div>
+
+
     <div id="content-update">
         {% include "stock/content-reload.html" %}
     </div>

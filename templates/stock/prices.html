@@ -1,0 +1,84 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if graphLength > 1 %}
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Time', 'Current Price', 'Day Tendency: {{stock.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h'],
+        {% for a, b, c, d in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
+         {% endfor %}
+      ]);
+
+      var options = {
+        legend: {position: 'top', textStyle: {fontSize: 14}},
+        series: {
+                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
+                1: {type: 'line', color: {%if stock.dayTendency >= 0.01%}'#CC3434'{% elif stock.dayTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                2: {type: 'line', color: {%if stock.weekTendency >= 0.01%}'#CC3434'{% elif stock.weekTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
+                },
+        hAxis: { format: 'HH:mm M/d' },
+        vAxis: { format: 'short', title: 'Shares Current Price' },
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      var view = new google.visualization.DataView(data);
+      columns = [0, 1];
+      {% if stock.dayTendencyA or stock.dayTendencyB %}
+        columns.push(2);
+      {% endif %}
+      {% if stock.weekTendencyA or stock.weekTendencyB %}
+        columns.push(3);
+      {% endif %}
+      view.setColumns(columns);
+
+      var chart = new google.visualization.ComboChart(document.getElementById('price-history'));
+
+      chart.draw(view, options);
+    }
+</script>
+{% endif %}
+
+<div class="container">
+    <div class="overlay close"></div>
+    <div class="modal-center-large">
+        <h2 class="title">Last month share price fluctations for stock: {{stock.tName}} [{{stock.tAcronym}}]</h2>
+        <div class="module">
+            <span style="position: absolute; top:40px; right: 10px;"><button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tAcronym}}"></button></span>
+            <p>Tendency over last day: {{stock.dayTendency|priceTendency:"stock"|safe}}</p>
+            <p>Tendency over last week: {{stock.weekTendency|priceTendency:"stock"|safe}}</p>
+            {% if graphLength == 0 %}
+              <p class="warning">No relevent data to plot (most probably because the share price is $0)</p>
+            {% elif graphLength == 1 %}
+              <p class="warning">No relevent data to plot (most probably because the share price used to be $0), come back soon.</p>
+            {% else %}
+              <div id="price-history"></div>
+            {% endif %}
+        </div>
+    </div>
+</div>

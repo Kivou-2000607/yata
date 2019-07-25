@@ -146,29 +146,43 @@ def honorBanner(url, name):
 
 
 @register.filter(name='priceTendency')
-def priceTendency(fl):
-    fl *= 100
+def priceTendency(fl, arg="item"):
+    if arg == "stock":
+        fl *= 1000
+        sign = "&permil;"
+        colors = ["valid", "error"]
+    else:
+        fl *= 100
+        sign = "%"
+        colors = ["error", "valid"]
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
-        return '<span class="error">High</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
+        return '<span class="{}">High</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(colors[0], s, fl, sign)
     elif fl <= -1:
-        return '<span class="valid">Low</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
+        return '<span class="{}">Low</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(colors[1], s, fl, sign)
     else:
-        return '<span class="neutral">Steady</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
+        return '<span class="neutral">Steady</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(s, fl, sign)
 
 
 @register.filter(name='priceTendencyShort')
-def priceTendencyShort(fl):
-    fl *= 100
+def priceTendencyShort(fl, arg="item"):
+    if arg == "stock":
+        fl *= 1000
+        sign = "&permil;"
+        colors = ["valid", "error"]
+    else:
+        fl *= 100
+        sign = "%"
+        colors = ["error", "valid"]
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
-        return '<span class="error"><i class="fas fa-{}"></i> {:+.1f}%</span>'.format(s, fl)
+        return '<span class="{}"><i class="fas fa-{}"></i> {:+.1f}{}</span>'.format(colors[0], s, fl, sign)
     elif fl <= -1:
-        return '<span class="valid"><i class="fas fa-{}"></i> {:+.1f}%</span>'.format(s, fl)
+        return '<span class="{}"><i class="fas fa-{}"></i> {:+.1f}{}</span>'.format(colors[1], s, fl, sign)
     else:
-        return '<span class="neutral"><i class="fas fa-{}"></i> {:+.1f}%</span>'.format(s, fl)
+        return '<span class="neutral"><i class="fas fa-{}"></i> {:+.1f}{}</span>'.format(s, fl, sign)
 
 
 @register.filter(name='forecast')

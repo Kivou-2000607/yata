@@ -21,11 +21,14 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.conf import settings
 
+import json
+
 from player.models import Player
 from stock.models import Stock
 
 from yata.handy import apiCall
 from yata.handy import returnError
+from yata.handy import timestampToDate
 
 
 def index(request):
@@ -39,7 +42,7 @@ def index(request):
 
             stocks = Stock.objects.all().order_by("tId")
 
-            context = {'player': player, 'stocks': stocks, 'stockcat': True, 'view': {'list': True}}
+            context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks[0].timestamp, 'stockcat': True, 'view': {'list': True}}
             return render(request, 'stock.html', context)
 
         else:
@@ -69,12 +72,61 @@ def list(request):
 
             stocks = Stock.objects.all().order_by("tId")
 
-            context = {'player': player, 'stocks': stocks, 'stockcat': True, 'view': {'list': True}}
+            context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks["timestamp"], 'stockcat': True, 'view': {'list': True}}
             page = 'stock/content-reload.html' if request.method == 'POST' else 'stock.html'
             return render(request, page, context)
 
         else:
             return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def details(request, tId):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            stock = Stock.objects.filter(tId=tId).first()
+
+            context = {'stock': stock}
+            return render(request, 'stock/details.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def prices(request, tId):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            stock = Stock.objects.filter(tId=tId).first()
+
+            # create price histogram
+            priceHistory = sorted(json.loads(stock.priceHistory).items(), key=lambda x: x[0])
+
+            graph = [[timestampToDate(int(t)), p, stock.dayTendencyA * float(t) + stock.dayTendencyB, stock.weekTendencyA * float(t) + stock.weekTendencyB] for t, p in priceHistory]
+            graphLength = 0
+            for i, (_, p, wt, mt) in enumerate(graph):
+                if not int(p):
+                    graph[i][1] = "null"
+                    # graph[i][2] = "null"
+                    # graph[i][3] = "null"
+                else:
+                    graphLength += 1
+                if i < len(graph) - 24 or wt < 0:
+                    graph[i][2] = "null"
+                if i < len(graph) - 24 * 7 or mt < 0:
+                    graph[i][3] = "null"
+
+            context = {'stock': stock, "graph": graph, "graphLength": graphLength}
+            return render(request, 'stock/prices.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception:
         return returnError()

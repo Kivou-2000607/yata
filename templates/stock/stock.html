@@ -28,15 +28,25 @@ This file is part of yata.
         <th colspan="2">
             <div class="stock-image" title={{stock.tAcronym}}>
                 <form method="post">{% csrf_token %}
-                    <button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tAcronym}}"></button>
+                    <button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tName}} [{{tAcronym}}]"></button>
                 </form>
             </div>
         </th>
     </tr>
-    <tr><th colspan="2">{{stock.tAcronym}}</th></tr>
-    <tr><th colspan="2">Share: ${{stock.tCurrentPrice|format:"{:,.3f}"}}</th></tr>
-    <tr><th colspan="2">FC: {{stock.tForecast|forecast|safe}}</th></tr>
-    <tr><th colspan="2">DE: {{stock.tDemand|demand|safe}}</th></tr>
+    <tr><th colspan="2"><a href="{% url 'stock:details' stock.tId %}" class="stock-details" title="{{stock.tName}}">{{stock.tAcronym}}</a></th></tr>
+    <tr><th colspan="2" title="Forecast">FC: {{stock.tForecast|forecast|safe}}</th></tr>
+    <tr><th colspan="2" title="Demand">DE: {{stock.tDemand|demand|safe}}</th></tr>
+    <tr ><th colspan="2"><a href="https://www.torn.com/stockexchange.php" target="_blank">Price: ${{stock.tCurrentPrice|format:"{:,.3f}"}}</a></th></tr>
+    {% if stock.dayTendencyB %}
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'stock:prices' stock.tId %}" class="stock-prices" title="Share price tendency over a day / a week">{{stock.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
+      </tr>
+    {% else %}
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'bazaar:prices' stock.tId %}" class="stock-prices" title="Share price tendency over a day / a week">No data</a></th>
+      </tr>
+    {% endif %}
+    <tr ><th class="{%if not stock.tAvailableShares%}lack{%endif%}" colspan="2">Shares: {{stock.tAvailableShares|intcomma}}</th></tr>
 </thead>
 
 <tbody>
