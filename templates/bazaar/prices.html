@@ -21,13 +21,14 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+{% if graph %}
 <script>
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Market Price', 'Week Tendency ({{item.weekTendencyA|mul:86400|floatformat:0}}$/day)', 'Month Tendency ({{item.monthTendencyA|mul:86400|floatformat:0}}$/day)'],
+        ['Time', 'Market Price', 'Week Tendency: {{item.weekTendencyA|floatformat:0|mul:86400|format:"{:+,d}"}} $/day', 'Month Tendency: {{item.monthTendencyA|floatformat:0|mul:86400|format:"{:+,d}"}} $/day'],
         {% for a, b, c, d in graph %}
             // [{{a}}, {{b}}],
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
@@ -55,13 +56,14 @@ This file is part of yata.
       chart.draw(data, options);
     }
 </script>
+{% endif %}
 
 <div class="container">
     <div class="overlay close"></div>
     <div class="modal-center-large">
         <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
         <div class="module">
-            <span style="position: absolute; top:30px; right: 10px;"><button>{{item.display_large}}</button></span>
+            <span style="position: absolute; top:40px; right: 10px;"><button>{{item.display_large}}</button></span>
             <p>Tendency over last week: {{item.weekTendency|priceTendency|safe}}</p>
             <p>Tendency over last month: {{item.monthTendency|priceTendency|safe}}</p>
             <div id="price-history"></div>
