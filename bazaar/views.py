@@ -283,7 +283,9 @@ def prices(request, itemId):
             priceHistory = sorted(json.loads(item.priceHistory).items(), key=lambda x: x[0])
             # plot only last 8 points of the Tendency
             graph = [[timestampToDate(int(t)), p, item.weekTendencyA * float(t) + item.weekTendencyB, item.monthTendencyA * float(t) + item.monthTendencyB] for t, p in priceHistory]
-            for i, (_, _, wt, mt) in enumerate(graph):
+            for i, (_, p, wt, mt) in enumerate(graph):
+                if not int(p):
+                    graph[i][1] = "null"
                 if i < len(graph) - 7 or wt < 0:
                     graph[i][2] = "null"
                 if i < len(graph) - 31 or mt < 0:

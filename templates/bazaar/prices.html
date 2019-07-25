@@ -27,7 +27,7 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Market Price', 'Week Tendency', 'Month Tendency'],
+        ['Time', 'Market Price', 'Week Tendency ({{item.weekTendencyA|mul:86400|floatformat:0}}$/day)', 'Month Tendency ({{item.monthTendencyA|mul:86400|floatformat:0}}$/day)'],
         {% for a, b, c, d in graph %}
             // [{{a}}, {{b}}],
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],

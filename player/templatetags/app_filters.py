@@ -151,11 +151,11 @@ def priceTendency(fl):
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
-        return '<span class="error">High (<i class="fas fa-{}"></i> {:+.1f}%)</span>'.format(s, fl)
+        return '<span class="error">High</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
     elif fl <= -1:
-        return '<span class="valid">Low (<i class="fas fa-{}"></i> {:+.1f}%)</span>'.format(s, fl)
+        return '<span class="valid">Low</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
     else:
-        return '<span class="neutral">Steady (<i class="fas fa-{}"></i> {:+.1f}%)</span>'.format(s, fl)
+        return '<span class="neutral">Steady</span> (<i class="fas fa-{}"></i> {:+.1f}% per day)'.format(s, fl)
 
 
 @register.filter(name='priceTendencyShort')
