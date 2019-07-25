@@ -169,3 +169,23 @@ def priceTendencyShort(fl):
         return '<span class="valid"><i class="fas fa-{}"></i> {:+.1f}%</span>'.format(s, fl)
     else:
         return '<span class="neutral"><i class="fas fa-{}"></i> {:+.1f}%</span>'.format(s, fl)
+
+
+@register.filter(name='forecast')
+def forecast(forecast):
+    if forecast in ["Good"]:
+        return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(forecast)
+    elif forecast in ["Poor"]:
+        return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(forecast)
+    else:
+        return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(forecast)
+
+
+@register.filter(name='demand')
+def demand(demand):
+    if demand in ["High"]:
+        return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(demand)
+    elif demand in ["Low"]:
+        return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(demand)
+    else:
+        return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(demand)

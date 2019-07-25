@@ -1,0 +1,44 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<thead>
+    <tr>
+        <th colspan="2">
+            <div class="stock-image" title={{stock.tAcronym}}>
+                <form method="post">{% csrf_token %}
+                    <button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tAcronym}}"></button>
+                </form>
+            </div>
+        </th>
+    </tr>
+    <tr><th colspan="2">{{stock.tAcronym}}</th></tr>
+    <tr><th colspan="2">Share: ${{stock.tCurrentPrice|format:"{:,.3f}"}}</th></tr>
+    <tr><th colspan="2">FC: {{stock.tForecast|forecast|safe}}</th></tr>
+    <tr><th colspan="2">DE: {{stock.tDemand|demand|safe}}</th></tr>
+</thead>
+
+<tbody>
+
+</tbody>

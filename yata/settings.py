@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'target.apps.TargetConfig',
     'chain.apps.ChainConfig',
     'bazaar.apps.BazaarConfig',
+    'stock.apps.StockConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

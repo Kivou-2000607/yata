@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/stock.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Stock
+{% endblock %}
+
+{% block jquery %}
+<script>
+    $(document).on('click', 'table.stock-categories td', function(e){
+        e.preventDefault();
+        var l = $(this).children("a").attr("href").split("/")[2];
+        $( "#content-update" ).load( "/stock/"+l+"/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").addClass("grey");
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+        $("div.error").hide();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-update">
+        {% include "stock/content-reload.html" %}
+    </div>
+
+    <!-- <div class="catch-me">
+        <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring"></i>&nbsp;&nbsp;Tutorial&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+        <div class="module tutorial" style="display: none;">
+            {% include "stock/tutorial.html" %}
+        </div>
+    </div> -->
+{% endblock %}

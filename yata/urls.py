@@ -28,6 +28,7 @@ urlpatterns = [
     re_path(r'^chain/', include('chain.urls')),
     re_path(r'^awards/', include('awards.urls')),
     re_path(r'^target/', include('target.urls')),
+    re_path(r'^stock/', include('stock.urls')),
     path('admin/', admin.site.urls),
 
     # site
@@ -38,4 +39,4 @@ urlpatterns = [
     path('api', views.api, name="api"),
     path('badges', views.badges, name="badges"),
 
-    ]
+]

@@ -87,6 +87,10 @@ This file is part of yata.
                 <hr class="sep">
                 <p>Welcome to the bazaar overview. You can create a custom list by clicking at the bottom of every items.</p>
                 {% include "bazaar/categories.html" %}
+            {% elif stockcat %}
+                <hr class="sep">
+                <p>Welcome to the stock overview.</p>
+                {% include "stock/categories.html" %}
             {% endif %}
 
         </div>
