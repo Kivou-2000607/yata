@@ -258,6 +258,50 @@ def all(request):
         return returnError()
 
 
+def top10(request):
+    try:
+        if request.session.get('player'):
+            print('[view.bazaar.default] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            # key = player.key
+            bazaarJson = json.loads(player.bazaarJson)
+            playerList = bazaarJson.get("list", [])
+
+            print('[view.bazaar.default] create output items')
+            items = {"Sell": [], "Buy": []}
+
+            inventory = bazaarJson.get("inventory", dict({}))
+            bazaar = bazaarJson.get("bazaar", dict({}))
+            display = bazaarJson.get("display", dict({}))
+            for item in Item.objects.all().order_by('weekTendency')[:10]:
+                item.stockI = inventory.get(str(item.tId), 0)
+                item.stockB = bazaar.get(str(item.tId), 0)
+                item.stockD = display.get(str(item.tId), 0)
+                item.stock = item.stockI + item.stockB + item.stockD
+                items["Buy"].append(item)
+                # item.save()
+            for item in Item.objects.all().order_by('-weekTendency')[:10]:
+                item.stockI = inventory.get(str(item.tId), 0)
+                item.stockB = bazaar.get(str(item.tId), 0)
+                item.stockD = display.get(str(item.tId), 0)
+                item.stock = item.stockI + item.stockB + item.stockD
+                items["Sell"].append(item)
+                # item.save()
+
+            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+            page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+            return render(request, page, context)
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
 def details(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
