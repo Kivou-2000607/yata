@@ -31,7 +31,7 @@ from yata.handy import returnError
 from yata.handy import timestampToDate
 
 
-def index(request):
+def index(request, select='all'):
     try:
         if request.session.get('player'):
             print('[view.stock.list] get player id from session')
@@ -63,25 +63,40 @@ def index(request):
             #     stock.save()
 
             # load torn stocks
-            stocks = {s.tId: {'t': s} for s in Stock.objects.all().order_by("tId")}
-
-            # # add personal stocks to torn stocks
+            stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
+            ts = 0
+            # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():
                 tId = v['stock_id']
-                tstock = stocks[tId].get('t')
+                if tId in stocks:
+                    tstock = stocks[tId].get('t')
+                    ts = tstock.timestamp
+                    print(tstock)
 
-                # add profit
-                v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
-                # add if bonus
-                if tstock.tRequirement:
-                    v['bonus'] = 1 if v['shares'] >= tstock.tRequirement else 0
+                    # add profit
+                    v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
+                    # add if bonus
+                    if tstock.tRequirement:
+                        v['bonus'] = 1 if v['shares'] >= tstock.tRequirement else 0
 
-                if stocks[tId].get('p') is None:
-                    stocks[tId]['p'] = [v]
-                else:
-                    stocks[tId]['p'].append(v)
+                    if stocks[tId].get('p') is None:
+                        stocks[tId]['p'] = [v]
+                    else:
+                        stocks[tId]['p'].append(v)
 
-            context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks[0]['t'].timestamp, 'stockcat': True, 'view': {'list': True}}
+            # select stocks
+            if select in ['hd']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tDemand in ["High", "Very High"]}
+            elif select in ['ld']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tDemand in ["Low", "Very Low"]}
+            elif select in ['gf']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tForecast in ["Good", "Very Good"]}
+            elif select in ['pf']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tForecast in ["Poor", "Very Poor"]}
+            elif select in ['my']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v.get('p') is not None}
+
+            context = {'player': player, 'stocks': stocks, 'lastUpdate': ts, 'stockcat': True, 'view': {'list': True}}
             if error:
                 context.update(error)
             page = 'stock/content-reload.html' if request.method == 'POST' else 'stock.html'
@@ -118,10 +133,15 @@ def prices(request, tId):
 
             # create price histogram
             priceHistory = sorted(json.loads(stock.get('t').priceHistory).items(), key=lambda x: x[0])
+            quantityHistory = {k: v for k, v in sorted(json.loads(stock.get('t').quantityHistory).items(), key=lambda x: x[0])}
 
-            graph = [[timestampToDate(int(t)), p, stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB, stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB] for t, p in priceHistory]
+            graph = [[t, p, stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB, stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB, 0] for t, p in priceHistory]
             graphLength = 0
-            for i, (_, p, wt, mt) in enumerate(graph):
+            for i, (t, p, wt, mt, _) in enumerate(graph):
+                # add quantity
+                graph[i][4] = quantityHistory.get(t, 0)
+
+                # remove 0 prices
                 if not int(p):
                     graph[i][1] = "null"
                     # graph[i][2] = "null"
@@ -132,6 +152,11 @@ def prices(request, tId):
                     graph[i][2] = "null"
                 if i < len(graph) - 24 * 7 or mt < 0:
                     graph[i][3] = "null"
+
+                # convert timestamp to date
+                graph[i][0] = timestampToDate(int(t))
+
+            print(graph)
 
             # # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():

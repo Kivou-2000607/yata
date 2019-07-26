@@ -20,6 +20,7 @@ class Stock(models.Model):
     tRequirement = models.BigIntegerField(default=0)
     tDescription = models.CharField(default="tDescription", blank=True, max_length=200)
     priceHistory = models.TextField(default="{}")  # dictionary {timestamp: price}
+    quantityHistory = models.TextField(default="{}")  # dictionary {timestamp: quantity}
     dayTendency = models.FloatField(default=0.0)
     dayTendencyA = models.FloatField(default=0.0)
     dayTendencyB = models.FloatField(default=0.0)
@@ -64,8 +65,9 @@ class Stock(models.Model):
         self.tDescription = v.get('benefit', dict({'description': ""}))['description']
         self.timestamp = int(ts)
 
-        # update price history
+        # update price history/quantity
         priceHistory = json.loads(self.priceHistory)
+        quantityHistory = json.loads(self.quantityHistory)
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
         to_del = []
         for t, p in priceHistory.items():
@@ -75,9 +77,15 @@ class Stock(models.Model):
         for t in to_del:
             print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
             del priceHistory[t]
+            try:
+                del quantityHistory[t]
+            except BaseException:
+                pass
 
         priceHistory[str(ts)] = float(v['current_price'])
         self.priceHistory = json.dumps(priceHistory)
+        quantityHistory[str(ts)] = int(v['available_shares'])
+        self.quantityHistory = json.dumps(quantityHistory)
 
         # update tendency
         ts = 0

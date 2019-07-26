@@ -15,11 +15,14 @@
     $(document).on('click', 'table.stock-categories td', function(e){
         e.preventDefault();
         var l = $(this).children("a").attr("href").split("/")[2];
-        $( "#content-update" ).load( "/stock/"+l+"/", {
+        var t = $(this).children("a").attr("href").split("/")[3];
+        console.log(l);
+        console.log($(this).children("a").attr("href").split("/"));
+        $( "#content-update" ).load( "/stock/"+l+"/"+t, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l)
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l+' of '+t)
         $("div.error").hide();
     });
 

@@ -1,6 +1,6 @@
 table.stock-categories td {
     text-align: center;
-    width: 50%;
+    /* width: 20%; */
     cursor: pointer;
     border: 0;
 }

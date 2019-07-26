@@ -28,27 +28,28 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h'],
-        {% for a, b, c, d in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
+        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Available Shares'],
+        {% for a, b, c, d, e in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {{e}}],
          {% endfor %}
       ]);
 
       var options = {
         legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
-                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
-                1: {type: 'line', color: {%if stock.t.dayTendency >= 0.001%}'#0B8E14'{% elif stock.t.dayTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
-                2: {type: 'line', color: {%if stock.t.weekTendency >= 0.001%}'#0B8E14'{% elif stock.t.weekTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
+          0: {type: 'area', color: '#787878', lineDashStyle: [5, 5], pointShape: 'None', lineWidth: 2, targetAxisIndex: 1, areaOpacity: 0.1},
+                1: {type: 'line', color: '#780078', pointSize: 5, pointShape: 'circle',   lineWidth: 3, targetAxisIndex: 0},
+                2: {type: 'line', color: {%if stock.t.dayTendency >= 0.001%}'#0B8E14'{% elif stock.t.dayTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
+                3: {type: 'line', color: {%if stock.t.weekTendency >= 0.001%}'#0B8E14'{% elif stock.t.weekTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
                 },
         hAxis: { format: 'HH:mm M/d' },
-        vAxis: { format: 'short', title: 'Shares Current Price' },
+        vAxis: {format: 'short'},
         'backgroundColor': 'transparent',
         'chartArea': {'width': '90%', 'height': '70%'},
       };
 
       var view = new google.visualization.DataView(data);
-      columns = [0, 1];
+      columns = [0, 4, 1];
       {% if stock.t.dayTendencyA or stock.t.dayTendencyB %}
         columns.push(2);
       {% endif %}
