@@ -82,20 +82,28 @@ This file is part of yata.
 
             {% if stock.p %}
               <hr class="sep">
+              <table class="center-large">
               {% for pstock in stock.p %}
-                <h3>Personal stocks #{{forloop.counter}}</h3>
-                <!-- 'stock_id': 15, 'shares': 2000000, 'bought_price': '366.8675', 'time_bought': 1514159772, 'time_listed': 0 -->
-                <ul>
-                  <li><b>{{pstock.shares|intcomma}}</b> shares bought on {{pstock.time_bought|ts2date}} at <b>${{pstock.bought_price|floatformat:3}}</b></li>
-                  <li>Total value when bought: <b>${{pstock.shares|mul:pstock.bought_price|floatformat:0|intcomma}}</b></li>
-                  <li>Current total value: <b>${{pstock.shares|mul:stock.t.tCurrentPrice|floatformat:0|intcomma}} ({{pstock.profit|priceTendencyShort|safe}})</b></li>
-                  {% if pstock.time_listed %}
-                    <li>You listed these shares on {{pstock.time_listed|ts2date}} for a current profit of {{pstock.bought_price}}</li>
-                  {% else %}
-                    <li>Benefits if sold now: <b class="{% if pstock.profit > 0 %}valid{% elif pstock.profit < 0%}error{%else%}neutral{%endif%}">{{pstock.profit|mul:pstock.bought_price|mul:pstock.shares|format:"{:+,.0f}"}}$</b></li>
-                  {% endif %}
-                </ul>
-                <hr class="sep">
+               {% if forloop.counter0|divisibleby:2 %}<tr>{% endif %}
+
+                 <td>
+                    <h3>Personal block #{{forloop.counter}}</h3>
+                    <!-- 'stock_id': 15, 'shares': 2000000, 'bought_price': '366.8675', 'time_bought': 1514159772, 'time_listed': 0 -->
+                    <ul>
+                      <li><b>{{pstock.shares|intcomma}}</b> shares bought on {{pstock.time_bought|ts2date}} at <b>${{pstock.bought_price|floatformat:3}}</b></li>
+                      {% if pstock.bonus %}
+                        <li><span class="valid">You are currently earning a bonus from this block</span></li>
+                      {% endif%}
+                      <li>Total value when bought: <b>${{pstock.shares|mul:pstock.bought_price|floatformat:0|intcomma}}</b></li>
+                      <li>Current total value: <b>${{pstock.shares|mul:stock.t.tCurrentPrice|floatformat:0|intcomma}} ({{pstock.profit|priceTendencyShort|safe}})</b></li>
+                      {% if pstock.time_listed %}
+                        <li>You listed these shares on {{pstock.time_listed|ts2date}} for a current profit of {{pstock.bought_price}}</li>
+                      {% else %}
+                        <li>Benefits if sold now: <b class="{% if pstock.profit > 0 %}valid{% elif pstock.profit < 0%}error{%else%}neutral{%endif%}">{{pstock.profit|mul:pstock.bought_price|mul:pstock.shares|format:"{:+,.0f}"}}$</b></li>
+                      {% endif %}
+                    </ul>
+                  </td>
+                  {% if forloop.counter|divisibleby:2 %}</tr>{% elif forloop.last %}</tr>{% endif %}
               {% endfor %}
             {% endif %}
         </div>

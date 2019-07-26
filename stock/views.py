@@ -30,29 +30,8 @@ from yata.handy import apiCall
 from yata.handy import returnError
 from yata.handy import timestampToDate
 
-#
-# def index(request):
-#     try:
-#         if request.session.get('player'):
-#             print('[view.stock.index] get player id from session')
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#             player.lastActionTS = int(timezone.now().timestamp())
-#             key = player.key
-#
-#             stocks = Stock.objects.all().order_by("tId")
-#
-#             context = {'player': player, 'stocks': stocks, 'lastUpdate': stocks[0].timestamp, 'stockcat': True, 'view': {'list': True}}
-#             return render(request, 'stock.html', context)
-#
-#         else:
-#             return returnError(type=403, msg="You might want to log in.")
-#
-#     except Exception:
-#         return returnError()
 
-
-def list(request):
+def index(request):
     try:
         if request.session.get('player'):
             print('[view.stock.list] get player id from session')
@@ -69,6 +48,7 @@ def list(request):
             else:
                 print('[view.stock.list] save my stocks')
                 player.stocksJson = json.dumps(myStocks.get("stocks", dict({})))
+                player.stocksInfo = len(myStocks.get("stocks", []))
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
                 player.save()
 
@@ -88,6 +68,14 @@ def list(request):
             # # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():
                 tId = v['stock_id']
+                tstock = stocks[tId].get('t')
+
+                # add profit
+                v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
+                # add if bonus
+                if tstock.tRequirement:
+                    v['bonus'] = 1 if v['shares'] >= tstock.tRequirement else 0
+
                 if stocks[tId].get('p') is None:
                     stocks[tId]['p'] = [v]
                 else:
@@ -148,7 +136,13 @@ def prices(request, tId):
             # # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():
                 if int(v['stock_id']) == int(tId):
-                    v['profit'] = float(float(stock.get('t').tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
+
+                    # add profit
+                    v['profit'] = (float(stock.get('t').tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
+                    # add if bonus
+                    if stock.get('t').tRequirement:
+                        v['bonus'] = 1 if v['shares'] >= stock.get('t').tRequirement else 0
+
                     if stock.get('p') is None:
                         stock['p'] = [v]
                     else:

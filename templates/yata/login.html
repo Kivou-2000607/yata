@@ -42,6 +42,15 @@ This file is part of yata.
                     {% endif %}
                     <span class="sep"></span>
 
+                <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Go to bazaar">
+                    <b><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stock overview:</b></a>
+                    {% if player.stocksInfo == "N/A" %}
+                        &empty;
+                    {% else %}
+                        {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
+                    {% endif %}
+                    <span class="sep"></span>
+
                 <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
                     <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction:</b></a>
                     {% if player.chainInfo == "N/A" %}
