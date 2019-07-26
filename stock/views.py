@@ -52,26 +52,14 @@ def index(request, select='all'):
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
                 player.save()
 
-            # update the torn stock (or not...)
-            # stocks = apiCall("torn", "", "stocks,timestamp", key=key)
-            # for k, v in stocks["stocks"].items():
-            #     stock = Stock.objects.filter(tId=int(k)).first()
-            #     if stock is None:
-            #         stock = Stock.create(k, v, stocks["timestamp"])
-            #     else:
-            #         stock.update(k, v, stocks["timestamp"])
-            #     stock.save()
-
-            # load torn stocks
+            # load torn stocks and add personal stocks to torn stocks
             stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
             ts = 0
-            # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():
                 tId = v['stock_id']
                 if tId in stocks:
                     tstock = stocks[tId].get('t')
-                    ts = tstock.timestamp
-                    print(tstock)
+                    ts = max(ts, tstock.timestamp)
 
                     # add profit
                     v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
@@ -95,6 +83,8 @@ def index(request, select='all'):
                 stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tForecast in ["Poor", "Very Poor"]}
             elif select in ['my']:
                 stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v.get('p') is not None}
+            else:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[0])}
 
             context = {'player': player, 'stocks': stocks, 'lastUpdate': ts, 'stockcat': True, 'view': {'list': True}}
             if error:
