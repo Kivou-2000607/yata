@@ -20,8 +20,8 @@ This file is part of yata.
 
 <h2 class="title">Stock listing<span class="flush-right">Last update: {{lastUpdate|ts2date}}</span></h2>
 <div class="module stock-listing">
-  {% for stock in stocks %}
-      <table class="trshadow stock-sell-table">
+  {% for id, stock in stocks.items %}
+      <table class="trshadow stock-table">
           {% include "stock/stock.html" with stock=stock%}
       </table>
   {% empty %}

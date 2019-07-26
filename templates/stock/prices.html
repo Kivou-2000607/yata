@@ -28,7 +28,7 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Current Price', 'Day Tendency: {{stock.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h'],
+        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h'],
         {% for a, b, c, d in graph %}
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
          {% endfor %}
@@ -38,8 +38,8 @@ This file is part of yata.
         legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
                 0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
-                1: {type: 'line', color: {%if stock.dayTendency >= 0.001%}'#0B8E14'{% elif stock.dayTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
-                2: {type: 'line', color: {%if stock.weekTendency >= 0.001%}'#0B8E14'{% elif stock.weekTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
+                1: {type: 'line', color: {%if stock.t.dayTendency >= 0.001%}'#0B8E14'{% elif stock.t.dayTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                2: {type: 'line', color: {%if stock.t.weekTendency >= 0.001%}'#0B8E14'{% elif stock.t.weekTendency <= -0.001%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
                 },
         hAxis: { format: 'HH:mm M/d' },
         vAxis: { format: 'short', title: 'Shares Current Price' },
@@ -49,10 +49,10 @@ This file is part of yata.
 
       var view = new google.visualization.DataView(data);
       columns = [0, 1];
-      {% if stock.dayTendencyA or stock.dayTendencyB %}
+      {% if stock.t.dayTendencyA or stock.t.dayTendencyB %}
         columns.push(2);
       {% endif %}
-      {% if stock.weekTendencyA or stock.weekTendencyB %}
+      {% if stock.t.weekTendencyA or stock.t.weekTendencyB %}
         columns.push(3);
       {% endif %}
       view.setColumns(columns);
@@ -67,17 +67,36 @@ This file is part of yata.
 <div class="container">
     <div class="overlay close"></div>
     <div class="modal-center-large">
-        <h2 class="title">Last month share price fluctations for stock: {{stock.tName}} [{{stock.tAcronym}}]</h2>
+        <h2 class="title">Last month share price fluctations for stock: {{stock.t.tName}} [{{stock.t.tAcronym}}]</h2>
         <div class="module">
-            <span style="position: absolute; top:40px; right: 10px;"><button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tAcronym}}"></button></span>
-            <p>Tendency over last day: {{stock.dayTendency|priceTendency:"stock"|safe}}</p>
-            <p>Tendency over last week: {{stock.weekTendency|priceTendency:"stock"|safe}}</p>
+            <span style="position: absolute; top:40px; right: 10px;"><button><img src="/static/stocks/{{stock.t.tId}}.png" alt="{{stock.t.tAcronym}}"></button></span>
+            <p>Tendency over last day: {{stock.t.dayTendency|priceTendency:"stock"|safe}}</p>
+            <p>Tendency over last week: {{stock.t.weekTendency|priceTendency:"stock"|safe}}</p>
             {% if graphLength == 0 %}
               <p class="warning">No relevent data to plot (most probably because the share price is $0)</p>
             {% elif graphLength == 1 %}
               <p class="warning">No relevent data to plot (most probably because the share price used to be $0), come back soon.</p>
             {% else %}
               <div id="price-history"></div>
+            {% endif %}
+
+            {% if stock.p %}
+              <hr class="sep">
+              {% for pstock in stock.p %}
+                <h3>Personal stocks #{{forloop.counter}}</h3>
+                <!-- 'stock_id': 15, 'shares': 2000000, 'bought_price': '366.8675', 'time_bought': 1514159772, 'time_listed': 0 -->
+                <ul>
+                  <li><b>{{pstock.shares|intcomma}}</b> shares bought on {{pstock.time_bought|ts2date}} at <b>${{pstock.bought_price|floatformat:3}}</b></li>
+                  <li>Total value when bought: <b>${{pstock.shares|mul:pstock.bought_price|floatformat:0|intcomma}}</b></li>
+                  <li>Current total value: <b>${{pstock.shares|mul:stock.t.tCurrentPrice|floatformat:0|intcomma}} ({{pstock.profit|priceTendencyShort|safe}})</b></li>
+                  {% if pstock.time_listed %}
+                    <li>You listed these shares on {{pstock.time_listed|ts2date}} for a current profit of {{pstock.bought_price}}</li>
+                  {% else %}
+                    <li>Benefits if sold now: <b class="{% if pstock.profit > 0 %}valid{% elif pstock.profit < 0%}error{%else%}neutral{%endif%}">{{pstock.profit|mul:pstock.bought_price|mul:pstock.shares|format:"{:+,.0f}"}}$</b></li>
+                  {% endif %}
+                </ul>
+                <hr class="sep">
+              {% endfor %}
             {% endif %}
         </div>
     </div>

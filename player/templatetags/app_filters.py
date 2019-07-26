@@ -150,11 +150,10 @@ def priceTendency(fl, arg="item"):
     if arg == "stock":
         fl *= 1000
         sign = "&permil;"
-        colors = ["valid", "error"]
     else:
         fl *= 100
         sign = "%"
-        colors = ["error", "valid"]
+    colors = ["valid", "error"]
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
@@ -170,11 +169,10 @@ def priceTendencyShort(fl, arg="item"):
     if arg == "stock":
         fl *= 1000
         sign = "&permil;"
-        colors = ["valid", "error"]
     else:
         fl *= 100
         sign = "%"
-        colors = ["error", "valid"]
+    colors = ["valid", "error"]
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
@@ -203,3 +201,13 @@ def demand(demand):
         return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(demand)
     else:
         return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(demand)
+
+
+@register.filter(name='short')
+def short(num):
+    num = float('{:.3g}'.format(num))
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])

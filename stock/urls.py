@@ -4,7 +4,7 @@ from . import views
 
 app_name = "stock"
 urlpatterns = [
-    re_path(r'^$', views.index, name='index'),
+    re_path(r'^$', views.list, name='index'),
 
     re_path(r'^list/$', views.list, name='list'),
     re_path(r'^details/(?P<tId>\w+)$', views.details, name='details'),

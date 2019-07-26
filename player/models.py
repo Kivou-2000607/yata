@@ -66,6 +66,11 @@ class Player(models.Model):
     awardsJson = models.TextField(default="{}")
     awardsUpda = models.IntegerField(default=0)
 
+    # info for stocks APP
+    stocksInfo = models.CharField(default="N/A", max_length=255)
+    stocksJson = models.TextField(default="{}")
+    stocksUpda = models.IntegerField(default=0)
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 

@@ -38,8 +38,8 @@ This file is part of yata.
         legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
                 0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
-                1: {type: 'line', color: {%if item.weekTendency >= 0.01%}'#CC3434'{% elif item.weekTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
-                2: {type: 'line', color: {%if item.monthTendency >= 0.01%}'#CC3434'{% elif item.monthTendency <= -0.01%}'#0B8E14'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
+                1: {type: 'line', color: {%if item.weekTendency >= 0.01%}'#0B8E14'{% elif item.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                2: {type: 'line', color: {%if item.monthTendency >= 0.01%}'#0B8E14'{% elif item.monthTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
                 },
         hAxis: { format: 'M/d/yy' },
         vAxis: { format: 'short', title: 'Market price' },

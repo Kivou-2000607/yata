@@ -26,29 +26,52 @@ This file is part of yata.
 <thead>
     <tr>
         <th colspan="2">
-            <div class="stock-image" title={{stock.tAcronym}}>
+            <div class="stock-image" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]">
                 <form method="post">{% csrf_token %}
-                    <button><img src="/static/stocks/{{stock.tId}}.png" alt="{{stock.tName}} [{{tAcronym}}]"></button>
+                    <button><img src="/static/stocks/{{stock.t.tId}}.png" alt="{{stock.t.tName}} [{{stock.t.tAcronym}}]"></button>
                 </form>
             </div>
         </th>
     </tr>
-    <tr><th colspan="2"><a href="{% url 'stock:details' stock.tId %}" class="stock-details" title="{{stock.tName}}">{{stock.tAcronym}}</a></th></tr>
-    <tr><th colspan="2" title="Forecast">FC: {{stock.tForecast|forecast|safe}}</th></tr>
-    <tr><th colspan="2" title="Demand">DE: {{stock.tDemand|demand|safe}}</th></tr>
-    <tr ><th colspan="2"><a href="https://www.torn.com/stockexchange.php" target="_blank">Price: ${{stock.tCurrentPrice|format:"{:,.3f}"}}</a></th></tr>
-    {% if stock.dayTendencyB %}
+    <tr><th colspan="2"><a href="{% url 'stock:details' stock.t.tId %}" class="stock-details" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]">{{stock.t.tAcronym}}</a></th></tr>
+    <tr><th colspan="2" title="Forecast">FC: {{stock.t.tForecast|forecast|safe}}</th></tr>
+    <tr><th colspan="2" title="Demand">DE: {{stock.t.tDemand|demand|safe}}</th></tr>
+    {% if stock.t.dayTendencyB %}
       <tr class="prices-tendency">
-        <th colspan="2"><a href="{% url 'stock:prices' stock.tId %}" class="stock-prices" title="Share price tendency over a day / a week">{{stock.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
+        <th colspan="2"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
       </tr>
     {% else %}
       <tr class="prices-tendency">
-        <th colspan="2"><a href="{% url 'bazaar:prices' stock.tId %}" class="stock-prices" title="Share price tendency over a day / a week">No data</a></th>
+        <th colspan="2"><a href="{% url 'bazaar:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">No data</a></th>
       </tr>
     {% endif %}
-    <tr ><th class="{%if not stock.tAvailableShares%}lack{%endif%}" colspan="2">Shares: {{stock.tAvailableShares|intcomma}}</th></tr>
+    <tr >
+      <th class="A {%if not stock.t.tAvailableShares%}lack{%endif%}" >{{stock.t.tAvailableShares|short}}</th>
+      <!-- <th><a href="https://www.torn.com/stockexchange.php" target="_blank">${{stock.t.tCurrentPrice|format:"{:,.3f}"}}</a></th> -->
+      <th class="B">${{stock.t.tCurrentPrice|format:"{:,.3f}"}}</th>
+    </tr>
 </thead>
 
 <tbody>
+  {% for pStock in stock.p %}
+  {% if pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.003 %}
+      <tr class="ggt">
+  {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.997 %}
+        <tr class="llt">
+  {% elif pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.001 %}
+      <tr class="gt">
+  {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.999 %}
+      <tr class="lt">
+  {% else %}
+    <tr class="eq">
+  {% endif %}
+  {% if stock.t.tRequirement and pStock.shares >= stock.t.tRequirement %}
+      <td><b>{{pStock.shares|short}}</b></td>
+  {% else %}
+      <td>{{pStock.shares|short}}</td>
+  {% endif %}
+      <td>${{pStock.bought_price|floatformat:3}}</td>
+    </tr>
+  {% endfor %}
 
 </tbody>
