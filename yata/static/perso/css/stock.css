@@ -58,5 +58,5 @@ table.stock-table .eq  { background:#9fc5e8; }
 table.stock-table .gt  { background:#f9cb9c; }
 table.stock-table .ggt { background:#fce5cd; }
 
-table.stock-table .A { width:40%; cursor: default;}
-table.stock-table .B { width:60%; cursor: default;}
+table.stock-table .A { width:50%; cursor: default; padding:2px;}
+table.stock-table .B { width:50%; cursor: default; padding:2px;}

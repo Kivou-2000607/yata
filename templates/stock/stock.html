@@ -30,8 +30,8 @@ This file is part of yata.
         </th>
     </tr>
     {# <tr><th colspan="2"><a href="{% url 'stock:details' stock.t.tId %}" class="stock-details" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]">{{stock.t.tAcronym}}</a></th></tr> #}
-    <tr><th colspan="2" title="Forecast">FC: {{stock.t.tForecast|forecast|safe}}</th></tr>
-    <tr><th colspan="2" title="Demand">DE: {{stock.t.tDemand|demand|safe}}</th></tr>
+    {# <tr><th colspan="2" title="Forecast">FC: {{stock.t.tForecast|forecast|safe}}</th></tr>  #}
+    {# <tr><th colspan="2" title="Demand">DE: {{stock.t.tDemand|demand|safe}}</th></tr> #}
     {% if stock.t.dayTendencyB %}
       <tr class="prices-tendency">
         <th colspan="2"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
@@ -41,6 +41,10 @@ This file is part of yata.
         <th colspan="2"><a href="{% url 'bazaar:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">No data</a></th>
       </tr>
     {% endif %}
+    <tr >
+      <th class="A" title="Demand">{{stock.t.tDemand|demand|safe}}</th>
+      <th class="B" title="Forecast">{{stock.t.tForecast|forecast|safe}}</th>
+    </tr>
     <tr >
       <th class="A {%if not stock.t.tAvailableShares%}lack{%endif%}" >{{stock.t.tAvailableShares|short}}</th>
       {# <th><a href="https://www.torn.com/stockexchange.php" target="_blank">${{stock.t.tCurrentPrice|format:"{:,.3f}"}}</a></th> #}

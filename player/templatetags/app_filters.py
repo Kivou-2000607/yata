@@ -185,9 +185,9 @@ def priceTendencyShort(fl, arg="item"):
 
 @register.filter(name='forecast')
 def forecast(forecast):
-    if forecast in ["Good"]:
+    if forecast in ["Good", "Very Good"]:
         return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(forecast)
-    elif forecast in ["Poor"]:
+    elif forecast in ["Poor", "Very Poor"]:
         return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(forecast)
     else:
         return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(forecast)
@@ -195,9 +195,9 @@ def forecast(forecast):
 
 @register.filter(name='demand')
 def demand(demand):
-    if demand in ["High"]:
+    if demand in ["High", "Very High"]:
         return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(demand)
-    elif demand in ["Low"]:
+    elif demand in ["Low", "Very Low"]:
         return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(demand)
     else:
         return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(demand)
