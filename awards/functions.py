@@ -969,11 +969,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     # 549 {'name': 'Tourist', 'description': 'Spend 7 days in the air', 'type': 7, 'circulation': 16881, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 724568067, 'title': 'Tourist [549]: Uncommon (16881)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = int(userInfo.get("personalstats", dict({})).get("traveltime", 0) / (3600 * 24))
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / float(max(userInfo.get("age", 0), 1))
-                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["days left", "current ratio of {:.2g} hours / day".format(ratio)]
+                    secondsOfFlight = int(userInfo.get("personalstats", dict({})).get("traveltime", 0))
+                    hoursOfFlight = float(secondsOfFlight / 3600.)
+                    daysOfFlight = float(hoursOfFlight / 24.0)
+                    vp["current"] = "{:.1f}".format(daysOfFlight)
+                    vp["achieve"] = min(1, daysOfFlight / float(vp["goal"]))
+                    ratio = daysOfFlight / float(max(userInfo.get("age", 0), 1))
+                    vp["left"] = "{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else "&infin;"
+                    vp["comment"] = ["days left", "current ratio of {:.2g} hours / day&#10;current state {:.1f} / {} hours".format(ratio, hoursOfFlight, vp["goal"] * 24)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
