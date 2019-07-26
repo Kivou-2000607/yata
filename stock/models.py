@@ -71,7 +71,7 @@ class Stock(models.Model):
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
         to_del = []
         for t, p in priceHistory.items():
-            if ts - int(t) > (3600 * 24 * 7):  # remove older than 1 week data
+            if ts - int(t) > 3600 * 24 * 7:  # remove older than 1 week data
                 to_del.append(t)
 
         for t in to_del:

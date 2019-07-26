@@ -137,6 +137,7 @@ def prices(request, tId):
 
             graph = [[t, p, stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB, stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB, 0] for t, p in priceHistory]
             graphLength = 0
+            maxTS = priceHistory[-1][0]
             for i, (t, p, wt, mt, _) in enumerate(graph):
                 # add quantity
                 graph[i][4] = quantityHistory.get(t, 0)
@@ -148,15 +149,14 @@ def prices(request, tId):
                     # graph[i][3] = "null"
                 else:
                     graphLength += 1
-                if i < len(graph) - 24 or wt < 0:
+
+                if int(maxTS) - int(t) > 3600 * 24 or wt < 0:
                     graph[i][2] = "null"
-                if i < len(graph) - 24 * 7 or mt < 0:
+                if int(maxTS) - int(t) > 3600 * 24 * 7 or mt < 0:
                     graph[i][3] = "null"
 
                 # convert timestamp to date
                 graph[i][0] = timestampToDate(int(t))
-
-            print(graph)
 
             # # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():

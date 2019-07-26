@@ -326,19 +326,23 @@ def prices(request, itemId):
             # create price histogram
             priceHistory = sorted(json.loads(item.priceHistory).items(), key=lambda x: x[0])
             # plot only last 8 points of the Tendency
-            graph = [[timestampToDate(int(t)), p, item.weekTendencyA * float(t) + item.weekTendencyB, item.monthTendencyA * float(t) + item.monthTendencyB] for t, p in priceHistory]
+            graph = [[t, p, item.weekTendencyA * float(t) + item.weekTendencyB, item.monthTendencyA * float(t) + item.monthTendencyB] for t, p in priceHistory]
             graphLength = 0
-            for i, (_, p, wt, mt) in enumerate(graph):
+            maxTS = priceHistory[-1][0]
+            for i, (t, p, wt, mt) in enumerate(graph):
                 if not int(p):
                     graph[i][1] = "null"
                     # graph[i][2] = "null"
                     # graph[i][3] = "null"
                 else:
                     graphLength += 1
-                if i < len(graph) - 7 or wt < 0:
+                if int(maxTS) - int(t) > 3600 * 24 * 7 or wt < 0:
                     graph[i][2] = "null"
-                if i < len(graph) - 31 or mt < 0:
+                if int(maxTS) - int(t) > 3600 * 24 * 31 or mt < 0:
                     graph[i][3] = "null"
+
+                # convert timestamp to date
+                graph[i][0] = timestampToDate(int(t))
 
             context = {'item': item, "graph": graph, "graphLength": graphLength}
             return render(request, 'bazaar/prices.html', context)

@@ -89,7 +89,6 @@ class Item(models.Model):
         return item
 
     def updateTendencies(self):
-        oneDay = 3600 * 24
         priceHistory = json.loads(self.priceHistory)
         ts = 0
         for t, p in priceHistory.items():
@@ -100,7 +99,7 @@ class Item(models.Model):
             x = []
             y = []
             for t, p in priceHistory.items():
-                if ts - int(t) < oneDay * 6.5 and int(p):
+                if ts - int(t) < 3600 * 24 * 7 + 30 and int(p):
                     x.append(int(t))
                     y.append(int(p))
             # print(len(x), x)
@@ -131,7 +130,7 @@ class Item(models.Model):
             x = []
             y = []
             for t, p in priceHistory.items():
-                if ts - int(t) < oneDay * 30.5 and int(p):
+                if ts - int(t) < 3600 * 24 * 7 + 30 and int(p):
                     x.append(int(t))
                     y.append(int(p))
             if(len(x) > 1):
@@ -187,9 +186,7 @@ class Item(models.Model):
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
         to_del = []
         for t, p in priceHistory.items():
-            if ts - int(t) > (3600 * 24 * 31 + 3600 * 22):
-                to_del.append(t)
-            if ts - int(t) < 3600 * 23:  # delete entry the same day
+            if ts - int(t) > 3600 * 24 * 31:
                 to_del.append(t)
 
         for t in to_del:
