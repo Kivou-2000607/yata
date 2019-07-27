@@ -130,7 +130,7 @@ class Item(models.Model):
             x = []
             y = []
             for t, p in priceHistory.items():
-                if ts - int(t) < 3600 * 24 * 7 + 30 and int(p):
+                if ts - int(t) < 3600 * 24 * 31 + 30 and int(p):
                     x.append(int(t))
                     y.append(int(p))
             if(len(x) > 1):
