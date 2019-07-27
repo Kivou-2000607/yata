@@ -34,10 +34,7 @@ This file is part of yata.
     {# <tr><th colspan="2" title="Demand">DE: {{stock.t.tDemand|demand|safe}}</th></tr> #}
     {% if stock.t.dayTendencyB %}
       <tr class="prices-tendency">
-
-            <th class="A" title="Share price tendency over a day"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}}</a></th>
-            <th class="B" title="Share price tendency over a week"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices">{{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
-        </a>
+            <th colspan=2 title="Share price tendency over a day / a week"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
       </tr>
     {% else %}
       <tr class="prices-tendency">
@@ -57,24 +54,24 @@ This file is part of yata.
 
 <tbody>
   {% for pStock in stock.p %}
-  {% if pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.003 %}
-      <tr class="ggt">
-  {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.997 %}
-        <tr class="llt">
-  {% elif pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.001 %}
-      <tr class="gt">
-  {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.999 %}
-      <tr class="lt">
-  {% else %}
-    <tr class="eq">
-  {% endif %}
-  {% if pStock.bonus %}
-      <td><b>{{pStock.shares|short}}</b></td>
-  {% else %}
-      <td>{{pStock.shares|short}}</td>
-  {% endif %}
-      <td>${{pStock.bought_price|floatformat:3}}</td>
-    </tr>
+      {% if pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.003 %}
+          <tr class="ggt">
+      {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.997 %}
+            <tr class="llt">
+      {% elif pStock.bought_price|mul:1.0 > stock.t.tCurrentPrice|mul:1.001 %}
+          <tr class="gt">
+      {% elif pStock.bought_price|mul:1.0 < stock.t.tCurrentPrice|mul:0.999 %}
+          <tr class="lt">
+      {% else %}
+        <tr class="eq">
+      {% endif %}
+      {% if pStock.bonus %}
+          <td><b>{{pStock.shares|short}}</b></td>
+      {% else %}
+          <td>{{pStock.shares|short}}</td>
+      {% endif %}
+          <td>${{pStock.bought_price|floatformat:3}}</td>
+        </tr>
   {% endfor %}
 
 </tbody>

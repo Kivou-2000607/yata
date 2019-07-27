@@ -25,24 +25,21 @@ import json
 import os
 
 from stock.models import Stock
-from bazaar.models import Preference
-from yata.handy import apiCall
+from stock.models import History
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.stock.update] start")
+        print("[command.stock.tmp] start")
 
-        preference = Preference.objects.all()[0]
+        for stock in Stock.objects.all():
+            prices = json.loads(stock.priceHistory)
+            quanti = json.loads(stock.quantityHistory)
+            for k, v in prices.items():
+                if len(stock.history_set.filter(timestamp=int(k))) == 0:
+                    print("create", k, v)
+                    stock.history_set.create(tCurrentPrice=float(v),
+                                             tAvailableShares=int(quanti.get(k, 0)),
+                                             timestamp=int(k))
 
-        key = preference.get_random_key()[1]
-        stocks = apiCall("torn", "", "stocks,timestamp", key=key)
-        for k, v in stocks["stocks"].items():
-            stock = Stock.objects.filter(tId=int(k)).first()
-            if stock is None:
-                stock = Stock.create(k, v, stocks["timestamp"])
-            else:
-                stock.update(k, v, stocks["timestamp"])
-            stock.save()
-
-        print("[command.stock.update] end")
+        print("[command.stock.tmp] end")

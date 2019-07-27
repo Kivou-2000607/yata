@@ -5,6 +5,8 @@ import json
 import math
 from scipy import stats
 
+from yata.handy import timestampToDate
+
 
 class Stock(models.Model):
     tId = models.IntegerField(default=0, unique=True)
@@ -15,8 +17,8 @@ class Stock(models.Model):
     tMarketCap = models.BigIntegerField(default=0)
     tTotalShares = models.BigIntegerField(default=0)
     tAvailableShares = models.BigIntegerField(default=0)
-    tForecast = models.CharField(default="tForecast", max_length=200)
-    tDemand = models.CharField(default="tDemand", max_length=200)
+    tForecast = models.CharField(default="Average", max_length=200)
+    tDemand = models.CharField(default="Average", max_length=200)
     tRequirement = models.BigIntegerField(default=0)
     tDescription = models.CharField(default="tDescription", blank=True, max_length=200)
     priceHistory = models.TextField(default="{}")  # dictionary {timestamp: price}
@@ -27,10 +29,10 @@ class Stock(models.Model):
     weekTendency = models.FloatField(default=0.0)
     weekTendencyA = models.FloatField(default=0.0)
     weekTendencyB = models.FloatField(default=0.0)
-    timestamp = models.BigIntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
 
     def __str__(self):
-        return "[{}] {}".format(self.tId, self.tName)
+        return "{} ({}) [{}]".format(self.tName, self.tAcronym, self.tId)
 
     @classmethod
     def create(cls, k, v, ts):
@@ -63,7 +65,7 @@ class Stock(models.Model):
         self.tDemand = v['demand']
         self.tRequirement = int(v.get('benefit', dict({'requirement': 0}))['requirement'])
         self.tDescription = v.get('benefit', dict({'description': ""}))['description']
-        self.timestamp = int(ts)
+        self.timestamp = int(ts) - int(ts) % 3600  # get the hour rounding
 
         # update price history/quantity
         priceHistory = json.loads(self.priceHistory)
@@ -155,3 +157,25 @@ class Stock(models.Model):
         print("[model.stock.update] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
 
         self.save()
+
+        self.history_set.create(tCurrentPrice=self.tCurrentPrice,
+                                tMarketCap=self.tMarketCap,
+                                tTotalShares=self.tTotalShares,
+                                tAvailableShares=self.tAvailableShares,
+                                tForecast=self.tForecast,
+                                tDemand=self.tDemand,
+                                timestamp=self.timestamp)
+
+
+class History(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    tCurrentPrice = models.FloatField(default=0.0)
+    tMarketCap = models.BigIntegerField(default=0)
+    tTotalShares = models.BigIntegerField(default=0)
+    tAvailableShares = models.BigIntegerField(default=0)
+    tForecast = models.CharField(default="Average", max_length=20)
+    tDemand = models.CharField(default="Average", max_length=20)
+    timestamp = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{} at {}".format(self.stock.tAcronym, timestampToDate(self.timestamp))
