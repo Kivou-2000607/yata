@@ -185,22 +185,26 @@ def priceTendencyShort(fl, arg="item"):
 
 @register.filter(name='forecast')
 def forecast(forecast):
-    if forecast in ["Good", "Very Good"]:
-        return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(forecast)
-    elif forecast in ["Poor", "Very Poor"]:
-        return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(forecast)
+    if forecast in ["Good"]:
+        return '<span class="valid"><i class="fas fa-sun"></i></span>'.format(forecast)
+    elif forecast in ["Poor"]:
+        return '<span class="error"><i class="fas fa-cloud-showers-heavy"></i></span>'.format(forecast)
     else:
-        return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(forecast)
+        return '<span class="neutral"><i class="fas fa-cloud-sun"></i></span>'.format(forecast)
 
 
 @register.filter(name='demand')
 def demand(demand):
-    if demand in ["High", "Very High"]:
-        return '<span class="valid"><i class="fas fa-caret-up"></i> {}</span>'.format(demand)
-    elif demand in ["Low", "Very Low"]:
-        return '<span class="error"><i class="fas fa-caret-down"></i> {}</span>'.format(demand)
-    else:
-        return '<span class="neutral"><i class="fas fa-sort"></i> {}</span>'.format(demand)
+    dStr = ["very low", "low", "average", "high", "very high"]
+    dCol = ["error", "error", "neutral", "valid", "valid"]
+    dImg = ['<i class="far fa-square"></i>'] * 4
+
+    ind = dStr.index(demand.lower()) if demand.lower() in dStr else 0
+
+    for i in range(ind):
+        dImg[i] = '<i class="fas fa-square"></i>'
+
+    return '<span class="{}">{}</span>'.format(dCol[ind], "".join(dImg))
 
 
 @register.filter(name='short')

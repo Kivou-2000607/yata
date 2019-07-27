@@ -34,16 +34,19 @@ This file is part of yata.
     {# <tr><th colspan="2" title="Demand">DE: {{stock.t.tDemand|demand|safe}}</th></tr> #}
     {% if stock.t.dayTendencyB %}
       <tr class="prices-tendency">
-        <th colspan="2"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}} / {{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
+
+            <th class="A" title="Share price tendency over a day"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices">{{stock.t.dayTendency|priceTendencyShort:"stock"|safe}}</a></th>
+            <th class="B" title="Share price tendency over a week"><a href="{% url 'stock:prices' stock.t.tId %}" class="stock-prices">{{stock.t.weekTendency|priceTendencyShort:"stock"|safe}}</a></th>
+        </a>
       </tr>
     {% else %}
       <tr class="prices-tendency">
         <th colspan="2"><a href="{% url 'bazaar:prices' stock.t.tId %}" class="stock-prices" title="Share price tendency over a day / a week">No data</a></th>
       </tr>
     {% endif %}
-    <tr >
-      <th class="A" title="Demand">{{stock.t.tDemand|demand|safe}}</th>
-      <th class="B" title="Forecast">{{stock.t.tForecast|forecast|safe}}</th>
+    <tr title="Demand {{stock.t.tDemand}} / Forecast {{stock.t.tForecast}}">
+      <th class="A">{{stock.t.tDemand|demand|safe}}</th>
+      <th class="B">{{stock.t.tForecast|forecast|safe}}</th>
     </tr>
     <tr >
       <th class="A {%if not stock.t.tAvailableShares%}lack{%endif%}" >{{stock.t.tAvailableShares|short}}</th>
