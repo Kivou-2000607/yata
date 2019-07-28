@@ -112,9 +112,10 @@ class Stock(models.Model):
                 else:
                     self.dayTendencyA = a  # a is in $/s
                     self.dayTendencyB = b
-                    time = abs(x[0] - x[-1])
-                    mean = abs(0.5 * a * (x[0] + x[-1]) + b)
-                    self.dayTendency = a * time / float(mean)
+                    # time = abs(x[0] - x[-1])
+                    # mean = abs(0.5 * a * (x[0] + x[-1]) + b)
+                    # self.dayTendency = a * time / float(mean)
+                    self.dayTendency = a * 3600 * 24 / float(y[-1])
             else:
                 self.dayTendencyA = 0.0
                 self.dayTendencyB = 0.0
@@ -143,9 +144,10 @@ class Stock(models.Model):
                 else:
                     self.weekTendencyA = a  # a is in $/s
                     self.weekTendencyB = b
-                    time = abs(x[0] - x[-1])
-                    mean = abs(0.5 * a * (x[0] + x[-1]) + b)
-                    self.weekTendency = a * time / float(mean)
+                    # time = abs(x[0] - x[-1])
+                    # mean = abs(0.5 * a * (x[0] + x[-1]) + b)
+                    # self.weekTendency = a * time / float(mean)
+                    self.weekTendency = a * 3600 * 24 / float(y[-1])
             else:
                 self.weekTendencyA = 0.0
                 self.weekTendencyB = 0.0

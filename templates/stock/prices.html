@@ -71,8 +71,8 @@ This file is part of yata.
         <h2 class="title">Last month share price fluctations for stock: {{stock.t.tName}} [{{stock.t.tAcronym}}]</h2>
         <div class="module">
             <span style="position: absolute; top:40px; right: 10px;"><button><img src="/static/stocks/{{stock.t.tId}}.png" alt="{{stock.t.tAcronym}}"></button></span>
-            <p>Tendency over last day: {{stock.t.dayTendency|priceTendency:"stock"|safe}}</p>
-            <p>Tendency over last week: {{stock.t.weekTendency|priceTendency:"stock"|safe}}</p>
+            <p>Tendency per day over last day: {{stock.t.dayTendency|priceTendency:"stock"|safe}}</p>
+            <p>Tendency per day over last week: {{stock.t.weekTendency|priceTendency:"stock"|safe}}</p>
             {% if graphLength == 0 %}
               <p class="warning">No relevent data to plot (most probably because the share price is $0)</p>
             {% elif graphLength == 1 %}

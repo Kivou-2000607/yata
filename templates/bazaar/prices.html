@@ -70,8 +70,8 @@ This file is part of yata.
         <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
         <div class="module">
             <span style="position: absolute; top:40px; right: 10px;"><button>{{item.display_large}}</button></span>
-            <p>Tendency over last week: {{item.weekTendency|priceTendency|safe}}</p>
-            <p>Tendency over last month: {{item.monthTendency|priceTendency|safe}}</p>
+            <p>Tendency per week over last week: {{item.weekTendency|priceTendency|safe}}</p>
+            <p>Tendency per week over last month: {{item.monthTendency|priceTendency|safe}}</p>
             {% if graphLength == 0 %}
               <p class="warning">No relevent data to plot (most probably because the market price is $0)</p>
             {% elif graphLength == 1 %}

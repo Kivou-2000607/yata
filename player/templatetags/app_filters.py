@@ -148,8 +148,10 @@ def honorBanner(url, name):
 @register.filter(name='priceTendency')
 def priceTendency(fl, arg="item"):
     if arg == "stock":
-        fl *= 1000
-        sign = "&permil;"
+        # fl *= 1000
+        # sign = "&permil;"
+        fl *= 100
+        sign = "%"
     else:
         fl *= 100
         sign = "%"
@@ -157,18 +159,20 @@ def priceTendency(fl, arg="item"):
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
-        return '<span class="{}">High</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(colors[0], s, fl, sign)
+        return '<span class="{}">High</span> (<i class="fas fa-{}"></i> {:+.2f}{})'.format(colors[0], s, fl, sign)
     elif fl <= -1:
-        return '<span class="{}">Low</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(colors[1], s, fl, sign)
+        return '<span class="{}">Low</span> (<i class="fas fa-{}"></i> {:+.2f}{})'.format(colors[1], s, fl, sign)
     else:
-        return '<span class="neutral">Steady</span> (<i class="fas fa-{}"></i> {:+.1f}{})'.format(s, fl, sign)
+        return '<span class="neutral">Steady</span> (<i class="fas fa-{}"></i> {:+.2f}{})'.format(s, fl, sign)
 
 
 @register.filter(name='priceTendencyShort')
 def priceTendencyShort(fl, arg="item"):
     if arg == "stock":
-        fl *= 1000
-        sign = "&permil;"
+        # fl *= 1000
+        # sign = "&permil;"
+        fl *= 100
+        sign = "%"
     else:
         fl *= 100
         sign = "%"

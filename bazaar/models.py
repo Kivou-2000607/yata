@@ -112,9 +112,10 @@ class Item(models.Model):
                 else:
                     self.weekTendencyA = a  # a is in $/s
                     self.weekTendencyB = b
-                    time = abs(x[0] - x[-1])
-                    mean = abs(0.5 * a * (x[0] + x[-1]) + b)
-                    self.weekTendency = a * time / float(mean)
+                    # time = abs(x[0] - x[-1])
+                    # mean = abs(0.5 * a * (x[0] + x[-1]) + b)
+                    # self.weekTendency = a * time / float(mean)
+                    self.weekTendency = a * 3600 * 24 * 7 / float(y[-1])
             else:
                 self.weekTendencyA = 0.0
                 self.weekTendencyB = 0.0
@@ -143,9 +144,10 @@ class Item(models.Model):
                 else:
                     self.monthTendencyA = a  # a is in $/s
                     self.monthTendencyB = b
-                    time = abs(x[0] - x[-1])
-                    mean = abs(0.5 * a * (x[0] + x[-1]) + b)
-                    self.monthTendency = a * time / float(mean)
+                    # time = abs(x[0] - x[-1])
+                    # mean = abs(0.5 * a * (x[0] + x[-1]) + b)
+                    # self.monthTendency = a * time / float(mean)
+                    self.monthTendency = a * 3600 * 24 * 7 / float(y[-1])
             else:
                 self.monthTendencyA = 0.0
                 self.monthTendencyB = 0.0
