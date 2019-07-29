@@ -60,9 +60,9 @@ This file is part of yata.
               chart.draw(data, options);
 
               var data2 = google.visualization.arrayToDataTable([
-                ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}],
-                {% for x, y, xm, xp in hofGraph %}
-                    [{{x}}, {{y}}, "<h3>Number of players: {{y|intcomma}}</h3><span>{{xm|floatformat:4}}% < Rarity score < {{xp|floatformat:4}}%</span>"],
+                ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}, 'Cummulative number of players', {role: 'tooltip', 'p': {'html': true}}],
+                {% for x, y, xm, xp, cu in hofGraph %}
+                    [{{x}}, {{y}}, "<h3>#players: {{y|intcomma}}</h3><span>{{xm|floatformat:4}}% < Rarity score < {{xp|floatformat:4}}%</span>", {{cu}}, "<h3>Cummulative #players: {{cu|intcomma}}</h3><span>Rarity score < {{xp|floatformat:4}}%</span>"],
                  {% endfor %}
               ]);
 
@@ -71,20 +71,23 @@ This file is part of yata.
                 legend: {position: 'none'},
                 tooltip: {isHtml: true, position: 'top'},
                 seriesType: 'bars',
-                series: {0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},},
+                series: {
+                    0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                    1: {type: 'line', targetAxisIndex: 1, color: '#447e9b'},
+                    },
                 bar: {groupWidth: '80%'},
-                hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log' },
+                hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log', viewWindow:{ min:0.01} },
                 vAxis: { format: 'short', title: "#Players" },
                 'backgroundColor': 'transparent',
                 'chartArea': {'width': '90%', 'height': '60%'},
               };
 
               var view2 = new google.visualization.DataView(data2);
-              view2.setColumns([0, 1]);
+              view2.setColumns([0, 1, 2, 3, 4]);
 
               var chart2 = new google.visualization.ComboChart(document.getElementById('hofChart'));
 
-              chart2.draw(data2, options2);
+              chart2.draw(view2, options2);
             }
 
         });

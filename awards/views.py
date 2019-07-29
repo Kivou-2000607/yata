@@ -139,9 +139,15 @@ def list(request, type):
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
 
                 bins = numpy.logspace(-2, 2, num=101)
+                bins[0] = 0
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
                 cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
-                hofGraph = [[x, y, xm, xp] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
+                hofGraph = [[x, y, xm, xp, 0] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
+                hofGraph[0][4] = hofGraph[0][1]
+                for i in range(len(hofGraph) - 1):
+                    hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
+                for _ in hofGraph:
+                    print(_)
                 context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
