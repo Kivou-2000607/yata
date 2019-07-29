@@ -60,7 +60,7 @@ def index(request):
             for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
                 # if h.get("rarity") not in ["Unknown Rarity"]:
                 if h.get("circulation", 0) > 0:
-                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
+                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
             context = {"player": player, "graph": graph, "awardscat": True, "view": {"awards": True}}
             for k, v in json.loads(player.awardsJson).items():
@@ -99,7 +99,7 @@ def list(request, type):
                     for k, h in honors.items():
                         # if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
                         if h.get("circulation", 0) > 0:
-                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
+                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
                 graph = sorted(graph, key=lambda x: -x[1])
                 context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph}
                 page = 'awards/list.html' if request.method == 'POST' else "awards.html"
@@ -111,7 +111,7 @@ def list(request, type):
                 updatePlayerAwards(player, tornAwards, userInfo)
                 for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
                     if h.get("circulation", 0) > 0:
-                        graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
+                        graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
                 context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
@@ -136,7 +136,7 @@ def list(request, type):
                 updatePlayerAwards(player, tornAwards, userInfo)
                 for k, h in sorted(tornAwards.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
                     if h.get("circulation", 0) > 0:
-                        graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
+                        graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
                 bins = numpy.logspace(-2, 2, num=101)
                 bins[0] = 0
