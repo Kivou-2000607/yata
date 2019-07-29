@@ -21,7 +21,7 @@ This file is part of yata.
 {% load mathfilters %}
 
 
-{% for item in items|dictsort:"tName" %}
+{% for item in items %}
     <table id="item-sell-table-{{item.tId}}" class="trshadow item-sell-table">
         {% include "bazaar/item.html" with item=item%}
     </table>
