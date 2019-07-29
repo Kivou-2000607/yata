@@ -146,8 +146,6 @@ def list(request, type):
                 hofGraph[0][4] = hofGraph[0][1]
                 for i in range(len(hofGraph) - 1):
                     hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
-                for _ in hofGraph:
-                    print(_)
                 context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
