@@ -59,7 +59,7 @@ def index(request):
             player.save()
 
             print('[view.bazaar.default] get all items on market')
-            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tId')
+            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
             # print('[view.bazaar.default] {}'.format(tTypes))
@@ -104,7 +104,7 @@ def custom(request):
             playerList = bazaarJson.get("list", [])
 
             print('[view.bazaar.default] get all items on player\'s list')
-            itemsOnMarket = Item.objects.filter(tId__in=playerList).order_by('tId')
+            itemsOnMarket = Item.objects.filter(tId__in=playerList).order_by('tName')
             print('[view.bazaar.default] create output items')
             items = {"Custom": []}
 
@@ -143,7 +143,7 @@ def default(request):
             playerList = bazaarJson.get("list", [])
 
             print('[view.bazaar.default] get all items on market')
-            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tId')
+            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
             # print('[view.bazaar.default] {}'.format(tTypes))
@@ -186,7 +186,7 @@ def sets(request):
             playerList = bazaarJson.get("list", [])
 
             print('[view.bazaar.default] get all items on market')
-            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tId')
+            itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
             print('[view.bazaar.default] get all tTypes')
             tTypes = ["Flower", "Plushie"]
             # print('[view.bazaar.default] {}'.format(tTypes))
@@ -229,7 +229,7 @@ def all(request):
             playerList = bazaarJson.get("list", [])
 
             print('[view.bazaar.default] get all items on market')
-            itemsOnMarket = Item.objects.all().order_by('tId')
+            itemsOnMarket = Item.objects.all().order_by('tName')
             print('[view.bazaar.default] get all tTypes')
             tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
             # print('[view.bazaar.default] {}'.format(tTypes))
