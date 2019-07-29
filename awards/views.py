@@ -138,7 +138,7 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve")), h.get("img"), h.get("rScore", 0), h.get("unreach")])
 
-                bins = numpy.logspace(-3, 2, num=101)
+                bins = numpy.logspace(-2, 2, num=101)
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
                 cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
                 hofGraph = [[x, y, xm, xp] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
