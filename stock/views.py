@@ -47,6 +47,8 @@ def index(request, select='all'):
                 error = {"apiErrorSub": myStocks["apiError"]}
             else:
                 print('[view.stock.list] save my stocks')
+                if myStocks.get("stocks") is None:
+                    myStocks["stocks"] = dict({})
                 player.stocksJson = json.dumps(myStocks.get("stocks", dict({})))
                 player.stocksInfo = len(myStocks.get("stocks", []))
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
