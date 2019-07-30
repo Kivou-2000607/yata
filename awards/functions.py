@@ -1782,7 +1782,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [21, 274, 572]:
+                elif int(k) in [21, 274, 572, 734]:
                     # 21 {'name': 'Driving Elite', 'description': 'Reach racing class A', 'type': 0, 'circulation': 15853, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 819611004, 'title': 'Driving Elite [21]: Uncommon (15853)'}
                     # 274 {'name': 'Redline', 'description': 'Win 250 races with a single car', 'type': 0, 'circulation': 3513, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 739693375, 'title': 'Redline [274]: Rare (3513)'}
                     # 572 {'name': 'Motorhead', 'description': 'Reach a racing skill of 10', 'type': 0, 'circulation': 1960, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Motorhead [572]: Extraordinary (1960)'}
