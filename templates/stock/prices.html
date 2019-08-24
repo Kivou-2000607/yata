@@ -28,28 +28,33 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Available Shares'],
-        {% for a, b, c, d, e in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {{e}}],
+        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Good Forcast', 'Poor Forcast'],
+        {% for a, b, c, d, _, _, e, _ in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {%if e == "Good"%}1{%else%}0{%endif%}, {%if e == "Poor"%}1{%else%}0{%endif%}],
          {% endfor %}
       ]);
 
       var options = {
         legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
-            0: {type: 'area', color: '#787878', lineDashStyle: [5, 5], pointShape: 'None', lineWidth: 2, targetAxisIndex: 1, areaOpacity: 0.1},
-            1: {type: 'line', color: '#780078', pointSize: 2, pointShape: 'None',   lineWidth: 2, targetAxisIndex: 0},
-            2: {type: 'line', color: {%if stock.t.dayTendency >= 0.01%}'#0B8E14'{% elif stock.t.dayTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
-            3: {type: 'line', color: {%if stock.t.weekTendency >= 0.01%}'#0B8E14'{% elif stock.t.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
+            0: {type: 'line', color: '#780078', pointShape: 'None',   lineWidth: 2, targetAxisIndex: 0},
+            1: {type: 'area', color: '#0B8E14', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1},
+            2: {type: 'area', color: '#CC3434', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1},
+            3: {type: 'line', color: {%if stock.t.dayTendency >= 0.01%}'#0B8E14'{% elif stock.t.dayTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
+            4: {type: 'line', color: {%if stock.t.weekTendency >= 0.01%}'#0B8E14'{% elif stock.t.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
+
         },
         hAxis: { format: 'HH:mm M/d' },
-        vAxis: {format: 'short'},
+        vAxes: {
+            0: { format: 'short'},
+            1: { textPosition: 'none', viewWindow:{ min: 0, max:1}},
+        },
         'backgroundColor': 'transparent',
         'chartArea': {'width': '90%', 'height': '70%'},
       };
 
       var view = new google.visualization.DataView(data);
-      columns = [0, 4, 1];
+      columns = [0, 1, 4, 5];
       {% if stock.t.dayTendencyA or stock.t.dayTendencyB %}
         columns.push(2);
       {% endif %}
@@ -61,6 +66,34 @@ This file is part of yata.
       var chart = new google.visualization.ComboChart(document.getElementById('price-history'));
 
       chart.draw(view, options);
+
+      var data2 = google.visualization.arrayToDataTable([
+        ['Time', 'Available Shares', 'Total Shares'],
+        {% for a, _, _, _, b, c, _, _ in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}],
+         {% endfor %}
+      ]);
+
+      var options2 = {
+        legend: {position: 'top', textStyle: {fontSize: 14}},
+        series: {
+            0: {type: 'line', color: '#447e9b', pointShape: 'None',   lineWidth: 2, targetAxisIndex: 0},
+            1: {type: 'area', color: '#787878', lineDashStyle: [5, 5], pointShape: 'None', lineWidth: 2, targetAxisIndex: 0, areaOpacity: 0.1},
+        },
+        hAxis: { format: 'HH:mm M/d' },
+        vAxis: {format: 'short', viewWindow:{ min: 0}},
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      var view2 = new google.visualization.DataView(data2);
+      columns = [0, 1, 2];
+      view2.setColumns(columns);
+
+      var chart2 = new google.visualization.ComboChart(document.getElementById('quantity-history'));
+
+      chart2.draw(view2, options2);
+
     }
 </script>
 {% endif %}
@@ -80,6 +113,7 @@ This file is part of yata.
             {% else %}
               <div id="price-history"></div>
             {% endif %}
+            <div id="quantity-history"></div>
 
             {% if stock.p %}
               <hr class="sep">

@@ -123,17 +123,23 @@ def prices(request, tId):
             player = Player.objects.filter(tId=request.session["player"].get("tId")).first()
             stock = {'t': Stock.objects.filter(tId=tId).first()}
 
-            # create price histogram
-            priceHistory = sorted(json.loads(stock.get('t').priceHistory).items(), key=lambda x: x[0])
-            quantityHistory = {k: v for k, v in sorted(json.loads(stock.get('t').quantityHistory).items(), key=lambda x: x[0])}
+            # timestamp rounded at the hour
+            ts = int(timezone.now().timestamp())
+            ts = int(ts) - int(ts) % 3600
 
-            graph = [[t, p, stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB, stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB, 0] for t, p in priceHistory]
+            history = stock.get('t').history_set.filter(timestamp__gte=(ts - 24 * 3600)).order_by('timestamp')
+
+            graph = []
+            for h in history:
+                t = h.timestamp
+                dt = stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB  # day tendancy
+                wt = stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB  # week tendancy
+                line = [t, h.tCurrentPrice, dt, wt, h.tAvailableShares, h.tTotalShares, h.tForecast, h.tDemand]
+                graph.append(line)
+
             graphLength = 0
-            maxTS = priceHistory[-1][0]
-            for i, (t, p, wt, mt, _) in enumerate(graph):
-                # add quantity
-                graph[i][4] = quantityHistory.get(t, 0)
-
+            maxTS = ts
+            for i, (t, p, dt, wt, _, _, _, _) in enumerate(graph):
                 # remove 0 prices
                 if not int(p):
                     graph[i][1] = "null"
@@ -142,9 +148,9 @@ def prices(request, tId):
                 else:
                     graphLength += 1
 
-                if int(maxTS) - int(t) > 3600 * 24 or wt < 0:
+                if int(maxTS) - int(t) > 3600 * 24 or dt < 0:
                     graph[i][2] = "null"
-                if int(maxTS) - int(t) > 3600 * 24 * 7 or mt < 0:
+                if int(maxTS) - int(t) > 3600 * 24 * 7 or wt < 0:
                     graph[i][3] = "null"
 
                 # convert timestamp to date

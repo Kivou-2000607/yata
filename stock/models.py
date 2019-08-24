@@ -77,7 +77,7 @@ class Stock(models.Model):
                 to_del.append(t)
 
         for t in to_del:
-            print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
+            print(f"[model.stock.update] remove history entry {t}: {priceHistory[t]}")
             del priceHistory[t]
             try:
                 del quantityHistory[t]
@@ -160,13 +160,14 @@ class Stock(models.Model):
 
         self.save()
 
-        self.history_set.create(tCurrentPrice=self.tCurrentPrice,
-                                tMarketCap=self.tMarketCap,
-                                tTotalShares=self.tTotalShares,
-                                tAvailableShares=self.tAvailableShares,
-                                tForecast=self.tForecast,
-                                tDemand=self.tDemand,
-                                timestamp=self.timestamp)
+        if not len(self.history_set.filter(timestamp=self.timestamp)):
+            self.history_set.create(tCurrentPrice=self.tCurrentPrice,
+                                    tMarketCap=self.tMarketCap,
+                                    tTotalShares=self.tTotalShares,
+                                    tAvailableShares=self.tAvailableShares,
+                                    tForecast=self.tForecast,
+                                    tDemand=self.tDemand,
+                                    timestamp=self.timestamp)
 
 
 class History(models.Model):
