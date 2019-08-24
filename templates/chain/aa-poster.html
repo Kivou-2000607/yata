@@ -1,0 +1,46 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+
+<form>{% csrf_token %}
+    <p>
+        {% if faction.poster %}
+            <span class="fa-stack fa-1x">
+                <i class="fas fa-scroll fa-stack-1x valid"></i>
+                {# <i class="fas fa-ban fa-stack-2x error"></i> #}
+            </span>
+            Upgrades poster is enable. You can customize it <a href="{% url 'chain:tree' %}">here</a> or disable it here:
+            <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}">
+                 <i class="fas fa-toggle-on" title="Disable Poster"></i>
+            </a>
+        {% else %}
+            <span class="fa-stack fa-1x">
+                <i class="fas fa-scroll fa-stack-1x"></i>
+                <i class="fas fa-ban fa-stack-2x error"></i>
+            </span>
+            Upgrades poster is disabled. You can enable it here:
+            <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}">
+                <i class="fas fa-toggle-off" title="Enable Poster"></i>
+            </a>
+            {% if messageDeleted %}
+                <span class="warning"> <i class="fas fa-exclamation-circle"></i>  Your poster has been deleted.</span>
+            {% endif %}
+        {% endif %}
+    </p>
+</form>

@@ -35,6 +35,7 @@ class Faction(models.Model):
 
     apiString = models.TextField(default="{}")
     posterOpt = models.TextField(default="{}")
+    poster = models.BooleanField(default=False)
 
     membersUpda = models.IntegerField(default=0)
 

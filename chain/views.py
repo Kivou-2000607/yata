@@ -117,7 +117,7 @@ def index(request):
                 faction.save()
 
             chains = faction.chain_set.filter(status=True).order_by('-end')
-            context = {'player': player, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
+            context = {'player': player, 'faction': faction, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
             return render(request, 'chain.html', context)
 
         else:
@@ -315,7 +315,7 @@ def list(request):
             # get chains
             chains = faction.chain_set.filter(status=True).order_by('-end')
 
-            context = {'player': player, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
+            context = {'player': player, 'faction': faction, 'chaincat': True, 'chains': chains, 'view': {'list': True}}
             if error:
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
                 context.update({selectError: error["apiError"] + " List of chain not updated."})
@@ -354,7 +354,7 @@ def report(request, chainId):
             chain = faction.chain_set.filter(tId=chainId).first()
             if chain is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
+                context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
                 return render(request, page, context)
 
             print('[view.chain.report] chain {} found'.format(chainId))
@@ -363,7 +363,7 @@ def report(request, chainId):
             report = chain.report_set.filter(chain=chain).first()
             if report is None:
                 print('[view.chain.report] report of {} not found'.format(chain))
-                context = dict({"player": player, 'chaincat': True, 'chain': chain, 'chains': chains, 'view': {'report': True, 'list': True}})
+                context = dict({"player": player, 'faction': faction, 'chaincat': True, 'chain': chain, 'chains': chains, 'view': {'report': True, 'list': True}})
                 return render(request, page, context)
 
             print('[view.chain.report] report of {} found'.format(chain))
@@ -390,6 +390,7 @@ def report(request, chainId):
             counts = report.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))
             context = dict({"player": player,
                             'chaincat': True,
+                            'faction': faction,
                             'chain': chain,  # for general info
                             'chains': chains,  # for chain list after report
                             'counts': counts,  # for report
@@ -433,6 +434,7 @@ def jointReport(request):
             if len(chains) < 1:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = {selectError: 'No chains found for the joint report. Add reports throught the chain list.',
+                           'faction': faction,
                            'chains': faction.chain_set.filter(status=True).order_by('-end'),
                            'player': player, 'chaincat': True, 'view': {'list': True}}
                 return render(request, page, context)
@@ -535,6 +537,7 @@ def jointReport(request):
                             'bonuses': arrayBonuses,  # bonuses for report
                             'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                             'player': player,
+                            'faction': faction,
                             'chaincat': True,  # to display categories
                             'view': {'jointReport': True}})  # view
 
@@ -874,6 +877,47 @@ def chainThreshold(request):
         return returnError()
 
 
+# action view
+def togglePoster(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.togglePoster] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.togglePoster] faction {} found'.format(factionId))
+
+            faction.poster = not faction.poster
+            faction.save()
+
+            messageDeleted = False
+            if not faction.poster:
+                url = "{}/trees/{}.png".format(settings.STATIC_ROOT, faction.tId)
+                if os.path.exists(url):
+                    print('[view.chain.togglePoster] Delete faction {} poster at {}'.format(factionId, url))
+                    os.remove(url)
+                    messageDeleted = True
+                else:
+                    print('[view.chain.togglePoster] Try to delete faction {} poster at {} but file does not exist'.format(factionId, url))
+
+            context = {'faction': faction}
+            if messageDeleted:
+                context.update({'messageDeleted': messageDeleted})
+            return render(request, 'chain/aa-poster.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
 def tree(request):
     try:
         if request.session.get('player'):
@@ -887,7 +931,13 @@ def tree(request):
                 faction = Faction.objects.filter(tId=player.factionId).first()
                 print('[view.chain.tree] player with AA. Faction {}'.format(faction))
 
+                if not faction.poster:
+                    context = {'player': player, 'chaincat': True, 'faction': faction, 'errorMessageSub': "Poster disabled. Go to AA options to enable it."}
+                    page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+                    return render(request, page, context)
+
                 if request.method == "POST":
+                    print(request.POST)
                     t = request.POST.get("t", False)
                     p = int(request.POST.get("p", False))
                     v = int(request.POST.get("v", False))

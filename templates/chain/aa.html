@@ -22,6 +22,7 @@ This file is part of yata.
 
 <h2 class="title">{{faction.name}} AA options</h2>
 <div class="module">
+    <h3>Keys</h3>
     <p>This is a summary of your faction's keys used for the creation of the chain reports.
         YATA picks randomly among all enabled keys to make the API calls.<br />
         If you don't want YATA to use your key you can disable it here.
@@ -44,8 +45,14 @@ This file is part of yata.
             {% endif %}
         </tbody>
     </table>
-    <br class="sep">
+
+    <h3>Chains threshold</h3>
     {% include "chain/aa-threshold.html" %}
+
+    <h3>Poster</h3>
+    <form>{% csrf_token %}
+        {% include "chain/aa-poster.html" %}
+    </form>
 </div>
 
 <h2 class="title">Crontab</h2>

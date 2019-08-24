@@ -30,7 +30,7 @@ class Command(BaseCommand):
         print("[command.chain.tree] start")
         for faction in Faction.objects.all():
             print("[command.chain.tree] faction {}".format(faction))
-            if len(json.loads(faction.posterOpt)):
+            if faction.poster:
                 factionTree(faction)
 
         print("[command.chain.tree] end")

@@ -152,6 +152,18 @@
         // reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
+
+    // toggle key in aa
+    $(document).on('click', '#chain-aa-toggle-poster', function(e){
+        e.preventDefault();
+        var reload = $(this).parents("form");
+        reload.load( "/chain/togglePoster/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+
     // faction tree
     $(document).on('change', '[id^="chain-tree-"]', function(e){
         e.preventDefault();
