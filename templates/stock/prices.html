@@ -38,8 +38,8 @@ This file is part of yata.
         legend: {position: 'top', textStyle: {fontSize: 14}},
         series: {
             0: {type: 'line', color: '#780078', pointShape: 'None',   lineWidth: 2, targetAxisIndex: 0},
-            1: {type: 'area', color: '#0B8E14', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1},
-            2: {type: 'area', color: '#CC3434', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1},
+            1: {type: 'steppedArea', color: '#0B8E14', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1, visibleInLegend: false, tooltip : false},
+            2: {type: 'steppedArea', color: '#CC3434', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1, visibleInLegend: false, tooltip : false},
             3: {type: 'line', color: {%if stock.t.dayTendency >= 0.01%}'#0B8E14'{% elif stock.t.dayTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
             4: {type: 'line', color: {%if stock.t.weekTendency >= 0.01%}'#0B8E14'{% elif stock.t.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
 

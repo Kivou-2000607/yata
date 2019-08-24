@@ -127,7 +127,7 @@ def prices(request, tId):
             ts = int(timezone.now().timestamp())
             ts = int(ts) - int(ts) % 3600
 
-            history = stock.get('t').history_set.filter(timestamp__gte=(ts - 24 * 3600)).order_by('timestamp')
+            history = stock.get('t').history_set.filter(timestamp__gte=(ts - 7 * 24 * 3600)).order_by('timestamp')
 
             graph = []
             for h in history:
