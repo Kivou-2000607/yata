@@ -83,6 +83,10 @@ def index(request, select='all'):
                 stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tForecast in ["Good", "Very Good"]}
             elif select in ['pf']:
                 stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tForecast in ["Poor", "Very Poor"]}
+            elif select in ['ns']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares in [0]}
+            elif select in ['lo']:
+                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares <= 0.01 * v['t'].tTotalShares}
             elif select in ['my']:
                 stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v.get('p') is not None}
             else:
