@@ -207,6 +207,7 @@ d = {
     653: 355071632,  # Smart Alec
     659: 494666789,  # Clever Dick
     651: 693932389,  # Wise Guy
+    656: 513618856,  # Whiz Kid
 
     # 5
     25: 566282329,  # Candy Man

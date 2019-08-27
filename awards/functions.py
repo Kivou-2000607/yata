@@ -456,17 +456,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["energy needed", "current ratio of {:.2g} stealth/win".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [763]:
-                    # 763: "name": "Bare", "description": "Win 250 unarmored attacks or defends", "type": 8,
-                    type = "Other attacks"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("unarmoredwon", 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / float(max(userInfo.get("personalstats", dict({})).get("attackswon", 0), 1))
-                    vp["left"] = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["energy needed", "current ratio of {:.2g} unarmored/win".format(ratio)]
-                    awards[type]["h_" + k] = vp
-
                 elif int(k) in [140, 151]:
                     # 140 {'name': 'Spray And Pray', 'description': 'Fire 2,500 rounds', 'type': 8, 'circulation': 72720, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     type = "Fire rounds"
@@ -854,14 +843,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["left", ""]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [743]:
-                    # "name": "Lavish", "description": "Dump an item with a current market value of at least $1,000,000", "type": 16,
-                    type = "City"
-                    vp["goal"] = 1
-                    vp["current"] = 1 if int(k) in honors_awarded else 0
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
-                    awards[type]["h_" + k] = vp
-
                 elif int(k) in [273]:
                     # 273 {'name': 'Bargain Hunter', 'description': 'Win 10 auctions', 'type': 16, 'circulation': 8415, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "Other items"
@@ -1233,7 +1214,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["days left", "with {:.0f}% education length reducion".format((1. - educationTimeReduction) * 100.)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [653, 659, 651]:
+                elif int(k) in [653, 659, 651, 656]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1241,14 +1222,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     i = 0
                     timeLeft = 0
+                    edLeft = []
                     for a, b in sorted(educations.items(), key=lambda x: x[1]['duration'], reverse=False):
                         if int(a) not in userInfo.get("education_completed", []):
                             if i >= vp["goal"] - vp["current"]:
                                 break
                             i += 1
                             timeLeft += educationTimeReduction * b["duration"]
+                            edLeft.append("{} (tier {})".format(b.get('name', '?'), b.get('tier', 0)))
                     vp["left"] = max(educationTimeReduction * timeLeft / (24. * 3600.), 0)
-                    vp["comment"] = ["days left", "taking the shortest courses left with {:.0f}% education length reducion".format((1. - educationTimeReduction) * 100.)]
+                    vp["comment"] = ["days left", "taking the shortest courses left with {:.0f}% education length reducion: &#013;{}".format((1. - educationTimeReduction) * 100., "&#013;- ".join(edLeft))]
 
                     awards[type]["h_" + k] = vp
 
@@ -1358,7 +1341,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Estate": dict(),
             "Networth": dict(),
             "Casino": dict(),
-            "Church": dict(),
             "Other money": dict()})
 
         honors_awarded = [int(k) for k in userInfo.get("honors_awarded", [])]
@@ -1448,15 +1430,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 elif int(k) in [237, 269, 275, 276, 326, 327, 338, 427, 431, 437, 513, 519]:
                     # 237 {'name': 'Poker King', 'description': 'Earn a poker score of 10,000,000', 'type': 9, 'circulation': 2267, 'rarity': 'Rare', 'awardType': 'Honor', 'img': '/static/honors/tsimg/NQ5Yy.png', 'title': 'Poker King [237]: Rare (2267)'}
                     type = "Casino"
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
-                    vp["current"] = 1 if int(k) in honors_awarded else 0
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [520, 521, 523]:
-                    # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
-                    # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
-                    type = "Church"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -1748,9 +1721,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Social": dict(),
             "Refills": dict(),
             "Perks": dict(),
+            "Church": dict(),
             "Racing": dict(),
             "Awards": dict(),
-            "Church": dict(),
             "Missions": dict(),
             "Maximum": dict(),
             "Events": dict()})
@@ -1784,20 +1757,20 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [316]:
-                    # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
-                    # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
-                    type = "Church"
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
-                    vp["current"] = 1 if int(k) in honors_awarded else 0
-                    awards[type]["h_" + k] = vp
-
                 elif int(k) in [309, 443, 459]:
                     # 309 {'name': 'Christmas in Torn', 'description': 'Login on Christmas Day', 'type': 11, 'circulation': 50473, 'rarity': 'Common', 'awardType': 'Honor', 'img': 959806366, 'title': 'Christmas in Torn [309]: Common (50473)'}
                     # 443 {'name': 'Trick or Treat', 'description': 'Login on Halloween', 'type': 11, 'circulation': 40866, 'rarity': 'Common', 'awardType': 'Honor', 'img': 513488839, 'title': 'Trick or Treat [443]: Common (40866)'}
                     # 459 {'name': 'Torniversary', 'description': 'Login on November 15th', 'type': 11, 'circulation': 41332, 'rarity': 'Common', 'awardType': 'Honor', 'img': 332983521, 'title': 'Torniversary [459]: Common (41332)'}
                     type = "Events"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [316, 520, 521]:
+                    # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
+                    # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
+                    type = "Church"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -1811,7 +1784,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [21, 274, 572, 734]:
+                elif int(k) in [21, 274, 572]:
                     # 21 {'name': 'Driving Elite', 'description': 'Reach racing class A', 'type': 0, 'circulation': 15853, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 819611004, 'title': 'Driving Elite [21]: Uncommon (15853)'}
                     # 274 {'name': 'Redline', 'description': 'Win 250 races with a single car', 'type': 0, 'circulation': 3513, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 739693375, 'title': 'Redline [274]: Rare (3513)'}
                     # 572 {'name': 'Motorhead', 'description': 'Reach a racing skill of 10', 'type': 0, 'circulation': 1960, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Motorhead [572]: Extraordinary (1960)'}
