@@ -60,3 +60,7 @@ table.stock-table .ggt { background:#fce5cd; }
 
 table.stock-table .A { width:50%; cursor: default; padding:2px;}
 table.stock-table .B { width:50%; cursor: default; padding:2px;}
+
+
+i.graph-period-selector { margin-left: 10px;}
+i.graph-period-selector.far.fa-circle { cursor: pointer;}

@@ -41,11 +41,20 @@
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
     });
+    $(document).on('click', '.graph-period-selector', function(e){
+        e.preventDefault();
+        var tId = $(this).children("input").val().split("-")[0];
+        var period = $(this).children("input").val().split("-")[1];
+        console.log(tId, period);
+        $( "#stock-prices-graphs" ).load( "/stock/prices/"+tId+"/"+period, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $(this).addClass('fas fa-spinner fa-pulse');
+    });
     $(document).on('click', '.close', function(e){
         e.preventDefault();
         $(this).parent("div.container").css("display", "none");
     });
-
 
 </script>
 {% endblock %}

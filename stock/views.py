@@ -121,7 +121,7 @@ def details(request, tId):
         return returnError()
 
 
-def prices(request, tId):
+def prices(request, tId, period=None):
     try:
         if request.session.get('player') and request.method == "POST":
             player = Player.objects.filter(tId=request.session["player"].get("tId")).first()
@@ -131,7 +131,15 @@ def prices(request, tId):
             ts = int(timezone.now().timestamp())
             ts = int(ts) - int(ts) % 3600
 
-            history = stock.get('t').history_set.filter(timestamp__gte=(ts - 7 * 24 * 3600)).order_by('timestamp')
+            page = "stock/prices.html" if period is None else "stock/prices-graphs.html"
+            period = "7" if period is None else period
+
+            try:
+                periodS = int(period) * 24 * 3600
+            except BaseException:
+                periodS = ts
+
+            history = stock.get('t').history_set.filter(timestamp__gte=(ts - periodS)).order_by('timestamp')
 
             graph = []
             for h in history:
@@ -175,8 +183,8 @@ def prices(request, tId):
                     else:
                         stock['p'].append(v)
 
-            context = {'stock': stock, "graph": graph, "graphLength": graphLength}
-            return render(request, 'stock/prices.html', context)
+            context = {'stock': stock, "graph": graph, "graphLength": graphLength, "period": period}
+            return render(request, page, context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
