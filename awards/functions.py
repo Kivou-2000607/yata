@@ -1233,7 +1233,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["days left", "with {:.0f}% education length reducion".format((1. - educationTimeReduction) * 100.)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [653, 659, 651]:
+                elif int(k) in [653, 659, 651, 656]:
                     # 653 {'name': 'Smart Alec', 'description': 'Complete 10 education courses', 'type': 4, 'circulation': 150699, 'rarity': 'Very Common', 'awardType': 'Honor', 'img': 872280837, 'title': 'Smart Alec [653]: Very Common (150699)'}
                     type = "Courses"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
@@ -1241,14 +1241,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     i = 0
                     timeLeft = 0
+                    edLeft = []
                     for a, b in sorted(educations.items(), key=lambda x: x[1]['duration'], reverse=False):
                         if int(a) not in userInfo.get("education_completed", []):
                             if i >= vp["goal"] - vp["current"]:
                                 break
                             i += 1
                             timeLeft += educationTimeReduction * b["duration"]
+                            edLeft.append("{} (tier {})".format(b.get('name', '?'), b.get('tier', 0)))
                     vp["left"] = max(educationTimeReduction * timeLeft / (24. * 3600.), 0)
-                    vp["comment"] = ["days left", "taking the shortest courses left with {:.0f}% education length reducion".format((1. - educationTimeReduction) * 100.)]
+                    vp["comment"] = ["days left", "taking the shortest courses left with {:.0f}% education length reducion: &#013;{}".format((1. - educationTimeReduction) * 100., "&#013;- ".join(edLeft))]
 
                     awards[type]["h_" + k] = vp
 
@@ -1786,7 +1788,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                 elif int(k) in [316]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
-                    # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
                     type = "Church"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
