@@ -1240,7 +1240,7 @@ def importWall(request):
                     defenders.append(p)
             print(f"Wall Participants: {i}")
 
-            if i>500:
+            if i > 500:
                 t = 0
                 m = f"{i} is too much participants for a wall"
                 print(m)
@@ -1261,6 +1261,13 @@ def importWall(request):
                        'territory': req.get('terr')}
             print("Wall headers: processed")
 
+            if faction.tId not in [wallDic.get('attackerFactionId'), wallDic.get('defenderFactionId')]:
+                t = 0
+                m = f"{faction} is not involved in this war"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Faction in wall: checked")
+
             messageList = []
             wall = Wall.objects.filter(tId=wallDic.get('tId')).first()
             if wall is None:
@@ -1275,6 +1282,7 @@ def importWall(request):
                 messageList.append(f"wall already added to {faction}")
             else:
                 messageList.append(f"adding wall to {faction}")
+                wall.faction.add(faction)
 
             t = 1
             m = ", ".join(messageList)
