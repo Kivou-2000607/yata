@@ -243,3 +243,31 @@ class Crontab(models.Model):
 
     def nFactions(self):
         return len(self.faction.all())
+
+
+class Wall(models.Model):
+    tId = models.IntegerField(default=0)
+    tss = models.IntegerField(default=0)
+    tse = models.IntegerField(default=0)
+    attackers = models.TextField(default="{}", null=True, blank=True)
+    defenders = models.TextField(default="{}", null=True, blank=True)
+    attackerFactionId = models.IntegerField(default=0)
+    attackerFactionName = models.CharField(default="AttackFaction", max_length=200)
+    defenderFactionId = models.IntegerField(default=0)
+    defenderFactionName = models.CharField(default="DefendFaction", max_length=200)
+    territory = models.CharField(default="AAA", max_length=3)
+    factions = models.ManyToManyField(Faction, blank=True)
+
+
+    def update(self, req):
+        self.tId = int(req.get('tId'))
+        self.tss = int(req.get('tss'))
+        self.tse = int(req.get('tse'))
+        self.attackers = req.get('attackers')
+        self.defenders = req.get('defenders')
+        self.attackerFactionId = int(req.get('attackerFactionId'))
+        self.attackerFactionName = req.get('attackerFactionName')
+        self.defenderFactionId = int(req.get('defenderFactionId'))
+        self.defenderFactionName = req.get('defenderFactionName')
+        self.territory = req.get('territory')
+        self.save()

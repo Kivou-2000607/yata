@@ -1,0 +1,48 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+
+
+{% if type == 0 %}
+    ERROR
+{% elif type == 1 %}
+    <h2>Wall #{{wall.tId}} created</h2>
+{% elif type == 2 %}
+    <h2>Wall #{{wall.tId}} modified</h2>
+{% else %}
+    ???
+{% endif %}
+
+Territory: {{wall.territory}}<br>
+Start: {{wall.tss}}<br>
+End: {{wall.tse}}<br>
+
+<h3>Attackers from {{wall.attackerFactionName}} [{{wall.attackerFactionId}}]</h3>
+<ul>
+{% for p in wall.attackers %}
+    <li>{{p.Name}} [{{p.XID}}]: {{p.Points}} / {{p.Joins}} / {{p.Clears}}</li>
+{% endfor %}
+</ul>
+
+<h3>Defenders from {{wall.defenderFactionName}} [{{wall.defenderFactionId}}]</h3>
+<ul>
+{% for p in wall.defenders %}
+    <li>{{p.Name}} [{{p.XID}}]: {{p.Points}} / {{p.Joins}} / {{p.Clears}}</li>
+{% endfor %}
+</ul>

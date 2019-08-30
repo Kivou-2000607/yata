@@ -26,4 +26,6 @@ urlpatterns = [
     re_path(r'^renderIndividualReport/(?P<chainId>\w+)/(?P<memberId>\w+)$', views.renderIndividualReport, name='renderIndividualReport'),
 
     re_path(r'^tree/$', views.tree, name='tree'),
+
+    re_path(r'^importWall/$', views.importWall, name='importWall'),
     ]

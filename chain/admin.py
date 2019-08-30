@@ -28,6 +28,7 @@ from .models import Bonus
 from .models import Attacks
 from .models import Preference
 from .models import Crontab
+from .models import Wall
 
 from yata.handy import timestampToDate
 
@@ -185,3 +186,13 @@ class CrontabAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Crontab, CrontabAdmin)
+
+
+class WallAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['tId', 'tss', 'attackerFactionName', 'defenderFactionName', 'territory']
+
+
+admin.site.register(Wall, WallAdmin)

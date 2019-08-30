@@ -20,6 +20,8 @@ This file is part of yata.
 from django.shortcuts import render
 from django.utils import timezone
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 
 from scipy import stats
 import numpy
@@ -41,6 +43,7 @@ from chain.functions import BONUS_HITS
 from chain.models import Faction
 from chain.models import Preference
 from chain.models import Crontab
+from chain.models import Wall
 
 
 # render view
@@ -1179,3 +1182,109 @@ def resetArmoryRecord(request):
 
     except Exception:
         return returnError()
+
+
+@csrf_exempt
+def importWall(request):
+    if request.method == 'POST':
+        try:
+            req = json.loads(request.body)
+
+            # get author
+            authorId = req.get("author", 0)
+            author = Player.objects.filter(tId=authorId).first()
+
+            #  check if author is in YATA
+            if author is None:
+                t = 0
+                m = "You're no register in YATA"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Author in yata: checked")
+            print(author)
+
+            # check if API key sent == API key in YATA
+            HTTP_KEY = request.META.get("HTTP_KEY")
+            if HTTP_KEY != author.key:
+                t = 0
+                m = "Your API keys don't match"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("API keys match: checked")
+
+            #  check if AA of a faction
+            if not author.factionAA:
+                t = 0
+                m = "You don't have AA perm"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("AA perm: checked")
+
+            #  check if can get faction
+            faction = Faction.objects.filter(tId=author.factionId).first()
+            if faction is None:
+                t = 0
+                m = f"Can't find faction {author.factionId} in YATA database"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Faction exists: checked")
+
+            attackers = []
+            defenders = []
+            i = 0
+            for p in req.get("participants"):
+                i += 1
+                if p.get("Position") in ["Attacker"]:
+                    attackers.append(p)
+                else:
+                    defenders.append(p)
+            print(f"Wall Participants: {i}")
+
+            if i>500:
+                t = 0
+                m = f"{i} is too much participants for a wall"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("# Participant: checked")
+
+            wallDic = {'tId': int(req.get('id')),
+                       # 'tss': int(req.get('ts_start')),
+                       # 'tse': int(req.get('ts_end')),
+                       'tss': int(req.get('ts_start')),
+                       'tse': int(req.get('ts_end')),
+                       'attackers': attackers,
+                       'defenders': defenders,
+                       'attackerFactionId': int(req.get('att_fac')),
+                       'defenderFactionId': int(req.get('def_fac')),
+                       'attackerFactionName': req.get('att_fac_name'),
+                       'defenderFactionName': req.get('def_fac_name'),
+                       'territory': req.get('terr')}
+            print("Wall headers: processed")
+
+            messageList = []
+            wall = Wall.objects.filter(tId=wallDic.get('tId')).first()
+            if wall is None:
+                messageList.append(f"Wall {wallDic.get('tId')} created")
+                creation = True
+                wall = Wall.objects.create(**wallDic)
+            else:
+                messageList.append(f"Wall {wallDic.get('tId')} modified")
+                wall.update(wallDic)
+
+            if faction in wall.factions.all():
+                messageList.append(f"wall already added to {faction}")
+            else:
+                messageList.append(f"adding wall to {faction}")
+
+            t = 1
+            m = ", ".join(messageList)
+            print(m)
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+        except Exception:
+            t = 0
+            m = "Server error... YATA's been poorly coded..."
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+    else:
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
