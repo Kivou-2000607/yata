@@ -1282,16 +1282,16 @@ def importWall(request):
                 messageList.append(f"wall already added to {faction}")
             else:
                 messageList.append(f"adding wall to {faction}")
-                wall.faction.add(faction)
+                wall.factions.add(faction)
 
             t = 1
             m = ", ".join(messageList)
             print(m)
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
-        except Exception:
+        except BaseException as e:
             t = 0
-            m = "Server error... YATA's been poorly coded..."
+            m = f"Server error... YATA's been poorly coded: {e}"
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
     else:
