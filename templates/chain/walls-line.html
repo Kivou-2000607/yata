@@ -1,0 +1,43 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+{% if wall %}
+  <td class="b"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+  <td class="b">{{wall.tss|ts2date}}</td>
+  <td class="b">{{wall.tse|ts2date}}</td>
+  <td class="b">{{wall.tse|sub:wall.tss|ts2time}}</td>
+  <td class="b" ><b>{{wall.attackerFactionName}}</b></td>
+  <td class="b" ><b>{{wall.defenderFactionName}}</b></td>
+  <td class="b" ><b>{{wall.territory}}</b></td>
+  <td class="b" >
+    {% if player.factionAA %}
+        <!-- delete -->
+        <form>{% csrf_token %}
+            <a class="wall-delete" href={% url 'chain:deleteWall' wall.tId %}><i class="fas fa-trash-alt" title="Delete wall"></i></a>
+        </form>
+    {% else %}
+      need AA
+    {% endif %}
+  </td>
+{% endif %}

@@ -27,5 +27,7 @@ urlpatterns = [
 
     re_path(r'^tree/$', views.tree, name='tree'),
 
+    re_path(r'^walls/$', views.walls, name='walls'),
+    re_path(r'^deleteWall/(?P<wallId>\w+)$', views.deleteWall, name='deleteWall'),
     re_path(r'^importWall/$', views.importWall, name='importWall'),
     ]

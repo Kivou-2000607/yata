@@ -1184,6 +1184,67 @@ def resetArmoryRecord(request):
         return returnError()
 
 
+def walls(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.wall] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.wall] faction {} found'.format(factionId))
+
+            walls = Wall.objects.filter(factions=faction).all()
+            print(walls)
+
+            context = {'player': player, 'chaincat': True, 'faction': faction, "walls": walls, 'view': {'walls': True}}
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# action view
+def deleteWall(request, wallId):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.deleteWall] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.deleteWall] faction {} found'.format(factionId))
+
+                wall = Wall.objects.filter(tId=wallId).first()
+                wall.factions.remove(faction)
+                if not len(wall.factions.all()):
+                    print('[view.chain.deleteWall] delete wall {}'.format(wall.tId))                    
+                    wall.delete()
+
+                return render(request, 'chain/walls-line.html')
+            else:
+                return returnError(type=403, msg="You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
 @csrf_exempt
 def importWall(request):
     if request.method == 'POST':
