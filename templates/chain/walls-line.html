@@ -24,12 +24,12 @@ This file is part of yata.
 
 {% if wall %}
   <td class="b"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
-  <td class="b">{{wall.tss|ts2date}}</td>
-  <td class="b">{{wall.tse|ts2date}}</td>
-  <td class="b">{{wall.tse|sub:wall.tss|ts2time}}</td>
-  <td class="b" ><b>{{wall.attackerFactionName}}</b></td>
-  <td class="b" ><b>{{wall.defenderFactionName}}</b></td>
-  <td class="b" ><b>{{wall.territory}}</b></td>
+  <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
+  <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
+  <td class="b" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
+  <td class="b" ><a href="https://www.torn.com/factions.php?step=profile&ID={{wall.attackerFactionId}}" target="_blank"><b>{{wall.attackerFactionName}} [{{wall.attackerFactionId}}]</b></a></td>
+  <td class="b" ><a href="https://www.torn.com/factions.php?step=profile&ID={{wall.defenderFactionId}}" target="_blank"><b>{{wall.defenderFactionName}} [{{wall.defenderFactionId}}]</b></a></td>
+  <td class="b" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank"><b>{{wall.territory}}</b></a></td>
   <td class="b" >
     {% if player.factionAA %}
         <!-- delete -->
