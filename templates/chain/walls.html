@@ -24,28 +24,22 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-      $.tablesorter.addParser({
-          // set a unique id
-          id: 'ago',
-          is: function(s, table, cell, $cell) {
-              // return false so this parser is not auto detected
-              return false;
-          },
-          format: function(s, table, cell, cellIndex) {
-              // format your data for normalization
-              var ret = s.toLowerCase()
-              .replace(/days/,86400).replace(/day/,86400)
-              .replace(/hours/,3600).replace(/hour/,3600)
-              .replace(/hrs/,3600).replace(/hr/,3600)
-              .replace(/minutes/,60).replace(/minute/,60)
-              .replace(/mins/,60).replace(/min/,60).split(' ');
-              return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
-          },
-          // set type, either numeric or text
-          type: 'numeric',
-      });
+        $.tablesorter.addParser({
+            // set a unique id
+            id: 'dataVal',
+            // check if cell value has a numerical value
+            is: function(s, table, cell, $cell) {
+                return !isNaN($cell.attr("data-val"));
+            },
+            // format data for normalization
+            format: function(s, table, cell, cellIndex) {
+                return parseInt($(cell).attr("data-val"));
+            },
+            // set type, either numeric or text
+            type: 'numeric'
+        });
 
-        $("#chain-list").tablesorter({headers: { 3: { sorter: 'ago' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+        $("#walls-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
     });
 </script>
 
@@ -63,6 +57,7 @@ This file is part of yata.
                 <th>Defenders</th>
                 <th>Territory</th>
                 <th>Remove</th>
+            </tr>
         </thead>
         <tbody>
         {% for wall in walls %}
