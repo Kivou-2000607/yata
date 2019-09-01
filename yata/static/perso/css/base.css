@@ -229,7 +229,7 @@ thead th.none:after {
 
 .old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 
-h2.rounded, div.rounded { border-radius: 6px; }
+h2.rounded, div.rounded { border-radius: 6px; margin-bottom: 30px; }
 h2.toggle-display { cursor: pointer; }
 
 pre {

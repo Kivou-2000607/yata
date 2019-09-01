@@ -1198,9 +1198,51 @@ def walls(request):
             print('[view.chain.wall] faction {} found'.format(factionId))
 
             walls = Wall.objects.filter(factions=faction).all()
-            print(walls)
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, "walls": walls, 'view': {'walls': True}}
+            summary = dict({})
+            for wall in walls:
+                # print(wall)
+                aFac = f"{wall.attackerFactionName} [{wall.attackerFactionId}]"
+                dFac = f"{wall.defenderFactionName} [{wall.defenderFactionId}]"
+
+                if aFac not in summary:
+                    summary[aFac] = dict({'Total': [0, 0, 0],  # Total [Points / Joins / Clears]
+                                          'Players': dict({})})
+                if dFac not in summary:
+                    summary[dFac] = dict({'Total': [0, 0, 0],  # Total [Points / Joins / Clears]
+                                          'Players': dict({})})
+
+                attackers = json.loads(wall.attackers)
+                for k, v in attackers.items():
+                    if k not in summary[aFac]['Players']:
+                        summary[aFac]['Players'][k] = {"D": [0, 0, 0],  # [Points / Joins / Clears]
+                                                       "A": [0, 0, 0],  # [Points / Joins / Clears]
+                                                       "P": [v["XID"], v["Name"], v["Level"]]}
+                    summary[aFac]['Players'][k]["A"][0] += v["Points"]
+                    summary[aFac]['Players'][k]["A"][1] += v["Joins"]
+                    summary[aFac]['Players'][k]["A"][2] += v["Clears"]
+                    summary[aFac]['Total'][0] += v["Points"]
+                    summary[aFac]['Total'][1] += v["Joins"]
+                    summary[aFac]['Total'][2] += v["Clears"]
+
+                defenders = json.loads(wall.defenders)
+                for k, v in defenders.items():
+                    if k not in summary[dFac]['Players']:
+                        summary[dFac]['Players'][k] = {"D": [0, 0, 0],  # [Points / Joins / Clears]
+                                                       "A": [0, 0, 0],  # [Points / Joins / Clears]
+                                                       "P": [v["XID"], v["Name"], v["Level"]]}
+                    summary[dFac]['Players'][k]["A"][0] += v["Points"]
+                    summary[dFac]['Players'][k]["A"][1] += v["Joins"]
+                    summary[dFac]['Players'][k]["A"][2] += v["Clears"]
+                    summary[dFac]['Total'][0] += v["Points"]
+                    summary[dFac]['Total'][1] += v["Joins"]
+                    summary[dFac]['Total'][2] += v["Clears"]
+
+            # print("summary")
+            # for k, v in summary.items():
+            #     print(k, v)
+
+            context = {'player': player, 'chaincat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 
@@ -1230,7 +1272,7 @@ def deleteWall(request, wallId):
                 wall = Wall.objects.filter(tId=wallId).first()
                 wall.factions.remove(faction)
                 if not len(wall.factions.all()):
-                    print('[view.chain.deleteWall] delete wall {}'.format(wall.tId))                    
+                    print('[view.chain.deleteWall] delete wall {}'.format(wall.tId))
                     wall.delete()
 
                 return render(request, 'chain/walls-line.html')
@@ -1290,15 +1332,17 @@ def importWall(request):
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("Faction exists: checked")
 
-            attackers = []
-            defenders = []
+            attackers = dict({})
+            defenders = dict({})
             i = 0
             for p in req.get("participants"):
                 i += 1
+                if p.get("Name")[0] == '=':
+                    p["Name"] = p["Name"][2:-1]
                 if p.get("Position") in ["Attacker"]:
-                    attackers.append(p)
+                    attackers[p.get('XID')] = p
                 else:
-                    defenders.append(p)
+                    defenders[p.get('XID')] = p
             print(f"Wall Participants: {i}")
 
             if i > 500:
@@ -1313,8 +1357,8 @@ def importWall(request):
                        # 'tse': int(req.get('ts_end')),
                        'tss': int(req.get('ts_start')),
                        'tse': int(req.get('ts_end')),
-                       'attackers': attackers,
-                       'defenders': defenders,
+                       'attackers': json.dumps(attackers),
+                       'defenders': json.dumps(defenders),
                        'attackerFactionId': int(req.get('att_fac')),
                        'defenderFactionId': int(req.get('def_fac')),
                        'attackerFactionName': req.get('att_fac_name'),

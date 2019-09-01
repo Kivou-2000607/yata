@@ -95,6 +95,11 @@ table.chain-armory-breakdown td.a { width: 50%; text-align: left; }  /* x1 */
 table.chain-armory-breakdown td.b { width: 25%; text-align: center; }  /* x2 */
 
 
+table.wall-joint-faction-report td.a { width: 30%; text-align: left; }
+table.wall-joint-faction-report td.b { width: 10%; text-align: center; }
+table.wall-joint-faction-report td.c { width: 20%; text-align: right; }
+table.wall-joint-faction-report td.d { width: 20%; text-align: center; }
+
 .live-bar {
     background-color: lightgray;
     border-radius: 4px;

@@ -28,6 +28,6 @@ This file is part of yata.
     <div id="loop-over-item-sell-table-{{k}}" class="module" {% if view.hideType %}style="display: none;"{% endif %}>
         {% include "bazaar/loop-items.html" with itemType=k items=v %}
     </div>
-    {% if view.hideType %}<br>{% endif %}
+    {# {% if view.hideType %}<br>{% endif %} #}
 </div>
 {% endfor %}

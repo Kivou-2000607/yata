@@ -40,6 +40,7 @@ This file is part of yata.
         });
 
         $("#walls-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+        $(".wall-joint-faction-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]});
     });
 </script>
 
@@ -68,6 +69,47 @@ This file is part of yata.
         </tbody>
     </table>
     {% else%}
-        <p class="error">No wall recorded. Ask a AA member to add a report.</p>
+        <p class="error">No wall recorded. To add a report, if you are a AA member, install <a href="https://github.com/Helcostr/helcostr-torn-userscripts/raw/master/Userscripts/echo_ter_report.user.js" target="_blank">this script</a> and go to the report page on torn that you want to import.</p>
     {% endif %}
 </div>
+
+{% for fac, TotalPlayers in summary.items %}
+<div class="catch-me">
+
+<h2 class="title toggle-display rounded">Walls summary for faction {{fac}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="module" style="display: none;">
+    <table class="tablesorter center trshadow wall-joint-faction-report">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Lvl</th>
+                <th>Points</th>
+                <th>Joins</th>
+                <th>Clears</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for XID, player in TotalPlayers.Players.items %}
+            <tr>
+                <td class="a">{{player.P.1|playerURL:XID|safe}}</td>
+                <td class="b">{{player.P.2}}</td>
+                <td class="c">{{player.A.0|add:player.D.0|intcomma}}</td>
+                <td class="d">{{player.A.1|add:player.D.1}}</td>
+                <td class="d">{{player.A.2|add:player.D.2}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <table class="tablesorter center trshadow wall-joint-faction-report">
+        <tbody>
+            <td class="a"></td>
+            <td class="b"><b>Total</b></td>
+            <td class="c"><b>{{TotalPlayers.Total.0|intcomma}}</b></td>
+            <td class="d"><b>{{TotalPlayers.Total.1}}</b></td>
+            <td class="d"><b>{{TotalPlayers.Total.2}}</b></td>
+        </tbody>
+    </table>
+</div>
+
+</div>
+{% endfor %}
