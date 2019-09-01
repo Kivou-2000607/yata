@@ -1300,17 +1300,26 @@ def importWall(request):
             #  check if author is in YATA
             if author is None:
                 t = 0
-                m = "You're no register in YATA"
+                m = "You're not register in YATA"
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("Author in yata: checked")
             print(author)
 
-            # check if API key sent == API key in YATA
+            # check if API key is valid with api call
             HTTP_KEY = request.META.get("HTTP_KEY")
+            call = apiCall('user', '', '', key=HTTP_KEY)
+            print(call)
+            if "apiError" in call:
+                t = -1
+                m = call["apiError"]
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+            # check if API key sent == API key in YATA
             if HTTP_KEY != author.key:
                 t = 0
-                m = "Your API keys don't match"
+                m = "Your API key seems to be out of date in YATA, please log again"
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("API keys match: checked")
