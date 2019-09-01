@@ -23,14 +23,15 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if wall %}
-  <td class="b"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+  <td class="a"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
   <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
   <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
   <td class="b" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
   <td class="b" >{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
   <td class="b" >{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
-  <td class="b" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
-  <td class="b" >
+  <td class="a" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
+  <td class="a" >{{wall.result}}</td>
+  <td class="a" >
     {% if player.factionAA %}
         <!-- delete -->
         <form>{% csrf_token %}

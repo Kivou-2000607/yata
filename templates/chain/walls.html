@@ -47,7 +47,7 @@ This file is part of yata.
 <h2 class="title">List of walls</h2>
 <div class="module">
     {% if walls|length %}
-    <table id="walls-list" class="tablesorter center-large trshadow chain-list">
+    <table id="walls-list" class="tablesorter center-large trshadow wall-list">
         <thead>
             <tr>
                 <th>Wall [ID]</th>
@@ -57,6 +57,7 @@ This file is part of yata.
                 <th>Attackers</th>
                 <th>Defenders</th>
                 <th>Territory</th>
+                <th>Result</th>
                 <th>Remove</th>
             </tr>
         </thead>
@@ -69,7 +70,7 @@ This file is part of yata.
         </tbody>
     </table>
     {% else%}
-        <p class="error">No wall recorded. To add a report, if you are a AA member, install <a href="/static/integration/wall.js" target="_blank">this script</a> and go to the report page on torn that you want to import.</p>
+        <p class="error">No wall recorded. To add a report, if you are a AA member, install <a href="https://github.com/Helcostr/helcostr-torn-userscripts/raw/master/Userscripts/echo_ter_report.user.js" target="_blank">this script</a> and go to the report page on torn that you want to import.</p>
     {% endif %}
 </div>
 
