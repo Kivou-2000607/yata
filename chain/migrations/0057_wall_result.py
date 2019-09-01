@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='wall',
             name='result',
-            field=models.CharField(default='Timeout', max_length=3),
+            field=models.CharField(default='Timeout', max_length=10),
         ),
     ]
