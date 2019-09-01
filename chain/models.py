@@ -256,6 +256,7 @@ class Wall(models.Model):
     defenderFactionId = models.IntegerField(default=0)
     defenderFactionName = models.CharField(default="DefendFaction", max_length=200)
     territory = models.CharField(default="AAA", max_length=3)
+    result = models.CharField(default="Timeout", max_length=3)
     factions = models.ManyToManyField(Faction, blank=True)
 
 
@@ -263,11 +264,13 @@ class Wall(models.Model):
         self.tId = int(req.get('tId'))
         self.tss = int(req.get('tss'))
         self.tse = int(req.get('tse'))
-        self.attackers = json.dumps(req.get('attackers'))
-        self.defenders = json.dumps(req.get('defenders'))
+        self.attackers = req.get('attackers')
+        self.defenders = req.get('defenders')
         self.attackerFactionId = int(req.get('attackerFactionId'))
         self.attackerFactionName = req.get('attackerFactionName')
         self.defenderFactionId = int(req.get('defenderFactionId'))
         self.defenderFactionName = req.get('defenderFactionName')
         self.territory = req.get('territory')
+        self.result = req.get('result', 0)
+
         self.save()

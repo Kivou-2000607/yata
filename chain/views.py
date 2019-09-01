@@ -1313,7 +1313,7 @@ def importWall(request):
             if "apiError" in call:
                 t = -1
                 m = call
-                print(m)
+                print({"message": m, "type": t})
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
             # check if API key sent == API key in YATA
@@ -1361,9 +1361,15 @@ def importWall(request):
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("# Participant: checked")
 
+            r = int(req.get('result', 0))
+            if r == -1:
+                result = "Loss"
+            elif r == 1:
+                result = "Win"
+            else:
+                result = "Timeout"
+
             wallDic = {'tId': int(req.get('id')),
-                       # 'tss': int(req.get('ts_start')),
-                       # 'tse': int(req.get('ts_end')),
                        'tss': int(req.get('ts_start')),
                        'tse': int(req.get('ts_end')),
                        'attackers': json.dumps(attackers),
@@ -1372,7 +1378,8 @@ def importWall(request):
                        'defenderFactionId': int(req.get('def_fac')),
                        'attackerFactionName': req.get('att_fac_name'),
                        'defenderFactionName': req.get('def_fac_name'),
-                       'territory': req.get('terr')}
+                       'territory': req.get('terr'),
+                       'result': result}
             print("Wall headers: processed")
 
             if faction.tId not in [wallDic.get('attackerFactionId'), wallDic.get('defenderFactionId')]:
