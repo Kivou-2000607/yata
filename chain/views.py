@@ -1312,7 +1312,7 @@ def importWall(request):
             print(call)
             if "apiError" in call:
                 t = -1
-                m = call["apiError"]
+                m = call
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
