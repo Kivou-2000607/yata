@@ -47,6 +47,9 @@ class Faction(models.Model):
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
+    def getFullName(self):
+        return "{} [{}]".format(self.name, self.tId)
+
     def addKey(self, id, key):
         try:
             keys = json.loads(self.apiString)

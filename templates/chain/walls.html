@@ -77,7 +77,7 @@ This file is part of yata.
 {% for fac, TotalPlayers in summary.items %}
 <div class="catch-me">
 
-<h2 class="title toggle-display rounded">Walls summary for faction {{fac}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="title toggle-display rounded">Walls breakdown for <b class='{% if fac == faction.getFullName %}valid{% else %}error{% endif %}'>{{fac}}</b>: {{TotalPlayers.Total.0|intcomma}} points, {{TotalPlayers.Total.1}} joins and {{TotalPlayers.Total.2}} clears&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="module" style="display: none;">
     <table class="tablesorter center trshadow wall-joint-faction-report">
         <thead>
