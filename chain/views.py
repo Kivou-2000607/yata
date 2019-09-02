@@ -1363,11 +1363,11 @@ def importWall(request):
 
             r = int(req.get('result', 0))
             if r == -1:
-                result = "Loss"
+                result = "Timeout"
             elif r == 1:
                 result = "Win"
             else:
-                result = "Timeout"
+                result = "Truce"
 
             wallDic = {'tId': int(req.get('id')),
                        'tss': int(req.get('ts_start')),

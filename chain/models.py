@@ -256,7 +256,7 @@ class Wall(models.Model):
     defenderFactionId = models.IntegerField(default=0)
     defenderFactionName = models.CharField(default="DefendFaction", max_length=200)
     territory = models.CharField(default="AAA", max_length=3)
-    result = models.CharField(default="Timeout", max_length=10)
+    result = models.CharField(default="Unset", max_length=10)
     factions = models.ManyToManyField(Faction, blank=True)
 
 
