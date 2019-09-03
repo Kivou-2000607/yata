@@ -296,6 +296,7 @@ d = {
     627: 615242155,  # Manu Forti
     739: 571800831,  # Church Mouse
     763: 159149768,  # Bare
+    631: 160168767,  # Vae Victis
     476: 0,  # Chainer 5
 
     # 9
@@ -441,4 +442,4 @@ d = {
     371: 668653618,  # Protege
     664: 309095716,  # Mercenary
     636: 147013735,  # Task Master
-}
+    }
