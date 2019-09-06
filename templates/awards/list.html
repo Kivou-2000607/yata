@@ -64,6 +64,8 @@ This file is part of yata.
 
 </script>
 
+<script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
+
 <h2 class="title">Awards tracker
     <span class="flush-right">Last update: {{player.awardsUpda|ts2date}}</span>
     <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span>
@@ -112,33 +114,33 @@ This file is part of yata.
     {% for awardType, awardsList in awards.items %}
         {% for awardId, award in awardsList.items %}
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
-                <td class="a"><span title="{{awardType}}">{{awardType}}</span></td>
+                <td class="a"><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
-                  <td class="b award-todo">{{award.img|honorBanner:award.name|safe}}</td>
+                  <td class="b award-todo"><span title="{{award.name}}" rel="tooltip">{{award.img|honorBanner:award.name|safe}}</span></td>
                 {% else %}
                     {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
-                        <td class="b"><img src="{% static image_static %}" title="{{award.name}}" class="medals"> &nbsp; {{award.name}}</td>
+                        <td class="b"><span title="{{award.name}}" rel="tooltip"><img src="{% static image_static %}" class="medals"> &nbsp; {{award.name}}</span></td>
                     {% endwith %}
                 {% endif %}
-                <td class="c"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
-                <td class="d"><span title="{{award.description}}">{{award.description}}</span></td>
-                <td class="e"><span title="{{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
-                <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
+                <td class="c"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %} rel="tooltip">{{award.circulation|intcomma}}</span></td>
+                <td class="d"><span title="{{award.description}}" rel="tooltip">{{award.description}}</span></td>
+                <td class="e"><span title="{{award.head}}{{award.current|intcomma}}" rel="tooltip">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}" rel="tooltip">{{award.head}}{{award.goal|intcomma}}</span></td>
                 {% if award.achieve == 1%}
                 <td colspan="2" class="award-done">
                     Awarded on
                 </td>
                 <td colspan="1" class="award-done">
-                    {{award.awarded_time|ts2date}}
+                    <span title="{{award.awarded_time|ts2date}}" rel="tooltip">{{award.awarded_time|ts2date}}</span>
                 </td>
                 {% else %}
                     <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}"><span title="{{award.achieve|mul:100|intdiv:1|floatformat:0}}%">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
                     {% if award.left|floatformat:0|intcomma %}
-                        <td class="g"><span title="{{award.left|floatformat:0|intcomma}}">{{award.left|floatformat:0|intcomma}}</span></td>
+                        <td class="g"><span title="{{award.left|floatformat:0|intcomma}}" rel="tooltip">{{award.left|floatformat:0|intcomma}}</span></td>
                     {% else %}
-                        <td class="g"><span title="{{award.left|safe}}">{{award.left|safe}}</span></td>
+                        <td class="g"><span title="{{award.left|safe}}" rel="tooltip">{{award.left|safe}}</span></td>
                     {% endif %}
-                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1|safe}}">{{award.comment.0|safe}}</span></td>
+                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1|safe}}" rel="tooltip">{{award.comment.0|safe}}</span></td>
                 {% endif %}
                 <td class="i">
                     <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
