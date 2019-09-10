@@ -104,7 +104,6 @@ def list(request, type):
                 graph2 = []
                 for type, honors in awards.items():
                     for k, h in honors.items():
-                        print(k, h)
                         # if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
                         if h.get("circulation", 0) > 0:
                             if h.get("awardType") in ["Honor"]:
