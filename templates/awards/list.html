@@ -167,7 +167,7 @@ This file is part of yata.
                     <td class="h" style="cursor: pointer"><span title="{{award.comment.1|safe}}" rel="tooltip">{{award.comment.0|safe}}</span></td>
                 {% endif %}
                 <td class="i">
-                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
+                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
                 </td>
             </tr>
         {% endfor %}

@@ -1924,6 +1924,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 awards[category]["h_14"]["double"] = True
                 awards[category]["h_156"]["double"] = True
 
+            # special case for triple lvl 100
+            if k1 == "h_264":
+                awards[category]["h_264"]["triple"] = True
+                awards[category]["h_265"]["triple"] = True
+                awards[category]["m_53"]["triple"] = True
+
             for k2, v2 in aw.items():
                 # if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
                 if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
