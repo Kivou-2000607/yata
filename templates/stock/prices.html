@@ -56,7 +56,7 @@ This file is part of yata.
                       <li>Total value when bought: <b>${{pstock.shares|mul:pstock.bought_price|floatformat:0|intcomma}}</b></li>
                       <li>Current total value: <b>${{pstock.shares|mul:stock.t.tCurrentPrice|floatformat:0|intcomma}} ({{pstock.profit|priceTendencyShort|safe}})</b></li>
                       {% if pstock.time_listed %}
-                        <li>You listed these shares on {{pstock.time_listed|ts2date}} for a current profit of {{pstock.bought_price}}</li>
+                        <li>You listed these shares on {{pstock.time_listed|ts2date}} for a current profit of <b class="{% if pstock.profit > 0 %}valid{% elif pstock.profit < 0%}error{%else%}neutral{%endif%}">{{pstock.profit|mul:pstock.bought_price|mul:pstock.shares|format:"{:+,.0f}"}}$</b></li>
                       {% else %}
                         <li>Benefits if sold now: <b class="{% if pstock.profit > 0 %}valid{% elif pstock.profit < 0%}error{%else%}neutral{%endif%}">{{pstock.profit|mul:pstock.bought_price|mul:pstock.shares|format:"{:+,.0f}"}}$</b></li>
                       {% endif %}
