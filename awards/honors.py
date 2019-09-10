@@ -297,6 +297,7 @@ d = {
     739: 571800831,  # Church Mouse
     763: 159149768,  # Bare
     631: 160168767,  # Vae Victis
+    317: 125937483,  # Phoenix
     476: 0,  # Chainer 5
 
     # 9
