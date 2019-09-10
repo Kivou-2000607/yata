@@ -136,13 +136,18 @@ def badge(value, arg):
 def honorUrl(url):
     return "https://awardimages.torn.com/435540163.png" if url is None else url
 
-
 @register.filter(name='honorBanner')
 def honorBanner(url, name):
     if url is None:
         return f"<div class=\"award-default\"><img class=\"award-default\" src=\"{settings.STATIC_URL}honors/defaultBanner.png\" title=\"{name}\"><span class=\"award-default\">{name}</span></div>"
     else:
         return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
+
+@register.filter(name='medalUrl')
+def medalUrl(id):
+    # img = f"<img src=\"{settings.STATIC_URL}medals/img/{id}_r.png\" class=\"medals\">"
+    url = f"{settings.STATIC_URL}medals/img/{id}_r.png"
+    return url
 
 
 @register.filter(name='priceTendency')

@@ -19,7 +19,7 @@ This file is part of yata.
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
-AWARDS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
+HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
 
 
 def computeRarity(c):
@@ -478,7 +478,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = ["energy needed", "current ratio of {:,.2g} rounds/attack".format(ratio)]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
@@ -1987,6 +1987,9 @@ def updatePlayerAwards(player, tornAwards, userInfo):
 
     rScorePerso = 0.0
     for k, v in tornAwards["honors"].items():
+        if v.get("achieve", 0) == 1:
+            rScorePerso += v.get("rScore", 0)
+    for k, v in tornAwards["medals"].items():
         if v.get("achieve", 0) == 1:
             rScorePerso += v.get("rScore", 0)
 

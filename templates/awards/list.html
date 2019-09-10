@@ -52,12 +52,36 @@ This file is part of yata.
                 'chartArea': {'width': '90%', 'height': '70%'},
               };
 
-              var view = new google.visualization.DataView(data);
-              view.setColumns([0, 1]);
-
               var chart = new google.visualization.ComboChart(document.getElementById('chart'));
-
               chart.draw(data, options);
+
+            {% if graph2|length %}
+              var data2 = google.visualization.arrayToDataTable([
+                  ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                  {% for h, c, s, im, p, r in graph2 %}
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|medalUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                  {% endfor %}
+              ]);
+
+              var options2 = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                         },
+                bar: {groupWidth: '70%'},
+                hAxis: {  textPosition: 'none', title: "Medals" },
+                vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+              var chart2 = new google.visualization.ComboChart(document.getElementById('chart2'));
+              chart2.draw(data2, options2);
+
+              {% endif %}
             }
 
         });
@@ -153,6 +177,7 @@ This file is part of yata.
 
 <table class="center-large">
     <tr><td><div id="chart"></div></td></tr>
+    <tr><td><div id="chart2"></div></td></tr>
 </table>
 
 </div>
