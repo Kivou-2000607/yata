@@ -44,7 +44,7 @@ def index(request):
 
             error = False
             tornAwards = Call.objects.first().load()
-            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', player.key)
+            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', player.key)
             if 'apiError' in userInfo:
                 error = userInfo
             else:

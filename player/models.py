@@ -85,7 +85,7 @@ class Player(models.Model):
         import json
 
         # API Calls
-        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', self.key)
+        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key)
 
         # if user.get('apiErrorCode') == 2:
         #    print("delete player")
