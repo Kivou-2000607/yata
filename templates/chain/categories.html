@@ -20,7 +20,7 @@ This file is part of yata.
 <!-- categories -->
 <form>
     {% csrf_token %}
-<table class="center tdshadow chain-categories">
+<table class="center-large tdshadow chain-categories">
     <tbody>
     <tr>
         <td>
@@ -40,6 +40,9 @@ This file is part of yata.
         </td>
         <td>
             <a href="{% url 'chain:armory' %}"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</a>
+        </td>
+        <td>
+            <a href="{% url 'chain:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a>
         </td>
         {% if player.factionAA %}
         <td>

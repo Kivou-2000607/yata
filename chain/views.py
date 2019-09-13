@@ -44,6 +44,8 @@ from chain.models import Faction
 from chain.models import Preference
 from chain.models import Crontab
 from chain.models import Wall
+from chain.models import Territory
+from chain.models import Racket
 
 
 # render view
@@ -1417,3 +1419,79 @@ def importWall(request):
 
     else:
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+
+
+def territories(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.territories] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.territories] faction {} found'.format(factionId))
+
+            # HACK for bug report: https://www.torn.com/forums.php#/p=threads&f=19&t=16118056&b=0&a=0
+            # add territory from /faction that are not in /torn
+            territories = apiCall("faction", "", "territory", key=player.key)
+            if "apiError" not in territories:
+                for k, v in territories["territory"].items():
+                    if not len(Territory.objects.filter(tId=k)):
+                        terr = Territory.objects.create(tId=k, **v)
+                        print(f"[view.chain.territories] missing territory {terr}")
+                        racket = Racket.objects.filter(tId=k).first()
+                        if racket is not None:
+                            tmp = {"name": racket.name, "level": racket.level, "reward": racket.reward, "created": racket.created, "changed": racket.changed, "faction": racket.faction}
+                            terr.racket = json.dumps(tmp)
+                            terr.save()
+
+            # get faction territories
+            territories = Territory.objects.filter(faction=factionId)
+            n = len(territories)
+            x0 = 0.0
+            y0 = 0.0
+            summary = {"n": n, "daily_respect": 0.0}
+            if n:
+                for territory in territories:
+                    r = json.loads(territory.racket)
+                    if len(r):
+                        territory.racket = "{name}: {reward}".format(**r)
+                    else:
+                        territory.racket = ""
+                    x0 += territory.coordinate_x
+                    y0 += territory.coordinate_y
+                    summary["daily_respect"] += territory.daily_respect
+
+                x0 /= n
+                y0 /= n
+                summary["coordinate_x"] = x0
+                summary["coordinate_y"] = y0
+
+            rackets = Racket.objects.all()
+            allTerritories = Territory.objects.all()
+            for racket in rackets:
+                x = allTerritories.filter(tId=racket.tId).first().coordinate_x
+                y = allTerritories.filter(tId=racket.tId).first().coordinate_y
+                racket.coordinate_x = x
+                racket.coordinate_y = y
+                racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
+                if racket.faction:
+                    tmp = Faction.objects.filter(tId=racket.faction).first()
+                    if tmp is not None:
+                        racket.factionName = tmp.name
+                    else:
+                        racket.factionName = "Faction"
+
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
