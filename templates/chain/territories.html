@@ -51,13 +51,16 @@ This file is part of yata.
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+          {% for t in allTerritories %}
+          [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {fill-color: none;}', '{{t|tTooltip|safe}}'],
+          {% endfor %}
           {% for t in territories %}
-            [ {{t.coordinate_x}}, {{t.coordinate_y}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
           {% endfor %}
           {% for t in rackets %}
-            [ {{t.coordinate_x}}, {{t.coordinate_y}}, 'point {shape-type: star; fill-color: #CC3434; stroke-color: #000; size: 8;}', '{{t|rTooltip|safe}}'],
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {shape-type: star; fill-color: #CC3434; stroke-color: #000; size: 8;}', '{{t|rTooltip|safe}}'],
           {% endfor %}
-          [ {{summary.coordinate_x}}, {{summary.coordinate_y}}, 'point {shape-type: star; fill-color: #447e9b; stroke-color: #000; size: 8;}', '{{summary|sTooltip|safe}}'],
+          [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y}}, 'point {shape-type: star; fill-color: #447e9b; stroke-color: #000; size: 8;}', '{{summary|sTooltip|safe}}'],
         ]);
 
         // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
@@ -68,19 +71,22 @@ This file is part of yata.
           vAxis: {
               viewWindow:{ max: 0, min: 3500 },
               baselineColor: 'none',
-              textPosition: 'none'
+              textPosition: 'none',
+              gridlines: { color: '#999' },
+              direction: -1
           },
           hAxis: {
                 viewWindow:{ max: 0, min: 6500 },
                 baselineColor: 'none',
-                textPosition: 'none'
+                textPosition: 'none',
+                gridlines: { color: '#999' },
             },
           'chartArea': {'width': '100%', 'height': '100%'},
           'backgroundColor': 'transparent',
           legend: 'none'
         };
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.ScatterChart(document.getElementById('map-graph'));
 
         chart.draw(data, options);
       }
@@ -89,6 +95,13 @@ This file is part of yata.
 
 <div class="module rounded">
     <span class="neutral"><i class="fas fa-info-circle"></i>&nbsp;&nbsp;Work in progress</span>
+</div>
+
+<h2 class="title">Map</h2>
+<div class="module">
+    <div id='map-background' class='map-background'>
+        <div id="map-graph" class='map-graph'></div>
+    </div>
 </div>
 
 <h2 class="title">List of territories</h2>
@@ -112,10 +125,6 @@ This file is part of yata.
             </tr>
         </tbody>
     </table>
-    <table class="center">
-    </table>
-    <div id="chart_div" style="width: 650px; height: 350px; margin-left: 50%; margin: 0 auto;"></div>
-
     <table id="territory-list" class="tablesorter center-large trshadow territory-list">
         <thead>
             <tr>

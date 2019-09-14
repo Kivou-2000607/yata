@@ -1473,8 +1473,15 @@ def territories(request):
                 summary["coordinate_x"] = x0
                 summary["coordinate_y"] = y0
 
-            rackets = Racket.objects.all()
             allTerritories = Territory.objects.all()
+            for territory in allTerritories:
+                tmp = Faction.objects.filter(tId=territory.faction).first()
+                if tmp is not None:
+                    territory.factionName = tmp.name
+                else:
+                    territory.factionName = "Faction"
+
+            rackets = Racket.objects.all()
             for racket in rackets:
                 t = allTerritories.filter(tId=racket.tId).first()
                 x = t.coordinate_x
@@ -1491,7 +1498,7 @@ def territories(request):
                     else:
                         racket.factionName = "Faction"
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'allTerritories': allTerritories, 'view': {'territories': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 

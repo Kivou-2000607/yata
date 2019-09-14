@@ -208,3 +208,27 @@ table.racket-list td.c { width: 20%; text-align: center;} /* x2 */
     animation: refresh-content 60s linear;
     -webkit-animation: refresh-content 60s linear;
 } */
+
+
+div.map-background,
+div.map-graph {
+    width: 650px;
+    height: 350px;
+    margin-left: 50%;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+div.map-background::after {
+  content: "";
+  background: url("/static/images/map.png");
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}
