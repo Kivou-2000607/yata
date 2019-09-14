@@ -52,7 +52,7 @@ This file is part of yata.
         var data = google.visualization.arrayToDataTable([
           ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
           {% for t in allTerritories %}
-          [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {fill-color: none;}', '{{t|tTooltip|safe}}'],
+          [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.05}}, 'point {size: 1; fill-color: none;}', '{{t|tTooltip|safe}}'],
           {% endfor %}
           {% for t in territories %}
             [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
@@ -69,7 +69,7 @@ This file is part of yata.
           // title: 'Territory and racket map',
           tooltip: {isHtml: true, position: 'top'},
           vAxis: {
-              viewWindow:{ max: 0, min: 3500 },
+              viewWindow:{ max: 0, min: 3790 },
               baselineColor: 'none',
               textPosition: 'none',
               gridlines: { color: '#999' },

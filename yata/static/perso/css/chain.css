@@ -213,7 +213,7 @@ table.racket-list td.c { width: 20%; text-align: center;} /* x2 */
 div.map-background,
 div.map-graph {
     width: 650px;
-    height: 350px;
+    height: 379px;
     margin-left: 50%;
     margin: 0 auto;
     display: block;
@@ -223,7 +223,8 @@ div.map-graph {
 
 div.map-background::after {
   content: "";
-  background: url("/static/images/map.png");
+  background: url("/static/images/map-resized.png");
+  background-size: 650px 379px;
   opacity: 0.5;
   top: 0;
   left: 0;

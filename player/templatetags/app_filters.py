@@ -228,7 +228,8 @@ def short(num):
 
 @register.filter(name='tTooltip')
 def tTooltip(t):
-    return f'<div style="margin: 8px;"><h3>Territory {t.tId}</h3><b>Faction:</b> {t.factionName} [{t.faction}]<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}</div>'
+    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
+    return f'<div style="margin: 8px;"><h3>Territory {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}</div>'
 
 
 @register.filter(name='rTooltip')
@@ -238,5 +239,4 @@ def rTooltip(t):
 
 @register.filter(name='sTooltip')
 def sTooltip(t):
-    print(t)
     return f'<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {t["factionName"]} [{t["faction"]}]<br><b>Coordinates:</b> {t["coordinate_x"]:.2f}x{t["coordinate_y"]:.2f}</div>'
