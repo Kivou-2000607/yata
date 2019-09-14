@@ -44,6 +44,47 @@ This file is part of yata.
         $("#territory-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1], [0,0]]});
         $("#racket-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[7,0]]});
     });
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+          {% for t in territories %}
+            [ {{t.coordinate_x}}, {{t.coordinate_y}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
+          {% endfor %}
+          {% for t in rackets %}
+            [ {{t.coordinate_x}}, {{t.coordinate_y}}, 'point {shape-type: star; fill-color: #CC3434; stroke-color: #000; size: 8;}', '{{t|rTooltip|safe}}'],
+          {% endfor %}
+          [ {{summary.coordinate_x}}, {{summary.coordinate_y}}, 'point {shape-type: star; fill-color: #447e9b; stroke-color: #000; size: 8;}', '{{summary|sTooltip|safe}}'],
+        ]);
+
+        // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
+        // var maxV = 1.1 * Math.max(data.getColumnRange(1).max, data.getColumnRange(0).max);
+        var options = {
+          // title: 'Territory and racket map',
+          tooltip: {isHtml: true, position: 'top'},
+          vAxis: {
+              viewWindow:{ max: 0, min: 3500 },
+              baselineColor: 'none',
+              textPosition: 'none'
+          },
+          hAxis: {
+                viewWindow:{ max: 0, min: 6500 },
+                baselineColor: 'none',
+                textPosition: 'none'
+            },
+          'chartArea': {'width': '100%', 'height': '100%'},
+          'backgroundColor': 'transparent',
+          legend: 'none'
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      }
+
 </script>
 
 <div class="module rounded">
@@ -52,6 +93,9 @@ This file is part of yata.
 
 <h2 class="title">List of territories</h2>
 <div class="module">
+
+
+
 
     <table class="center tdshadow territory-summary">
         <thead>
@@ -68,6 +112,9 @@ This file is part of yata.
             </tr>
         </tbody>
     </table>
+    <table class="center">
+    </table>
+    <div id="chart_div" style="width: 650px; height: 350px; margin-left: 50%; margin: 0 auto;"></div>
 
     <table id="territory-list" class="tablesorter center-large trshadow territory-list">
         <thead>
@@ -131,6 +178,7 @@ This file is part of yata.
         {% endfor %}
         </tbody>
     </table>
+
 
 </div>
 

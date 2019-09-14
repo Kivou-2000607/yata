@@ -224,3 +224,19 @@ def short(num):
         magnitude += 1
         num /= 1000.0
     return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+
+
+@register.filter(name='tTooltip')
+def tTooltip(t):
+    return f'<div style="margin: 8px;"><h3>Territory {t.tId}</h3><b>Faction:</b> {t.factionName} [{t.faction}]<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}</div>'
+
+
+@register.filter(name='rTooltip')
+def rTooltip(t):
+    return f'<div style="margin: 8px;"><h3>Racket {t.tId}</h3><b>Faction:</b> {t.factionName} [{t.faction}]<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}<br><b>Racket:</b> {t.name}<br><b>Reward:</b> {t.reward}<br><b>Distance:</b> {t.distance:0.2f}</div>'
+
+
+@register.filter(name='sTooltip')
+def sTooltip(t):
+    print(t)
+    return f'<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {t["factionName"]} [{t["faction"]}]<br><b>Coordinates:</b> {t["coordinate_x"]:.2f}x{t["coordinate_y"]:.2f}</div>'

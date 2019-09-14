@@ -1463,7 +1463,10 @@ def territories(request):
                         territory.racket = ""
                     x0 += territory.coordinate_x
                     y0 += territory.coordinate_y
+                    territory.factionName = faction.name
                     summary["daily_respect"] += territory.daily_respect
+                    summary["factionName"] = territory.factionName
+                    summary["faction"] = territory.faction
 
                 x0 /= n
                 y0 /= n
@@ -1473,10 +1476,13 @@ def territories(request):
             rackets = Racket.objects.all()
             allTerritories = Territory.objects.all()
             for racket in rackets:
-                x = allTerritories.filter(tId=racket.tId).first().coordinate_x
-                y = allTerritories.filter(tId=racket.tId).first().coordinate_y
+                t = allTerritories.filter(tId=racket.tId).first()
+                x = t.coordinate_x
+                y = t.coordinate_y
+                r = t.daily_respect
                 racket.coordinate_x = x
                 racket.coordinate_y = y
+                racket.daily_respect = r
                 racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
                 if racket.faction:
                     tmp = Faction.objects.filter(tId=racket.faction).first()
