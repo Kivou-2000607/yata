@@ -24,91 +24,14 @@ This file is part of yata.
 
 {% if territories|length %}
 
-<script>
-    $(document).ready(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'dataVal',
-            // check if cell value has a numerical value
-            is: function(s, table, cell, $cell) {
-                return !isNaN($cell.attr("data-val"));
-            },
-            // format data for normalization
-            format: function(s, table, cell, cellIndex) {
-                return parseInt($(cell).attr("data-val"));
-            },
-            // set type, either numeric or text
-            type: 'numeric'
-        });
-
-        $("#territory-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1], [0,0]]});
-        $("#racket-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[7,0]]});
-    });
-
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-          {% for t in allTerritories %}
-          [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.05}}, 'point {size: 1; fill-color: none;}', '{{t|tTooltip|safe}}'],
-          {% endfor %}
-          {% for t in territories %}
-            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
-          {% endfor %}
-          {% for t in rackets %}
-            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y}}, 'point {shape-type: star; fill-color: #CC3434; stroke-color: #000; size: 8;}', '{{t|rTooltip|safe}}'],
-          {% endfor %}
-          [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y}}, 'point {shape-type: star; fill-color: #447e9b; stroke-color: #000; size: 8;}', '{{summary|sTooltip|safe}}'],
-        ]);
-
-        // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
-        // var maxV = 1.1 * Math.max(data.getColumnRange(1).max, data.getColumnRange(0).max);
-        var options = {
-          // title: 'Territory and racket map',
-          tooltip: {isHtml: true, position: 'top'},
-          vAxis: {
-              viewWindow:{ max: 0, min: 3790 },
-              baselineColor: 'none',
-              textPosition: 'none',
-              gridlines: { color: '#999' },
-              direction: -1
-          },
-          hAxis: {
-                viewWindow:{ max: 0, min: 6500 },
-                baselineColor: 'none',
-                textPosition: 'none',
-                gridlines: { color: '#999' },
-            },
-          'chartArea': {'width': '100%', 'height': '100%'},
-          'backgroundColor': 'transparent',
-          legend: 'none'
-        };
-
-        var chart = new google.visualization.ScatterChart(document.getElementById('map-graph'));
-
-        chart.draw(data, options);
-      }
-
-</script>
-
-<div class="module rounded">
-    <span class="neutral"><i class="fas fa-info-circle"></i>&nbsp;&nbsp;Work in progress</span>
-</div>
 
 <h2 class="title">Map</h2>
-<div class="module">
-    <div id='map-background' class='map-background'>
-        <div id="map-graph" class='map-graph'></div>
-    </div>
+<div id="chain-map" class="module">
+    {% include "chain/territories-graph.html"%}
 </div>
 
 <h2 class="title">List of territories</h2>
 <div class="module">
-
-
-
 
     <table class="center tdshadow territory-summary">
         <thead>

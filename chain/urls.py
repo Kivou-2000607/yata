@@ -30,4 +30,5 @@ urlpatterns = [
     re_path(r'^importWall/$', views.importWall, name='importWall'),
 
     re_path(r'^territories/$', views.territories, name='territories'),
+    re_path(r'^territoriesFullGraph/$', views.territoriesFullGraph, name='territoriesFullGraph'),
     ]
