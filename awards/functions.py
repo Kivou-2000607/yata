@@ -1180,7 +1180,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                             vp["comment"] = ["energy needed", "to go from 0 to 100"]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [541, 542]:
+                elif int(k) in [541, 542, 543]:
                     # "541": { "name": "Mule", "description": "Import 100 items from abroad", "type": 7},
                     type = "Import items"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))

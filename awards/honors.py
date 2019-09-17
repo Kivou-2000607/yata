@@ -258,6 +258,7 @@ d = {
     557: 980280221,  # Globetrotter
     541: 456129092,  # Mule
     542: 500114722,  # Smuggler
+    543: 267993904,  # Trafficker
 
     # 8
     20: 778719620,  # Precision
