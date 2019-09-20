@@ -1067,7 +1067,7 @@ def armory(request):
 
                 elif 'deposited' in ns:
                     member = ns[0]
-                    n = int(ns[2].replace(",", ""))
+                    n = int(ns[2].replace(",", "").replace("$", ""))
                     timestamps["nObjects"] += n
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
@@ -1433,20 +1433,6 @@ def territories(request):
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
             print('[view.chain.territories] faction {} found'.format(factionId))
 
-            # HACK for bug report: https://www.torn.com/forums.php#/p=threads&f=19&t=16118056&b=0&a=0
-            # add territory from /faction that are not in /torn
-            # territories = apiCall("faction", "", "territory", key=player.key)
-            # if "apiError" not in territories:
-            #     for k, v in territories["territory"].items():
-            #         if not len(Territory.objects.filter(tId=k)):
-            #             terr = Territory.objects.create(tId=k, **v)
-            #             print(f"[view.chain.territories] missing territory {terr}")
-            #             racket = Racket.objects.filter(tId=k).first()
-            #             if racket is not None:
-            #                 tmp = {"name": racket.name, "level": racket.level, "reward": racket.reward, "created": racket.created, "changed": racket.changed, "faction": racket.faction}
-            #                 terr.racket = json.dumps(tmp)
-            #                 terr.save()
-
             # get faction territories
             print('[view.chain.territories] get faction territories')
             territories = Territory.objects.filter(faction=factionId)
@@ -1521,20 +1507,6 @@ def territoriesFullGraph(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
             print('[view.chain.territories] faction {} found'.format(factionId))
-
-            # HACK for bug report: https://www.torn.com/forums.php#/p=threads&f=19&t=16118056&b=0&a=0
-            # add territory from /faction that are not in /torn
-            # territories = apiCall("faction", "", "territory", key=player.key)
-            # if "apiError" not in territories:
-            #     for k, v in territories["territory"].items():
-            #         if not len(Territory.objects.filter(tId=k)):
-            #             terr = Territory.objects.create(tId=k, **v)
-            #             print(f"[view.chain.territories] missing territory {terr}")
-            #             racket = Racket.objects.filter(tId=k).first()
-            #             if racket is not None:
-            #                 tmp = {"name": racket.name, "level": racket.level, "reward": racket.reward, "created": racket.created, "changed": racket.changed, "faction": racket.faction}
-            #                 terr.racket = json.dumps(tmp)
-            #                 terr.save()
 
             # get faction territories
             territories = Territory.objects.filter(faction=factionId)

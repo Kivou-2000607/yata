@@ -106,8 +106,9 @@ def login(request):
 
 def logout(request):
     try:
-        print('[view.yata.logout] delete session')
-        del request.session['player']
+        if request.session.get('player'):
+            print('[view.yata.logout] delete session')
+            del request.session['player']
         return HttpResponseRedirect(reverse('index'))
 
     except Exception:
