@@ -1493,6 +1493,8 @@ def territories(request):
                         racket.factionName = tmp.name
                     else:
                         racket.factionName = "Faction"
+                else:
+                    racket.factionName = "-"
 
             context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'

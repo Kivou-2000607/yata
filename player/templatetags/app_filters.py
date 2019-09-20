@@ -234,7 +234,8 @@ def tTooltip(t):
 
 @register.filter(name='rTooltip')
 def rTooltip(t):
-    return f'<div style="margin: 8px;"><h3>Racket {t.tId}</h3><b>Faction:</b> {t.factionName} [{t.faction}]<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}<br><b>Racket:</b> {t.name}<br><b>Reward:</b> {t.reward}<br><b>Distance:</b> {t.distance:0.2f}</div>'
+    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
+    return f'<div style="margin: 8px;"><h3>Racket {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}<br><b>Racket:</b> {t.name}<br><b>Reward:</b> {t.reward}<br><b>Distance:</b> {t.distance:0.2f}</div>'
 
 
 @register.filter(name='sTooltip')
