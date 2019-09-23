@@ -44,7 +44,7 @@ def index(request):
 
             error = False
             tornAwards = Call.objects.first().load()
-            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons', player.key)
+            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', player.key)
             if 'apiError' in userInfo:
                 error = userInfo
             else:
@@ -62,7 +62,13 @@ def index(request):
                 if h.get("circulation", 0) > 0:
                     graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
-            context = {"player": player, "graph": graph, "awardscat": True, "view": {"awards": True}}
+            graph2 = []
+            for k, h in sorted(tornAwards.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                # if h.get("rarity") not in ["Unknown Rarity"]:
+                if h.get("circulation", 0) > 0:
+                    graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+
+            context = {"player": player, "graph": graph, "graph2": graph2, "awardscat": True, "view": {"awards": True}}
             for k, v in json.loads(player.awardsJson).items():
                 context[k] = v
             if error:
@@ -95,13 +101,19 @@ def list(request, type):
             if type in AWARDS_CAT:
                 awards, awardsSummary = createAwards(tornAwards, userInfo, type)
                 graph = []
+                graph2 = []
                 for type, honors in awards.items():
                     for k, h in honors.items():
                         # if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
                         if h.get("circulation", 0) > 0:
-                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                            if h.get("awardType") in ["Honor"]:
+                                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                            elif h.get("awardType") in ["Medal"]:
+                                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+
                 graph = sorted(graph, key=lambda x: -x[1])
-                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph}
+                graph2 = sorted(graph2, key=lambda x: -x[1])
+                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
                 page = 'awards/list.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
@@ -113,7 +125,12 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
-                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph}
+                graph2 = []
+                for k, h in sorted(tornAwards.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                    if h.get("circulation", 0) > 0:
+                        graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+
+                context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
@@ -124,8 +141,10 @@ def list(request, type):
                     try:
                         hof.append({"player": p,
                                     "rscore": float(p.awardsInfo),
-                                    "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
-                                    "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
+                                    # "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
+                                    # "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
+                                    "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"],
+                                    "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwards"],
                                     })
                         hofGraph.append(float(p.awardsInfo))
                     except BaseException:
@@ -138,6 +157,11 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
+                graph2 = []
+                for k, h in sorted(tornAwards.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
+                    if h.get("circulation", 0) > 0:
+                        graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+
                 bins = numpy.logspace(-2, 2, num=101)
                 bins[0] = 0
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
@@ -146,7 +170,7 @@ def list(request, type):
                 hofGraph[0][4] = hofGraph[0][1]
                 for i in range(len(hofGraph) - 1):
                     hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
-                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
+                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 

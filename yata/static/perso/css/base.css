@@ -31,6 +31,10 @@ a, th {
     outline: none;
 }
 
+.yata-logo {
+    height: 31.5px;
+}
+
 ul li { list-style-type: disc; }
 ul ul li { list-style-type: circle; }
 
@@ -48,9 +52,9 @@ div.module p:last-child {
     margin: 0px;
 }
 
-div.tutorial {
+/* div.tutorial {
     margin-bottom: 0px;
-}
+} */
 
 div.module input[type="submit"] {
     display: inline-block;

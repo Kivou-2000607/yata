@@ -24,7 +24,7 @@ import json
 
 from yata.handy import apiCall
 from awards.honors import d
-from awards.functions import AWARDS_UNREACH
+from awards.functions import HONORS_UNREACH
 from awards.functions import computeRarity
 
 
@@ -38,27 +38,44 @@ class Call(models.Model):
 
     def update(self):
         req = apiCall("torn", "", "medals,honors", self.key)
+
+        # put dummy circulation in medals before ched update
+        # for i, k in enumerate(req["medals"]):
+        #     if req["honors"].get(k) is None:
+        #         req["medals"][k]["circulation"] = 1000000
+        #         # req["medals"][k]["circulation"] = int(req["honors"].get(k)["circulation"])
+        #         print(req["medals"][k])
+        #     else:
+        #         c =  int(req["honors"].get(k)["circulation"])
+        #         req["medals"][k]["circulation"] = c if c > 1 else 1000000
+        #     req["medals"][k]["rarity"] = "???"
+
         if 'apiError' in req:
             print(req["apiError"])
         else:
             self.timestamp = int(timezone.now().timestamp())
-            to_del = []
             popTotal = 0
-            for k, v in req["honors"].items():
-                circulation = int(req["honors"][k].get("circulation", 0))
-                if v.get("type") in [1]:
-                    to_del.append(k)
-                else:
-                    if circulation > 0:
-                        popTotal += 1. / computeRarity(circulation)
-                req["honors"][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
-                req["honors"][k]["unreach"] = 1 if int(k) in AWARDS_UNREACH else 0
-            for k in to_del:
-                del req["honors"][k]
+            for awardType in ["honors", "medals"]:
+                to_del = []
+                for k, v in req[awardType].items():
+                    circulation = int(req[awardType][k].get("circulation", 0))
+                    if v.get("type") in [1]:
+                        to_del.append(k)
+                    else:
+                        if circulation > 1:
+                            popTotal += 1. / computeRarity(circulation)
+                    if awardType in ["honors"]:
+                        req[awardType][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
+                        req[awardType][k]["unreach"] = 1 if int(k) in HONORS_UNREACH else 0
+                    elif awardType in ["medals"]:
+                        req[awardType][k]["img"] = "{}".format(k)
+                for k in to_del:
+                    del req[awardType][k]
 
-            for k, v in req["honors"].items():
-                if v["circulation"] > 0:
-                    req["honors"][k]["rScore"] = 100. / computeRarity(v["circulation"]) / popTotal
+            for awardType in ["honors", "medals"]:
+                for k, v in req[awardType].items():
+                    if v["circulation"] > 1:
+                        req[awardType][k]["rScore"] = 100. / computeRarity(v["circulation"]) / popTotal
 
             self.a = json.dumps(req)
             self.save()

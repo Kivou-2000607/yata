@@ -47,6 +47,9 @@ class Faction(models.Model):
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
+    def getFullName(self):
+        return "{} [{}]".format(self.name, self.tId)
+
     def addKey(self, id, key):
         try:
             keys = json.loads(self.apiString)
@@ -259,7 +262,6 @@ class Wall(models.Model):
     result = models.CharField(default="Unset", max_length=10)
     factions = models.ManyToManyField(Faction, blank=True)
 
-
     def update(self, req):
         self.tId = int(req.get('tId'))
         self.tss = int(req.get('tss'))
@@ -274,3 +276,32 @@ class Wall(models.Model):
         self.result = req.get('result', 0)
 
         self.save()
+
+
+class Territory(models.Model):
+    tId = models.CharField(default="XXX", max_length=3)
+    sector = models.IntegerField(default=0)
+    size = models.IntegerField(default=0)
+    density = models.IntegerField(default=0)
+    daily_respect = models.IntegerField(default=0)
+    coordinate_x = models.FloatField(default=0)
+    coordinate_y = models.FloatField(default=0)
+    faction = models.IntegerField(default=0)
+    racket = models.TextField(default="{}", null=True, blank=True)
+
+    def __str__(self):
+        return "Territory {} [{}]".format(self.tId, self.faction)
+
+
+class Racket(models.Model):
+    # territory = models.ForeignKey(Territory, on_delete=models.CASCADE)
+    tId = models.CharField(default="XXX", max_length=3)
+    name = models.CharField(default="Racket Name", max_length=200)
+    reward = models.CharField(default="Get nice things for free", max_length=200)
+    created = models.IntegerField(default=0)
+    changed = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    faction = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Racket {} [{}]".format(self.tId, self.faction)

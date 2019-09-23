@@ -265,9 +265,10 @@ def updateNote(request):
             print('[view.target.updateNote] {}: {}'.format(targetId, note))
 
             targetJson = json.loads(player.targetJson)
-            targetJson["targets"][targetId]["note"] = note
-            player.targetJson = json.dumps(targetJson)
-            player.save()
+            if targetJson["targets"].get(targetId) is not None:
+                targetJson["targets"][targetId]["note"] = note
+                player.targetJson = json.dumps(targetJson)
+                player.save()
 
             context = {"target": {"note": note}, "targetId": targetId}
             return render(request, 'target/targets-line-note.html', context)
@@ -288,9 +289,10 @@ def delete(request, targetId):
             player = Player.objects.filter(tId=tId).first()
             targetJson = json.loads(player.targetJson)
 
-            del targetJson["targets"][targetId]
-            player.targetJson = json.dumps(targetJson)
-            player.save()
+            if targetJson.get("targets") is not None:
+                del targetJson["targets"][targetId]
+                player.targetJson = json.dumps(targetJson)
+                player.save()
 
             return render(request, 'target/targets-line.html')
 

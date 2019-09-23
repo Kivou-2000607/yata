@@ -136,13 +136,18 @@ def badge(value, arg):
 def honorUrl(url):
     return "https://awardimages.torn.com/435540163.png" if url is None else url
 
-
 @register.filter(name='honorBanner')
 def honorBanner(url, name):
     if url is None:
         return f"<div class=\"award-default\"><img class=\"award-default\" src=\"{settings.STATIC_URL}honors/defaultBanner.png\" title=\"{name}\"><span class=\"award-default\">{name}</span></div>"
     else:
         return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
+
+@register.filter(name='medalUrl')
+def medalUrl(id):
+    # img = f"<img src=\"{settings.STATIC_URL}medals/img/{id}_r.png\" class=\"medals\">"
+    url = f"{settings.STATIC_URL}medals/img/{id}_r.png"
+    return url
 
 
 @register.filter(name='priceTendency')
@@ -219,3 +224,20 @@ def short(num):
         magnitude += 1
         num /= 1000.0
     return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+
+
+@register.filter(name='tTooltip')
+def tTooltip(t):
+    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
+    return f'<div style="margin: 8px;"><h3>Territory {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}</div>'
+
+
+@register.filter(name='rTooltip')
+def rTooltip(t):
+    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
+    return f'<div style="margin: 8px;"><h3>Racket {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}<br><b>Racket:</b> {t.name}<br><b>Reward:</b> {t.reward}<br><b>Distance:</b> {t.distance:0.2f}</div>'
+
+
+@register.filter(name='sTooltip')
+def sTooltip(t):
+    return f'<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {t["factionName"]} [{t["faction"]}]<br><b>Coordinates:</b> {t["coordinate_x"]:.2f}x{t["coordinate_y"]:.2f}</div>'

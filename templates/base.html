@@ -36,6 +36,7 @@ This file is part of yata.
     <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
     <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
     <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/tooltip.css" %} />
     {% block css%}{% endblock %}
 
     <!-- load jquery from https://code.jquery.com/ -->
@@ -46,7 +47,6 @@ This file is part of yata.
     		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
     		crossorigin="anonymous"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
 
     <!-- load table sorter  -->
     <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
@@ -128,7 +128,8 @@ This file is part of yata.
 
     <div id="container">
         <div id="content">
-            <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1>
+            <h1><img class="yata-logo" src="{% static "logo/yata.min.svg" %}" alt="YATA - Yet Another Torn App"></h1>
+            {# <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1> #}
 
             {% include "yata/login.html" %}
             {% include "yata/section-message.html" %}

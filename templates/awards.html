@@ -36,20 +36,43 @@
 
         $(document).on('click', 'span[id^="award-category-"]', function(e){
             e.preventDefault();
-            $("tr.award-todo").show('fast', function() {});
+            // *********************** //
+            // HANDLE CATEGORY BUTTONS //
+            // *********************** //
+
+            // select award category and toggleButton
+            var awardCategory = $(this).attr("id");
+            var toggleButton = $("#"+awardCategory).children("i");
+
+            // check if toggle button was already on and change to Allawards if so
+            if (toggleButton.hasClass("fas fa-toggle-on")) {
+                awardCategory = "award-category-Allawards"
+                toggleButton = $("#"+awardCategory).children("i");
+            }
+            // put all buttons to off and current button to on
             $('[id^="award-category-"]').children("i").removeClass("fas fa-toggle-on");
             $('[id^="award-category-"]').children("i").addClass("fas fa-toggle-off");
-            var id = $(this).attr("id");
-            var icon = $("#awards-done-icon");
-            var localIcon = $("#"+id).children("i");
-            if (icon.hasClass("fas fa-toggle-on")) {
-                $("tr.award-done").show('fast', function() {});
-                $('tr[class^="award-"]:not(.'+id+')').hide();
-            } else {
-                $('tr.award-todo:not(.'+id+')').hide();
+            toggleButton.removeClass("fas fa-toggle-off")
+            toggleButton.addClass("fas fa-toggle-on")
+
+            // *********************** //
+            // HANDLE AWARDS SHOW/HIDE //
+            // *********************** //
+
+            // get all awards container and hide all awards
+            var allAwardsContainer = $('table#awards-list').children("tbody");
+            allAwardsContainer.find("tr").hide();
+
+            // create selector with award category
+            var selector = 'tr.'+awardCategory
+
+            // add to selector todo if not show awards done
+            if ($("#awards-done-icon").hasClass("fas fa-toggle-off")) {
+                selector += '.award-todo'
             }
-            localIcon.removeClass("fas fa-toggle-off");
-            localIcon.addClass("fas fa-toggle-on");
+
+            // select awards to show and show them
+            allAwardsContainer.find(selector).show('fast', function() {});
         });
 
         $(document).on('click', 'table.awards-categories td', function(e){

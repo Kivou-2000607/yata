@@ -75,8 +75,10 @@
         var reload = $("#target-list-refresh-"+targetId);
         reload.load( "/target/delete/"+targetId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        },
+        );
+        // reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        reload.remove();
     });
 
 

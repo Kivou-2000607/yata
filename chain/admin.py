@@ -29,8 +29,12 @@ from .models import Attacks
 from .models import Preference
 from .models import Crontab
 from .models import Wall
+from .models import Territory
+from .models import Racket
 
 from yata.handy import timestampToDate
+
+import json
 
 
 class PreferenceAdmin(admin.ModelAdmin):
@@ -196,3 +200,27 @@ class WallAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Wall, WallAdmin)
+
+
+class TerritoryAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['tId', 'faction', 'have_racket']
+    search_fields = ['tId', 'faction']
+
+    def have_racket(self, instance):
+        racket = json.loads(instance.racket)
+        if len(racket):
+            return racket.get("name")
+
+
+admin.site.register(Territory, TerritoryAdmin)
+
+
+class RacketAdmin(admin.ModelAdmin):
+    list_display = ['tId', 'name']
+    search_fields = ['tId', 'name']
+
+
+admin.site.register(Racket, RacketAdmin)

@@ -258,6 +258,7 @@ d = {
     557: 980280221,  # Globetrotter
     541: 456129092,  # Mule
     542: 500114722,  # Smuggler
+    543: 267993904,  # Trafficker
 
     # 8
     20: 778719620,  # Precision
@@ -296,6 +297,8 @@ d = {
     627: 615242155,  # Manu Forti
     739: 571800831,  # Church Mouse
     763: 159149768,  # Bare
+    631: 160168767,  # Vae Victis
+    317: 125937483,  # Phoenix
     476: 0,  # Chainer 5
 
     # 9
@@ -441,4 +444,4 @@ d = {
     371: 668653618,  # Protege
     664: 309095716,  # Mercenary
     636: 147013735,  # Task Master
-}
+    }

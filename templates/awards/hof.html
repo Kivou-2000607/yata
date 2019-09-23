@@ -52,21 +52,45 @@ This file is part of yata.
                 'chartArea': {'width': '90%', 'height': '70%'},
               };
 
-              var view = new google.visualization.DataView(data);
-              view.setColumns([0, 1]);
-
-              var chart = new google.visualization.ComboChart(document.getElementById('rarityChart'));
-
+              var chart = new google.visualization.ComboChart(document.getElementById('chart'));
               chart.draw(data, options);
 
-              var data2 = google.visualization.arrayToDataTable([
+              {% if graph2|length %}
+                var data2 = google.visualization.arrayToDataTable([
+                    ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                    {% for h, c, s, im, p, r in graph2 %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|medalUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                    {% endfor %}
+                ]);
+
+                var options2 = {
+                  // bar: {groupWidth: "100%"},
+                  legend: {position: 'none'},
+                  tooltip: {isHtml: true, position: 'top'},
+                  seriesType: 'bars',
+                  series: {
+                            0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                           },
+                  bar: {groupWidth: '70%'},
+                  hAxis: {  textPosition: 'none', title: "Medals" },
+                  vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                  'backgroundColor': 'transparent',
+                  'chartArea': {'width': '90%', 'height': '70%'},
+                };
+
+                var chart2 = new google.visualization.ComboChart(document.getElementById('chart2'));
+                chart2.draw(data2, options2);
+
+            {% endif %}
+
+              var dataHOF = google.visualization.arrayToDataTable([
                 ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}, 'Cummulative number of players', {role: 'tooltip', 'p': {'html': true}}],
                 {% for x, y, xm, xp, cu in hofGraph %}
                     [{{x}}, {{y}}, "<h3>#players: {{y|intcomma}}</h3><span>{{xm|floatformat:4}}% < Rarity score < {{xp|floatformat:4}}%</span>", {{cu}}, "<h3>Cummulative #players: {{cu|intcomma}}</h3><span>Rarity score < {{xp|floatformat:4}}%</span>"],
                  {% endfor %}
               ]);
 
-              var options2 = {
+              var optionsHOF = {
                 // bar: {groupWidth: "100%"},
                 legend: {position: 'none'},
                 tooltip: {isHtml: true, position: 'top'},
@@ -78,23 +102,25 @@ This file is part of yata.
                 bar: {groupWidth: '80%'},
                 hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log', viewWindow:{ min:0.01} },
                 vAxes: {
-                  0: { format: 'short', title:       "#Players", viewWindow:{ max:1.1 * data2.getColumnRange(1).max, }, },
-                  1: { format: 'short', title: "Cum. #Players", viewWindow:{ max:1.1 * data2.getColumnRange(3).max, }, },
+                  0: { format: 'short', title:       "#Players", viewWindow:{ max:1.1 * dataHOF.getColumnRange(1).max, }, },
+                  1: { format: 'short', title: "Cum. #Players", viewWindow:{ max:1.1 * dataHOF.getColumnRange(3).max, }, },
                  },
                 'backgroundColor': 'transparent',
                 'chartArea': {'width': '90%', 'height': '60%'},
               };
 
-              var view2 = new google.visualization.DataView(data2);
-              view2.setColumns([0, 1, 2, 3, 4]);
+              var viewHOF = new google.visualization.DataView(dataHOF);
+              viewHOF.setColumns([0, 1, 2, 3, 4]);
 
-              var chart2 = new google.visualization.ComboChart(document.getElementById('hofChart'));
+              var chartHOF = new google.visualization.ComboChart(document.getElementById('chartHOF'));
 
-              chart2.draw(view2, options2);
+              chartHOF.draw(viewHOF, optionsHOF);
             }
 
         });
 </script>
+
+<script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
 
 <h2 class="title">Hall of fame (top 50)</h2>
 <div class="module">
@@ -106,7 +132,7 @@ This file is part of yata.
                 <th>rank</th>
                 <th>Name</th>
                 <th>Faction</th>
-                <th>Honors awarded</th>
+                <th>Awarded</th>
                 <th>Rarity score</th>
             </tr>
         </thead>
@@ -117,7 +143,7 @@ This file is part of yata.
                         <td class="a">#{{ forloop.counter }}</td>
                         <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
                         <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
-                        <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
+                        <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}" rel="tooltip">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
                         <td class="c">{{k.rscore|floatformat:4}}%</td>
                     </tr>
                 {% endif %}
@@ -126,10 +152,11 @@ This file is part of yata.
         </tbody>
     </table>
     <table class="center-large">
-        <tr><td><div id="hofChart"></div></td></tr>
+        <tr><td><div id="chartHOF"></div></td></tr>
     </table>
     <table class="center-large">
-        <tr><td><div id="rarityChart"></div></td></tr>
+        <tr><td><div id="chart"></div></td></tr>
+        <tr><td><div id="chart2"></div></td></tr>
     </table>
 
 
