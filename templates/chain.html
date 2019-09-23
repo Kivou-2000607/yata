@@ -28,7 +28,7 @@
     // nav links
     $(document).on('click', 'table.chain-categories td', e=>{
         e.preventDefault();
-        var l = $(this).children("a").attr("href").split("/")[2];
+        var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
         $( "#content-update" ).load( "/chain/"+l+"/", {
             csrfmiddlewaretoken: getCookie("csrftoken")
         },afterLoad);
@@ -44,7 +44,7 @@
     // see report from list button
     $(document).on('click', '.chain-report-see-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();
+        var chainId = e.currentTarget.href.split("/").pop();
         $( "#content-update" ).load( "/chain/report/"+chainId, {
             chainId: chainId,
             csrfmiddlewaretoken: getCookie("csrftoken")
@@ -55,7 +55,7 @@
     // refresh/create report from list button
     $(document).on('click', '.chain-report-refresh-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();
+        var chainId = e.currentTarget.href.split("/").pop();
         $("#catch-buttons-"+chainId).load( "/chain/createReport/"+chainId, {
             chainId: chainId,
             csrfmiddlewaretoken: getCookie("csrftoken")
@@ -65,7 +65,7 @@
     // delete report from list button
     $(document).on('click', '.chain-report-delete-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();;
+        var chainId = e.currentTarget.href.split("/").pop();;
         $("#catch-buttons-"+chainId).load( "/chain/deleteReport/"+chainId, {
             chainId: chainId,
             csrfmiddlewaretoken: getCookie("csrftoken")
@@ -75,7 +75,7 @@
     // toggle report from list button
     $(document).on('click', '.chain-report-toggle-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();
+        var chainId = e.currentTarget.href.split("/").pop();
         $("#catch-buttons-"+chainId).load( "/chain/toggleReport/"+chainId, {
             chainId: chainId,
             csrfmiddlewaretoken: getCookie("csrftoken")
@@ -101,11 +101,11 @@
     // show individual report
     $(document).on('click', 'tr[id^="chain-ireport-"] > td:not(.dont-touch-me)', e=>{
         e.preventDefault();
-        var splt = $(this).closest("tr").attr("id").split("-");
+        var splt = $(e.currentTarget).closest("tr").attr("id").split("-");
         var memberId = splt.pop();
         var chainId = splt.pop();
         if( !$( "#individal-report-"+memberId ).length ) {
-            $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+            $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(e.currentTarget).closest('tr'));
         }
         $("#individal-report-"+memberId).load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
             csrfmiddlewaretoken: getCookie("csrftoken")
@@ -115,14 +115,14 @@
     // close individual report
     $(document).on('click', '[id^="individal-report-"]', e=>{
         e.preventDefault();
-        $(this).html("");
+        $(e.currentTarget).html("");
     });
 
     // toggle key in aa
     $(document).on('click', '.chain-aa-toggle-key', e=>{
         e.preventDefault();
-        var id = this.href.split("/").pop();
-        $(this).parents("tr").load( "/chain/toggleKey/"+id, {
+        var id = e.currentTarget.href.split("/").pop();
+        $(e.currentTarget).parents("tr").load( "/chain/toggleKey/"+id, {
             id: id,
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="3" style="text-align: center;">'+spinner+'</td>');
@@ -131,7 +131,7 @@
     // change chain threshold in aa
     $(document).on('change', '#chain-aa-change-threshold', e=>{
         e.preventDefault();
-        var reload = $(this);
+        var reload = $(e.currentTarget);
         var threshold = reload.children("p").children("select").val();
         reload.load( "/chain/chainThreshold/", {
             threshold: threshold,
@@ -144,7 +144,7 @@
     // toggle key in aa
     $(document).on('click', '#chain-aa-toggle-poster', e=>{
         e.preventDefault();
-        $(this).parents("form").load( "/chain/togglePoster/", {
+        $(e.currentTarget).parents("form").load( "/chain/togglePoster/", {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="3" style="text-align: center;">'+spinner+'</td>');
     });
@@ -153,8 +153,8 @@
     // faction tree
     $(document).on('change', '[id^="chain-tree-"]', e=>{
         e.preventDefault();
-        var v = $(this).val();
-        var id = $(this).attr("id").split("-");
+        var v = $(e.currentTarget).val();
+        var id = $(e.currentTarget).attr("id").split("-");
         var p = id.pop();
         var t = id.pop();
         $( "#content-update" ).load( "/chain/tree/", {
@@ -167,7 +167,7 @@
     // toggle armory record
     $(document).on('click', '#chain-armory-record', e=>{
         e.preventDefault();
-        $(this).closest("table").load( "/chain/toggleArmoryRecord/", {
+        $(e.currentTarget).closest("table").load( "/chain/toggleArmoryRecord/", {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="2" style="text-align: center;">'+spinner+'</td>');
     });
@@ -175,7 +175,7 @@
     // reset armory record
     $(document).on('click', '#chain-armory-reset', e=>{
         e.preventDefault();
-        $(this).closest("table").load( "/chain/resetArmoryRecord/", {
+        $(e.currentTarget).closest("table").load( "/chain/resetArmoryRecord/", {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="2" style="text-align: center;">'+spinner+'</td>');
     });
@@ -183,15 +183,15 @@
     // drop down armory record
     $(document).on('click', '.chain-armory-toggle-view', e=>{
         e.preventDefault();        
-        $(this).next("table").slideToggle("fast", ()=>{
-            $(this).find("i.fa-caret-right").toggleClass("fa-rotate-90");
+        $(e.currentTarget).next("table").slideToggle("fast", ()=>{
+            $(e.currentTarget).find("i.fa-caret-right").toggleClass("fa-rotate-90");
         });
     });
 
     // refresh timer target update
     window.setInterval(()=>{
-        $(".timeout").each(()=>{
-            var timeRefresh = $.trim($(this).text());
+        $(".timeout").each(e=>{
+            var timeRefresh = $.trim($(e.currentTarget).text());
             var splitRefresh = timeRefresh.split(" ");
             var sRefresh = 0;
             if (splitRefresh.length == 2) {
@@ -207,11 +207,11 @@
             sRefresh = sRefresh % 60;
             if (mRefresh) {
                 spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html(''+mRefresh+" mins "+spad+" s");
+                $(e.currentTarget).html(''+mRefresh+" mins "+spad+" s");
             } else {
-                $(this).html(''+sRefresh+" s");
+                $(e.currentTarget).html(''+sRefresh+" s");
                 if(!sRefresh)
-                    $(this).removeClass("timeout");
+                    $(e.currentTarget).removeClass("timeout");
             }
         });
     }, 1000);
@@ -230,7 +230,7 @@
     // delete wall from list
     $(document).on('click', '.wall-delete', e=>{
         e.preventDefault();
-        $(this).parents("tr").load( this.href, {
+        $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
     });
