@@ -63,7 +63,7 @@ This file is part of yata.
         <tbody>
         {% for territory in territories %}
         <tr class="{% if territory.racket %}racket{% endif %}">
-            <td class="a">{{territory.tId}}</td>
+            <td class="a"><a href="https://www.torn.com/city.php#terrName={{territory.tId}}" target="_blank">{{territory.tId}}</a></td>
             <td class="a">{{territory.sector}}</td>
             <td class="a">{{territory.size}}</td>
             <td class="a">{{territory.density}}</td>
@@ -93,7 +93,7 @@ This file is part of yata.
         {% for racket in rackets %}
             {% if player.factionId != racket.faction %}
             <tr>
-                <td class="a">{{racket.tId}}</td>
+                <td class="a"><a href="https://www.torn.com/city.php#terrName={{racket.tId}}" target="_blank">{{racket.tId}}</a></td>
                 <td class="b">{{racket.name}}</td>
                 <td class="b">{{racket.reward}}</td>
                 <td class="a">{{racket.level}}</td>
