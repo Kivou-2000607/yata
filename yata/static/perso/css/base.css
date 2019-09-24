@@ -23,17 +23,11 @@ html, body{
   background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
   font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
 }
-body{
-  position: relative;
-}
+body{ position: relative; }
 
-a, th {
-    outline: none;
-}
+a, th { outline: none; }
 
-.yata-logo {
-    height: 31.5px;
-}
+h1 { height: 35px; }
 
 ul li { list-style-type: disc; }
 ul ul li { list-style-type: circle; }
@@ -45,6 +39,7 @@ div.module {
     /* padding:0 10px 0 10px; */
     border-radius:0 0 6px 6px;
     padding: 10px;
+    margin-bottom: 20px;
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
 }
 
@@ -233,7 +228,7 @@ thead th.none:after {
 
 .old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 
-h2.rounded, div.rounded { border-radius: 6px; margin-bottom: 30px; }
+h2.rounded, div.rounded { border-radius: 6px; margin-bottom: 20px; }
 h2.toggle-display { cursor: pointer; }
 
 pre {
