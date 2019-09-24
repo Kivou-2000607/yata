@@ -324,7 +324,7 @@ d = {
     234: 511356030,  # Silver Belt
     723: 907581608,  # Toned
     240: 362146978,  # Behemoth
-    242: 773994822,  # Phoenix
+    242: 907398851,  # Supersonic
     694: 978318797,  # Athletic
     241: 611520665,  # Draco
     643: 867197599,  # Powerhouse
