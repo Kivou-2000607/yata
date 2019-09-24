@@ -171,6 +171,7 @@ d = {
     143: 744664817,  # Pin Puller
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
+    778: 0, # Specialist 
 
     # 3
     39: 198010293,  # Woodland Camo
