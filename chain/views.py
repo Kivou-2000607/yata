@@ -536,7 +536,6 @@ def jointReport(request):
                     arrayBonuses[i].append(False)
 
             # hack for joint report total time
-            chains = faction.chain_set.filter(status=True).order_by('-end')
             totalTime = 0
             for c in chains:
                 totalTime += (c.end - c.start)
@@ -546,7 +545,7 @@ def jointReport(request):
                             'total': total,  # for general info
                             'counts': arrayCounts,  # counts for report
                             'bonuses': arrayBonuses,  # bonuses for report
-                            'chains': chains,  # for chain list after report
+                            'chains': faction.chain_set.filter(status=True).order_by('-end'),  # for chain list after report
                             'player': player,
                             'chain': chain,
                             'faction': faction,
