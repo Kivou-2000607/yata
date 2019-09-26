@@ -50,19 +50,19 @@ This file is part of yata.
         var data = google.visualization.arrayToDataTable([
           ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
           {% for t in allTerritories %}
-            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {size: 1; fill-color: #fff;}', '{{t|tTooltip|safe}}'],
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {size: 2; fill-color: #326983;}', '{{t|tTooltip|safe}}'],
           {% endfor %}
           {% for t in territories %}
-            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 3;}', '{{t|tTooltip|safe}}'],
           {% endfor %}
           {% for t in rackets %}
             {% if t.level == 1 %}
-                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {fill-color: #CC3434; stroke-color: #000; size: 5;}', '{{t|rTooltip|safe}}'],
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {fill-color: #CC3434; size: 2;}', '{{t|rTooltip|safe}}'],
             {% else %}
-                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: star; shape-dent: 0.5; shape-sides: {{t.level}}; fill-color: #CC3434; stroke-color: #000; size: 5;}', '{{t|rTooltip|safe}}'],
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: star; shape-dent: 0.5; shape-sides: {{t.level}}; fill-color: #CC3434; size: 2;}', '{{t|rTooltip|safe}}'],
             {% endif %}
           {% endfor %}
-          [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y|mul:1.04}}, 'point {fill-color: #447e9b; stroke-color: #000; size: 5;}', '{{summary|sTooltip|safe}}'],
+          // [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y|mul:1.04}}, 'point {fill-color: #447e9b; size: 2;}', '{{summary|sTooltip|safe}}'],
         ]);
 
         // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
@@ -85,7 +85,7 @@ This file is part of yata.
             },
           'chartArea': {'width': '100%', 'height': '100%'},
           'backgroundColor': 'transparent',
-          legend: 'none'
+          legend: 'none',
         };
 
         var chart = new google.visualization.ScatterChart(document.getElementById('map-graph'));
@@ -95,6 +95,6 @@ This file is part of yata.
 
 </script>
 
-<div id='map-background' class='map-background'>
-    <div id="map-graph" class='map-graph'></div>
+<div id='map-background' class='map-background x2'>
+    <div id="map-graph" class='map-graph x2'></div>
 </div>
