@@ -33,6 +33,7 @@ class Preference(models.Model):
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
     apiString = models.CharField(default="0", max_length=330)  # for 10 pairs login(15):key(16)
+    territoryTS = models.IntegerField(default=0)
 
     def get_random_key(self):
         from numpy.random import randint

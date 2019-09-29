@@ -28,7 +28,7 @@ SECTION_CHOICES = (
     ('T', 'target'),
     ('A', 'awards'),
     ('S', 'stock'),
-)
+    )
 
 
 class Player(models.Model):

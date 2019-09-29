@@ -40,8 +40,8 @@ from chain.functions import updateMembers
 from chain.functions import factionTree
 from chain.functions import BONUS_HITS
 
+from bazaar.models import Preference
 from chain.models import Faction
-from chain.models import Preference
 from chain.models import Crontab
 from chain.models import Wall
 from chain.models import Territory
@@ -71,9 +71,6 @@ def index(request):
                 return render(request, 'chain.html', context)
 
             factionId = int(user.get("faction")["faction_id"])
-            preferences = Preference.objects.first()
-            allowedFactions = json.loads(preferences.allowedFactions) if preferences is not None else []
-            print("[view.chain.index] allowedFactions: {}".format(allowedFactions))
             # if str(factionId) in allowedFactions:
             if True:
                 player.chainInfo = user.get("faction")["faction_name"]
@@ -1488,7 +1485,9 @@ def territories(request):
                 else:
                     racket.factionName = "-"
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
+            preferences = Preference.objects.first()
+            territoryTS = preferences.territoryTS
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territoryTS': territoryTS, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 
