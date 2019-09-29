@@ -25,7 +25,7 @@ This file is part of yata.
 {% if territories|length %}
 
 
-<h2 class="title">Map</h2>
+<h2 class="title">Map<span class="flush-right">Last update: {{territoryTS|ts2date}}</span></h2>
 <div id="chain-map" class="module">
     {% include "chain/territories-graph.html"%}
 </div>

@@ -113,7 +113,8 @@ This file is part of yata.
     </script>
 
     <!-- favicon -->
-    <!-- <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} /> -->
+    {# <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} /> #}
+    {# <link rel="icon" type="image/svg+xml" href={% static "logo/yata.icon.svg" %} /> #}
     <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
 
     <!-- meta  -->
@@ -128,7 +129,8 @@ This file is part of yata.
 
     <div id="container">
         <div id="content">
-            <h1><img class="yata-logo" src="{% static "logo/yata.min.svg" %}" alt="YATA - Yet Another Torn App"></h1>
+            {# <h1><img src="{% static "logo/yata.full.svg" %}" alt="YATA - Yet Another Torn App"></h1> #}
+            <h1>{% include "svg/yata.full.svg" %}</h1>
             {# <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1> #}
 
             {% include "yata/login.html" %}

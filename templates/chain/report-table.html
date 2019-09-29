@@ -25,7 +25,7 @@ This file is part of yata.
 <script>
 
 $(document).ready(function() {
-    $("#chain-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[7,1]]});
+    $("#chain-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[8,1]]});
 
     $("#chain-report").bind("sortStart",function() {
         $('[id^="individal-report-"]').remove();
@@ -96,7 +96,7 @@ $(document).ready(function() {
 </script>
 
 
-{% if chain %}
+{% if chain.nAttacks %}
     <table class="center tdshadow chain-summary">
         <thead>
             {% if chain.tId > 0 %}
@@ -134,6 +134,8 @@ $(document).ready(function() {
         </th></tr>
     </thead>
 </table>
+
+{% with naturalE=chain.end|sub:chain.start|intdiv:"2500"|add:6 %}
 <table id="chain-report" class="tablesorter center-large trshadow chain-report">
     <thead>
         <tr>
@@ -142,6 +144,9 @@ $(document).ready(function() {
             <th title="Number of attacks that counted for the chain.">Number<br>of hits</th>
             <th title="Total number of attacks including losses, assists, friendly fires...">Number of<br>attacks</th>
             <th title="Number of attacks that counted for the war.">Number of<br>war hits</th>
+            {% if chain %}
+            <th title="Number of hits without counting natural energy: 6 + {{chain.end|sub:chain.start}} / 2500 = {{naturalE}}.">Number of<br>boosted hits</th>
+            {% endif %}
             <!-- <th title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
             <th title="Average of war modifier over all hits">modifiers<br>(war)</th>
             <th title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
@@ -166,6 +171,10 @@ $(document).ready(function() {
                 <td class="c">{{c.wins|add:c.bonus}}</td>
                 <td class="c">{{c.hits}}</td>
                 <td class="c">{{c.warhits}}</td>
+                {% if chain %}
+                <td class="c">{{c.wins|add:c.bonus|sub:naturalE}}</td>
+                {% endif %}
+
                 {% if c.wins %}
                     <!-- <td class="c">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->
                     <!-- <td class="c">{{c.war|div:c.wins|floatformat:2}}</td> -->
@@ -213,6 +222,7 @@ $(document).ready(function() {
         {% endfor %}
     </tbody>
 </table>
+{% endwith %}
 
 {% if graph.data|length %}
     <hr class="sep">

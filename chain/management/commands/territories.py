@@ -66,5 +66,7 @@ class Command(BaseCommand):
             print(f"{i+1} / {n}: create racket {k}")
             terr = Racket.objects.create(tId=k, **v)
 
+        preference.territoryTS = int(timezone.now().timestamp())
+        preference.save()
 
         print("[command.chain.territories] end")

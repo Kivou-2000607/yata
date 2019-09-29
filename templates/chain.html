@@ -109,7 +109,7 @@
         }
         $("#individal-report-"+memberId).load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
             csrfmiddlewaretoken: getCookie("csrftoken")
-        }).html('<td colspan="11" style="text-align: center;">'+spinner+'</td>');
+        }).html('<td colspan="12" style="text-align: center;">'+spinner+'</td>');
     });
 
     // close individual report

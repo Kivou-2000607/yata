@@ -233,3 +233,13 @@ div.map-background::after {
   position: absolute;
   z-index: 0;
 }
+
+div.map-background.x2,
+div.map-graph.x2 {
+    width: 1300px;
+    height: 758px;
+}
+
+div.map-background.x2::after {
+    background-size: 1300px 758px;
+}
