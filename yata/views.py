@@ -42,6 +42,8 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
             context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
         else:
             context = {'allNews': allNews, 'allDonations': allDonations}

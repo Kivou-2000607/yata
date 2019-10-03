@@ -57,12 +57,13 @@ class Faction(models.Model):
             keys = {}
         if str(id) in keys:
             if keys[str(id)][:16] == key:
-                print("[model.faction.addKey] same key, nothing changed")
+                pass
+                # print("[model.faction.addKey] same key, nothing changed")
             else:
-                print("[model.faction.addKey] key changed")
+                # print("[model.faction.addKey] key changed")
                 keys[str(id)] = key
         else:
-            print("[model.faction.addKey] new key")
+            # print("[model.faction.addKey] new key")
             keys[str(id)] = key
 
         self.apiString = json.dumps(keys)

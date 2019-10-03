@@ -39,8 +39,6 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
-            player.save()
-            # error = updateAttacks(player)
 
             targets = json.loads(player.targetJson).get("targets", dict({}))
             player.targetInfo = len(targets)
