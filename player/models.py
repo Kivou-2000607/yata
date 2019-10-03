@@ -38,8 +38,8 @@ class Player(models.Model):
     key = models.CharField(default="AAAA", max_length=16)
 
     # BooleanField states
-    # active = models.BooleanField(default=True)
-    # validKey = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)
+    validKey = models.BooleanField(default=True)
 
     # user information: faction
     factionId = models.IntegerField(default=0)
