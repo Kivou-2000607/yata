@@ -262,6 +262,39 @@ def live(request):
         return returnError()
 
 
+# action view
+def toggleLiveReport(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleLiveReport] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+            context = {"player": player}
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.toggleLiveReport] faction {} found'.format(factionId))
+
+            # toggle live creation
+            faction.createLive =  not faction.createLive
+            faction.save()
+
+            print('[view.chain.toggleLiveReport] render')
+            context.update({"faction": faction, "messageDeleted": True})
+            return render(request, 'chain/live-toggle.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+
 # render view
 def list(request):
     try:

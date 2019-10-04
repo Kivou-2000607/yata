@@ -140,13 +140,22 @@
         // reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
-
-    // toggle key in aa
+    // toggle faction poster in aa
     $(document).on('click', '#chain-aa-toggle-poster', e=>{
         e.preventDefault();
         $(e.currentTarget).parents("form").load( "/chain/togglePoster/", {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="3" style="text-align: center;">'+spinner+'</td>');
+    });
+
+    // toggle live report creation
+    $(document).on('click', '#chain-live-toggle-creation', function(e){
+        e.preventDefault();
+        var reload = $(this).parents("form");
+        reload.load( "/chain/toggleLiveReport/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
 

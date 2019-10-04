@@ -347,30 +347,34 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
     elif typeOfAwards == "drugs":
 
+        # WARNING absolute discusting HACK to avoid type Speed from drug and from gym to mix up
+        # (which results in 50 speed no showing up in all awards)
+        # There is a white space after avery drug type.
+
         # minutes of CD
         forComment = dict({
-            "Cannabis": 75,
-            "Ecstasy": 210,
-            "Ketamine": 70,
-            "LSD": 425,
-            "Opium": 215,
-            "Shrooms": 209.5,
-            "Speed": 301,
-            "PCP": 330,
-            "Xanax": 420,
-            "Vicodin": 300})
+            "Cannabis ": 75,
+            "Ecstasy ": 210,
+            "Ketamine ": 70,
+            "LSD ": 425,
+            "Opium ": 215,
+            "Shrooms ": 209.5,
+            "Speed ": 301,
+            "PCP ": 330,
+            "Xanax ": 420,
+            "Vicodin ": 300})
 
         awards = dict({
-            "Cannabis": dict(),
-            "Ecstasy": dict(),
-            "Ketamine": dict(),
-            "LSD": dict(),
-            "Opium": dict(),
-            "Shrooms": dict(),
-            "Speed": dict(),
-            "PCP": dict(),
-            "Xanax": dict(),
-            "Vicodin": dict()})
+            "Cannabis ": dict(),
+            "Ecstasy ": dict(),
+            "Ketamine ": dict(),
+            "LSD ": dict(),
+            "Opium ": dict(),
+            "Shrooms ": dict(),
+            "Speed ": dict(),
+            "PCP ": dict(),
+            "Xanax ": dict(),
+            "Vicodin ": dict()})
 
         honors_awarded = [int(k) for k in userInfo.get("honors_awarded", [])]
         honors_time = [int(k) for k in userInfo.get("honors_time", [])]
@@ -388,14 +392,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["awarded_time"] = 0
 
                 if int(k) in [26]:
-                    type = "Cannabis"
+                    type = "Cannabis "
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [29, 30, 31, 32, 33, 34, 35, 36, 37, 38]:
-                    type = v["description"].split(" ")[-1]
+                    type = v["description"].split(" ")[-1] + " "
                     vp["goal"] = 50
                     key = type.lower()[:3] + "taken"
                     if key == "ecstaken":

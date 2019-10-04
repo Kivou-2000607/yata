@@ -50,11 +50,16 @@ This file is part of yata.
                     </tr>
                     <tr>
                         <td colspan="2">Chain started {{currentTimestamp|sub:liveChain.start|ts2time}} ago</td>
-                        <td colspan="2">Chain status: <span class="valid">active</span></td>
+                        {% if liveChain.current < 10 %}
+                            <td colspan="1">Chain status: <span class="warning">warming up</span></td>
+                        {% else %}
+                            <td colspan="1">Chain status: <span class="valid">active</span></td>
+                        {% endif %}
+                        <td colspan="1">Hits: {{liveChain.current}} / {{liveChain.max}} (x{{liveChain.modifier}})</td>
                     </tr>
                     <tr>
                         <td colspan="2">Timeout: <span class="timeout">{{liveChain.timeout|ts2time}}</span> <i class="error flush-right">API response off {{currentTimestamp|sub:liveChain.timestamp}} s</i></td>
-                        <td colspan="2"> Hits: {{liveChain.current}} / {{liveChain.max}} (x{{liveChain.modifier}})</td>
+                        <td colspan="2">{% include "chain/live-toggle.html" %}</td>
                     </tr>
                     <tr>
                         <td colspan="3">

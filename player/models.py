@@ -37,6 +37,10 @@ class Player(models.Model):
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
 
+    # BooleanField states
+    active = models.BooleanField(default=True)
+    validKey = models.BooleanField(default=True)
+
     # user information: faction
     factionId = models.IntegerField(default=0)
     factionAA = models.BooleanField(default=False)
@@ -72,25 +76,33 @@ class Player(models.Model):
     stocksUpda = models.IntegerField(default=0)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.tId)
+        return "{:15} [{:07}]".format(self.name, self.tId)
 
     def update_info(self):
         """ update player information
 
         """
-        print("[player.models.update_info] {}".format(self))
         from yata.handy import apiCall
         from awards.functions import updatePlayerAwards
         from chain.models import Faction
         import json
 
         # API Calls
-        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key)
+        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key, verbose=False)
 
-        # if user.get('apiErrorCode') == 2:
-        #    print("delete player")
-        #    self.delete()
-        #    return 0
+        # set boolean
+        self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
+        self.validKey = False if user.get('apiErrorCode') else self.validKey
+
+        if not self.active and not self.validKey:
+            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> delete user".format(self, self.lastActionTS, self.active, self.validKey))
+            # self.delete()
+            return 0
+        elif 'apiError' in user:
+            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> api error {}".format(self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
+            return 0
+        else:
+            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1}".format(self, self.lastActionTS, self.active, self.validKey))
 
         # update basic info (and chain)
         self.name = user.get("name", "?")
@@ -104,7 +116,7 @@ class Player(models.Model):
                 faction = Faction.objects.create(tId=self.factionId)
             faction.name = self.factionNa
 
-            chains = apiCall("faction", "", "chains", self.key)
+            chains = apiCall("faction", "", "chains", self.key, verbose=False)
             if chains.get("chains") is not None:
                 self.factionAA = True
                 self.chainInfo = "{} [AA]".format(self.factionNa)
@@ -147,7 +159,7 @@ class Player(models.Model):
         self.lastUpdateTS = int(timezone.now().timestamp())
         self.save()
 
-        print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
+        # print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
 
 
 class News(models.Model):
