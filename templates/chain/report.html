@@ -40,15 +40,22 @@ This file is part of yata.
 {% else %}
     {% if view.liveReport %}
         {% if liveChain.current %}
-            <h2 class="title">Report not yet created</h2>
+            <h2 class="title">Report not created</h2>
             <div class="module">
-                It will be automatically update in a couple of minutes
+                <p>
+                    {% if faction.createLive %}
+                        <span class="valid">Live recording is on</span>, the report will be automatically updated in a couple of minutes...
+                    {% else %}
+                        You need to <span class="error">start recording</span> to create the live report.
+                    {% endif %}
+                </p>
+                <p>It will start <b>at the beginning of the chain</b>, not when you started recording.</p>
             </div>
         {% endif %}
     {% else%}
         <h2 class="title">Report not yet created</h2>
         <div class="module">
-            It will be automatically update in a couple of minutes
+            It will be automatically updated in a couple of minutes.
         </div>
     {% endif %}
 {% endif  %}

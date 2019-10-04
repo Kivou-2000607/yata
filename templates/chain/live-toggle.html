@@ -1,0 +1,36 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+
+<form>{% csrf_token %}
+    {% if faction.createLive %}
+        <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
+        <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
+            <i class="fas fa-stop-circle error" title="Disable Live"></i>&nbsp;Stop
+        </a>
+    {% else %}
+        <i class="fas fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not Recording</i>
+        {% if messageDeleted %}
+        <span class="warning">&nbsp;&nbsp;The report will be deleted.</span>
+        {% endif %}
+        <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
+            <i class="fas fa-dot-circle error" title="Enable Live"></i>&nbsp;Record
+        </a>
+    {% endif %}
+</form>

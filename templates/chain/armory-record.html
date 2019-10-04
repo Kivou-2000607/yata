@@ -19,15 +19,13 @@ This file is part of yata.
 
 {% if faction.armoryRecord %}
     <td>
-        <a id="chain-armory-record" href=""><i class="far fa-stop-circle"></i>&nbsp;&nbsp;Stop recording</a>
-        &nbsp;&nbsp;
-        <i class="far fa-check-square valid"></i>&nbsp;&nbsp;Recording armory news
+        <i class="far fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
+        <a id="chain-armory-record" class="flush-right" href=""><i class="far fa-stop-circle error"></i>&nbsp;&nbsp;Stop</a>
     </td>
 {% else %}
     <td>
-        <a id="chain-armory-record" href=""><i class="far fa-play-circle"></i>&nbsp;&nbsp;Start recording</a>
-        &nbsp;&nbsp;
-        <i class="far fa-square error"></i>&nbsp;&nbsp;Not recording armory news
+        <i class="far fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not recording</i>
+        <a id="chain-armory-record" class="flush-right" href=""><i class="far fa-dot-circle error"></i>&nbsp;&nbsp;Record</a>
     </td>
 {% endif %}
-<td><a id="chain-armory-reset" href=""><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete records</a><i class="far fa-question-circle flush-right" style="cursor: help;" title="If you start recording, all the current and new events will be saved. &#13;If you stop recording, they will still be available along with the last 1000 events.&#13;If you delete the records, only the last 1000 events will be available.&#13;When recording new events are automatically saved every 5 minutes.&#13;If you have more than 1000 events in 5 minutes some will be lost.&#13;PM Kivou [2000607 if it's the case]."></i></td>
+<td><a id="chain-armory-reset" href=""><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete records</a><i class="far fa-question-circle flush-right" style="cursor: help;" title="If you start recording, all the current and new events will be saved. &#13;If you stop recording, they will still be available along with the last 1000 events.&#13;If you delete the records, only the last 1000 events will be available.&#13;When recording new events are automatically saved every 5 minutes.&#13;If you have more than 1000 events in 5 minutes some will be lost.&#13;PM Kivou [2000607] if it's the case."></i></td>
