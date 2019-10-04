@@ -62,23 +62,27 @@ This file is part of yata.
     <script>
 
         $(document).on('click', 'a.yata-link-awards', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading awards (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
         });
 
         $(document).on('click', 'a.yata-link-target', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading targets</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
         });
 
         $(document).on('click', 'a.yata-link-chain', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (2 API calls)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading faction (2 API calls)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
         });
 
         $(document).on('click', 'a.yata-link-bazaar', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading bazaar (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
         });
 
         $(document).on('click', 'a.yata-link-stock', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading stocks (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+        });
+
+        $(document).on('click', 'a.yata-link-loot', function(e){
+            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading loot</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
         });
 
         $(document).on('click', 'a.news-read', function(e){

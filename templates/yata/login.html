@@ -76,6 +76,10 @@ This file is part of yata.
                     {% else %}
                         {{player.awardsInfo|floatformat:2}}% honor rarity score
                     {% endif %}
+                    <span class="sep"></span>
+
+                <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Go to loot">
+                    <b><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Loot NPCs</b></a>
 
                 <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
             </p>
