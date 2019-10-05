@@ -64,7 +64,8 @@ class Command(BaseCommand):
                 keyHolder, key = faction.getRandomKey()
 
                 # live chains
-                liveChain = apiCall("faction", faction.tId, "chain", key, sub="chain")
+                liveChain = apiCall("faction", faction.tId, "chain,timestamp", key, sub="chain")
+                liveChain = liveChain["chain"]
                 if 'apiError' in liveChain:
                     print('[command.chain.livereport] api key error: {}'.format((liveChain['apiError'])))
                     if liveChain['apiErrorCode'] in API_CODE_DELETE:
@@ -73,14 +74,22 @@ class Command(BaseCommand):
 
                 elif int(liveChain["current"]) < 10:
                     print('[command.chain.livereport]    --> no live report')
+                    faction.activeChain = False
+                    faction.createLive = False
                     faction.chain_set.filter(tId=0).delete()
+                    faction.save()
 
-                # elif int(liveChain["cooldown"]) > 0:
-                #     print('[command.chain.livereport]    --> chain in cooldown')
+                elif not faction.createLive:
+                    print('[command.chain.livereport]    --> creation of live report off')
+                    faction.chain_set.filter(tId=0).delete()
+                    faction.activeChain = True
+                    faction.save()
 
                 else:
                     # get chain
                     print('[command.chain.livereport]    --> live report')
+                    faction.activeChain = True
+                    faction.save()
                     chain = faction.chain_set.filter(tId=0).first()
                     if chain is None:
                         print('[command.chain.livereport]   --> create chain 0')
