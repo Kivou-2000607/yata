@@ -64,8 +64,7 @@ class Command(BaseCommand):
                 keyHolder, key = faction.getRandomKey()
 
                 # live chains
-                liveChain = apiCall("faction", faction.tId, "chain,timestamp", key, sub="chain")
-                liveChain = liveChain["chain"]
+                liveChain = apiCall("faction", faction.tId, "chain", key, sub="chain")
                 if 'apiError' in liveChain:
                     print('[command.chain.livereport] api key error: {}'.format((liveChain['apiError'])))
                     if liveChain['apiErrorCode'] in API_CODE_DELETE:
