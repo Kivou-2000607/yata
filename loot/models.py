@@ -14,6 +14,7 @@ class NPC(models.Model):
     status = models.CharField(max_length=20, default="Ok")
     hospitalTS = models.IntegerField(default=0)
     updateTS = models.IntegerField(default=0)
+    show = models.BooleanField(default=False)
 
     def __str__(self):
         return f"NPC {self.name} [{self.tId}]"
@@ -61,13 +62,13 @@ class NPC(models.Model):
                 next += 1
             lootTimings[i + 1] = {"lvl": i + 1, "ts": ts, "due": due, "next": next}
 
-        next = 5 - lootTimings[4]['next']
+        current = 5 - lootTimings[5]['next']
         if lvl is None:
             return lootTimings
         elif lvl in ['next']:
-            return lootTimings[next]
+            return lootTimings[max(current + 1, 5)]
         elif lvl in ['current']:
-            return lootTimings[next - 1]
+            return lootTimings[current]
         else:
             return lootTimings[lvl - 1]
 
@@ -81,4 +82,4 @@ class NPC(models.Model):
         return self.lootTimings(lvl=4)
 
     def pictureURL(self):
-        return f"/static/images/loot/npc_{self.tId}.jpg"
+        return f"/static/images/loot/npc_{self.tId}.png"

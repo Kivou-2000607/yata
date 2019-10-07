@@ -26,7 +26,8 @@ class Command(BaseCommand):
         print("[command.loot.updateLoot] start")
 
         # update NPC status
-        for npc in NPC.objects.all():
+        for npc in NPC.objects.filter(show=True):
+            print(f"update {npc}")
             npc.update()
 
 

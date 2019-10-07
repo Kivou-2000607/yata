@@ -63,3 +63,15 @@ div.miniloot > img {
     width: 25px;
     /* margin: 2px; */
 }
+
+
+p.loot-level {
+    margin-bottom: 0.4em;
+}
+
+p.loot-level-update {
+    margin-top: 20px!important;
+    text-align: right;
+    font-size: 10px;
+    opacity: 0.5;
+}

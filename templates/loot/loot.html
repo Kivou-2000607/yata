@@ -50,15 +50,15 @@ This file is part of yata.
                 {% for k, v in npc.lootTimings.items %}
                     {% if forloop.counter0 %}
                         {% if v.due < 0 %}
-                            <p class="overdue"><b>Loot level {{v.lvl|lootLevel}}</b><br>
+                            <p class="loot-level overdue"><b>Loot level {{v.lvl|lootLevel}}</b><br>
                             Since {{v.due|mul:-1|ts2ago}} at {{v.ts|ts2date:"%I:%M:%S %p"}} TCT</p>
                         {% else %}
-                            <p><b>Loot level {{v.lvl|lootLevel}}</b><br>
+                            <p class="loot-level"><b>Loot level {{v.lvl|lootLevel}}</b><br>
                             In <span class="update-timer{% if npc.nextLevel.lvl == forloop.counter0 %} valid{% endif %}">{{v.due|ts2time}}</span> at <span {% if npc.nextLevel.lvl == forloop.counter0 %}class="valid"{% endif %}>{{v.ts|ts2date:"%I:%M:%S %p"}}</span> TCT</p>
-
                         {% endif %}
                     {% endif %}
                 {% endfor %}
+                <p class='loot-level-update'>Uptade: {{npc.updateTS|ts2date}} TCT</p>
             </div>
         </div>
     {% endfor %}

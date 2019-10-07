@@ -14,11 +14,7 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
 
-            # update NPC status
-            # for npc in NPC.objects.all():
-            #     npc.update(key=player.key)
-
-            context = {"player": player, "NPCs": NPC.objects.all()}
+            context = {"player": player, "NPCs": NPC.objects.filter(show=True).order_by('tId')}
             return render(request, "loot.html", context)
 
         else:
