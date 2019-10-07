@@ -18,6 +18,7 @@ This file is part of yata.
 {% endcomment %}
 {% load humanize %}
 
+{% if player.factionAA %}
 <form>{% csrf_token %}
     {% if faction.createLive %}
         <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
@@ -34,3 +35,10 @@ This file is part of yata.
         </a>
     {% endif %}
 </form>
+{% else %}
+    {% if faction.createLive %}
+        <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
+    {% else %}
+        <i class="fas fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not Recording</i>
+    {% endif %}
+{% endif %}

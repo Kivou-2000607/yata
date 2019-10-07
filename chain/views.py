@@ -270,21 +270,24 @@ def toggleLiveReport(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             factionId = player.factionId
-            context = {"player": player}
 
-            # get faction
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-            print('[view.chain.toggleLiveReport] faction {} found'.format(factionId))
+            if player.factionAA:
+                # get faction
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                    print('[view.chain.toggleLiveReport] faction {} found'.format(factionId))
 
-            # toggle live creation
-            faction.createLive = not faction.createLive
-            faction.save()
+                # toggle live creation
+                faction.createLive = not faction.createLive
+                faction.save()
 
-            print('[view.chain.toggleLiveReport] render')
-            context.update({"faction": faction, "messageDeleted": True})
-            return render(request, 'chain/live-toggle.html', context)
+                print('[view.chain.toggleLiveReport] render')
+                context = {"player": player, "faction": faction, "messageDeleted": True}
+                return render(request, 'chain/live-toggle.html', context)
+
+            else:
+                return returnError(type=403, msg="You need AA rights.")
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
