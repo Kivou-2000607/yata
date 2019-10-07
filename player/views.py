@@ -13,7 +13,7 @@ def readNews(request):
             player = Player.objects.filter(tId=tId).first()
             news = News.objects.last()
             news.player.add(player)
-            return HttpResponse("{} maked as read".format(news.type))
+            return HttpResponse("{} marked as read".format(news.type))
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
