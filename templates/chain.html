@@ -270,8 +270,18 @@
         e.preventDefault();
         var wallId = this.href.split("/").pop();
         var reload = $(this).parents("tr");
-        console.log(reload);
         reload.load( "/chain/deleteWall/"+wallId, {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    });
+
+    // toggle wall from list
+    $(document).on('click', '.wall-toggle', function(e){
+        e.preventDefault();
+        var wallId = this.href.split("/").pop();
+        var reload = $(this).parents("tr");
+        reload.load( "/chain/toggleWall/"+wallId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');

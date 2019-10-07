@@ -33,12 +33,19 @@ This file is part of yata.
   <td class="a" >{{wall.result}}</td>
   <td class="a" >
     {% if player.factionAA %}
-        <!-- delete -->
         <form>{% csrf_token %}
+            <!-- toggle -->
+            {% if wall.breakSingleFaction %}
+                <a class="wall-toggle" href={% url 'chain:toggleWall' wall.tId %}><i class="fas fa-toggle-on" title="Remove wall from breakdown"></i></a>
+            {% else %}
+                <a class="wall-toggle" href={% url 'chain:toggleWall' wall.tId %}><i class="fas fa-toggle-off" title="Add wall from breakdown"></i></a>
+            {% endif %}
+            &nbsp; &nbsp;
+            <!-- delete -->
             <a class="wall-delete" href={% url 'chain:deleteWall' wall.tId %}><i class="fas fa-trash-alt" title="Delete wall"></i></a>
         </form>
     {% else %}
-      need AA
+      Needs AA
     {% endif %}
   </td>
 {% endif %}

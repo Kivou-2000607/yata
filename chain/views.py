@@ -279,7 +279,7 @@ def toggleLiveReport(request):
             print('[view.chain.toggleLiveReport] faction {} found'.format(factionId))
 
             # toggle live creation
-            faction.createLive =  not faction.createLive
+            faction.createLive = not faction.createLive
             faction.save()
 
             print('[view.chain.toggleLiveReport] render')
@@ -292,7 +292,6 @@ def toggleLiveReport(request):
 
     except Exception:
         return returnError()
-
 
 
 # render view
@@ -1239,7 +1238,13 @@ def walls(request):
 
             summary = dict({})
             for wall in walls:
-                # print(wall)
+                # account for this wall only of faction id in wall.breakdown
+                breakdown = json.loads(wall.breakdown)
+                if str(faction.tId) in breakdown:
+                    pass
+                else:
+                    continue
+
                 aFac = f"{wall.attackerFactionName} [{wall.attackerFactionId}]"
                 dFac = f"{wall.defenderFactionName} [{wall.defenderFactionId}]"
 
@@ -1314,6 +1319,49 @@ def deleteWall(request, wallId):
                     wall.delete()
 
                 return render(request, 'chain/walls-line.html')
+            else:
+                return returnError(type=403, msg="You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# action view
+def toggleWall(request, wallId):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleWall] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.toggleWall] faction {} found'.format(factionId))
+
+                wall = Wall.objects.filter(tId=wallId).first()
+                breakdown = json.loads(wall.breakdown)
+
+                if str(faction.tId) in breakdown:
+                    # the wall was on we turn it off
+                    breakdown = [id for id in breakdown if id != str(faction.tId)]
+                    wall.breakSingleFaction = False
+                else:
+                    # the wall was off we turn it on
+                    breakdown.append(str(faction.tId))
+                    wall.breakSingleFaction = True
+
+                wall.breakdown = json.dumps(breakdown)
+                wall.save()
+
+                context = {"player": player, "wall": wall}
+                return render(request, 'chain/walls-line.html', context)
             else:
                 return returnError(type=403, msg="You need AA rights.")
 

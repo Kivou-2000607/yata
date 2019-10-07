@@ -264,6 +264,10 @@ class Wall(models.Model):
     territory = models.CharField(default="AAA", max_length=3)
     result = models.CharField(default="Unset", max_length=10)
     factions = models.ManyToManyField(Faction, blank=True)
+    # array of the two faction ID. Toggle wall for a faction adds/removes the ID to this array
+    breakdown = models.TextField(default="[]", null=True, blank=True)
+    # temporary bool only here to pass breakdown of the faction to template
+    breakSingleFaction = models.BooleanField(default=False)
 
     def update(self, req):
         self.tId = int(req.get('tId'))
