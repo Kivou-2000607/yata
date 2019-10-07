@@ -44,18 +44,22 @@ def ts2date(timestamp, fmt=None):
 
 @register.filter(name='ts2time')
 def ts2time(timestamp):
-    d = timestamp // 86400
-    h = (timestamp - 86400 * d) // 3600 % 24
-    m = (timestamp - 3600 * h) // 60 % 60
-    s = (timestamp - 60 * m) % 60
-    if d:
-        return "{} days {:02d} hrs {:02d} mins {:02d} s".format(d, h, m, s)
-    elif h:
-        return "{} hrs {:02d} mins {:02d} s".format(h, m, s)
-    elif m:
-        return "{} mins {:02d} s".format(m, s)
-    else:
-        return "{} s".format(s)
+    try:
+        d = timestamp // 86400
+        h = (timestamp - 86400 * d) // 3600 % 24
+        m = (timestamp - 3600 * h) // 60 % 60
+        s = (timestamp - 60 * m) % 60
+        if d:
+            return "{} days {:02d} hrs {:02d} mins {:02d} s".format(d, h, m, s)
+        elif h:
+            return "{} hrs {:02d} mins {:02d} s".format(h, m, s)
+        elif m:
+            return "{} mins {:02d} s".format(m, s)
+        else:
+            return "{} s".format(s)
+    except BaseException as e:
+        return str(e)
+
 
 
 @register.filter(name='ts2ago')
@@ -241,3 +245,21 @@ def rTooltip(t):
 @register.filter(name='sTooltip')
 def sTooltip(t):
     return f'<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {t["factionName"]} [{t["faction"]}]<br><b>Coordinates:</b> {t["coordinate_x"]:.2f}x{t["coordinate_y"]:.2f}</div>'
+
+
+
+
+@register.filter(name='lootLevel')
+def lootLevel(lvl):
+    if lvl == 1:
+        return "I"
+    elif lvl == 2:
+        return "II"
+    elif lvl == 3:
+        return "III"
+    elif lvl == 4:
+        return "IV"
+    elif lvl == 5:
+        return "V"
+    else:
+        return '0'

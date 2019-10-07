@@ -243,6 +243,17 @@
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
     });
+    });
+
+    // toggle wall from list
+    $(document).on('click', '.wall-toggle', e=>{
+        e.preventDefault();
+        $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
+    });
+
 </script>
 {% endblock %}
 

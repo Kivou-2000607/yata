@@ -1,0 +1,66 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<h2 class="title">NPCs</h2>
+<div class="module">
+    <div class="loot-npc-container">
+    {% for npc in NPCs %}
+        <div class="loot-npc">
+            <div class="loot-npc-profile">
+                <img class="profile" src="{{npc.pictureURL}}">
+                <div>
+                    {{npc.name|playerURL:npc.tId|safe}}
+                    {% if npc.currentLevel.lvl %}
+                        <div class="hospitalized valid">Loot level {{npc.currentLevel.lvl|lootLevel}}</div>
+                    {% else %}
+                        <div class="hospitalized error">Hospitalized</div>
+                    {% endif %}
+                </div>
+                <div class="miniloot">
+                    <img {% if npc.currentLevel.lvl < 1 %}class="overdue"{% endif %} src="{% static "images/loot/loot1.svg" %}">
+                    <img {% if npc.currentLevel.lvl < 2 %}class="overdue"{% endif %} src="{% static "images/loot/loot2.svg" %}">
+                    <img {% if npc.currentLevel.lvl < 3 %}class="overdue"{% endif %} src="{% static "images/loot/loot3.svg" %}">
+                    <img {% if npc.currentLevel.lvl < 4 %}class="overdue"{% endif %} src="{% static "images/loot/loot4.svg" %}">
+                    <img {% if npc.currentLevel.lvl < 5 %}class="overdue"{% endif %} src="{% static "images/loot/loot5.svg" %}">
+                </div>
+            </div>
+            <div class="loot-npc-content">
+                {% for k, v in npc.lootTimings.items %}
+                    {% if forloop.counter0 %}
+                        {% if v.due < 0 %}
+                            <p class="loot-level overdue"><b>Loot level {{v.lvl|lootLevel}}</b><br>
+                            Since {{v.due|mul:-1|ts2ago}} at {{v.ts|ts2date:"%I:%M:%S %p"}} TCT</p>
+                        {% else %}
+                            <p class="loot-level"><b>Loot level {{v.lvl|lootLevel}}</b><br>
+                            In <span class="update-timer{% if npc.nextLevel.lvl == forloop.counter0 %} valid{% endif %}">{{v.due|ts2time}}</span> at <span {% if npc.nextLevel.lvl == forloop.counter0 %}class="valid"{% endif %}>{{v.ts|ts2date:"%I:%M:%S %p"}}</span> TCT</p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <p class='loot-level-update'>Uptade: {{npc.updateTS|ts2date}} TCT</p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>

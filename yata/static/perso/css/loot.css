@@ -1,0 +1,77 @@
+div.loot-npc-container {
+    width: 80%;
+    margin-left: 10%;
+    overflow: hidden; /* add this to contain floated children */
+}
+
+div.loot-npc {
+    max-width: 48%;
+    float:left; /* add this */
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin: 10px;
+}
+div.loot-npc:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+}
+
+div.loot-npc-profile {
+    float:left;
+    width: 125px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin: 10px;
+    border-radius: 10px;
+}
+div.loot-npc-profile > div {
+    padding: 5px 20px 10px 20px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+div.loot-npc-profile > img.profile {
+    width: 125px;
+    border-radius: 10px;
+}
+
+img.loot {
+    height: 30px;
+}
+
+.overdue {
+    opacity: 0.5;
+}
+
+div.hospitalized {
+    margin-top: 5px;
+    margin-bottom: -15px;
+    height: 30px;
+    vertical-align: middle;
+}
+
+div.loot-npc-content {
+    float:left;
+    text-align: left;
+    margin: 10px;
+    margin-top: 15px;
+    vertical-align: middle;
+}
+
+div.miniloot {
+    text-align: center;
+}
+
+div.miniloot > img {
+    width: 25px;
+    /* margin: 2px; */
+}
+
+
+p.loot-level {
+    margin-bottom: 0.4em;
+}
+
+p.loot-level-update {
+    margin-top: 20px!important;
+    text-align: right;
+    font-size: 10px;
+    opacity: 0.5;
+}

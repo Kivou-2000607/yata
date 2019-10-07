@@ -29,6 +29,7 @@ urlpatterns = [
     re_path(r'^awards/', include('awards.urls')),
     re_path(r'^target/', include('target.urls')),
     re_path(r'^stock/', include('stock.urls')),
+    re_path(r'^loot/', include('loot.urls')),
     path('admin/', admin.site.urls),
 
     # site
