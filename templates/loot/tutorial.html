@@ -20,3 +20,31 @@ This file is part of yata.
 
 <h3>Loot levels of NPC</h3>
 <p>Gives information on loot levels of NPCs.</p>
+<h3>API payload looks like</h3>
+<pre>
+{"{{NPCs.0.tId}}":  // torn Id
+    {
+        "name": "{{NPCs.0.name}}",  // torn  name
+        "hospout": {{NPCs.0.hospitalTS}},  // timestamp of hosp out
+        "update": {{NPCs.0.updateTS}},  // timestamp of the payload update
+        "status": "{{NPCs.0.status}}",  // status of the npc
+        "timings": // timings of the 5 loot levels
+            {
+                "1":  // loot level 1
+                    {
+                        "ts": {{NPCs.0.lootTimings.1.ts}}  // timestamp when npc reach this level
+                        "due": {{NPCs.0.lootTimings.1.due}},  // number of seconds to this level compared to now
+                    },
+                "2": {"ts": {{NPCs.0.lootTimings.2.ts}}, "due": {{NPCs.0.lootTimings.2.due}}},
+                "3": {"ts": {{NPCs.0.lootTimings.3.ts}}, "due": {{NPCs.0.lootTimings.3.due}}},
+                "4": {"ts": {{NPCs.0.lootTimings.4.ts}}, "due": {{NPCs.0.lootTimings.4.due}}},
+                "5": {"ts": {{NPCs.0.lootTimings.5.ts}}, "due": {{NPCs.0.lootTimings.5.due}}},
+            },
+        "levels":  // information on the current/next level
+            {
+                "current": {{NPCs.0.currentLevel.lvl}},  // current loot level
+                "next": {{NPCs.0.nextLevel.lvl}}  // next loot level
+            }
+    },
+}
+</pre>

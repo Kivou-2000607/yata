@@ -1376,6 +1376,7 @@ def toggleWall(request, wallId):
         return returnError()
 
 
+# API
 @csrf_exempt
 def importWall(request):
     if request.method == 'POST':

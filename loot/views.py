@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.utils import timezone
+
+import json
 
 from yata.handy import returnError
 from player.models import Player
@@ -22,3 +25,28 @@ def index(request):
 
     except Exception:
         return returnError()
+
+
+# API
+def timings(request):
+    try:
+
+        npcs = dict({})
+        for npc in NPC.objects.filter(show=True).order_by('tId'):
+            t = npc.lootTimings()
+            c = npc.lootTimings("current")
+            n = npc.lootTimings("next")
+            del t[0]
+            npcs[npc.tId] = {
+                "name": npc.name,
+                "hospout": npc.hospitalTS,
+                "update": npc.updateTS,
+                "status": npc.status,
+                "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts']} for k in t},
+                "levels": {'current': c['lvl'], 'next': n['lvl']}
+                }
+
+        return HttpResponse(json.dumps(npcs), content_type="application/json")
+
+    except BaseException as e:
+        return HttpResponse(json.dumps({"error": {"code": 500, "error": f"{type(e)}"}}), content_type="application/json")

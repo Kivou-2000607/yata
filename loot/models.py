@@ -66,7 +66,7 @@ class NPC(models.Model):
         if lvl is None:
             return lootTimings
         elif lvl in ['next']:
-            return lootTimings[max(current + 1, 5)]
+            return lootTimings[min(current + 1, 5)]
         elif lvl in ['current']:
             return lootTimings[current]
         else:
