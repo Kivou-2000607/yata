@@ -28,6 +28,7 @@ window.setInterval(function(){
             }
 
             sRefresh --;
+            sRefresh = Math.max(sRefresh, 0)
             hRefresh = Math.floor(sRefresh / 3600);
             sRefresh = sRefresh % 3600;
             mRefresh = Math.floor(sRefresh / 60);
