@@ -30,7 +30,7 @@ This file is part of yata.
   <td class="b" >{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
   <td class="b" >{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
   <td class="a" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
-  <td class="a" >{{wall.result}}</td>
+  <td class="a" ><span class="{{wall.result}}">{{wall.result}}</span></td>
   <td class="a" >
     {% if player.factionAA %}
         <form>{% csrf_token %}
