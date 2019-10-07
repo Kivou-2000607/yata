@@ -11,156 +11,141 @@
 
 {% block jquery %}
 <script>
-    $(document).on('click', 'table.chain-categories td', function(e){
+    // update history on load
+    const afterLoad = (r,s,x) =>{
+        window.history.pushState(null, document.title, x.url);
+    };
+
+    // parse cookie
+    const getCookie = (s)=>{
+        let parse=RegExp(""+s+"[^;]+").exec(document.cookie);
+        return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
+    };
+
+    //Store repeated html string (spinner)
+    const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
+
+    // nav links
+    $(document).on('click', 'table.chain-categories td', e=>{
         e.preventDefault();
-        var l = $(this).children("a").attr("href").split("/")[2];
+        var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
         $( "#content-update" ).load( "/chain/"+l+"/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        $("#content-update h2").addClass("grey");
-        apiCalls = "";
-        if (l == "jointReport" || l == "live" || l == "members") {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        let apiCalls = "";
+        if (l == "jointReport" || l == "live" || l == "members")
             apiCalls = " (1 API call)";
-        } else if (l == "list") {
+        else if (l == "list")
             apiCalls = " (1 API call if AA)";
-        }
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+l+apiCalls)
+        $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Loading '+l+apiCalls)
         $("div.error").hide();
     });
 
     // see report from list button
-    $(document).on('click', '.chain-report-see-list', function(e){
+    $(document).on('click', '.chain-report-see-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();
+        var chainId = e.currentTarget.href.split("/").pop();
         $( "#content-update" ).load( "/chain/report/"+chainId, {
             chainId: chainId,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading report '+chainId)
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report '+chainId);
     });
 
     // refresh/create report from list button
-    $(document).on('click', '.chain-report-refresh-list', function(e){
+    $(document).on('click', '.chain-report-refresh-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();;
-        var reload = $("#catch-buttons-"+chainId);
-        reload.load( "/chain/createReport/"+chainId, {
+        var chainId = e.currentTarget.href.split("/").pop();
+        $("#catch-buttons-"+chainId).load( "/chain/createReport/"+chainId, {
             chainId: chainId,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad).html(spinner);
     });
 
     // delete report from list button
-    $(document).on('click', '.chain-report-delete-list', function(e){
+    $(document).on('click', '.chain-report-delete-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();;
-        var reload = $("#catch-buttons-"+chainId);
-        reload.load( "/chain/deleteReport/"+chainId, {
+        var chainId = e.currentTarget.href.split("/").pop();;
+        $("#catch-buttons-"+chainId).load( "/chain/deleteReport/"+chainId, {
             chainId: chainId,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad).html(spinner);
     });
 
     // toggle report from list button
-    $(document).on('click', '.chain-report-toggle-list', function(e){
+    $(document).on('click', '.chain-report-toggle-list', e=>{
         e.preventDefault();
-        var chainId = this.href.split("/").pop();;
-        var reload = $("#catch-buttons-"+chainId);
-        reload.load( "/chain/toggleReport/"+chainId, {
+        var chainId = e.currentTarget.href.split("/").pop();
+        $("#catch-buttons-"+chainId).load( "/chain/toggleReport/"+chainId, {
             chainId: chainId,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad).html(spinner);
     });
 
-    $(document).on('click', '#toggle-zero-hits', function(e){
+    // toggle zero-hits
+    $(document).on('click', '#toggle-zero-hits', e=>{
         e.preventDefault();
-        $(".zero-hits").slideToggle('fast', function() {});
-        $(".zero-hits").promise().done(function() {
-            var icon = $("#zero-hits-icon");
-            if (icon.hasClass("fas fa-toggle-on")) {
-                icon.removeClass("fas fa-toggle-on");
-                icon.addClass("fas fa-toggle-off");
-            } else {
-                icon.removeClass("fas fa-toggle-off");
-                icon.addClass("fas fa-toggle-on");
-            }
+        $(".zero-hits").slideToggle('fast').promise().done(()=>{
+            $("#zero-hits-icon").toggleClass("fa-toggle-on fa-toggle-off");
         });
     });
 
-    $(document).on('click', '#toggle-kicked-members', function(e){
+    // toggle non-members
+    $(document).on('click', '#toggle-kicked-members', e=>{
         e.preventDefault();
-        $(".kicked-members").slideToggle('fast', function() {});
-        $(".kicked-members").promise().done(function() {
-            var icon = $("#kicked-members-icon");
-            if (icon.hasClass("fas fa-toggle-on")) {
-                icon.removeClass("fas fa-toggle-on");
-                icon.addClass("fas fa-toggle-off");
-            } else {
-                icon.removeClass("fas fa-toggle-off");
-                icon.addClass("fas fa-toggle-on");
-            }
+        $(".kicked-members").slideToggle('fast').promise().done(()=>{
+            $("#kicked-members-icon").toggleClass("fa-toggle-on fa-toggle-off");
         });
     });
 
     // show individual report
-    $(document).on('click', 'tr[id^="chain-ireport-"] > td:not(.dont-touch-me)', function(e){
+    $(document).on('click', 'tr[id^="chain-ireport-"] > td:not(.dont-touch-me)', e=>{
         e.preventDefault();
-        var splt = $(this).closest("tr").attr("id").split("-");
+        var splt = $(e.currentTarget).closest("tr").attr("id").split("-");
         var memberId = splt.pop();
         var chainId = splt.pop();
         if( !$( "#individal-report-"+memberId ).length ) {
-            $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(this).closest('tr'));
+            $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(e.currentTarget).closest('tr'));
         }
-        var reload = $("#individal-report-"+memberId);
-        reload.load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="12" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        $("#individal-report-"+memberId).load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="12" style="text-align: center;">'+spinner+'</td>');
     });
 
     // close individual report
-    $(document).on('click', '[id^="individal-report-"]', function(e){
+    $(document).on('click', '[id^="individal-report-"]', e=>{
         e.preventDefault();
-        $(this).html("");
+        $(e.currentTarget).html("");
     });
 
     // toggle key in aa
-    $(document).on('click', '.chain-aa-toggle-key', function(e){
+    $(document).on('click', '.chain-aa-toggle-key', e=>{
         e.preventDefault();
-        var id = this.href.split("/").pop();
-        var reload = $(this).parents("tr");
-        reload.load( "/chain/toggleKey/"+id, {
+        var id = e.currentTarget.href.split("/").pop();
+        $(e.currentTarget).parents("tr").load( "/chain/toggleKey/"+id, {
             id: id,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="3" style="text-align: center;">'+spinner+'</td>');
     });
 
     // change chain threshold in aa
-    $(document).on('change', '#chain-aa-change-threshold', function(e){
+    $(document).on('change', '#chain-aa-change-threshold', e=>{
         e.preventDefault();
-        var reload = $(this);
+        var reload = $(e.currentTarget);
         var threshold = reload.children("p").children("select").val();
         reload.load( "/chain/chainThreshold/", {
             threshold: threshold,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            csrfmiddlewaretoken: getCookie("csrftoken")
         });
         // reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
     });
 
-
     // toggle faction poster in aa
-    $(document).on('click', '#chain-aa-toggle-poster', function(e){
+    $(document).on('click', '#chain-aa-toggle-poster', e=>{
         e.preventDefault();
-        var reload = $(this).parents("form");
-        reload.load( "/chain/togglePoster/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        $(e.currentTarget).parents("form").load( "/chain/togglePoster/", {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="3" style="text-align: center;">'+spinner+'</td>');
     });
 
     // toggle live report creation
@@ -175,59 +160,47 @@
 
 
     // faction tree
-    $(document).on('change', '[id^="chain-tree-"]', function(e){
+    $(document).on('change', '[id^="chain-tree-"]', e=>{
         e.preventDefault();
-        var v = $(this).val();
-        var id = $(this).attr("id").split("-");
+        var v = $(e.currentTarget).val();
+        var id = $(e.currentTarget).attr("id").split("-");
         var p = id.pop();
         var t = id.pop();
         $( "#content-update" ).load( "/chain/tree/", {
             t: t, p: p, v: v,
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            csrfmiddlewaretoken: getCookie("csrftoken")
         });
-        $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Creating new image')
+        $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Creating new image');
     });
 
     // toggle armory record
-    $(document).on('click', '#chain-armory-record', function(e){
+    $(document).on('click', '#chain-armory-record', e=>{
         e.preventDefault();
-        var reload = $(this).closest("table");
-        reload.load( "/chain/toggleArmoryRecord/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="2" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        $(e.currentTarget).closest("table").load( "/chain/toggleArmoryRecord/", {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="2" style="text-align: center;">'+spinner+'</td>');
     });
 
     // reset armory record
-    $(document).on('click', '#chain-armory-reset', function(e){
+    $(document).on('click', '#chain-armory-reset', e=>{
         e.preventDefault();
-        var reload = $(this).closest("table");
-        reload.load( "/chain/resetArmoryRecord/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="2" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        $(e.currentTarget).closest("table").load( "/chain/resetArmoryRecord/", {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="2" style="text-align: center;">'+spinner+'</td>');
     });
 
-    // reset armory record
-    $(document).on('click', '.chain-armory-toggle-view', function(e){
-        e.preventDefault();
-        var target = $(this).next("table");
-        console.log(target);
-        var i = $(this).find("i.fa-caret-right");
-        target.slideToggle("fast", function(){
-            if(target.is(':visible')) {
-                i.addClass("fa-rotate-90");
-            } else {
-                i.removeClass("fa-rotate-90");
-            }
+    // drop down armory record
+    $(document).on('click', '.chain-armory-toggle-view', e=>{
+        e.preventDefault();        
+        $(e.currentTarget).next("table").slideToggle("fast", ()=>{
+            $(e.currentTarget).find("i.fa-caret-right").toggleClass("fa-rotate-90");
         });
     });
 
     // refresh timer target update
-    window.setInterval(function(){
-        $(".timeout").each(function() {
-            var timeRefresh = $.trim($(this).text());
+    window.setInterval(()=>{
+        $(".timeout").each(e=>{
+            var timeRefresh = $.trim($(e.currentTarget).text());
             var splitRefresh = timeRefresh.split(" ");
             var sRefresh = 0;
             if (splitRefresh.length == 2) {
@@ -243,50 +216,43 @@
             sRefresh = sRefresh % 60;
             if (mRefresh) {
                 spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html(mRefresh.toString()+" mins "+spad+" s");
+                $(e.currentTarget).html(''+mRefresh+" mins "+spad+" s");
             } else {
-                $(this).html(sRefresh.toString()+" s");
-                if(!sRefresh) {
-                    $(this).removeClass("timeout")
-                }
+                $(e.currentTarget).html(''+sRefresh+" s");
+                if(!sRefresh)
+                    $(e.currentTarget).removeClass("timeout");
             }
         });
     }, 1000);
 
     // refresh live chain
-    window.setInterval(function(){
-        $("#refresh-live-chain").each(function() {
+    window.setInterval(()=>{
+        $("#refresh-live-chain").each(()=>{
             $( "#content-update" ).load( "/chain/live/", {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                csrfmiddlewaretoken: getCookie("csrftoken"),
             });
-            $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading live chain (1 API Call)')
+            $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading live chain (1 API Call)').addClass("grey");
             $("div.error").hide();
         });
     }, 60000);
 
     // delete wall from list
-    $(document).on('click', '.wall-delete', function(e){
+    $(document).on('click', '.wall-delete', e=>{
         e.preventDefault();
-        var wallId = this.href.split("/").pop();
-        var reload = $(this).parents("tr");
-        reload.load( "/chain/deleteWall/"+wallId, {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
+    });
     });
 
     // toggle wall from list
-    $(document).on('click', '.wall-toggle', function(e){
+    $(document).on('click', '.wall-toggle', e=>{
         e.preventDefault();
-        var wallId = this.href.split("/").pop();
-        var reload = $(this).parents("tr");
-        reload.load( "/chain/toggleWall/"+wallId, {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
+            csrfmiddlewaretoken: getCookie("csrftoken")
         });
-        reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
     });
-
 
 </script>
 {% endblock %}
