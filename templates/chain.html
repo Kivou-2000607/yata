@@ -191,7 +191,7 @@
 
     // drop down armory record
     $(document).on('click', '.chain-armory-toggle-view', e=>{
-        e.preventDefault();        
+        e.preventDefault();
         $(e.currentTarget).next("table").slideToggle("fast", ()=>{
             $(e.currentTarget).find("i.fa-caret-right").toggleClass("fa-rotate-90");
         });
@@ -241,17 +241,16 @@
         e.preventDefault();
         $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
             csrfmiddlewaretoken: getCookie("csrftoken")
-        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
-    });
+        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
     });
 
     // toggle wall from list
     $(document).on('click', '.wall-toggle', e=>{
         e.preventDefault();
+        console.log("coucou");
         $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
             csrfmiddlewaretoken: getCookie("csrftoken")
-        });
-        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');    
+        }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
     });
 
 </script>
