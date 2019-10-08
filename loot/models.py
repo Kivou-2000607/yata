@@ -39,7 +39,7 @@ class NPC(models.Model):
             else:
                 self.status = status[1]
 
-            print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS,self.updateTS))
+            print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
 
     def lootTimings(self, lvl=None):

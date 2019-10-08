@@ -223,7 +223,6 @@ def live(request):
                         ETA = timestampToDate(int((liveChain["max"] - b) / a))
                     except BaseException as e:
                         print("[view.chain.live] ERROR, unable to compute ETA liveChain[max] = {}, a = {}, b = {}".format(liveChain["max"], a, b))
-                        print(f"[view.chain.live] {e}")
                         ETA = "unable to compute EAT"
                     graph['info']['ETALast'] = ETA
                     graph['info']['regLast'] = [a, b]
@@ -233,7 +232,6 @@ def live(request):
                         ETA = timestampToDate(int((liveChain["max"] - b) / a))
                     except BaseException as e:
                         print("[view.chain.live] ERROR, unable to compute ETA liveChain[max] = {}, a = {}, b = {}".format(liveChain["max"], a, b))
-                        print(f"[view.chain.live] {e}")
                         ETA = "unable to compute EAT"
                     graph['info']['ETA'] = ETA
                     graph['info']['reg'] = [a, b]
