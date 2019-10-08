@@ -17,7 +17,7 @@ class NPC(models.Model):
     show = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"NPC {self.name} [{self.tId}]"
+        return "NPC {} [{}]".format(self.name, self.tId)
 
     def update(self, key=None):
         if key is None:
@@ -39,7 +39,7 @@ class NPC(models.Model):
             else:
                 self.status = status[1]
 
-            print(f"[loot.NPC.update] {self}: {self.status} {self.hospitalTS} {self.updateTS}")
+            print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS,self.updateTS))
             self.save()
 
     def lootTimings(self, lvl=None):
@@ -82,4 +82,4 @@ class NPC(models.Model):
         return self.lootTimings(lvl=4)
 
     def pictureURL(self):
-        return f"/static/images/loot/npc_{self.tId}.png"
+        return "/static/images/loot/npc_{}.png".format(self.tId)

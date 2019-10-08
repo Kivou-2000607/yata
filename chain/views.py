@@ -1248,8 +1248,8 @@ def walls(request):
                 else:
                     continue
 
-                aFac = f"{wall.attackerFactionName} [{wall.attackerFactionId}]"
-                dFac = f"{wall.defenderFactionName} [{wall.defenderFactionId}]"
+                aFac = "{} [{}]".format(wall.attackerFactionName, wall.attackerFactionId)
+                dFac = "{} [{}]".format(wall.defenderFactionName, wall.defenderFactionId)
 
                 if aFac not in summary:
                     summary[aFac] = dict({'Total': [0, 0, 0],  # Total [Points / Joins / Clears]
@@ -1426,7 +1426,7 @@ def importWall(request):
             faction = Faction.objects.filter(tId=author.factionId).first()
             if faction is None:
                 t = 0
-                m = f"Can't find faction {author.factionId} in YATA database"
+                m = "Can't find faction {} in YATA database".format(author.factionId)
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("Faction exists: checked")
@@ -1442,11 +1442,11 @@ def importWall(request):
                     attackers[p.get('XID')] = p
                 else:
                     defenders[p.get('XID')] = p
-            print(f"Wall Participants: {i}")
+            print("Wall Participants: {}".format(i))
 
             if i > 500:
                 t = 0
-                m = f"{i} is too much participants for a wall"
+                m = "{} is too much participants for a wall".format(i)
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("# Participant: checked")
@@ -1474,7 +1474,7 @@ def importWall(request):
 
             if faction.tId not in [wallDic.get('attackerFactionId'), wallDic.get('defenderFactionId')]:
                 t = 0
-                m = f"{faction} is not involved in this war"
+                m = "{} is not involved in this war".format(faction)
                 print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("Faction in wall: checked")
@@ -1482,17 +1482,17 @@ def importWall(request):
             messageList = []
             wall = Wall.objects.filter(tId=wallDic.get('tId')).first()
             if wall is None:
-                messageList.append(f"Wall {wallDic.get('tId')} created")
+                messageList.append("Wall {} created".format(wallDic.get('tId')))
                 creation = True
                 wall = Wall.objects.create(**wallDic)
             else:
-                messageList.append(f"Wall {wallDic.get('tId')} modified")
+                messageList.append("Wall {} modified".format(wallDic.get('tId')))
                 wall.update(wallDic)
 
             if faction in wall.factions.all():
-                messageList.append(f"wall already added to {faction}")
+                messageList.append("wall already added to {}".format(faction))
             else:
-                messageList.append(f"adding wall to {faction}")
+                messageList.append("adding wall to {}".format(faction))
                 wall.factions.add(faction)
 
             t = 1
@@ -1501,7 +1501,7 @@ def importWall(request):
 
         except BaseException as e:
             t = 0
-            m = f"Server error... YATA's been poorly coded: {e}"
+            m = "Server error... YATA's been poorly coded: {}".format(e)
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
     else:

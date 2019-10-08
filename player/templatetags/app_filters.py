@@ -67,18 +67,18 @@ def ts2ago(timestamp):
     t = timestamp // 86400
     if t:
         s = "" if t == 1 else "s"
-        return f"{t} day{s} ago"
+        return "{} day{} ago".format(t, s)
     t = (timestamp - 86400 * t) // 3600 % 24
     if t:
         s = "" if t == 1 else "s"
-        return f"{t} hr{s} ago"
+        return "{} hr{} ago".format(t, s)
     t = (timestamp - 3600 * t) // 60 % 60
     if t:
         s = "" if t == 1 else "s"
-        return f"{t} min{s} ago"
+        return "{} min{} ago".format(t, s)
     t = (timestamp - 60 * t) % 60
     s = "" if t == 1 else "s"
-    return f"{t} sec{s} ago"
+    return "{} sec{} ago".format(t, s)
 
 
 @register.filter(name='format')
@@ -143,14 +143,13 @@ def honorUrl(url):
 @register.filter(name='honorBanner')
 def honorBanner(url, name):
     if url is None:
-        return f"<div class=\"award-default\"><img class=\"award-default\" src=\"{settings.STATIC_URL}honors/defaultBanner.png\" title=\"{name}\"><span class=\"award-default\">{name}</span></div>"
+        return "<div class=\"award-default\"><img class=\"award-default\" src=\"{}honors/defaultBanner.png\" title=\"{}\"><span class=\"award-default\">{}</span></div>".format(settings.STATIC_URL, name, name)
     else:
-        return f"<img class=\"award-default\" src=\"{url}\" title=\"{name}\">"
+        return "<img class=\"award-default\" src=\"{}\" title=\"{}\">".format(url, name)
 
 @register.filter(name='medalUrl')
 def medalUrl(id):
-    # img = f"<img src=\"{settings.STATIC_URL}medals/img/{id}_r.png\" class=\"medals\">"
-    url = f"{settings.STATIC_URL}medals/img/{id}_r.png"
+    url = "{}medals/img/{}_r.png".format(settings.STATIC_URL, id)
     return url
 
 
@@ -232,19 +231,19 @@ def short(num):
 
 @register.filter(name='tTooltip')
 def tTooltip(t):
-    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
-    return f'<div style="margin: 8px;"><h3>Territory {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}</div>'
+    f = '{} [{}]'.format(t.factionName, t.faction) if bool(t.faction) else "-"
+    return '<div style="margin: 8px;"><h3>Territory {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}</div>'.format(t.tId, f, t.coordinate_x,t.coordinate_y, t.daily_respect)
 
 
 @register.filter(name='rTooltip')
 def rTooltip(t):
-    f = f'{t.factionName} [{t.faction}]' if bool(t.faction) else "-"
-    return f'<div style="margin: 8px;"><h3>Racket {t.tId}</h3><b>Faction:</b> {f}<br><b>Coordinates:</b> {t.coordinate_x}x{t.coordinate_y}<br><b>Respect:</b> {t.daily_respect}<br><b>Racket:</b> {t.name}<br><b>Reward:</b> {t.reward}<br><b>Distance:</b> {t.distance:0.2f}</div>'
+    f = '{} [{}]'.format(t.factionName, t.faction) if bool(t.faction) else "-"
+    return '<div style="margin: 8px;"><h3>Racket {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}<br><b>Racket:</b> {}<br><b>Reward:</b> {}<br><b>Distance:</b> {:0.2f}</div>'.format(t.tId, f, t.coordinate_x,t.coordinate_y, t.daily_respect,t.name, t.reward, t.distance)
 
 
 @register.filter(name='sTooltip')
 def sTooltip(t):
-    return f'<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {t["factionName"]} [{t["faction"]}]<br><b>Coordinates:</b> {t["coordinate_x"]:.2f}x{t["coordinate_y"]:.2f}</div>'
+    return '<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {} [{}]<br><b>Coordinates:</b> {:.2f}x{:.2f}</div>'.format(t["factionName"], t["faction"], t["coordinate_x"], t["coordinate_y"])
 
 
 

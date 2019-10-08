@@ -955,7 +955,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                             split_perk = p.strip().split(" ")
                             r = float(split_perk[1].replace("%", "")) / 100.
                             c *= (1. - r)
-                            coding_perks.append(f"education ({int(r * 100)}%)")
+                            coding_perks.append("education ({}%)".format(int(r * 100)))
                             break
                     for p in userInfo.get("company_perks", []):
                         if "virus coding time reduction" == p[6:].lower():
@@ -973,7 +973,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["left"] = max(t * (vp["goal"] - vp["current"]), 0)
                     s1 = "" if vp["left"] == 1 else "s"
                     s2 = "" if t == 1 else "s"
-                    vp["comment"] = [f"day{s1} left", f"coding simple viruses in {t} day{s2} ({coding_perks})"]
+                    vp["comment"] = ["day{} left".format(s1), "coding simple viruses in {} day{} ({})".format(t, s2, coding_perks)]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [527]:

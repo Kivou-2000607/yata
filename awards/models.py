@@ -34,7 +34,7 @@ class Call(models.Model):
     a = models.TextField(default="{}")
 
     def __str__(self):
-        return f"Call #{self.pk}"
+        return "Call #{}".format(self.pk)
 
     def update(self):
         req = apiCall("torn", "", "medals,honors", self.key)

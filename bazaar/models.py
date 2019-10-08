@@ -193,7 +193,7 @@ class Item(models.Model):
                 to_del.append(t)
 
         for t in to_del:
-            print(f"[model.bazaar.item] remove history entry {t}: {priceHistory[t]}")
+            print("[model.bazaar.item] remove history entry {}: {}".format(t, priceHistory[t]))
             del priceHistory[t]
 
         priceHistory[ts] = int(v["market_value"])

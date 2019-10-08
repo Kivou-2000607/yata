@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
         # update NPC status
         for npc in NPC.objects.filter(show=True):
-            print(f"update {npc}")
+            print("update {}".format(npc))
             npc.update()
 
 

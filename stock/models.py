@@ -77,7 +77,7 @@ class Stock(models.Model):
                 to_del.append(t)
 
         for t in to_del:
-            print(f"[model.stock.update] remove history entry {t}: {priceHistory[t]}")
+            print("[model.stock.update] remove history entry {}: {}".format(t, priceHistory[t]))
             del priceHistory[t]
             try:
                 del quantityHistory[t]

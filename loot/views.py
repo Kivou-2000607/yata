@@ -49,4 +49,4 @@ def timings(request):
         return HttpResponse(json.dumps(npcs), content_type="application/json")
 
     except BaseException as e:
-        return HttpResponse(json.dumps({"error": {"code": 500, "error": f"{type(e)}"}}), content_type="application/json")
+        return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
