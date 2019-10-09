@@ -58,6 +58,7 @@ def updateAttacks(player):
                 attacks[k]["endTS"] = int(v["timestamp_ended"])
                 attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
                 attacks[k]["bonus"] = int(v["chain"])
+
             else:
                 allModifiers = 1.0
                 for mod, val in v['modifiers'].items():
@@ -70,6 +71,9 @@ def updateAttacks(player):
                 attacks[k]["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
                 attacks[k]["bonus"] = 0
                 attacks[k]["level"] = level
+                if int(v['modifiers']["war"]) == 2:
+                    attacks[k]["modifiers"]["fairFight"] = 0
+
 
         for k in remove:
             del attacks[k]

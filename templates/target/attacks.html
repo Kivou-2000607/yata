@@ -43,16 +43,19 @@ This file is part of yata.
         </thead>
         <tbody>
         {% for k, v in attacks.items %}
-        <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.modifiers.fairFight == 3 %}max-fair-fight{% elif v.modifiers.fairFight|div:2 > 1 %}good-fair-fight{% endif %} {% if v.bonus %}bonus-attack{% endif %}">
+        <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.modifiers.fairFight == 3 %}max-fair-fight{% elif v.modifiers.fairFight|div:2 > 1 %}good-fair-fight{% elif v.modifiers.fairFight == 0 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}">
             <td class="a">{{v.endTS|ts2date}}</td>
             <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
             <td class="c">{{v.result}}</td>
             <td class="e">{{v.level}}</td>
-            {% if v.bonus == 0 %}
-                <td class="d">{{v.modifiers.fairFight|floatformat:2}}</td>
+            {% if v.bonus > 0 %}
+                <td colspan="2">Bonus: {{v.bonus}}</td>
+            {% elif v.modifiers.fairFight == 0 %}
+                <td class="d">War</td>
                 <td class="d">{{v.flatRespect|floatformat:2}}</td>
             {% else %}
-                <td colspan="2">Bonus: {{v.bonus}}</td>
+                <td class="d">{{v.modifiers.fairFight|floatformat:2}}</td>
+                <td class="d">{{v.flatRespect|floatformat:2}}</td>
             {% endif %}
             <td class="e">
                 <div class="catch-buttons-attack-{{v.defender_id}}">

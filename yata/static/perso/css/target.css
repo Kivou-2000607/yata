@@ -33,6 +33,7 @@ table.target-attacks tr.zero-respect       { background:#ff00001e; }
 table.target-attacks tr.max-fair-fight       { background:#d9ead3ee; }
 table.target-attacks tr.good-fair-fight       { background:#d9ead3ae; }
 table.target-attacks tr.bonus-attack       { background:#a8b6d73e; }
+table.target-attacks tr.war-attack       { background:#FF8C003e; }
 
 table.target-attacks td.a { width: 25%; text-align: left; }
 table.target-attacks td.b { width: 25%; text-align: left; }
