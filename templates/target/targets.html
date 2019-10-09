@@ -20,6 +20,15 @@ This file is part of yata.
 
 <script>
         $(document).ready(function() {
+
+             $('.target-list-note').keydown( function(e) {
+                 var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+                 if(key == 13) {
+                     e.preventDefault();
+                     return $(e.target).blur().focus();
+                 }
+             });
+
             $.tablesorter.addParser({
                 // set a unique id
                 id: 'ago',
