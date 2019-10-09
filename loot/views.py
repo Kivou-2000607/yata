@@ -17,7 +17,7 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
 
-            context = {"player": player, "NPCs": NPC.objects.filter(show=True).order_by('tId')}
+            context = {"player": player, "NPCs": [npc for npc in NPC.objects.filter(show=True).order_by('tId')]}
             return render(request, "loot.html", context)
 
         else:
