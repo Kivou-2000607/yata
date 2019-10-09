@@ -1096,10 +1096,10 @@ def armory(request):
                         if member in armory[item]:
                             armory[item][member][0] += n
                         else:
-                            armory[item][member] = [n, 0]
+                            armory[item][member] = [n, 0, 0]
                     else:
-                        # new item and new member [taken, given]
-                        armory[item] = {member: [n, 0]}
+                        # new item and new member [taken, given, filled]
+                        armory[item] = {member: [n, 0, 0]}
 
                 elif 'deposited' in ns:
                     member = ns[0]
@@ -1114,13 +1114,13 @@ def armory(request):
                         if member in armory[item]:
                             armory[item][member][1] += n
                         else:
-                            armory[item][member] = [0, n]
+                            armory[item][member] = [0, n, 0]
                     else:
                         # new item and new member [taken, given]
-                        armory[item] = {member: [0, n]}
+                        armory[item] = {member: [0, n, 0]}
 
                 # elif 'gave' in ns:
-                    # print(ns)
+                #     print(ns)
 
                 elif 'filled' in ns:
                     member = ns[0]
@@ -1128,12 +1128,12 @@ def armory(request):
                     timestamps["nObjects"] += 1
                     if item in armory:
                         if member in armory[item]:
-                            armory[item][member][1] += 1
+                            armory[item][member][2] += 1
                         else:
-                            armory[item][member] = [0, 1]
+                            armory[item][member] = [0, 0, 1]
                     else:
-                        # new item and new member [taken, given]
-                        armory[item] = {member: [0, 1]}
+                        # new item and new member [taken, given, filled]
+                        armory[item] = {member: [0, 0, 1]}
 
             armoryType = {t: dict({}) for t in ITEM_TYPE}
             armoryType["Points"] = dict({})

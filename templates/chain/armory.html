@@ -84,10 +84,10 @@ $(document).ready(function() {
         {% if items|length %}
         {# <table class="center"><thead><tr><th>{{type}}</tr></th></thead></table> #}
         <h3>{{type}}</h3>
-        {% for item, members in items.items %}
+        {% for tItem, members in items.items %}
         <table class="center chain-armory-toggle-view">
             <tr>
-                <td class="a">{{item}} (x{{members|length}})</td>
+                <td class="a">{{tItem}} (x{{members|length}})</td>
                 <td class="b"><i class="fas fa-caret-right"></td>
             </tr>
         </table>
@@ -97,6 +97,9 @@ $(document).ready(function() {
                     <th>Member</th>
                     <th>Taken</th>
                     <th>Gave</th>
+                    {% if tItem == "Blood Bag" %}
+                        <th>Filled</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -105,6 +108,9 @@ $(document).ready(function() {
                         <td class="a">{{k}}</td>
                         <td class="b">{{v.0}}</td>
                         <td class="b">{{v.1}}</td>
+                        {% if tItem == "Blood Bag" %}
+                            <td class="b">{{v.2}}</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
             </tbody>
