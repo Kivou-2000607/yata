@@ -1080,6 +1080,7 @@ def armory(request):
             armory = dict({})
             timestamps["nObjects"] = 0
             for k, v in armoryRaw.items():
+                btype = "?"
                 ns = cleanhtml(v.get("news", "")).split(" ")
                 if 'used' in ns:
                     member = ns[0]
@@ -1087,7 +1088,10 @@ def armory(request):
                         item = ns[6].title()
                         n = 25
                     else:
-                        item = " ".join(ns[6:-1]).split(":")[0].strip()
+                        splt = " ".join(ns[6:-1]).split(":")
+                        if len(splt):
+                            btype = splt[-1].strip()
+                        item = splt[0].strip()
                         # item = " ".join(ns[6:-1]).strip()
                         n = 1
 
@@ -1095,34 +1099,41 @@ def armory(request):
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][0] += n
+                            armory[item][member][3] = btype
                         else:
-                            armory[item][member] = [n, 0, 0]
+                            armory[item][member] = [n, 0, 0, btype]
                     else:
                         # new item and new member [taken, given, filled]
-                        armory[item] = {member: [n, 0, 0]}
+                        armory[item] = {member: [n, 0, 0, btype]}
 
                 elif 'deposited' in ns:
                     member = ns[0]
+                    # print(ns)
                     n = int(ns[2].replace(",", "").replace("$", ""))
                     timestamps["nObjects"] += n
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
                     else:
-                        item = " ".join(ns[4:]).split(":")[0].strip()
+                        splt = " ".join(ns[6:-1]).split(":")
+                        if len(splt):
+                            btype = splt[-1].strip()
+                        item = splt[0].strip()
                         # item = " ".join(ns[4:]).strip()
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][1] += n
+                            armory[item][member][3] = btype
                         else:
-                            armory[item][member] = [0, n, 0]
+                            armory[item][member] = [0, n, 0, btype]
                     else:
                         # new item and new member [taken, given]
-                        armory[item] = {member: [0, n, 0]}
+                        armory[item] = {member: [0, n, 0, btype]}
 
                 # elif 'gave' in ns:
                 #     print(ns)
 
                 elif 'filled' in ns:
+                    # print(ns)
                     member = ns[0]
                     item = "Blood Bag"
                     timestamps["nObjects"] += 1
@@ -1130,10 +1141,10 @@ def armory(request):
                         if member in armory[item]:
                             armory[item][member][2] += 1
                         else:
-                            armory[item][member] = [0, 0, 1]
+                            armory[item][member] = [0, 0, 1, btype]
                     else:
                         # new item and new member [taken, given, filled]
-                        armory[item] = {member: [0, 0, 1]}
+                        armory[item] = {member: [0, 0, 1, btype]}
 
             armoryType = {t: dict({}) for t in ITEM_TYPE}
             armoryType["Points"] = dict({})

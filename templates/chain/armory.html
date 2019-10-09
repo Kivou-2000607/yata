@@ -94,22 +94,42 @@ $(document).ready(function() {
         <table class="center trshadow chain-armory-breakdown" style="margin-bottom: 10px;">
             <thead>
                 <tr>
-                    <th>Member</th>
-                    <th>Taken</th>
-                    <th>Gave</th>
                     {% if tItem == "Blood Bag" %}
+                        <th>Member</th>
+                        <th>Type</th>
+                        <th>Taken</th>
+                        <th>Gave</th>
+                        <th>Diff</th>
                         <th>Filled</th>
+                        <th>Diff</th>
+                        <th>Total</th>
+                        <th>Diff</th>
+                    {% else %}
+                        <th>Member</th>
+                        <th>Taken</th>
+                        <th>Gave</th>
+                        <th>Diff</th>
                     {% endif %}
                 </tr>
             </thead>
             <tbody>
                     {% for k, v in members.items %}
                     <tr>
-                        <td class="a">{{k}}</td>
-                        <td class="b">{{v.0}}</td>
-                        <td class="b">{{v.1}}</td>
                         {% if tItem == "Blood Bag" %}
-                            <td class="b">{{v.2}}</td>
+                            <td class="c">{{k}}</td>
+                            <td class="d">{{v.3}}</td>
+                            <td class="d">{{v.0}}</td>
+                            <td class="d">{{v.1}}</td>
+                            <td class="d {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
+                            <td class="d">{{v.2}}</td>
+                            <td class="d {% if v.2 < v.0 %}error{% elif v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.2|sub:v.0|format:"{:+,.0f}"}}</td>
+                            <td class="d">{{v.1|add:v.2}}</td>
+                            <td class="d {% if v.1|add:v.2 < v.0 %}error{% elif v.1|add:v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|add:v.2|sub:v.0|format:"{:+,.0f}"}}</td>
+                        {% else %}
+                            <td class="a">{{k}}</td>
+                            <td class="b">{{v.0}}</td>
+                            <td class="b">{{v.1}}</td>
+                            <td class="b {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
