@@ -61,7 +61,6 @@ def ts2time(timestamp):
         return str(e)
 
 
-
 @register.filter(name='ts2ago')
 def ts2ago(timestamp):
     t = timestamp // 86400
@@ -140,12 +139,14 @@ def badge(value, arg):
 def honorUrl(url):
     return "https://awardimages.torn.com/435540163.png" if url is None else url
 
+
 @register.filter(name='honorBanner')
 def honorBanner(url, name):
     if url is None:
         return "<div class=\"award-default\"><img class=\"award-default\" src=\"{}honors/defaultBanner.png\" title=\"{}\"><span class=\"award-default\">{}</span></div>".format(settings.STATIC_URL, name, name)
     else:
         return "<img class=\"award-default\" src=\"{}\" title=\"{}\">".format(url, name)
+
 
 @register.filter(name='medalUrl')
 def medalUrl(id):
@@ -232,25 +233,27 @@ def short(num):
 @register.filter(name='tTooltip')
 def tTooltip(t):
     f = '{} [{}]'.format(t.factionName, t.faction) if bool(t.faction) else "-"
-    return '<div style="margin: 8px;"><h3>Territory {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}</div>'.format(t.tId, f, t.coordinate_x,t.coordinate_y, t.daily_respect)
+    return '<div style="margin: 8px;"><h3>Territory {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}</div>'.format(t.tId, f, t.coordinate_x, t.coordinate_y, t.daily_respect)
 
 
 @register.filter(name='rTooltip')
 def rTooltip(t):
     f = '{} [{}]'.format(t.factionName, t.faction) if bool(t.faction) else "-"
-    return '<div style="margin: 8px;"><h3>Racket {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}<br><b>Racket:</b> {}<br><b>Reward:</b> {}<br><b>Distance:</b> {:0.2f}</div>'.format(t.tId, f, t.coordinate_x,t.coordinate_y, t.daily_respect,t.name, t.reward, t.distance)
+    return '<div style="margin: 8px;"><h3>Racket {}</h3><b>Faction:</b> {}<br><b>Coordinates:</b> {}x{}<br><b>Respect:</b> {}<br><b>Racket:</b> {}<br><b>Reward:</b> {}<br><b>Distance:</b> {:0.2f}</div>'.format(t.tId, f, t.coordinate_x, t.coordinate_y, t.daily_respect, t.name, t.reward, t.distance)
 
 
 @register.filter(name='sTooltip')
 def sTooltip(t):
     return '<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {} [{}]<br><b>Coordinates:</b> {:.2f}x{:.2f}</div>'.format(t["factionName"], t["faction"], t["coordinate_x"], t["coordinate_y"])
 
+
 @register.filter(name='float2IfFloat')
 def float2IfFloat(f):
-    if f:
+    try:
         return "{:,.0f}".format(f) if int(f) == f else "{:,.2f}".format(f)
-    else:
+    except BaseException:
         return ""
+
 
 @register.filter(name='lootLevel')
 def lootLevel(lvl):
