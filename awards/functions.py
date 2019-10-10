@@ -85,21 +85,24 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     def dLeftE(energy, r=None, c=None):
         # try:
         # days
-        d = [energy / ed for ed in eDay]
-        # tootlip with details
-        if r is not None:
-            tt = "With a current ration of <i>{:,.2g} {}</i><br>".format(r, c)
-        elif c is not None:
-            tt = "<i>{}</i><br>".format(c)
-        else:
-            tt=""
+        try:
+            d = [energy / ed for ed in eDay]
+            # tootlip with details
+            if r is not None:
+                tt = "With a current ration of <i>{:,.2g} {}</i><br>".format(r, c)
+            elif c is not None:
+                tt = "<i>{}</i><br>".format(c)
+            else:
+                tt=""
 
-        tt += 'Total energy needed: <i>{:,}</i><br>\
-                - natural energy: <b>{:.2f}</b> days<br>\
-                - daily refill: <b>{:.2f}</b> days<br>\
-                - 3 xanax / day: <b>{:.2f}</b> days<br>\
-                - both: <b>{:.2f}</b> days'.format(int(energy), *d)
-        return d[0], tt
+            tt += 'Total energy needed: <i>{:,}</i><br>\
+                    - natural energy: <b>{:.2f}</b> days<br>\
+                    - daily refill: <b>{:.2f}</b> days<br>\
+                    - 3 xanax / day: <b>{:.2f}</b> days<br>\
+                    - both: <b>{:.2f}</b> days'.format(int(energy), *d)
+            return d[0], tt
+        except BaseException:
+            return energy, energy
 
     if typeOfAwards == "crimes":
 
