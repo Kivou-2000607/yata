@@ -83,24 +83,23 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     eDay[3] = eDay[0] + eBar + 3 * 250
 
     def dLeftE(energy, r=None, c=None):
-        try:
-            # days
-            d = [energy / ed for ed in eDay]
-            # tootlip with details
-            tt = "Total energy needed: <b>{:,}</b><br>\
-                   - natural energy: {:.2f} days<br>\
-                   - daily refill: {:.2f} days<br>\
-                   - 3 xanax / day: {:.2f} days<br>\
-                   - both: {:.2f} days".format(int(energy), *d)
-            if r is not None:
-                tt += "<br>With a current ration of {:,.2g} {}".format(r, c)
-            elif c is not None:
-                tt += "<br>{}".format(c)
-            return d[0], tt
-        except BaseException:
-            return "&infin;", "&infin;"
+        # try:
+        # days
+        d = [energy / ed for ed in eDay]
+        # tootlip with details
+        if r is not None:
+            tt = "With a current ration of <i>{:,.2g} {}</i><br>".format(r, c)
+        elif c is not None:
+            tt = "<i>{}</i><br>".format(c)
+        else:
+            tt=""
 
-    # userInfo = {}
+        tt += 'Total energy needed: <i>{:,}</i><br>\
+                - natural energy: <b>{:.2f}</b> days<br>\
+                - daily refill: <b>{:.2f}</b> days<br>\
+                - 3 xanax / day: <b>{:.2f}</b> days<br>\
+                - both: <b>{:.2f}</b> days'.format(int(energy), *d)
+        return d[0], tt
 
     if typeOfAwards == "crimes":
 
@@ -173,6 +172,23 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
         # time to get 1 nerve counting beers
         timeToGet1nerveBoth = 5 / float(1 + ngain5)
 
+        def dLeftN(nerve):
+            d = [0, 0, 0, 0]
+            d[0] = nerve * 5 / (60 * 24)
+            d[1] = nerve * timeToGet1nerveRefi / (60 * 24)
+            d[2] = nerve * timeToGet1nerveBeer / (60 * 24)
+            d[3] = nerve * timeToGet1nerveBoth / (60 * 24)
+
+            tt = "With an arbitrary <i>success rate of {:,.0f}%</i><br>\
+                  Total Nerve needed: <i>{:,.0f}</i><br>\
+                  - Expected time: <b>{:.1f}</b> days<br>\
+                  - With daily refill: <b>{:.1f}</b> days<br>\
+                  - With 24 beers a day: <b>{:.1f}</b> days<br>\
+                  - With both: <b>{:.1f}</b> days{}".format(100 * forComment[type][1], nerve, *d, "<br><i>while working in a pub</i>" if pub else "")
+
+            return d[0], tt
+
+
         for k, v in tornAwards["honors"].items():
             if v["type"] in [5, 15]:
                 vp = v
@@ -191,12 +207,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [6]:
@@ -205,12 +218,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [24]:
@@ -219,12 +229,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [152]:
@@ -233,12 +240,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [153]:
@@ -247,12 +251,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [155, 161]:
@@ -261,12 +262,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [159]:
@@ -275,12 +273,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [160]:
@@ -289,12 +284,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                    timeMa = nerve * 5 / (60 * 24)
-                    timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                    timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                    timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                    vp["left"] = timeMa
-                    vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [251]:
@@ -356,12 +348,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                 vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                 nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
-                timeMa = nerve * 5 / (60 * 24)
-                timeRe = nerve * timeToGet1nerveRefi / (60 * 24)
-                timeBe = nerve * timeToGet1nerveBeer / (60 * 24)
-                timeBo = nerve * timeToGet1nerveBoth / (60 * 24)
-                vp["left"] = timeMa
-                vp["comment"] = "With an arbitrary success rate of {:,.0f}%.<br>Nerve needed: {:,.0f}<br>Expected time: {:.1f} days<br>With daily refill: {:.1f} days<br>With 24 beers a day{}: {:.1f} days<br>With both: {:.1f} days".format(100 * forComment[type][1], nerve, timeMa, timeRe, " (pub)" if pub else "", timeBe, timeBo)
+                n = dLeftN(nerve)
+                vp["left"] = n[0]
+                vp["comment"] = n[1]
                 awards[type]["m_" + k] = vp
 
             elif v["type"] == "OTR":
@@ -1671,8 +1660,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         "Backdrop": 3,
                         }
 
-                    vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
-                    # vp["comment"] = ["token needed", "cost {} tokens".format(token[v["name"]])]
+                    # vp["left"] = (1 - vp["achieve"]) * token[v["name"]]
+                    vp["comment"] = "Cost {} tokens".format(token[v["name"]])
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [221, 277]:

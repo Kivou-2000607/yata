@@ -252,7 +252,12 @@ def float2IfFloat(f):
     try:
         return "{:,.0f}".format(f) if int(f) == f else "{:,.2f}".format(f)
     except BaseException:
-        return ""
+        return f
+
+
+@register.filter(name='convertInf')
+def convertInf(f):
+    return 1e10 if f in ["&infin;"] else f
 
 
 @register.filter(name='lootLevel')

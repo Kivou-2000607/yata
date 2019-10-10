@@ -41,7 +41,7 @@ This file is part of yata.
                 type: 'numeric'
             });
 
-            $("#awards-list").tablesorter({ header: {6: 'dataVal'}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
+            $("#awards-list").tablesorter({ header: {6: 'dataVal', 7: 'dataVal'}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
 
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -176,7 +176,13 @@ This file is part of yata.
                     </td>
                 {% else %}
                     <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Acheived: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
-                    <td class="g" data-val="{{award.left}}"><span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfFloat}}</span></td>
+                    <td class="g" data-val="{{award.left|convertInf}}">
+                        {% if award.left %}
+                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfFloat|safe}}</span>
+                        {% elif award.comment %}
+                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+                        {% endif %}
+                    </td>
                 {% endif %}
                 <td class="i">
                     <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
