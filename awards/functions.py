@@ -93,7 +93,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             elif c is not None:
                 tt = "<i>{}</i><br>".format(c)
             else:
-                tt=""
+                tt = ""
 
             tt += 'Total energy needed: <i>{:,}</i><br>\
                     - natural energy: <b>{:.2f}</b> days<br>\
@@ -190,7 +190,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                   - With both: <b>{:.1f}</b> days{}".format(100 * forComment[type][1], nerve, *d, "<br><i>while working in a pub</i>" if pub else "")
 
             return d[0], tt
-
 
         for k, v in tornAwards["honors"].items():
             if v["type"] in [5, 15]:
@@ -916,16 +915,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                # elif int(k) in [4]:
-                #     # 4 {'name': "I'm a Real Doctor", 'description': 'Steal 500 medical items', 'type': 15, 'circulation': 24992, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
-                #     type = "Medical items"
-                #     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                #     vp["current"] = userInfo.get("personalstats", dict({})).get("medstolen", 0)
-                #     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                #     vp["left"] = max((vp["goal"] - vp["current"]) / (0.5 * 7), 0)
-                #     vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "as brain surgeon stealing SFAK"]
-                #     awards[type]["h_" + k] = vp
-
                 elif int(k) in [7]:
                     # 7 {'name': 'Magical Veins', 'description': 'Use 5,000 medical items', 'type': 15, 'circulation': 4686, 'rarity': 'Rare', 'awardType': 'Honor', 'achieve': 0}
                     type = "Medical items"
@@ -933,7 +922,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("medicalitemsused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "using 1h CD blood bags"
+                    vp["comment"] = "Using 1h CD blood bags"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [1]:
@@ -944,7 +933,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "current ratio of {:.2g} finds / day".format(ratio)]
+                    vp["comment"] = "With a current ratio of {:.2g} finds / day".format(ratio)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [238]:
@@ -1032,7 +1021,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("alcoholused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(0.5 * (vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "using 1h CD bottles"
+                    vp["comment"] = "Using 1h CD bottles"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [537]:
@@ -1042,7 +1031,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("candyused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(0.5 * (vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "using 30min CD sweets"
+                    vp["comment"] = "Using 30min CD sweets"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [538]:
@@ -1052,7 +1041,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("energydrinkused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(2 * (vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "using 2h CD cans"
+                    vp["comment"] = "Using 2h CD cans"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [539]:
@@ -1068,7 +1057,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("booksread", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(31 * (vp["goal"] - vp["current"]) - currentBook, 0)
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "currently read {:.02f} days of a book".format(currentBook)]
+                    vp["comment"] = "Currently reading {:.02f} days of a book".format(currentBook)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [678, 716, 717]:
@@ -1101,7 +1090,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "current ratio of {:.2g} finds / day".format(ratio)]
+                    vp["comment"] = "With a current ratio of {:.2g} finds / day".format(ratio)
                     awards[type]["m_" + k] = vp
 
                 elif int(k) in [198, 199, 200]:
@@ -1110,8 +1099,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("medicalitemsused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"] - vp["current"], 0))
-                    vp["comment"] = "using 1h CD blood bags"
+                    vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
+                    vp["comment"] = "Using 1h CD blood bags"
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "travel":
@@ -1369,7 +1358,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("medstolen", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"] - vp["current"]) / (0.5 * 7), 0)
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "as brain surgeon stealing SFAK"]
+                    vp["comment"] = "As brain surgeon stealing SFAK"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [23, 267]:
@@ -1730,7 +1719,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = ["day left" if vp["left"] == 1 else "days left", "current ratio of {:.2g} hours / day".format(ratio)]
+                    vp["comment"] = "With a current ratio of {:.2g} hours / day".format(ratio)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [312]:
