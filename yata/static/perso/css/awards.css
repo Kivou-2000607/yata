@@ -44,7 +44,7 @@ table.awards-list td.c { width: 5%; text-align: right; }
 /* table.awards-list td.d { width: 30%; } */
 table.awards-list td.e { width: 7%; text-align: right; } /* x2 */
 table.awards-list td.f { width: 4%; text-align: center; }
-table.awards-list td.g { width: 6%; text-align: right; }
+table.awards-list td.g { width: 6%; text-align: center; }
 table.awards-list td.h { width: 11%; text-align: left; }
 table.awards-list td.i { width: 2%; text-align: left; }
 table.awards-list tr.award-done { display: none; }
@@ -107,4 +107,9 @@ span.award-default {
   text-shadow: 0 0 2px #000; /* horizontal-offset vertical-offset 'blur' colour */
   -moz-text-shadow: 0 0 2px #000;
   -webkit-text-shadow: 0 0 2px #000;
+}
+
+span.awarded-time {
+    color: #999;
+    font-style: italic;
 }

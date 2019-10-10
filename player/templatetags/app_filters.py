@@ -245,8 +245,12 @@ def rTooltip(t):
 def sTooltip(t):
     return '<div style="margin: 8px;"><h3>Barycenter</h3><b>Faction:</b> {} [{}]<br><b>Coordinates:</b> {:.2f}x{:.2f}</div>'.format(t["factionName"], t["faction"], t["coordinate_x"], t["coordinate_y"])
 
-
-
+@register.filter(name='float2IfFloat')
+def float2IfFloat(f):
+    if f:
+        return "{:,.0f}".format(f) if int(f) == f else "{:,.2f}".format(f)
+    else:
+        return ""
 
 @register.filter(name='lootLevel')
 def lootLevel(lvl):

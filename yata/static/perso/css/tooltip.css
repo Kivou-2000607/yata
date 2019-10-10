@@ -2,11 +2,12 @@
 
 #tooltip
 {
-    text-align: center;
+    text-align: left;
     color: #fff;
     background: #111;
     position: absolute;
     z-index: 100;
+    padding: 15px;
     padding: 15px;
 }
 
@@ -43,4 +44,8 @@
     right: 10px;
     left: auto;
     margin: 0;
+}
+
+.thelp {
+    cursor: help;
 }

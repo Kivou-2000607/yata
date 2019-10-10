@@ -24,7 +24,24 @@ This file is part of yata.
 
 <script>
         $(document).ready(function() {
-            $("#awards-list").tablesorter({ cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
+
+
+            $.tablesorter.addParser({
+                // set a unique id
+                id: 'dataVal',
+                // check if cell value has a numerical value
+                is: function(s, table, cell, $cell) {
+                    return !isNaN($cell.attr("data-val"));
+                },
+                // format data for normalization
+                format: function(s, table, cell, cellIndex) {
+                    return parseFloat($(cell).attr("data-val"));
+                },
+                // set type, either numeric or text
+                type: 'numeric'
+            });
+
+            $("#awards-list").tablesorter({ header: {6: 'dataVal'}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
 
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -130,7 +147,7 @@ This file is part of yata.
             <th class="e" >State</th>
             <th class="e" >Goal</th>
             <th class="f" >Achieve</th>
-            <th class="g" colspan="2" >Comment</th>
+            <th class="g" >Days left</th>
             <th class="i"></th>
         </tr>
     </thead>
@@ -140,31 +157,26 @@ This file is part of yata.
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
                 <td class="a"><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
-                  <td class="b award-todo"><span title="{{award.name}}" rel="tooltip">{{award.img|honorBanner:award.name|safe}}</span></td>
+                  <td class="b award-todo"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">{{award.img|honorBanner:award.name|safe}}</span></td>
                 {% else %}
                     {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
-                        <td class="b"><span title="{{award.name}}" rel="tooltip"><img src="{% static image_static %}" class="medals"> &nbsp; {{award.name}}</span></td>
+                        <td class="b"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% static image_static %}" class="medals"> &nbsp; {{award.name}}</span></td>
                     {% endwith %}
                 {% endif %}
                 <td class="c"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %} rel="tooltip">{{award.circulation|intcomma}}</span></td>
                 <td class="d"><span title="{{award.description}}" rel="tooltip">{{award.description}}</span></td>
-                <td class="e"><span title="{{award.head}}{{award.current|intcomma}}" rel="tooltip">{{award.head}}{{award.current|intcomma}}</span></td>
-                <td class="e"><span title="{{award.head}}{{award.goal|intcomma}}" rel="tooltip">{{award.head}}{{award.goal|intcomma}}</span></td>
+                <td class="e"><span title="Current: {{award.head}}{{award.current|intcomma}}" rel="tooltip">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="e"><span title="Goal: {{award.head}}{{award.goal|intcomma}}" rel="tooltip">{{award.head}}{{award.goal|intcomma}}</span></td>
                 {% if award.achieve == 1%}
-                <td colspan="2" class="award-done">
-                    Awarded on
-                </td>
-                <td colspan="1" class="award-done">
-                    <span title="{{award.awarded_time|ts2date}}" rel="tooltip">{{award.awarded_time|ts2date}}</span>
-                </td>
+                    <td class="f award-done" data-val="{{award.awarded_time}}">
+                        <span title="Awarded on {{award.awarded_time|ts2date}}" rel="tooltip">100%</span>
+                    </td>
+                    <td class="g" data-val="{{award.awarded_time}}">
+                        <span class="awarded-time" title="Awarded on: {{award.awarded_time|ts2date}}" rel="tooltip">{{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
+                    </td>
                 {% else %}
-                    <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}"><span title="{{award.achieve|mul:100|intdiv:1|floatformat:0}}%">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
-                    {% if award.left|floatformat:0|intcomma %}
-                        <td class="g"><span title="{{award.left|floatformat:0|intcomma}}" rel="tooltip">{{award.left|floatformat:0|intcomma}}</span></td>
-                    {% else %}
-                        <td class="g"><span title="{{award.left|safe}}" rel="tooltip">{{award.left|safe}}</span></td>
-                    {% endif %}
-                    <td class="h" style="cursor: pointer"><span title="{{award.comment.1|safe}}" rel="tooltip">{{award.comment.0|safe}}</span></td>
+                    <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Acheived: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
+                    <td class="g" data-val="{{award.left}}"><span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfFloat}}</span></td>
                 {% endif %}
                 <td class="i">
                     <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
