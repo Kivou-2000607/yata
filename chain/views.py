@@ -278,6 +278,7 @@ def toggleLiveReport(request):
 
                 # toggle live creation
                 faction.createLive = not faction.createLive
+                print(faction.createLive)
                 faction.save()
 
                 print('[view.chain.toggleLiveReport] render')
@@ -663,6 +664,12 @@ def createReport(request, chainId):
             print('[view.chain.createReport] number of hits: {}'.format(chain.nHits))
             chain.createReport = True
             chain.save()
+
+            # reset number of createReport
+            faction.createReport = faction.numberOfReportsToCreate()
+            faction.save()
+            print('[view.chain.createReport] set faction create report to {}'.format(faction.createReport))
+
             context = {"player": player, "chain": chain}
             return render(request, 'chain/list-buttons.html', context)
 
@@ -763,6 +770,11 @@ def deleteReport(request, chainId):
             chain.createReport = False
             chain.hasReport = False
             chain.save()
+
+            # reset number of createReport
+            faction.createReport = faction.numberOfReportsToCreate()
+            faction.save()
+            print('[view.chain.deleteReport] set faction create report to {}'.format(faction.createReport))
 
             context = {"player": player, "chain": chain}
             return render(request, 'chain/list-buttons.html', context)

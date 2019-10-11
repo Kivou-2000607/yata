@@ -150,14 +150,14 @@ class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'live_chain', 'ongoing_reports', 'number_of_reports', 'numberOfKeys', 'last_api_call', 'lastAPICall', 'crontabs', 'armoryRecord']
+    list_display = ['tId', 'name', 'createLive', 'createReport', 'ongoing_reports', 'number_of_reports', 'numberOfKeys', 'last_api_call', 'lastAPICall', 'crontabs', 'armoryRecord']
     inlines = [ChainInline, MemberInline]
-    list_filter = ['numberOfKeys', 'armoryRecord']
+    list_filter = ['createLive', 'createReport', 'armoryRecord']
     search_fields = ['name', 'tId']
 
-    def live_chain(self, instance):
-        return(bool(len(instance.chain_set.filter(tId=0))))
-    live_chain.boolean = True
+    # def live_chain(self, instance):
+    #     return(bool(len(instance.chain_set.filter(tId=0))))
+    # live_chain.boolean = True
 
     def number_of_reports(self, instance):
         return("{}/{}".format(len(instance.chain_set.filter(hasReport=True)), len(instance.chain_set.all())))

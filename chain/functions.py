@@ -362,9 +362,16 @@ def fillReport(faction, members, chain, report, attacks):
     return chain, report, (binsCenter, histo), chain.nHits <= nWRA[0]
 
 
-def updateMembers(faction, key=None):
+def updateMembers(faction, key=None, force=True):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
+
+    now = int(timezone.now().timestamp())
+
+    # don't update if less than 24h ago and force is False
+    if not force and (now - faction.membersUpda) < 24 * 3600:
+        print("[function.chain.updateMembers] skip update member")
+        return faction.member_set.all()
 
     # get key
     if key is None:
@@ -372,6 +379,7 @@ def updateMembers(faction, key=None):
         print("[function.chain.updateMembers] using {} key".format(name))
     else:
         print("[function.chain.updateMembers] using personal key")
+
 
     # call members
     membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
@@ -389,7 +397,7 @@ def updateMembers(faction, key=None):
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberDB.status = ", ".join(tmp)
             memberDB.save()
-            faction.membersUpda = int(timezone.now().timestamp())
+            faction.membersUpda = now
         elif Member.objects.filter(tId=m).first() is not None:
             # print('[VIEW members] member {} [{}] change faction'.format(membersAPI[m]['name'], m))
             memberTmp = Member.objects.filter(tId=m).first()
@@ -400,7 +408,7 @@ def updateMembers(faction, key=None):
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberTmp.status = ", ".join(tmp)
             memberTmp.save()
-            faction.membersUpda = int(timezone.now().timestamp())
+            faction.membersUpda = now
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
             tmp = [s for s in membersAPI[m]['status'] if s]

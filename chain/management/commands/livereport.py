@@ -42,7 +42,7 @@ class Command(BaseCommand):
         # get crontab
         crontab = Crontab.objects.filter(tabNumber=crontabId).first()
         try:
-            factions = [faction for faction in crontab.faction.all()]
+            factions = [faction for faction in crontab.faction.filter(createLive=True)]
         except BaseException:
             print("[command.chain.livereport] no crontab found")
             return
@@ -50,8 +50,8 @@ class Command(BaseCommand):
         n = len(factions)
         factions = random.sample(factions, n)
 
-        for f in factions:
-            print("[command.chain.livereport] --> {}".format(f))
+        # for f in factions:
+        #     print("[command.chain.livereport] --> {}".format(f))
 
         for i, faction in enumerate(factions):
             print("[command.chain.livereport] #{}: {}".format(i + 1, faction))
@@ -112,7 +112,7 @@ class Command(BaseCommand):
 
                     # update members
                     print("[command.chain.livereport]    --> udpate members")
-                    members = updateMembers(faction, key=key)
+                    members = updateMembers(faction, key=key, force=False)
                     # members = faction.member_set.all()
                     if 'apiError' in members:
                         print("[command.chain.livereport]    --> error in API continue to next chain: {}".format(members['apiError']))

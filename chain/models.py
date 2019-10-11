@@ -45,6 +45,7 @@ class Faction(models.Model):
     armoryString = models.TextField(default="{}")
 
     createLive = models.BooleanField(default=False)
+    createReport = models.IntegerField(default=0)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
