@@ -32,7 +32,7 @@ class Command(BaseCommand):
             print("[command.chain.crontab] {} cleared".format(crontab))
             crontab.faction.clear()
 
-        for faction in Faction.objects.all():
+        for faction in Faction.objects.all().exclude(apiString="{}"):
             checkCrontab = faction.crontab_set.first()
             if checkCrontab is not None:
                 print("[command.chain.crontab] faction {}: already on {}".format(faction, checkCrontab))
