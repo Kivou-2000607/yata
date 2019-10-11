@@ -40,8 +40,7 @@ class Command(BaseCommand):
         # get crontab
         crontab = Crontab.objects.filter(tabNumber=crontabId).first()
         try:
-            factions = [faction for faction in crontab.faction.filter(createReport__gt=0)]
-            print(factions)
+            factions = [faction for faction in crontab.faction.filter(createReport=True)]
         except BaseException:
             print("[command.chain.chainreport] no crontab found")
             return
@@ -110,7 +109,7 @@ class Command(BaseCommand):
                     chain.save()
 
                     # reset number of createReport
-                    faction.createReport = faction.numberOfReportsToCreate()
+                    faction.createReport = bool(faction.numberOfReportsToCreate())
                     faction.save()
                     print('[view.chain.createReport] set faction create report to {}'.format(faction.createReport))
 

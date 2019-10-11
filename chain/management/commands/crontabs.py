@@ -37,9 +37,9 @@ class Command(BaseCommand):
             if checkCrontab is not None:
                 print("[command.chain.crontab] faction {}: already on {}".format(faction, checkCrontab))
             elif faction.numberOfKeys:
-                faction.createReport = faction.numberOfReportsToCreate()
+                faction.createReport = bool(faction.numberOfReportsToCreate())
                 faction.save()
-                print("[command.chain.crontab] faction {}: createReport: {}".format(faction, faction.createReport))
+                print("[command.chain.crontab] faction {}: createReport {}".format(faction, faction.createReport))
                 minBusy = min([c.nFactions() for c in openCrontab])
                 for crontab in openCrontab:
                     if crontab.nFactions() == minBusy:

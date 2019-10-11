@@ -666,7 +666,7 @@ def createReport(request, chainId):
             chain.save()
 
             # reset number of createReport
-            faction.createReport = faction.numberOfReportsToCreate()
+            faction.createReport = bool(faction.numberOfReportsToCreate())
             faction.save()
             print('[view.chain.createReport] set faction create report to {}'.format(faction.createReport))
 
@@ -772,7 +772,7 @@ def deleteReport(request, chainId):
             chain.save()
 
             # reset number of createReport
-            faction.createReport = faction.numberOfReportsToCreate()
+            faction.createReport = bool(faction.numberOfReportsToCreate())
             faction.save()
             print('[view.chain.deleteReport] set faction create report to {}'.format(faction.createReport))
 
