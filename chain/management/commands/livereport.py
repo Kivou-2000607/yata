@@ -58,6 +58,8 @@ class Command(BaseCommand):
 
             # get api key
             if not faction.numberOfKeys:
+                faction.createLive = False
+                faction.save()
                 print("[command.chain.livereport]    --> no api key found")
 
             else:

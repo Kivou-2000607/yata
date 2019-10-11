@@ -19,22 +19,26 @@ This file is part of yata.
 {% load humanize %}
 
 {% if player.factionAA %}
-<form>{% csrf_token %}
-    {% if faction.createLive %}
-        <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
-        <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
-            <i class="fas fa-stop-circle error" title="Disable Live"></i>&nbsp;Stop
-        </a>
+    {% if liveChain.current > 9 %}
+        <form>{% csrf_token %}
+            {% if faction.createLive %}
+                <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>
+                <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
+                    <i class="fas fa-stop-circle error" title="Disable Live"></i>&nbsp;Stop
+                </a>
+            {% else %}
+                <i class="fas fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not Recording</i>
+                {% if message %}
+                    <span class="warning">&nbsp;&nbsp;{{message}}</span>
+                {% endif %}
+                <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
+                    <i class="fas fa-dot-circle error" title="Enable Live"></i>&nbsp;Record
+                </a>
+            {% endif %}
+        </form>
     {% else %}
-        <i class="fas fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not Recording</i>
-        {% if messageDeleted %}
-        <span class="warning">&nbsp;&nbsp;The report will be deleted.</span>
-        {% endif %}
-        <a id="chain-live-toggle-creation" class="flush-right" href="{% url 'chain:toggleLiveReport' %}">
-            <i class="fas fa-dot-circle error" title="Enable Live"></i>&nbsp;Record
-        </a>
+        <i class="fas fa-microphone-alt-slash error"></i>&nbsp;&nbsp;<i>Not Recording</i> <span class="flush-right" style="opacity: 0.5;">You will be able to record after warming up</span>
     {% endif %}
-</form>
 {% else %}
     {% if faction.createLive %}
         <i class="fas fa-microphone-alt valid"></i>&nbsp;&nbsp;<i>Recording</i>

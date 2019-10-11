@@ -277,12 +277,17 @@ def toggleLiveReport(request):
                     print('[view.chain.toggleLiveReport] faction {} found'.format(factionId))
 
                 # toggle live creation
-                faction.createLive = not faction.createLive
-                print(faction.createLive)
+                message = "The report will be deleted."
+                if faction.numberOfKeys:
+                    faction.createLive = not faction.createLive
+                else:
+                    faction.createLive = False
+                    message = "You need at least one AA key enabled."
+
                 faction.save()
 
                 print('[view.chain.toggleLiveReport] render')
-                context = {"player": player, "faction": faction, "messageDeleted": True}
+                context = {"player": player, "faction": faction, "message": message, "liveChain": {"current": 10}}
                 return render(request, 'chain/live-toggle.html', context)
 
             else:
