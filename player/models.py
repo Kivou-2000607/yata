@@ -93,10 +93,11 @@ class Player(models.Model):
 
         # set boolean
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
-        self.validKey = False if user.get('apiErrorCode') else self.validKey
+        self.validKey = False if user.get('apiErrorCode', 0) == 2 else self.validKey
 
         if not self.active and not self.validKey:
             print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> delete user".format(self, self.lastActionTS, self.active, self.validKey))
+            self.save()
             # self.delete()
             return 0
         elif 'apiError' in user:

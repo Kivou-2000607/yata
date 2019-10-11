@@ -9,8 +9,9 @@ from yata.handy import timestampToDate
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
-    list_display = ['tId', 'name', 'last_action', 'lastActionTS', 'last_update', 'lastUpdateTS']
+    list_display = ['tId', 'name', 'active', 'validKey', 'last_action', 'lastActionTS', 'last_update', 'lastUpdateTS']
     search_fields = ['name', 'tId']
+    list_filter = ['active', 'validKey']
 
     def last_update(self, instance):
         return timestampToDate(instance.lastUpdateTS)
