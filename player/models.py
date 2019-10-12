@@ -91,9 +91,15 @@ class Player(models.Model):
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key, verbose=False)
 
-        # set boolean
+        # set active
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
+
+        # change to false if error code 2
         self.validKey = False if user.get('apiErrorCode', 0) == 2 else self.validKey
+
+        # change to true if fetch result
+        self.validKey = True if user.get('name', False) else self.validKey
+
         self.save()
 
         if not self.active and not self.validKey:
