@@ -45,12 +45,12 @@ class NPC(models.Model):
     def lootTimings(self, lvl=None):
         now = int(timezone.now().timestamp())
         lootTimings = dict({0: {"lvl": 0}})
-        ts = [self.hospitalTS,  # lvl 1
-              self.hospitalTS + 30 * 60,  # lvl 2
-              self.hospitalTS + 90 * 60,  # lvl 3
-              self.hospitalTS + 210 * 60,  # lvl 4
-              self.hospitalTS + 450 * 60,  # lvl 5
-              ]
+        # ts = [self.hospitalTS,  # lvl 1
+        #       self.hospitalTS + 30 * 60,  # lvl 2
+        #       self.hospitalTS + 90 * 60,  # lvl 3
+        #       self.hospitalTS + 210 * 60,  # lvl 4
+        #       self.hospitalTS + 450 * 60,  # lvl 5
+        #       ]
 
         add = 0
         next = 0
@@ -60,7 +60,19 @@ class NPC(models.Model):
             due = ts - now
             if due > 0:
                 next += 1
-            lootTimings[i + 1] = {"lvl": i + 1, "ts": ts, "due": due, "next": next}
+
+            if next == 0:
+                pro = 100
+            elif next == 1:
+                if add:
+                    pro = 100 * (1. - max(due, 0) / float(add * 60))
+                else:
+                    pro = 100 * (1. - max(due, 0) / float(120 * 60))
+            else:
+                pro = 0
+
+            lootTimings[i + 1] = {"lvl": i + 1, "ts": ts, "due": due, "pro": int(pro), "next": next}
+
 
         current = 5 - lootTimings[5]['next']
         if lvl is None:
@@ -70,7 +82,7 @@ class NPC(models.Model):
         elif lvl in ['current']:
             return lootTimings[current]
         else:
-            return lootTimings[lvl - 1]
+            return lootTimings[lvl]
 
     def nextLevel(self):
         return self.lootTimings(lvl='next')

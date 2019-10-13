@@ -22,28 +22,29 @@ This file is part of yata.
 <p>Gives information on loot levels of NPCs.</p>
 <h3>API payload looks like</h3>
 <pre>
-{"{{NPCs.0.tId}}":  // torn Id
+{"{{NPCs.1.tId}}":  // torn Id
     {
-        "name": "{{NPCs.0.name}}",  // torn  name
-        "hospout": {{NPCs.0.hospitalTS}},  // timestamp of hosp out
-        "update": {{NPCs.0.updateTS}},  // timestamp of the payload update
-        "status": "{{NPCs.0.status}}",  // status of the npc
+        "name": "{{NPCs.1.name}}",  // torn  name
+        "hospout": {{NPCs.1.hospitalTS}},  // timestamp of hosp out
+        "update": {{NPCs.1.updateTS}},  // timestamp of the payload update
+        "status": "{{NPCs.1.status}}",  // status of the npc
         "timings": // timings of the 5 loot levels
             {
                 "1":  // loot level 1
                     {
-                        "ts": {{NPCs.0.lootTimings.1.ts}}  // timestamp when npc reach this level
-                        "due": {{NPCs.0.lootTimings.1.due}},  // number of seconds to this level compared to now
+                        "ts": {{NPCs.1.lootTimings.1.ts}}  // timestamp when npc reach this level
+                        "due": {{NPCs.1.lootTimings.1.due}},  // number of seconds to this level compared to now
+                        "pro": {{NPCs.1.lootTimings.1.pro}},  // progress in % before next level
                     },
-                "2": {"ts": {{NPCs.0.lootTimings.2.ts}}, "due": {{NPCs.0.lootTimings.2.due}}},
-                "3": {"ts": {{NPCs.0.lootTimings.3.ts}}, "due": {{NPCs.0.lootTimings.3.due}}},
-                "4": {"ts": {{NPCs.0.lootTimings.4.ts}}, "due": {{NPCs.0.lootTimings.4.due}}},
-                "5": {"ts": {{NPCs.0.lootTimings.5.ts}}, "due": {{NPCs.0.lootTimings.5.due}}},
+                "2": {"ts": {{NPCs.1.lootTimings.2.ts}}, "due": {{NPCs.1.lootTimings.2.due}}, "pro": {{NPCs.1.lootTimings.2.pro}}},
+                "3": {"ts": {{NPCs.1.lootTimings.3.ts}}, "due": {{NPCs.1.lootTimings.3.due}}, "pro": {{NPCs.1.lootTimings.3.pro}}},
+                "4": {"ts": {{NPCs.1.lootTimings.4.ts}}, "due": {{NPCs.1.lootTimings.4.due}}, "pro": {{NPCs.1.lootTimings.4.pro}}},
+                "5": {"ts": {{NPCs.1.lootTimings.5.ts}}, "due": {{NPCs.1.lootTimings.5.due}}, "pro": {{NPCs.1.lootTimings.5.pro}}},
             },
         "levels":  // information on the current/next level
             {
-                "current": {{NPCs.0.currentLevel.lvl}},  // current loot level
-                "next": {{NPCs.0.nextLevel.lvl}}  // next loot level
+                "current": {{NPCs.1.currentLevel.lvl}},  // current loot level
+                "next": {{NPCs.1.nextLevel.lvl}}  // next loot level
             }
     },
 }

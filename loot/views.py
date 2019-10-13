@@ -42,9 +42,11 @@ def timings(request):
                 "hospout": npc.hospitalTS,
                 "update": npc.updateTS,
                 "status": npc.status,
-                "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts']} for k in t},
+                "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
                 "levels": {'current': c['lvl'], 'next': n['lvl']}
                 }
+            for k in [1, 2, 3, 4, 5]:
+                 npcs[npc.tId]["timings"][k]["pro"] = t[k]
 
         return HttpResponse(json.dumps(npcs), content_type="application/json")
 
