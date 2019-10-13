@@ -16,11 +16,13 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
+from django.utils import timezone
+
 from player.models import News
 from player.models import Player
 from player.models import Message
 from player.models import SECTION_CHOICES
-from django.utils import timezone
+from loot.models import NPC
 
 
 def news(request):
@@ -52,5 +54,12 @@ def sectionMessage(request):
         return {}
 
 
-# def currentTimestamp(request):
-#     return {"currentTimestamp": int(timezone.now().timestamp())}
+def nextLoot(request):
+    # try:
+    # get smaller due time
+    due = int(timezone.now().timestamp())
+    for npc in NPC.objects.filter(show=True).order_by('tId'):
+        due = max(min(npc.lootTimings(lvl=4)["due"], due), 0)
+    return {"nextLoot": due}
+    # except:
+    #     return {"nextLoot": 0}

@@ -34,6 +34,11 @@ ul ul li { list-style-type: circle; }
 
 a.form-inline, form.form-inline { display: inline!important; }
 
+
+div#content {
+    padding-top: 0px;
+}
+
 div.module {
     background-color: #cccccc00;
     /* padding:0 10px 0 10px; */
@@ -314,3 +319,25 @@ div.modal-topright {
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
+
+
+table.yata-login {
+    width: 100%;
+}
+table.yata-login td {
+    font-size: unset;
+    line-height: unset;
+    border: none;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+table.yata-login td.a { width: 10%; text-align: left; }  /* x1 */
+table.yata-login td.b { width: 10%; text-align: left; }  /* x7 */
+table.yata-login td.c { width: 20%; text-align: right; }  /* x1 */
+table.yata-login td.d { width: 90%; text-align: left; }  /* x1 */
+
+table.yata-login td.b > span { color: #666; font-style: italic;}  /* x7 */
+
+/* table.yata-login td:hover { background: #eee; }  */ /* x6 */ 

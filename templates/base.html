@@ -61,28 +61,8 @@ This file is part of yata.
     {% block jquery %}{% endblock %}
     <script>
 
-        $(document).on('click', 'a.yata-link-awards', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading awards (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
-        });
-
-        $(document).on('click', 'a.yata-link-target', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading targets</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
-        });
-
-        $(document).on('click', 'a.yata-link-chain', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading faction (2 API calls)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
-        });
-
-        $(document).on('click', 'a.yata-link-bazaar', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading bazaar (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
-        });
-
-        $(document).on('click', 'a.yata-link-stock', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading stocks (1 API call)</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
-        });
-
-        $(document).on('click', 'a.yata-link-loot', function(e){
-            $("#yata-login").html('<h2 class="title grey"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading loot</h2><div class="module"><i class="fas fa-spinner fa-pulse"></i></div>');
+        $(document).on('click', 'a[class^="yata-link"]', function(e){
+            $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
         });
 
         $(document).on('click', 'a.news-read', function(e){
@@ -114,6 +94,43 @@ This file is part of yata.
             }
         });
 
+        // refresh timer target update
+        window.setInterval(function(){
+            $("span#loot-countdown").each(function() {
+                var timeRefresh = $.trim($(this).text());
+                var splitRefresh = timeRefresh.split(" ");
+                var sRefresh = 0;
+                if (splitRefresh.length == 2) {
+                    sRefresh = parseInt(splitRefresh[0]);
+                } else if (splitRefresh.length == 4) {
+                    sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
+                } else if (splitRefresh.length == 6) {
+                    sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
+                }
+
+                sRefresh --;
+                sRefresh = Math.max(sRefresh, 0)
+                if (sRefresh == 0) {
+                    $(this).parent("span").addClass("error");
+                    $(this).parent("span").html("NOW");
+                }
+                hRefresh = Math.floor(sRefresh / 3600);
+                sRefresh = sRefresh % 3600;
+                mRefresh = Math.floor(sRefresh / 60);
+                sRefresh = sRefresh % 60;
+                if (hRefresh) {
+                    spad = ("0"+sRefresh.toString()).slice(-2);
+                    $(this).html(hRefresh.toString()+" hrs "+mRefresh.toString()+" mins "+spad+" s");
+                }
+                else if (mRefresh) {
+                    spad = ("0"+sRefresh.toString()).slice(-2);
+                    $(this).html(mRefresh.toString()+" mins "+spad+" s");
+                } else {
+                    $(this).html(sRefresh.toString()+" s");
+                }
+            });
+        }, 1000);
+
     </script>
 
     <!-- favicon -->
@@ -134,10 +151,11 @@ This file is part of yata.
     <div id="container">
         <div id="content">
             {# <h1><img src="{% static "logo/yata.full.svg" %}" alt="YATA - Yet Another Torn App"></h1> #}
-            <h1>{% include "svg/yata.full.svg" %}</h1>
+            {# <h1>{% include "svg/yata.full.svg" %}</h1> #}
             {# <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1> #}
-
-            {% include "yata/login.html" %}
+            <div id="yata-login">
+                {% include "yata/login.html" %}
+            </div>
             {% include "yata/section-message.html" %}
             {% include "yata/error.html" %}
 
