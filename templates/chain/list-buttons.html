@@ -23,6 +23,7 @@ This file is part of yata.
     {% if chain.hasReport %}
         {% if player.factionAA %}
 
+            {% if chain.tId %}
             <!-- see -->
             <form>{% csrf_token %}
                 <a  class="chain-report-see-list" href="{% url 'chain:report' chain.tId %}"><i class="fas fa-eye" title="See report"></i></a> -
@@ -37,6 +38,7 @@ This file is part of yata.
             <form>{% csrf_token %}
                 <a class="chain-report-delete-list" href={% url 'chain:deleteReport' chain.tId %}><i class="fas fa-trash-alt" title="Delete report"></i></a> -
             </form>
+            {% endif %}
 
             <!-- toggle -->
             <form>{% csrf_token %}
