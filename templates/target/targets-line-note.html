@@ -18,6 +18,25 @@ This file is part of yata.
 {% endcomment %}
 
 
+<script>
+
+        $(document).ready(function() {
+
+            // put this bit here because after a note update js was not intercepting a second "enter"
+
+            $('.target-list-note').keydown( function(e) {
+                var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+                if(key == 13) {
+                    e.preventDefault();
+                    console.log(e.target)
+                    return $(e.target).blur().focus();
+                }
+            });
+
+        });
+
+</script>
+
 <form>
     {% csrf_token %}
     {% if target.note %}
