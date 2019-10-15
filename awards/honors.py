@@ -345,6 +345,7 @@ d = {
     638: 228161802,  # Funambulist
     498: 914416584,  # Shielded
     690: 662053219,  # Ripped
+    704: 0,  # Shredded
 
     # 11
     163: 431464057,  # Fascination
