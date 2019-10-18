@@ -178,7 +178,7 @@ This file is part of yata.
                     <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Acheived: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
                     <td class="g" data-val="{{award.left|convertInf}}">
                         {% if award.left %}
-                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfFloat|safe}}</span>
+                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
                         {% elif award.comment %}
                             <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
                         {% endif %}
