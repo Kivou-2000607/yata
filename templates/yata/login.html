@@ -35,12 +35,13 @@ This file is part of yata.
                     </td>
                     {# home #}
                     <td class="b">
-                        <a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</a><br>
+                        <a href="{% url 'index' %}" class="yata-link-home" title="Home">
+                            <b class="valid"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</b></a><br>
                         <span>{{request.session.player.name}}</span>
                     </td>
                     {# bazaar #}
                     <td class="b">
-                        <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Go to bazaar">
+                        <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Bazaar">
                             <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar</b></a><br>
                             <span>
                             {% if player.bazaarInfo == "N/A" %}
@@ -52,7 +53,7 @@ This file is part of yata.
                     </td>
                     {# stocks #}
                     <td class="b">
-                        <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Go to bazaar">
+                        <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Stocks">
                             <b><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stocks</b></a><br>
                             <span>
                             {% if player.stocksInfo == "N/A" %}
@@ -64,7 +65,7 @@ This file is part of yata.
                     </td>
                     {# faction #}
                     <td class="b">
-                        <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Go to chain">
+                        <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Faction">
                             <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a><br>
                             <span>
                             {% if player.chainInfo == "N/A" %}
@@ -76,7 +77,7 @@ This file is part of yata.
                     </td>
                     {# targets #}
                     <td class="b">
-                        <a href="{% url 'target:index' %}" class="yata-link-target" title="Go to chain">
+                        <a href="{% url 'target:index' %}" class="yata-link-target" title="Targets">
                             <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
                             <span>
                             {% if player.targetInfo == "N/A" %}
@@ -88,7 +89,7 @@ This file is part of yata.
                     </td>
                     {# awards #}
                     <td class="b">
-                        <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Go to awards">
+                        <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Awards">
                             <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
                             <span>
                             {% if player.awardsInfo == "N/A" %}
@@ -100,7 +101,7 @@ This file is part of yata.
                     </td>
                     {# loot #}
                     <td class="b">
-                        <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Go to loot">
+                        <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Loot">
                             <b><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Loot</b></a><br>
                             <span>
                             {% if nextLoot %}
@@ -119,23 +120,23 @@ This file is part of yata.
 
             {% if awardscat %}
                 <hr class="sep">
-                <p>Welcome to the awards tracker. Browse throught the following categories to see which award you can get next:</p>
+                {# <p>Welcome to the awards tracker. Browse throught the following categories to see which award you can get next:</p> #}
                 {% include "awards/categories.html" %}
             {% elif targetcat %}
                 <hr class="sep">
-                <p>Welcome to the target list. You can look at your last attacks to add a new targets. You can refresh the information by clicking on the target line.</p>
+                {# <p>Welcome to the target list. You can look at your last attacks to add a new targets. You can refresh the information by clicking on the target line.</p> #}
                 {% include "target/categories.html" %}
             {% elif chaincat %}
                 <hr class="sep">
-                <p>Welcome to the chain reports. Have a look at the live report, old chains or the joint report.</p>
+                {# <p>Welcome to the chain reports. Have a look at the live report, old chains or the joint report.</p> #}
                 {% include "chain/categories.html" %}
             {% elif bazaarcat %}
                 <hr class="sep">
-                <p>Welcome to the bazaar overview. You can create a custom list by clicking at the bottom of every items.</p>
+                {# <p>Welcome to the bazaar overview. You can create a custom list by clicking at the bottom of every items.</p> #}
                 {% include "bazaar/categories.html" %}
             {% elif stockcat %}
                 <hr class="sep">
-                <p>Welcome to the stock overview.</p>
+                {# <p>Welcome to the stock overview.</p> #}
                 {% include "stock/categories.html" %}
             {% endif %}
 
@@ -158,7 +159,7 @@ This file is part of yata.
                             &nbsp;
                             <input id="yata-login-remember" type="checkbox" value="Remember me">
                             <label for="yata-login-remember">Remember me</label>
-                            {% if apiError %}<p class="no-margin"><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></p>{% endif %}
+                            {% if apiError %}<span style="margin-left: 10px; "><a class="error" href=""><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</a></span>{% endif %}
                         </form>
                     </td>
                 </tr>

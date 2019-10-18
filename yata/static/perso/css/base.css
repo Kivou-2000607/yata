@@ -340,4 +340,13 @@ table.yata-login td.d { width: 90%; text-align: left; }  /* x1 */
 
 table.yata-login td.b > span { color: #666; font-style: italic;}  /* x7 */
 
-/* table.yata-login td:hover { background: #eee; }  */ /* x6 */ 
+/* table.yata-login td:hover { background: #eee; }  */ /* x6 */
+
+div.tutorial { font-size: 12px; }
+div.tutorial li { font-size: 12px; line-height: 1.1}
+div.tutorial p { margin-left: 5px; }
+
+span.login-message {
+    font-style: italic;
+    color: #447e9b!important;
+}

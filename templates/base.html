@@ -62,6 +62,8 @@ This file is part of yata.
     <script>
 
         $(document).on('click', 'a[class^="yata-link"]', function(e){
+            $("#content-update h2").addClass("grey");
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+$(this).attr("title"))
             $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
         });
 

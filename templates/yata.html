@@ -2,11 +2,6 @@
 {% load static %}
 {% load app_filters %}
 
-{% block css%}
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/yata.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/bazaar.css" %} />
-{% endblock%}
-
 {% block title%}
     - Home
 {% endblock %}
@@ -21,7 +16,7 @@
             check: $("#yata-login-remember").is(':checked'),
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
-        reload.find("td.d").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)');
+        reload.find("td.d").html('<span class="login-message"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</span>');
     });
 
     $(document).on('click', '#yata-delete-submit', function(e){
@@ -54,7 +49,8 @@
         <p><a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><br> Gives the timing of when NPCs are reaching the different loot levels.</p>
         {% if player %}
             <hr class="sep">
-            <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account: </a> All your information will be removed from the database.</p>
+            <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>
+            <p><a class="yata-link-prune error" href="{% url 'player:prune' %}"><i class="fas fa-eraser"></i>&nbsp;&nbsp;Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
         {% endif %}
     </div>
     <div class="module rounded">

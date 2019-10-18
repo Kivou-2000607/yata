@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/player.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Player
+{% endblock %}
+
+{% block jquery %}
+{% endblock %}
+
+{% block content %}
+    <div id="content-update">
+        {% include "player/content-reload.html" %}
+    </div>
+
+    {# tutorial #}
+{% endblock %}
