@@ -1131,7 +1131,7 @@ def armory(request):
                     if ns[-1] in ["points"]:
                         item = ns[-1].title()
                     else:
-                        splt = " ".join(ns[6:-1]).split(":")
+                        splt = " ".join(ns[4:]).split(":")
                         if len(splt):
                             btype = splt[-1].strip()
                         item = splt[0].strip()
