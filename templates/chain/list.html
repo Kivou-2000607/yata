@@ -68,7 +68,11 @@ This file is part of yata.
         {% for chain in chains %}
         <tr>
             {% if chain.tId > 0 %}
-                <td class="a"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
+                {% if chain.wall %}
+                    <td class="a"><a href="https://www.torn.com/war.php?step=warreport&warID={{chain.tId}}" target="_blank">Wall [{{chain.tId}}]</a></td>
+                {% else %}
+                    <td class="a"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
+                {% endif %}
                 <td class="b">{{chain.start|ts2date}}</td>
                 <td class="b">{{chain.end|ts2date}}</td>
             {% else %}

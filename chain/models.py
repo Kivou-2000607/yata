@@ -166,12 +166,13 @@ class Chain(models.Model):
     hasReport = models.BooleanField(default=False)
     jointReport = models.BooleanField(default=False)
     graph = models.TextField(default="", null=True, blank=True)
+    wall = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{} chain #{}".format(self.faction, self.tId)
-
-    # def have_report(self):
-    #     return True if len(self.report_set.all()) else False
+        if self.wall:
+            return "{} wall #{}".format(self.faction, self.tId)
+        else:
+            return "{} chain #{}".format(self.faction, self.tId)
 
     def toggle_report(self):
         self.jointReport = not self.jointReport

@@ -137,10 +137,18 @@ def apiCallAttacks(faction, chain, key=None):
             # if(len(attacks) < 2):
                 # feedAttacks = False
 
-            if chain.tId:
+            # stoping criterion for walls
+            if chain.wall:
+                feedAttacks = len(attacks) > 10
+
+            # stoping criterion for regular reports
+            elif chain.tId:
                 feedAttacks = not chain.nHits == maxHit
+
+            # stoping criterion for live reports
             else:
                 feedAttacks = len(attacks) > 95
+
             beginTS = max(tableTS)
             print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), maxHit, beginTS, endTS, feedAttacks))
             i += 1
@@ -165,8 +173,13 @@ def apiCallAttacks(faction, chain, key=None):
                 print('[function.chain.apiCallAttacks] Delete last attacks for live chains')
             else:
                 print('[function.chain.apiCallAttacks] Not delete last attacks for live chains since length = {}'.format(n))
-        except:
+        except BaseException:
             pass
+
+    if chain.wall and not feedAttacks:
+        print('[function.chain.apiCallAttacks] set chain createReport to False')
+        chain.createReport = False
+        chain.save()
 
     return chainDict
 
@@ -299,7 +312,7 @@ def fillReport(faction, members, chain, report, attacks):
     histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
     binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
     chain.reportNHits = nWRA[0]
-    if not chain.tId:
+    if not chain.tId or chain.wall:
         chain.nHits = nWRA[0]  # update for live chains
         chain.respect = nWRA[1]  # update for live chains
     chain.nAttacks = nWRA[2]
@@ -359,7 +372,12 @@ def fillReport(faction, members, chain, report, attacks):
     for b in bonus:
         report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
 
-    return chain, report, (binsCenter, histo), chain.nHits <= nWRA[0]
+    if chain.wall:
+        finished = not chain.createReport
+    else:
+        finished = chain.nHits <= nWRA[0]
+
+    return chain, report, (binsCenter, histo), finished
 
 
 def updateMembers(faction, key=None, force=True):
@@ -379,7 +397,6 @@ def updateMembers(faction, key=None, force=True):
         print("[function.chain.updateMembers] using {} key".format(name))
     else:
         print("[function.chain.updateMembers] using personal key")
-
 
     # call members
     membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')

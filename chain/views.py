@@ -1417,15 +1417,12 @@ def importWall(request):
             if author is None:
                 t = 0
                 m = "You're not register in YATA"
-                print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             print("Author in yata: checked")
-            print(author)
 
             # check if API key is valid with api call
             HTTP_KEY = request.META.get("HTTP_KEY")
             call = apiCall('user', '', '', key=HTTP_KEY)
-            print(call)
             if "apiError" in call:
                 t = -1
                 m = call
@@ -1520,6 +1517,13 @@ def importWall(request):
             else:
                 messageList.append("adding wall to {}".format(faction))
                 wall.factions.add(faction)
+
+            chain = faction.chain_set.filter(tId=wall.tId).first()
+            if chain is None:
+                chain = faction.chain_set.create(tId=wall.tId, start=wall.tss, end=wall.tse, wall=True)
+                print("create chain:", chain)
+            else:
+                print("chain already exists:", chain)
 
             t = 1
             m = ", ".join(messageList)

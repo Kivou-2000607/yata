@@ -112,7 +112,7 @@ $(document).ready(function() {
             </tr>
             <tr>
                 <td colspan="2"><b>Hits / Attacks:</b> {{chain.reportNHits}} / {{chain.nAttacks}} &nbsp;&nbsp; ({{chain.reportNHits|div:chain.nAttacks|mul:"100"|floatformat:0}}%)</td>
-                <td><b>Respect earnt:</b> {{chain.respect|floatformat:0}}</td><td><b>Respect / Attacks:</b> {{chain.respect|div:chain.nAttacks|floatformat:2}}</td>
+                <td><b>Respect earnt:</b> {{chain.respect|floatformat:0|intcomma}}</td><td><b>Respect / Attacks:</b> {{chain.respect|div:chain.nAttacks|floatformat:2}}</td>
             </tr>
                 {% for b in bonus %}
                     {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
