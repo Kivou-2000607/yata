@@ -255,6 +255,20 @@ def float2IfFloat(f):
         return f
 
 
+@register.filter(name='float2IfSmall')
+def float2IfSmall(f):
+    try:
+        if f < 1:
+            ret = "{:,.2g}".format(f)
+        elif f < 100:
+            ret = "{:,.3g}".format(f)
+        else:
+            ret = "{:,.0f}".format(f)
+    except BaseException as e:
+        ret = f
+    return ret
+
+
 @register.filter(name='convertInf')
 def convertInf(f):
     return 1e10 if f in ["&infin;"] else f
