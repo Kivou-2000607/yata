@@ -1097,8 +1097,8 @@ def armory(request):
             armory = dict({})
             timestamps["nObjects"] = 0
             for k, v in armoryRaw.items():
-                btype = "?"
                 ns = cleanhtml(v.get("news", "")).split(" ")
+                btype = "?"
                 if 'used' in ns:
                     member = ns[0]
                     if ns[6] in ["points"]:
@@ -1106,7 +1106,7 @@ def armory(request):
                         n = 25
                     else:
                         splt = " ".join(ns[6:-1]).split(":")
-                        if len(splt):
+                        if len(splt) > 1:
                             btype = splt[-1].strip()
                         item = splt[0].strip()
                         # item = " ".join(ns[6:-1]).strip()
@@ -1116,11 +1116,15 @@ def armory(request):
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][0] += n
-                            armory[item][member][3] = btype
+                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
+                            if btype not in btypes:
+                                btypes.append(btype)
+                                armory[item][member][3] = ", ".join(btypes)
                         else:
                             armory[item][member] = [n, 0, 0, btype]
                     else:
                         # new item and new member [taken, given, filled]
+                        # print(btype)
                         armory[item] = {member: [n, 0, 0, btype]}
 
                 elif 'deposited' in ns:
@@ -1132,14 +1136,17 @@ def armory(request):
                         item = ns[-1].title()
                     else:
                         splt = " ".join(ns[4:]).split(":")
-                        if len(splt):
+                        if len(splt) > 1:
                             btype = splt[-1].strip()
                         item = splt[0].strip()
                         # item = " ".join(ns[4:]).strip()
                     if item in armory:
                         if member in armory[item]:
                             armory[item][member][1] += n
-                            armory[item][member][3] = btype
+                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
+                            if btype not in btypes:
+                                btypes.append(btype)
+                                armory[item][member][3] = ", ".join(btypes)
                         else:
                             armory[item][member] = [0, n, 0, btype]
                     else:
