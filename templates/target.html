@@ -37,7 +37,8 @@
     $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)', function(e){
         e.preventDefault();
         var reload = $(this).closest("tr");
-        var targetId = reload.attr("id").split("-").pop();
+        // var targetId = reload.attr("id").split("-").pop();
+        var targetId = reload.attr("data-val");
         reload.removeClass("old-refresh");
         reload.load( "/target/refresh/"+targetId, {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,

@@ -716,29 +716,37 @@ def renderIndividualReport(request, chainId, memberId):
 
             # create graph
             count = report.count_set.filter(attackerId=memberId).first()
-            graphSplit = count.graph.split(',')
-            if len(graphSplit) > 1:
-                print('[view.chain.renderIndividualReport] data found for graph of length {}'.format(len(graphSplit)))
-                # compute average time for one bar
-                bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
-                cummulativeHits = 0
-                for line in graphSplit:
-                    splt = line.split(':')
-                    cummulativeHits += int(splt[1])
-                    graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
-                    speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
-                    graph['info']['speedRate'] = speedRate
+            if count is not None:
+                graphSplit = count.graph.split(',')
+                if len(graphSplit) > 1:
+                    print('[view.chain.renderIndividualReport] data found for graph of length {}'.format(len(graphSplit)))
+                    # compute average time for one bar
+                    bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
+                    graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+                    cummulativeHits = 0
+                    for line in graphSplit:
+                        splt = line.split(':')
+                        cummulativeHits += int(splt[1])
+                        graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                        speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                        graph['info']['speedRate'] = speedRate
+                else:
+                    print('[view.chain.report] no data found for graph')
+                    graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
+
+                # context
+                context = dict({'graph': graph,  # for report
+                                'memberId': memberId})  # for selecting to good div
+
+                print('[view.chain.renderIndividualReport] render')
+                return render(request, 'chain/ireport.html', context)
             else:
-                print('[view.chain.report] no data found for graph')
-                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
+                print('[view.chain.renderIndividualReport] Error: no count...')
+                # context
+                context = dict({'graph': None,  # for report
+                                'memberId': memberId})  # for selecting to good div
+                return render(request, 'chain/ireport.html', context)
 
-            # context
-            context = dict({'graph': graph,  # for report
-                            'memberId': memberId})  # for selecting to good div
-
-            print('[view.chain.renderIndividualReport] render')
-            return render(request, 'chain/ireport.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -1466,8 +1474,11 @@ def importWall(request):
             i = 0
             for p in req.get("participants"):
                 i += 1
+                print("import wall, participants before: ", p)
+                p = {k.split(" ")[0].strip(): v for k, v in p.items()}
                 if p.get("Name")[0] == '=':
                     p["Name"] = p["Name"][2:-1]
+                print("import wall, participants after: ", p)
                 if p.get("Position") in ["Attacker"]:
                     attackers[p.get('XID')] = p
                 else:

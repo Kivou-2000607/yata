@@ -193,11 +193,24 @@ def refresh(request, targetId):
             attacks = targetJson.get("attacks", dict({}))
             targets = targetJson.get("targets", dict({}))
 
+            # when id is not an int...
+            try:
+                b = int(targetId)
+            except BaseException:
+                print("ERROR: targetId", targetId)
+                context = {"apiErrorLine": "Id is not an integer... please contact Kivou"}
+                return render(request, 'target/targets-line.html', context)
+
             # call for target info
             error = False
             targetInfo = apiCall('user', targetId, 'profile,timestamp', key)
             if 'apiError' in targetInfo:
                 error = targetInfo
+
+            elif not str(targetInfo["player_id"]) == targetId:
+                print("ERROR: targetId != returned id", targetId, targetInfo["player_id"])
+                context = {"apiErrorLine": "API call returns wrong player ID. Id asked = {}, Id returned = {}".format(targetId, targetInfo["player_id"])}
+                return render(request, 'target/targets-line.html', context)
 
             else:
                 # get latest attack to target id
@@ -224,7 +237,7 @@ def refresh(request, targetId):
                 target["respect"] = target.get("fairFight", 1.0) * 0.25 * (math.log(level) + 1) if level else 0
 
                 for k, v in sorted(attacks.items(), key=lambda x: x[1]['timestamp_ended'], reverse=True):
-                    if int(v["defender_id"]) == int(targetId) and int(v["chain"]) not in BONUS_HITS:
+                    if str(v["defender_id"]) == str(targetId) and int(v["chain"]) not in BONUS_HITS:
                         print('[view.target.refresh] refresh traget last attack info')
                         target["targetName"] = v["defender_name"]
                         target["result"] = v["result"]
@@ -288,9 +301,10 @@ def delete(request, targetId):
             targetJson = json.loads(player.targetJson)
 
             if targetJson.get("targets") is not None:
-                del targetJson["targets"][targetId]
-                player.targetJson = json.dumps(targetJson)
-                player.save()
+                if targetJson["targets"].get(targetId) is not None:
+                    del targetJson["targets"][targetId]
+                    player.targetJson = json.dumps(targetJson)
+                    player.save()
 
             return render(request, 'target/targets-line.html')
 

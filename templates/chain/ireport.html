@@ -58,5 +58,8 @@ This file is part of yata.
 
     <div id="ihistogram-{{memberId}}"></div>
 </td>
-<!-- <td style="text-align: center;" id="ihistogram-close-{{memberId}}"><a href=""><i class="far fa-times-circle"></i></a></td> -->
+{% elif count is None %}
+<td colspan="12">
+    <div id="ihistogram-{{memberId}}" class="error" style="text-align: center;">No count found...</div>
+</td>
 {% endif %}

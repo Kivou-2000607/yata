@@ -73,7 +73,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     honors_time = [int(k) for k in userInfo.get("honors_time", [])]
     medals_awarded = [int(k) for k in userInfo.get("medals_awarded", [])]
     medals_time = [int(k) for k in userInfo.get("medals_time", [])]
-    daysOld = float(userInfo.get("age", 1))
+    daysOld = max(float(userInfo.get("age", 1)), 1.0)
 
     # convert energy to time
     eBar = userInfo.get("energy", {"maximum": 0})["maximum"]
