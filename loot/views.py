@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
+from django.db import connection
 
 import json
 
@@ -30,7 +31,6 @@ def index(request):
 # API
 def timings(request):
     try:
-
         npcs = dict({})
         for npc in NPC.objects.filter(show=True).order_by('tId'):
             t = npc.lootTimings()
@@ -46,6 +46,8 @@ def timings(request):
                 "levels": {'current': c['lvl'], 'next': n['lvl']}
                 }
 
+        if connection.connection is not None:
+            connection.close()
         return HttpResponse(json.dumps(npcs), content_type="application/json")
 
     except BaseException as e:
