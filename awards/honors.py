@@ -171,7 +171,7 @@ d = {
     143: 744664817,  # Pin Puller
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
-    778: 714786529, # Specialist 
+    778: 714786529,  # Specialist
 
     # 3
     39: 198010293,  # Woodland Camo
@@ -300,6 +300,7 @@ d = {
     763: 159149768,  # Bare
     631: 160168767,  # Vae Victis
     317: 125937483,  # Phoenix
+    740: 0,  # Devastation
     476: 0,  # Chainer 5
 
     # 9
@@ -446,4 +447,4 @@ d = {
     371: 668653618,  # Protege
     664: 309095716,  # Mercenary
     636: 147013735,  # Task Master
-    }
+}
