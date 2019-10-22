@@ -55,11 +55,11 @@ def sectionMessage(request):
 
 
 def nextLoot(request):
-    # try:
-    # get smaller due time
-    due = int(timezone.now().timestamp())
-    for npc in NPC.objects.filter(show=True).order_by('tId'):
-        due = max(min(npc.lootTimings(lvl=4)["due"], due), 0)
-    return {"nextLoot": due}
-    # except:
-    #     return {"nextLoot": 0}
+    try:
+        # get smaller due time
+        due = int(timezone.now().timestamp())
+        for npc in NPC.objects.filter(show=True).order_by('tId'):
+            due = max(min(npc.lootTimings(lvl=4)["due"], due), 0)
+        return {"nextLoot": due}
+    except:
+        return {"nextLoot": 0}

@@ -3,6 +3,8 @@
 
 {% block css%}
     <link rel="stylesheet" type="text/css" href={% static "perso/css/chain.css" %} />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+
 {% endblock%}
 
 {% block title%}
@@ -10,6 +12,9 @@
 {% endblock %}
 
 {% block jquery %}
+{# for date picker #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
 <script>
     // update history on load
     const afterLoad = (r,s,x) =>{

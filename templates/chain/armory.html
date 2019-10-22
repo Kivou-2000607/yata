@@ -34,7 +34,6 @@ $( function() {
       $( "#date-value" ).html( "<th>from: " + s + "</th><th>to: " + e + "</th>");
     },
     change: function( event, ui ) {
-        console.log(ui.values[ 0 ] + " " + ui.values[ 1 ]);
         $( "#content-update" ).load( "/chain/armory/", {
             start: ui.values[ 0 ],
             end: ui.values[ 1 ],
@@ -46,13 +45,45 @@ $( function() {
   });
   s = new Date($( "#date-range" ).slider( "values", 0 )*1000).toUTCString().replace("GMT", "");
   e = new Date($( "#date-range" ).slider( "values", 1 )*1000).toUTCString().replace("GMT", "");
-  $( "#date-value" ).html( "<th>from: " + s + "</th><th>to: " + e + "</th>");
+  $( "#date-value" ).html( '<th id="pick-time-start">from: ' + s + '</th><th id="pick-time-end">to: ' + e + '</th>');
 });
 
 $(document).ready(function() {
     $(".chain-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
 });
 
+$(function () {
+    $("#pick-time-start").datetimepicker({
+        step: 15,
+        onChangeDateTime:function(dp,$input){
+            console.log(s)
+            var d = new Date($input.val());
+            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
+            $( "#content-update" ).load( "/chain/armory/", {
+                start: dUTC/1000,
+                end: $( "#date-range" ).slider( "option", "values" )[1],
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $("#content-update h2").addClass("grey");
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+        },
+    });
+    $("#pick-time-end").datetimepicker({
+        step: 15,
+        onChangeDateTime:function(dp,$input){
+            console.log(s)
+            var d = new Date($input.val());
+            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
+            $( "#content-update" ).load( "/chain/armory/", {
+                start: $( "#date-range" ).slider( "option", "values" )[0],
+                end: dUTC/1000,
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+            });
+            $("#content-update h2").addClass("grey");
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+        },
+    });
+});
 </script>
 
 <h2 class="title">Armory settings</h2>
