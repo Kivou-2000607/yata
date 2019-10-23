@@ -117,6 +117,7 @@ $(document).ready(function() {
       var chartCrit = new google.visualization.ComboChart(document.getElementById('histogramCrit'));
       chartCrit.draw(dataCrit, optionsCrit);
     }
+
 {% endif %}
 </script>
 
@@ -269,5 +270,8 @@ $(document).ready(function() {
             {% endif %}
         </td></tr>
     </table>
+{% else %}
+    <hr class="sep">
+    <p class="error">No histogram found. Try to refresh it by clicking on the refresh button <i class="fas fa-sync-alt" title="Refresh report"></i> in the chain list. No need to delete and recreate it.</p>
 {% endif %}
 {% endif %}

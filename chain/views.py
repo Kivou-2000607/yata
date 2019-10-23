@@ -412,7 +412,7 @@ def report(request, chainId):
             # create graph
             graphSplit = chain.graph.split(',')
             graphSplitCrit = chain.graphCrit.split(',')
-            if len(graphSplit) > 1:
+            if len(graphSplit) > 1 and len(graphSplitCrit) > 1:
                 print('[view.chain.report] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
@@ -428,7 +428,7 @@ def report(request, chainId):
                     graph['info']['speedRate'] = speedRate
             else:
                 print('[view.chain.report] no data found for graph')
-                graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
+                graph = {'data': [], 'dataCrit': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
             # context
             counts = report.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))
