@@ -190,6 +190,7 @@ def fillReport(faction, members, chain, report, attacks):
     nWRA = [0, 0.0, 0]  # number of wins, respect and attacks
     bonus = []  # chain bonus
     attacksForHisto = []  # record attacks timestamp histogram
+    attacksCriticalForHisto = dict({"30": [], "60": [], "90": []})  # record critical attacks timestamp histogram
 
     # create attackers array on the fly to avoid db connection in the loop
     attackers = dict({})
@@ -245,8 +246,18 @@ def fillReport(faction, members, chain, report, attacks):
                 lastTS = v['timestamp_ended'] if lastTS == 0 else lastTS
 
                 # compute chain watcher version 2
-                attackers[attackerID][11] += (v['timestamp_ended'] - lastTS)
+                timeSince = v['timestamp_ended'] - lastTS
+                attackers[attackerID][11] += timeSince
                 lastTS = v['timestamp_ended']
+
+                # add to critical attack
+                timeLeft = max(500 - timeSince, 0)
+                if timeLeft < 30:
+                    attacksCriticalForHisto["30"].append(v['timestamp_ended'])
+                elif timeLeft < 60:
+                    attacksCriticalForHisto["60"].append(v['timestamp_ended'])
+                elif timeLeft < 90:
+                    attacksCriticalForHisto["90"].append(v['timestamp_ended'])
 
                 attacksForHisto.append(v['timestamp_ended'])
                 if attackerID in attackersHisto:
@@ -309,14 +320,23 @@ def fillReport(faction, members, chain, report, attacks):
     print('[function.chain.fillReport] chain delta time: {} second'.format(diff))
     print('[function.chain.fillReport] histogram bins delta time: {} second'.format(binsGapMinutes * 60))
     print('[function.chain.fillReport] histogram number of bins: {}'.format(len(bins) - 1))
+
+    # fill attack histogram
     histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
     binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
+    chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
+
+    # fill 30, 60, 90s critical attacks histogram
+    histo30, _ = numpy.histogram(attacksCriticalForHisto["30"], bins=bins)
+    histo60, _ = numpy.histogram(attacksCriticalForHisto["60"], bins=bins)
+    histo90, _ = numpy.histogram(attacksCriticalForHisto["90"], bins=bins)
+    chain.graphCrit = ','.join(['{}:{}:{}'.format(a, b, c) for (a, b, c) in zip(histo30, histo60, histo90)])
+
     chain.reportNHits = nWRA[0]
     if not chain.tId or chain.wall:
         chain.nHits = nWRA[0]  # update for live chains
         chain.respect = nWRA[1]  # update for live chains
     chain.nAttacks = nWRA[2]
-    chain.graph = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
     chain.lastUpdate = int(timezone.now().timestamp())
     chain.save()
 

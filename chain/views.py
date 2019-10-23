@@ -411,16 +411,19 @@ def report(request, chainId):
 
             # create graph
             graphSplit = chain.graph.split(',')
+            graphSplitCrit = chain.graphCrit.split(',')
             if len(graphSplit) > 1:
                 print('[view.chain.report] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+                graph = {'data': [], 'dataCrit': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                 cummulativeHits = 0
-                for line in graphSplit:
+                for line, lineCrit in zip(graphSplit, graphSplitCrit):
                     splt = line.split(':')
+                    spltCrit = lineCrit.split(':')
                     cummulativeHits += int(splt[1])
                     graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                    graph['dataCrit'].append([timestampToDate(int(splt[0])), int(spltCrit[0]), int(spltCrit[1]), int(spltCrit[2])])
                     speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                     graph['info']['speedRate'] = speedRate
             else:
@@ -746,7 +749,6 @@ def renderIndividualReport(request, chainId, memberId):
                 context = dict({'graph': None,  # for report
                                 'memberId': memberId})  # for selecting to good div
                 return render(request, 'chain/ireport.html', context)
-
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

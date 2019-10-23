@@ -45,6 +45,7 @@ $(document).ready(function() {
          {% endfor %}
       ]);
 
+
       var options = {
         // bar: {groupWidth: "100%"},
         legend: {position: 'top', textStyle: {fontSize: 14}},
@@ -64,10 +65,18 @@ $(document).ready(function() {
       };
 
       {% else %}
+
           var data = google.visualization.arrayToDataTable([
             ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
             {% for a,b,c in graph.data %}
                 [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+             {% endfor %}
+          ]);
+
+          var dataCrit = google.visualization.arrayToDataTable([
+            ['Time', 'Number of hits < 30s', 'Number of hits < 60s', 'Number of hits < 90s'],
+            {% for a,b,c,d in graph.dataCrit %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
              {% endfor %}
           ]);
 
@@ -83,14 +92,30 @@ $(document).ready(function() {
             'chartArea': {'width': '90%', 'height': '70%'},
           };
 
+          var optionsCrit = {
+            bar: {groupWidth: "100%"},
+            isStacked: true,
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#cc0000'},
+                      1: {type: 'bar', targetAxisIndex: 0, color: '#FF8C00'},
+                      2: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
       {% endif %}
 
-      var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1]);
+      // var view = new google.visualization.DataView(data);
+      // view.setColumns([0, 1]);
 
       var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
-
       chart.draw(data, options);
+
+      var chartCrit = new google.visualization.ComboChart(document.getElementById('histogramCrit'));
+      chartCrit.draw(dataCrit, optionsCrit);
     }
 {% endif %}
 </script>
@@ -232,6 +257,7 @@ $(document).ready(function() {
         </thead>
         <tbody>
             <tr class="white"><td><div id="histogram"></div></td></tr>
+            <tr class="white"><td><div id="histogramCrit"></div></td></tr>
         </tbody>
         <tr><td style="text-align: left; overflow-wrap: break-word; overflow: auto; white-space: normal;">Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.
             Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).<br>
