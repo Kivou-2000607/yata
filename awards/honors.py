@@ -300,7 +300,7 @@ d = {
     763: 159149768,  # Bare
     631: 160168767,  # Vae Victis
     317: 125937483,  # Phoenix
-    740: 0,  # Devastation
+    740: 853474729,  # Devastation
     476: 0,  # Chainer 5
 
     # 9
