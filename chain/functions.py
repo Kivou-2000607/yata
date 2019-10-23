@@ -252,7 +252,7 @@ def fillReport(faction, members, chain, report, attacks):
                 lastTS = v['timestamp_ended']
 
                 # add to critical attack
-                timeLeft = max(500 - timeSince, 0)
+                timeLeft = max(300 - timeSince, 0)
                 if timeLeft < 30:
                     attacksCriticalForHisto["30"].append(v['timestamp_ended'])
                 elif timeLeft < 60:
@@ -269,7 +269,7 @@ def fillReport(faction, members, chain, report, attacks):
                 nWRA[0] += 1
                 nWRA[1] += respect
                 nWRA[3] = max(chainCount, nWRA[3])
-                
+
                 if v['chain'] in BONUS_HITS:
                     attackers[attackerID][12] += 1
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
