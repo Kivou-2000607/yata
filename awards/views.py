@@ -137,7 +137,6 @@ def list(request, type):
 
             elif type == "hof":
                 hof = []
-                hofGraph = []
                 playerInHOF = False
                 for p in Player.objects.filter(awardsRank__lt=(HOF_SIZE + 1)).order_by('awardsRank'):
                     try:
@@ -149,7 +148,6 @@ def list(request, type):
                                     "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"],
                                     "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwards"],
                                     })
-                        hofGraph.append(float(p.awardsInfo))
                     except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
 
@@ -174,6 +172,10 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
+                # get hof graph
+                hofGraph = []
+                for p in Player.objects.all():
+                    hofGraph.append(float(p.awardsScor / 10000.0))
                 bins = numpy.logspace(-2, 2, num=101)
                 bins[0] = 0
                 histo, _ = numpy.histogram(hofGraph, bins=bins)
