@@ -153,7 +153,7 @@ def list(request, type):
 
                 if not playerInHOF:
                     hof.append({"player": player,
-                                "rscore": float(p.awardsScor / 10000.0),
+                                "rscore": float(player.awardsScor / 10000.0),
                                 # "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
                                 # "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
                                 "nAwarded": json.loads(player.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"],
