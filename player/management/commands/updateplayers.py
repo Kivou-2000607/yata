@@ -27,7 +27,7 @@ import traceback
 class Command(BaseCommand):
     def handle(self, **options):
 
-        for player in Player.objects.all():
+        for player in Player.objects.filter(validKey=True):
             try:
                 player.update_info()
             except BaseException as e:
