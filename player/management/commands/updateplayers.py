@@ -27,9 +27,22 @@ import traceback
 class Command(BaseCommand):
     def handle(self, **options):
 
+        # update players info
         for player in Player.objects.filter(validKey=True):
             try:
                 player.update_info()
             except BaseException as e:
-                print(f"[UPDATE PLAYER ERROR]: {e}")
+                print(f"[command.player.updateplayers]: {e}")
                 print(traceback.format_exc())
+
+        # temp... delete me
+        for player in Player.objects.filter(validKey=False):
+            player.awardsScor = int(float(player.awardsInfo) * 10000)
+            print("[command.player.updateplayers] COMMENT ME. update non valid key award score. {}: {}".format(player, player.awardsScor))
+            player.save()
+
+        # compute rank
+        for i, player in enumerate(Player.objects.order_by('-awardsScor')):
+            print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player, player.awardsScor/10000.))
+            player.awardsRank = i + 1
+            player.save()

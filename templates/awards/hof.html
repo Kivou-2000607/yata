@@ -138,17 +138,14 @@ This file is part of yata.
         </thead>
         <tbody>
             {% for k in hof %}
-                {% if forloop.counter0 < 50 or k.player.tId == player.tId %}
-                    <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
-                        <td class="a">#{{ forloop.counter }}</td>
-                        <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
-                        <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
-                        <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}" rel="tooltip">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
-                        <td class="c">{{k.rscore|floatformat:4}}%</td>
-                    </tr>
-                {% endif %}
+                <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
+                    <td class="a">#{{k.player.awardsRank}}</td>
+                    <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
+                    <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
+                    <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}" rel="tooltip">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
+                    <td class="c">{{k.rscore|floatformat:4}}%</td>
+                </tr>
             {% endfor %}
-
         </tbody>
     </table>
     <table class="center-large">

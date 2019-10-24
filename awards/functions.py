@@ -23,6 +23,8 @@ AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work"
 
 HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
 
+HOF_SIZE = 50
+
 
 def computeRarity(c):
     import math
@@ -2096,6 +2098,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
 
     player.awardsJson = json.dumps(awardsJson)
     player.awardsInfo = "{:.4f}".format(rScorePerso)
+    player.awardsScor = int(rScorePerso * 10000)
     player.awardsUpda = int(timezone.now().timestamp())
     player.save()
 

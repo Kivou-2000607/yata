@@ -70,6 +70,8 @@ class Player(models.Model):
     awardsInfo = models.CharField(default="N/A", max_length=255)
     awardsJson = models.TextField(default="{}")
     awardsUpda = models.IntegerField(default=0)
+    awardsRank = models.IntegerField(default=99999)
+    awardsScor = models.IntegerField(default=0)  # int(10000 x score in %)
 
     # info for stocks APP
     stocksInfo = models.CharField(default="N/A", max_length=255)

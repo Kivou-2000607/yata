@@ -28,6 +28,7 @@ from yata.handy import returnError
 from awards.functions import createAwards
 from awards.functions import updatePlayerAwards
 from awards.functions import AWARDS_CAT
+from awards.functions import HOF_SIZE
 from player.models import Player
 from awards.models import Call
 
@@ -137,10 +138,12 @@ def list(request, type):
             elif type == "hof":
                 hof = []
                 hofGraph = []
-                for p in Player.objects.exclude(awardsInfo="N/A").all():
+                playerInHOF = False
+                for p in Player.objects.filter(awardsRank__lt=(HOF_SIZE + 1)).order_by('awardsRank'):
                     try:
+                        playerInHOF = True if tId == p.tId else playerInHOF
                         hof.append({"player": p,
-                                    "rscore": float(p.awardsInfo),
+                                    "rscore": float(p.awardsScor / 10000.0),
                                     # "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
                                     # "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
                                     "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"],
@@ -149,6 +152,15 @@ def list(request, type):
                         hofGraph.append(float(p.awardsInfo))
                     except BaseException:
                         print('[view.awards.list] error getting info on {}'.format(p))
+
+                if not playerInHOF:
+                    hof.append({"player": player,
+                                "rscore": float(p.awardsScor / 10000.0),
+                                # "nAwarded": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwarded"],
+                                # "nAwards": json.loads(p.awardsJson)["summaryByType"]["AllHonors"]["nAwards"],
+                                "nAwarded": json.loads(player.awardsJson)["summaryByType"]["AllAwards"]["nAwarded"],
+                                "nAwards": json.loads(player.awardsJson)["summaryByType"]["AllAwards"]["nAwards"],
+                                })
 
                 awards = awardsJson.get('awards')
                 graph = []
