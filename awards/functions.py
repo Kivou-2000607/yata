@@ -1448,7 +1448,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = int(userInfo.get(key, "0.0").split(".")[0])
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     gains = int(vp["current"]) - 100000000
-                    if gains > 0:
+                    if gains > 0 and bridge[type] in honors_awarded:
                         elapsedTime = (int(timezone.now().timestamp()) - int(honors_time[honors_awarded.index(bridge[type])])) / (3600 * 24.)
                         ratio = gains / max(elapsedTime, 1)
                         statsLeft = max((vp["goal"] - vp["current"]), 0)
