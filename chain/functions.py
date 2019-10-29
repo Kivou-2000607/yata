@@ -61,7 +61,7 @@ def apiCallAttacks(faction, chain, key=None):
     keys = faction.getAllPairs(enabledKeys=True)
 
     # add + 2 s to the endTS
-    endTS += 1
+    endTS += 2
 
     # init
     chainDict = dict({})
