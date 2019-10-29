@@ -17,25 +17,12 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.conf import settings
+from .models import APIKey
 
-import json
-import os
-
-from bazaar.models import Item
-from bazaar.models import Preference
-from yata.handy import apiCall
+import random
 
 
-class Command(BaseCommand):
-    def handle(self, **options):
-        print("[command.bazaar.updateTendencies] start")
-
-        for item in Item.objects.all():
-            print("[command.bazaar.updateTendencies] reset prices of {} to {}".format(item, item.tMarketValue))
-            item.updateTendencies()
-            item.save()
-
-        print("[command.bazaar.updateTendencies] end")
+def randomKey():
+    keys = [_.key for _ in APIKey.objects.filter(status=True)]
+    key = random.choice(keys)
+    return key

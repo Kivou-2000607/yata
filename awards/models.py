@@ -21,34 +21,25 @@ from django.db import models
 from django.utils import timezone
 
 import json
+import numpy
 
 from yata.handy import apiCall
+from setup.functions import randomKey
 from awards.honors import d
 from awards.functions import HONORS_UNREACH
 from awards.functions import computeRarity
 
 
-class Call(models.Model):
+class AwardsData(models.Model):
     timestamp = models.IntegerField(default=0)
-    key = models.CharField(max_length=20)
-    a = models.TextField(default="{}")
+    apicall = models.TextField(default="{}")
+    hofHistogram = models.TextField(default="{}")
 
     def __str__(self):
-        return "Call #{}".format(self.pk)
+        return "Awards Data #{}".format(self.pk)
 
-    def update(self):
-        req = apiCall("torn", "", "medals,honors", self.key)
-
-        # put dummy circulation in medals before ched update
-        # for i, k in enumerate(req["medals"]):
-        #     if req["honors"].get(k) is None:
-        #         req["medals"][k]["circulation"] = 1000000
-        #         # req["medals"][k]["circulation"] = int(req["honors"].get(k)["circulation"])
-        #         print(req["medals"][k])
-        #     else:
-        #         c =  int(req["honors"].get(k)["circulation"])
-        #         req["medals"][k]["circulation"] = c if c > 1 else 1000000
-        #     req["medals"][k]["rarity"] = "???"
+    def updateApiCall(self):
+        req = apiCall("torn", "", "medals,honors", randomKey())
 
         if 'apiError' in req:
             print(req["apiError"])
@@ -77,29 +68,8 @@ class Call(models.Model):
                     if v["circulation"] > 1:
                         req[awardType][k]["rScore"] = 100. / computeRarity(v["circulation"]) / popTotal
 
-            self.a = json.dumps(req)
+            self.apicall = json.dumps(req)
             self.save()
 
-    def load(self):
-        return json.loads(self.a)
-
-
-class Donation(models.Model):
-    event = models.CharField(max_length=512)
-    # You were sent {GIFT} from {SENDER} with the message: {MESSAGE} {DATE}
-
-    def __str__(self):
-        return self.event
-
-    def split(self):
-        spl = self.event.split(": ")
-
-        spl1 = spl[0].split(" from ")
-        gift = " ".join(spl1[0].split(" ")[3:])
-        sender = spl1[1].split(" ")[0]
-
-        spl2 = spl[1].split(" ")
-        message = " ".join(spl2[:-2])
-        date = " ".join(spl2[-2:])
-
-        return {"date": date, "message": message, "sender": sender, "gift": gift}
+    def loadAPICall(self):
+        return json.loads(self.apicall)

@@ -74,7 +74,6 @@ def updateAttacks(player):
                 if int(v['modifiers']["war"]) == 2:
                     attacks[k]["modifiers"]["fairFight"] = 0
 
-
         for k in remove:
             del attacks[k]
 

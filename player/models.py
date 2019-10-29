@@ -20,7 +20,13 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
-from awards.models import Call
+import json
+
+from yata.handy import apiCall
+from awards.functions import updatePlayerAwards
+from chain.models import Faction
+from awards.models import AwardsData
+
 
 SECTION_CHOICES = (
     ('B', 'bazaar'),
@@ -85,10 +91,6 @@ class Player(models.Model):
         """ update player information
 
         """
-        from yata.handy import apiCall
-        from awards.functions import updatePlayerAwards
-        from chain.models import Faction
-        import json
 
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key, verbose=False)
@@ -145,7 +147,7 @@ class Player(models.Model):
 
         # update awards info
         # tornAwards = apiCall('torn', '', 'honors,medals', self.key)
-        tornAwards = Call.objects.first().load()
+        tornAwards = AwardsData.objects.first().loadAPICall()
         if 'apiError' in tornAwards:
             self.awardsJson = json.dumps(tornAwards)
             self.awardsInfo = "0"
@@ -196,3 +198,24 @@ class Message(models.Model):
 
     def __str__(self):
         return "{} of {:%Y/%M/%d} by {}".format(self.section, self.date, self.authorName)
+
+
+class Donation(models.Model):
+    event = models.CharField(max_length=512)
+    # You were sent {GIFT} from {SENDER} with the message: {MESSAGE} {DATE}
+
+    def __str__(self):
+        return self.event
+
+    def split(self):
+        spl = self.event.split(": ")
+
+        spl1 = spl[0].split(" from ")
+        gift = " ".join(spl1[0].split(" ")[3:])
+        sender = spl1[1].split(" ")[0]
+
+        spl2 = spl[1].split(" ")
+        message = " ".join(spl2[:-2])
+        date = " ".join(spl2[-2:])
+
+        return {"date": date, "message": message, "sender": sender, "gift": gift}

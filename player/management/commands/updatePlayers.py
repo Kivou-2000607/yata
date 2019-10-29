@@ -19,9 +19,13 @@ This file is part of yata.
 
 
 from django.core.management.base import BaseCommand
-from player.models import Player
 
 import traceback
+import numpy
+import json
+
+from player.models import Player
+from awards.models import AwardsData
 
 
 class Command(BaseCommand):
@@ -48,3 +52,21 @@ class Command(BaseCommand):
             print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player, player.awardsScor / 10000.))
             player.awardsRank = i + 1
             player.save()
+
+        # compute hof graph
+        print("[command.player.updateplayers] COMPUTE HOF GRAPH")
+        hofGraph = []
+        for p in Player.objects.all():
+            hofGraph.append(float(p.awardsScor / 10000.0))
+        bins = numpy.logspace(-2, 2, num=101)
+        bins[0] = 0
+        histo, _ = numpy.histogram(hofGraph, bins=bins)
+        cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
+        hofGraph = [[float(x), float(y), float(xm), float(xp), 0] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
+        hofGraph[0][4] = hofGraph[0][1]
+        for i in range(len(hofGraph) - 1):
+            hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
+
+        hof = AwardsData.objects.first()
+        hof.hofHistogram = json.dumps(hofGraph)
+        hof.save()

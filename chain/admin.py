@@ -26,7 +26,7 @@ from .models import Report
 from .models import Count
 from .models import Bonus
 from .models import Attacks
-from .models import Preference
+from .models import FactionData
 from .models import Crontab
 from .models import Wall
 from .models import Territory
@@ -37,11 +37,11 @@ from yata.handy import timestampToDate
 import json
 
 
-class PreferenceAdmin(admin.ModelAdmin):
+class FactionDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
-admin.site.register(Preference, PreferenceAdmin)
+admin.site.register(FactionData, FactionDataAdmin)
 
 
 class AttacksInline(admin.TabularInline):

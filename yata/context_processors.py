@@ -61,5 +61,5 @@ def nextLoot(request):
         for npc in NPC.objects.filter(show=True).order_by('tId'):
             due = max(min(npc.lootTimings(lvl=4)["due"], due), 0)
         return {"nextLoot": due}
-    except:
+    except BaseException:
         return {"nextLoot": 0}

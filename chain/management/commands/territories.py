@@ -24,9 +24,10 @@ from django.conf import settings
 import json
 import os
 
-from bazaar.models import Preference
+from setup.functions import randomKey
 from chain.models import Territory
 from chain.models import Racket
+from chain.models import FactionData
 from yata.handy import apiCall
 
 
@@ -34,10 +35,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         print("[command.chain.territories] start")
 
-        preference = Preference.objects.all()[0]
-
-        key = preference.get_random_key()[1]
-        territories = apiCall("torn", "", "territory,rackets", key, verbose=False)
+        territories = apiCall("torn", "", "territory,rackets", randomKey(), verbose=False)
 
         print("[command.chain.territories] update territories")
         allTerr = territories.get("territory", dict({}))
@@ -66,7 +64,8 @@ class Command(BaseCommand):
             print(f"{i+1} / {n}: create racket {k}")
             terr = Racket.objects.create(tId=k, **v)
 
-        preference.territoryTS = int(timezone.now().timestamp())
-        preference.save()
+        fd = FactionData.objects.first()
+        fd.territoryTS = int(timezone.now().timestamp())
+        fd.save()
 
         print("[command.chain.territories] end")

@@ -21,10 +21,6 @@ from django.db import models
 import json
 
 
-class Preference(models.Model):
-    allowedFactions = models.TextField(default="{}")
-
-
 class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
@@ -315,3 +311,7 @@ class Racket(models.Model):
 
     def __str__(self):
         return "Racket {} [{}]".format(self.tId, self.faction)
+
+
+class FactionData(models.Model):
+    territoryTS = models.IntegerField(default=0)

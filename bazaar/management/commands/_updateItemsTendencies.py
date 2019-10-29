@@ -18,19 +18,22 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 from django.conf import settings
 
 import json
 import os
-from awards.honors import d
-from awards.models import Call
+
+from bazaar.models import Item
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        file = os.path.join(settings.PROJECT_ROOT, 'static/honors/bannersId.json')
-        with open(file, 'w') as fp:
-            json.dump(d, fp)
+        print("[command.bazaar.updateTendencies] start")
 
-        call = Call.objects.first()
-        call.update()
+        for item in Item.objects.all():
+            print("[command.bazaar.updateTendencies] reset prices of {} to {}".format(item, item.tMarketValue))
+            item.updateTendencies()
+            item.save()
+
+        print("[command.bazaar.updateTendencies] end")

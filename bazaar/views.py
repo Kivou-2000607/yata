@@ -22,8 +22,8 @@ from django.utils import timezone
 
 import json
 
-from bazaar.models import Preference
 from bazaar.models import Item
+from bazaar.models import BazaarData
 from player.models import Player
 from yata.handy import apiCall
 from yata.handy import returnError
@@ -369,7 +369,7 @@ def update(request, itemId):
             item = Item.objects.filter(tId=itemId).first()
             print('[view.bazaar.updateItem] {}'.format(item))
 
-            baz = item.update_bazaar(key=key, n=Preference.objects.first().nItems)
+            baz = item.update_bazaar(key=key, n=BazaarData.objects.first().nItems)
             error = False
             if 'apiError' in baz:
                 error = baz

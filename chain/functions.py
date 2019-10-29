@@ -226,7 +226,7 @@ def fillReport(faction, members, chain, report, attacks):
         if(int(v['attacker_faction']) == faction.tId):
             # if attacker not part of the faction at the time of the call
             if attackerID not in attackers:
-                #print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
+                # print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
                 attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0, 0]  # add out of faction attackers on the fly
 
             attackers[attackerID][0] += 1
@@ -397,7 +397,7 @@ def fillReport(faction, members, chain, report, attacks):
     if chain.wall:
         finished = not chain.createReport
     else:
-        #finished = chain.nHits <= nWRA[0]
+        # finished = chain.nHits <= nWRA[0]
         if nWRA[0] != nWRA[3]:
             print('[function.chain.fillReport] ERROR in counts: #Wins = {} and maxCount = {}'.format(nWRA[0], nWRA[3]))
         finished = chain.nHits <= nWRA[3]

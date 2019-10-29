@@ -35,7 +35,7 @@ class Command(BaseCommand):
             keyHolder, key = faction.getRandomKey()
 
             if key:
-                armoryRaw = apiCall('faction', faction.tId, 'armorynewsfull', key, sub="armorynews")
+                armoryRaw = apiCall('faction', faction.tId, 'armorynewsfull', key, sub="armorynews", verbose=False)
                 if 'apiError' in armoryRaw:
                     print(f"[command.chain.armory] {armoryRaw['apiError']}")
                     continue

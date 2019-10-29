@@ -25,18 +25,16 @@ import json
 import os
 
 from bazaar.models import Item
-from bazaar.models import Preference
+from bazaar.models import BazaarData
 from yata.handy import apiCall
+from setup.functions import randomKey
 
 
 class Command(BaseCommand):
     def handle(self, **options):
         print("[command.bazaar.scan] start")
 
-        preference = Preference.objects.all()[0]
-
-        key = preference.get_random_key()[1]
-        items = apiCall("torn", "", "items,timestamp", key, sub="items", verbose=False)
+        items = apiCall("torn", "", "items,timestamp", randomKey(), sub="items", verbose=False)
 
         itemType = dict({})
 
@@ -68,16 +66,18 @@ class Command(BaseCommand):
                     print("[command.bazaar.scan]: request found more than one item id", len(req))
                     return 0
 
-            preference.lastScanTS = int(timezone.now().timestamp())
-            preference.save()
+            bd = BazaarData.objects.first()
+            bd.lastScanTS = int(timezone.now().timestamp())
+            bd.save()
+
 
         # delete bazaar info for custom items refreshed more than 24h ago
         items = Item.objects.filter(onMarket=False).filter(lastUpdateTS__lt=(int(timezone.now().timestamp()) - 86400))
         for item in items:
             item.marketdata_set.all().delete()
 
-        file = os.path.join(settings.PROJECT_ROOT, 'static/items/itemTypes.json')
-        with open(file, 'w') as fp:
-            json.dump(itemType, fp)
+        bd = BazaarData.objects.first()
+        bd.itemType = json.dumps(itemType)
+        bd.save()
 
         print("[command.bazaar.scan] end")

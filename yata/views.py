@@ -26,9 +26,9 @@ from django.utils import timezone
 import json
 import traceback
 
+from player.models import Donation
 from player.models import Player
 from player.models import News
-from awards.models import Donation
 from chain.models import Faction
 from yata.handy import apiCall
 from yata.handy import returnError

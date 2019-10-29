@@ -18,29 +18,11 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.conf import settings
 
-import json
-import os
-
-from bazaar.models import Item
-from bazaar.models import Preference
-from yata.handy import apiCall
+from awards.models import AwardsData
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.bazaar.resetPrices] start")
-
-        for item in Item.objects.all():
-            print("[command.bazaar.resetPrices] reset prices of {} to {}".format(item, item.tMarketValue))
-            now = int(timezone.now().timestamp())
-            priceHistory = dict({})
-            for i in range(31):
-                t = now - i * 3600 * 24
-                priceHistory[t] = item.tMarketValue
-            item.priceHistory = json.dumps(priceHistory)
-            item.save()
-
-        print("[command.bazaar.resetPrices] end")
+        call = AwardsData.objects.first()
+        call.updateApiCall()

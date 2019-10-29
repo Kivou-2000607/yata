@@ -5,7 +5,7 @@ from django.conf import settings
 import requests
 
 from yata.handy import apiCall
-from bazaar.models import Preference
+from setup.functions import randomKey
 
 
 class NPC(models.Model):
@@ -21,8 +21,7 @@ class NPC(models.Model):
 
     def update(self, key=None):
         if key is None:
-            preference = Preference.objects.all()[0]
-            key = preference.get_random_key()[1]
+            key = randomKey()
 
         req = requests.get('https://api.torn.com/user/{}?&selections=profile,timestamp&key={}'.format(self.tId, key)).json()
         if 'error' in req:

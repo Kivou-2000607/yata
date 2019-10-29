@@ -21,16 +21,14 @@ from django.contrib import admin
 
 from .models import MarketData
 from .models import Item
-from .models import Preference
-#
-# from django.contrib.sessions.models import Session
-#
-#
-# class SessionAdmin(admin.ModelAdmin):
-#     list_display = ['session_key', 'expire_date']
-#
-#
-# admin.site.register(Session, SessionAdmin)
+from .models import BazaarData
+
+
+class BazaarDataAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+
+admin.site.register(BazaarData, BazaarDataAdmin)
 
 
 class MarketDataInline(admin.TabularInline):
@@ -66,10 +64,3 @@ class ItemAdmin(admin.ModelAdmin):
     search_fields = ['tName', 'tId', 'tType']
 
 admin.site.register(Item, ItemAdmin)
-
-
-class PreferenceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nItems', 'lastScanTS']
-
-
-admin.site.register(Preference, PreferenceAdmin)

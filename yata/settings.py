@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'bazaar.apps.BazaarConfig',
     'stock.apps.StockConfig',
     'loot.apps.LootConfig',
+    'setup.apps.SetupConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

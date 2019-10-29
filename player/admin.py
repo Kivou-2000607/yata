@@ -1,8 +1,6 @@
 from django.contrib import admin
 
-from .models import Player
-from .models import News
-from .models import Message
+from .models import *
 from yata.handy import timestampToDate
 
 
@@ -36,3 +34,10 @@ class MessageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Message, MessageAdmin)
+
+
+class DonationAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+
+admin.site.register(Donation, DonationAdmin)

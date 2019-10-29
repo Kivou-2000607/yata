@@ -27,21 +27,6 @@ from scipy import stats
 from yata.handy import apiCall
 
 
-class Preference(models.Model):
-    # autorisedId = models.CharField(default="", max_length=200)
-    key = models.CharField(default="", max_length=16)
-    nItems = models.IntegerField(default=10)
-    lastScanTS = models.IntegerField(default=0)
-    apiString = models.CharField(default="0", max_length=330)  # for 10 pairs login(15):key(16)
-    territoryTS = models.IntegerField(default=0)
-
-    def get_random_key(self):
-        from numpy.random import randint
-        pairs = self.apiString.split(",")
-        i = randint(0, len(pairs))
-        return pairs[i].split(":")
-
-
 class Item(models.Model):
     # torn ID of the item
     # object description from: https://api.torn.com/torn/{id}?selections=items&key=
@@ -287,3 +272,9 @@ class MarketData(models.Model):
 
     def __str__(self):
         return "{}: {} x {}".format(self.item, self.quantity, self.cost)
+
+
+class BazaarData(models.Model):
+    nItems = models.IntegerField(default=10)
+    lastScanTS = models.IntegerField(default=0)
+    itemType = models.TextField(default="{}")

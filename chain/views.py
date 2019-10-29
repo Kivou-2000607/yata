@@ -40,12 +40,12 @@ from chain.functions import updateMembers
 from chain.functions import factionTree
 from chain.functions import BONUS_HITS
 
-from bazaar.models import Preference
 from chain.models import Faction
 from chain.models import Crontab
 from chain.models import Wall
 from chain.models import Territory
 from chain.models import Racket
+from chain.models import FactionData
 
 
 # render view
@@ -1052,9 +1052,10 @@ def tree(request):
 
 
 def armory(request):
-    from bazaar.items import ITEM_TYPE
+    from bazaar.models import BazaarData
 
     try:
+        ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
         if request.session.get('player'):
             print('[view.armory] get player id from session')
             tId = request.session["player"].get("tId")
@@ -1620,8 +1621,7 @@ def territories(request):
                 else:
                     racket.factionName = "-"
 
-            preferences = Preference.objects.first()
-            territoryTS = preferences.territoryTS
+            territoryTS = FactionData.objects.first().territoryTS
             context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territoryTS': territoryTS, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)

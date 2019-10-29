@@ -19,27 +19,10 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.conf import settings
 
-import json
-import os
-
-from stock.models import Stock
-from setup.functions import randomKey
-from yata.handy import apiCall
-
+from setup.models import APIKey
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.stock.update] start")
-
-        stocks = apiCall("torn", "", "stocks,timestamp", randomKey())
-        for k, v in stocks["stocks"].items():
-            stock = Stock.objects.filter(tId=int(k)).first()
-            if stock is None:
-                stock = Stock.create(k, v, stocks["timestamp"])
-            else:
-                stock.update(k, v, stocks["timestamp"])
-            stock.save()
-
-        print("[command.stock.update] end")
+        for key in APIKey.objects.all():
+            key.checkKey()

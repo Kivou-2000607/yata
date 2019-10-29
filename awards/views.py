@@ -17,6 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -30,7 +31,8 @@ from awards.functions import updatePlayerAwards
 from awards.functions import AWARDS_CAT
 from awards.functions import HOF_SIZE
 from player.models import Player
-from awards.models import Call
+
+from awards.models import AwardsData
 
 
 def index(request):
@@ -44,7 +46,7 @@ def index(request):
             userInfo = awardsJson.get('userInfo')
 
             error = False
-            tornAwards = Call.objects.first().load()
+            tornAwards = AwardsData.objects.first().loadAPICall()
             userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', player.key)
             if 'apiError' in userInfo:
                 error = userInfo
@@ -95,7 +97,7 @@ def list(request, type):
             awardsJson = json.loads(player.awardsJson)
             print('[view.awards.list] award type: {}'.format(type))
 
-            tornAwards = Call.objects.first().load()
+            tornAwards = AwardsData.objects.first().loadAPICall()
             userInfo = awardsJson.get('userInfo')
             summaryByType = awardsJson.get('summaryByType')
 
@@ -172,19 +174,7 @@ def list(request, type):
                     if h.get("circulation", 0) > 0:
                         graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
-                # get hof graph
-                hofGraph = []
-                for p in Player.objects.all():
-                    hofGraph.append(float(p.awardsScor / 10000.0))
-                bins = numpy.logspace(-2, 2, num=101)
-                bins[0] = 0
-                histo, _ = numpy.histogram(hofGraph, bins=bins)
-                cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
-                hofGraph = [[x, y, xm, xp, 0] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
-                hofGraph[0][4] = hofGraph[0][1]
-                for i in range(len(hofGraph) - 1):
-                    hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
-                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": hofGraph}
+                context = {"player": player, "view": {"hof": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2, "hof": sorted(hof, key=lambda x: -x["rscore"]), "hofGraph": json.loads(AwardsData.objects.first().hofHistogram)}
                 page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
                 return render(request, page, context)
 
@@ -193,3 +183,8 @@ def list(request, type):
 
     except Exception:
         return returnError()
+
+
+def bannersId(request):
+    from awards.honors import d
+    return HttpResponse(json.dumps(d), content_type="application/json")
