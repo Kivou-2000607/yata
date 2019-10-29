@@ -244,6 +244,6 @@ class PlayerData(models.Model):
         t = int(timezone.now().timestamp())
         self.nHour = len(players.filter(lastActionTS__gte=(t - (3600))))
         self.nDay = len(players.filter(lastActionTS__gte=(t - (24 * 3600))))
-        self.nMont = len(players.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+        self.nMonth = len(players.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
 
         self.save()
