@@ -41,3 +41,10 @@ class DonationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Donation, DonationAdmin)
+
+
+class PlayerDataAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+
+admin.site.register(PlayerData, PlayerDataAdmin)

@@ -21,7 +21,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
 
+import json
+
 from player.models import Player
+from player.models import PlayerData
 from player.models import News
 from yata.handy import returnError
 
@@ -49,20 +52,26 @@ def prune(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
 
-            players = Player.objects.all()
-            nTotal = len(players)
+            nPlayers = PlayerData.objects.first()
 
-            nValid = len(players.filter(active=True).exclude(validKey=False))
-            nInact = len(players.filter(active=False))
-            nInval = len(players.filter(validKey=False))
-
-            prune = Player.objects.filter(active=False).exclude(validKey=True)
-            nPrune = len(prune)
-
-            context = {"player": player, "nTotal": nTotal, "nInact": nInact, "nValid": nValid, "nInval": nInval, "nPrune": nPrune, "prune": prune}
+            context = {"player": player, "nTotal": nPlayers.nTotal, "nInact": nPlayers.nInact, "nValid": nPlayers.nValid, "nInval": nPlayers.nInval, "nPrune": nPlayers.nPrune}
             return render(request, "player.html", context)
         else:
             return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
+        return returnError()
+
+
+def number(request):
+    try:
+        lastActions = dict({})
+        nPlayers = PlayerData.objects.first()
+        lastActions["hour"] = nPlayers.nHour
+        lastActions["day"] = nPlayers.nDay
+        lastActions["month"] = nPlayers.nMonth
+        lastActions["total"] = nPlayers.nTotal
+        lastActions["string"] = "{} / {} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"], lastActions["hour"])
+        return HttpResponse(json.dumps(lastActions), content_type="application/json")
+    except BaseException:
         return returnError()

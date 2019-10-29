@@ -28,6 +28,7 @@ import traceback
 
 from player.models import Donation
 from player.models import Player
+from player.models import PlayerData
 from player.models import News
 from chain.models import Faction
 from yata.handy import apiCall
@@ -136,22 +137,6 @@ def delete(request):
         return HttpResponseRedirect(reverse('logout'))
 
     except Exception:
-        return returnError()
-
-
-def api(request):
-    try:
-        lastActions = dict({})
-        t = int(timezone.now().timestamp())
-        lastActions["hour"] = len(Player.objects.filter(lastActionTS__gte=(t - (3600))))
-        lastActions["day"] = len(Player.objects.filter(lastActionTS__gte=(t - (24 * 3600))))
-        lastActions["month"] = len(Player.objects.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
-        lastActions["total"] = len(Player.objects.all())
-        lastActions["string"] = "{} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"])
-        import time
-        time.sleep(10)
-        return HttpResponse(json.dumps(lastActions), content_type="application/json")
-    except BaseException:
         return returnError()
 
 

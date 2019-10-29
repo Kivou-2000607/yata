@@ -37,25 +37,24 @@ This file is part of yata.
         <tbody>
             <tr><td class="a"><b class="neutral">Users</b></td><td class="b">{{nTotal}}</td><td class="b">100%</td></tr>
             <tr><td class="a"><b class="valid">Active and valid users</b></td><td class="b">{{nValid}}</td><td class="b">{{nValid|mul:100|intdiv:nTotal}}%</td></tr>
-            <tr><td class="a"><b class="warning">Inactive users</b></td><td class="b">{{nInact}}</td><td class="b">{{nInact|mul:100|intdiv:nTotal}}%</td></tr>
-            <tr><td class="a"><b class="warning">Invalid users (wrong API key)</b></td><td class="b">{{nInval}}</td><td class="b">{{nInval|mul:100|intdiv:nTotal}}%</td></tr>
+            <tr><td class="a"><b class="warning">Inactive users (1 month)</b></td><td class="b">{{nInact}}</td><td class="b">{{nInact|mul:100|intdiv:nTotal}}%</td></tr>
+            <tr><td class="a"><b class="warning">Invalid users (invalid API key)</b></td><td class="b">{{nInval}}</td><td class="b">{{nInval|mul:100|intdiv:nTotal}}%</td></tr>
             <tr><td class="a"><b class="error">Users subject to pruning</b></td><td class="b">{{nPrune}}</td><td class="b">{{nPrune|mul:100|intdiv:nTotal}}%</td></tr>
         </tbody>
     </table>
 </div>
 
-<h2 class="title">List of users subjected to <span class="error">pruning</span></h2>
-<div class="module">
-    <p><b></b></p>
-    <table id="players-prune" class="center">
-        <thead>
-            <tr><th>Id</th><th>Last know name</th></tr>
-        </thead>
-        <tbody>
-            {% for p in prune %}
-                <tr><td>{{p.tId}}</td><td>{{p.name}}</td></tr>
-            {% endfor %}
-        </tbody>
-
-    </table>
-</div>
+{# <h2 class="title">List of users subjected to <span class="error">pruning</span></h2> #}
+{# <div class="module"> #}
+    {# <p><b></b></p> #}
+    {# <table id="players-prune" class="center"> #}
+        {# <thead> #}
+            {# <tr><th>Id</th><th>Last know name</th></tr> #}
+        {# </thead> #}
+        {# <tbody> #}
+            {# {% for p in prune %} #}
+                {# <tr><td>{{p.tId}}</td><td>{{p.name}}</td></tr> #}
+            {# {% endfor %} #}
+        {# </tbody> #}
+    {# </table> #}
+{# </div> #}

@@ -219,3 +219,31 @@ class Donation(models.Model):
         date = " ".join(spl2[-2:])
 
         return {"date": date, "message": message, "sender": sender, "gift": gift}
+
+
+class PlayerData(models.Model):
+    nTotal = models.IntegerField(default=1)
+    nValid = models.IntegerField(default=0)
+    nInval = models.IntegerField(default=0)
+    nPrune = models.IntegerField(default=0)
+    nInact = models.IntegerField(default=0)
+
+    nDay = models.IntegerField(default=0)
+    nHour = models.IntegerField(default=0)
+    nMonth = models.IntegerField(default=0)
+
+    def updateNumberOfPlayers(self):
+        players = Player.objects.all()
+
+        self.nTotal = len(players)
+        self.nValid = len(players.filter(active=True).exclude(validKey=False))
+        self.nInact = len(players.filter(active=False))
+        self.nInval = len(players.filter(validKey=False))
+        self.nPrune = len(players.filter(validKey=False).exclude(validKey=True))
+
+        t = int(timezone.now().timestamp())
+        self.nHour = len(players.filter(lastActionTS__gte=(t - (3600))))
+        self.nDay = len(players.filter(lastActionTS__gte=(t - (24 * 3600))))
+        self.nMont = len(players.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
+
+        self.save()
