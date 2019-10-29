@@ -239,7 +239,7 @@ class PlayerData(models.Model):
         self.nValid = len(players.filter(active=True).exclude(validKey=False))
         self.nInact = len(players.filter(active=False))
         self.nInval = len(players.filter(validKey=False))
-        self.nPrune = len(players.filter(validKey=False).exclude(validKey=True))
+        self.nPrune = len(players.filter(validKey=False).exclude(active=True))
 
         t = int(timezone.now().timestamp())
         self.nHour = len(players.filter(lastActionTS__gte=(t - (3600))))
