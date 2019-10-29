@@ -200,8 +200,12 @@ def priceTendencyShort(fl, arg="item"):
 def forecast(forecast):
     if forecast in ["Good"]:
         return '<span class="valid"><i class="fas fa-sun"></i></span>'.format(forecast)
+    elif forecast in ["Very Good"]:
+        return '<span class="valid"><i class="fas fa-umbrella-beach"></i></span>'.format(forecast)
     elif forecast in ["Poor"]:
         return '<span class="error"><i class="fas fa-cloud-showers-heavy"></i></span>'.format(forecast)
+    elif forecast in ["Very Poor"]:
+        return '<span class="error"><i class="fas fa-poo-storm"></i></span>'.format(forecast)
     else:
         return '<span class="neutral"><i class="fas fa-cloud-sun"></i></span>'.format(forecast)
 
