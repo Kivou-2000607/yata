@@ -62,7 +62,7 @@ class Command(BaseCommand):
         bins[0] = 0
         histo, _ = numpy.histogram(hofGraph, bins=bins)
         cBins = [0.5 * float(a + b) for a, b in zip(bins[:-1], bins[1:])]
-        hofGraph = [[float(x), float(y), float(xm), float(xp), 0] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
+        hofGraph = [[float(x), int(y), float(xm), float(xp), 0] for x, y, xm, xp in zip(cBins, histo, bins[:-1], bins[1:])]
         hofGraph[0][4] = hofGraph[0][1]
         for i in range(len(hofGraph) - 1):
             hofGraph[i + 1][4] = hofGraph[i + 1][1] + hofGraph[i][4]
