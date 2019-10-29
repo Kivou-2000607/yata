@@ -45,6 +45,7 @@ d = {
     14: 506875686,  # Slow Bomb
     614: 670053246,  # Honored
     734: 182849928,  # Wrecked
+    288: 317742122,  # Fresh Start
 
     # 1
     171: 228001376,  # Afghanistan

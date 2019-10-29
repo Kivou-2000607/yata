@@ -1849,7 +1849,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
         awards = dict({
             "Social": dict(),
-            "Refills": dict(),
+            "Points": dict(),
             "Perks": dict(),
             "Racing": dict(),
             "Awards": dict(),
@@ -1943,13 +1943,21 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 elif int(k) in [266, 566]:
                     # 566 {'name': "You've Got Some Nerve", 'description': 'Refill your nerve bar 250 times', 'type': 0, 'circulation': 812, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': 572050307, 'title': "You've Got Some Nerve [566]: Extraordinary (812)"}
                     # 266 {'name': 'Energize', 'description': 'Refill your energy bar 250 times', 'type': 0, 'circulation': 10237, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 400884239, 'title': 'Energize [266]: Limited (10237)'}
-                    type = "Refills"
+                    type = "Points"
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
                     key = "nerverefills" if v["description"].split(" ")[2] == "nerve" else "refills"
                     vp["current"] = userInfo.get("personalstats", dict({})).get(key, 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(vp["goal"] - vp["current"], 0)
                     vp["comment"] = "with daily refill"
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [288]:
+                    # "288": { "name": "Fresh Start", "description": "Reset your merits", "type": 0,
+                    type = "Points"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [244, 607, 620]:
