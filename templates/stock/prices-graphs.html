@@ -30,7 +30,7 @@ This file is part of yata.
       var data = google.visualization.arrayToDataTable([
         ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Good Forcast', 'Poor Forcast'],
         {% for a, b, c, d, _, _, e, _ in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {%if e == "Good"%}1{%else%}0{%endif%}, {%if e == "Poor"%}1{%else%}0{%endif%}],
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {%if e == "Good"%}1{%elif e == "Very Good"%}1{%else%}0{%endif%}, {%if e == "Poor"%}1{%elif e == "Very Poor"%}1{%else%}0{%endif%}],
          {% endfor %}
       ]);
 
