@@ -270,7 +270,7 @@ $(document).ready(function() {
             {% endif %}
         </td></tr>
     </table>
-{% else %}
+{% elif chain.nAttacks %}
     <hr class="sep">
     <p class="error">No histogram found. Try to refresh it by clicking on the refresh button <i class="fas fa-sync-alt" title="Refresh report"></i> in the chain list. No need to delete and recreate it.</p>
 {% endif %}

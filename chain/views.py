@@ -564,7 +564,7 @@ def jointReport(request):
 
             # add last time connected
             error = False
-            update = updateMembers(faction, key=key)
+            update = updateMembers(faction, key=key, force=False)
             if 'apiError' in update:
                 error = update
 
