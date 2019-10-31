@@ -231,15 +231,15 @@
     }, 1000);
 
     // refresh live chain
-    window.setInterval(()=>{
-        $("#refresh-live-chain").each(()=>{
-            $( "#content-update" ).load( "/chain/live/", {
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-            });
-            $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading live chain (1 API Call)').addClass("grey");
-            $("div.error").hide();
-        });
-    }, 60000);
+    // window.setInterval(()=>{
+    //     $("#refresh-live-chain").each(()=>{
+    //         $( "#content-update" ).load( "/chain/live/", {
+    //             csrfmiddlewaretoken: getCookie("csrftoken"),
+    //         });
+    //         $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading live chain (1 API Call)').addClass("grey");
+    //         $("div.error").hide();
+    //     });
+    // }, 60000);
 
     // delete wall from list
     $(document).on('click', '.wall-delete', e=>{
