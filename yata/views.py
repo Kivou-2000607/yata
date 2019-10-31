@@ -140,5 +140,5 @@ def delete(request):
         return returnError()
 
 
-def badges(request):
-    return render(request, "yata/badges.html")
+# def badges(request):
+#     return render(request, "yata/badges.html")
