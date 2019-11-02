@@ -409,7 +409,7 @@ def update(request, itemId):
             player.bazaarJson = json.dumps(bazaarJson)
             player.save()
 
-            context = {'list': playerList, 'item': item, "view": {"timer": True}}
+            context = {'player': player, 'list': playerList, 'item': item, "view": {"timer": True}}
             if error:
                 context.update(error)
             return render(request, "bazaar/item.html", context)
@@ -467,7 +467,7 @@ def toggle(request, itemId):
             player.bazaarJson = json.dumps(bazaarJson)
             player.save()
 
-            context = {'item': item, 'list': playerList, "view": {"timer": True}}
+            context = {'player': player, 'item': item, 'list': playerList, "view": {"timer": True}}
             return render(request, "bazaar/item.html", context)
 
         else:
