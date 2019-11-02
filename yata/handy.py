@@ -87,11 +87,12 @@ def returnError(type=500, msg=None):
     import traceback
     from django.utils import timezone
     from django.http import HttpResponseServerError
+    from django.http import HttpResponseForbidden
     from django.template.loader import render_to_string
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
-        return HttpResponseServerError(render_to_string('403.html', {'exception': msg}))
+        return HttpResponseForbidden(render_to_string('403.html', {'exception': msg}))
     else:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
