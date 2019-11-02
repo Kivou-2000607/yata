@@ -22,7 +22,6 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-{% if territories|length %}
 
 
 <h2 class="title">Map<span class="flush-right">Last update: {{territoryTS|ts2date}}</span></h2>
@@ -30,6 +29,7 @@ This file is part of yata.
     {% include "chain/territories-graph.html"%}
 </div>
 
+{% if territories|length %}
 <h2 class="title">List of territories</h2>
 <div class="module">
 
@@ -76,6 +76,13 @@ This file is part of yata.
     </table>
 </div>
 
+{% elif player.tId > 0%}
+    <h2 class="title">List of territories</h2>
+    <div class="module">
+        <p class="error">Your faction has no territories</p>
+    </div>
+{% endif %}
+
 <h2 class="title">List of Rackets</h2>
 <div class="module">
     <table id="racket-list" class="tablesorter center-large trshadow racket-list">
@@ -113,10 +120,3 @@ This file is part of yata.
 
 
 </div>
-
-{% else%}
-<h2 class="title">List of territories</h2>
-<div class="module">
-    <p class="error">Your faction has no territories</p>
-</div>
-{% endif %}

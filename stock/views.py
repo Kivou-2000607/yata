@@ -52,8 +52,7 @@ def index(request, select='all'):
                 error = {"apiErrorSub": myStocks["apiError"]}
             else:
                 print('[view.stock.list] save my stocks')
-                if myStocks.get("stocks") is None:
-                    myStocks["stocks"] = dict({})
+                myStocks["stocks"] = myStocks.get("stocks", dict({}))
                 player.stocksJson = json.dumps(myStocks.get("stocks", dict({})))
                 player.stocksInfo = len(myStocks.get("stocks", []))
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
@@ -61,12 +60,13 @@ def index(request, select='all'):
 
         # load torn stocks and add personal stocks to torn stocks
         stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
-        ts = 0
+        ts = stocks[0]['t'].timestamp
+
         for k, v in json.loads(player.stocksJson).items():
             tId = v['stock_id']
             if tId in stocks:
                 tstock = stocks[tId].get('t')
-                ts = max(ts, tstock.timestamp)
+                # ts = max(ts, tstock.timestamp)
 
                 # add profit
                 v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])

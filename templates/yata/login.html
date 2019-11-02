@@ -44,10 +44,14 @@ This file is part of yata.
                         <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Bazaar">
                             <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar</b></a><br>
                             <span>
-                            {% if player.bazaarInfo == "N/A" or player.tId == -1 %}
-                            &empty;
+                            {% if player.tId > 0 %}
+                                {% if player.bazaarInfo == "N/A" %}
+                                &empty;
+                                {% else %}
+                                {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
+                                {% endif %}
                             {% else %}
-                            {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
+                                Can't update price yourself
                             {% endif %}
                             </span>
                     </td>
@@ -56,28 +60,36 @@ This file is part of yata.
                         <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Stocks">
                             <b><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stocks</b></a><br>
                             <span>
-                            {% if player.stocksInfo == "N/A" %}
-                            &empty;
+                            {% if player.tId > 0 %}
+                                {% if player.stocksInfo == "N/A" %}
+                                &empty;
+                                {% else %}
+                                {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
+                                {% endif %}
                             {% else %}
-                            {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
+                                Don't show your blocks
                             {% endif %}
                             </span>
                     </td>
-                    {% if player.tId > 0 %}
                     {# faction #}
                     <td class="b">
                         <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Faction">
                             <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a><br>
                             <span>
-                            {% if player.chainInfo == "N/A" %}
-                            &empty;
+                            {% if player.tId > 0 %}
+                                {% if player.chainInfo == "N/A" %}
+                                &empty;
+                                {% else %}
+                                {{player.chainInfo}}
+                                {% endif %}
                             {% else %}
-                            {{player.chainInfo}}
+                                Only shows rackets
                             {% endif %}
                             </span>
                     </td>
                     {# targets #}
                     <td class="b">
+                        {% if player.tId > 0 %}
                         <a href="{% url 'target:index' %}" class="yata-link-target" title="Targets">
                             <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
                             <span>
@@ -87,17 +99,26 @@ This file is part of yata.
                             {{player.targetInfo}} target{{player.targetInfo|pluralize}}
                             {% endif %}
                             </span>
+                        {% else %}
+                            <a class="neutral" title="Targets">
+                                <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a></span><br>
+                                <span>Not available</span>
+                        {% endif %}
                     </td>
-                    {% endif %}
+
                     {# awards #}
                     <td class="b">
                         <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Awards">
                             <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
                             <span>
-                            {% if player.tId == -1 %}
-                            &empty;
+                            {% if player.tId > 0 %}
+                                {% if player.targetInfo == "N/A" %}
+                                &empty;
+                                {% else %}
+                                {{player.awardsInfo|floatformat:2}}% rarity score
+                                {% endif %}
                             {% else %}
-                            {{player.awardsInfo|floatformat:2}}% rarity score
+                                Don't show progress
                             {% endif %}
                             </span>
                     </td>
@@ -130,7 +151,7 @@ This file is part of yata.
                 <hr class="sep">
                 {# <p>Welcome to the target list. You can look at your last attacks to add a new targets. You can refresh the information by clicking on the target line.</p> #}
                 {% include "target/categories.html" %}
-            {% elif chaincat %}
+            {% elif chaincat and player.tId > 0 %}
                 <hr class="sep">
                 {# <p>Welcome to the chain reports. Have a look at the live report, old chains or the joint report.</p> #}
                 {% include "chain/categories.html" %}

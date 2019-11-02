@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -123,7 +124,8 @@ def index(request):
             return render(request, 'chain.html', context)
 
         else:
-            return returnError(type=403, msg="You might want to log in.")
+            return redirect('/chain/territories/')
+            # return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
         return returnError()
@@ -1564,71 +1566,71 @@ def territories(request):
         if request.session.get('player'):
             print('[view.chain.territories] get player id from session')
             tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            factionId = player.factionId
-
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-            print('[view.chain.territories] faction {} found'.format(factionId))
-
-            # get faction territories
-            print('[view.chain.territories] get faction territories')
-            territories = Territory.objects.filter(faction=factionId)
-            n = len(territories)
-            x0 = 0.0
-            y0 = 0.0
-            summary = {"n": n, "daily_respect": 0.0}
-            if n:
-                for territory in territories:
-                    r = json.loads(territory.racket)
-                    if len(r):
-                        territory.racket = "{name}: {reward}".format(**r)
-                    else:
-                        territory.racket = ""
-                    x0 += territory.coordinate_x
-                    y0 += territory.coordinate_y
-                    territory.factionName = faction.name
-                    summary["daily_respect"] += territory.daily_respect
-                    summary["factionName"] = territory.factionName
-                    summary["faction"] = territory.faction
-
-                x0 /= n
-                y0 /= n
-                summary["coordinate_x"] = x0
-                summary["coordinate_y"] = y0
-
-            print('[view.chain.territories] get all territories')
-            allTerritories = Territory.objects.all()
-
-            print('[view.chain.territories] get rackets')
-            rackets = Racket.objects.all()
-            for racket in rackets:
-                t = allTerritories.filter(tId=racket.tId).first()
-                x = t.coordinate_x
-                y = t.coordinate_y
-                r = t.daily_respect
-                racket.coordinate_x = x
-                racket.coordinate_y = y
-                racket.daily_respect = r
-                racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
-                if racket.faction:
-                    tmp = Faction.objects.filter(tId=racket.faction).first()
-                    if tmp is not None:
-                        racket.factionName = tmp.name
-                    else:
-                        racket.factionName = "Faction"
-                else:
-                    racket.factionName = "-"
-
-            territoryTS = FactionData.objects.first().territoryTS
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territoryTS': territoryTS, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
-            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
-            return render(request, page, context)
-
         else:
-            message = "You might want to log in."
-            return returnError(type=403, msg=message)
+            print('[view.chain.territories] anon session')
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+        factionId = player.factionId
+
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+        print('[view.chain.territories] faction {} found'.format(factionId))
+
+        # get faction territories
+        print('[view.chain.territories] get faction territories')
+        territories = Territory.objects.filter(faction=factionId)
+        n = len(territories)
+        x0 = 2568.97
+        y0 = 2479.89
+        summary = {"n": n, "daily_respect": 0.0}
+        if n:
+            for territory in territories:
+                r = json.loads(territory.racket)
+                if len(r):
+                    territory.racket = "{name}: {reward}".format(**r)
+                else:
+                    territory.racket = ""
+                x0 += territory.coordinate_x
+                y0 += territory.coordinate_y
+                territory.factionName = faction.name
+                summary["daily_respect"] += territory.daily_respect
+                summary["factionName"] = territory.factionName
+                summary["faction"] = territory.faction
+
+            x0 /= n
+            y0 /= n
+            summary["coordinate_x"] = x0
+            summary["coordinate_y"] = y0
+
+        print('[view.chain.territories] get all territories')
+        allTerritories = Territory.objects.all()
+
+        print('[view.chain.territories] get rackets')
+        rackets = Racket.objects.all()
+        for racket in rackets:
+            t = allTerritories.filter(tId=racket.tId).first()
+            x = t.coordinate_x
+            y = t.coordinate_y
+            r = t.daily_respect
+            racket.coordinate_x = x
+            racket.coordinate_y = y
+            racket.daily_respect = r
+            racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
+            if racket.faction:
+                tmp = Faction.objects.filter(tId=racket.faction).first()
+                if tmp is not None:
+                    racket.factionName = tmp.name
+                else:
+                    racket.factionName = "Faction"
+            else:
+                racket.factionName = "-"
+
+        territoryTS = FactionData.objects.first().territoryTS
+        context = {'player': player, 'chaincat': True, 'faction': faction, 'rackets': rackets, 'territoryTS': territoryTS, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
+        page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+        return render(request, page, context)
 
     except Exception:
         return returnError()
@@ -1637,9 +1639,14 @@ def territories(request):
 # action view
 def territoriesFullGraph(request):
     try:
-        if request.session.get('player') and request.method == 'POST':
-            print('[view.chain.territoriesFullGraph] get player id from session')
-            tId = request.session["player"].get("tId")
+        if request.method == 'POST':
+            if request.session.get('player'):
+                print('[view.chain.territories] get player id from session')
+                tId = request.session["player"].get("tId")
+            else:
+                print('[view.chain.territoriesFullGraph] anon session')
+                tId = -1
+
             player = Player.objects.filter(tId=tId).first()
             factionId = player.factionId
 
@@ -1651,8 +1658,8 @@ def territoriesFullGraph(request):
             # get faction territories
             territories = Territory.objects.filter(faction=factionId)
             n = len(territories)
-            x0 = 0.0
-            y0 = 0.0
+            x0 = 2568.97
+            y0 = 2479.89
             summary = {"n": n, "daily_respect": 0.0}
             if n:
                 for territory in territories:
