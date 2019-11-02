@@ -54,14 +54,17 @@ def index(request):
         tornAwards = AwardsData.objects.first().loadAPICall()
         if tId > 0:
             userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', player.key)
-            if 'apiError' in userInfo:
-                error = userInfo
-            else:
-                print("[view.awards.index] update awards")
-                awardsJson["userInfo"] = userInfo
-                player.awardsJson = json.dumps(awardsJson)
-                updatePlayerAwards(player, tornAwards, userInfo)
-                player.save()
+        else:
+            userInfo = dict({})
+
+        if 'apiError' in userInfo:
+            error = userInfo
+        else:
+            print("[view.awards.index] update awards")
+            awardsJson["userInfo"] = userInfo
+            player.awardsJson = json.dumps(awardsJson)
+            updatePlayerAwards(player, tornAwards, userInfo)
+            player.save()
 
         # get graph data
         awards = awardsJson.get('awards')
