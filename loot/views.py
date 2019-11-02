@@ -22,7 +22,11 @@ def index(request):
             return render(request, "loot.html", context)
 
         else:
-            return returnError(type=403, msg="You might want to log in.")
+
+            player = Player.objects.filter(tId=-1).first()
+            context = {"player": player, "NPCs": [npc for npc in NPC.objects.filter(show=True).order_by('tId')]}
+            return render(request, "loot.html", context)
+            # return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
         return returnError()

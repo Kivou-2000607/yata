@@ -26,9 +26,11 @@ This file is part of yata.
         <td>
             <a href="{% url 'stock:list' 'all' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;All stocks</a>
         </td>
+        {% if player.tId > 0 %}
         <td>
           <a href="{% url 'stock:list' 'my' %}"><i class="fas fa-user-check"></i>&nbsp;&nbsp;My blocks</a>
         </td>
+        {% endif %}
         <td>
             <a href="{% url 'stock:list' 'lo' %}"><i class="fas fa-battery-quarter"></i>&nbsp;&nbsp;<1%</a>
         </td>

@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
         # compute rank
         print("[command.player.updateplayers] COMPUTE RANKS")
-        for i, player in enumerate(Player.objects.order_by('-awardsScor')):
+        for i, player in enumerate(Player.objects.exclude(tId=-1).order_by('-awardsScor')):
             print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player, player.awardsScor / 10000.))
             player.awardsRank = i + 1
             player.save()
@@ -56,7 +56,7 @@ class Command(BaseCommand):
         # compute hof graph
         print("[command.player.updateplayers] COMPUTE HOF GRAPH")
         hofGraph = []
-        for p in Player.objects.all():
+        for p in Player.objects.exclude(tId=-1):
             hofGraph.append(float(p.awardsScor / 10000.0))
         bins = numpy.logspace(-2, 2, num=101)
         bins[0] = 0

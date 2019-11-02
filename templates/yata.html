@@ -39,14 +39,33 @@
     <div class="module rounded">
         <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
             It has been designed to enhance your gameplay using information from the <a href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
-            To see what's in there, sign in and browse through the following categories.
+            To see what's in there browse through the following categories.<br />
+            If you want to unleash the full power of YATA you need to enter your API key. Some part are public and you can browse them anonymously.
         </p>
-        <p><a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><i class="fas fa-store"></i>&nbsp;&nbsp;<b>Bazaar overview</b></a><br> Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.</p>
-        <p><a class="yata-link-stock" href="{% url 'stock:index' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;<b>Stock overview</b></a><br> View all the stock shares, prices and tendencies.</p>
-        <p><a class="yata-link-chain" href="{% url 'chain:index' %}"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;<b>Faction</b></a><br> Build your chain reports, join them together and monitor the faction.</p>
-        <p><a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;<b>Targets</b></a><br> Remember your good targets and maximize your respect gains during chains.</p>
-        <p><a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>&nbsp;&nbsp;<b>Awards</b></a><br> Track the next award you can get.</p>
-        <p><a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><br> Gives the timing of when NPCs are reaching the different loot levels.</p>
+        <p>
+            <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><i class="fas fa-store"></i>&nbsp;&nbsp;<b>Bazaar overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to updated them and set custom lists.">partially public</span><br>
+            Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.
+        </p>
+        <p>
+            <a class="yata-link-stock" href="{% url 'stock:index' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;<b>Stock overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to see your blocks">partially public</span><br>
+            View all the stock shares, prices and tendencies.
+        </p>
+        <p>
+            <a class="yata-link-chain" href="{% url 'chain:index' %}"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;<b>Faction</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
+            Build your chain reports, join them together and monitor the faction.
+        </p>
+        <p>
+            <a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;<b>Targets</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
+            Remember your good targets and maximize your respect gains during chains.
+        </p>
+        <p>
+            <a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>&nbsp;&nbsp;<b>Awards</b></a><span class="section-status valid" title="You can browse awards but will have no information on your progression.">partially public</span><br>
+            Track the next award you can get.
+        </p>
+        <p>
+            <a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
+            Gives the timing of when NPCs are reaching the different loot levels.
+        </p>
         {% if player %}
             <hr class="sep">
             <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>

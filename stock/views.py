@@ -36,12 +36,17 @@ def index(request, select='all'):
         if request.session.get('player'):
             print('[view.stock.list] get player id from session')
             tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            player.lastActionTS = int(timezone.now().timestamp())
-            key = player.key
+        else:
+            print('[view.stock.list] anon')
+            tId = -1
 
-            # update personal stocks
-            error = False
+        player = Player.objects.filter(tId=tId).first()
+        player.lastActionTS = int(timezone.now().timestamp())
+        key = player.key
+
+        # update personal stocks
+        error = False
+        if tId > 0:
             myStocks = apiCall("user", "", "stocks,timestamp", key=key)
             if 'apiError' in myStocks:
                 error = {"apiErrorSub": myStocks["apiError"]}
@@ -54,52 +59,49 @@ def index(request, select='all'):
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
             player.save()
 
-            # load torn stocks and add personal stocks to torn stocks
-            stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
-            ts = 0
-            for k, v in json.loads(player.stocksJson).items():
-                tId = v['stock_id']
-                if tId in stocks:
-                    tstock = stocks[tId].get('t')
-                    ts = max(ts, tstock.timestamp)
+        # load torn stocks and add personal stocks to torn stocks
+        stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
+        ts = 0
+        for k, v in json.loads(player.stocksJson).items():
+            tId = v['stock_id']
+            if tId in stocks:
+                tstock = stocks[tId].get('t')
+                ts = max(ts, tstock.timestamp)
 
-                    # add profit
-                    v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
-                    # add if bonus
-                    if tstock.tRequirement:
-                        v['bonus'] = 1 if v['shares'] >= tstock.tRequirement else 0
+                # add profit
+                v['profit'] = (float(tstock.tCurrentPrice) - float(v["bought_price"])) / float(v["bought_price"])
+                # add if bonus
+                if tstock.tRequirement:
+                    v['bonus'] = 1 if v['shares'] >= tstock.tRequirement else 0
 
-                    if stocks[tId].get('p') is None:
-                        stocks[tId]['p'] = [v]
-                    else:
-                        stocks[tId]['p'].append(v)
+                if stocks[tId].get('p') is None:
+                    stocks[tId]['p'] = [v]
+                else:
+                    stocks[tId]['p'].append(v)
 
-            # select stocks
-            if select in ['hd']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tDemand in ["High", "Very High"]}
-            elif select in ['ld']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tDemand in ["Low", "Very Low"]}
-            elif select in ['gf']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tForecast in ["Good", "Very Good"]}
-            elif select in ['pf']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tForecast in ["Poor", "Very Poor"]}
-            elif select in ['ns']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares in [0]}
-            elif select in ['lo']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares <= 0.01 * v['t'].tTotalShares}
-            elif select in ['my']:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v.get('p') is not None}
-            else:
-                stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[0])}
-
-            context = {'player': player, 'stocks': stocks, 'lastUpdate': ts, 'stockcat': True, 'view': {'list': True}}
-            if error:
-                context.update(error)
-            page = 'stock/content-reload.html' if request.method == 'POST' else 'stock.html'
-            return render(request, page, context)
-
+        # select stocks
+        if select in ['hd']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tDemand in ["High", "Very High"]}
+        elif select in ['ld']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tDemand in ["Low", "Very Low"]}
+        elif select in ['gf']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v['t'].tForecast in ["Good", "Very Good"]}
+        elif select in ['pf']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tForecast in ["Poor", "Very Poor"]}
+        elif select in ['ns']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares in [0]}
+        elif select in ['lo']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: -x[1]['t'].dayTendency) if v['t'].tAvailableShares <= 0.01 * v['t'].tTotalShares}
+        elif select in ['my']:
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[1]['t'].dayTendency) if v.get('p') is not None}
         else:
-            return returnError(type=403, msg="You might want to log in.")
+            stocks = {k: v for k, v in sorted(stocks.items(), key=lambda x: x[0])}
+
+        context = {'player': player, 'stocks': stocks, 'lastUpdate': ts, 'stockcat': True, 'view': {'list': True}}
+        if error:
+            context.update(error)
+        page = 'stock/content-reload.html' if request.method == 'POST' else 'stock.html'
+        return render(request, page, context)
 
     except Exception:
         return returnError()
@@ -107,7 +109,7 @@ def index(request, select='all'):
 
 def details(request, tId):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.method == "POST":
             stock = {'t': Stock.objects.filter(tId=tId).first()}
 
             context = {'stock': stock}
@@ -123,8 +125,15 @@ def details(request, tId):
 
 def prices(request, tId, period=None):
     try:
-        if request.session.get('player') and request.method == "POST":
-            player = Player.objects.filter(tId=request.session["player"].get("tId")).first()
+        if request.method == "POST":
+            if request.session.get('player'):
+                print('[view.stock.prices] get player id from session')
+                playerId = request.session["player"].get("tId")
+            else:
+                print('[view.stock.prices] anon')
+                playerId = -1
+
+            player = Player.objects.filter(tId=playerId).first()
             stock = {'t': Stock.objects.filter(tId=tId).first()}
 
             # timestamp rounded at the hour

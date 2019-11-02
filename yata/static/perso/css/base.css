@@ -350,3 +350,5 @@ span.login-message {
     font-style: italic;
     color: #447e9b!important;
 }
+
+span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 10px;}

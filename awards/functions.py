@@ -163,7 +163,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
         timeToGet1nerveRefi = 5 / float(1 + ngain5)
 
         # nerve gain with one beer for 1h
-        pub = True if "+ 50% bottle of alcohol boost" in userInfo.get("company_perks") else False
+        pub = True if "+ 50% bottle of alcohol boost" in userInfo.get("company_perks", []) else False
         ngain = 1.5 if pub else 1
         # nerve gain with one beer for 5min
         ngain5 = ngain / float(1 * 60 / 5)

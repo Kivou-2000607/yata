@@ -23,7 +23,7 @@ This file is part of yata.
 
 {% include "yata/news.html" %}
 
-    {% if request.session.player %}
+    {% if player %}
 
         {# <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2> #}
         <div class="module">
@@ -37,14 +37,14 @@ This file is part of yata.
                     <td class="b">
                         <a href="{% url 'index' %}" class="yata-link-home" title="Home">
                             <b class="valid"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</b></a><br>
-                        <span>{{request.session.player.name}}</span>
+                        <span>{{player.name}}</span>
                     </td>
                     {# bazaar #}
                     <td class="b">
                         <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Bazaar">
                             <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar</b></a><br>
                             <span>
-                            {% if player.bazaarInfo == "N/A" %}
+                            {% if player.bazaarInfo == "N/A" or player.tId == -1 %}
                             &empty;
                             {% else %}
                             {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
@@ -63,6 +63,7 @@ This file is part of yata.
                             {% endif %}
                             </span>
                     </td>
+                    {% if player.tId > 0 %}
                     {# faction #}
                     <td class="b">
                         <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Faction">
@@ -87,12 +88,13 @@ This file is part of yata.
                             {% endif %}
                             </span>
                     </td>
+                    {% endif %}
                     {# awards #}
                     <td class="b">
                         <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Awards">
                             <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
                             <span>
-                            {% if player.awardsInfo == "N/A" %}
+                            {% if player.tId == -1 %}
                             &empty;
                             {% else %}
                             {{player.awardsInfo|floatformat:2}}% rarity score
@@ -111,10 +113,12 @@ This file is part of yata.
                             {% endif %}
                             </span>
                     </td>
+                    {% if player.tId > 0 %}
                     {# logout #}
                     <td class="c">
                         <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
                     </td>
+                    {% endif %}
                 </tr>
             </table>
 

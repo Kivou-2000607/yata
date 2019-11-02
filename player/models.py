@@ -233,7 +233,7 @@ class PlayerData(models.Model):
     nMonth = models.IntegerField(default=0)
 
     def updateNumberOfPlayers(self):
-        players = Player.objects.all()
+        players = Player.objects.exclude(tId=-1)
 
         self.nTotal = len(players)
         self.nValid = len(players.filter(active=True).exclude(validKey=False))

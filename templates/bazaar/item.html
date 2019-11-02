@@ -27,13 +27,17 @@ This file is part of yata.
     <tr>
         <th colspan="2">
             <div class="item-image">
-                <form method="post">{% csrf_token %}
-                    {% if apiErrorSub %}
-                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
-                    {% else %}
-                        <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}">{{item.display_large}}</button></a>
-                    {% endif %}
-                </form>
+                {% if player.tId == -1 %}
+                    <button title="{{item.tName}}">{{item.display_large}}</button>
+                {% else %}
+                    <form method="post">{% csrf_token %}
+                        {% if apiErrorSub %}
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
+                        {% else %}
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}">{{item.display_large}}</button></a>
+                        {% endif %}
+                    </form>
+                {% endif %}
             </div>
         </th>
     </tr>
@@ -64,6 +68,8 @@ This file is part of yata.
             </div>
         </th>
     </tr>
+
+    {% if player.tId > 0 %}
     <tr>
         <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'>
             <form method="post">{% csrf_token %}
@@ -77,6 +83,7 @@ This file is part of yata.
             </form>
         </th>
     </tr>
+    {% endif %}
 
     <tr>
         <th colspan="2">
