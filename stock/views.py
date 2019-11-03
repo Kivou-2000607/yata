@@ -52,11 +52,14 @@ def index(request, select='all'):
                 error = {"apiErrorSub": myStocks["apiError"]}
             else:
                 print('[view.stock.list] save my stocks')
-                myStocks["stocks"] = myStocks.get("stocks", dict({}))
+                if myStocks.get("stocks") is not None:
+                    myStocks["stocks"] = myStocks.get("stocks")
+                else:
+                    myStocks["stocks"] = dict({})
                 player.stocksJson = json.dumps(myStocks.get("stocks", dict({})))
                 player.stocksInfo = len(myStocks.get("stocks", []))
                 player.stocksUpda = int(myStocks.get("timestamp", 0))
-            player.save()
+        player.save()
 
         # load torn stocks and add personal stocks to torn stocks
         stocks = {s.tId: {'t': s} for s in Stock.objects.all()}
