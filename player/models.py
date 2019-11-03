@@ -43,7 +43,7 @@ class Player(models.Model):
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
-    dId = models.IntegerField(default=0)
+    dId = models.BigIntegerField(default=0)
 
     # BooleanField states
     active = models.BooleanField(default=True)
