@@ -39,7 +39,8 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
-
+            player.active = True
+            
             targets = json.loads(player.targetJson).get("targets", dict({}))
             player.targetInfo = len(targets)
             player.save()

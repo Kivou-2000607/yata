@@ -44,6 +44,7 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
+            player.active = True
             player.save()
             context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
         else:
@@ -77,6 +78,7 @@ def login(request):
                 player = Player.objects.create(tId=int(user.get('player_id')))
             print('[view.yata.login] update player')
             player.key = p.get('key')
+            player.active = True
             player.update_info()
             player.lastActionTS = int(timezone.now().timestamp())
 

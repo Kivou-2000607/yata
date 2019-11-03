@@ -45,6 +45,7 @@ def index(request):
             tId = -1
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
+        player.active = True
         player.save()
 
         awardsJson = json.loads(player.awardsJson)

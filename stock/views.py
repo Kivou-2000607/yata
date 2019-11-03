@@ -42,6 +42,7 @@ def index(request, select='all'):
 
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
+        player.active = True
         key = player.key
 
         # update personal stocks

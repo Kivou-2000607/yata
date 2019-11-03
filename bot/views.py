@@ -34,6 +34,7 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
+            player.active = True
 
             if player.dId:
                 print("registered to discord")
@@ -44,6 +45,7 @@ def index(request):
             if preference is None:
                 preference = player.preference_set.create()
 
+            player.save()
             context = {"player": player, "preference": preference}
             return render(request, "bot.html", context)
 

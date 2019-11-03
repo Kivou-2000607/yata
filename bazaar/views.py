@@ -41,6 +41,7 @@ def index(request):
 
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
+        player.active = True
         key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])

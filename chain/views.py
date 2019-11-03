@@ -57,6 +57,7 @@ def index(request):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
+            player.active = True
             key = player.key
 
             # get user info
