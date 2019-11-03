@@ -43,6 +43,7 @@ class Player(models.Model):
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
+    dId = models.IntegerField(default=0)
 
     # BooleanField states
     active = models.BooleanField(default=True)
@@ -93,7 +94,7 @@ class Player(models.Model):
         """
 
         # API Calls
-        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars', self.key, verbose=False)
+        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
 
         # set active
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
@@ -103,6 +104,10 @@ class Player(models.Model):
 
         # change to true if fetch result
         self.validKey = True if user.get('name', False) else self.validKey
+
+        # discrod id
+        dId = user.get('discord', {'discordID': ''})['discordID']
+        self.dId = 0 if dId in [''] else dId
 
         self.save()
 

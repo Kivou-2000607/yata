@@ -8,3 +8,5 @@ whitenoise==3.3.1
 numpy==1.14.3
 scipy==1.2.0
 Pillow==6.2.0
+
+discord.py==1.2.4

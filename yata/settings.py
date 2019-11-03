@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'stock.apps.StockConfig',
     'loot.apps.LootConfig',
     'setup.apps.SetupConfig',
+    'bot.apps.BotConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
