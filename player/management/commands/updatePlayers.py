@@ -33,15 +33,16 @@ class Command(BaseCommand):
 
         # update players info
         print("[command.player.updateplayers] UPDATE PLAYERS")
-        for p in Player.objects.filter(validKey=True).only("tId"):
+        playersId = Player.objects.filter(validKey=True).only("tId")
+        n = len(playersId)
+        for i, p in enumerate(playersId):
             try:
-                print("get player")
                 player = Player.objects.filter(tId=p.tId).first()
-                print("update player")
-                player.update_info()
+                player.update_info(i=i + 1, n=n)
             except BaseException as e:
                 print(f"[command.player.updateplayers]: {e}")
                 print(traceback.format_exc())
+        del playersId
 
         # compute rank
         print("[command.player.updateplayers] COMPUTE RANKS")

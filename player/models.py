@@ -88,10 +88,12 @@ class Player(models.Model):
     def __str__(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
-    def update_info(self):
+    def update_info(self, i=None, n=None):
         """ update player information
 
         """
+
+        progress="{:04}/{:04}: ".format(i, n) if i is not None else ""
 
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
@@ -110,16 +112,16 @@ class Player(models.Model):
         self.dId = 0 if dId in [''] else dId
 
         if not self.active and not self.validKey:
-            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> delete user".format(self, self.lastActionTS, self.active, self.validKey))
+            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, self, self.lastActionTS, self.active, self.validKey))
             # self.delete()
             self.save()
             return 0
         elif 'apiError' in user:
-            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> api error {}".format(self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
+            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
             self.save()
             return 0
         else:
-            print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1}".format(self, self.lastActionTS, self.active, self.validKey))
+            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1}".format(progress, self, self.lastActionTS, self.active, self.validKey))
 
         # update basic info (and chain)
         self.name = user.get("name", "?")
