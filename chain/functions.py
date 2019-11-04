@@ -21,6 +21,7 @@ from django.utils import timezone
 
 from yata.handy import apiCall
 from yata.handy import timestampToDate
+from chain.models import FactionData
 from chain.models import Member
 
 import requests
@@ -567,3 +568,55 @@ def factionTree(faction, key=None):
     # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
     img.crop((0, 0, x + 90 + 10, y)).save(url)
     print('[function.chain.factionTree] image saved {}'.format(url))
+
+
+def updateFactionTree(faction, key=None, force=False, reset=False):
+    # it's not possible to delete all memebers and recreate the base
+    # otherwise the target list will be lost
+
+    now = int(timezone.now().timestamp())
+
+    # don't update if less than 24h ago and force is False
+    if not force and (now - faction.treeUpda) < 24 * 3600:
+        print("[function.chain.updateFactionTree] skip update tree")
+        # return faction.faction.all()
+    else:
+        # call upgrade Tree
+        tornTree = json.loads(FactionData.objects.first().upgradeTree)
+        factionTree = apiCall('faction', faction.tId, 'upgrades', key, sub='upgrades')
+        if 'apiError' in factionTree:
+            print("[function.chain.updateFactionTree] api key error {}".format(factionTree['apiError']))
+        else:
+            print("[function.chain.updateFactionTree] update faction tree")
+            orders = dict({})
+            for i in range(48):
+                id = str(i + 1)
+
+                if id not in tornTree:
+                    continue
+
+                # create branches that are not in faction tree
+                branch = tornTree[id]["1"]['branch']
+                if id not in factionTree :
+                    factionTree[id] = {'branch': branch, 'branchorder': 0, 'branchmultiplier': 0, 'name': tornTree[id]["1"]['name'], 'level': 0, 'basecost': 0, }
+
+                # put core branch to branchorder 1
+                if branch in ['Core']:
+                    factionTree[id]['branchorder'] = 1
+
+                # consistency in the branchorder for the
+                if branch in orders:
+                    orders[branch] = max(factionTree[id]['branchorder'], orders[branch])
+                else:
+                    orders[branch] = factionTree[id]['branchorder']
+
+            for k in factionTree:
+                factionTree[k]['branchorder'] = orders[factionTree[k]['branch']]
+
+            faction.factionTree = json.dumps(factionTree)
+            if faction.simuTree in ["{}"] or reset:
+                faction.simuTree = faction.factionTree
+            faction.treeUpda = now
+            faction.save()
+
+    return json.loads(faction.factionTree), json.loads(faction.simuTree)

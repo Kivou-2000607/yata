@@ -252,10 +252,38 @@
     // toggle wall from list
     $(document).on('click', '.wall-toggle', e=>{
         e.preventDefault();
-        console.log("coucou");
         $(e.currentTarget).parents("tr").load( e.currentTarget.href, {
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
+    });
+
+    // modify upgrade tree
+    $(document).on('change', 'select[id^="simu-tree-"]', e=>{
+        e.preventDefault();
+        var splt = $(e.currentTarget).attr("id").split("-");
+
+        var modification = splt.pop()
+        var branchId = splt.pop();
+
+        var value = $(e.currentTarget.selectedOptions).attr("value");
+
+        $("#faction-upgrade-tree").load( "/chain/aa/", {
+            change: true,
+            modification: modification,
+            branchId: branchId,
+            value: value,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+    });
+
+    // reset upgrade tree
+    $(document).on('click', '#faction-tree-reset', e=>{
+        e.preventDefault();
+        $("#faction-upgrade-tree").load( "/chain/aa/", {
+            change: true,
+            reset: true,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
     });
 
 </script>

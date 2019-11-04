@@ -292,3 +292,11 @@ def lootLevel(lvl):
         return "V"
     else:
         return '0'
+
+
+@register.filter(name="getFromList")
+def getFromList(array, n):
+    try:
+        return array[n]
+    except BaseException:
+        return -1

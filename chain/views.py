@@ -38,6 +38,7 @@ from yata.handy import timestampToDate
 from yata.handy import returnError
 
 from chain.functions import updateMembers
+from chain.functions import updateFactionTree
 from chain.functions import factionTree
 from chain.functions import BONUS_HITS
 
@@ -857,6 +858,8 @@ def aa(request):
                 print('[view.chain.aa] player with AA. Faction {}'.format(faction))
                 faction.addKey(player.tId, player.key)
                 faction.save()
+
+                # gives the faction a crontab if not
                 if not len(faction.crontab_set.all()):
                     openCrontab = Crontab.objects.filter(open=True).all()
                     minBusy = min([c.nFactions() for c in openCrontab])
@@ -867,17 +870,122 @@ def aa(request):
                             break
                     print('[view.chain.aa] attributed to {} '.format(crontab))
 
-                crontabs = dict({})
                 # update members before to avoid coming here before having members
-                updateMembers(faction, key=player.key)
+                updateMembers(faction, key=player.key, force=False)
+
+                # fill crontabs and keys
+                crontabs = dict({})
                 keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
                 for crontab in faction.crontab_set.all():
                     print('[view.chain.aa]     --> {}'.format(crontab))
                     crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
                     for f in crontab.faction.all():
                         crontabs[crontab.tabNumber]["factions"].append(f)
-                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
-                page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+
+                # upgrade tree
+                if request.POST.get('reset', False):
+                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True, reset=True)
+                else:
+                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=False)
+                upgradeTree = json.loads(FactionData.objects.first().upgradeTree)
+
+                if request.POST.get('branchId') is not None:
+                    modId = request.POST.get('branchId')
+                    modModification = request.POST.get('modification')
+                    modValue = request.POST.get('value')
+                    if modId in simuTree:
+                        simuTree[modId][modModification] = int(modValue)
+
+                    if modModification in ['branchorder']:
+                        for k in [k for k, v in simuTree.items() if v['branch'] == simuTree[modId]['branch']]:
+                            simuTree[k]['branchorder'] = int(modValue)
+
+                    faction.simuTree = json.dumps(simuTree)
+                    faction.save()
+
+                upgradeTreeReshaped = dict({})
+                totalRespect = {"faction": 0, "tree": 0, "simu": 0}
+
+                for branchId, branch in upgradeTree.items():
+                    bname = branch["1"]['branch']
+                    uname = branch["1"]['name']
+
+                    # remove useless entries
+                    del branch["1"]["branch"]
+                    del branch["1"]["name"]
+                    del branch["1"]["ability"]
+                    del branch["1"]["challenge"]
+
+                    # add faction entries
+                    branch["1"]["faction_order"] = 0
+                    branch["1"]["faction_level"] = 0
+                    branch["1"]["faction_cost"] = 0
+                    branch["1"]["faction_multiplier"] = 0
+                    branch["1"]["simu_order"] = 0
+                    branch["1"]["simu_level"] = 0
+                    branch["1"]["simu_cost"] = 0
+                    branch["1"]["simu_multiplier"] = 0
+
+                    # respects = [0]
+                    respects = [0] + [v["base_cost"] for k, v in branch.items()]
+
+                    # modify name css id
+                    if len(branch) > 1:
+                        uname = " ".join(uname.split(" ")[:-1])
+
+                    if bname in upgradeTreeReshaped:
+                        upgradeTreeReshaped[bname][uname] = branch["1"]
+                    else:
+                        upgradeTreeReshaped[bname] = {uname: branch["1"]}
+
+                    upgradeTreeReshaped[bname][uname]["respect"] = respects
+                    upgradeTreeReshaped[bname][uname]["levels"] = len(respects) - 1
+                    upgradeTreeReshaped[bname][uname]["branchId"] = branchId
+
+                # create faction tree
+                for branchId, branch in factionTree.items():
+                    bname = branch['branch']
+                    uname = branch['name']
+
+                    # change name for levels branches
+                    if upgradeTreeReshaped[bname].get(uname) is None:
+                        uname = " ".join(uname.split(" ")[:-1])
+
+                    order = branch["branchorder"]
+                    multiplier = 2**(int(order) - 1) if order > 0 else 0
+                    lvl = branch["level"]
+                    res = upgradeTreeReshaped[bname][uname]["respect"]
+                    upgradeTreeReshaped[bname][uname]["faction_order"] = order
+                    upgradeTreeReshaped[bname][uname]["faction_multiplier"] = multiplier
+                    upgradeTreeReshaped[bname][uname]["faction_level"] = lvl
+                    upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
+                    totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
+
+                # create simulation tree
+                for branchId, branch in simuTree.items():
+                    bname = branch['branch']
+                    uname = branch['name']
+
+                    # change name for levels branches
+                    if upgradeTreeReshaped[bname].get(uname) is None:
+                        uname = " ".join(uname.split(" ")[:-1])
+
+                    order = int(branch["branchorder"])
+                    multiplier = 2**(int(order) - 1) if order > 0 else 0
+                    lvl = branch["level"]
+                    res = upgradeTreeReshaped[bname][uname]["respect"]
+                    upgradeTreeReshaped[bname][uname]["simu_order"] = order
+                    upgradeTreeReshaped[bname][uname]["simu_multiplier"] = multiplier
+                    upgradeTreeReshaped[bname][uname]["simu_level"] = lvl
+                    upgradeTreeReshaped[bname][uname]["simu_cost"] = multiplier * numpy.sum(res[:lvl + 1])
+                    totalRespect["simu"] += upgradeTreeReshaped[bname][uname]["simu_cost"]
+
+                # upgrade key
+                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, "upgradeTree": upgradeTreeReshaped, "totalRespect": totalRespect, 'view': {'aa': True}}
+                if request.method == 'POST':
+                    page = 'chain/content-reload.html' if request.POST.get('change') is None else 'chain/aa-upgrade-tree.html'
+                else:
+                    page = 'chain.html'
                 return render(request, page, context)
 
             else:

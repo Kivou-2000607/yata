@@ -1,0 +1,106 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<table class="center chain-tree">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th colspan="3">Current State</th>
+            <th colspan="3">Simulation</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>Branch</th>
+            <th>Upgrade</th>
+            <th>Order</th>
+            <th>Level</th>
+            <th>Cost</th>
+            <th>Order</th>
+            <th>Level</th>
+            <th>Cost</th>
+            <th>Diff</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for branchId, branch in upgradeTree.items %}
+            {% for upgradeId, u in branch.items %}
+
+                {% if branchId == 'Core' %}
+                    <tr class="order-core">
+                {% else %}
+                    <tr class="order-{{u.simu_order}}">
+                {% endif %}
+                    <td class="a"><b>{{branchId}}</b></td>
+                    <td class="b"><b>{{upgradeId}}</b></td>
+                    <td class="c">{{u.faction_order}}</td>
+                    <td class="c">{{u.faction_level}}</td>
+                    <td class="d">{{u.faction_cost|intcomma}}</td>
+                    <td class="d">
+                        {% if branchId == "Core" %}
+                            {{u.simu_order}}
+                        {% else %}
+                            <select id="simu-tree-{{u.branchId}}-branchorder" class="faction-upgrade-tree">
+                                {% for i in "0123456"|make_list %}
+                                <option value="{{i}}" {% if forloop.counter0 is u.simu_order %}selected{% endif %}>{{i}}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </td>
+                    <td class="d">
+                        <select id="simu-tree-{{u.branchId}}-level" class="faction-upgrade-tree">
+                            {% for r in u.respect %}
+                                <option value="{{forloop.counter0}}" {% if forloop.counter0 is u.simu_level %}selected{% endif %}>{{forloop.counter0}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="d">{{u.simu_cost|intcomma}}</td>
+                    {% if u.faction_cost > u.simu_cost %}
+                        <td class="d valid">{{u.simu_cost|sub:u.faction_cost|format:"{:+,.0f}"}}</td>
+                    {% elif u.faction_cost < u.simu_cost %}
+                        <td class="d error">{{u.simu_cost|sub:u.faction_cost|format:"{:+,.0f}"}}</td>
+                    {% else %}
+                        <td class="d neutral">0</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="d">{{totalRespect.faction|intcomma}}</td>
+            <td></td>
+            <td></td>
+            <td class="d">{{totalRespect.simu|intcomma}}</td>
+            {% if totalRespect.faction > totalRespect.simu %}
+                <td class="d valid">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
+            {% elif totalRespect.faction < totalRespect.simu %}
+                <td class="d error">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
+            {% else %}
+                <td class="d neutral">0</td>
+            {% endif %}
+        </tr>
+    </tbody>
+</table>

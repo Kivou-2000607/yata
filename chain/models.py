@@ -33,6 +33,10 @@ class Faction(models.Model):
     posterOpt = models.TextField(default="{}")
     poster = models.BooleanField(default=False)
 
+    factionTree = models.TextField(default="{}")
+    simuTree = models.TextField(default="{}")
+    treeUpda = models.IntegerField(default=0)
+
     membersUpda = models.IntegerField(default=0)
 
     numberOfKeys = models.IntegerField(default=0)
@@ -315,3 +319,4 @@ class Racket(models.Model):
 
 class FactionData(models.Model):
     territoryTS = models.IntegerField(default=0)
+    upgradeTree = models.TextField(default="{}", null=True, blank=True)

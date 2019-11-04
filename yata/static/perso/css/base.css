@@ -34,6 +34,8 @@ ul ul li { list-style-type: circle; }
 
 a.form-inline, form.form-inline { display: inline!important; }
 
+h2 a { color: #FFF!important; font-weight: bold; }
+h2 a:hover { color: #DDD; text-shadow: #FC0 1px 0 5px; }
 
 div#content {
     padding-top: 0px;
