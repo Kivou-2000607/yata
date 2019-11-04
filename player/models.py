@@ -98,6 +98,11 @@ class Player(models.Model):
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
 
+        # skip if not active in torn since last update
+        if self.lastUpdateTS > int(user.get("last_action")["timestamp"]):
+            print("[player.models.update_info] {}{} skip since not active since last update".format(progress, self))
+            return 0
+
         # set active
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
 
