@@ -54,8 +54,9 @@ class Command(BaseCommand):
         # compute hof graph
         print("[command.player.updateplayers] COMPUTE HOF GRAPH")
         hofGraph = []
-        for p in Player.objects.exclude(awardsScor=0).only("awardsScor"):
-            hofGraph.append(float(p.awardsScor / 10000.0))
+        for i, player in enumerate(Player.objects.exclude(awardsScor=0).only("awardsScor")):
+            print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player, player.awardsScor / 10000.))
+            hofGraph.append(float(player.awardsScor / 10000.0))
         bins = numpy.logspace(-2, 2, num=101)
         bins[0] = 0
         histo, _ = numpy.histogram(hofGraph, bins=bins)

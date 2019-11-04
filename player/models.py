@@ -98,11 +98,6 @@ class Player(models.Model):
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
 
-        # skip if not active in torn since last update
-        if self.lastUpdateTS > int(user.get("last_action")["timestamp"]):
-            print("[player.models.update_info] {}{} skip since not active since last update".format(progress, self))
-            return 0
-
         # set active
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
 
@@ -116,15 +111,25 @@ class Player(models.Model):
         dId = user.get('discord', {'discordID': ''})['discordID']
         self.dId = 0 if dId in [''] else dId
 
+        # skip if not yata active and no valid key
         if not self.active and not self.validKey:
             print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, self, self.lastActionTS, self.active, self.validKey))
             # self.delete()
             self.save()
             return 0
+
+        # skip if api error (not invalid key)
         elif 'apiError' in user:
             print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
             self.save()
             return 0
+
+        # skip if not active in torn since last update
+        elif self.lastUpdateTS > int(user.get("last_action")["timestamp"]):
+            print("[player.models.update_info] {}{} skip since not active since last update".format(progress, self))
+            return 0
+
+        # do update
         else:
             print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1}".format(progress, self, self.lastActionTS, self.active, self.validKey))
 
