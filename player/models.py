@@ -109,14 +109,14 @@ class Player(models.Model):
         dId = user.get('discord', {'discordID': ''})['discordID']
         self.dId = 0 if dId in [''] else dId
 
-        self.save()
-
         if not self.active and not self.validKey:
             print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> delete user".format(self, self.lastActionTS, self.active, self.validKey))
             # self.delete()
+            self.save()
             return 0
         elif 'apiError' in user:
             print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1} -> api error {}".format(self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
+            self.save()
             return 0
         else:
             print("[player.models.update_info] {} action: {:010} active: {:1} api: {:1}".format(self, self.lastActionTS, self.active, self.validKey))

@@ -33,22 +33,19 @@ class Command(BaseCommand):
 
         # update players info
         print("[command.player.updateplayers] UPDATE PLAYERS")
-        for player in Player.objects.filter(validKey=True):
+        for p in Player.objects.filter(validKey=True).only("tId"):
             try:
+                print("get player")
+                player = Player.objects.filter(tId=p.tId).first()
+                print("update player")
                 player.update_info()
             except BaseException as e:
                 print(f"[command.player.updateplayers]: {e}")
                 print(traceback.format_exc())
 
-        # temp... delete me
-        # for player in Player.objects.filter(validKey=False):
-        #     player.awardsScor = int(float(player.awardsInfo) * 10000)
-        #     print("[command.player.updateplayers] COMMENT ME. update non valid key award score. {}: {}".format(player, player.awardsScor))
-        #     player.save()
-
         # compute rank
         print("[command.player.updateplayers] COMPUTE RANKS")
-        for i, player in enumerate(Player.objects.exclude(tId=-1).order_by('-awardsScor')):
+        for i, player in enumerate(Player.objects.exclude(tId=-1).only("awardsScor", "awardsRank").order_by('-awardsScor')):
             print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player, player.awardsScor / 10000.))
             player.awardsRank = i + 1
             player.save()
@@ -56,7 +53,7 @@ class Command(BaseCommand):
         # compute hof graph
         print("[command.player.updateplayers] COMPUTE HOF GRAPH")
         hofGraph = []
-        for p in Player.objects.exclude(tId=-1):
+        for p in Player.objects.exclude(awardsScor=0).only("awardsScor"):
             hofGraph.append(float(p.awardsScor / 10000.0))
         bins = numpy.logspace(-2, 2, num=101)
         bins[0] = 0
