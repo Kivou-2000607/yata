@@ -826,8 +826,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [605]:
+                elif int(k) in [605, 488]:
                     # "605": {"name": "Friendly Fire", "description": "Defeat a fellow faction member", "type": 8,
+                    # "488": {"name": "Vengeance", "description": "Successfully perform a faction retaliation hit","type": 8,
                     type = "Other"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
