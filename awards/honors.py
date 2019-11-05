@@ -302,7 +302,7 @@ d = {
     631: 160168767,  # Vae Victis
     317: 125937483,  # Phoenix
     740: 853474729,  # Devastation
-    488: 0,  # Vengeance    
+    488: 918833578,  # Vengeance    
     476: 0,  # Chainer 5
 
     # 9
