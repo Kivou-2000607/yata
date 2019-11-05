@@ -22,8 +22,10 @@ from django.shortcuts import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
+from django.conf import settings
 
 import json
+import os
 import traceback
 
 from player.models import Donation
@@ -142,5 +144,11 @@ def delete(request):
         return returnError()
 
 
-# def badges(request):
-#     return render(request, "yata/badges.html")
+def analytics(request):
+    try:
+        fold = "analytics"
+        ls = sorted(os.listdir("{}/{}".format(settings.STATIC_ROOT, fold)))
+        context = {"reports": ls, 'view': {'analytics': True}}
+        return render(request, 'yata.html', context)
+    except BaseException:
+        return returnError()

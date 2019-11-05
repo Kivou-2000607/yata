@@ -300,3 +300,19 @@ def getFromList(array, n):
         return array[n]
     except BaseException:
         return -1
+
+
+@register.filter(name="parseReportFile")
+def parseReportFile(report):
+    try:
+        splt = report.split(".")[0].split("-")
+        if len(splt) == 3:
+            if splt[1] in ['last']:
+                return "Report of the last couple of days".format(splt[1], splt[2])
+            else:
+                return "Report of {}/{}".format(splt[1], splt[2])
+        elif len(splt) == 2:
+            return "Report of {}".format(splt[1])
+
+    except BaseException:
+        return "report"

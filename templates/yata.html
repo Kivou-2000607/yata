@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 {% load app_filters %}
 
 {% block title%}
@@ -34,93 +33,8 @@
 {% endblock %}
 
 {% block content %}
-
-    <!-- <h2 class="title">What is YATA</h2> -->
-    <div class="module rounded">
-        <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
-            It has been designed to enhance your gameplay using information from the <a href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
-            To see what's in there browse through the following categories.<br />
-            If you want to unleash the full power of YATA you need to enter your API key. Some parts are public and you can browse them anonymously.
-        </p>
-        <p>
-            <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><i class="fas fa-store"></i>&nbsp;&nbsp;<b>Bazaar overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to updated them and set custom lists.">partially public</span><br>
-            Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.
-        </p>
-        <p>
-            <a class="yata-link-stock" href="{% url 'stock:index' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;<b>Stock overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to see your blocks">partially public</span><br>
-            View all the stock shares, prices and tendencies.
-        </p>
-        <p>
-            <a class="yata-link-chain" href="{% url 'chain:index' %}"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;<b>Faction</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
-            Build your chain reports, join them together and monitor the faction.
-        </p>
-        <p>
-            <a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;<b>Targets</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
-            Remember your good targets and maximize your respect gains during chains.
-        </p>
-        <p>
-            <a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>&nbsp;&nbsp;<b>Awards</b></a><span class="section-status valid" title="You can browse awards but will have no information on your progression.">partially public</span><br>
-            Track the next award you can get.
-        </p>
-        <p>
-            <a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
-            Gives the timing of when NPCs are reaching the different loot levels.
-        </p>
-        {% if player %}
-            <hr class="sep">
-            <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>
-            <p><a class="yata-link-prune error" href="{% url 'player:prune' %}"><i class="fas fa-eraser"></i>&nbsp;&nbsp;Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
-        {% endif %}
+    <div id="content-update">
+        {% include "yata/content-reload.html" %}
     </div>
-    <div class="module rounded">
-        <p id="badges">{% include 'yata/badges.html' %}</p>
-
-        <p><b>YATA</b> is an open source website developped and maintained by {{"Kivou"|playerURL:"2000607"|safe}}.
-            Source code can be found <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i> here</a>.<br />
-            For suggestions and bug reports you can either <a href="https://github.com/Kivou-2000607/yata/issues" target="_blank"><i class="fab fa-github"></i> post an issue on github</a>, join the <a href="https://discord.gg/tZaYpbG" target="_blank"><i class="fab fa-discord"></i> discord</a> or comment on the <a href="https://www.torn.com/forums.php#/p=threads&t=16100118" target="_blank"><i class="far fa-comments"></i> forum thread</a>.
-        </p>
-        <p><b>Torn integration:</b> userscripts are currently developped by {{"Helcostr"|playerURL:1934501|safe}} to import data from Torn to YATA when the API fails to give relevent information.</p>
-    </div>
-
-    {% if allDonations|length %}
-        <div class="catch-me">
-            <h2 class="title grey toggle-display rounded"><i class="fas fa-gift"></i>&nbsp;&nbsp;Donations&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-            <div class="module tutorial" style="display: none;">
-                    <table  style="margin: auto;">
-                        <thead>
-                            <tr>
-                                <th>Sender</th>
-                                <th>Gift</th>
-                                <th>Message</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for donation in allDonations %}
-                        <tr>
-                            <td>{{donation.split.sender}}</td>
-                            <td>{{donation.split.gift}}</td>
-                            <td>{{donation.split.message}}</td>
-                            <td>{{donation.split.date}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% endif %}
-
-    {% if allNews|length %}
-        <div class="catch-me">
-            <h2 class="title grey toggle-display rounded"><i class="far fa-calendar-check"></i>&nbsp;&nbsp;News feed&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-            <div class="module tutorial" style="display: none;">
-                <ul>
-                {% for news in allNews %}
-                    <li><b>{{ news.type }}</b> of {{ news.date }}: {{ news.text|safe }}&nbsp;&nbsp;{{news.authorName|playerURL:news.authorId|safe}}</li>
-                {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {% endif %}
 
 {% endblock %}

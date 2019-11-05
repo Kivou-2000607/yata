@@ -39,7 +39,7 @@ urlpatterns = [
     path('login', views.login, name="login"),
     path('logout', views.logout, name="logout"),
     path('delete', views.delete, name="delete"),
-    # path('badges', views.badges, name="badges"),
+    path('analytics', views.analytics, name="analytics"),
 
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
