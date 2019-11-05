@@ -57,7 +57,9 @@ This file is part of yata.
                 <p>This is not normal.
                 Please contact {{"Kivou"|playerURL:"2000607"|safe}} and copy paste this message:</p>
                 <pre>{{exception}}</pre>
-                <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
+                {% if home %}
+                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
+                {% endif %}
             </div>
 
         </div> <!--end of content-->

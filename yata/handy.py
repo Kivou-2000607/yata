@@ -83,7 +83,7 @@ def cleanhtml(raw_html):
     return cleantext
 
 
-def returnError(type=500, msg=None):
+def returnError(type=500, msg=None, home=True):
     import traceback
     from django.utils import timezone
     from django.http import HttpResponseServerError
@@ -92,7 +92,7 @@ def returnError(type=500, msg=None):
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
-        return HttpResponseForbidden(render_to_string('403.html', {'exception': msg}))
+        return HttpResponseForbidden(render_to_string('403.html', {'exception': msg, 'home': home}))
     else:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip()}))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip(), 'home': home}))

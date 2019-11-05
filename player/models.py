@@ -249,6 +249,8 @@ class PlayerData(models.Model):
     nHour = models.IntegerField(default=0)
     nMonth = models.IntegerField(default=0)
 
+    ipsBan = models.TextField(default="[]")
+
     def updateNumberOfPlayers(self):
         players = Player.objects.exclude(tId=-1)
 

@@ -54,7 +54,9 @@ This file is part of yata.
             <h2 class="title"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 403: Permission Denied</h2>
             <div class="module">
                 <p>{{exception}}</p>
-                <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
+                {% if home %}
+                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
+                {% endif %}
             </div>
 
         </div> <!--end of content-->
