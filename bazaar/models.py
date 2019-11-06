@@ -236,12 +236,12 @@ class Item(models.Model):
         else:
             # fuse both
             marketData = []
-            for k, v in bazaar.items():
+            for v in bazaar:
                 marketData.append({"cost": v["cost"], "quantity": v["quantity"], "itemmarket": False})
 
             pp = 0  # previews price
             q = 0  # quantity
-            for i, (k, v) in enumerate(itemmarket.items()):
+            for i, v in enumerate(itemmarket):
                 pp = v["cost"] if i == 0 else pp
                 if v["cost"] == pp:
                     q += 1
