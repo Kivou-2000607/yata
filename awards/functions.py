@@ -1011,7 +1011,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["left"] = max(t * (vp["goal"] - vp["current"]), 0)
                     s1 = "" if vp["left"] == 1 else "s"
                     s2 = "" if t == 1 else "s"
-                    vp["comment"] = ["day{} left".format(s1), "coding simple viruses in {} day{} ({})".format(t, s2, coding_perks)]
+                    vp["comment"] = "Coding simple viruses in {} day{} ({})".format(t, s2, coding_perks)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [527]:
