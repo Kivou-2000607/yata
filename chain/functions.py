@@ -49,9 +49,6 @@ def getBonusHits(hitNumber, ts):
 
 
 def apiCallAttacks(faction, chain, key=None):
-    # WARNING no fallback for this method if api crashed. Will yeld server error.
-    # WINS = ["Arrested", "Attacked", "Looted", "None", "Special", "Hospitalized", "Mugged"]
-
     # get faction
     factionId = faction.tId
     beginTS = chain.start
@@ -64,19 +61,19 @@ def apiCallAttacks(faction, chain, key=None):
     # add + 2 s to the endTS
     endTS += 2
 
-    # init
-    chainDict = dict({})
-    feedAttacks = True
-    i = 1
-
-    nAPICall = 0
-    # key = None
+    # init variables
+    chainDict = dict({})  # returned dic of attacks
+    feedAttacks = True  # set if the report is over or not
+    i = 1  # indice for the number of iteration (db + api calls)
+    nAPICall = 0  # indice for the number of api calls
     tmp = ""
+
     allReq = report.attacks_set.all()
     while feedAttacks and nAPICall < faction.nAPICall:
         # try to get req from database
         tryReq = allReq.filter(tss=beginTS).first()
 
+        # take attacks from torn API
         if tryReq is None:
             if key is None:
                 keyToUse = keys[i % len(keys)][1]
@@ -94,78 +91,89 @@ def apiCallAttacks(faction, chain, key=None):
                 tsDiff = int(timezone.now().timestamp()) - faction.lastAPICall
 
             nAPICall += 1
-            url = "https://api.torn.com/faction/{}?selections=attacks,timestamp&key={}&from={}&to={}".format(faction.tId, keyToUse, beginTS, endTS)
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
-            print("[function.chain.apiCallAttacks] \tnumber {}: {}".format(nAPICall, url.replace("&key=" + keyToUse, "")))
-            req = requests.get(url).json()
-            faction.lastAPICall = int(req.get("timestamp", timezone.now().timestamp()))
+            # make the API call
+            selection = "attacks,timestamp&from={}&to={}".format(beginTS, endTS)
+            req = apiCall("faction", faction.tId, selection, keyToUse, verbose=False)
+
+            # get timestamps
+            reqTS = int(timezone.now().timestamp())
+            tornTS = int(req.get("timestamp", 0))
+
+            # save payload
+            faction.lastAPICall = int(req.get("timestamp", reqTS))
             faction.save()
+
+            # check if no api call
             if 'error' in req:
                 chainDict["apiError"] = "API error code {}: {}.".format(req["error"]["code"], req["error"]["error"])
                 chainDict["apiErrorCode"] = int(req["error"]["code"])
                 break
 
+            # get attacks from api request
             attacks = req.get("attacks", dict({}))
 
-            if len(attacks):
-                report.attacks_set.create(tss=beginTS, tse=endTS, req=json.dumps([attacks]))
+            # SANITY CHECK 1: empty payload
+            if not len(attacks):
+                print("[function.chain.apiCallAttacks] \t[WARNING] empty payload (blank turn)".format(tornTS, reqTS))
+                break
 
+            # SANITY CHECK 2: api timestamp delayed from now
+            elif abs(tornTS - reqTS) > 25:
+                print("[function.chain.apiCallAttacks] \t[WARNING] returned cache response from API tornTS={}, reqTS={} (blank turn)".format(tornTS, reqTS))
+                break
+
+            # SANITY CHECK 3: check if payload different than previous call
+            elif json.dumps([attacks]) == tmp:
+                print("[function.chain.apiCallAttacks] \t[WARNING] same response as before (blank turn)")
+                break
+            else:
+                tmp = json.dumps([attacks])
+
+            # all tests passed: push attacks in the database
+            report.attacks_set.create(tss=beginTS, tse=endTS, req=json.dumps([attacks]))
+
+        # take attacks from the database
         else:
             print("[function.chain.apiCallAttacks] iteration #{} from database".format(i))
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             attacks = json.loads(tryReq.req)[0]
 
-        if json.dumps([attacks]) == tmp:
-            print("[function.chain.apiCallAttacks] \tWarning same response as before")
-            report.attacks_set.filter(tss=beginTS).all().delete()
-            chainDict["error"] = "same response"
-            break
+        # filter all attacks
+        beginTS = 0
+        chainCounter = 0
+        for k, v in attacks.items():
+            if v["defender_faction"] != factionId:
+                chainDict[k] = v  # dictionnary of filtered attacks
+                chainCounter = max(v["chain"], chainCounter)  # get max chain counter
+                beginTS = max(v["timestamp_started"], beginTS)  # get latest timestamp
+
+        # stoping criterion for walls
+        if chain.wall:
+            feedAttacks = len(attacks) > 10
+
+        # stoping criterion for regular reports
+        elif chain.tId:
+            feedAttacks = not chain.nHits == chainCounter
+
+        # stoping criterion for live reports
         else:
-            tmp = json.dumps([attacks])
+            feedAttacks = len(attacks) > 95
 
-        tableTS = []
-        maxHit = 0
-        if len(attacks):
-            for j, (k, v) in enumerate(attacks.items()):
-                if v["defender_faction"] != factionId:
-                    chainDict[k] = v
-                    maxHit = max(v["chain"], maxHit)
-                    # print(v["timestamp_started"])
-                    tableTS.append(v["timestamp_started"])
-                    # beginTS = max(beginTS, v["timestamp_started"])
-                    # feedattacks = True if int(v["timestamp_started"])-beginTS else False
-                    # print(chain.nHits, v["chain"])
-                # print(v["chain"], maxHit, chain.nHits)
-            # if(len(attacks) < 2):
-                # feedAttacks = False
+        print("[function.chain.apiCallAttacks] \tattacks={} chainCounter={} beginTS={}, endTS={} feed={}".format(len(attacks), chainCounter, beginTS, endTS, feedAttacks))
+        i += 1
 
-            # stoping criterion for walls
-            if chain.wall:
-                feedAttacks = len(attacks) > 10
-
-            # stoping criterion for regular reports
-            elif chain.tId:
-                feedAttacks = not chain.nHits == maxHit
-
-            # stoping criterion for live reports
-            else:
-                feedAttacks = len(attacks) > 95
-
-            beginTS = max(tableTS)
-            print("[function.chain.apiCallAttacks] \tattacks={} count={} beginTS={}, endTS={} feed={}".format(len(attacks), maxHit, beginTS, endTS, feedAttacks))
-            i += 1
-        else:
-            print("[function.chain.apiCallAttacks] call number {}: {} attacks".format(i, len(attacks)))
-            feedAttacks = False
-
-        # check if attack timestamp out of bound
+        # SANITY CHECK 4: check if timestamps are out of bounds
         if chain.start > beginTS or chain.end < beginTS:
-            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(chain.start, beginTS, endTS))
-            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} w chain.end = {}".format(timestampToDate(chain.start), timestampToDate(beginTS), timestampToDate(endTS)))
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} < chain.end = {}".format(chain.start, beginTS, endTS))
+            print("[function.chain.apiCallAttacks] ERRORS Attacks out of bounds: chain.starts = {} < beginTS = {} < chain.end = {}".format(timestampToDate(chain.start), timestampToDate(beginTS), timestampToDate(endTS)))
             report.attacks_set.last().delete()
             print('[function.chain.apiCallAttacks] Deleting last attacks and exiting')
             return chainDict
 
+    print('[function.chain.apiCallAttacks] stop iterating')
+
+    # potentially delete last set of attacks for live chains
     if not chain.tId:
         try:
             lastAttacks = report.attacks_set.last()
@@ -178,6 +186,7 @@ def apiCallAttacks(faction, chain, key=None):
         except BaseException:
             pass
 
+    # special case for walls
     if chain.wall and not feedAttacks:
         print('[function.chain.apiCallAttacks] set chain createReport to False')
         chain.createReport = False
@@ -597,7 +606,7 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
 
                 # create branches that are not in faction tree
                 branch = tornTree[id]["1"]['branch']
-                if id not in factionTree :
+                if id not in factionTree:
                     factionTree[id] = {'branch': branch, 'branchorder': 0, 'branchmultiplier': 0, 'name': tornTree[id]["1"]['name'], 'level': 0, 'basecost': 0, }
 
                 # put core branch to branchorder 1
