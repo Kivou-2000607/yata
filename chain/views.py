@@ -875,7 +875,9 @@ def aa(request):
 
                 # fill crontabs and keys
                 crontabs = dict({})
-                keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs()]
+                keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is not None]
+                keysIgnored = [(id, k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is None]
+
                 for crontab in faction.crontab_set.all():
                     print('[view.chain.aa]     --> {}'.format(crontab))
                     crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
@@ -981,7 +983,7 @@ def aa(request):
                     totalRespect["simu"] += upgradeTreeReshaped[bname][uname]["simu_cost"]
 
                 # upgrade key
-                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, "upgradeTree": upgradeTreeReshaped, "totalRespect": totalRespect, 'view': {'aa': True}}
+                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'keysIgnored': keysIgnored, "upgradeTree": upgradeTreeReshaped, "totalRespect": totalRespect, 'view': {'aa': True}}
                 if request.method == 'POST':
                     page = 'chain/content-reload.html' if request.POST.get('change') is None else 'chain/aa-upgrade-tree.html'
                 else:

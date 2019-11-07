@@ -41,6 +41,9 @@ This file is part of yata.
             {% for p, k in keys %}
                 <tr>{% include "chain/aa-keys.html" %}</tr>
             {% endfor %}
+            {% for id, k in keysIgnored %}
+                <tr>{% include "chain/aa-keys-ignored.html" %}</tr>
+            {% endfor %}
             {% if not faction.numberOfKeys %}
                 <tr><td colspan="3"><span class="warning"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;You don't have any key enabled. Your reports will never be updated.</td></tr>
             {% endif %}
