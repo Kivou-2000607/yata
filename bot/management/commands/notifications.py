@@ -23,40 +23,43 @@ from bot.models import Preference
 from bot.models import BotData
 
 from discord import Client
+import time
 
 
 class Notifications(Client):
 
     async def on_ready(self):
-        prefs = Preference.objects.all()
-        for p in prefs:
-            user = self.get_user(int(p.player.dId))
 
-            if user is None:
-                p.yataServer = False
-            else:
-                p.yataServer = True
-                p.yataServerName = user.name
+        # while True:
+        for i in range(5):
+            for p in Preference.objects.all():
+                user = self.get_user(int(p.player.dId))
 
-            p.save()
-            print(p, p.yataServer, p.yataServerName)
-
-            if p.hasNotifications() and p.yataServer:
                 if user is None:
-                    print("\tuser not found")
+                    p.yataServer = False
                 else:
-                    messages = p.sendNotifications()
-                    if messages:
-                        for message in messages:
-                            print("\tnotification set: {}".format(message))
-                            await user.send(message)
+                    p.yataServer = True
+                    p.yataServerName = user.name
+
+                p.save()
+                print(p, p.yataServer, p.yataServerName)
+
+                if p.hasNotifications() and p.yataServer:
+                    if user is None:
+                        print("\tuser not found")
                     else:
-                        print("\tno notification to send")
+                        messages = p.sendNotifications()
+                        if messages:
+                            for message in messages:
+                                print("\tnotification set: {}".format(message))
+                                await user.send(message)
+                        else:
+                            print("\tno notification to send")
 
-            else:
-                print("\tno notifications on")
+                else:
+                    print("\tno notifications on")
 
-        await self.close()
+            time.sleep(60)
 
 
 class Command(BaseCommand):
