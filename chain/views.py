@@ -927,7 +927,7 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
 
-                    branchesCost[bname][0] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][0] += multiplier * numpy.sum(res[:lvl + 1])
                     branchesCost[bname][1] = order
 
                 # update simu tree on the fly and branchesCost [2, 3]
@@ -989,7 +989,7 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["simu_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["simu"] += upgradeTreeReshaped[bname][uname]["simu_cost"]
 
-                    branchesCost[bname][2] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][2] += multiplier * numpy.sum(res[:lvl + 1])
                     branchesCost[bname][3] = order
 
                 # upgrade key
