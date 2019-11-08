@@ -1154,7 +1154,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = "current ratio of {:.2g} travels / day.".format(ratio)
+                    vp["comment"] = "Current ratio of {:.2g} travels / day.".format(ratio)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [549, 567, 557]:
@@ -1168,7 +1168,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, daysOfFlight / float(vp["goal"]))
                     ratio = daysOfFlight / daysOld
                     vp["left"] = "{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else "&infin;"
-                    vp["comment"] = "current ratio of {:.2g} hours / day&#10;current state {:.1f} / {} hours".format(ratio * 24, hoursOfFlight, vp["goal"] * 24)
+                    vp["comment"] = "Current ratio of {:.2g} hours / day<br>Current state {:.1f} / {} hours".format(ratio * 24, hoursOfFlight, vp["goal"] * 24)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
@@ -1180,7 +1180,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = int(userInfo.get("personalstats", dict({})).get(key, 0))
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(2 * flightTimes[key] * pilot * (vp["goal"] - vp["current"]) / 1440., 0)
-                    vp["comment"] = "with a one way travel of {:.0f} minutes".format(flightTimes[key] * pilot)
+                    vp["comment"] = "With a one way travel of {:.0f} minutes".format(flightTimes[key] * pilot)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [50, 51, 52]:
