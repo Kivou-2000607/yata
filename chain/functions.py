@@ -592,11 +592,12 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
     else:
         # call upgrade Tree
         tornTree = json.loads(FactionData.objects.first().upgradeTree)
-        factionTree = apiCall('faction', faction.tId, 'upgrades', key, sub='upgrades')
-        if 'apiError' in factionTree:
-            print("[function.chain.updateFactionTree] api key error {}".format(factionTree['apiError']))
+        factionCall = apiCall('faction', faction.tId, 'basic,upgrades', key)
+        if 'apiError' in factionCall:
+            print("[function.chain.updateFactionTree] api key error {}".format(factionCall['apiError']))
         else:
             print("[function.chain.updateFactionTree] update faction tree")
+            factionTree = factionCall.get('upgrades')
             orders = dict({})
             for i in range(48):
                 id = str(i + 1)
@@ -626,6 +627,7 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
             if faction.simuTree in ["{}"] or reset:
                 faction.simuTree = faction.factionTree
             faction.treeUpda = now
+            faction.respect = int(factionCall.get('respect', 0))
             faction.save()
 
     return json.loads(faction.factionTree), json.loads(faction.simuTree)

@@ -906,7 +906,10 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["branchId"] = branchId
 
                 # compute base cost of each branch
-                branchesCost = dict({"Core": [0, 0, 0, 0], "Criminality": [0, 0, 0, 0], "Fortitude": [0, 0, 0, 0], "Voracity": [0, 0, 0, 0], "Toleration": [0, 0, 0, 0], "Excursion": [0, 0, 0, 0], "Steadfast": [0, 0, 0, 0], "Aggression": [0, 0, 0, 0], "Suppression": [0, 0, 0, 0]})
+                # for each branch
+                # faction -> 0: base respect 1: respect 2: position
+                # simulat -> 3: base respect 4: respect 5: position
+                branchesCost = dict({"Core": [0, 0, 0, 0, 0, 0], "Criminality": [0, 0, 0, 0, 0, 0], "Fortitude": [0, 0, 0, 0, 0, 0], "Voracity": [0, 0, 0, 0, 0, 0], "Toleration": [0, 0, 0, 0, 0, 0], "Excursion": [0, 0, 0, 0, 0, 0], "Steadfast": [0, 0, 0, 0, 0, 0], "Aggression": [0, 0, 0, 0, 0, 0], "Suppression": [0, 0, 0, 0, 0, 0]})
 
                 # create faction tree
                 for branchId, branch in factionTree.items():
@@ -927,10 +930,11 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
 
-                    branchesCost[bname][0] += multiplier * numpy.sum(res[:lvl + 1])
-                    branchesCost[bname][1] = order
+                    branchesCost[bname][0] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][1] += multiplier * numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][2] = order
 
-                # update simu tree on the fly and branchesCost [2, 3]
+                # update simu tree on the fly and branchesCost [3, 5]
                 if request.POST.get('branchId') is not None:
                     modId = request.POST.get('branchId')
                     modModification = request.POST.get('modification')
@@ -947,13 +951,13 @@ def respectSimulator(request):
                                 uname = " ".join(uname.split(" ")[:-1])
                             lvl = int(v["level"])
                             res = upgradeTreeReshaped[bname][uname]["respect"]
-                            branchesCost[v["branch"]][2] += numpy.sum(res[:lvl + 1])
+                            branchesCost[v["branch"]][3] += numpy.sum(res[:lvl + 1])
 
-                        for i, (k, v) in enumerate([(k, v) for (k, v) in sorted(branchesCost.items(), key=lambda x: -x[1][2]) if k not in ["Core"]]):
-                            branchesCost[k][3] = i + 1 if branchesCost[k][2] else 0
+                        for i, (k, v) in enumerate([(k, v) for (k, v) in sorted(branchesCost.items(), key=lambda x: -x[1][3]) if k not in ["Core"]]):
+                            branchesCost[k][5] = i + 1 if branchesCost[k][3] else 0
 
                         for k, v in [(k, v) for (k, v) in simuTree.items() if v["branch"] not in ["Core"]]:
-                            order = int(branchesCost[v["branch"]][3])
+                            order = int(branchesCost[v["branch"]][5])
                             simuTree[k]["branchorder"] = order
                             simuTree[k]["branchmultiplier"] = 2**(int(order) - 1) if order > 0 else 0
 
@@ -967,8 +971,9 @@ def respectSimulator(request):
 
                 # reset simu branch cost
                 for k in branchesCost:
-                    branchesCost[k][2] = 0
                     branchesCost[k][3] = 0
+                    branchesCost[k][4] = 0
+                    branchesCost[k][5] = 0
 
                 # create simulation tree
                 for branchId, branch in simuTree.items():
@@ -989,8 +994,9 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["simu_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["simu"] += upgradeTreeReshaped[bname][uname]["simu_cost"]
 
-                    branchesCost[bname][2] += multiplier * numpy.sum(res[:lvl + 1])
-                    branchesCost[bname][3] = order
+                    branchesCost[bname][3] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][4] += multiplier * numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][5] = order
 
                 # upgrade key
                 context = {'player': player, 'chaincat': True, "faction": faction, "upgradeTree": upgradeTreeReshaped, "branchesCost": branchesCost, "totalRespect": totalRespect, 'view': {'simu': True}}

@@ -25,6 +25,7 @@ class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
     hitsThreshold = models.IntegerField(default=100)
+    respect = models.IntegerField(default=0)
 
     lastAPICall = models.IntegerField(default=0)
     nAPICall = models.IntegerField(default=2)

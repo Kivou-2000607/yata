@@ -259,6 +259,11 @@ def float2IfFloat(f):
         return f
 
 
+@register.filter(name='emptyIfFalse')
+def emptyIfFalse(f):
+    return f if f else ""
+
+
 @register.filter(name='float2IfSmall')
 def float2IfSmall(f):
     try:
