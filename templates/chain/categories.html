@@ -50,6 +50,10 @@ This file is part of yata.
         <td>
             <a href="{% url 'chain:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a>
         </td>
+    {% if player.factionAA %}
+    </tr>
+    <tr>
+    {% endif %}
         <td>
             <a href="{% url 'chain:armory' %}"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</a>
             <span style="margin-left:10px">
@@ -65,9 +69,12 @@ This file is part of yata.
             <a href="{% url 'chain:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a>
         </td>
         {% if player.factionAA %}
-        <td>
-            <a href="{% url 'chain:aa' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;AA options</a>
-        </td>
+            <td>
+                <a href="{% url 'chain:aa' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;AA options</a>
+            </td>
+            <td>
+                <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a>
+            </td>
             {% if faction.poster %}
             <td>
                 <a href="{% url 'chain:tree' %}"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</a>

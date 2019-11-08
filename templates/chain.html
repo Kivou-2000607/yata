@@ -267,7 +267,7 @@
 
         var value = $(e.currentTarget.selectedOptions).attr("value");
 
-        $("#faction-upgrade-tree").load( "/chain/aa/", {
+        $("#faction-upgrade-tree").load( "/chain/respectSimulator/", {
             change: true,
             modification: modification,
             branchId: branchId,
@@ -279,7 +279,7 @@
     // reset upgrade tree
     $(document).on('click', '#faction-tree-reset', e=>{
         e.preventDefault();
-        $("#faction-upgrade-tree").load( "/chain/aa/", {
+        $("#faction-upgrade-tree").load( "/chain/respectSimulator/", {
             change: true,
             reset: true,
             csrfmiddlewaretoken: getCookie("csrftoken")

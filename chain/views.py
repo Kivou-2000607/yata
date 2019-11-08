@@ -844,7 +844,7 @@ def toggleReport(request, chainId):
         return returnError()
 
 
-def aa(request):
+def respectSimulator(request):
     try:
         if request.session.get('player'):
             print('[view.chain.aa] get player id from session')
@@ -859,51 +859,12 @@ def aa(request):
                 faction.addKey(player.tId, player.key)
                 faction.save()
 
-                # gives the faction a crontab if not
-                if not len(faction.crontab_set.all()):
-                    openCrontab = Crontab.objects.filter(open=True).all()
-                    minBusy = min([c.nFactions() for c in openCrontab])
-                    for crontab in openCrontab:
-                        if crontab.nFactions() == minBusy:
-                            crontab.faction.add(faction)
-                            crontab.save()
-                            break
-                    print('[view.chain.aa] attributed to {} '.format(crontab))
-
-                # update members before to avoid coming here before having members
-                updateMembers(faction, key=player.key, force=False)
-
-                # fill crontabs and keys
-                crontabs = dict({})
-                keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is not None]
-                keysIgnored = [(id, k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is None]
-
-                for crontab in faction.crontab_set.all():
-                    print('[view.chain.aa]     --> {}'.format(crontab))
-                    crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
-                    for f in crontab.faction.all():
-                        crontabs[crontab.tabNumber]["factions"].append(f)
-
                 # upgrade tree
                 if request.POST.get('reset', False):
                     factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True, reset=True)
                 else:
                     factionTree, simuTree = updateFactionTree(faction, key=player.key, force=False)
                 upgradeTree = json.loads(FactionData.objects.first().upgradeTree)
-
-                if request.POST.get('branchId') is not None:
-                    modId = request.POST.get('branchId')
-                    modModification = request.POST.get('modification')
-                    modValue = request.POST.get('value')
-                    if modId in simuTree:
-                        simuTree[modId][modModification] = int(modValue)
-
-                    if modModification in ['branchorder']:
-                        for k in [k for k, v in simuTree.items() if v['branch'] == simuTree[modId]['branch']]:
-                            simuTree[k]['branchorder'] = int(modValue)
-
-                    faction.simuTree = json.dumps(simuTree)
-                    faction.save()
 
                 upgradeTreeReshaped = dict({})
                 totalRespect = {"faction": 0, "tree": 0, "simu": 0}
@@ -944,6 +905,9 @@ def aa(request):
                     upgradeTreeReshaped[bname][uname]["levels"] = len(respects) - 1
                     upgradeTreeReshaped[bname][uname]["branchId"] = branchId
 
+                # compute base cost of each branch
+                branchesCost = dict({"Core": [0, 0, 0, 0], "Criminality": [0, 0, 0, 0], "Fortitude": [0, 0, 0, 0], "Voracity": [0, 0, 0, 0], "Toleration": [0, 0, 0, 0], "Excursion": [0, 0, 0, 0], "Steadfast": [0, 0, 0, 0], "Aggression": [0, 0, 0, 0], "Suppression": [0, 0, 0, 0]})
+
                 # create faction tree
                 for branchId, branch in factionTree.items():
                     bname = branch['branch']
@@ -962,6 +926,49 @@ def aa(request):
                     upgradeTreeReshaped[bname][uname]["faction_level"] = lvl
                     upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
+
+                    branchesCost[bname][0] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][1] = order
+
+                # update simu tree on the fly and branchesCost [2, 3]
+                if request.POST.get('branchId') is not None:
+                    modId = request.POST.get('branchId')
+                    modModification = request.POST.get('modification')
+                    modValue = request.POST.get('value')
+                    if modId in simuTree:
+                        simuTree[modId][modModification] = int(modValue)
+
+                    # optimize branch order
+                    if modModification in ['level']:
+                        for k, v in simuTree.items():
+                            bname = v["branch"]
+                            uname = v["name"]
+                            if upgradeTreeReshaped[bname].get(uname) is None:
+                                uname = " ".join(uname.split(" ")[:-1])
+                            lvl = int(v["level"])
+                            res = upgradeTreeReshaped[bname][uname]["respect"]
+                            branchesCost[v["branch"]][2] += numpy.sum(res[:lvl + 1])
+
+                        for i, (k, v) in enumerate([(k, v) for (k, v) in sorted(branchesCost.items(), key=lambda x: -x[1][2]) if k not in ["Core"]]):
+                            branchesCost[k][3] = i + 1 if branchesCost[k][2] else 0
+
+                        for k, v in [(k, v) for (k, v) in simuTree.items() if v["branch"] not in ["Core"]]:
+                            order = int(branchesCost[v["branch"]][3])
+                            simuTree[k]["branchorder"] = order
+                            simuTree[k]["branchmultiplier"] = 2**(int(order) - 1) if order > 0 else 0
+
+                    # if modify branch order change all same branch order
+                    if modModification in ['branchorder']:
+                        for k in [k for k, v in simuTree.items() if v['branch'] == simuTree[modId]['branch']]:
+                            simuTree[k]['branchorder'] = int(modValue)
+
+                    faction.simuTree = json.dumps(simuTree)
+                    faction.save()
+
+                # reset simu branch cost
+                for k in branchesCost:
+                    branchesCost[k][2] = 0
+                    branchesCost[k][3] = 0
 
                 # create simulation tree
                 for branchId, branch in simuTree.items():
@@ -982,12 +989,70 @@ def aa(request):
                     upgradeTreeReshaped[bname][uname]["simu_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     totalRespect["simu"] += upgradeTreeReshaped[bname][uname]["simu_cost"]
 
+                    branchesCost[bname][2] += numpy.sum(res[:lvl + 1])
+                    branchesCost[bname][3] = order
+
                 # upgrade key
-                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'keysIgnored': keysIgnored, "upgradeTree": upgradeTreeReshaped, "totalRespect": totalRespect, 'view': {'aa': True}}
+                context = {'player': player, 'chaincat': True, "faction": faction, "upgradeTree": upgradeTreeReshaped, "branchesCost": branchesCost, "totalRespect": totalRespect, 'view': {'simu': True}}
                 if request.method == 'POST':
-                    page = 'chain/content-reload.html' if request.POST.get('change') is None else 'chain/aa-upgrade-tree.html'
+                    page = 'chain/content-reload.html' if request.POST.get('change') is None else 'chain/respect-simulator-table.html'
                 else:
                     page = 'chain.html'
+                return render(request, page, context)
+
+            else:
+                return returnError(type=403, msg="You need AA rights.")
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def aa(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.aa] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=player.factionId).first()
+                print('[view.chain.aa] player with AA. Faction {}'.format(faction))
+                faction.addKey(player.tId, player.key)
+                faction.save()
+
+                # gives the faction a crontab if not
+                if not len(faction.crontab_set.all()):
+                    openCrontab = Crontab.objects.filter(open=True).all()
+                    minBusy = min([c.nFactions() for c in openCrontab])
+                    for crontab in openCrontab:
+                        if crontab.nFactions() == minBusy:
+                            crontab.faction.add(faction)
+                            crontab.save()
+                            break
+                    print('[view.chain.aa] attributed to {} '.format(crontab))
+
+                # update members before to avoid coming here before having members
+                updateMembers(faction, key=player.key, force=False)
+
+                # fill crontabs and keys
+                crontabs = dict({})
+                keys = [(faction.member_set.filter(tId=id).first(), k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is not None]
+                keysIgnored = [(id, k) for (id, k) in faction.getAllPairs() if faction.member_set.filter(tId=id).first() is None]
+
+                for crontab in faction.crontab_set.all():
+                    print('[view.chain.aa]     --> {}'.format(crontab))
+                    crontabs[crontab.tabNumber] = {"crontab": crontab, "factions": []}
+                    for f in crontab.faction.all():
+                        crontabs[crontab.tabNumber]["factions"].append(f)
+
+                # upgrade key
+                context = {'player': player, 'chaincat': True, 'crontabs': crontabs, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'keysIgnored': keysIgnored, 'view': {'aa': True}}
+                page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                 return render(request, page, context)
 
             else:

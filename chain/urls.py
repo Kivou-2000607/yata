@@ -13,6 +13,7 @@ urlpatterns = [
     re_path(r'^aa/$', views.aa, name='aa'),
     re_path(r'^tree/$', views.tree, name='tree'),
     re_path(r'^armory/$', views.armory, name='armory'),
+    re_path(r'^respectSimulator/$', views.respectSimulator, name='respectSimulator'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),

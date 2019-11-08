@@ -279,6 +279,10 @@ table.chain-tree td.b { width: 15%; text-align: left; } /* x1 */
 table.chain-tree td.c { width: 6.25%; text-align: center; }  /* x4 */
 table.chain-tree td.d { width: 10%; text-align: right; }  /* x5 */
 
+table.chain-tree-sum td.a { width: 20%; text-align: left; }  /* x1 */
+table.chain-tree-sum td.b { width: 15%; text-align: right; } /* x2 */
+table.chain-tree-sum td.c { width: 10%; text-align: center; }  /* x5 */
+
 table.chain-tree tr { border-radius: 4px;}
 table.chain-tree tr.order-1 { background-color: #447e9b11}
 table.chain-tree tr.order-2 { background-color: #447e9b22}

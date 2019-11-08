@@ -21,6 +21,70 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+
+<table class="center chain-tree-sum">
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Current State</th>
+            <th colspan="2">Simulation</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>Branch</th>
+            <th>Total base cost</th>
+            <th>Order</th>
+            <th>Total base cost</th>
+            <th>Order</th>
+            <th>Diff cost</th>
+            <th>Diff Order</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b, cl in branchesCost.items %}
+        <tr>
+            <td class="a"><b>{{b}}</b></td>
+            <td class="b">{{cl.0|intcomma}}</td>
+            <td class="c">{{cl.1}}</td>
+            <td class="b">{{cl.2|intcomma}}</td>
+            <td class="c">{{cl.3}}</td>
+            {% if cl.2 > cl.0 %}
+                <td class="error b">{{cl.2|sub:cl.0|format:"{:+,.0f}"}}</td>
+            {% elif cl.2 < cl.0 %}
+                <td class="valid b">{{cl.2|sub:cl.0|format:"{:+,.0f}"}}</td>
+            {% else %}
+                <td class="neutral b">0</td>
+            {% endif %}
+            {% if cl.3 > cl.1 %}
+                <td class="error c">{{cl.3|sub:cl.1|format:"{:+,.0f}"}}</td>
+            {% elif cl.3 < cl.1 %}
+                <td class="valid c">{{cl.3|sub:cl.1|format:"{:+,.0f}"}}</td>
+            {% else %}
+                <td class="neutral c">0</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+
+        <tr>
+            <td><b>TOTAL</b></td>
+            <td class="b">{{totalRespect.faction|intcomma}}</td>
+            <td></td>
+            <td class="b">{{totalRespect.simu|intcomma}}</td>
+            <td></td>
+            {% if totalRespect.faction > totalRespect.simu %}
+                <td class="b valid">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
+            {% elif totalRespect.faction < totalRespect.simu %}
+                <td class="b error">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
+            {% else %}
+                <td class="b neutral">0</td>
+            {% endif %}
+            <td></td>
+        </tr>
+
+    </tbody>
+</table>
+<hr class="sep">
+
 <table class="center chain-tree">
     <thead>
         <tr>
@@ -85,22 +149,5 @@ This file is part of yata.
                 </tr>
             {% endfor %}
         {% endfor %}
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="d">{{totalRespect.faction|intcomma}}</td>
-            <td></td>
-            <td></td>
-            <td class="d">{{totalRespect.simu|intcomma}}</td>
-            {% if totalRespect.faction > totalRespect.simu %}
-                <td class="d valid">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
-            {% elif totalRespect.faction < totalRespect.simu %}
-                <td class="d error">{{totalRespect.simu|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
-            {% else %}
-                <td class="d neutral">0</td>
-            {% endif %}
-        </tr>
     </tbody>
 </table>

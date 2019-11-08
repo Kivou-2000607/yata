@@ -88,8 +88,3 @@ This file is part of yata.
         <p><span class="warning"><i class="fas fa-bug"></i>  You have no crontab associated to your faction. {% if faction.numberOfKeys %} If you just enabled one key click <a href={% url 'chain:index' %}>here</a>. If the problem persist please PM <a>{{"Kivou"|playerURL:"2000607"|safe}}</a> for details.{% else %}You need at least one AA key enabled.{% endif %}</span></p>
     {% endif %}
 </div>
-
-<h2 class="title">Upgrade tree<span id="faction-tree-reset" class="flush-right"><a href=""><i class="fas fa-toilet-paper"></i>&nbsp;&nbsp;Reset faction tree</a></span></h2>
-<div id="faction-upgrade-tree" class="module">
-    {% include "chain/aa-upgrade-tree.html" %}
-</div>
