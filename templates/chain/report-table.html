@@ -142,7 +142,7 @@ $(document).ready(function() {
             </tr>
                 {% for b in bonus %}
                     {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
-                        <td style="text-align: center;"><b>Bonus #{{b.hit}}</b><br>{{b.name|playerURL:b.tId|safe}}</td>
+                        <td style="text-align: center;"><b>Bonus #{{b.hit}}</b><br>{{b.name|playerURL:b.tId|safe}}{% if b.targetId %}<br>on {{b.targetName|playerURL:b.targetId|safe}}{% endif %}</td>
                     {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
                 {% endfor %}
         </tbody>

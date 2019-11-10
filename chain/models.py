@@ -203,10 +203,12 @@ class Report(models.Model):
 class Bonus(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0)
-    name = models.CharField(default="Duke", max_length=64)
+    name = models.CharField(default="Duke", max_length=15)
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     respectMax = models.FloatField(default=0)
+    targetId = models.IntegerField(default=0)
+    targetName = models.CharField(default="Unkown", max_length=15)
 
     def __str__(self):
         return("Bonus of {}".format(self.report.chain))
@@ -215,7 +217,7 @@ class Bonus(models.Model):
 class Count(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     attackerId = models.IntegerField(default=0)
-    name = models.CharField(default="Duke", max_length=64)
+    name = models.CharField(default="Duke", max_length=15)
     hits = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
@@ -262,9 +264,9 @@ class Wall(models.Model):
     attackers = models.TextField(default="{}", null=True, blank=True)
     defenders = models.TextField(default="{}", null=True, blank=True)
     attackerFactionId = models.IntegerField(default=0)
-    attackerFactionName = models.CharField(default="AttackFaction", max_length=200)
+    attackerFactionName = models.CharField(default="AttackFaction", max_length=15)
     defenderFactionId = models.IntegerField(default=0)
-    defenderFactionName = models.CharField(default="DefendFaction", max_length=200)
+    defenderFactionName = models.CharField(default="DefendFaction", max_length=15)
     territory = models.CharField(default="AAA", max_length=3)
     result = models.CharField(default="Unset", max_length=10)
     factions = models.ManyToManyField(Faction, blank=True)

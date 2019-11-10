@@ -284,7 +284,7 @@ def fillReport(faction, members, chain, report, attacks):
                     attackers[attackerID][12] += 1
                     r = getBonusHits(v['chain'], v["timestamp_ended"])
                     print('[function.chain.fillReport] bonus {}: {} respects'.format(v['chain'], r))
-                    bonus.append((v['chain'], attackerID, attackerName, respect, r))
+                    bonus.append((v['chain'], attackerID, attackerName, respect, r, v.get('defender_id', '0'), v.get('defender_name', 'Unkown')))
                 else:
                     attackers[attackerID][1] += 1
                     attackers[attackerID][2] += float(v['modifiers']['fairFight'])
@@ -402,7 +402,7 @@ def fillReport(faction, members, chain, report, attacks):
     print('[function.chain.fillReport] fill database with bonus')
     report.bonus_set.all().delete()
     for b in bonus:
-        report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4])
+        report.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], respectMax=b[4], targetId=b[5], targetName=b[6])
 
     if chain.wall:
         finished = not chain.createReport
