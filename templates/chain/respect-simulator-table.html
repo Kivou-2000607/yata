@@ -44,12 +44,13 @@ This file is part of yata.
     });
 </script>
 
-<table class="center chain-tree-sum">
+<table class="center chain-tree-sum sticky">
     <thead>
         <tr>
             <th></th>
             <th colspan="2">Current state</th>
             <th colspan="2">Simulation</th>
+            <th>Difference</th>
         </tr>
         <tr>
             <th>Faction Respect</th>
@@ -57,6 +58,7 @@ This file is part of yata.
             <th>Respect available</th>
             <th>Respect Used</th>
             <th>Respect available</th>
+            <th>Respect Used</th>
         </tr>
     </thead>
     <tbody>
@@ -66,18 +68,18 @@ This file is part of yata.
             <td class="c">{{faction.respect|sub:totalRespect.faction|signColor}}</td>
             <td class="c">{{totalRespect.simu|intcomma}}</td>
             <td class="c">{{faction.respect|sub:totalRespect.simu|signColor}}</td>
+            <td class="c">{{totalRespect.faction|sub:totalRespect.simu|signColor}}</td>
         </tr>
     </tbody>
 </table>
 
 <br>
-<table id="chain-tree-sum" class="center-medium chain-tree-sum">
+<table id="chain-tree-sum" class="center-medium chain-tree-sum trshadow">
     <thead>
         <tr>
             <th></th>
             <th colspan="3">Current State</th>
-            <th colspan="3">Simulation</th>
-            <th colspan="3">Difference</th>
+            <th colspan="6">Simulation</th>
         </tr>
         <tr>
             <th>Branch</th>
@@ -95,16 +97,18 @@ This file is part of yata.
     <tbody>
         {% for b, cl in branchesCost.items %}
         <tr>
-            <td class="a"><b>{{b}}</b></td>
-            <td class="b">{{cl.0|emptyIfFalse|intcomma}}</td>
-            <td class="b">{{cl.1|emptyIfFalse|intcomma}}</td>
-            <td class="c">{{cl.2|emptyIfFalse}}</td>
-            <td class="b">{{cl.3|emptyIfFalse|intcomma}}</td>
-            <td class="b">{{cl.3|sub:cl.0|signColor:1}}</td>
-            <td class="b">{{cl.4|emptyIfFalse|intcomma}}</td>
-            <td class="b">{{cl.4|sub:cl.1|signColor:1}}</td>
-            <td class="c">{{cl.5|emptyIfFalse}}</td>
-            <td class="c">{{cl.5|sub:cl.2|signColor:1}}</td>
+            {% if cl.3 or cl.3 > cl.0 or cl.3 < cl.0 %}
+                <td class="a"><b>{{b}}</b></td>
+                <td class="b">{{cl.0|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.1|emptyIfFalse|intcomma}}</td>
+                <td class="c">{{cl.2|emptyIfFalse}}</td>
+                <td class="b">{{cl.3|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.3|sub:cl.0|signColor:1}}</td>
+                <td class="b">{{cl.4|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.4|sub:cl.1|signColor:1}}</td>
+                <td class="c">{{cl.5|emptyIfFalse}}</td>
+                <td class="c">{{cl.5|sub:cl.2|signColor:1}}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
