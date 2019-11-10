@@ -44,7 +44,34 @@ This file is part of yata.
     });
 </script>
 
-<table id="chain-tree-sum" class="center chain-tree-sum">
+<table class="center chain-tree-sum">
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Current state</th>
+            <th colspan="2">Simulation</th>
+        </tr>
+        <tr>
+            <th>Faction Respect</th>
+            <th>Respect Used</th>
+            <th>Respect available</th>
+            <th>Respect Used</th>
+            <th>Respect available</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="c"><b>{{faction.respect|intcomma}}</b></td>
+            <td class="c">{{totalRespect.faction|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:totalRespect.faction|signColor}}</td>
+            <td class="c">{{totalRespect.simu|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:totalRespect.simu|signColor}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<table id="chain-tree-sum" class="center-medium chain-tree-sum">
     <thead>
         <tr>
             <th></th>
@@ -58,11 +85,11 @@ This file is part of yata.
             <th>Respect</th>
             <th>Order</th>
             <th>Base</th>
+            <th></th>
             <th>Respect</th>
+            <th></th>
             <th>Order</th>
-            <th>Base</th>
-            <th>Respect</th>
-            <th>Order</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -73,73 +100,25 @@ This file is part of yata.
             <td class="b">{{cl.1|emptyIfFalse|intcomma}}</td>
             <td class="c">{{cl.2|emptyIfFalse}}</td>
             <td class="b">{{cl.3|emptyIfFalse|intcomma}}</td>
+            <td class="b">{{cl.3|sub:cl.0|signColor:1}}</td>
             <td class="b">{{cl.4|emptyIfFalse|intcomma}}</td>
+            <td class="b">{{cl.4|sub:cl.1|signColor:1}}</td>
             <td class="c">{{cl.5|emptyIfFalse}}</td>
-            {% if cl.3 > cl.0 %}
-                <td class="error b">{{cl.3|sub:cl.0|format:"{:+,.0f}"}}</td>
-                <td class="error b">{{cl.3|sub:cl.1|format:"{:+,.0f}"}}</td>
-            {% elif cl.3 < cl.0 %}
-                <td class="valid b">{{cl.3|sub:cl.0|format:"{:+,.0f}"}}</td>
-                <td class="valid b">{{cl.3|sub:cl.1|format:"{:+,.0f}"}}</td>
-            {% else %}
-                <td class="neutral b"></td>
-                <td class="neutral b"></td>
-            {% endif %}
-            {% if cl.5 > cl.2 %}
-                <td class="error c">{{cl.5|sub:cl.2|format:"{:+,.0f}"}}</td>
-            {% elif cl.5 < cl.2 %}
-                <td class="valid c">{{cl.5|sub:cl.2|format:"{:+,.0f}"}}</td>
-            {% else %}
-                <td class="neutral c"></td>
-            {% endif %}
+            <td class="c">{{cl.5|sub:cl.2|signColor:1}}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<br>
-<table class="center">
-    <thead>
-        <tr>
-            <th>Faction Respect</th>
-            <th>Respect Used</th>
-            <th>Respect available</th>
-            <th>Respect Used</th>
-            <th>Respect available</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><b>{{faction.respect|intcomma}}</b></td>
-            <td class="b">{{totalRespect.faction|intcomma}}</td>
-            {% if totalRespect.faction > faction.respect %}
-                <td class="b error">{{faction.respect|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
-            {% elif totalRespect.faction < faction.respect %}
-                <td class="b valid">{{faction.respect|sub:totalRespect.faction|format:"{:+,.0f}"}}</td>
-            {% else %}
-                <td class="b neutral">0</td>
-            {% endif %}
-            <td class="b">{{totalRespect.simu|intcomma}}</td>
-            {% if totalRespect.simu > faction.respect %}
-                <td class="b error">{{faction.respect|sub:totalRespect.simu|format:"{:+,.0f}"}}</td>
-            {% elif totalRespect.simu < faction.respect %}
-                <td class="b valid">{{faction.respect|sub:totalRespect.simu|format:"{:+,.0f}"}}</td>
-            {% else %}
-                <td class="b neutral">0</td>
-            {% endif %}
-        </tr>
 
-    </tbody>
-</table>
 <hr class="sep">
 
-<table id="chain-tree" class="center chain-tree">
+<table id="chain-tree" class="center-medium chain-tree">
     <thead>
         <tr>
             <th></th>
             <th></th>
             <th colspan="3">Current State</th>
-            <th colspan="3">Simulation</th>
-            <th></th>
+            <th colspan="6">Simulation</th>
         </tr>
         <tr>
             <th>Branch</th>
@@ -148,9 +127,11 @@ This file is part of yata.
             <th>Level</th>
             <th>Cost</th>
             <th>Order</th>
+            <th></th>
             <th>Level</th>
+            <th></th>
             <th>Cost</th>
-            <th>Diff</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -178,6 +159,7 @@ This file is part of yata.
                             </select>
                         {% endif %}
                     </td>
+                    <td class="c">{{u.simu_order|sub:u.faction_order|signColor:1}}</td>
                     <td class="c" data-val="{{u.simu_level|emptyIfFalse}}">
                         <select id="simu-tree-{{u.branchId}}-level" class="faction-upgrade-tree">
                             {% for r in u.respect %}
@@ -185,14 +167,9 @@ This file is part of yata.
                             {% endfor %}
                         </select>
                     </td>
+                    <td class="c">{{u.simu_level|sub:u.faction_level|signColor}}</td>
                     <td class="d">{{u.simu_cost|intcomma}}</td>
-                    {% if u.faction_cost > u.simu_cost %}
-                        <td class="d valid">{{u.simu_cost|sub:u.faction_cost|format:"{:+,.0f}"}}</td>
-                    {% elif u.faction_cost < u.simu_cost %}
-                        <td class="d error">{{u.simu_cost|sub:u.faction_cost|format:"{:+,.0f}"}}</td>
-                    {% else %}
-                        <td class="d neutral">0</td>
-                    {% endif %}
+                    <td class="d">{{u.simu_cost|sub:u.faction_cost|signColor:1}}</td>
                 </tr>
             {% endfor %}
         {% endfor %}

@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django import template
 from django.conf import settings
+from django.utils.html import format_html
 
 register = template.Library()
 
@@ -321,3 +322,15 @@ def parseReportFile(report):
 
     except BaseException:
         return "report"
+
+
+@register.filter(name="signColor")
+def signColor(i, inv=False):
+    if i > 0:
+        cl = "error" if inv else "valid"
+        return format_html('<span class="{}">{:+,.0f}</span>'.format(cl, i))
+    elif i < 0:
+        cl = "valid" if inv else "error"
+        return format_html('<span class="{}">{:+,.0f}</span>'.format(cl, i))
+    else:
+        return ''

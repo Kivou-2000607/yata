@@ -176,6 +176,12 @@ table.center {
   margin-right:25%;
 }
 
+table.center-medium {
+  width:65%;
+  margin-left:17.5%;
+  margin-right:17.5%;
+}
+
 table.center-large {
   width:95%;
   margin-left:2.5%;
@@ -183,6 +189,7 @@ table.center-large {
 }
 
 table.center td,
+table.center-medium td,
 table.center-large td {
     max-width: 0;
     overflow: hidden;
@@ -191,6 +198,7 @@ table.center-large td {
 }
 
 table.center th,
+table.center-medium th,
 table.center-large th { text-align: center; }
 
 table.trshadow tr:hover  {
