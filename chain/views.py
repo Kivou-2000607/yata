@@ -940,7 +940,6 @@ def respectSimulator(request):
                     modModification = request.POST.get('modification')
                     modValue = request.POST.get('value')
 
-
                     # check consistency of the graph (necessary levels for the sub branches)
                     if modModification in ["level"]:
                         # modify the value in the simulation tree
@@ -968,8 +967,8 @@ def respectSimulator(request):
                             32: [[33, 9]],  # oversea banking
 
                             # Supression
-                            45: [[46, 3]], # maximum life
-                            48: [[47, 7]], # escape
+                            45: [[46, 3]],  # maximum life
+                            48: [[47, 7]],  # escape
 
                             # Agression
                             44: [[43, 10]],  # accuracy
@@ -990,7 +989,7 @@ def respectSimulator(request):
                             # Core
                             10: [[11, 2]],  # chaining
                             12: [[11, 2]],  # territory
-                        }
+                            }
 
                         if int(modId) in r and int(modValue):
                             for b, lvl in [(b[0], b[1]) for b in r[int(modId)]]:
@@ -1014,8 +1013,8 @@ def respectSimulator(request):
                             33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
 
                             # Supression
-                            46: [[45, 3]], # defense
-                            47: [[48, 7]], # dexterity
+                            46: [[45, 3]],  # defense
+                            47: [[48, 7]],  # dexterity
 
                             # Agression
                             43: [[44, 10]],  # speed
@@ -1030,7 +1029,7 @@ def respectSimulator(request):
 
                             # Core
                             11: [[10, 2], [12, 2]],  # capacity
-                        }
+                            }
 
                         if int(modId) in r:
                             for sb, lvl in [(sb[0], sb[1]) for sb in r[int(modId)]]:
@@ -1042,7 +1041,8 @@ def respectSimulator(request):
                             36: [37, 38, 39],  # strength training
                             38: [39, 36, 37],  # defense training
                             39: [38, 36, 37],  # dexterity training
-                        }
+                            }
+
                         if int(modId) in r:
                             # max the close branch to 10
                             if int(modValue) > 10:
@@ -1058,7 +1058,7 @@ def respectSimulator(request):
 
                         # special case for core
                         r = {
-                            1: [], # weapon armory
+                            1: [],  # weapon armory
                             2: [1],  # armor armory
                             3: [1, 2],  # tempory armory
                             4: [1, 2],  # medical armory
@@ -1066,7 +1066,7 @@ def respectSimulator(request):
                             6: [1, 2, 4],  # drug armory
                             7: [1, 2, 3, 4, 5, 6],  # point storage
                             8: [1, 2, 3, 4, 5, 6, 7],  # laboratory
-                        }
+                            }
 
                         if int(modId) in r:
                             if int(modValue):
@@ -1145,7 +1145,13 @@ def respectSimulator(request):
                     branchesCost[bname][5] = order
 
                 # upgrade key
-                context = {'player': player, 'chaincat': True, "faction": faction, "upgradeTree": upgradeTreeReshaped, "branchesCost": branchesCost, "totalRespect": totalRespect, 'view': {'simu': True}}
+                context = {'player': player,
+                           'chaincat': True,
+                           "faction": faction,
+                           "upgradeTree": upgradeTreeReshaped,
+                           "branchesCost": branchesCost,
+                           "totalRespect": totalRespect,
+                           'view': {'simu': True}}
                 if request.method == 'POST':
                     page = 'chain/content-reload.html' if request.POST.get('change') is None else 'chain/respect-simulator-table.html'
                 else:
