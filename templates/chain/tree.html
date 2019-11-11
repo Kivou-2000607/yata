@@ -19,6 +19,7 @@ This file is part of yata.
 
 {% load humanize %}
 {% load mathfilters %}
+{% load app_filters %}
 {% load static %}
 {% static "" as baseUrl %}
 
@@ -41,6 +42,8 @@ This file is part of yata.
                 <input id="chain-tree-fontColor-2" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
                 <label for="chain-tree-fontColor-3">transparency </label>
                 <input id="chain-tree-fontColor-3" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}"><br />
+                <label for="chain-tree-fontColor-4">hexa </label>
+                <input id="chain-tree-fontColor-4" class="poster-hexa" type="text" placeholder="#{{posterOpt.fontColor|hexa}}">
             </p>
             <p>
                 <label for="chain-tree-background-0">Background: red </label>
@@ -51,6 +54,8 @@ This file is part of yata.
                 <input id="chain-tree-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
                 <label for="chain-tree-background-3">transparency </label>
                 <input id="chain-tree-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}"><br />
+                <label for="chain-tree-background-4">hexa </label>
+                <input id="chain-tree-background-4" class="poster-hexa" type="text" placeholder="#{{posterOpt.background|hexa}}">
             </p>
             <p>
                 <label for="chain-tree-iconType-0">Icon type: </label>

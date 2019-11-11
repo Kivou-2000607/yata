@@ -1344,16 +1344,48 @@ def tree(request):
                     print(request.POST)
                     t = request.POST.get("t", False)
                     p = int(request.POST.get("p", False))
-                    v = int(request.POST.get("v", False))
+
+                    # hexa color code
+                    if p == 4:
+                        hex = request.POST.get("v").replace("#", "")[:8]
+                        if len(hex) == 4:
+                            tmp = hex
+                            hex = ""
+                            for i in range(4):
+                                hex += tmp[i]+tmp[i]
+
+                        elif len(hex) == 8:
+                            pass
+
+                        else:
+                            hex = "FFFFFFFF"
+
+                        try:
+                            int(hex, 16)
+                        except:
+                            hex = "FFFFFFFF"
+
+                        v = [int(hex[:2], 16), int(hex[2:4], 16), int(hex[4:6], 16), int(hex[6:8], 16)]
+
+                    # decimal for one color
+                    else:
+                        v = int(request.POST.get("v", False))
+
                     if t:
                         print('[view.chain.tree] {}[{}] = {}'.format(t, p, v))
                         posterOpt = json.loads(faction.posterOpt)
                         if posterOpt.get(t, False):
-                            posterOpt[t][p] = v
+                            if p == 4:
+                                posterOpt[t] = v
+                            else:
+                                posterOpt[t][p] = v
                         else:
                             if t == "fontColor":
-                                option = [0, 0, 0, 255]
-                                option[p] = v
+                                if p == 4:
+                                    option = v
+                                else:
+                                    option = [0, 0, 0, 255]
+                                    option[p] = v
                             elif t == "fontFamily":
                                 option = [0]
                                 option[p] = v
@@ -1361,8 +1393,11 @@ def tree(request):
                                 option = [0]
                                 option[p] = v
                             elif t == "background":
-                                option = [0, 0, 0, 0]
-                                option[p] = v
+                                if p == 4:
+                                    option = v
+                                else:
+                                    option = [0, 0, 0, 0]
+                                    option[p] = v
 
                             posterOpt[t] = option
 

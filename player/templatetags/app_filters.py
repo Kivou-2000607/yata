@@ -334,3 +334,15 @@ def signColor(i, inv=False):
         return format_html('<span class="{}">{:+,.0f}</span>'.format(cl, i))
     else:
         return ''
+
+
+@register.filter(name="hexa")
+def hexa(tab):
+    try:
+        hexa = ""
+        for i in tab:
+            print(i, "{:02x}".format(i))
+            hexa = "{}{:02x}".format(hexa, i)
+        return hexa
+    except BaseException:
+        return "FFFFFFFF"
