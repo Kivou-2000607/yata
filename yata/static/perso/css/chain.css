@@ -282,6 +282,7 @@ table.chain-tree td.d { width: 10%; text-align: right; }  /* x3 */
 table.chain-tree-sum td.a { width: 10%; text-align: left; }  /* x1 */
 table.chain-tree-sum td.b { width: 10%; text-align: right; } /* x6 */
 table.chain-tree-sum td.c { width: 6%; text-align: center; }  /* x5 */
+table.chain-tree-sum tr.max-order { text-decoration: line-through; opacity: 0.5; font-style: oblique; }  /* x5 */
 
 table.chain-tree tr { border-radius: 4px;}
 table.chain-tree tr.order-1 { background-color: #447e9b11}
@@ -290,4 +291,6 @@ table.chain-tree tr.order-3 { background-color: #447e9b33}
 table.chain-tree tr.order-4 { background-color: #447e9b44}
 table.chain-tree tr.order-5 { background-color: #447e9b55}
 table.chain-tree tr.order-6 { background-color: #447e9b66}
+table.chain-tree tr.order-7 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
+table.chain-tree tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.chain-tree tr.order-core { background-color: #0001}

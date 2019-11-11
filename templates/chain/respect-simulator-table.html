@@ -96,7 +96,7 @@ This file is part of yata.
     </thead>
     <tbody>
         {% for b, cl in branchesCost.items %}
-        <tr>
+        <tr {% if cl.5 > 6 %}class="max-order"{% endif %}>
             {% if cl.3 or cl.3 > cl.0 or cl.3 < cl.0 %}
                 <td class="a"><b>{{b}}</b></td>
                 <td class="b">{{cl.0|emptyIfFalse|intcomma}}</td>
@@ -157,7 +157,7 @@ This file is part of yata.
                             {{u.simu_order}}
                         {% else %}
                             <select id="simu-tree-{{u.branchId}}-branchorder" class="faction-upgrade-tree">
-                                {% for i in "0123456"|make_list %}
+                                {% for i in "012345678"|make_list %}
                                 <option value="{{i}}" {% if forloop.counter0 is u.simu_order %}selected{% endif %}>{{i}}</option>
                                 {% endfor %}
                             </select>

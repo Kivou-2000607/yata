@@ -588,6 +588,10 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
     # don't update if less than 24h ago and force is False
     if not force and (now - faction.treeUpda) < 24 * 3600:
         print("[function.chain.updateFactionTree] skip update tree")
+        if faction.simuTree in ["{}"]:
+            print("[function.chain.updateFactionTree] set simuTree as faction tree")
+            faction.simuTree = faction.factionTree
+            faction.save()
         # return faction.faction.all()
     else:
         # call upgrade Tree
@@ -624,8 +628,10 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
                 factionTree[k]['branchorder'] = orders[factionTree[k]['branch']]
 
             faction.factionTree = json.dumps(factionTree)
-            if faction.simuTree in ["{}"] or reset:
+            if reset:
+                print("[function.chain.updateFactionTree] set simuTree as faction tree")
                 faction.simuTree = faction.factionTree
+                faction.save()
             faction.treeUpda = now
             faction.respect = int(factionCall.get('respect', 0))
             faction.save()

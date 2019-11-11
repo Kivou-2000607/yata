@@ -935,150 +935,148 @@ def respectSimulator(request):
                     branchesCost[bname][2] = order
 
                 # update simu tree on the fly and branchesCost [3, 5]
-                for k, v in simuTree.items():
-                    print(k, v)
                 if request.POST.get('branchId') is not None:
                     modId = request.POST.get('branchId')
                     modModification = request.POST.get('modification')
                     modValue = request.POST.get('value')
 
-                    # modify the value in the simulation tree
-                    if modId in simuTree:
-                        simuTree[modId][modModification] = int(modValue)
 
                     # check consistency of the graph (necessary levels for the sub branches)
+                    if modModification in ["level"]:
+                        # modify the value in the simulation tree
+                        if modId in simuTree:
+                            simuTree[modId][modModification] = int(modValue)
 
-                    # change branch level if the modification of the subbranch requires it
-                    # lvl: level reuired
-                    # {sb: [[b1, lvl1], [b2, lvl2]]}
-                    r = {
-                        # Toleration
-                        27: [[29, 1]],  # side effect
-                        28: [[29, 13]],  # overdosing
+                        # change branch level if the modification of the subbranch requires it
+                        # lvl: level reuired
+                        # {sb: [[b1, lvl1], [b2, lvl2]]}
+                        r = {
+                            # Toleration
+                            27: [[29, 1]],  # side effect
+                            28: [[29, 13]],  # overdosing
 
-                        # Criminality
-                        13: [[14, 2]],  # nerve
-                        15: [[14, 2]],  # jail time
-                        17: [[14, 2], [15, 10]],  # bust skill
-                        16: [[14, 2], [15, 10], [17, 10]],  # bust nerve
+                            # Criminality
+                            13: [[14, 2]],  # nerve
+                            15: [[14, 2]],  # jail time
+                            17: [[14, 2], [15, 10]],  # bust skill
+                            16: [[14, 2], [15, 10], [17, 10]],  # bust nerve
 
-                        # Excrusion
-                        34: [[33, 2]],  # travel cost
-                        31: [[33, 3]],  # hunting
-                        35: [[33, 8]],  # rehab
-                        32: [[33, 9]],  # oversea banking
+                            # Excrusion
+                            34: [[33, 2]],  # travel cost
+                            31: [[33, 3]],  # hunting
+                            35: [[33, 8]],  # rehab
+                            32: [[33, 9]],  # oversea banking
 
-                        # Supression
-                        45: [[46, 3]], # maximum life
-                        48: [[47, 7]], # escape
+                            # Supression
+                            45: [[46, 3]], # maximum life
+                            48: [[47, 7]], # escape
 
-                        # Agression
-                        44: [[43, 10]],  # accuracy
-                        40: [[42, 3]],  # hospitalization
-                        41: [[42, 15]],  # damage
+                            # Agression
+                            44: [[43, 10]],  # accuracy
+                            40: [[42, 3]],  # hospitalization
+                            41: [[42, 15]],  # damage
 
-                        # Fortitude
-                        18: [[20, 2]],  # medical cooldown
-                        19: [[20, 13]],  # reviving
-                        21: [[20, 4]],  # life regeneration
-                        22: [[20, 4], [21, 5]],  # medical effectiveness
+                            # Fortitude
+                            18: [[20, 2]],  # medical cooldown
+                            19: [[20, 13]],  # reviving
+                            21: [[20, 4]],  # life regeneration
+                            22: [[20, 4], [21, 5]],  # medical effectiveness
 
-                        # Voracity
-                        23: [[25, 2]],  # candy effect
-                        24: [[25, 15]],  # energy drink effect
-                        26: [[25, 9]],  # alcohol effect
+                            # Voracity
+                            23: [[25, 2]],  # candy effect
+                            24: [[25, 15]],  # energy drink effect
+                            26: [[25, 9]],  # alcohol effect
 
-                        # Core
-                        10: [[11, 2]],  # chaining
-                        12: [[11, 2]],  # territory
-                    }
+                            # Core
+                            10: [[11, 2]],  # chaining
+                            12: [[11, 2]],  # territory
+                        }
 
-                    if int(modId) in r and int(modValue):
-                        for b, lvl in [(b[0], b[1]) for b in r[int(modId)]]:
-                            print(b, lvl, simuTree[str(b)]['level'])
-                            simuTree[str(b)]['level'] = max(lvl, simuTree[str(b)]['level'])
+                        if int(modId) in r and int(modValue):
+                            for b, lvl in [(b[0], b[1]) for b in r[int(modId)]]:
+                                print("couocu", b, lvl, simuTree[str(b)]['level'])
+                                simuTree[str(b)]['level'] = max(lvl, simuTree[str(b)]['level'])
 
-                    # change subbranch level to zero if the modification of the branch requires it
-                    # sb: sub branch
-                    # b: b branch
-                    # {b: [[sb1, lvl1], [sb2, lvl2]]}
-                    r = {
-                        # Toleration
-                        29: [[27, 1], [28, 13]],  # addiction
+                        # change subbranch level to zero if the modification of the branch requires it
+                        # sb: sub branch
+                        # b: b branch
+                        # {b: [[sb1, lvl1], [sb2, lvl2]]}
+                        r = {
+                            # Toleration
+                            29: [[27, 1], [28, 13]],  # addiction
 
-                        # Criminality
-                        17: [[16, 10]],  # bust skill
-                        15: [[17, 10], [16, 10]],  # jail time
-                        14: [[15, 2], [13, 2], [17, 2], [16, 2]],  # crimes
+                            # Criminality
+                            17: [[16, 10]],  # bust skill
+                            15: [[17, 10], [16, 10]],  # jail time
+                            14: [[15, 2], [13, 2], [17, 2], [16, 2]],  # crimes
 
-                        # Excrusion
-                        33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
+                            # Excrusion
+                            33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
 
-                        # Supression
-                        46: [[45, 3]], # defense
-                        47: [[48, 7]], # dexterity
+                            # Supression
+                            46: [[45, 3]], # defense
+                            47: [[48, 7]], # dexterity
 
-                        # Agression
-                        43: [[44, 10]],  # speed
-                        42: [[40, 3], [41, 15]],  # strength
+                            # Agression
+                            43: [[44, 10]],  # speed
+                            42: [[40, 3], [41, 15]],  # strength
 
-                        # Fortitude
-                        20: [[18, 2], [21, 4], [22, 4], [19, 13]],   # hospitalization time
-                        21: [[22, 5]],   # life regeneration
+                            # Fortitude
+                            20: [[18, 2], [21, 4], [22, 4], [19, 13]],   # hospitalization time
+                            21: [[22, 5]],   # life regeneration
 
-                        # Voracity
-                        25: [[23, 2], [24, 15], [26, 9]],  # booster cooldown
+                            # Voracity
+                            25: [[23, 2], [24, 15], [26, 9]],  # booster cooldown
 
-                        # Core
-                        11: [[10, 2], [12, 2]],  # capacity
-                    }
+                            # Core
+                            11: [[10, 2], [12, 2]],  # capacity
+                        }
 
-                    if int(modId) in r:
-                        for sb, lvl in [(sb[0], sb[1]) for sb in r[int(modId)]]:
-                            simuTree[str(sb)]['level'] = 0 if int(modValue) < lvl else simuTree[str(sb)]['level']
+                        if int(modId) in r:
+                            for sb, lvl in [(sb[0], sb[1]) for sb in r[int(modId)]]:
+                                simuTree[str(sb)]['level'] = 0 if int(modValue) < lvl else simuTree[str(sb)]['level']
 
-                    # special case for steadfast
-                    r = {
-                        37: [36, 38, 39],  # speed training
-                        36: [37, 38, 39],  # strength training
-                        38: [39, 36, 37],  # defense training
-                        39: [38, 36, 37],  # dexterity training
-                    }
-                    if int(modId) in r:
-                        # max the close branch to 10
-                        if int(modValue) > 10:
-                            i = str(r[int(modId)][0])
-                            simuTree[i]['level'] = min(10, simuTree[i]['level'])
+                        # special case for steadfast
+                        r = {
+                            37: [36, 38, 39],  # speed training
+                            36: [37, 38, 39],  # strength training
+                            38: [39, 36, 37],  # defense training
+                            39: [38, 36, 37],  # dexterity training
+                        }
+                        if int(modId) in r:
+                            # max the close branch to 10
+                            if int(modValue) > 10:
+                                i = str(r[int(modId)][0])
+                                simuTree[i]['level'] = min(10, simuTree[i]['level'])
 
-                        # max the two other branches to 15
-                        if int(modValue) > 15:
-                            i = str(r[int(modId)][1])
-                            simuTree[i]['level'] = min(15, simuTree[i]['level'])
-                            i = str(r[int(modId)][2])
-                            simuTree[i]['level'] = min(15, simuTree[i]['level'])
+                            # max the two other branches to 15
+                            if int(modValue) > 15:
+                                i = str(r[int(modId)][1])
+                                simuTree[i]['level'] = min(15, simuTree[i]['level'])
+                                i = str(r[int(modId)][2])
+                                simuTree[i]['level'] = min(15, simuTree[i]['level'])
 
-                    # special case for core
-                    r = {
-                        1: [], # weapon armory
-                        2: [1],  # armor armory
-                        3: [1, 2],  # tempory armory
-                        4: [1, 2],  # medical armory
-                        5: [1, 2, 3],  # booster armory
-                        6: [1, 2, 4],  # drug armory
-                        7: [1, 2, 3, 4, 5, 6],  # point storage
-                        8: [1, 2, 3, 4, 5, 6, 7],  # laboratory
-                    }
+                        # special case for core
+                        r = {
+                            1: [], # weapon armory
+                            2: [1],  # armor armory
+                            3: [1, 2],  # tempory armory
+                            4: [1, 2],  # medical armory
+                            5: [1, 2, 3],  # booster armory
+                            6: [1, 2, 4],  # drug armory
+                            7: [1, 2, 3, 4, 5, 6],  # point storage
+                            8: [1, 2, 3, 4, 5, 6, 7],  # laboratory
+                        }
 
-                    if int(modId) in r:
-                        if int(modValue):
-                            for i in r[int(modId)]:
-                                simuTree[str(i)]['level'] = 1
-                        else:
-                            for k in [k for k, v in r.items() if int(modId) in v]:
-                                simuTree[str(k)]['level'] = 0
+                        if int(modId) in r:
+                            if int(modValue):
+                                for i in r[int(modId)]:
+                                    simuTree[str(i)]['level'] = 1
+                            else:
+                                for k in [k for k, v in r.items() if int(modId) in v]:
+                                    simuTree[str(k)]['level'] = 0
 
-                    # optimize branch order
-                    if modModification in ['level']:
+                        # optimize branch order
                         for k, v in simuTree.items():
                             bname = v["branch"]
                             uname = v["name"]
@@ -1088,9 +1086,11 @@ def respectSimulator(request):
                             res = upgradeTreeReshaped[bname][uname]["respect"]
                             branchesCost[v["branch"]][3] += numpy.sum(res[:lvl + 1])
 
+                        # update branch costs
                         for i, (k, v) in enumerate([(k, v) for (k, v) in sorted(branchesCost.items(), key=lambda x: -x[1][3]) if k not in ["Core"]]):
                             branchesCost[k][5] = i + 1 if branchesCost[k][3] else 0
 
+                        # update branch order
                         for k, v in [(k, v) for (k, v) in simuTree.items() if v["branch"] not in ["Core"]]:
                             order = int(branchesCost[v["branch"]][5])
                             simuTree[k]["branchorder"] = order
@@ -1098,8 +1098,19 @@ def respectSimulator(request):
 
                     # if modify branch order change all same branch order
                     if modModification in ['branchorder']:
-                        for k in [k for k, v in simuTree.items() if v['branch'] == simuTree[modId]['branch']]:
+                        # branch we modify the order modifying
+                        a = [(k, v) for k, v in simuTree.items() if v['branch'] == simuTree[modId]['branch']]
+
+                        if int(modValue):
+                            # branch that has this order and we'll swap with above
+                            b = [(k, v) for k, v in simuTree.items() if v['branchorder'] == int(modValue) and v['branch'] != simuTree[modId]['branch'] and v['branch'] not in ['Core']]
+                            for k, v in b:
+                                simuTree[k]['branchorder'] = simuTree[modId]['branchorder']
+
+                        for k, v in a:
                             simuTree[k]['branchorder'] = int(modValue)
+                            if not int(modValue):
+                                simuTree[k]['level'] = 0
 
                     faction.simuTree = json.dumps(simuTree)
                     faction.save()
