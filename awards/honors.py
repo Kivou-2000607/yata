@@ -302,7 +302,7 @@ d = {
     631: 160168767,  # Vae Victis
     317: 125937483,  # Phoenix
     740: 853474729,  # Devastation
-    488: 918833578,  # Vengeance    
+    488: 918833578,  # Vengeance
     476: 0,  # Chainer 5
 
     # 9
@@ -414,6 +414,7 @@ d = {
     520: 415521967,  # Pious
     521: 120811903,  # Saintly
     523: 899062871,  # Devout
+    522: 0,  # Sacrificial
 
     # 15
     367: 474813486,  # Clotted
