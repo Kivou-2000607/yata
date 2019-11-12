@@ -594,9 +594,13 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
             faction.save()
         # return faction.faction.all()
     else:
+
         # call upgrade Tree
         tornTree = json.loads(FactionData.objects.first().upgradeTree)
-        factionCall = apiCall('faction', faction.tId, 'basic,upgrades', key)
+        # basic needed for respect
+        # upgrades needed for upgrades daaa
+        # stats needed for challenges
+        factionCall = apiCall('faction', faction.tId, 'basic,upgrades,stats', key)
         if 'apiError' in factionCall:
             print("[function.chain.updateFactionTree] api key error {}".format(factionCall['apiError']))
         else:
@@ -606,13 +610,14 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
             for i in range(48):
                 id = str(i + 1)
 
+                # skip id = 8 for example #blameched
                 if id not in tornTree:
                     continue
 
                 # create branches that are not in faction tree
                 branch = tornTree[id]["1"]['branch']
                 if id not in factionTree:
-                    factionTree[id] = {'branch': branch, 'branchorder': 0, 'branchmultiplier': 0, 'name': tornTree[id]["1"]['name'], 'level': 0, 'basecost': 0, }
+                    factionTree[id] = {'branch': branch, 'branchorder': 0, 'branchmultiplier': 0, 'name': tornTree[id]["1"]['name'], 'level': 0, 'basecost': 0, 'challengedone': 0}
 
                 # put core branch to branchorder 1
                 if branch in ['Core']:
@@ -623,6 +628,21 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
                     orders[branch] = max(factionTree[id]['branchorder'], orders[branch])
                 else:
                     orders[branch] = factionTree[id]['branchorder']
+
+                # set faction progress
+                sub = "1"
+                sub = "2" if id == "10" else sub  # chaining 1rt is No challenge
+                sub = "3" if id == "11" else sub  # capacity 1rt and 2nd is No challenge
+                sub = "2" if id == "12" else sub  # territory 1rt is No challenge
+                ch = tornTree[id][sub]['challengeprogress']
+                if ch[0] in ["age", "best_chain"]:
+                    factionTree[id]["challengedone"] = factionCall.get(ch[0], 0)
+                elif ch[0] in ["members"]:
+                    factionTree[id]["challengedone"] = len(factionCall.get(ch[0], [1, 2]))
+                elif ch[0] is None:
+                    factionTree[id]["challengedone"] = 0
+                else:
+                    factionTree[id]["challengedone"] = factionCall["stats"].get(ch[0], 0)
 
             for k in factionTree:
                 factionTree[k]['branchorder'] = orders[factionTree[k]['branch']]

@@ -286,6 +286,13 @@
         }).html(spinner);
     });
 
+    // show/hide upgrades details
+    $(document).on('click', '.show-upgrade-details', e=>{
+        e.preventDefault();
+        $(e.currentTarget.parentElement.nextElementSibling).slideToggle();
+    });
+
+
 </script>
 {% endblock %}
 

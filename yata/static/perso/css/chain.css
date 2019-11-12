@@ -294,3 +294,12 @@ table.chain-tree tr.order-6 { background-color: #447e9b66}
 table.chain-tree tr.order-7 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.chain-tree tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.chain-tree tr.order-core { background-color: #0001}
+table.chain-tree td.show-upgrade-details { cursor: help;}
+
+tr.upgrade-details {display: none;  padding: 0; background-color: #eeee; color: #555}
+
+
+table.chain-tree-details td.a { width: 15%; text-align: left; }  /* x1 */
+table.chain-tree-details td.b { width: 40%; text-align: left; } /* x1 */
+table.chain-tree-details td.c { width: 40%; text-align: left; }  /* x1 */
+table.chain-tree-details td.d { width: 5%; text-align: right; }  /* x1 */

@@ -863,7 +863,7 @@ def respectSimulator(request):
                 if request.POST.get('reset', False):
                     factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True, reset=True)
                 else:
-                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=False)
+                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True)
                 upgradeTree = json.loads(FactionData.objects.first().upgradeTree)
 
                 upgradeTreeReshaped = dict({})
@@ -872,6 +872,11 @@ def respectSimulator(request):
                 for branchId, branch in upgradeTree.items():
                     bname = branch["1"]['branch']
                     uname = branch["1"]['name']
+
+                    # create tooltip
+                    details = []
+                    for k, v in branch.items():
+                        details.append([v["name"], v["ability"], v["challenge"], v["challengeprogress"][1]])
 
                     # remove useless entries
                     del branch["1"]["branch"]
@@ -904,6 +909,7 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["respect"] = respects
                     upgradeTreeReshaped[bname][uname]["levels"] = len(respects) - 1
                     upgradeTreeReshaped[bname][uname]["branchId"] = branchId
+                    upgradeTreeReshaped[bname][uname]["details"] = details
 
                 # compute base cost of each branch
                 # for each branch
@@ -928,6 +934,7 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["faction_multiplier"] = multiplier
                     upgradeTreeReshaped[bname][uname]["faction_level"] = lvl
                     upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
+                    upgradeTreeReshaped[bname][uname]["challengedone"] = branch["challengedone"]
                     totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
 
                     branchesCost[bname][0] += numpy.sum(res[:lvl + 1])
@@ -1144,6 +1151,11 @@ def respectSimulator(request):
                     branchesCost[bname][4] += multiplier * numpy.sum(res[:lvl + 1])
                     branchesCost[bname][5] = order
 
+                # for k1, v1 in upgradeTreeReshaped.items():
+                #     print(k1)
+                #     for k2, v2 in v1.items():
+                #         print(k2, v2)
+
                 # upgrade key
                 context = {'player': player,
                            'chaincat': True,
@@ -1352,7 +1364,7 @@ def tree(request):
                             tmp = hex
                             hex = ""
                             for i in range(4):
-                                hex += tmp[i]+tmp[i]
+                                hex += tmp[i] + tmp[i]
 
                         elif len(hex) == 8:
                             pass
@@ -1362,7 +1374,7 @@ def tree(request):
 
                         try:
                             int(hex, 16)
-                        except:
+                        except BaseException:
                             hex = "FFFFFFFF"
 
                         v = [int(hex[:2], 16), int(hex[2:4], 16), int(hex[4:6], 16), int(hex[6:8], 16)]

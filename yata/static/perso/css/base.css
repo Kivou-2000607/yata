@@ -188,6 +188,12 @@ table.center-large {
   margin-right:2.5%;
 }
 
+table.center-full {
+    width:100%;
+    margin-left:0%;
+    margin-right:0%;
+}
+
 /* td.border-left,
 th.border-left { border-left: 0.5px dashed; } */
 

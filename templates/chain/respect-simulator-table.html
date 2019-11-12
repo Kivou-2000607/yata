@@ -22,6 +22,7 @@ This file is part of yata.
 {% load app_filters %}
 
 <script>
+
     // $(document).ready(function() {
     //
     //     $.tablesorter.addParser({
@@ -122,7 +123,7 @@ This file is part of yata.
 </table>
 <br>
 
-<table id="chain-tree" class="center-medium chain-tree">
+<table id="chain-tree" class="center-medium chain-tree trshadow">
     <thead>
         <tr>
             <th colspan="11">Simulator</th>
@@ -156,8 +157,8 @@ This file is part of yata.
                 {% else %}
                     <tr class="order-{{u.simu_order}}">
                 {% endif %}
-                    <td class="a"><b>{{branchId}}</b></td>
-                    <td class="b"><b>{{upgradeId}}</b></td>
+                    <td class="a show-upgrade-details"><b>{{branchId}}</b></td>
+                    <td class="b show-upgrade-details"><b>{{upgradeId}}</b></td>
                     <td class="c">{{u.faction_order|emptyIfFalse}}</td>
                     <td class="c">{{u.faction_level|emptyIfFalse}}</td>
                     <td class="d">{{u.faction_cost|emptyIfFalse|intcomma}}</td>
@@ -184,6 +185,24 @@ This file is part of yata.
                     <td class="d">{{u.simu_cost|intcomma}}</td>
                     <td class="d">{{u.simu_cost|sub:u.faction_cost|signColor:1}}</td>
                 </tr>
+                <tr class="upgrade-details">
+                    <td colspan="11">
+                    <table class="center-full chain-tree-details">
+                        {% for detail in u.details %}
+                        <tr>
+                            <td class="a">{{detail.0}}</td>
+                            <td class="b">{{detail.1}}</td>
+                            <td class="c">{{detail.2}}</td>
+                            {% if u.challengedone < detail.3 %}
+                                <td class="d error" title="{{u.challengedone}} / {{detail.3}}">{{u.challengedone|div:detail.3|mul:100|floatformat:0}}%</td>
+                            {% else %}
+                                <td class="d valid" title="{{u.challengedone}} / {{detail.3}}">100%</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                </tr>
             {% endfor %}
         {% endfor %}
     </tbody>
@@ -196,6 +215,7 @@ This file is part of yata.
 <ul>
     <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branch will be swap to two identical orders.</li>
     <li>If you modify the <b>level</b> of an upgrade, the order of all the branches will be modified to <span class="valid">minimize the respect used</span> and, if needed, the levels of other upgrades of the branch will be <span class="valid">set to their minimal required values</span>.</li>
+    <li><b>Challenges</b> are not taken into account for the simulation. You can see the availability of the upgrade levels by clicking on the upgrade name.</li>
 </ul>
 </p>
 <p><i class="fas fa-toilet-paper"></i>&nbsp;&nbsp;You can reset to simulation to the current state by clicking on the reset button on the top right.
