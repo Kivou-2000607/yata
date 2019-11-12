@@ -414,7 +414,7 @@ d = {
     520: 415521967,  # Pious
     521: 120811903,  # Saintly
     523: 899062871,  # Devout
-    522: 0,  # Sacrificial
+    522: 768442023,  # Sacrificial
 
     # 15
     367: 474813486,  # Clotted
