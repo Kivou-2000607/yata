@@ -34,12 +34,13 @@ This file is part of yata.
             <h3>Market Cap: {{stock.t.tMarketCap|intcomma}}</h3>
             <h3>Total Shares: {{stock.t.tTotalShares|intcomma}}</h3>
             <h3>Available Shares: {{stock.t.tAvailableShares|intcomma}}</h3>
-            <h3>Forecast: {{stock.t.tForecast|forecast|safe}}</h3>
-            <h3>Demand: {{stock.t.tDemand|demand|safe}}</h3>
+            <h3>Forecast: <span title="stock.t.tForecast">{{stock.t.tForecast|forecast|safe}}</span></h3>
+            <h3>Demand: <span title="Demand is {{stock.t.tDemand}}">{{stock.t.tDemand|demand|safe}}</span></h3>
             {% if stock.t.tRequirement %}
             <hr class="sep">
                 <h3><center>Bonus</center></h3>
-                <p>{{stock.t.tDescription|safe}} for <b>{{stock.t.tRequirement|intcomma}}</b> shares</p>
+                <p>{{stock.t.tDescription|safe}} for <b>{{stock.t.tRequirement|intcomma}}</b> shares<br>
+                Current price for the block: <b>${{stock.t.tRequirement|mul:stock.t.tCurrentPrice|floatformat:0|intcomma}}</b></p>
             {% endif %}
         </div>
     </div>

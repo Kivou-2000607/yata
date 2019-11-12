@@ -118,7 +118,7 @@ h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left 
 .error:focus { color: #A02525!important; }
 .neutral:hover,
 .neutral:active,
-.neutral:focus { color: #036!important; }
+.neutral:focus { color: #444!important; }
 .valid:hover,
 .valid:active,
 .valid:focus { color: #005E00!important; }
