@@ -1476,7 +1476,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Estate": dict(),
             "Networth": dict(),
             "Casino": dict(),
-            "Church": dict(),
+            "Donations": dict(),
             "Other money": dict()})
 
         for k, v in tornAwards["honors"].items():
@@ -1569,7 +1569,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 elif int(k) in [520, 521, 523, 522]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
                     # "520": {"name": "Pious", "description": "Donate a total of $100,000 to the church", "type": 14, "circulation": 6088, "rarity": "Limited" },
-                    type = "Church"
+                    type = "Donations"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
