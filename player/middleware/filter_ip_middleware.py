@@ -24,14 +24,18 @@ import json
 
 from player.models import PlayerData
 
+
 class FilterIPMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         # get banned ips
-        ipsBan = json.loads(PlayerData.objects.first().ipsBan)
-        # ipsBan = []
+        playerdata = PlayerData.objects.first()
+        if playerdata is None:
+            ipsBan = []
+        else:
+            ipsBan = json.loads(playerdata.ipsBan)
 
         # get client ip
         ip = request.META.get('REMOTE_ADDR')
