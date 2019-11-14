@@ -476,6 +476,14 @@ def jointReport(request):
                 context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
                 return render(request, page, context)
 
+            # update members for:
+            # add last time connected in bonus table
+            # more recent dif than from count
+            error = False
+            update = updateMembers(faction, key=key, force=False)
+            if 'apiError' in update:
+                error = update
+
             # get chains
             chains = faction.chain_set.filter(jointReport=True).order_by('start')
             print('[VIEW jointReport] {} chains for the joint report'.format(len(chains)))
@@ -526,6 +534,13 @@ def jointReport(request):
                         counts[count.attackerId]['watcher'] += count.watcher / float(len(chains))
                         counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere']  # been present to at least one chain
                     else:
+                        # compute last dif if possible
+                        if 'apiError' in update:
+                            dif = count.daysInFaction
+                        else:
+                            m = update.filter(tId=count.attackerId).first()
+                            dif = -1 if m is None else m.daysInFaction
+
                         counts[count.attackerId] = {'name': count.name,
                                                     'hits': count.hits,
                                                     'wins': count.wins,
@@ -538,7 +553,7 @@ def jointReport(request):
                                                     'groupAttack': count.groupAttack,
                                                     'overseas': count.overseas,
                                                     'watcher': count.watcher / float(len(chains)),
-                                                    'daysInFaction': count.daysInFaction,
+                                                    'daysInFaction': dif,
                                                     'beenThere': count.beenThere,
                                                     'attackerId': count.attackerId}
                 print('[VIEW jointReport] {} counts for {}'.format(len(counts), chain))
@@ -565,12 +580,6 @@ def jointReport(request):
             # aggregate counts
             arrayCounts = [v for k, v in sorted(counts.items(), key=lambda x: (-x[1]["wins"] - x[1]["bonus"], -x[1]["respect"]))]
             arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
-
-            # add last time connected
-            error = False
-            update = updateMembers(faction, key=key, force=False)
-            if 'apiError' in update:
-                error = update
 
             for i, bonus in enumerate(arrayBonuses):
                 try:
@@ -630,7 +639,7 @@ def members(request):
                 return render(request, page, context)
 
             # update chains if AA
-            members = updateMembers(faction, key=key)
+            members = updateMembers(faction, key=key, force=True)
             error = False
             if 'apiError' in members:
                 error = members
