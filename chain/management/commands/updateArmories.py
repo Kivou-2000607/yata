@@ -28,7 +28,7 @@ import json
 class Command(BaseCommand):
     def handle(self, **options):
         print("[command.chain.armory] start")
-        for faction in Faction.objects.filter(armoryRecord=True):
+        for faction in Faction.objects.filter(armoryRecord=True).only("armoryString", "armoryRecord"):
             print("[command.chain.armory] faction {}".format(faction))
             # armoryRecord(faction)
 
@@ -38,6 +38,8 @@ class Command(BaseCommand):
                 armoryRaw = apiCall('faction', faction.tId, 'armorynewsfull', key, sub="armorynews", verbose=False)
                 if 'apiError' in armoryRaw:
                     print(f"[command.chain.armory] {armoryRaw['apiError']}")
+                    if armory['apiErrorCode'] in [1, 2, 7, 10]:
+                        faction.delKey(keyHolder)
                     continue
 
                 if faction.armoryRecord:
@@ -50,5 +52,7 @@ class Command(BaseCommand):
                 faction.save()
             else:
                 print("[command.chain.armory] No key")
+                faction.armoryRecord = False
+                faction.save()
 
         print("[command.chain.armory] end")
