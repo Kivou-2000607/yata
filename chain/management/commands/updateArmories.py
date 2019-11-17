@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 armoryRaw = apiCall('faction', faction.tId, 'armorynewsfull', key, sub="armorynews", verbose=False)
                 if 'apiError' in armoryRaw:
                     print(f"[command.chain.armory] {armoryRaw['apiError']}")
-                    if armory['apiErrorCode'] in [1, 2, 7, 10]:
+                    if armoryRaw['apiErrorCode'] in [1, 2, 7, 10]:
                         faction.delKey(keyHolder)
                     continue
 
