@@ -45,7 +45,6 @@ $(document).ready(function() {
          {% endfor %}
       ]);
 
-
       var options = {
         // bar: {groupWidth: "100%"},
         legend: {position: 'top', textStyle: {fontSize: 14}},
@@ -73,6 +72,21 @@ $(document).ready(function() {
              {% endfor %}
           ]);
 
+
+            var options = {
+              // bar: {groupWidth: "100%"},
+              legend: {position: 'top', textStyle: {fontSize: 14}},
+              seriesType: 'bars',
+              series: {
+                        0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                        1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                       },
+              'backgroundColor': 'transparent',
+              'chartArea': {'width': '90%', 'height': '70%'},
+            };
+
+        {% endif %}
+
           var dataCrit = google.visualization.arrayToDataTable([
             ['Time', 'Number of hits < 30s', 'Number of hits < 60s', 'Number of hits < 90s'],
             {% for a,b,c,d in graph.dataCrit %}
@@ -80,17 +94,13 @@ $(document).ready(function() {
              {% endfor %}
           ]);
 
-          var options = {
-            // bar: {groupWidth: "100%"},
-            legend: {position: 'top', textStyle: {fontSize: 14}},
-            seriesType: 'bars',
-            series: {
-                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
-                      1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
-                     },
-            'backgroundColor': 'transparent',
-            'chartArea': {'width': '90%', 'height': '70%'},
-          };
+          var dataStat = google.visualization.arrayToDataTable([
+            ['Number of Hits', 'Number of members'],
+            {% for a, b in graph.dataStat %}
+                [{{a}}, {{b}}],
+             {% endfor %}
+          ]);
+
 
           var optionsCrit = {
             bar: {groupWidth: "100%"},
@@ -106,7 +116,18 @@ $(document).ready(function() {
             'chartArea': {'width': '90%', 'height': '70%'},
           };
 
-      {% endif %}
+          var optionsStat = {
+            // bar: {groupWidth: "100%"},
+            // isStacked: true,
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
 
       // var view = new google.visualization.DataView(data);
       // view.setColumns([0, 1]);
@@ -116,6 +137,10 @@ $(document).ready(function() {
 
       var chartCrit = new google.visualization.ComboChart(document.getElementById('histogramCrit'));
       chartCrit.draw(dataCrit, optionsCrit);
+
+      var chartStat = new google.visualization.ComboChart(document.getElementById('histogramStat'));
+      chartStat.draw(dataStat, optionsStat);
+
     }
 
 {% endif %}
@@ -254,11 +279,15 @@ $(document).ready(function() {
     <hr class="sep">
     <table class="center-large">
         <thead>
-            <tr><th>Number of hits over time</th></tr>
+            <tr><th>Statistics</th></tr>
         </thead>
         <tbody>
             <tr class="white"><td><div id="histogram"></div></td></tr>
+            <tr><th>Number of hits over time</th></tr>
             <tr class="white"><td><div id="histogramCrit"></div></td></tr>
+            <tr><th>Number of critical hits over time</th></tr>
+            <tr class="white"><td><div id="histogramStat"></div></td></tr>
+            <tr><th>Members statistics</th></tr>
         </tbody>
         <tr><td style="text-align: left; overflow-wrap: break-word; overflow: auto; white-space: normal;">Each of the {{graph.data|length}} bars represents the number of hits made in a {{graph.info.binsTime|floatformat:0}} minutes window.
             Red bars correspond to critical times where the hit rate is 1 for 5 minutes (here {{graph.info.criticalHits|floatformat:0}} hit{{ graph.info.criticalHits|floatformat:0|pluralize}} for {{graph.info.binsTime|floatformat:0}} minutes).<br>

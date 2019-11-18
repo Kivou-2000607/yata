@@ -355,7 +355,12 @@ def fillReport(faction, members, chain, report, attacks):
     # fill the database with counts
     print('[function.chain.fillReport] fill database with counts')
     report.count_set.all().delete()
+    hitsForStats = []
     for k, v in attackers.items():
+        # for stats later
+        if v[1]:
+            hitsForStats.append(v[1])
+
         # time now - chain end - days old: determine if member was in the fac for the chain
         delta = int(timezone.now().timestamp()) - chain.end - v[9] * 24 * 3600
         beenThere = True if (delta < 0 or v[9] < 0) else False
@@ -397,6 +402,12 @@ def fillReport(faction, members, chain, report, attacks):
                                 graph=graphTmp,
                                 watcher=watcher,
                                 warhits=v[13])
+
+    # create attack stats
+    stats, statsBins = numpy.histogram(hitsForStats, bins=32)
+    statsBinsCenter = [int(0.5 * (a + b)) for (a, b) in zip(statsBins[0:-1], statsBins[1:])]
+    graphStats = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(statsBinsCenter, stats)])
+    chain.graphStat = graphStats
 
     # fill the database with bonus
     print('[function.chain.fillReport] fill database with bonus')

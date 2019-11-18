@@ -202,18 +202,22 @@ def live(request):
 
                 # create graph
                 graphSplit = chain.graph.split(',')
+                graphSplitCrit = chain.graphCrit.split(',')
+                graphSplitStat = chain.graphStat.split(',')
                 if len(graphSplit) > 1:
                     print('[view.chain.index] data found for graph of length {}'.format(len(graphSplit)))
                     # compute average time for one bar
                     bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                    graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+                    graph = {'data': [], 'dataCrit': [], 'dataStat': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                     cummulativeHits = 0
                     x = numpy.zeros(len(graphSplit))
                     y = numpy.zeros(len(graphSplit))
-                    for i, line in enumerate(graphSplit):
+                    for i, (line, lineCrit) in enumerate(zip(graphSplit, graphSplitCrit)):
                         splt = line.split(':')
+                        spltCrit = lineCrit.split(':')
                         cummulativeHits += int(splt[1])
                         graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits, int(splt[0])])
+                        graph['dataCrit'].append([timestampToDate(int(splt[0])), int(spltCrit[0]), int(spltCrit[1]), int(spltCrit[2])])
                         x[i] = int(splt[0])
                         y[i] = cummulativeHits
                     speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
@@ -240,9 +244,14 @@ def live(request):
                     graph['info']['ETA'] = ETA
                     graph['info']['reg'] = [a, b]
 
+                    if len(graphSplitStat) > 1:
+                        for line in graphSplitStat:
+                            splt = line.split(':')
+                            graph['dataStat'].append([float(splt[0]), int(splt[1])])
+
                 else:
                     print('[view.chain.live] no data found for graph')
-                    graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
+                    graph = {'data': [], 'dataCrit': [], 'dataStat': [], 'info': {'binsTime': 5, 'criticalHits': 1}}
 
                 # context
                 context = {'player': player, 'chaincat': True, 'faction': faction, 'chain': chain, 'liveChain': liveChain, 'bonus': bonus, 'counts': counts, 'currentTimestamp': cts, 'view': {'report': True, 'liveReport': True}, 'graph': graph}
@@ -416,11 +425,12 @@ def report(request, chainId):
             # create graph
             graphSplit = chain.graph.split(',')
             graphSplitCrit = chain.graphCrit.split(',')
+            graphSplitStat = chain.graphStat.split(',')
             if len(graphSplit) > 1 and len(graphSplitCrit) > 1:
                 print('[view.chain.report] data found for graph of length {}'.format(len(graphSplit)))
                 # compute average time for one bar
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                graph = {'data': [], 'dataCrit': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+                graph = {'data': [], 'dataCrit': [], 'dataStat': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                 cummulativeHits = 0
                 for line, lineCrit in zip(graphSplit, graphSplitCrit):
                     splt = line.split(':')
@@ -430,9 +440,15 @@ def report(request, chainId):
                     graph['dataCrit'].append([timestampToDate(int(splt[0])), int(spltCrit[0]), int(spltCrit[1]), int(spltCrit[2])])
                     speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                     graph['info']['speedRate'] = speedRate
+
+                if len(graphSplitStat) > 1:
+                    for line in graphSplitStat:
+                        splt = line.split(':')
+                        graph['dataStat'].append([float(splt[0]), int(splt[1])])
+
             else:
                 print('[view.chain.report] no data found for graph')
-                graph = {'data': [], 'dataCrit': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
+                graph = {'data': [], 'dataCrit': [], 'dataStat': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
             # context
             counts = report.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))

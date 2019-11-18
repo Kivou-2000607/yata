@@ -168,6 +168,7 @@ class Chain(models.Model):
     jointReport = models.BooleanField(default=False)
     graph = models.TextField(default="", null=True, blank=True)
     graphCrit = models.TextField(default="", null=True, blank=True)
+    graphStat = models.TextField(default="", null=True, blank=True)
     wall = models.BooleanField(default=False)
 
     def __str__(self):
