@@ -186,7 +186,7 @@ $(document).ready(function() {
     </thead>
 </table>
 
-{% with naturalE=chain.end|sub:chain.start|intdiv:"2500"|add:6 %}
+{% with naturalE=chain.end|sub:chain.start|intdiv:"3000"|add:6 %}
 <table id="chain-report" class="tablesorter center-large trshadow chain-report">
     <thead>
         <tr>
@@ -196,7 +196,7 @@ $(document).ready(function() {
             <th title="Total number of attacks including losses, assists, friendly fires...">Number of<br>attacks</th>
             <th title="Number of attacks that counted for the war.">Number of<br>war hits</th>
             {% if chain %}
-            <th title="Number of hits without counting natural energy: 6 + {{chain.end|sub:chain.start}} / 2500 = {{naturalE}}.">Number of<br>boosted hits</th>
+            <th title="Number of hits without counting natural energy: 6 + {{chain.end|sub:chain.start}} / 3000 = {{naturalE}}.">Number of<br>boosted hits</th>
             {% endif %}
             <!-- <th title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
             <th title="Average of war modifier over all hits">modifiers<br>(war)</th>
