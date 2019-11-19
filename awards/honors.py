@@ -303,6 +303,7 @@ d = {
     317: 125937483,  # Phoenix
     740: 853474729,  # Devastation
     488: 918833578,  # Vengeance
+    781: 0,  # Riddled
     476: 0,  # Chainer 5
 
     # 9
