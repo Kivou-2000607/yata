@@ -32,7 +32,7 @@ def ts2date(timestamp, fmt=None):
         return "N/A"
 
     try:
-        d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+        d = datetime.datetime.fromtimestamp(int(timestamp), tz=pytz.UTC)
     except BaseException:
         d = datetime.datetime.fromtimestamp(0, tz=pytz.UTC)
 

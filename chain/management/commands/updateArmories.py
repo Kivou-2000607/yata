@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from chain.models import Faction
 from yata.handy import apiCall
@@ -35,20 +36,41 @@ class Command(BaseCommand):
             keyHolder, key = faction.getRandomKey()
 
             if key:
-                armoryRaw = apiCall('faction', faction.tId, 'armorynewsfull', key, sub="armorynews", verbose=False)
-                if 'apiError' in armoryRaw:
-                    print(f"[command.chain.armory] {armoryRaw['apiError']}")
-                    if armoryRaw['apiErrorCode'] in [1, 2, 7, 10]:
+                factionInfo = apiCall('faction', faction.tId, 'armorynewsfull,donations,currency', key, verbose=False)
+                
+                # handle error
+                if 'apiError' in factionInfo:
+                    print("[command.chain.armory] {}".format(factionInfo['apiError']))
+                    if factionInfo['apiErrorCode'] in [1, 2, 7, 10]:
                         faction.delKey(keyHolder)
                     continue
 
                 if faction.armoryRecord:
+                    
+                    # record armory
                     for k, v in json.loads(faction.armoryString).items():
-                        if k not in armoryRaw:
-                            armoryRaw[k] = v
-                    faction.armoryString = json.dumps(armoryRaw)
+                        if k not in factionInfo.get("armorynews"):
+                            factionInfo[k] = v
+                    faction.armoryString = json.dumps(factionInfo)
+
+                    # record networth
+                    totalDonations = 0
+                    totalVault = factionInfo.get("money", 0)
+                    for k, v in factionInfo.get("donations", dict({})).items():
+                        totalDonations += int(v["money_balance"])
+                    
+                    ts = int(timezone.now().timestamp())
+                    ts = int(ts) - int(ts) % (3600 * 24)  # round to the day 
+                    
+                    tmp = json.loads(faction.networthString)
+                    tmp[str(ts)] = [totalVault, totalDonations]
+                    
+                    faction.networthString = json.dumps(tmp)
+
                 else:
+                    faction.networthString = "{}"
                     faction.armoryString = "{}"
+                    
                 faction.save()
             else:
                 print("[command.chain.armory] No key")

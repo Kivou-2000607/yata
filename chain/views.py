@@ -1601,7 +1601,8 @@ def armory(request):
                 if k in ["Points"]:
                     armoryType["Points"][k] = v
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            networthGraph = json.loads(faction.networthString)
+            context = {'player': player, 'networthGraph': networthGraph, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 

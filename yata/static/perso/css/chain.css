@@ -303,3 +303,8 @@ table.chain-tree-details td.a { width: 15%; text-align: left; }  /* x1 */
 table.chain-tree-details td.b { width: 40%; text-align: left; } /* x1 */
 table.chain-tree-details td.c { width: 40%; text-align: left; }  /* x1 */
 table.chain-tree-details td.d { width: 5%; text-align: right; }  /* x1 */
+
+
+table.chain-networth td.a { width: 25%; text-align: center; }  /* x1 */
+table.chain-networth td.b { width: 25%; text-align: right; }  /* x3 */
+

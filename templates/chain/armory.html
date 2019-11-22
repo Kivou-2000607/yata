@@ -171,5 +171,63 @@ $(function () {
         {% endfor %}
     {% else %}
         <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
-    {% endif %}
+    {% endif %}    
 </div>
+
+{% if faction.armoryRecord %}
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Faction Money', 'Vault', 'Deposit'],
+            {% for a, v in networthGraph.items %}
+                [new Date({{a|mul:1000}}), {{v.0|sub:v.1}}, {{v.0}}, {{v.1}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "$###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('networth-graph'));
+        chart.draw(data, options);
+
+    }
+</script>
+<h2 class="title">Faction Networh</h2>
+<div class="module">
+    <div id="networth-graph"></div>
+    
+    <hr class="sep">
+    
+    <table class="center chain-networth">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Vault</th>
+            <th>Deposit</th>
+            <th>Faction Money</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for a, v in networthGraph.items %}
+            <tr>
+                <td class="a">{{a|ts2date:"%Y/%m/%d"}}</td>
+                <td class="b">${{v.0|intcomma}}</td>
+                <td class="b">${{v.1|intcomma}}</td>
+                <td class="b">${{v.0|sub:v.1|intcomma}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
