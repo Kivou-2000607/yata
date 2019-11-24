@@ -29,6 +29,7 @@ import json
 class Command(BaseCommand):
     def handle(self, **options):
         print("[command.chain.armory] start")
+        #for faction in Faction.objects.filter(tId=33241).only("armoryString", "armoryRecord"):
         for faction in Faction.objects.filter(armoryRecord=True).only("armoryString", "armoryRecord"):
             print("[command.chain.armory] faction {}".format(faction))
             # armoryRecord(faction)
@@ -37,7 +38,7 @@ class Command(BaseCommand):
 
             if key:
                 factionInfo = apiCall('faction', faction.tId, 'armorynewsfull,donations,currency', key, verbose=False)
-                
+
                 # handle error
                 if 'apiError' in factionInfo:
                     print("[command.chain.armory] {}".format(factionInfo['apiError']))
@@ -46,19 +47,21 @@ class Command(BaseCommand):
                     continue
 
                 if faction.armoryRecord:
+
+                    armoryInfo = factionInfo.get("armorynews")
                     
                     # record armory
                     for k, v in json.loads(faction.armoryString).items():
-                        if k not in factionInfo.get("armorynews"):
-                            factionInfo[k] = v
-                    faction.armoryString = json.dumps(factionInfo)
+                        if k not in armoryInfo:
+                            armoryInfo[k] = v
+                    faction.armoryString = json.dumps(armoryInfo)
 
                     # record networth
                     totalDonations = 0
                     totalVault = factionInfo.get("money", 0)
                     for k, v in factionInfo.get("donations", dict({})).items():
                         totalDonations += int(v["money_balance"])
-                    
+
                     ts = int(timezone.now().timestamp())
                     ts = int(ts) - int(ts) % (3600 * 24)  # round to the day 
                     
