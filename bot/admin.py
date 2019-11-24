@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import Preference
 from .models import Event
 from .models import BotData
+from .models import Configuration
 
 
 class EventInline(admin.TabularInline):
@@ -25,3 +26,13 @@ class BotDataAdmin(admin.ModelAdmin):
 
 
 admin.site.register(BotData, BotDataAdmin)
+
+
+class ConfigurationAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+    
+    list_display = ['pk', 'token']
+
+
+admin.site.register(Configuration, ConfigurationAdmin)

@@ -68,3 +68,9 @@ class Event(models.Model):
 
 class BotData(models.Model):
     token = models.CharField(default="BOT_TOKEN", max_length=512)
+
+
+# bot configuration
+class Configuration(models.Model):
+    token = models.CharField(default="BOT_TOKEN", max_length=512, unique=True)
+    variables = models.TextField(default="{}")
