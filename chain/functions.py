@@ -52,6 +52,7 @@ def apiCallAttacks(faction, chain, key=None):
     # get faction
     factionId = faction.tId
     beginTS = chain.start
+    beginTSPreviousStep = 0
     endTS = chain.end
     report = chain.report_set.first()
 
@@ -70,6 +71,11 @@ def apiCallAttacks(faction, chain, key=None):
 
     allReq = report.attacks_set.all()
     while feedAttacks and nAPICall < faction.nAPICall:
+
+        # SANITY CHECK 0: ask for same beginTS than previous chain
+        if beginTS - beginTSPreviousStep <= 0:
+            print("[function.chain.apiCallAttacks] \t[WARNING] will ask for same beginTS next iteration")
+
         # try to get req from database
         tryReq = allReq.filter(tss=beginTS).first()
 
@@ -113,9 +119,12 @@ def apiCallAttacks(faction, chain, key=None):
             # get attacks from api request
             attacks = req.get("attacks", dict({}))
 
+            print("[function.chain.apiCallAttacks] \ttornTS={}, reqTS={} diff={}".format(tornTS, reqTS, tornTS - reqTS))
+
+            print("Runs sanity checks")
             # SANITY CHECK 1: empty payload
             if not len(attacks):
-                print("[function.chain.apiCallAttacks] \t[WARNING] empty payload (blank turn)".format(tornTS, reqTS))
+                print("[function.chain.apiCallAttacks] \t[WARNING] empty payload (blank turn)")
                 break
 
             # SANITY CHECK 2: api timestamp delayed from now
@@ -139,7 +148,8 @@ def apiCallAttacks(faction, chain, key=None):
             print("[function.chain.apiCallAttacks] \tFrom {} to {}".format(timestampToDate(beginTS), timestampToDate(endTS)))
             attacks = json.loads(tryReq.req)[0]
 
-        # filter all attacks
+        # filter all attacks and compute new TS
+        beginTSPreviousStep = beginTS
         beginTS = 0
         chainCounter = 0
         for k, v in attacks.items():
@@ -150,7 +160,10 @@ def apiCallAttacks(faction, chain, key=None):
 
         # stoping criterion for walls
         if chain.wall:
-            feedAttacks = len(attacks) > 10
+            # stop a report if ask 2 times for the same timestep
+            feedAttacks = bool(beginTS - beginTSPreviousStep)
+            if feedAttacks:
+                feedAttacks = len(attacks) > 10
 
         # stoping criterion for regular reports
         elif chain.tId:
