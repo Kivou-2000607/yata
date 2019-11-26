@@ -1459,7 +1459,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         vp["left"] = max(statsLeft / ratio, 0) if ratio > 0 else "&infin;"
                         vp["comment"] = '<b>{}</b><br> - <b>{:,.0f}</b> left.<br> - <b>{:+,.0f}</b> gains since 100m, {:,.0f} days ago.<br> - Ratio of <b>{:,.0f}</b> {} / day on this period.'.format(type, statsLeft, gains, elapsedTime, ratio, key)
                     else:
-                        vp["comment"] = "You need at least 100,000,000 {} for a prediction of the time left".format(key)
+                        # vp["comment"] = "You need at least 100,000,000 {} for a prediction of the time left".format(key)
+                        vp["comment"] = "Sorry, I can not make a prediction at this moment. You need at least 100m {}.".format(key)
 
                     awards[type]["h_" + k] = vp
 
