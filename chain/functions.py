@@ -468,7 +468,8 @@ def updateMembers(faction, key=None, force=True):
         if memberDB is not None:
             # print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
             memberDB.name = membersAPI[m]['name']
-            memberDB.lastAction = membersAPI[m]['last_action']
+            memberDB.lastAction = membersAPI[m]['last_action']['relative']
+            memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
             memberDB.daysInFaction = membersAPI[m]['days_in_faction']
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberDB.status = ", ".join(tmp)
@@ -479,7 +480,8 @@ def updateMembers(faction, key=None, force=True):
             memberTmp = Member.objects.filter(tId=m).first()
             memberTmp.faction = faction
             memberTmp.name = membersAPI[m]['name']
-            memberTmp.lastAction = membersAPI[m]['last_action']
+            memberTmp.lastAction = membersAPI[m]['last_action']['relative']
+            memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
             memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
             tmp = [s for s in membersAPI[m]['status'] if s]
             memberTmp.status = ", ".join(tmp)
@@ -488,7 +490,7 @@ def updateMembers(faction, key=None, force=True):
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
             tmp = [s for s in membersAPI[m]['status'] if s]
-            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action'], daysInFaction=membersAPI[m]['days_in_faction'], status=", ".join(tmp))
+            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action']['relative'], lastActionTS=membersAPI[m]['last_action']['timestamp'], daysInFaction=membersAPI[m]['days_in_faction'], status=", ".join(tmp))
 
     # delete old members
     for m in membersDB:

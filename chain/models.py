@@ -189,6 +189,7 @@ class Member(models.Model):
     name = models.CharField(default="Duke", max_length=15)
     daysInFaction = models.IntegerField(default=0)
     lastAction = models.CharField(default="-", max_length=200)
+    lastActionTS = models.IntegerField(default=0)
     status = models.CharField(default="-", max_length=200)
 
     def __str__(self):
