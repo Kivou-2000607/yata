@@ -443,6 +443,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Fire rounds": dict(),
             "Other attacks": dict(),
             "Assists": dict(),
+            "Damage": dict(),
             "Finishing hits": dict()})
 
         keysTmp = ["attackswon", "attacksstealthed", "attackslost", "attacksdraw", "attacksassisted"]
@@ -555,9 +556,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [740]:
+                elif int(k) in [740, 741]:
                     # "740": {"name": "Devastation", "description": "Deal at least 5,000 damage in a single hit", "type": 8,
-                    type = "Other attacks"
+                    # "741": {"name": "Obliteration", "description": "Deal at least 10,000 damage in a single hit",	"type": 8,
+                    type = "Damage"
                     vp["goal"] = int(v["description"].split(" ")[3].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("bestdamage", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
