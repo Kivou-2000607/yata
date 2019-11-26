@@ -1915,14 +1915,45 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [21, 274, 572, 734]:
-                    # 21 {'name': 'Driving Elite', 'description': 'Reach racing class A', 'type': 0, 'circulation': 15853, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 819611004, 'title': 'Driving Elite [21]: Uncommon (15853)'}
+                elif int(k) in [274, 734]:
                     # 274 {'name': 'Redline', 'description': 'Win 250 races with a single car', 'type': 0, 'circulation': 3513, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 739693375, 'title': 'Redline [274]: Rare (3513)'}
-                    # 572 {'name': 'Motorhead', 'description': 'Reach a racing skill of 10', 'type': 0, 'circulation': 1960, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Motorhead [572]: Extraordinary (1960)'}
                     type = "Racing"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [572]:
+                    # 572 {'name': 'Motorhead', 'description': 'Reach a racing skill of 10', 'type': 0, 'circulation': 1960, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Motorhead [572]: Extraordinary (1960)'}
+                    type = "Racing"
+                    vp["goal"] = 10
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("racingskill", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / daysOld
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    vp["comment"] = "With a current ratio of {:.2g} Racing skills / day".format(ratio)
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [21]:
+                    # 21 {'name': 'Driving Elite', 'description': 'Reach racing class A', 'type': 0, 'circulation': 15853, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 819611004, 'title': 'Driving Elite [21]: Uncommon (15853)'}
+                    type = "Racing"
+                    vp["goal"] = 475
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("racingpointsearned", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / daysOld
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    classes = {"D": 25, "C": 100, "B": 250, "A": 475}
+                    cl = "E"
+                    if vp["current"] > 24:
+                        cl = "D"
+                    if vp["current"] > 99:
+                        cl = "C"
+                    if vp["current"] > 249:
+                        cl = "B"
+                    if vp["current"] > 474:
+                        cl = "A"
+                    left = "<br>".join(["- Class {} ({} points): {} left".format(k, v, v - vp["current"]) for k, v in classes.items()])
+                    vp["comment"] = "You're currently in class {}<br>with a current ratio of {:.2g} points / day<br>{}".format(cl, ratio, left)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [380, 395]:
