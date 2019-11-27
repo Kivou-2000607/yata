@@ -1480,7 +1480,7 @@ def armory(request):
                     page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                     return render(request, page, context)
 
-                if not faction.armoryRecord:
+                if faction.armoryRecord:
                     for k, v in json.loads(faction.armoryString).items():
                         if k not in armoryRaw:
                             armoryRaw[k] = v
