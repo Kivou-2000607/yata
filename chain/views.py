@@ -1480,13 +1480,14 @@ def armory(request):
                     page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                     return render(request, page, context)
 
-                if faction.armoryRecord:
+                if not faction.armoryRecord:
                     for k, v in json.loads(faction.armoryString).items():
                         if k not in armoryRaw:
                             armoryRaw[k] = v
                     faction.armoryString = json.dumps(armoryRaw)
                 else:
                     faction.armoryString = "{}"
+                    faction.networthString = "{}"
 
                 faction.save()
 
@@ -1602,7 +1603,14 @@ def armory(request):
                     armoryType["Points"][k] = v
 
             networthGraph = json.loads(faction.networthString)
-            context = {'player': player, 'networthGraph': networthGraph, 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            tmp = [0, 0]
+            for i, (k, v) in enumerate(sorted(networthGraph.items(), key=lambda x: x[0], reverse=False)):
+                diff = v[0] - v[1]
+                networthGraph[k].append(diff - tmp[0])
+                networthGraph[k].append(v[2] - tmp[1])
+                tmp = [diff, v[2]]
+
+            context = {'player': player, 'networthGraph': sorted(networthGraph.items(), key=lambda x: x[0], reverse=True)[:-1], 'chaincat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
             return render(request, page, context)
 

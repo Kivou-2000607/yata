@@ -48,10 +48,6 @@ $( function() {
   $( "#date-value" ).html( '<th id="pick-time-start">from: ' + s + '</th><th id="pick-time-end">to: ' + e + '</th>');
 });
 
-$(document).ready(function() {
-    $(".chain-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
-});
-
 $(function () {
     $("#pick-time-start").datetimepicker({
         step: 15,
@@ -84,6 +80,27 @@ $(function () {
         },
     });
 });
+
+$(document).ready(function() {
+    $.tablesorter.addParser({
+        // set a unique id
+        id: 'dataVal',
+        // check if cell value has a numerical value
+        is: function(s, table, cell, $cell) {
+            return !isNaN($cell.attr("data-val"));
+        },
+        // format data for normalization
+        format: function(s, table, cell, cellIndex) {
+            return parseInt($(cell).attr("data-val"));
+        },
+        // set type, either numeric or text
+        type: 'numeric'
+    });
+
+    // $(".chain-networth").tablesorter({headers: { 0: { sorter: 'dataVal' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+    $(".chain-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+});
+
 </script>
 
 <h2 class="title">Armory settings</h2>
@@ -171,7 +188,7 @@ $(function () {
         {% endfor %}
     {% else %}
         <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
-    {% endif %}    
+    {% endif %}
 </div>
 
 {% if faction.armoryRecord %}
@@ -181,9 +198,9 @@ $(function () {
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Faction Money', 'Vault', 'Deposit'],
-            {% for a, v in networthGraph.items %}
-                [new Date({{a|mul:1000}}), {{v.0|sub:v.1}}, {{v.0}}, {{v.1}}],
+            ['Time', 'Faction Money Gains', 'Respect Gains'],
+            {% for a, v in networthGraph %}
+                [new Date({{a|mul:1000}}), {{v.3}}, {{v.4}}],
             {% endfor %}
         ]);
 
@@ -191,7 +208,7 @@ $(function () {
         var options = {
             displayAnnotations: true,
             displayExactValues: false,
-            numberFormats: "$###,###",
+            numberFormats: "###,###",
             scaleColumns: [0, 1],
             scaleType: "allmaximized",
             scaleFormat: 'short',
@@ -202,32 +219,51 @@ $(function () {
 
     }
 </script>
+
+{% if networthGraph|length %}
+
 <h2 class="title">Faction Networh</h2>
 <div class="module">
     <div id="networth-graph"></div>
-    
+
     <hr class="sep">
-    
-    <table class="center chain-networth">
+
+    <table class="center-medium chain-networth">
         <thead>
         <tr>
             <th>Date</th>
             <th>Vault</th>
             <th>Deposit</th>
             <th>Faction Money</th>
+            <th>Respect</th>
+            <th>Money gain</th>
+            <th>Respect gain</th>
         </tr>
         </thead>
         <tbody>
-            {% for a, v in networthGraph.items %}
+            {% for a, v in networthGraph %}
             <tr>
-                <td class="a">{{a|ts2date:"%Y/%m/%d"}}</td>
+                <td class="a" data-val="{{a}}">{{a|ts2date:"%Y/%m/%d"}}</td>
                 <td class="b">${{v.0|intcomma}}</td>
                 <td class="b">${{v.1|intcomma}}</td>
-                <td class="b">${{v.0|sub:v.1|intcomma}}</td>
+                {% if forloop.first %}
+                    <td class="b"><b>${{v.0|sub:v.1|intcomma}}</b></td>
+                    <td class="b"><b>{{v.2|intcomma}}</b></td>
+                {% else %}
+                    <td class="b">${{v.0|sub:v.1|intcomma}}</td>
+                    <td class="b">{{v.2|intcomma}}</td>
+                {% endif %}
+                {# {% if forloop.last %} #}
+                    {# <td class="b"></td> #}
+                    {# <td class="b"></td> #}
+                {# {% else %} #}
+                    <td class="b">{{v.3|signColor|intcomma}}</td>
+                    <td class="b">{{v.4|signColor|intcomma}}</td>
+                {# {% endif %} #}
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 {% endif %}
-
+{% endif %}

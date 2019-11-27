@@ -305,6 +305,5 @@ table.chain-tree-details td.c { width: 40%; text-align: left; }  /* x1 */
 table.chain-tree-details td.d { width: 5%; text-align: right; }  /* x1 */
 
 
-table.chain-networth td.a { width: 25%; text-align: center; }  /* x1 */
-table.chain-networth td.b { width: 25%; text-align: right; }  /* x3 */
-
+table.chain-networth td.a { width: 10%; text-align: center; }  /* x1 */
+table.chain-networth td.b { width: 15%; text-align: right; }  /* x6 */

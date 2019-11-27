@@ -151,7 +151,7 @@ class FactionAdmin(admin.ModelAdmin):
         css = {'all': ('perso/css/admin.css',)}
 
     list_display = ['tId', 'name', 'createLive', 'createReport', 'ongoing_reports', 'number_of_reports', 'numberOfKeys', 'last_api_call', 'lastAPICall', 'crontabs', 'armoryRecord']
-    inlines = [ChainInline, MemberInline]
+    # inlines = [ChainInline, MemberInline]
     list_filter = ['createLive', 'createReport', 'armoryRecord']
     search_fields = ['name', 'tId']
 
