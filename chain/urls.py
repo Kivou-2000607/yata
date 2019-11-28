@@ -33,6 +33,7 @@ urlpatterns = [
     re_path(r'^importWall/$', views.importWall, name='importWall'),
 
 
+    re_path(r'^bigBrother/$', views.bigBrother, name='bigBrother'),
     re_path(r'^importUpgrades/$', views.importUpgrades, name='importUpgrades'),
 
     re_path(r'^territories/$', views.territories, name='territories'),

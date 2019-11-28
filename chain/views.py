@@ -2130,6 +2130,69 @@ def territoriesFullGraph(request):
     except Exception:
         return returnError()
 
+def bigBrother(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.bigBrother] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.bigBrother] faction {} found'.format(factionId))
+
+            statsList = dict({})
+            contributors = False
+            comparison = False
+            for stat in faction.stat_set.all():
+                # create entry if first iteration on this type
+                if stat.name not in statsList:
+                    statsList[stat.name] = []
+
+                # enter contributors
+                statsList[stat.name].append(stat.timestamp)
+
+            if request.POST.get('type', False):
+                type = request.POST.get('type')
+                tsA = int(request.POST.get('tsA'))
+                tsB = int(request.POST.get('tsB'))
+                comparison = [type, tsA, tsB]
+
+                # select first timestamp
+                stat = faction.stat_set.filter(name=type, timestamp=tsA).first()
+                contributors = dict({})
+                for k, v in json.loads(stat.contributors).items():
+                    contributors[k] = [v[0], v[1], 0]
+
+                # select second timestamp
+                if tsB > 0:
+                    stat = faction.stat_set.filter(name=type, timestamp=tsB).first()
+                    for k, v in json.loads(stat.contributors).items():
+                        # update 3rd column if already in timestamp A
+                        if k in contributors:
+                            contributors[k][2] = v[1]
+
+                        # add if new
+                        else:
+                            contributors[k] = [v[0], 0, v[1]]
+
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'view': {'bigBrother': True}}
+
+            if request.method == 'POST':
+                page = 'chain/content-reload.html' if request.POST.get('type') is None else 'chain/big-brother-table.html'
+            else:
+                page = 'chain.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
 
 @csrf_exempt
 def importUpgrades(request):
@@ -2197,12 +2260,18 @@ def importUpgrades(request):
                 del c["exmember"]
                 req["contributors"][c["userid"]] = [c["playername"], c["total"]]
 
-            req["timestamp"] = int(timezone.now().timestamp())
+            ts = int(timezone.now().timestamp())
+            ts = ts - ts % 3600
+            req["timestamp"] = ts
+            req["contributors"] = json.dumps(req["contributors"])
+            if faction.stat_set.filter(timestamp=ts).filter(type=req.get('type')).first() is not None:
+                t = 0
+                m = "This stat has already been imported this hour... Try the next new hour."
+            else:
+                t = 1
+                m = "{} as been imported".format(req.get('name', False))
+                faction.stat_set.create(**req)
 
-            faction.stat_set.create(**req)
-
-            t = 1
-            m = "{} as been imported".format(req.get('name', False))
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
         except BaseException as e:

@@ -19,7 +19,7 @@ This file is part of yata.
 
 table.chain-categories td {
     text-align: center;
-    width: 11.11%;
+    width: 15%;
     cursor: pointer;
     border: 0;
 }
@@ -307,3 +307,7 @@ table.chain-tree-details td.d { width: 5%; text-align: right; }  /* x1 */
 
 table.chain-networth td.a { width: 10%; text-align: center; }  /* x1 */
 table.chain-networth td.b { width: 15%; text-align: right; }  /* x6 */
+
+table.faction-bb-comparison td.a { width: 30%; text-align: left; }  /* x1 */
+table.faction-bb-comparison td.b { width: 25%; text-align: right; }  /* x2 */
+table.faction-bb-comparison td.c { width: 20%; text-align: center; }  /* x1 */

@@ -1,0 +1,35 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<h2 class="title">Big brother</h2>
+<div class="module">
+    <div id="faction-big-brother-table">
+        {% include "chain/big-brother-table.html" %}
+    </div>
+</div>
+
+<div class="module rounded">
+    <p><b>Add an entry</b>: install <a href="/static/integration/importChallenge.js" target="_blank">this script</a> and go to the <a href="https://www.torn.com/factions.php?step=your#/tab=upgrades" target="_blank">Torn faction upgrade tree</a>. Open a branch with a challenge and click import.</p>
+</div>

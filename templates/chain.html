@@ -292,6 +292,29 @@
         $(e.currentTarget.parentElement.nextElementSibling).slideToggle();
     });
 
+    // big brother
+    $(document).on('change', '.faction-bb-stats-list', e=>{
+        e.preventDefault();
+        var splt = $(e.currentTarget).val().split("-");
+
+        if(splt.length == 2) {
+            var tsB = 0;
+            var tsA = splt.pop();
+            var type = splt.pop();
+        } else if (splt.length == 3) {
+            var tsB = splt.pop();
+            var tsA = splt.pop();
+            var type = splt.pop();
+        }
+
+        $("#faction-big-brother-table").load( "/chain/bigBrother/", {
+            tsA: tsA,
+            tsB: tsB,
+            type: type,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+
+    });
 
 </script>
 {% endblock %}

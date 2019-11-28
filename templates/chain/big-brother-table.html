@@ -1,0 +1,105 @@
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $.tablesorter.addParser({
+            // set a unique id
+            id: 'dataVal',
+            // check if cell value has a numerical value
+            is: function(s, table, cell, $cell) {
+                return !isNaN($cell.attr("data-val"));
+            },
+            // format data for normalization
+            format: function(s, table, cell, cellIndex) {
+                return parseInt($(cell).attr("data-val"));
+            },
+            // set type, either numeric or text
+            type: 'numeric'
+        });
+
+        $("#faction-bb-comparison").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,1], [1,1]]});
+    });
+</script>
+
+<p style="text-align: center;">
+
+{% if statsList|length %}
+<select class="faction-bb-stats-list">
+    <option selected disabled hidden><i>Select a first challenge and a date</i></option>
+    {% for statType, timestamps in statsList.items %}
+        <option disabled><i>{{statType}}</i></option>
+        {% for ts in timestamps %}
+            {% if ts == comparison.1 and statType == comparison.0 %}
+                <option value="{{statType}}-{{ts}}" selected><b>{{statType}}</b> --- {{ts|ts2date}}</option>
+            {% else %}
+                <option value="{{statType}}-{{ts}}"><b>{{statType}}</b> --- {{ts|ts2date}}</option>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</select>
+{% else %}
+<p class="error">You need to add a challenge entry first...</p>
+{% endif %}
+
+{% if comparison %}
+<select class="faction-bb-stats-list">
+    <option selected disabled hidden><i>Select a second date</i></option>
+    {% for statType, timestamps in statsList.items %}
+        {% if statType == comparison.0 %}
+            <option disabled><i>{{statType}}</i></option>
+            {% for ts in timestamps %}
+                {% if ts <= comparison.1 %}
+                    <option value="{{statType}}-{{comparison.1}}-{{ts}}" disabled><b>{{ts|ts2date}}</option>
+                {% elif ts == comparison.2 %}
+                    <option value="{{statType}}-{{comparison.1}}-{{ts}}" selected><b>{{ts|ts2date}}</option>
+                {% else %}
+                    <option value="{{statType}}-{{comparison.1}}-{{ts}}"><b>{{ts|ts2date}}</option>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</select>
+{% endif %}
+</p>
+
+
+
+{% if comparison %}
+
+    <table id="faction-bb-comparison" class="center faction-bb-comparison">
+        <thead>
+            <tr>
+                <th colspan="4">Challenge: {{comparison.0}}</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>On {{comparison.1|ts2date}}</th>
+                {% if comparison.2 > 0 %}
+                    <th>On {{comparison.2|ts2date}}</th>
+                    <th>Difference</th>
+                {% else %}
+                    <th colspan="2">select a second stat</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, v in contributors.items %}
+            <tr>
+                <td class="a">{{v.0|playerURL:id|safe}}</td>
+                <td class="b">{{v.1|intcomma}}</td>
+                {% if comparison.2 > 0 %}
+                    <td class="b">{{v.2|intcomma}}</td>
+                    <td class="c">{{v.2|sub:v.1|signColor}}</td>
+                {% else %}
+                    <td class="b"></td>
+                    <td class="c"></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
