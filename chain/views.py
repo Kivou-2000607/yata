@@ -2129,3 +2129,86 @@ def territoriesFullGraph(request):
 
     except Exception:
         return returnError()
+
+
+@csrf_exempt
+def importUpgrades(request):
+    if request.method == 'POST':
+        try:
+            req = json.loads(request.body)
+
+            # get author
+            authorId = req.get("author", 0)
+            author = Player.objects.filter(tId=authorId).first()
+
+            #  check if author is in YATA
+            if author is None:
+                t = 0
+                m = "You're not register in YATA"
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Author in yata: checked")
+
+            # check if API key is valid with api call
+            HTTP_KEY = request.META.get("HTTP_KEY")
+            call = apiCall('user', '', '', key=HTTP_KEY)
+            if "apiError" in call:
+                t = -1
+                m = call
+                print({"message": m, "type": t})
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+            # check if API key sent == API key in YATA
+            if HTTP_KEY != author.key:
+                t = 0
+                m = "Your API key seems to be out of date in YATA, please log again"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("API keys match: checked")
+
+            #  check if AA of a faction
+            if not author.factionAA:
+                t = 0
+                m = "You don't have AA perm"
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("AA perm: checked")
+
+            #  check if can get faction
+            faction = Faction.objects.filter(tId=author.factionId).first()
+            if faction is None:
+                t = 0
+                m = "Can't find faction {} in YATA database".format(author.factionId)
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Faction exists: checked")
+
+            #  check if can read type and name
+            if not req.get('type', False) or not req.get('name', False):
+                t = 0
+                m = "Can't read the upgrade type or name... weird".format(author.factionId)
+                print(m)
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            print("Read upgrade type and name: checked")
+
+            contributors = req.get("contributors", dict({}))
+            del req["author"]
+            req["contributors"] = dict({})
+            for c in [c for c in contributors if not c.get("exmember", True)]:
+                del c["exmember"]
+                req["contributors"][c["userid"]] = [c["playername"], c["total"]]
+
+            req["timestamp"] = int(timezone.now().timestamp())
+
+            faction.stat_set.create(**req)
+
+            t = 1
+            m = "{} as been imported".format(req.get('name', False))
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+        except BaseException as e:
+            t = 0
+            m = "Server error... YATA's been poorly coded: {}".format(e)
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+    else:
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")

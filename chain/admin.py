@@ -31,6 +31,7 @@ from .models import Crontab
 from .models import Wall
 from .models import Territory
 from .models import Racket
+from .models import Stat
 
 from yata.handy import timestampToDate
 
@@ -133,6 +134,17 @@ class ChainAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Chain, ChainAdmin)
+
+
+class StatAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['pk', 'faction', 'name', 'type']
+    search_fields = ['author']
+
+
+admin.site.register(Stat, StatAdmin)
 
 
 class MemberInline(admin.TabularInline):
