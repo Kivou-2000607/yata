@@ -2130,6 +2130,7 @@ def territoriesFullGraph(request):
     except Exception:
         return returnError()
 
+
 def bigBrother(request):
     try:
         if request.session.get('player'):
@@ -2163,20 +2164,22 @@ def bigBrother(request):
                 # select first timestamp
                 stat = faction.stat_set.filter(name=type, timestamp=tsA).first()
                 contributors = dict({})
-                for k, v in json.loads(stat.contributors).items():
-                    contributors[k] = [v[0], v[1], 0]
-
-                # select second timestamp
-                if tsB > 0:
-                    stat = faction.stat_set.filter(name=type, timestamp=tsB).first()
+                # in case they remove stat and select it before refraising
+                if stat is not None:
                     for k, v in json.loads(stat.contributors).items():
-                        # update 3rd column if already in timestamp A
-                        if k in contributors:
-                            contributors[k][2] = v[1]
+                        contributors[k] = [v[0], v[1], 0]
 
-                        # add if new
-                        else:
-                            contributors[k] = [v[0], 0, v[1]]
+                    # select second timestamp
+                    if tsB > 0:
+                        stat = faction.stat_set.filter(name=type, timestamp=tsB).first()
+                        for k, v in json.loads(stat.contributors).items():
+                            # update 3rd column if already in timestamp A
+                            if k in contributors:
+                                contributors[k][2] = v[1]
+
+                            # add if new
+                            else:
+                                contributors[k] = [v[0], 0, v[1]]
 
             context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'view': {'bigBrother': True}}
 
@@ -2188,6 +2191,42 @@ def bigBrother(request):
 
         else:
             message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# action view
+def removeUpgrade(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.removeUpgrade] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.removeUpgrade] faction {} found'.format(factionId))
+
+                s = faction.stat_set.filter(name=request.POST.get('type')).filter(timestamp=request.POST.get('ts')).first()
+                try:
+                    s.delete()
+                    m = "Okay"
+                    t = 1
+                except BaseException as e:
+                    m = str(e)
+                    t = -1
+
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            else:
+                return returnError(type=403, msg="You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception:

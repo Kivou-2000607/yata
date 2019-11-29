@@ -30,6 +30,30 @@ This file is part of yata.
     </div>
 </div>
 
+<h2 class="title">List of challenges</h2>
+<div class="module">
+    <table class="center">
+      <thead>
+        <tr>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for statType, timestamps in statsList.items %}
+          {% for ts in timestamps %}
+            <tr>
+              <td class="a">{{statType}}</td>
+              <td class="a">{{ts|ts2date}}</td>
+              <td class="a"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
 <div class="module rounded">
     <p><b>Add an entry</b>: install <a href="/static/integration/challenges.user.js" target="_blank">this script</a> and go to the <a href="https://www.torn.com/factions.php?step=your#/tab=upgrades" target="_blank">Torn faction upgrade tree</a>. Open a branch with a challenge and click import.</p>
 </div>

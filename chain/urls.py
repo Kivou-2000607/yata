@@ -34,6 +34,7 @@ urlpatterns = [
 
 
     re_path(r'^bigBrother/$', views.bigBrother, name='bigBrother'),
+    re_path(r'^removeUpgrade/$', views.removeUpgrade, name='removeUpgrade'),
     re_path(r'^importUpgrades/$', views.importUpgrades, name='importUpgrades'),
 
     re_path(r'^territories/$', views.territories, name='territories'),

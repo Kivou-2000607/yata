@@ -313,8 +313,22 @@
             type: type,
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html(spinner);
+    });
+
+    // big brother remove
+    $(document).on('click', '.faction-bb-delete', e=>{
+        e.preventDefault();
+        var splt = $(e.currentTarget).attr("data-val").split("-");
+        var tr = $(e.currentTarget).parents("tr");
+
+        tr.load( "/chain/removeUpgrade/", {
+            ts: splt.pop(),
+            type: splt.pop(),
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).remove();
 
     });
+
 
 </script>
 {% endblock %}
