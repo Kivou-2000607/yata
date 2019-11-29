@@ -2144,42 +2144,75 @@ def bigBrother(request):
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
             print('[view.chain.bigBrother] faction {} found'.format(factionId))
 
+            bridge = {
+                "criminaloffences": "Offences",
+                "busts": "Busts",
+                "jails": "Jail sentences",
+                "drugsused": "Drugs taken",
+                "drugoverdoses": "Overdoses",
+                "gymstrength": "Energy on strength",
+                "gymspeed": "Energy on speed",
+                "gymdefense": "Energy on defense",
+                "gymdexterity": "Energy on dexterity",
+                "traveltime": "Hours of flight",
+                "hunting": "Hunts",
+                "rehabs": "Rehabs",
+                "caymaninterest": "Interest in Cayman",
+                "medicalcooldownused": "Medical cooldown",
+                "revives": "Revives",
+                "medicalitemrecovery": "Life recovered",
+                "hosptimereceived": "Hospital received",
+                "candyused": "Candy used",
+                "alcoholused": "Alcohol used",
+                "energydrinkused": "Energy drinks used",
+                "hosptimegiven": "Hospital given",
+                "attacksdamagehits": "Damaging hits",
+                "attacksdamage": "Damage dealt",
+                "attacksdamaging": "Damage received",
+                "attacksrunaway": "Runaways",
+                # "": "",
+            }
             statsList = dict({})
             contributors = False
             comparison = False
             for stat in faction.stat_set.all():
                 # create entry if first iteration on this type
-                if stat.name not in statsList:
-                    statsList[stat.name] = []
+                if stat.type not in statsList:
+                    statsList[stat.type] = []
 
                 # enter contributors
-                statsList[stat.name].append(stat.timestamp)
+                realName = bridge.get(stat.name, stat.name)
+                statsList[stat.type].append([realName, stat.timestamp])
 
             if request.POST.get('type', False):
-                type = request.POST.get('type')
+                type = int(request.POST.get('type'))
                 tsA = int(request.POST.get('tsA'))
                 tsB = int(request.POST.get('tsB'))
-                comparison = [type, tsA, tsB]
+                comparison = [type, tsA, tsB, str(type)]
 
                 # select first timestamp
-                stat = faction.stat_set.filter(name=type, timestamp=tsA).first()
+                stat = faction.stat_set.filter(type=type, timestamp=tsA).first()
                 contributors = dict({})
                 # in case they remove stat and select it before refraising
                 if stat is not None:
+                    comparison[3] = bridge.get(stat.name, stat.name)
                     for k, v in json.loads(stat.contributors).items():
-                        contributors[k] = [v[0], v[1], 0]
+                        contributors[bridge.get(k, k)] = [v[0], v[1], 0]
 
                     # select second timestamp
                     if tsB > 0:
-                        stat = faction.stat_set.filter(name=type, timestamp=tsB).first()
+                        stat = faction.stat_set.filter(type=type, timestamp=tsB).first()
                         for k, v in json.loads(stat.contributors).items():
+                            name = bridge.get(k, k)
                             # update 3rd column if already in timestamp A
                             if k in contributors:
-                                contributors[k][2] = v[1]
-
+                                contributors[name][2] = v[1]
                             # add if new
                             else:
-                                contributors[k] = [v[0], 0, v[1]]
+                                contributors[name] = [v[0], 0, v[1]]
+                            c = contributors[name]
+                            if not c[2] - c[1]:
+                                del contributors[name]
 
             context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'view': {'bigBrother': True}}
 

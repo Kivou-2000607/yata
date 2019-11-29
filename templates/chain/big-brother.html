@@ -42,9 +42,9 @@ This file is part of yata.
       </thead>
       <tbody>
         {% for statType, timestamps in statsList.items %}
-          {% for ts in timestamps %}
+          {% for name, ts in timestamps %}
             <tr>
-              <td class="a">{{statType}}</td>
+              <td class="a">{% ifchanged %}<b>{{name}}</b>{% endifchanged %}</td>
               <td class="a">{{ts|ts2date}}</td>
               <td class="a"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
             </tr>
