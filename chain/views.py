@@ -2266,7 +2266,7 @@ def importUpgrades(request):
             req["contributors"] = json.dumps(req["contributors"])
             if faction.stat_set.filter(timestamp=ts).filter(type=req.get('type')).first() is not None:
                 t = 0
-                m = "This stat has already been imported this hour... Try the next new hour."
+                m = "Stat already imported this hour."
             else:
                 t = 1
                 m = "{} as been imported".format(req.get('name', False))
