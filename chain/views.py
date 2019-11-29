@@ -2245,7 +2245,7 @@ def removeUpgrade(request):
                     return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
                 print('[view.chain.removeUpgrade] faction {} found'.format(factionId))
 
-                s = faction.stat_set.filter(name=request.POST.get('type')).filter(timestamp=request.POST.get('ts')).first()
+                s = faction.stat_set.filter(type=request.POST.get('type')).filter(timestamp=request.POST.get('ts')).first()
                 try:
                     s.delete()
                     m = "Okay"
