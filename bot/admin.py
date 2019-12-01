@@ -29,9 +29,6 @@ admin.site.register(BotData, BotDataAdmin)
 
 
 class ConfigurationAdmin(admin.ModelAdmin):
-    class Media:
-        css = {'all': ('perso/css/admin.css',)}
-    
     list_display = ['pk', 'token']
 
 
