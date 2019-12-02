@@ -65,10 +65,14 @@ def login(request):
         if request.method == 'POST':
             p = request.POST
             print('[view.yata.login] API call with key: {}'.format(p.get('key')))
-            user = apiCall('user', '', 'profile', p.get('key'))
-            if 'apiError' in user:
-                print('[view.yata.login] API error: {}'.format(user))
-                context = user
+            try:
+                user = apiCall('user', '', 'profile', p.get('key'))
+                if 'apiError' in user:
+                    print('[view.yata.login] API error: {}'.format(user))
+                    context = user
+                    return render(request, 'yata/login.html', context)
+            except BaseException as e:
+                context = {'apiError': e}
                 return render(request, 'yata/login.html', context)
 
             # create/update player in the database
