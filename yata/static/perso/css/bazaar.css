@@ -31,13 +31,13 @@ h2.title > img{
     border-radius: 4px;
 }
 
-a.update-type {
+/* a.update-type {
     color: #FFF;
 }
 a.update-type:hover {
     color: #DDD;
     text-shadow: #FC0 1px 0 5px;
-}
+} */
 
 table.item-sell-table  {
     display: inline-table;
