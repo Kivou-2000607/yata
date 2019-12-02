@@ -1,3 +1,9 @@
+a.YATA-link { outline: none; color: #DDD; font-weight: bold; text-decoration: none;}
+a.YATA-link:focus,
+a.YATA-link:hover,
+a.YATA-link:checked,
+a.YATA-link:enabled,
+a.YATA-link:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none;}
 
 div#YATA-infobox {
   display: relative;

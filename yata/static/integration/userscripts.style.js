@@ -7,16 +7,19 @@ var iconError = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZ
 var icon = '<a href="https://yata.alwaysdata.net/" target="_blank"><img id="YATA-icon" class="YATA-icon" alt="YATA icon" src="'+iconNeutral+'"></a>'
 var infobox = '<div id="YATA-infobox" class="m-bottom10"><div id="YATA-status">'+icon+'</div><div id="YATA-message"><div id="YATA-message-buttons"></div><div id="YATA-message-text"></div></div></div><div class="clear"></div><hr class="page-head-delimiter">';
 
+// parse cookie
+const getCookie = (s)=>{
+    let parse=RegExp(""+s+"[^;]+").exec(document.cookie);
+    return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
+};
 
 const setIcon = (type) => {
-  console.log("set icon to "+type);
   // valid case
   if(type == 1) { $("#YATA-icon").attr("src", iconValid); }
   // error case
   else if (type == -1) { $("#YATA-icon").attr("src", iconError); }
   // neutral
   else { $("#YATA-icon").attr("src", iconNeutral); }
-  console.log($("#YATA-icon"));
 }
 
 // Msgbox
@@ -45,9 +48,9 @@ const errorKey = (msg, good)=>{
         good = false;
     }
     if (good)
-        msgbox("Stored key:");
+        msgbox("Stored key");
     else
-        error(msg+" Retype key:");
+        error(msg+' Retype <a href="https://www.torn.com/preferences.php#tab=api" target="_blank" class="YATA-link">key</a>:');
 
     // define input
     let input = $('<input id="YATA-api-key" class="YATA-input">')
@@ -68,30 +71,11 @@ const errorKey = (msg, good)=>{
             return errorKey("Key is not the correct length.");
         valid("Key stored, ready to submit.")
         $("#YATA-api-key").remove();
-        $("#YATA-api-key-store").remove();
+        // $("#YATA-api-key-store").remove();
     });
 
     // display buttons
     if(!$("#YATA-api-key").length){
-      $("#YATA-message").append(input).append(button);
+      $("#YATA-message").append(input);
     }
-}
-
-// setup the buttons
-const buttonSetup = (buttonName, cb)=>{
-
-    const buttonSetup = (text, cb)=>{
-        let button = $('<button class="YATA-button">');
-        button.text(text);
-        button.click(cb);
-        $("#YATA-message-buttons").append(button);
-    };
-
-    // reset all buttons
-    $("#YATA-message-buttons").html("");
-    // set buttons if name specified
-    if (typeof buttonName != "undefined")
-        buttonSetup(buttonName, cb);
-    // set API storage button
-    buttonSetup("API Storage", ()=>{ errorKey("", true) });
 }
