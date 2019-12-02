@@ -8,6 +8,7 @@ urlpatterns = [
 
     re_path(r'^attacks/$', views.attacks, name='attacks'),
     re_path(r'^targets/$', views.targets, name='targets'),
+    re_path(r'^revives/$', views.revives, name='revives'),
 
     re_path(r'^toggleTarget/(?P<targetId>\w+)$', views.toggleTarget, name='toggleTarget'),
 

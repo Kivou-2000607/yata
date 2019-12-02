@@ -40,7 +40,7 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
             player.active = True
-            
+
             targets = json.loads(player.targetJson).get("targets", dict({}))
             player.targetInfo = len(targets)
             player.save()
@@ -404,6 +404,33 @@ def add(request):
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def revives(request):
+    try:
+        if request.session.get('player'):
+            print('[view.traget.attacks] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            error = False
+            revives = dict({})
+            # insert code here ^^
+
+            context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
+            if error:
+                context.update(error)
+
+            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception:
         return returnError()

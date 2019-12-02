@@ -17,22 +17,10 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!-- categories -->
-<form>
-    {% csrf_token %}
-<table class="center tdshadow target-categories">
-    <tbody>
-    <tr>
-        <td>
-            <a href="{% url 'target:targets' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</a>
-        </td>
-        <td>
-            <a href="{% url 'target:attacks' %}"><i class="fas fa-user-shield"></i>&nbsp;&nbsp;Attacks</a>
-        </td>
-        <td>
-            <a href="{% url 'target:revives' %}"><i class="fas fa-heartbeat"></i>&nbsp;&nbsp;Revives</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</form>
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title">List of recent revives</span></h2>
+<div class="module">
+<p>I'm just being a troll here. I'm trying to get {{"kwartz"|playerURL:2002288|safe}} to code for YATA and it will be his first projet. Maybe if you push him he'll do it. <i class="far fa-kiss-wink-heart"></i></p>
+</div>
