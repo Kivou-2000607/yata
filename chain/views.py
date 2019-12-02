@@ -1997,8 +1997,8 @@ def territories(request):
         print('[view.chain.territories] get faction territories')
         territories = Territory.objects.filter(faction=factionId)
         n = len(territories)
-        x0 = 2568.97
-        y0 = 2479.89
+        x0 = 0.0
+        y0 = 0.0
         summary = {"n": n, "daily_respect": 0.0}
         if n:
             for territory in territories:
