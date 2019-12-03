@@ -2,75 +2,43 @@ from django.db import models
 from django.utils import timezone
 
 from player.models import Player
-
-from yata.handy import apiCall
-from yata.handy import cleanhtml
+from chain.models import Faction
 
 
-# class Preference(models.Model):
-#     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-#     yataServer = models.BooleanField(default=False)
-#     yataServerName = models.CharField(default="", blank=True, max_length=32)
-#
-#     notificationsEvents = models.BooleanField(default=False)
-#
-#     def __str__(self):
-#         return "Bot preference of {}".format(self.player)
-#
-#     def hasNotifications(self):
-#         return self.notificationsEvents
-#
-#     def sendNotifications(self):
-#         """Returns a array of messages or False"""
-#
-#         # get torn api events list
-#         key = self.player.key
-#         r = apiCall('user', '', 'events', key, sub='events', verbose=False)
-#
-#         # keep only unseen events
-#         events = {int(k): v for k, v in r.items() if v['seen'] == 0}
-#
-#         # handle the api error case
-#         if 'apiError' in r:
-#             return [r['apiError']]
-#
-#         # loop over the unseen events
-#         messages = []
-#         for eventId, v in events.items():
-#             # create id and message
-#             event = cleanhtml(v['event']).replace("[view]", "").strip()
-#
-#             # check if unseen even has already been notified (ie if Event exist)
-#             # first notification -> create Event object and return message
-#             if self.event_set.filter(eventId=eventId).first() is None:
-#                 self.event_set.create(eventId=eventId, timestamp=int(timezone.now().timestamp()))
-#                 messages.append(event)
-#
-#             # event unseen but already notified
-#             else:
-#                 pass
-#
-#         # loop over notifications sent and clean
-#         for e in self.event_set.all():
-#             # event is now seen
-#             if e.eventId not in events:
-#                 print("delete event because seen")
-#                 e.delete()
-#
-#         return messages if len(messages) else False
-#
-#
-# class Event(models.Model):
-#     preference = models.ForeignKey(Preference, on_delete=models.CASCADE)
-#     eventId = models.IntegerField(default=0)
-#     timestamp = models.IntegerField(default=0)
-#
-#
-# class BotData(models.Model):
-#     token = models.CharField(default="BOT_TOKEN", max_length=512)
-
-
-# bot configuration
-class Configuration(models.Model):
+# bot
+class DiscordApp(models.Model):
+    name = models.CharField(default="BOT_NAME", max_length=32)
     token = models.CharField(default="BOT_TOKEN", max_length=512, unique=True)
     variables = models.TextField(default="{}")
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+# bot configuration on a guild
+class Guild(models.Model):
+    configuration = models.ForeignKey(DiscordApp, on_delete=models.CASCADE)
+    guildId = models.BigIntegerField(default=0)
+    guildName = models.CharField(default="guild_name", max_length=32)
+
+    # stock module
+    stockModule = models.BooleanField(default=False)
+    stockWSSB = models.BooleanField(default=False)
+    stockTCB = models.BooleanField(default=False)
+
+    # loot module
+    lootModule = models.BooleanField(default=False)
+
+    # verify module
+    verifyModule = models.BooleanField(default=False)
+    verifyForce = models.BooleanField(default=False)
+    verifyKeys = models.ManyToManyField(Player)
+    verifyFactions = models.ManyToManyField(Faction)
+
+    # verify repository
+    repoModule = models.BooleanField(default=False)
+    repoName = models.CharField(default="repo_token", max_length=64)
+    repoToken = models.CharField(default="repo_name", max_length=32)
+
+    def __str__(self):
+        return "{} on {} [{}]".format(self.configuration, self.guildName, self.guildId)

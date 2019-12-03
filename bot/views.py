@@ -22,38 +22,74 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db import connection
 
-from yata.handy import apiCall
 from yata.handy import returnError
 from player.models import Player
+from bot.models import DiscordApp
 
+import json
 
-# def index(request):
-#     try:
-#         if request.session.get('player'):
-#             print('[view.bot.index] get player id from session')
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#             player.lastActionTS = int(timezone.now().timestamp())
-#             player.active = True
-#
-#             if player.dId:
-#                 print("registered to discord")
-#             else:
-#                 print("not registered to discord")
-#
-#             preference = player.preference_set.first()
-#             if preference is None:
-#                 preference = player.preference_set.create()
-#
-#             player.save()
-#             context = {"player": player, "preference": preference}
-#             return render(request, "bot.html", context)
-#
-#         else:
-#             return returnError(type=403, msg="You might want to log in.")
-#
-#     except Exception:
-#         return returnError()
+def index(request):
+    try:
+        if request.session.get('player'):
+            print('[view.bot.index] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+
+            # this is just for me...
+            if player.tId not in [2000607]:
+                return returnError(type=403, msg="This page is not for you...")
+
+            # loop on bots
+            for bot in DiscordApp.objects.all():
+                var = dict({})
+                # loop on configuration helpers attached to the bot
+                for guild in bot.guild_set.all():
+                    var[guild.guildId] = dict({})
+
+                    # loot module
+                    if guild.lootModule:
+                        var[guild.guildId]["loot"] = {"active": True}
+
+                    # stocks
+                    if guild.stockModule:
+                        var[guild.guildId]["stocks"] = {"active": True}
+                        if guild.stockWSSB:
+                            var[guild.guildId]["stocks"]["wssb"] = True
+                        if guild.stockTCB:
+                            var[guild.guildId]["stocks"]["tcb"] = True
+
+                    # repository
+                    if guild.repoModule:
+                        var[guild.guildId]["repository"] = {"active": True, "name": guild.repoName, "token": guild.repoToken}
+
+                    # verify
+                    if guild.verifyModule:
+                        var[guild.guildId]["verify"] = {"active": True}
+                        if guild.verifyForce:
+                            var[guild.guildId]["verify"]["force"] = True
+
+                        # loop over yata users to get their keys
+                        var[guild.guildId]["keys"] = dict({p.tId: p.key for p in guild.verifyKeys.all()})
+
+                        # loop over yata users to get their keys
+                        var[guild.guildId]["factions"] = dict({f.tId: f.name for f in guild.verifyFactions.all()})
+
+                bot.variables = json.dumps(var)
+                bot.save()
+
+            configurations = DiscordApp.objects.values()
+            for conf in configurations:
+                conf["variables"] = json.loads(conf["variables"])
+
+            player.save()
+            context = {"player": player, "configurations": configurations}
+            return render(request, "bot.html", context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
 #
 #
 # def togglePref(request, type):

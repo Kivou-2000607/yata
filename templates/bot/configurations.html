@@ -17,14 +17,19 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
-
-{% if notifications %}
-    {% include "bot/notifications.html" %}
-{% endif %}
-
-{% if configurations %}
-    {% include "bot/configurations.html" %}
-{% endif %}
+{% for conf in configurations %}
+<h2 class="title"><b>{{conf.name}}</b> [{{conf.id}}]</h2>
+    <div class="module">
+         {% for guildId, var in conf.variables.items %}
+            <h3>Guild id {{guildId}}</h3>
+                {% for module, options in var.items %}
+                    <h4>{{module}}</h4>
+                    <ul>
+                        {% for k, v in options.items %}
+                            <li><b>{{k}}</b>: {{v}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+         {% endfor %}
+    </div>
+{% endfor %}
