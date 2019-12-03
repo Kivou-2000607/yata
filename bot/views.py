@@ -45,6 +45,7 @@ def index(request):
                 # loop on configuration helpers attached to the bot
                 for guild in bot.guild_set.all():
                     var[guild.guildId] = dict({})
+                    var[guild.guildId]["name"] = guild.guildName
 
                     # loot module
                     if guild.lootModule:
@@ -77,12 +78,12 @@ def index(request):
                 bot.variables = json.dumps(var)
                 bot.save()
 
-            configurations = DiscordApp.objects.values()
-            for conf in configurations:
-                conf["variables"] = json.loads(conf["variables"])
+            apps = DiscordApp.objects.values()
+            for app in apps:
+                app["variables"] = json.loads(app["variables"])
 
             player.save()
-            context = {"player": player, "configurations": configurations}
+            context = {"player": player, "apps": apps}
             return render(request, "bot.html", context)
 
         else:
