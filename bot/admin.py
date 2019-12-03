@@ -13,6 +13,7 @@ admin.site.register(DiscordApp, DiscordAppAdmin)
 
 class GuildAdmin(admin.ModelAdmin):
     list_display = ['__str__']
+    raw_id_fields = ("verifyKeys", "verifyFactions")
 
 
 admin.site.register(Guild, GuildAdmin)

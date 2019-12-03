@@ -32,8 +32,8 @@ class Guild(models.Model):
     # verify module
     verifyModule = models.BooleanField(default=False)
     verifyForce = models.BooleanField(default=False)
-    verifyKeys = models.ManyToManyField(Player)
-    verifyFactions = models.ManyToManyField(Faction)
+    verifyKeys = models.ManyToManyField(Player, blank=True)
+    verifyFactions = models.ManyToManyField(Faction, blank=True)
 
     # verify repository
     repoModule = models.BooleanField(default=False)
