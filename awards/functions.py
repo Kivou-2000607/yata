@@ -591,6 +591,19 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [800]:
+                    # 800": {"name": "Surplus", "description": "Use 100 rounds of special ammunition", "type": 2,
+                    type = "Fire rounds"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("specialammoused", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
+                    e = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    days = dLeftE(e, r=ratio, c="round / attack")
+                    vp["left"] = days[0]
+                    vp["comment"] = days[1]
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 778, 781]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}

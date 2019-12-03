@@ -173,6 +173,7 @@ d = {
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
     778: 714786529,  # Specialist
+    800: 956179599,  # Surplus
 
     # 3
     39: 198010293,  # Woodland Camo
