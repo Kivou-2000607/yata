@@ -251,6 +251,8 @@ class Attacks(models.Model):
     tss = models.IntegerField(default=0)
     tse = models.IntegerField(default=0)
     req = models.TextField()
+    def __str__(self):
+        return("Attack {} of {}".format(self.pk, self.report))
 
 
 class Crontab(models.Model):

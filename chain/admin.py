@@ -48,10 +48,14 @@ admin.site.register(FactionData, FactionDataAdmin)
 class AttacksInline(admin.TabularInline):
     model = Attacks
     extra = 0
+    show_change_link = True
+    can_delete = False
+    readonly_fields = ('tss', 'tse',)
+    exclude = ['req']
 
 
 class AttacksAdmin(admin.ModelAdmin):
-    list_display = ['report', 'date_start', 'date_end']
+    list_display = ['__str__', 'date_start', 'date_end']
 
     def report(self, instance):
         return instance.report
@@ -69,6 +73,9 @@ admin.site.register(Attacks, AttacksAdmin)
 class BonusInline(admin.TabularInline):
     model = Bonus
     extra = 0
+    show_change_link = True
+    can_delete = False
+    readonly_fields = ('tId', 'name', 'hit', 'respect', 'respectMax', 'targetId', 'targetName')
 
 
 class BonusAdmin(admin.ModelAdmin):
@@ -82,6 +89,9 @@ class CountInline(admin.TabularInline):
     model = Count
     extra = 0
     show_change_link = True
+    can_delete = False
+    readonly_fields = ('attackerId', 'name', 'hits', 'bonus', 'wins', 'respect', 'fairFight', 'war', 'retaliation', 'groupAttack', 'overseas', 'daysInFaction', 'beenThere', 'watcher', 'warhits')
+    exclude = ['graph']
 
 
 class CountAdmin(admin.ModelAdmin):
@@ -101,7 +111,7 @@ class ReportAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
     list_display = ['__str__']
-    inlines = [BonusInline, CountInline, AttacksInline]
+    inlines = [AttacksInline, CountInline, BonusInline]
 
 
 admin.site.register(Report, ReportAdmin)

@@ -73,6 +73,7 @@ def apiCallAttacks(faction, chain, key=None):
     while feedAttacks and nAPICall < faction.nAPICall:
 
         # SANITY CHECK 0: ask for same beginTS than previous chain
+        # shouldn't happen because fedback = False if so (see below)
         if beginTS - beginTSPreviousStep <= 0:
             print("[function.chain.apiCallAttacks] \t[WARNING] will ask for same beginTS next iteration")
 
@@ -121,7 +122,6 @@ def apiCallAttacks(faction, chain, key=None):
 
             print("[function.chain.apiCallAttacks] \ttornTS={}, reqTS={} diff={}".format(tornTS, reqTS, tornTS - reqTS))
 
-            print("Runs sanity checks")
             # SANITY CHECK 1: empty payload
             if not len(attacks):
                 print("[function.chain.apiCallAttacks] \t[WARNING] empty payload (blank turn)")
@@ -136,6 +136,7 @@ def apiCallAttacks(faction, chain, key=None):
             elif json.dumps([attacks]) == tmp:
                 print("[function.chain.apiCallAttacks] \t[WARNING] same response as before (blank turn)")
                 break
+
             else:
                 tmp = json.dumps([attacks])
 
@@ -158,12 +159,19 @@ def apiCallAttacks(faction, chain, key=None):
                 chainCounter = max(v["chain"], chainCounter)  # get max chain counter
                 beginTS = max(v["timestamp_started"], beginTS)  # get latest timestamp
 
+        # stoping criterion if same timestamp
+        if beginTS - beginTSPreviousStep <= 0:
+            feedAttacks = False
+            print("[function.chain.apiCallAttacks] stopped chain because was going to ask for the same timestamp")
+
+        # stoping criterion too many attack requests
+        if i > 1500:
+            feedAttacks = False
+            print("[function.chain.apiCallAttacks] stopped chain because too many iterations")
+
         # stoping criterion for walls
-        if chain.wall:
-            # stop a report if ask 2 times for the same timestep
-            feedAttacks = bool(beginTS - beginTSPreviousStep)
-            if feedAttacks:
-                feedAttacks = len(attacks) > 10
+        elif chain.wall:
+            feedAttacks = len(attacks) > 10
 
         # stoping criterion for regular reports
         elif chain.tId:
