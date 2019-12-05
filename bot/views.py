@@ -47,6 +47,10 @@ def index(request):
                     var[guild.guildId] = dict({})
                     var[guild.guildId]["name"] = guild.guildName
 
+                    # manage channels
+                    if guild.manageChannels:
+                        var[guild.guildId]["channels"] = {"active": True}
+
                     # loot module
                     if guild.lootModule:
                         var[guild.guildId]["loot"] = {"active": True}

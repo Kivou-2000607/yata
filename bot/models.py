@@ -22,6 +22,9 @@ class Guild(models.Model):
     guildName = models.CharField(default="guild_name", max_length=32)
 
     # stock module
+    manageChannels = models.BooleanField(default=False)
+
+    # stock module
     stockModule = models.BooleanField(default=False)
     stockWSSB = models.BooleanField(default=False)
     stockTCB = models.BooleanField(default=False)
