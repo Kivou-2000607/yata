@@ -43,22 +43,15 @@ This file is part of yata.
                 type: 'numeric',
             });
 
-            $.tablesorter.addParser({
-                // set a unique id
-                id: 'dataVal',
-                // check if cell value has a numerical value
-                is: function(s, table, cell, $cell) {
-                    return !isNaN($cell.attr("data-val"));
+            $("#target-targets").tablesorter({
+                textExtraction: {
+                  10: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
                 },
-                // format data for normalization
-                format: function(s, table, cell, cellIndex) {
-                    return parseInt($(cell).attr("data-val"));
-                },
-                // set type, either numeric or text
-                type: 'numeric'
+                headers: { 0: { sorter: 'ago' }, 4: { sorter: 'ago' }},
+                cssAsc: 'up',
+                cssDesc: 'down',
+                sortList: [[6,1],[3,1],[2,0]]
             });
-
-            $("#target-targets").tablesorter({headers: { 0: { sorter: 'ago' }, 4: { sorter: 'ago' }, 10: {sorter: 'dataVal'}} , cssAsc: 'up', cssDesc: 'down', sortList: [[6,1],[3,1],[2,0]]});
         });
 </script>
 

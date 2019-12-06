@@ -40,9 +40,9 @@ This file is part of yata.
 <form>
     {% csrf_token %}
     {% if target.note %}
-        <input class="target-list-note" type="text" Value="{{target.note}}">
+        <input class="target-list-note" type="text" value="{{target.note}}">
     {% else %}
-        <input class="target-list-note" type="text" placeholder="Enter a note here">
+        <input class="target-list-note" type="text" placeholder="Enter a note here" value="">
     {% endif %}
     <input type="hidden" value="{{targetId}}">
 </form>
