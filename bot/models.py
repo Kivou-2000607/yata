@@ -21,13 +21,14 @@ class Guild(models.Model):
     guildId = models.BigIntegerField(default=0)
     guildName = models.CharField(default="guild_name", max_length=32)
 
-    # stock module
+    # general options
     manageChannels = models.BooleanField(default=False)
 
     # stock module
     stockModule = models.BooleanField(default=False)
     stockWSSB = models.BooleanField(default=False)
     stockTCB = models.BooleanField(default=False)
+    stockChannel = models.CharField(default="", blank=True, max_length=16)
 
     # loot module
     lootModule = models.BooleanField(default=False)

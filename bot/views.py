@@ -28,6 +28,7 @@ from bot.models import DiscordApp
 
 import json
 
+
 def index(request):
     try:
         if request.session.get('player'):
@@ -62,6 +63,8 @@ def index(request):
                             var[guild.guildId]["stocks"]["wssb"] = True
                         if guild.stockTCB:
                             var[guild.guildId]["stocks"]["tcb"] = True
+                        if guild.stockChannel:
+                            var[guild.guildId]["stocks"]["channel"] = guild.stockChannel
 
                     # repository
                     if guild.repoModule:
