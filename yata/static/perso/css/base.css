@@ -54,6 +54,11 @@ div.module {
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
 }
 
+div.module h1 {margin: 15px 10px; height: auto; font-weight: 300; font-size: 20px; color: #666;}
+div.module h2 {margin: 10px 10px; height: auto; font-weight: 600; font-size: 15px; color: #666;}
+div.module h2 {padding: 0; background: 0000;}
+
+
 div.module p:last-child {
     margin: 0px;
 }

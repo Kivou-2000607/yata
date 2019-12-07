@@ -21,17 +21,23 @@ This file is part of yata.
 <h2 class="title"><b>{{app.name}}</b> [{{app.id}}]</h2>
     <div class="module">
          {% for guildId, guild in app.variables.items %}
-            <h3>Guild {{guild.name}} [{{guildId}}]</h3>
+            <h1>Guild {{guild.name}} [{{guildId}}]</h1>
                 {% for module, options in guild.items %}
                     {% if module != "name" %}
-                        <h4>{{module}}</h4>
-                        <ul>
+                        <h2>{{module}}</h2>
+                        <p>
                             {% for k, v in options.items %}
-                                <li><b>{{k}}</b>: {{v}}</li>
+                                <b>{{k}}:</b> <i>{{v}}</i>
+                                {% if not forloop.last %}
+                                ,&nbsp;
+                                {% endif %}
                             {% endfor %}
-                        </ul>
+                        </p>
                     {% endif %}
                 {% endfor %}
+                {% if not forloop.last %}
+                <hr class="sep">
+                {% endif %}
          {% endfor %}
     </div>
 {% endfor %}
