@@ -77,10 +77,11 @@ def index(request):
                             var[guild.guildId]["verify"]["force"] = True
 
                         # loop over yata users to get their keys
-                        var[guild.guildId]["keys"] = dict({p.tId: p.key for p in guild.verifyKeys.all()})
-
-                        # loop over yata users to get their keys
                         var[guild.guildId]["factions"] = dict({f.tId: f.name for f in guild.verifyFactions.all()})
+
+                    # loop over yata users to get their keys
+                    if len(guild.verifyKeys.all()):
+                        var[guild.guildId]["keys"] = dict({p.tId: p.key for p in guild.verifyKeys.all()})
 
                 bot.variables = json.dumps(var)
                 bot.save()
