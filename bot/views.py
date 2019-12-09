@@ -38,7 +38,9 @@ def index(request):
 
             # this is just for me...
             if player.tId not in [2000607]:
-                return returnError(type=403, msg="This page is not for you...")
+                guilds = [guild.guildName for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all()]
+                context = {"player": player, "guilds": guilds}
+                return render(request, "bot.html", context)
 
             # loop on bots
             for bot in DiscordApp.objects.all():
@@ -90,7 +92,6 @@ def index(request):
             for app in apps:
                 app["variables"] = json.loads(app["variables"])
 
-            player.save()
             context = {"player": player, "apps": apps}
             return render(request, "bot.html", context)
 

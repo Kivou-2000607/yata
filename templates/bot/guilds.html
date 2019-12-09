@@ -17,18 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
 
-{% if notifications %}
-    {% include "bot/notifications.html" %}
-{% endif %}
-
-{% if apps %}
-    {% include "bot/apps.html" %}
-{% endif %}
-
-{% if guilds %}
-    {% include "bot/guilds.html" %}
-{% endif %}
+<h2 class="title">Servers</h2>
+<div class="module">
+    <p>The YATA bot is currently runing on</p>
+    <ul>
+        {% for guild in guilds %}
+        <li>{{guild}}</li>
+        {% endfor %}
+    </ul>
+</div>
