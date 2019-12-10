@@ -137,7 +137,7 @@ def toggleTarget(request, targetId):
                 lifeMax = int(targetInfo["life"]["maximum"])
                 life = int(targetInfo["life"]["current"])
                 status = targetInfo["status"][0].replace("In hospital", "H")
-                statusFull = " ".join(targetInfo["status"])
+                statusFull = "{} {}".format(targetInfo["status"]["description"], targetInfo["status"]["details"])
                 lastAction = convertElaspedString(targetInfo["last_action"]["relative"])
                 lastUpdate = int(targetInfo.get("timestamp", timezone.now().timestamp()))
 
@@ -225,8 +225,8 @@ def refresh(request, targetId):
                 target["targetName"] = targetInfo["name"]
                 target["life"] = int(targetInfo["life"]["current"])
                 target["lifeMax"] = int(targetInfo["life"]["maximum"])
-                target["status"] = targetInfo["status"][0].replace("In hospital", "H")
-                target["statusFull"] = " ".join(targetInfo["status"])
+                target["status"] = targetInfo["status"]["description"].replace("In hospital", "H")
+                target["statusFull"] = "{} {}".format(targetInfo["status"]["description"], targetInfo["status"]["details"])
                 target["lastAction"] = convertElaspedString(targetInfo["last_action"]["relative"])
                 target["lastUpdate"] = int(targetInfo.get("timestamp", timezone.now().timestamp()))
                 level = targetInfo["level"]
@@ -361,8 +361,8 @@ def add(request):
                                                      "level": level,
                                                      "lifeMax": int(targetInfo["life"]["maximum"]),
                                                      "life": int(targetInfo["life"]["current"]),
-                                                     "status": targetInfo["status"][0].replace("In hospital", "H"),
-                                                     "statusFull": " ".join(targetInfo["status"]),
+                                                     "status": targetInfo["status"]["description"].replace("In hospital", "H"),
+                                                     "statusFull": "{} {}".format(targetInfo["status"]["description"], targetInfo["status"]["details"]),
                                                      "lastAction": convertElaspedString(targetInfo["last_action"]["relative"]),
                                                      "lastUpdate": int(targetInfo.get("timestamp", timezone.now().timestamp())),
                                                      "note": ""
@@ -383,8 +383,8 @@ def add(request):
                                                  "level": level,
                                                  "lifeMax": int(targetInfo["life"]["maximum"]),
                                                  "life": int(targetInfo["life"]["current"]),
-                                                 "status": targetInfo["status"][0].replace("In hospital", "H"),
-                                                 "statusFull": " ".join(targetInfo["status"]),
+                                                 "status": targetInfo["status"]["description"].replace("In hospital", "H"),
+                                                 "statusFull": "{} {}".format(targetInfo["status"]["description"], targetInfo["status"]["details"]),
                                                  "lastAction": targetInfo["last_action"]["relative"],
                                                  "lastUpdate": int(targetInfo.get("timestamp", timezone.now().timestamp())),
                                                  "note": ""}

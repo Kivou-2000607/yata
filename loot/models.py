@@ -36,7 +36,7 @@ class NPC(models.Model):
                 self.hospitalTS = states['hospital_timestamp']
                 self.status = 'hospitalized'
             else:
-                self.status = status[1]
+                self.status = status["details"]
 
             print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
