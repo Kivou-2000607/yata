@@ -454,9 +454,9 @@ def updateMembers(faction, key=None, force=True):
     now = int(timezone.now().timestamp())
 
     # don't update if less than 24h ago and force is False
-    # if not force and (now - faction.membersUpda) < 24 * 3600:
-    #     print("[function.chain.updateMembers] skip update member")
-    #     return faction.member_set.all()
+    if not force and (now - faction.membersUpda) < 24 * 3600:
+        print("[function.chain.updateMembers] skip update member")
+        return faction.member_set.all()
 
     # get key
     if key is None:
