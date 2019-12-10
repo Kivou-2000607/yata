@@ -96,7 +96,7 @@ class Player(models.Model):
         progress="{:04}/{:04}: ".format(i, n) if i is not None else ""
 
         # API Calls
-        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
+        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp', self.key, verbose=False)
 
         # set active
         self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31

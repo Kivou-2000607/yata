@@ -604,18 +604,32 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 778, 781]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
                     # 481 {'name': 'Semper     Fortis', 'description': 'Defeat someone more powerful than you', 'type': 8, 'circulation': 29809, 'rarity': 'Common', 'awardType': 'Honor'}
                     # 615 {'name': 'Guardian Angel', 'description': 'Defeat someone while they are attacking someone else', 'type': 8, 'circulation': 6228, 'rarity': 'Limited', 'awardType': 'Honor'}
-                    # 778 { "name": "Specialist", "description": "Achieve 100% EXP on 25 different weapons",
                     # 781 { "name": "Riddled", "description": "Defeat an opponent after hitting at least 10 different body parts in a single attack", "type": 8,
                     type = "Other attacks"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [778]:
+                    # 778 { "name": "Specialist", "description": "Achieve 100% EXP on 25 different weapons",
+                    type = "Other attacks"
+                    vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
+                    wexp = userInfo.get("weaponexp", [])
+                    maxExp = ["{} {}".format(i + 1, k.get("name")) for i, k in enumerate(wexp) if k.get("exp") == 100]
+                    toMax = ['{} ({}%)'.format(k.get("name"), k.get("exp")) for k in wexp if k.get("exp") < 100 and k.get("exp") > 5]
+                    vp["current"] = len(maxExp)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    strA = "<b>Maxed</b><br>{}".format("<br>".join(maxExp)) if len(maxExp) else ""
+                    strB = "<b>To max (>5%)</b><br>{}".format("<br>".join(toMax)) if len(toMax) else ""
+                    if strA or strB:
+                        vp["comment"] = "{}<br>{}".format(strA, strB)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [232]:
@@ -1944,7 +1958,18 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
-                    vp["comment"] = "With a current ratio of {:.2g} Racing skills / day".format(ratio)
+                    vp["comment"] = "With a current ratio of {:.2g} racing skills / day".format(ratio)
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [571]:
+		        # "571": { "name": "Chequered Past", "description": "Win 100 races", "type": 0,
+                    type = "Racing"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("raceswon", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / daysOld
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
+                    vp["comment"] = "With a current ratio of {:.2g} races won / day".format(ratio)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [21]:

@@ -46,6 +46,7 @@ d = {
     614: 670053246,  # Honored
     734: 182849928,  # Wrecked
     288: 317742122,  # Fresh Start
+    571: 0,  # Chequered Past
 
     # 1
     171: 228001376,  # Afghanistan
