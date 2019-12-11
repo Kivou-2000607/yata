@@ -6,7 +6,7 @@
 {% endblock%}
 
 {% block title%}
-    - Loot
+    - Discord bot
 {% endblock %}
 
 {% block jquery %}
@@ -23,14 +23,28 @@
     });
 
     // update discord id
-    $(document).on('click', '[id^=pref-toggle-]', function(e){
+    $(document).on('click', '#discord-toggle-perm', function(e){
         e.preventDefault();
-        var type = $(this).attr('id').split('-').pop();
-        $(this).load( "/bot/togglePref/"+type+"/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
+        // var r = confirm("I accept to give the official YATA bot access to my API key");
+        var r = true;
+        if (r == true) {
+          var reload = $("#discord-perm");
+          reload.load( "/bot/togglePerm/", {
+              csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+          });
+          reload.html('<p><i class="fas fa-spinner fa-pulse"></i></p>');
+        }
     });
+
+    // // update discord id
+    // $(document).on('click', '[id^=pref-toggle-]', function(e){
+    //     e.preventDefault();
+    //     var type = $(this).attr('id').split('-').pop();
+    //     $(this).load( "/bot/togglePref/"+type+"/", {
+    //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    //     });
+    //     $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
+    // });
 
 </script>
 {% endblock %}

@@ -21,9 +21,7 @@ This file is part of yata.
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
 
-{% if notifications %}
-    {% include "bot/notifications.html" %}
-{% endif %}
+{% include "bot/main.html" %}
 
 {% if apps %}
     {% include "bot/apps.html" %}

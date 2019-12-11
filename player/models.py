@@ -43,7 +43,10 @@ class Player(models.Model):
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
+
+    # discord id and permission to give the bot the right to pull information
     dId = models.BigIntegerField(default=0)
+    botPerm = models.BooleanField(default=False)
 
     # BooleanField states
     active = models.BooleanField(default=True)
@@ -93,7 +96,7 @@ class Player(models.Model):
 
         """
 
-        progress="{:04}/{:04}: ".format(i, n) if i is not None else ""
+        progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
         # API Calls
         user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp', self.key, verbose=False)
@@ -189,6 +192,18 @@ class Player(models.Model):
         self.save()
 
         # print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
+
+    def update_discord_id(self):
+        error = False
+        discord = apiCall("user", "", "discord", self.key)
+        if 'apiError' in discord:
+            error = {"apiErrorSub": discord["apiError"]}
+        else:
+            dId = discord.get('discord', {'discordID': ''})['discordID']
+            self.dId = 0 if dId in [''] else dId
+            self.save()
+
+        return error
 
 
 class News(models.Model):

@@ -19,12 +19,10 @@ This file is part of yata.
 
 <form>{% csrf_token %}
     <p>
-        {% if player.dId%}
-            You have been verified on the official Torn discord server with the discord ID: <tt class="valid">{{player.dId}}</tt>
+        {% if player.botPerm%}
+            <a id="discord-toggle-perm" class="valid" href="{% url 'bot:togglePerm' %}"><i class="fas fa-toggle-on"></i>&nbsp; Currently, the official YATA bot has your permission to use your API key. Click to remove permission.</a>
         {% else %}
-            <span class="error">You have not been verified on the official Torn discord server.</span>
+            <a id="discord-toggle-perm" class="error" href="{% url 'bot:togglePerm' %}"><i class="fas fa-toggle-off"></i>&nbsp; Currently, the official YATA bot doesn't have your permission to use your API key. Click to give permission.</a>
         {% endif %}
-        <a id="discord-update-id" href="{% url 'bot:updateId' %}">&nbsp;&nbsp;<i class="fas fa-sync-alt" title="Update discord ID"></i></a>
-        {% if error %}&nbsp;&nbsp;<span class="error">{{error.apiErrorSub}}</span>{% endif %}
     </p>
 </form>

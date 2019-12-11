@@ -18,7 +18,7 @@ This file is part of yata.
 {% endcomment %}
 
 {% for app in apps %}
-<h2 class="title"><b>{{app.name}}</b> [{{app.id}}]</h2>
+<h2 class="title">{{app.name}} [{{app.id}}]</h2>
     <div class="module">
          {% for guildId, guild in app.variables.items %}
             <h1>Guild {{guild.name}} [{{guildId}}]</h1>

@@ -18,12 +18,21 @@ This file is part of yata.
 {% endcomment %}
 
 
-<h2 class="title">Servers</h2>
+<h2 class="title">Servers hosting the official YATA bot</h2>
 <div class="module">
-    <p>The YATA bot is currently runing on</p>
+    <table class="center">
+        <thead>
+            <th>Server name</th>
+            <th>Server id</th>
+        </thead>
+        <tbody>
+            {% for name, id in guilds %}
+                <td>{{name}}</td>
+                <td><tt>{{id}}</tt></td>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <ul>
-        {% for guild in guilds %}
-        <li>{{guild}}</li>
-        {% endfor %}
     </ul>
 </div>
