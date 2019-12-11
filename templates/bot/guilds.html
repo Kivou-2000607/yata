@@ -22,13 +22,17 @@ This file is part of yata.
 <div class="module">
     <table class="center">
         <thead>
-            <th>Server name</th>
-            <th>Server id</th>
+            <tr>
+                <th>Server name</th>
+                <th>Server id</th>
+            </tr>
         </thead>
         <tbody>
             {% for name, id in guilds %}
+            <tr>
                 <td>{{name}}</td>
                 <td><tt>{{id}}</tt></td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
