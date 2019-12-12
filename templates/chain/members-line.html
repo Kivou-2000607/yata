@@ -21,23 +21,25 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<tr>
-    <td class="a">{{member.name|playerURL:member.tId|safe}}</td>
+{% if errorMessage %}
+    <td colspan="13" class="error" style="text-align: center;">{{errorMessage}}</td>
+{% else %}
+    <td class="a dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
     <td class="b" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
     <td class="c player-status-{{member.color}}">{{member.description|cleanhtml}}
         {% if member.details and member.until%}
-            <span class="thelp flush-right" title="{{member.details|safe}}<br>Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}<br>Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
         {% elif member.details %}
-            <span class="thelp flush-right" title="{{member.details|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
         {% elif member.until %}
             <span class="thelp flush-right" title="Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
         {% endif %}
     </td>
     <td class="d" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
-    <td class="e">
+    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}">
         {% include "chain/members-line-energy.html"%}
     </td>
-    <td class="e">
+    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}">
         {% include "chain/members-line-nnb.html"%}
     </td>
-</tr>
+{% endif %}

@@ -18,6 +18,8 @@ This file is part of yata.
 """
 
 from django.db import models
+from django.utils import timezone
+
 import json
 import requests
 import re
@@ -42,6 +44,8 @@ class Faction(models.Model):
     treeUpda = models.IntegerField(default=0)
 
     membersUpda = models.IntegerField(default=0)
+    memberStatusUpda = models.IntegerField(default=0)
+    memberStatus = models.TextField(default="{}")
 
     numberOfKeys = models.IntegerField(default=0)
 
@@ -154,6 +158,25 @@ class Faction(models.Model):
         for k in ignore:
             del keys[k]
         return len(keys)
+
+    def updateMemberStatus(self):
+        # get now and delta update
+        now = int(timezone.now().timestamp())
+        delta = now - self.memberStatusUpda
+        if delta > 30:
+            key = self.getRandomKey()
+            membersAPI = apiCall('faction', '', 'basic', key[1], sub='members')
+            if 'apiError' in membersAPI:
+                return json.loads(self.memberStatus)
+
+            # print("update members status", delta)
+            self.memberStatus = json.dumps(membersAPI)
+            self.memberStatusUpda = now
+            self.save()
+        # else:
+        #     print("skip update members status", delta)
+
+        return json.loads(self.memberStatus)
 
 class Stat(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

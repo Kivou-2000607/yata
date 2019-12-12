@@ -22,6 +22,7 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<div id="reload-member-table">
 <script>
     $(document).ready(function() {
         $.tablesorter.addParser({
@@ -45,7 +46,7 @@ This file is part of yata.
 
 <script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
 
-<h2 class="title">List of {{faction}} members<span class="flush-right">Last update: {{faction.membersUpda|ts2date}}</span></h2>
+<h2 class="title">List of {{faction}} members<span class="flush-right">Last status update: {{faction.memberStatusUpda|ts2date}}</span><form class="form-inline"><a id="member-refresh" class="flush-right" href=""><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form></h2>
 <div class="module">
     <table id="chain-members" class="tablesorter center-medium trshadow chain-members">
         <thead>
@@ -59,10 +60,11 @@ This file is part of yata.
         </thead>
         <tbody>
         {% for member in members %}
-        <tr>
+        <tr class="chain-member-refresh" data-val="{{member.tId}}">
             {% include "chain/members-line.html" %}
         </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
 </div>

@@ -655,7 +655,7 @@ def members(request):
                 return render(request, page, context)
 
             # update chains if AA
-            members = updateMembers(faction, key=key, force=True)
+            members = updateMembers(faction, key=key, force=False)
             error = False
             if 'apiError' in members:
                 error = members
@@ -674,6 +674,7 @@ def members(request):
 
     except Exception:
         return returnError()
+
 
 # action view
 def toggleMemberShare(request):
@@ -722,8 +723,58 @@ def toggleMemberShare(request):
 
                 # member.save()
             else:
-                    return render(request, 'chain/members-line-energy.html', {'errorMessage': '?'})
+                return render(request, 'chain/members-line-energy.html', {'errorMessage': '?'})
 
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# action view
+def updateMember(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.updateMember] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            if player is None:
+                return render(request, 'chain/members-line.html', {'member': False, 'errorMessage': 'Who are you?'})
+
+            # get faction (of the user, not the member)
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'chain/members-line.html', {'errorMessage': 'Faction {} not found'.format(factionId)})
+
+            # update members status for the faction (skip < 30s)
+            membersAPI = faction.updateMemberStatus()
+
+            # get member id
+            memberId = request.POST.get("memberId", 0)
+
+            # get member
+            member = faction.member_set.filter(tId=memberId).first()
+            if member is None:
+                return render(request, 'chain/members-line.html', {'errorMessage': 'Member {} not found in faction {}'.format(memberId, factionId)})
+
+            # update status
+            member.updateStatus(**membersAPI.get(memberId, dict({})).get("status"))
+
+            # update energy
+            tmpP = Player.objects.filter(tId=memberId).first()
+            if tmpP is None:
+                member.shareE = -1
+                member.shareN = -1
+                member.save()
+            elif member.shareE > 0:
+                member.updateEnergy(key=tmpP.key)
+
+            context = {"player": player, "member": member}
+            return render(request, 'chain/members-line.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -2228,7 +2279,7 @@ def bigBrother(request):
                 "attacksdamaging": "Damage received",
                 "attacksrunaway": "Runaways",
                 # "": "",
-            }
+                }
             statsList = dict({})
             contributors = False
             comparison = False

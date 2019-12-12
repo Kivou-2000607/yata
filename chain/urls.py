@@ -17,6 +17,7 @@ urlpatterns = [
     # members
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^toggleMemberShare/$', views.toggleMemberShare, name='toggleMemberShare'),
+    re_path(r'^updateMember/$', views.updateMember, name='updateMember'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),

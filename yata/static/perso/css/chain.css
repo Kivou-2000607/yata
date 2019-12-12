@@ -44,9 +44,9 @@ table.chain-list td.e form { display: inline; }
 
 table.chain-members td.a { width: 15%; }
 table.chain-members td.b { width: 15%; text-align: right; cursor: pointer;}
-table.chain-members td.c { width: 25%; text-align: left;}
+table.chain-members td.c { width: 30%; text-align: left;}
 table.chain-members td.d { width: 5%; text-align: center; cursor: pointer;}
-table.chain-members td.e { width: 15%; text-align: center; cursor: default;}  /* x2 */
+table.chain-members td.e { width: 12.5%; text-align: center; cursor: default;}  /* x2 */
 
 table.wall-list td.a { width: 10%; text-align: center;} /* x1 */
 table.wall-list td.b { width: 15%;  text-align: center;} /* x5 */

@@ -349,6 +349,38 @@
         }).html(spinner);
     });
 
+    // refresh member from member list by clicking on the row
+    $(document).on('click', 'tr.chain-member-refresh > td:not(.dont-touch-me)', function(e){
+        e.preventDefault();
+        var reload = $(this).closest("tr");
+        var memberId = reload.attr("data-val");
+        reload.load( "/chain/updateMember/", {
+            memberId: memberId,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html('<td colspan="6" style="text-align: center;">'+spinner+'</td>');
+    });
+
+    // refresh all members from member list by clicking on title refresh button
+    $(document).on('click', '#member-refresh', function(e){
+        e.preventDefault();
+        var i=0;
+        $("#chain-members").find('tr.chain-member-refresh').each(function() {
+            var reload = $(this);
+            var memberId = reload.attr("data-val");
+            var wait = 0;
+            if(i) { wait = 1000; }
+            (function(index) {
+                setTimeout(function() {
+                    reload.load( "/chain/updateMember/", {
+                        memberId: memberId,
+                        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    }).html('<td colspan="6" style="text-align: center;">'+spinner+'</td>');
+                }, wait);
+            })(i);
+            i++;
+        });
+    });
+
 </script>
 {% endblock %}
 

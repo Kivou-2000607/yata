@@ -454,8 +454,8 @@ def updateMembers(faction, key=None, force=True):
 
     now = int(timezone.now().timestamp())
 
-    # don't update if less than 24h ago and force is False
-    if not force and (now - faction.membersUpda) < 24 * 3600:
+    # don't update if less than 1 hour ago and force is False
+    if not force and (now - faction.membersUpda) < 3600:
         print("[function.chain.updateMembers] skip update member")
         return faction.member_set.all()
 
@@ -467,7 +467,7 @@ def updateMembers(faction, key=None, force=True):
         print("[function.chain.updateMembers] using personal key")
 
     # call members
-    membersAPI = apiCall('faction', faction.tId, 'basic', key, sub='members')
+    membersAPI = faction.updateMemberStatus()
     if 'apiError' in membersAPI:
         return membersAPI
 
@@ -527,10 +527,14 @@ def updateMembers(faction, key=None, force=True):
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
             player = Player.objects.filter(tId=m).first()
-            memberNew = faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action']['relative'], lastActionTS=membersAPI[m]['last_action']['timestamp'], daysInFaction=membersAPI[m]['days_in_faction'],
-            shareE=-1 if player is None else 0,
-            shareN=-1 if player is None else 0,
-            )
+            memberNew = faction.member_set.create(
+                tId=m, name=membersAPI[m]['name'],
+                lastAction=membersAPI[m]['last_action']['relative'],
+                lastActionTS=membersAPI[m]['last_action']['timestamp'],
+                daysInFaction=membersAPI[m]['days_in_faction'],
+                shareE=-1 if player is None else 0,
+                shareN=-1 if player is None else 0,
+                )
             memberNew.updateStatus(**membersAPI[m]['status'])
 
     # delete old members
