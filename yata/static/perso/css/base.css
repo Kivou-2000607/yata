@@ -387,3 +387,13 @@ span.login-message {
 }
 
 span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 10px;}
+
+
+/* member status */
+.player-status-red { color: #CC3434; }
+.player-status-green { color: #0B8E14; }
+
+/* .error { color: #CC3434!important; font-weight: bold; }
+.warning { color: #FF8C00!important; font-weight: bold; }
+.neutral { color: #666!important; font-weight: bold; }
+.valid { color: #0B8E14!important; font-weight: bold; } */

@@ -20,6 +20,9 @@ This file is part of yata.
 
 def apiCall(section, id, selections, key, sub=None, verbose=True):
     import requests
+
+    key = str(key)
+    
     # DEBUG live chain
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
     #     from django.utils import timezone

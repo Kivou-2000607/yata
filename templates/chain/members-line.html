@@ -1,0 +1,43 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<tr>
+    <td class="a">{{member.name|playerURL:member.tId|safe}}</td>
+    <td class="b" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
+    <td class="c player-status-{{member.color}}">{{member.description|cleanhtml}}
+        {% if member.details and member.until%}
+            <span class="thelp flush-right" title="{{member.details|safe}}<br>Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
+        {% elif member.details %}
+            <span class="thelp flush-right" title="{{member.details|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+        {% elif member.until %}
+            <span class="thelp flush-right" title="Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
+        {% endif %}
+    </td>
+    <td class="d" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
+    <td class="e">
+        {% include "chain/members-line-energy.html"%}
+    </td>
+    <td class="e">
+        {% include "chain/members-line-nnb.html"%}
+    </td>
+</tr>

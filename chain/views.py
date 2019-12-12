@@ -675,6 +675,63 @@ def members(request):
     except Exception:
         return returnError()
 
+# action view
+def toggleMemberShare(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.toggleMemberShare] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'chain/members-line-energy.html', {'errorMessage': 'Faction {} not found'.format(factionId)})
+
+            # get member
+            member = faction.member_set.filter(tId=player.tId).first()
+            if member is None:
+                return render(request, 'chain/members-line-energy.html', {'errorMessage': 'Member {} not found'.format(player.tId)})
+
+            # toggle share energy
+            if request.POST.get("type") == "energy":
+                member.shareE = 0 if member.shareE else 1
+                error = member.updateEnergy(key=player.key)
+                # handle api error
+                if error:
+                    member.shareE = 0
+                    member.energy = 0
+                    return render(request, 'chain/members-line-energy.html', {'errorMessage': error.get('apiErrorString', 'error')})
+                else:
+                    context = {"player": player, "member": member}
+                    return render(request, 'chain/members-line-energy.html', context)
+
+            elif request.POST.get("type") == "nerve":
+                member.shareN = 0 if member.shareN else 1
+                error = member.updateNNB(key=player.key)
+                # handle api error
+                if error:
+                    member.shareN = 0
+                    member.nnb = 0
+                    return render(request, 'chain/members-line-nnb.html', {'errorMessage': error.get('apiErrorString', 'error')})
+                else:
+                    context = {"player": player, "member": member}
+                    return render(request, 'chain/members-line-nnb.html', context)
+
+                # member.save()
+            else:
+                    return render(request, 'chain/members-line-energy.html', {'errorMessage': '?'})
+
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
 
 # action view
 def createReport(request, chainId):

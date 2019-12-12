@@ -23,6 +23,7 @@ from yata.handy import apiCall
 from yata.handy import timestampToDate
 from chain.models import FactionData
 from chain.models import Member
+from player.models import Player
 
 import requests
 import time
@@ -473,16 +474,35 @@ def updateMembers(faction, key=None, force=True):
     membersDB = faction.member_set.all()
     for m in membersAPI:
         memberDB = membersDB.filter(tId=m).first()
+
+        # faction member already exists
         if memberDB is not None:
-            # print('[VIEW members] member {} [{}] updated'.format(membersAPI[m]['name'], m))
+            # update basics
             memberDB.name = membersAPI[m]['name']
             memberDB.lastAction = membersAPI[m]['last_action']['relative']
             memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
             memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-            tmp = [v for k, v in membersAPI[m]['status'].items() if k in ["details", "description"] and v]
-            memberDB.status = ", ".join(tmp)
+
+            # update status
+            memberDB.updateStatus(**membersAPI[m]['status'])
+
+            # update energy/NNB
+            player = Player.objects.filter(tId=memberDB.tId).first()
+            if player is None:
+                memberDB.shareE = -1
+                memberDB.energy = 0
+                memberDB.shareN = -1
+                memberDB.nnb = 0
+                memberDB.arson = 0
+            else:
+                if memberDB.shareE:
+                    memberDB.updateEnergy(key=player.key)
+                if memberDB.shareN:
+                    memberDB.updateNNB(key=player.key)
+
             memberDB.save()
-            faction.membersUpda = now
+
+        # member exists but from another faction
         elif Member.objects.filter(tId=m).first() is not None:
             # print('[VIEW members] member {} [{}] change faction'.format(membersAPI[m]['name'], m))
             memberTmp = Member.objects.filter(tId=m).first()
@@ -491,14 +511,27 @@ def updateMembers(faction, key=None, force=True):
             memberTmp.lastAction = membersAPI[m]['last_action']['relative']
             memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
             memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
-            tmp = [s for s in membersAPI[m]['status'] if s]
-            memberTmp.status = ", ".join(tmp)
+            memberTmp.updateStatus(**membersAPI[m]['status'])
+
+            # set shares to 0
+            player = Player.objects.filter(tId=memberTmp.tId).first()
+            memberTmp.shareE = -1 if player is None else 0
+            memberTmp.shareN = -1 if player is None else 0
+            memberTmp.energy = 0
+            memberTmp.nnb = 0
+            memberTmp.arson = 0
+
             memberTmp.save()
-            faction.membersUpda = now
+
+        # new member
         else:
             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-            tmp = [s for s in membersAPI[m]['status'] if s]
-            faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action']['relative'], lastActionTS=membersAPI[m]['last_action']['timestamp'], daysInFaction=membersAPI[m]['days_in_faction'], status=", ".join(tmp))
+            player = Player.objects.filter(tId=m).first()
+            memberNew = faction.member_set.create(tId=m, name=membersAPI[m]['name'], lastAction=membersAPI[m]['last_action']['relative'], lastActionTS=membersAPI[m]['last_action']['timestamp'], daysInFaction=membersAPI[m]['days_in_faction'],
+            shareE=-1 if player is None else 0,
+            shareN=-1 if player is None else 0,
+            )
+            memberNew.updateStatus(**membersAPI[m]['status'])
 
     # delete old members
     for m in membersDB:
@@ -512,6 +545,7 @@ def updateMembers(faction, key=None, force=True):
             # print("[function.chain.updateMembers] delete AA key {}".format(id))
             faction.delKey(id)
 
+    faction.membersUpda = now
     faction.save()
     return faction.member_set.all()
 

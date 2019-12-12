@@ -9,11 +9,14 @@ urlpatterns = [
     re_path(r'^live/$', views.live, name='live'),
     re_path(r'^list/$', views.list, name='list'),
     re_path(r'^jointReport/$', views.jointReport, name='jointReport'),
-    re_path(r'^members/$', views.members, name='members'),
     re_path(r'^aa/$', views.aa, name='aa'),
     re_path(r'^tree/$', views.tree, name='tree'),
     re_path(r'^armory/$', views.armory, name='armory'),
     re_path(r'^respectSimulator/$', views.respectSimulator, name='respectSimulator'),
+
+    # members
+    re_path(r'^members/$', views.members, name='members'),
+    re_path(r'^toggleMemberShare/$', views.toggleMemberShare, name='toggleMemberShare'),
 
     re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^createReport/(?P<chainId>\w+)$', views.createReport, name='createReport'),

@@ -329,6 +329,25 @@
 
     });
 
+    // toggle member shareE
+    $(document).on('click', '.chain-member-shareE', e=>{
+        e.preventDefault();
+        var td = $(e.currentTarget.offsetParent);
+        td.load( "/chain/toggleMemberShare/", {
+            type: "energy",
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+    });
+
+    // toggle member shareN
+    $(document).on('click', '.chain-member-shareN', e=>{
+        e.preventDefault();
+        var td = $(e.currentTarget.offsetParent);
+        td.load( "/chain/toggleMemberShare/", {
+            type: "nerve",
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+    });
 
 </script>
 {% endblock %}

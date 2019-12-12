@@ -1,0 +1,44 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if errorMessage %}
+    <span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
+{% endif %}
+
+{% if member.tId == player.tId %}
+    <span style="cursor: pointer;">
+    {% if member.shareE %}
+        <span class="error chain-member-shareE" title="Stop sharing your energy.">
+            {{member.energy}}
+        </span>
+    {% else %}
+        <span class="valid chain-member-shareE" title="Start sharing your energy with your factionmates. You will be able to stop sharing whenever you want by clicking your the energy.">
+            <i class="fas fa-user-plus"></i>
+        </span>
+    {% endif %}
+    </span>
+{% else %}
+    {% if member.shareE == -1 %}
+        <span class="error" title="{{member.name}} is not on YATA" rel="tooltip"><i class="fas fa-user-slash"></i></span>
+    {% elif member.shareE == 0 %}
+        <span class="warning" title="{{member.name}} does not wish to share" rel="tooltip"><i class="fas fa-user-times"></i></span>
+    {% elif member.shareE == 1 %}
+        {{member.energy}}
+    {% endif %}
+{% endif %}

@@ -19,7 +19,10 @@ This file is part of yata.
 
 from django.db import models
 import json
+import requests
+import re
 
+from yata.handy import apiCall
 
 class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
@@ -194,13 +197,104 @@ class Member(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="Duke", max_length=15)
     daysInFaction = models.IntegerField(default=0)
+
+    # last action
     lastAction = models.CharField(default="-", max_length=200)
     lastActionTS = models.IntegerField(default=0)
-    status = models.CharField(default="-", max_length=200)
+    # status = models.CharField(default="-", max_length=200)
+
+    # new status of december 2019
+    description = models.CharField(default="", max_length=64, blank=True)
+    details = models.CharField(default="", max_length=64, blank=True)
+    state = models.CharField(default="", max_length=32, blank=True)
+    color = models.CharField(default="", max_length=16, blank=True)
+    until = models.IntegerField(default=0)
+
+    # share energy and NNB with faction
+    # -1: not on YATA 0: doesn't wish to share 1: share
+    shareE = models.IntegerField(default=-1)
+    energy = models.IntegerField(default=0)
+
+    # share natural nerve bar
+    # -1: not on YATA 0: doesn't wish to share 1: share
+    shareN = models.IntegerField(default=-1)
+    nnb = models.IntegerField(default=0)
+    arson = models.IntegerField(default=0)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
+    def updateStatus(self, description=None, details=None, state=None, color=None, until=None, save=False, **args):
+        # the **args is here to hade extra keys not needed
+        if description is not None:
+            self.description = description
+        if details is not None:
+            self.details = details
+        if state is not None:
+            self.state = state
+        if color is not None:
+            self.color = color
+        if until is not None:
+            self.until = until
+        if save:
+            self.save()
+
+    def updateEnergy(self, key=None):
+        error = False
+        if not self.shareE:
+            self.energy = 0
+        else:
+            req = apiCall("user", "", "bars", key=key)
+            # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
+            # req = requests.get(url).json()
+            if 'apiError' in req:
+                error = req
+                self.energy = 0
+            else:
+                energy = req['energy'].get('current', 0)
+                self.energy = energy
+
+        self.save()
+
+        return error
+
+    def updateNNB(self, key=None):
+        error = False
+        if not self.shareN:
+            self.nnb = 0
+        else:
+            req = apiCall("user", "", "perks,bars,crimes", key=key)
+            if 'apiError' in req:
+                error = req
+                self.nnb = 0
+            else:
+                nnb = req['nerve'].get('maximum', 0)
+
+                # company perks
+                for p in req.get("company_perks", []):
+                    sp = p.split(' ')
+                    # not python 3.5 compatible
+                    # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
+                    if len(sp) == 4 and  sp[3] == "nerve" and sp[2] == "maximum":
+                        nnb -= int(sp[1])
+
+                # faction perks
+                for p in req.get("faction_perks", []):
+                    sp = p.split(' ')
+                    if len(sp) == 6 and  sp[3] == "nerve" and sp[2] == "maximum":
+                        nnb -= int(sp[5])
+
+                # merit perks
+                for p in req.get("merit_perks", []):
+                    sp = p.split(' ')
+                    if len(sp) == 4 and  sp[3] == "nerve" and sp[2] == "Maximum":
+                        nnb -= int(sp[1])
+
+                self.nnb = nnb
+                self.arson = req["criminalrecord"].get("fraud_crimes", 0)
+
+        self.save()
+        return error
 
 class Report(models.Model):
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
