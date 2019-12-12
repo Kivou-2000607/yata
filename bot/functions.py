@@ -21,6 +21,7 @@ from bot.models import DiscordApp
 
 import json
 
+
 def saveBotsConfigs():
     for bot in DiscordApp.objects.all():
         var = dict({})
@@ -46,6 +47,12 @@ def saveBotsConfigs():
                     var[guild.guildId]["stocks"]["tcb"] = True
                 if guild.stockChannel:
                     var[guild.guildId]["stocks"]["channel"] = guild.stockChannel
+
+            # chain
+            if guild.stockModule:
+                var[guild.guildId]["chain"] = {"active": True}
+                if guild.chainChannel:
+                    var[guild.guildId]["chain"]["channel"] = guild.chainChannel
 
             # repository
             if guild.repoModule:

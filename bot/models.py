@@ -30,6 +30,10 @@ class Guild(models.Model):
     stockTCB = models.BooleanField(default=False)
     stockChannel = models.CharField(default="", blank=True, max_length=16)
 
+    # chain module
+    chainModule = models.BooleanField(default=False)
+    chainChannel = models.CharField(default="", blank=True, max_length=16)
+
     # loot module
     lootModule = models.BooleanField(default=False)
 
