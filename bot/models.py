@@ -23,6 +23,7 @@ class Guild(models.Model):
 
     # general options
     manageChannels = models.BooleanField(default=False)
+    masterKeys = models.ManyToManyField(Player, blank=True)
 
     # stock module
     stockModule = models.BooleanField(default=False)
@@ -40,8 +41,8 @@ class Guild(models.Model):
     # verify module
     verifyModule = models.BooleanField(default=False)
     verifyForce = models.BooleanField(default=False)
-    verifyKeys = models.ManyToManyField(Player, blank=True)
     verifyFactions = models.ManyToManyField(Faction, blank=True)
+    verifyFacsRole = models.CharField(default="", blank=True, max_length=16)
 
     # verify repository
     repoModule = models.BooleanField(default=False)
