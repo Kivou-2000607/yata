@@ -21,9 +21,9 @@ This file is part of yata.
 <h2 class="title">{{app.name}} [{{app.id}}]</h2>
     <div class="module">
          {% for guildId, guild in app.variables.items %}
-            <h1>Guild {{guild.name}} [{{guildId}}]</h1>
+            <h1>Guild {{guild.admin.name}} [{{guildId}}] owned by {{guild.admin.owner}} [{{guild.admin.owner_id}}]</h1>
                 {% for module, options in guild.items %}
-                    {% if module != "name" %}
+                    {% if module != "admin" %}
                         <h2>{{module}}</h2>
                         <p>
                             {% for k, v in options.items %}

@@ -20,6 +20,8 @@ class Guild(models.Model):
     configuration = models.ForeignKey(DiscordApp, on_delete=models.CASCADE)
     guildId = models.BigIntegerField(default=0)
     guildName = models.CharField(default="guild_name", max_length=32)
+    guildOwnerId = models.BigIntegerField(default=0)
+    guildOwnerName = models.CharField(default="guild_owner", max_length=32)
 
     # general options
     manageChannels = models.BooleanField(default=False)

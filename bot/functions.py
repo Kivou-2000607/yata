@@ -28,7 +28,9 @@ def saveBotsConfigs():
         # loop on configuration helpers attached to the bot
         for guild in bot.guild_set.all():
             var[guild.guildId] = dict({})
-            var[guild.guildId]["name"] = guild.guildName
+            var[guild.guildId]["admin"] = {"name": guild.guildName,
+                                           "owner": guild.guildOwnerName,
+                                           "owner_id": guild.guildOwnerId}
 
             # manage channels
             if guild.manageChannels:
@@ -49,7 +51,7 @@ def saveBotsConfigs():
                     var[guild.guildId]["stocks"]["channel"] = guild.stockChannel
 
             # chain
-            if guild.stockModule:
+            if guild.chainModule:
                 var[guild.guildId]["chain"] = {"active": True}
                 if guild.chainChannel:
                     var[guild.guildId]["chain"]["channel"] = guild.chainChannel
