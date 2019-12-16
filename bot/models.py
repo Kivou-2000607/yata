@@ -22,6 +22,8 @@ class Guild(models.Model):
     guildName = models.CharField(default="guild_name", max_length=32)
     guildOwnerId = models.BigIntegerField(default=0)
     guildOwnerName = models.CharField(default="guild_owner", max_length=32)
+    guildContactId = models.BigIntegerField(default=0)
+    guildContactName = models.CharField(default="guild_contact", max_length=32)
 
     # general options
     manageChannels = models.BooleanField(default=False)

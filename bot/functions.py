@@ -30,7 +30,9 @@ def saveBotsConfigs():
             var[guild.guildId] = dict({})
             var[guild.guildId]["admin"] = {"name": guild.guildName,
                                            "owner": guild.guildOwnerName,
-                                           "owner_id": guild.guildOwnerId}
+                                           "owner_id": guild.guildOwnerId,
+                                           "contact": guild.guildContactName,
+                                           "contact_id": guild.guildContactId}
 
             # manage channels
             if guild.manageChannels:

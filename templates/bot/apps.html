@@ -17,11 +17,17 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load app_filters %}
+
 {% for app in apps %}
-<h2 class="title">{{app.name}} [{{app.id}}]</h2>
-    <div class="module">
-         {% for guildId, guild in app.variables.items %}
-            <h1>Guild {{guild.admin.name}} [{{guildId}}] owned by {{guild.admin.owner}} [{{guild.admin.owner_id}}]</h1>
+{% for guildId, guild in app.variables.items %}
+<div class="catch-me">
+    <h2 class="title toggle-display rounded">{{app.name}} [{{app.id}}] on guild {{guild.admin.name}} [{{guildId}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="module" style="display: none;">
+                <h2>Owner</h2>
+                <p>{{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
+                <h2>Contact</h2>
+                <p>{{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
                 {% for module, options in guild.items %}
                     {% if module != "admin" %}
                         <h2>{{module}}</h2>
@@ -38,6 +44,7 @@ This file is part of yata.
                 {% if not forloop.last %}
                 <hr class="sep">
                 {% endif %}
-         {% endfor %}
     </div>
+</div>
+{% endfor %}
 {% endfor %}
