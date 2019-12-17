@@ -1962,7 +1962,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [571]:
-		        # "571": { "name": "Chequered Past", "description": "Win 100 races", "type": 0,
+                    # "571": { "name": "Chequered Past", "description": "Win 100 races", "type": 0,
                     type = "Racing"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("raceswon", 0)
@@ -2014,16 +2014,25 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [266, 566]:
+                elif int(k) in [266, 334, 566]:
                     # 566 {'name': "You've Got Some Nerve", 'description': 'Refill your nerve bar 250 times', 'type': 0, 'circulation': 812, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': 572050307, 'title': "You've Got Some Nerve [566]: Extraordinary (812)"}
                     # 266 {'name': 'Energize', 'description': 'Refill your energy bar 250 times', 'type': 0, 'circulation': 10237, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 400884239, 'title': 'Energize [266]: Limited (10237)'}
+                    # "334": { "name": "Compulsive", "description": "Refill your casino tokens 250 times", "type": 0,
                     type = "Points"
                     vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
-                    key = "nerverefills" if v["description"].split(" ")[2] == "nerve" else "refills"
+                    splt = v["description"].split(" ")[2]
+                    if splt == "nerve":
+                        key = "nerverefills"
+                    elif splt in "energy":
+                        key = "refills"
+                    elif splt in "casino":
+                        key = "tokenrefills"
+                    else:
+                        key = "???"
                     vp["current"] = userInfo.get("personalstats", dict({})).get(key, 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max(vp["goal"] - vp["current"], 0)
-                    vp["comment"] = "with daily refill"
+                    vp["comment"] = "With daily refill"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [288]:

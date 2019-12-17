@@ -47,6 +47,7 @@ d = {
     734: 182849928,  # Wrecked
     288: 317742122,  # Fresh Start
     571: 559214781,  # Chequered Past
+    334: 0,  # Compulsive
 
     # 1
     171: 228001376,  # Afghanistan
