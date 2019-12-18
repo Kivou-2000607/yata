@@ -446,7 +446,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Damage": dict(),
             "Finishing hits": dict()})
 
-        keysTmp = ["attackswon", "attacksstealthed", "attackslost", "attacksdraw", "attacksassisted"]
+        keysTmp = ["attackswon", "attackslost", "attacksdraw", "attacksassisted"]
         totalNumberOfAttacks = sum([int(userInfo.get("personalstats", dict({})).get(k, 0)) for k in keysTmp])
         keysTmp = ["defendslost", "defendswon", "defendsstalemated", "theyrunaway"]
         totalNumberOfDefends = sum([int(userInfo.get("personalstats", dict({})).get(k, 0)) for k in keysTmp])
@@ -893,7 +893,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("respectforfaction", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    keysTmp = ["attackswon", "attacksstealthed", "attackslost", "attacksdraw", "attacksassisted"]
+                    keysTmp = ["attackswon", "attackslost", "attacksdraw", "attacksassisted"]
                     totalNumberOfAttacks = sum([int(userInfo.get("personalstats", dict({})).get(k, 0)) for k in keysTmp])
                     ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
                     e = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else "&infin;"
