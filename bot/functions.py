@@ -68,7 +68,7 @@ def saveBotsConfigs():
                 if guild.verifyForce:
                     var[guild.guildId]["verify"]["force"] = True
                 if guild.verifyFacsRole:
-                    var[guild.guildId]["verify"]["commun"] = guild.verifyFacsRole
+                    var[guild.guildId]["verify"]["common"] = guild.verifyFacsRole
                 var[guild.guildId]["factions"] = dict({f.tId: f.name for f in guild.verifyFactions.all()})
 
             # loop over yata users to get their keys
