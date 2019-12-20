@@ -247,9 +247,6 @@ $(document).ready(function() {
 
 
             <td class="c">
-                {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
-            </td>
-            <td class="c">
                 {% if c.totalHits %}
                     {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
                 {% else %}
