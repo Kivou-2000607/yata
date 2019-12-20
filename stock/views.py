@@ -154,17 +154,19 @@ def prices(request, tId, period=None):
 
             history = stock.get('t').history_set.filter(timestamp__gte=(ts - periodS)).order_by('timestamp')
 
+            av = stock.get('t').averagePrice
+
             graph = []
             for h in history:
                 t = h.timestamp
                 dt = stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB  # day tendancy
                 wt = stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB  # week tendancy
-                line = [t, h.tCurrentPrice, dt, wt, h.tAvailableShares, h.tTotalShares, h.tForecast, h.tDemand]
+                line = [t, h.tCurrentPrice, dt, wt, h.tAvailableShares, h.tTotalShares, h.tForecast, h.tDemand, av]
                 graph.append(line)
 
             graphLength = 0
             maxTS = ts
-            for i, (t, p, dt, wt, _, _, _, _) in enumerate(graph):
+            for i, (t, p, dt, wt, _, _, _, _, _) in enumerate(graph):
                 # remove 0 prices
                 if not int(p):
                     graph[i][1] = "null"

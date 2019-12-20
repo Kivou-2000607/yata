@@ -28,9 +28,9 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Good Forcast', 'Poor Forcast'],
-        {% for a, b, c, d, _, _, e, _ in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {%if e == "Good"%}1{%elif e == "Very Good"%}1{%else%}0{%endif%}, {%if e == "Poor"%}1{%elif e == "Very Poor"%}1{%else%}0{%endif%}],
+        ['Time', 'Current Price', 'Day Tendency: {{stock.t.dayTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Week Tendency: {{stock.t.weekTendencyA|mul:3600|format:"{:+,.2f}"}} $/h', 'Good Forcast', 'Poor Forcast', 'Trimestrial Average Price'],
+        {% for a, b, c, d, _, _, e, _, av in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}, {%if e == "Good"%}1{%elif e == "Very Good"%}1{%else%}0{%endif%}, {%if e == "Poor"%}1{%elif e == "Very Poor"%}1{%else%}0{%endif%}, {{av}}],
          {% endfor %}
       ]);
 
@@ -40,9 +40,9 @@ This file is part of yata.
             0: {type: 'line', color: '#780078', pointShape: 'None',   lineWidth: 2, targetAxisIndex: 0},
             1: {type: 'steppedArea', color: '#0B8E14', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1, visibleInLegend: false, tooltip : false},
             2: {type: 'steppedArea', color: '#CC3434', lineWidth: 0, targetAxisIndex: 1, areaOpacity: 0.1, visibleInLegend: false, tooltip : false},
-            3: {type: 'line', color: {%if stock.t.dayTendency >= 0.01%}'#0B8E14'{% elif stock.t.dayTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
-            4: {type: 'line', color: {%if stock.t.weekTendency >= 0.01%}'#0B8E14'{% elif stock.t.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
-
+            3: {type: 'line', color: '#F00', pointShape: 'None',   lineWidth: 1, targetAxisIndex: 0},
+            4: {type: 'line', color: {%if stock.t.dayTendency >= 0.01%}'#0B8E14'{% elif stock.t.dayTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', targetAxisIndex: 0},
+            5: {type: 'line', color: {%if stock.t.weekTendency >= 0.01%}'#0B8E14'{% elif stock.t.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5], targetAxisIndex: 0},
         },
         hAxis: { textPosition: 'none' },
         vAxes: {
@@ -54,7 +54,7 @@ This file is part of yata.
       };
 
       var view = new google.visualization.DataView(data);
-      columns = [0, 1, 4, 5];
+      columns = [0, 1, 4, 5, 6];
       {% if stock.t.dayTendencyA or stock.t.dayTendencyB %}
         columns.push(2);
       {% endif %}
@@ -69,7 +69,7 @@ This file is part of yata.
 
       var data2 = google.visualization.arrayToDataTable([
         ['Time', 'Available Shares', 'Total Shares', '1% of Total Shares'],
-        {% for a, _, _, _, b, c, _, _ in graph %}
+        {% for a, _, _, _, b, c, _, _, _ in graph %}
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{c|mul:0.01}}],
          {% endfor %}
       ]);

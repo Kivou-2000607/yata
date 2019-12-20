@@ -7,7 +7,7 @@ from yata.handy import timestampToDate
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
-    list_display = ['tId', 'name', 'botPerm', 'active', 'validKey', 'last_action', 'lastActionTS', 'last_update', 'lastUpdateTS']
+    list_display = ['tId', 'name', 'botPerm', 'active', 'validKey', 'dId']
     search_fields = ['name', 'tId']
     list_filter = ['active', 'validKey']
 
