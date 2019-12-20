@@ -173,10 +173,7 @@ $(document).ready(function() {
         </tbody>
     </table>
     <hr class="sep">
-{% endif %}
 
-
-{% if counts|length %}
 <table class="center-large">
     <thead>
         <tr><th style="text-align: center;">
@@ -253,7 +250,11 @@ $(document).ready(function() {
                 {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
             </td>
             <td class="c">
-                {{c.watcher|mul:100|floatformat:2}}%
+                {% if c.totalHits %}
+                    {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
+                {% else %}
+                    -
+                {% endif %}
             </td>
 
             {% if c.daysInFaction < 0 %}
