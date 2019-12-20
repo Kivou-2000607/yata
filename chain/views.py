@@ -2283,7 +2283,7 @@ def bigBrother(request):
             statsList = dict({})
             contributors = False
             comparison = False
-            for stat in faction.stat_set.all():
+            for stat in faction.stat_set.all().order_by('timestamp'):
                 # create entry if first iteration on this type
                 if stat.type not in statsList:
                     statsList[stat.type] = []
