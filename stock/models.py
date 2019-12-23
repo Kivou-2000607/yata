@@ -181,6 +181,10 @@ class Stock(models.Model):
         # compute triggers
         triggers = dict({})
 
+        # trigger: shares available
+        # if self.tAvailableShares:
+        #     triggers["shares"] = True
+
         # trigger: below average
         if self.tCurrentPrice < self.averagePrice:
             triggers["below"] = True

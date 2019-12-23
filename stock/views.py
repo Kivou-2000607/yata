@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.utils import timezone
 from django.conf import settings
 
@@ -207,3 +208,19 @@ def prices(request, tId, period=None):
 
     except Exception:
         return returnError()
+
+# API
+def alerts(request):
+    try:
+        stocks = Stock.objects.all()
+        payload = dict({})
+        for stock in stocks:
+            triggers = json.loads(stock.triggers)
+            if triggers:
+                payload[stock.tAcronym] = {"alerts": triggers, "price": stock.tCurrentPrice, "shares": stock.tAvailableShares}
+
+        return HttpResponse(json.dumps(payload, separators=(',', ':')), content_type="application/json")
+
+    except BaseException as e:
+        return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
+    # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")

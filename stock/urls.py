@@ -12,4 +12,5 @@ urlpatterns = [
     re_path(r'^prices/(?P<tId>\w+)$', views.prices, name='prices'),
     re_path(r'^prices/(?P<tId>\w+)/(?P<period>\w+)$', views.prices, name='prices'),
 
+    re_path(r'^alerts/$', views.alerts, name='alerts'),
 ]
