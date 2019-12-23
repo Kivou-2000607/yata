@@ -34,6 +34,7 @@ class Guild(models.Model):
     stockWSSB = models.BooleanField(default=False)
     stockTCB = models.BooleanField(default=False)
     stockChannel = models.CharField(default="", blank=True, max_length=16)
+    stockAlerts = models.BooleanField(default=False)
 
     # chain module
     chainModule = models.BooleanField(default=False)

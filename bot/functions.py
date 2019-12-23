@@ -51,6 +51,8 @@ def saveBotsConfigs():
                     var[guild.guildId]["stocks"]["tcb"] = True
                 if guild.stockChannel:
                     var[guild.guildId]["stocks"]["channel"] = guild.stockChannel
+                if guild.stockAlerts:
+                    var[guild.guildId]["stocks"]["alerts"] = True
 
             # chain
             if guild.chainModule:
