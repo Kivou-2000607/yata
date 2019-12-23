@@ -60,6 +60,11 @@ class Stock(models.Model):
 
     def update(self, k, v, ts):
         print("[model.stock.update] update: ", k, v['acronym'])
+
+        # get some previous steps for triggers
+        tPreviousShares = self.tAvailableShares
+        tPreviousForecast = self.tForecast
+
         self.tName = v['name']
         self.tAcronym = v['acronym']
         self.tDirector = v['director']
@@ -87,21 +92,21 @@ class Stock(models.Model):
                                     tDemand=self.tDemand,
                                     timestamp=self.timestamp)
         else:
-            lastHistory.tCurrentPrice=self.tCurrentPrice
-            lastHistory.tMarketCap=self.tMarketCap
-            lastHistory.tTotalShares=self.tTotalShares
-            lastHistory.tAvailableShares=self.tAvailableShares
-            lastHistory.tForecast=self.tForecast
-            lastHistory.tDemand=self.tDemand
-            lastHistory.timestamp=self.timestamp
+            lastHistory.tCurrentPrice = self.tCurrentPrice
+            lastHistory.tMarketCap = self.tMarketCap
+            lastHistory.tTotalShares = self.tTotalShares
+            lastHistory.tAvailableShares = self.tAvailableShares
+            lastHistory.tForecast = self.tForecast
+            lastHistory.tDemand = self.tDemand
+            lastHistory.timestamp = self.timestamp
             lastHistory.save()
 
         # get 4 month average
-        p = [h.tCurrentPrice for h in self.history_set.filter(timestamp__gte = ts - 3600 * 24 * 31 * 4)]
+        p = [h.tCurrentPrice for h in self.history_set.filter(timestamp__gte=ts - 3600 * 24 * 31 * 4)]
         if len(p):
             self.averagePrice = sum(p) / len(p)
 
-        history = self.history_set.filter(timestamp__gte = ts - 3600 * 24 * 7)
+        history = self.history_set.filter(timestamp__gte=ts - 3600 * 24 * 7)
         priceHistory = {h.timestamp: h.tCurrentPrice for h in history}
 
         # update tendency
@@ -174,6 +179,21 @@ class Stock(models.Model):
         # print("[model.stock.update] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
 
         # compute triggers
+        triggers = dict({})
+
+        # trigger: below average
+        if self.tCurrentPrice < self.averagePrice:
+            triggers["below"] = True
+
+        # trigger new shares available
+        if not tPreviousShares and self.tAvailableShares:
+            triggers["restock"] = True
+
+        # trigger if forcast move from bad to good
+        if tPreviousForecast in ["Poor", "Very Poor"] and self.tForecast in ["Good", "Very Good"]:
+            triggers["forecast"] = True
+
+        self.triggers = json.dumps(triggers)
 
         self.save()
 
