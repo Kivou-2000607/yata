@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css%}
-    {# <link rel="stylesheet" type="text/css" href={% static "perso/css/discord.css" %} /> #}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/bot.css" %} />
 {% endblock%}
 
 {% block title%}
@@ -35,6 +35,24 @@
           reload.html('<p><i class="fas fa-spinner fa-pulse"></i></p>');
         }
     });
+
+    // show/hide command
+    $(document).on('click', 'h1.module-doc, h2.command-doc', function(e){
+        e.preventDefault();
+        // get h2 and div
+        var h = $(this);
+        console.log(h);
+        var d = $(this).next("div");
+        var i = h.find("i.fas");
+        d.slideToggle("fast", function(){
+            if (d.css("display") == "none") {
+                i.removeClass("fa-rotate-90");
+            } else {
+                i.addClass("fa-rotate-90");
+            }
+        });
+    });
+
 
     // // update discord id
     // $(document).on('click', '[id^=pref-toggle-]', function(e){

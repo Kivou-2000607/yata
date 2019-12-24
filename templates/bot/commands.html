@@ -17,17 +17,10 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load app_filters %}
 
-{% include "bot/main.html" %}
-{% include "bot/commands.html" %}
-
-{% if apps %}
-    {% include "bot/apps.html" %}
-{% endif %}
-
-{% if guilds %}
-    {% include "bot/guilds.html" %}
-{% endif %}
+<h2 class="title">List of commands and features</h2>
+<div class="module">
+    {% include "bot/commands-verify.html" %}
+    {% include "bot/commands-chain.html" %}
+</div>

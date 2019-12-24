@@ -1,0 +1,4 @@
+h1.module-doc { cursor: help; }
+div.module-doc { margin-left: 10px; display: none;}
+h2.command-doc { cursor: help; }
+div.command-doc { margin-left: 20px; display: none;}

@@ -194,7 +194,7 @@ class Stock(models.Model):
             triggers["restock"] = True
 
         # trigger if forcast move from bad to good
-        if tPreviousForecast in ["Poor", "Very Poor"] and self.tForecast in ["Good", "Very Good"]:
+        if tPreviousForecast in ["Poor", "Very Poor"] and self.tForecast in ["Average", "Good", "Very Good"]:
             triggers["forecast"] = True
 
         self.triggers = json.dumps(triggers)

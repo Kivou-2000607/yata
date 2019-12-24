@@ -1,0 +1,40 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<h1 class="module-doc">Module Chain&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<p>This module provides tools to monitor chains.</p>
+
+<h2 class="command-doc">Command <tt>!chain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;TornFactionID&gt;</tt> or <tt>!verify &lt;w=warningTime&gt; &lt;n=notificationTime&gt;</tt></p>
+<p><b>Help:</b> Regularly gives status on the chain and send a notification to the chain faction roles (<tt>@Faction [factionId]</tt>) when chain is about to timeout. If <tt>&lt;TornFactionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the master key holder's faction. The two optional parameters <tt>&lt;w=warningTime&gt;</tt> and <tt>&lt;n=notificationTime&gt;</tt> sets the timeout notification threshold in seconds (default is 90 seconds) and the time between status update (default is 900 seconds = 10 minutes), respectively.</p>
+<p><b>Example:</b> <tt>!chain 2356 w=30 n=120</tt> will watch the chain of faction <tt>2356</tt>, gives notifications if timeout < 30 seconds and gives status update every 2 minutes.
+<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
+</div>
+
+<h2 class="command-doc">Command <tt>!stop</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p><b>Syntax:</b> <tt>!stop</tt></p>
+<p><b>Help:</b> tells the bot to stop watching a chain.</p>
+<p><b>Warning:</b> This is not a <i>real</i> command in the sense that upon status update, the bot will read previous messages and if it catches a <tt>!stop</tt> it will stop watching, say so and delete the <tt>!stop</tt> message. So it can take several minutes for the bot to actually stop. If you're watching several chains at the same time the next chain to notify will be stopped.<p>
+<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
+</div>
+
+</div>
