@@ -556,9 +556,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [740, 741]:
+                elif int(k) in [740, 741, 786]:
                     # "740": {"name": "Devastation", "description": "Deal at least 5,000 damage in a single hit", "type": 8,
                     # "741": {"name": "Obliteration", "description": "Deal at least 10,000 damage in a single hit",	"type": 8,
+                    # "786": { "name": "Annihilation", "description": "Deal at least 15,000 damage in a single hit", "type": 8,
                     type = "Damage"
                     vp["goal"] = int(v["description"].split(" ")[3].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("bestdamage", 0)

@@ -308,6 +308,7 @@ d = {
     488: 918833578,  # Vengeance
     781: 235478737,  # Riddled
     741: 257870729,  # Obliteration
+    786: 0,  # Annihilation
     476: 0,  # Chainer 5
 
     # 9

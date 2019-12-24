@@ -392,6 +392,7 @@ span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 
 /* member status */
 .player-status-red { color: #CC3434; }
 .player-status-green { color: #0B8E14; }
+.player-status-blue { color: #447e9b; }
 
 /* .error { color: #CC3434!important; font-weight: bold; }
 .warning { color: #FF8C00!important; font-weight: bold; }
