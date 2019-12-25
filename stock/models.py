@@ -191,7 +191,11 @@ class Stock(models.Model):
 
         # trigger new shares available
         if not tPreviousShares and self.tAvailableShares:
-            triggers["restock"] = True
+            triggers["new"] = True
+
+        # trigger more than 1% total
+        if self.tAvailableShares > 0.01 * self.tTotalShares:
+            triggers["enough"] = True
 
         # trigger if forcast move from bad to good
         if tPreviousForecast in ["Poor", "Very Poor"] and self.tForecast in ["Average", "Good", "Very Good"]:
