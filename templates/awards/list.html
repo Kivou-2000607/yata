@@ -176,16 +176,22 @@ This file is part of yata.
                     </td>
                 {% else %}
                     <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Achieved: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
-                    <td class="g" data-val="{{award.left|convertInf}}">
-                        {% if award.left %}
-                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
-                        {% elif award.comment %}
-                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
-                        {% endif %}
-                    </td>
+                    {% if award.left < 0 %}
+                        <td class="g" data-val="1e10">
+                            <span class="thelp" rel="tooltip">&infin;</span>
+                        </td>
+                    {% else %}
+                        <td class="g" data-val="{{award.left}}">
+                            {% if award.left %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
+                            {% elif award.comment %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 {% endif %}
                 <td class="i">
-                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
+                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to do!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
                 </td>
             </tr>
         {% endfor %}
