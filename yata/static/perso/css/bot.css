@@ -2,3 +2,72 @@ h1.module-doc { cursor: help; }
 div.module-doc { margin-left: 10px; display: none;}
 h2.command-doc { cursor: help; }
 div.command-doc { margin-left: 20px; display: none;}
+
+/* p.privacy-master {
+
+} */
+
+/* blue: 447e9b */
+/* red: CC3434 */
+/* green: 0B8E14 */
+
+p.color-private { color: #CC3434; }
+p.color-public { color: #447e9b; }
+p.color-none { color: #0B8E14; }
+
+p.privacy-master::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f509";
+    margin-right: 5px;
+}
+
+p.privacy-private::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f502";
+    margin-right: 5px;
+}
+
+p.privacy-none::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f4fc";
+    margin-right: 5px;
+}
+
+h3.privacy-personal-private::before,
+h2.privacy-personal-private::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f502";
+    margin-right: 5px;
+    color: #CC3434;
+}
+
+h3.privacy-personal-public::before,
+h2.privacy-personal-public::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f502";
+    margin-right: 5px;
+    color: #447e9b;
+}
+
+h3.privacy-master::before,
+h2.privacy-master::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f509";
+    margin-right: 5px;
+    color: #447e9b;
+}
+
+h3.privacy-none::before,
+h2.privacy-none::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f4fc";
+    margin-right: 5px;
+    color: #444;
+}

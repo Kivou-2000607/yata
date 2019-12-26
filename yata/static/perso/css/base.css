@@ -29,8 +29,9 @@ a, th { outline: none; }
 
 h1 { height: 35px; }
 
-ul li { list-style-type: disc; }
-ul ul li { list-style-type: circle; }
+li { font-size: 14px; }
+ul li { list-style-type: disclosure-closed; }
+ul ul li { list-style-type: disclosure-closed; }
 
 a.form-inline, form.form-inline { display: inline!important; }
 
@@ -56,8 +57,9 @@ div.module {
 
 div.module h1 {margin: 15px 10px; height: auto; font-weight: 300; font-size: 20px; color: #666;}
 div.module h2 {margin: 10px 10px; height: auto; font-weight: 600; font-size: 15px; color: #666;}
-div.module h2 {padding: 0; background: 0000;}
+div.module h3 {margin: 5px 10px; height: auto; font-weight: 500; font-size: 14px;}
 
+div.module h2 {padding: 0; background: 0000;}
 
 div.module p:last-child {
     margin: 0px;

@@ -27,37 +27,42 @@ This file is part of yata.
     </ul>
 </p>
 
-<h2 class="command-doc">Command <tt>!verify</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-master">Command <tt>!verify</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!verify</tt> or <tt>!verify &lt;TornID&gt;</tt> or <tt>!verify &lt;@DiscordMember&gt;</tt></p>
 <p><b>Help:</b> Links a discord account with a torn account. If no arguments given it verifies the author of the command. It will never remove any role.</p>
 <p><b>Scope:</b> Anyone can use it in <tt>#verify-id</tt>.</p>
+{# <p class="privacy-master warning">Use the master key to verify discord ID.</p> #}
 </div>
 
-<h2 class="command-doc">Command <tt>!verifyKey</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-personal-public">Command <tt>!verifyKey</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!verifyKey &lt;APIKey&gt;</tt></p>
 <p><b>Help:</b> Links a discord account with the Torn account corresponding to the API key on all mutual servers between the bot and the member. It will never remove any role. Official discord Torn verifiaction is not required.</p>
 <p><b>Scope:</b> Anyone can use it as DM to the bot.</p>
+{# <p class="privacy-none valid">Use the input key to verify discord ID.</p> #}
 </div>
 
-<h2 class="command-doc">Command <tt>!verifyAll</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-master">Command <tt>!verifyAll</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!verifyAll</tt></p>
 <p><b>Help:</b> Loops over all members of the server and apply <tt>!verify</tt> only to non verified members.</p>
 <p><b>Scope:</b> Server admin can use it in <tt>#yata-admin</tt>.</p>
+{# <p class="privacy-master warning">Use the master key to verify discord ID.</p> #}
 </div>
 
-<h2 class="command-doc">Command <tt>!checkFactions</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-master">Command <tt>!checkFactions</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!checkFactions</tt> or <tt>!checkFactions force</tt></p>
 <p><b>Help:</b> Loops over all factions and check if members are still part it. Write a report and remove faction and group of faction roles if <tt>force</tt> is asked.</p>
 <p><b>Scope:</b> Server admin can use it in <tt>#yata-admin</tt>.</p>
+{# <p class="privacy-master warning">Use the master key to get the list of members.</p> #}
 </div>
 
-<h2 class="command-doc">On member join&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-master">On member join&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p>The bot automatically applies <tt>!verify</tt> to new members of a server. It sends a welcome message and the result of the verification in the system channel.</p>
+{# <p class="privacy-master warning">Use the master key to verify discord ID.</p> #}
 </div>
 
 </div>

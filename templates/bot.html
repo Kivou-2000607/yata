@@ -43,7 +43,7 @@
         var h = $(this);
         console.log(h);
         var d = $(this).next("div");
-        var i = h.find("i.fas");
+        var i = h.find("i[class^='fas fa-caret']");
         d.slideToggle("fast", function(){
             if (d.css("display") == "none") {
                 i.removeClass("fa-rotate-90");

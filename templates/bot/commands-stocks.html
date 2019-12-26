@@ -21,29 +21,31 @@ This file is part of yata.
 <div class="module-doc">
 <p>This module gives information on wssb and tcb sharing group and notifies good investments on the stock market.</p>
 
-<h2 class="command-doc">Command <tt>!wssb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-personal-private">Command <tt>!wssb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!wssb</tt></p>
 <p><b>Help:</b> Give education's time left and BB ownership for all <tt>@wssb</tt>.</p>
 <p><b>Scope:</b> <tt>@wssb</tt> can use it in <tt>#wssb</tt>.</p>
+{# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
-<h2 class="command-doc">Command <tt>!tcb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-personal-private">Command <tt>!tcb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
 <p><b>Syntax:</b> <tt>!tcb</tt></p>
 <p><b>Help:</b> Give bank investment's time left and BB ownership for all <tt>@tcb</tt>.</p>
 <p><b>Scope:</b> <tt>@tcb</tt> can use it in <tt>#tcb</tt>.</p>
+{# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
-<h2 class="command-doc">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-none">Notifications <span class="warning">(work in progress)</span>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p class="warning">Work in progress</p>
 <p>Notifies <tt>@stock-alerts</tt> role in <tt>#stock-exchange</tt> good investments on the stock market. Triggers are:
 <ul>
     <li>forecast from bad to avg / good & shares available & price lower than trimestrial average</li>
     <li>restock shares (from 0 to something)</li>
 </ul>
 </p>
+{# <p class="privacy-none valid">No key needed.</p> #}
 </div>
 
 </div>

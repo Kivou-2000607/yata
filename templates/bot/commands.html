@@ -19,11 +19,14 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<h2 class="title">List of commands and features</h2>
+<h2 class="title">Documentation</h2>
 <div class="module">
-    {% include "bot/commands-verify.html" %}
-    {% include "bot/commands-loot.html" %}
-    {% include "bot/commands-chain.html" %}
-    {% include "bot/commands-stocks.html" %}
-    {% include "bot/commands-api.html" %}
+<p>The bot's commands are classified in modules. Click on the module for the list of commands and on the command for the documentation.</p>
+{% include "bot/commands-verify.html" %}
+{% include "bot/commands-loot.html" %}
+{% include "bot/commands-chain.html" %}
+{% include "bot/commands-stocks.html" %}
+{% include "bot/commands-api.html" %}
+{% include "bot/commands-legend.html" %}
+
 </div>
