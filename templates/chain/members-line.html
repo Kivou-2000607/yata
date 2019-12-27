@@ -39,7 +39,7 @@ This file is part of yata.
     <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}">
         {% include "chain/members-line-energy.html"%}
     </td>
-    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{% if member.shareN%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
+    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN%}{{member.nnb|mul:100000|add:member.arson}}{%else%}{{member.shareN}}{%endif%}">
         {% include "chain/members-line-nnb.html"%}
     </td>
 {% endif %}
