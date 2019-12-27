@@ -36,28 +36,29 @@ def index(request):
         if request.session.get('player'):
             print('[view.bot.index] get player id from session')
             tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            notifications = json.loads(player.notifications)
-
-            # update discord id
-            error = player.update_discord_id()
-
-            # get guilds
-            guilds = [[guild.guildName, guild.guildId] for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all()]
-
-            # this is just for me...
-            apps = False
-            if player.tId in [2000607]:
-                saveBotsConfigs()
-                apps = DiscordApp.objects.values()
-                for app in apps:
-                    app["variables"] = json.loads(app["variables"])
-
-            context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error}
-            return render(request, "bot.html", context)
-
         else:
-            return returnError(type=403, msg="You might want to log in.")
+            print('[view.bot.index] anon session')
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+        notifications = json.loads(player.notifications)
+
+        # update discord id
+        error = player.update_discord_id()
+
+        # get guilds
+        guilds = [[guild.guildName, guild.guildId] for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all()]
+
+        # this is just for me...
+        apps = False
+        if player.tId in [2000607]:
+            saveBotsConfigs()
+            apps = DiscordApp.objects.values()
+            for app in apps:
+                app["variables"] = json.loads(app["variables"])
+
+        context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error}
+        return render(request, "bot.html", context)
 
     except Exception:
         return returnError()
@@ -123,7 +124,7 @@ def toggleNoti(request):
             player.save()
 
             context = {'player': player, "type": type, 'notifications': notifications}
-            return render(request, "bot/commands-notifications-type.html".format(type), context)
+            return render(request, "bot/commands-api-notifications.html".format(type), context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

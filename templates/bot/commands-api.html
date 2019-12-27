@@ -17,7 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<h1 class="module-doc">Module API&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<h1 class="module-doc">Module Torn API&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
 <div class="module-doc">
 <p>This module brings a set of commands giving direct private/public results of API requests.</p>
 
@@ -55,6 +55,22 @@ This file is part of yata.
 {# <p class="privacy-master warning">Use the master key to pull public information on faction members.</p> #}
 </div>
 
-
+<h2 class="command-doc privacy-personal-private">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>The YATA bot can send you DM notifications if you're part of the <a href="https://discord.gg/tZaYpbG" target="_blank">YATA discord sever</a>. Select below the kind of notifications you want.</p>
+{% if player.tId > 0 %}
+{% with "event message award energy nerve chain education bank drug medical booster travel" as list %}
+    <table class="center notification-preferences">
+        {% for type in list.split %}
+        {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                <td id="discord-toggle-pref-{{type}}">{% include "bot/commands-api-notifications.html" with type=type %}</td>
+        {% if forloop.counter|divisibleby:4 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+        {% endfor %}
+    </table>
+{% endwith %}
+{% else %}
+<p class="error">You have to log in to set your preferences.</p>
+{% endif %}
+</div>
 
 </div>

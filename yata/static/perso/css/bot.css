@@ -71,3 +71,9 @@ h2.privacy-none::before {
     margin-right: 5px;
     color: #0B8E14;
 }
+
+table.notification-preferences td {
+    width: 25%;
+    cursor: pointer;
+    border: 0;
+}

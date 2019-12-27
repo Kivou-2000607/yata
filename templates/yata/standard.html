@@ -51,6 +51,10 @@ This file is part of yata.
         <a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
         Gives the timing of when NPCs are reaching the loot levels.
     </p>
+    <p>
+        <a class="yata-link-bot" href="{% url 'bot:index' %}"><i class="fas fa-robot"></i>&nbsp;&nbsp;<b>Discord bot</b></a><span class="section-status valid" title="Most of the features requires your API key.">partially public</span><br>
+        Discord bot made for Torn.
+    </p>
     {% if player %}
         <hr class="sep">
         <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>

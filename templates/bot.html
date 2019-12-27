@@ -37,10 +37,10 @@
     });
 
     // toggle notifications
-    $(document).on('click', "i[id^='discord-toggle-pref-']", function(e){
+    $(document).on('click', "td[id^='discord-toggle-pref-']", function(e){
         e.preventDefault();
-        var type = $(this).attr("id").split("-").pop()
-        var reload = $(this).parent("h2");
+        var reload = $(this);
+        var type = reload.attr("id").split("-").pop()
         reload.load( "/bot/toggleNoti/", {
             type: type,
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
