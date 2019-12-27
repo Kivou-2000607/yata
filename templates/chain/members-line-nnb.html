@@ -25,7 +25,7 @@ This file is part of yata.
 {% if member.tId == player.tId %}
     <span style="cursor: pointer;">
     {% if member.shareN %}
-        <span class="error chain-member-shareN" title="Stop sharing your nerve bar.">
+        <span class="error chain-member-shareN" title="{{member.nnb}} NNB<br>{{member.arson}} fraud crimes<br>Click to stop sharing your nerve bar." rel="tooltip">
             {{member.nnb}}
         </span>
     {% else %}
@@ -40,7 +40,7 @@ This file is part of yata.
     {% elif member.shareN == 0 %}
         <span class="warning" title="{{member.name}} does not wish to share" rel="tooltip"><i class="fas fa-user-times"></i></span>
     {% elif member.shareN == 1 %}
-        {{member.nnb}}
+        <span title="{{member.nnb}} NNB<br>{{member.arson}} fraud crimes" rel="tooltip">{{member.nnb}}</span>
     {% endif %}
 {% endif %}
 
