@@ -44,10 +44,6 @@ class Player(models.Model):
     name = models.CharField(default="Duke", max_length=200)
     key = models.CharField(default="AAAA", max_length=16)
 
-    # discord id and permission to give the bot the right to pull information
-    dId = models.BigIntegerField(default=0)
-    botPerm = models.BooleanField(default=False)
-
     # BooleanField states
     active = models.BooleanField(default=True)
     validKey = models.BooleanField(default=True)
@@ -87,6 +83,12 @@ class Player(models.Model):
     stocksInfo = models.CharField(default="N/A", max_length=255)
     stocksJson = models.TextField(default="{}")
     stocksUpda = models.IntegerField(default=0)
+
+    # discord id and permission to give the bot the right to pull information
+    dId = models.BigIntegerField(default=0)
+    botPerm = models.BooleanField(default=False)
+    activateNotifications = models.BooleanField(default=False)
+    notifications = models.TextField(default="{}")
 
     def __str__(self):
         return "{:15} [{:07}]".format(self.name, self.tId)

@@ -26,6 +26,7 @@ import re
 
 from yata.handy import apiCall
 
+
 class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=200)
@@ -179,12 +180,14 @@ class Faction(models.Model):
 
         return json.loads(self.memberStatus)
 
+
 class Stat(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     timestamp = models.IntegerField(default=0)
     name = models.CharField(default="stat type", max_length=64)
     type = models.IntegerField(default=0)
     contributors = models.TextField(default="{}")
+
 
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -299,19 +302,19 @@ class Member(models.Model):
                     sp = p.split(' ')
                     # not python 3.5 compatible
                     # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
-                    if len(sp) == 4 and  sp[3] == "nerve" and sp[2] == "maximum":
+                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
                         nnb -= int(sp[1])
 
                 # faction perks
                 for p in req.get("faction_perks", []):
                     sp = p.split(' ')
-                    if len(sp) == 6 and  sp[3] == "nerve" and sp[2] == "maximum":
+                    if len(sp) == 6 and sp[3] == "nerve" and sp[2] == "maximum":
                         nnb -= int(sp[5])
 
                 # merit perks
                 for p in req.get("merit_perks", []):
                     sp = p.split(' ')
-                    if len(sp) == 4 and  sp[3] == "nerve" and sp[2] == "Maximum":
+                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "Maximum":
                         nnb -= int(sp[1])
 
                 self.nnb = nnb
@@ -319,6 +322,7 @@ class Member(models.Model):
 
         self.save()
         return error
+
 
 class Report(models.Model):
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
@@ -369,6 +373,7 @@ class Attacks(models.Model):
     tss = models.IntegerField(default=0)
     tse = models.IntegerField(default=0)
     req = models.TextField()
+
     def __str__(self):
         return("Attack {} of {}".format(self.pk, self.report))
 
