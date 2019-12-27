@@ -34,7 +34,8 @@ This file is part of yata.
             },
             // format data for normalization
             format: function(s, table, cell, cellIndex) {
-              return parseInt($(cell).attr("data-val"));
+                if ($(cell).attr("data-val") == "") return "";
+                else return parseInt($(cell).attr("data-val"));
             },
             // set type, either numeric or text
             type: 'numeric'
