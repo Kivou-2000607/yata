@@ -1582,28 +1582,42 @@ def armory(request):
 
             if player.factionAA:
                 print('[view.armory] player with AA. Faction {}'.format(faction))
-                armoryRaw = apiCall('faction', player.factionId, 'armorynewsfull', player.key, sub="armorynews")
-                if 'apiError' in armoryRaw:
-                    context = {'player': player, 'chaincat': True, 'faction': faction, "apiErrorSub": armoryRaw["apiError"]}
+                req = apiCall('faction', player.factionId, 'armorynewsfull,fundsnewsfull', player.key)
+                if 'apiError' in req:
+                    context = {'player': player, 'chaincat': True, 'faction': faction, "apiErrorSub": req["apiError"]}
                     page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
                     return render(request, page, context)
 
+                armoryRaw = req["armorynews"]
+                fundsRaw = req["fundsnews"]
+
                 if faction.armoryRecord:
+                    # armory
                     for k, v in json.loads(faction.armoryString).items():
                         if k not in armoryRaw:
                             armoryRaw[k] = v
                     faction.armoryString = json.dumps(armoryRaw)
+
+                    # funds
+                    for k, v in json.loads(faction.fundsString).items():
+                        if k not in fundsRaw:
+                            fundsRaw[k] = v
+                    faction.fundsString = json.dumps(fundsRaw)
                 else:
                     faction.armoryString = "{}"
+                    faction.fundsString = "{}"
                     faction.networthString = "{}"
 
                 faction.save()
 
             else:
                 armoryRaw = json.loads(faction.armoryString)
+                fundsRaw = json.loads(faction.fundsString)
 
             now = int(timezone.now().timestamp())
             timestamps = {"start": now, "end": 0, "fstart": now, "fend": 0, "size": 0}
+
+            # delete armory out of timestamp
             toDel = []
             for k, v in armoryRaw.items():
                 if type(v) is not dict:
@@ -1614,13 +1628,26 @@ def armory(request):
                     timestamps["end"] = max(timestamps["end"], ts)
                     if ts < int(request.POST.get("start", 0)) or ts > int(request.POST.get("end", now)):
                         toDel.append(k)
-
             for k in toDel:
                 del armoryRaw[k]
 
+            # delete funds out of timestamp
+            toDel = []
+            for k, v in fundsRaw.items():
+                if type(v) is not dict:
+                    toDel.append(k)
+                else:
+                    ts = int(v.get("timestamp", 0))
+                    timestamps["start"] = min(timestamps["start"], ts)
+                    timestamps["end"] = max(timestamps["end"], ts)
+                    if ts < int(request.POST.get("start", 0)) or ts > int(request.POST.get("end", now)):
+                        toDel.append(k)
+            for k in toDel:
+                del fundsRaw[k]
+
             timestamps["fstart"] = request.POST.get("start", timestamps.get("start"))
             timestamps["fend"] = request.POST.get("end", timestamps.get("end"))
-            timestamps["size"] = len(armoryRaw)
+            timestamps["size"] = len(armoryRaw) + len(fundsRaw)
 
             armory = dict({})
             timestamps["nObjects"] = 0
@@ -1698,8 +1725,25 @@ def armory(request):
                         # new item and new member [taken, given, filled]
                         armory[item] = {member: [0, 0, 1, btype]}
 
+            for k, v in fundsRaw.items():
+                ns = cleanhtml(v.get("news", "")).split(" ")
+                print(ns)
+                item = "Funds"
+                member = ns[0]
+                if item not in armory:
+                    # was given, deposited, dummy, dummy
+                    armory[item] = {member: [0, 0, 0, ""]}
+                if member not in armory[item]:
+                    armory[item][member] = [0, 0, 0, ""]
+
+                if ns[1] == "was":
+                    armory[item][member][0] += int(ns[3].replace("$", "").replace(",", ""))
+                elif ns[1] == "deposited":
+                    armory[item][member][1] += int(ns[2].replace("$", "").replace(",", ""))
+
             armoryType = {t: dict({}) for t in ITEM_TYPE}
             armoryType["Points"] = dict({})
+            armoryType["Funds"] = dict({})
 
             for k, v in armory.items():
                 for t, i in ITEM_TYPE.items():
@@ -1709,6 +1753,9 @@ def armory(request):
                         break
                 if k in ["Points"]:
                     armoryType["Points"][k] = v
+
+                if k in ["Funds"]:
+                    armoryType["Funds"][k] = v
 
             networthGraph = json.loads(faction.networthString)
             tmp = [0, 0]

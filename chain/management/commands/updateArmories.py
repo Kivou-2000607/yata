@@ -36,7 +36,7 @@ class Command(BaseCommand):
             keyHolder, key = faction.getRandomKey()
 
             if key:
-                factionInfo = apiCall('faction', faction.tId, 'armorynewsfull,donations,currency,basic', key, verbose=False)
+                factionInfo = apiCall('faction', faction.tId, 'armorynewsfull,fundsnewsfull,donations,currency,basic', key, verbose=False)
 
                 # handle error
                 if 'apiError' in factionInfo:
@@ -48,12 +48,19 @@ class Command(BaseCommand):
                 if faction.armoryRecord:
 
                     armoryInfo = factionInfo.get("armorynews")
+                    fundsInfo = factionInfo.get("fundsnews")
 
                     # record armory
                     for k, v in json.loads(faction.armoryString).items():
                         if k not in armoryInfo:
                             armoryInfo[k] = v
                     faction.armoryString = json.dumps(armoryInfo)
+
+                    # record funds
+                    for k, v in json.loads(faction.fundsString).items():
+                        if k not in fundsInfo:
+                            fundsInfo[k] = v
+                    faction.fundsString = json.dumps(fundsInfo)
 
                     # record networth and respect
                     totalDonations = 0
@@ -74,6 +81,7 @@ class Command(BaseCommand):
                 else:
                     faction.networthString = "{}"
                     faction.armoryString = "{}"
+                    faction.fundsString = "{}"
 
                 faction.save()
             else:

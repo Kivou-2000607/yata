@@ -51,6 +51,7 @@ class Faction(models.Model):
 
     armoryRecord = models.BooleanField(default=False)
     armoryString = models.TextField(default="{}")
+    fundsString = models.TextField(default="{}")
     networthString = models.TextField(default="{}")
 
     createLive = models.BooleanField(default=False)

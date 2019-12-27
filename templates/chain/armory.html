@@ -166,17 +166,17 @@ $(document).ready(function() {
                         {% if tItem == "Blood Bag" %}
                             <td class="c">{{k}}</td>
                             <td class="d">{{v.3}}</td>
-                            <td class="d">{{v.0}}</td>
-                            <td class="d">{{v.1}}</td>
+                            <td class="d">{{v.0|format:"{:,.0f}"}}</td>
+                            <td class="d">{{v.1|format:"{:,.0f}"}}</td>
                             <td class="d {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
-                            <td class="d">{{v.2}}</td>
+                            <td class="d">{{v.2|format:"{:+,.0f}"}}</td>
                             <td class="d {% if v.2 < v.0 %}error{% elif v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.2|sub:v.0|format:"{:+,.0f}"}}</td>
-                            <td class="d">{{v.1|add:v.2}}</td>
+                            <td class="d">{{v.1|add:v.2|format:"{:+,.0f}"}}</td>
                             <td class="d {% if v.1|add:v.2 < v.0 %}error{% elif v.1|add:v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|add:v.2|sub:v.0|format:"{:+,.0f}"}}</td>
                         {% else %}
                             <td class="a">{{k}}</td>
-                            <td class="b">{{v.0}}</td>
-                            <td class="b">{{v.1}}</td>
+                            <td class="b">{{v.0|format:"{:,.0f}"}}</td>
+                            <td class="b">{{v.1|format:"{:,.0f}"}}</td>
                             <td class="b {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
                         {% endif %}
                     </tr>
