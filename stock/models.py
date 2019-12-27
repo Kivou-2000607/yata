@@ -61,8 +61,9 @@ class Stock(models.Model):
     def update(self, k, v, ts):
         print("[model.stock.update] update: ", k, v['acronym'])
 
-        # get some previous steps for triggers
+        # get previous snapshot for triggers
         tPreviousShares = self.tAvailableShares
+        tPreviousTotalShares = self.tTotalShares
         tPreviousForecast = self.tForecast
 
         self.tName = v['name']
@@ -192,6 +193,10 @@ class Stock(models.Model):
         # trigger new shares available
         if not tPreviousShares and self.tAvailableShares:
             triggers["new"] = True
+
+        # trigger shares snapshot by the system
+        if tPreviousTotalShares < self.tTotalShares:
+            triggers["injection"] = True
 
         # trigger more than 1% total
         if self.tAvailableShares > 0.01 * self.tTotalShares:
