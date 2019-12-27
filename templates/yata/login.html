@@ -112,7 +112,7 @@ This file is part of yata.
                             <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
                             <span>
                             {% if player.tId > 0 %}
-                                {% if player.targetInfo == "N/A" %}
+                                {% if player.awardsInfo == "N/A" %}
                                 &empty;
                                 {% else %}
                                 {{player.awardsInfo|floatformat:2}}% rarity score
