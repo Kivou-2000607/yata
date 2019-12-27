@@ -17,5 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-
-<b>Events</b>&nbsp;&nbsp;<i class="fa fa-toggle-{% if preference.notificationsEvents %}on{% else %}off{% endif %}"></i>
+<h1 class="module-doc">Module Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<p><span class="warning">Work in progress</span></p>
+<p>The YATA bot can send you DM notifications if you're part of the <a href="https://discord.gg/tZaYpbG" target="_blank">YATA discord sever</a>. Select below the kind of notifications you want.</p>
+{% with "event" as list %}
+    {% for type in list.split %}
+        <h2 class="privacy-personal-private">{% include "bot/commands-notifications-type.html" with type=type %}</h2>
+    {% endfor %}
+{% endwith %}
+</div>

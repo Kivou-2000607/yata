@@ -30,12 +30,14 @@ from bot.functions import saveBotsConfigs
 
 import json
 
+
 def index(request):
     try:
         if request.session.get('player'):
             print('[view.bot.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
+            notifications = json.loads(player.notifications)
 
             # update discord id
             error = player.update_discord_id()
@@ -51,7 +53,7 @@ def index(request):
                 for app in apps:
                     app["variables"] = json.loads(app["variables"])
 
-            context = {"player": player, "apps": apps, "guilds": guilds, "error": error}
+            context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error}
             return render(request, "bot.html", context)
 
         else:
@@ -93,6 +95,35 @@ def togglePerm(request):
 
             context = {'player': player}
             return render(request, "bot/give-permission.html", context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def toggleNoti(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            print('[view.bot.toggleNoti] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+
+            type = request.POST["type"]
+            notifications = json.loads(player.notifications)
+            if type in notifications:
+                del notifications[type]
+            else:
+                notifications[type] = dict({})
+
+            player.activateNotifications = bool(len(notifications))
+            player.notifications = json.dumps(notifications)
+            player.save()
+
+            context = {'player': player, "type": type, 'notifications': notifications}
+            return render(request, "bot/commands-notifications-type.html".format(type), context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

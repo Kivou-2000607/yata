@@ -2,8 +2,13 @@
 Django==3.0.1
 django-mathfilters==0.4.0
 requests==2.22.0
+
+# not needed for:
+# - development server (./manage.py runserver)
+# - sqlite3 database
 gunicorn==20.0.4
 psycopg2==2.8.4
+#psycopg2-binary==2.8.4
 
 # image modules
 Pillow==6.2.1

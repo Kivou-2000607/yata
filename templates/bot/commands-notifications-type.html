@@ -17,17 +17,5 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load app_filters %}
 
-<h2 class="title">Documentation</h2>
-<div class="module">
-<p>The bot's commands are classified in modules. Click on the module for the list of commands and on the command for the documentation.</p>
-{% include "bot/commands-verify.html" %}
-{% include "bot/commands-loot.html" %}
-{% include "bot/commands-chain.html" %}
-{% include "bot/commands-stocks.html" %}
-{% include "bot/commands-api.html" %}
-{% include "bot/commands-notifications.html" %}
-{% include "bot/commands-legend.html" %}
-
-</div>
+{{type|title}}&nbsp;&nbsp;<i id="discord-toggle-pref-{{type}}" class="fa fa-toggle-{% if type in notifications %}on{% else %}off{% endif %}"></i>

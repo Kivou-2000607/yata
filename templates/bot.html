@@ -22,7 +22,7 @@
         reload.html('<p><i class="fas fa-spinner fa-pulse"></i></p>');
     });
 
-    // update discord id
+    // toggle perm
     $(document).on('click', '#discord-toggle-perm', function(e){
         e.preventDefault();
         // var r = confirm("I accept to give the official YATA bot access to my API key");
@@ -34,6 +34,17 @@
           });
           reload.html('<p><i class="fas fa-spinner fa-pulse"></i></p>');
         }
+    });
+
+    // toggle notifications
+    $(document).on('click', "i[id^='discord-toggle-pref-']", function(e){
+        e.preventDefault();
+        var type = $(this).attr("id").split("-").pop()
+        var reload = $(this).parent("h2");
+        reload.load( "/bot/toggleNoti/", {
+            type: type,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        }).html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
     // show/hide command
