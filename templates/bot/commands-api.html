@@ -59,7 +59,7 @@ This file is part of yata.
 <div class="command-doc">
 <p>The YATA bot can send you DM notifications if you're part of the <a href="https://discord.gg/tZaYpbG" target="_blank">YATA discord sever</a>. Select below the kind of notifications you want.</p>
 {% if player.tId > 0 %}
-{% with "event message award energy nerve chain education bank drug medical booster travel" as list %}
+{% with "energy drug event bank nerve booster message education travel medical award chain" as list %}
     <table class="center notification-preferences">
         {% for type in list.split %}
         {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}

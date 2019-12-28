@@ -1068,6 +1068,7 @@ def respectSimulator(request):
                     upgradeTreeReshaped[bname][uname]["faction_level"] = lvl
                     upgradeTreeReshaped[bname][uname]["faction_cost"] = multiplier * numpy.sum(res[:lvl + 1])
                     upgradeTreeReshaped[bname][uname]["challengedone"] = branch["challengedone"]
+                    upgradeTreeReshaped[bname][uname]["unsets_completed"] = branch.get("unsets_completed", "")
                     totalRespect["faction"] += upgradeTreeReshaped[bname][uname]["faction_cost"]
 
                     branchesCost[bname][0] += numpy.sum(res[:lvl + 1])

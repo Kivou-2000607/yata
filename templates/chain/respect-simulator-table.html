@@ -157,7 +157,7 @@ This file is part of yata.
                 {% else %}
                     <tr class="order-{{u.simu_order}}">
                 {% endif %}
-                    <td class="a show-upgrade-details"><b>{{branchId}}</b></td>
+                    <td class="a show-upgrade-details" title="{{u}}"><b>{{branchId}}</b>{%if u.unsets_completed%} <i class="fas fa-history error" title="Branch unset on {{u.unsets_completed|ts2date}}"></i>{%endif%}</td>
                     <td class="b show-upgrade-details"><b>{{upgradeId}}</b></td>
                     <td class="c">{{u.faction_order|emptyIfFalse}}</td>
                     <td class="c">{{u.faction_level|emptyIfFalse}}</td>

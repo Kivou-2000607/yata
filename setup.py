@@ -88,3 +88,5 @@ if fill_db:
     r = os.system(cmd)
     cmd = 'python manage.py updateLoot'
     r = os.system(cmd)
+    cmd = 'python manage.py updateUpgradeTree'
+    r = os.system(cmd)
