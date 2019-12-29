@@ -2509,3 +2509,24 @@ def importUpgrades(request):
 
     else:
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+
+
+def importFakeWall(request):
+    try:
+        if request.method == 'GET' and len(request.GET) and request.GET.get("ts", False):
+                print(request.GET)
+                tId = request.session["player"].get("tId")
+                player = Player.objects.filter(tId=tId).first()
+                factionId = player.factionId
+                faction = Faction.objects.filter(tId=factionId).first()
+
+                chain = faction.chain_set.filter(tId=1).first()
+                if chain is not None:
+                    chain.delete()
+                chain = faction.chain_set.create(tId=1, start=int(request.GET.get("ts", False)), end=int(timezone.now().timestamp()), wall=True)
+
+                return redirect('/chain/')
+        else:
+            return returnError(type=403, msg="You need to set a GET date. Don\'t try to be a smart ass.")
+    except Exception:
+        return returnError()
