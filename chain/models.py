@@ -231,8 +231,8 @@ class Member(models.Model):
     # status = models.CharField(default="-", max_length=200)
 
     # new status of december 2019
-    description = models.CharField(default="", max_length=64, blank=True)
-    details = models.CharField(default="", max_length=64, blank=True)
+    description = models.CharField(default="", max_length=128, blank=True)
+    details = models.CharField(default="", max_length=128, blank=True)
     state = models.CharField(default="", max_length=32, blank=True)
     color = models.CharField(default="", max_length=16, blank=True)
     until = models.IntegerField(default=0)
