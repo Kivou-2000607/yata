@@ -243,8 +243,8 @@ $(document).ready(function() {
                 {% else %}
                     <td class="c">0.00</td>
                 {% endif %}
-                <td class="c">{{c.respect|floatformat:2}}</td>
 
+            <td class="c">{{c.respect|floatformat:2}}</td>
 
             <td class="c">
                 {% if c.totalHits %}
@@ -253,6 +253,8 @@ $(document).ready(function() {
                     -
                 {% endif %}
             </td>
+
+            <td class="c">{{c.watcher|mul:100|floatformat:2}}%</td>
 
             {% if c.daysInFaction < 0 %}
                 <td class="c"><i class="fas fa-sign-out-alt" title="not in the faction anymore"></i></td>
