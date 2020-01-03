@@ -89,5 +89,38 @@ def updateAttacks(player):
     return error
 
 
+def updateRevives(player):
+    tId = player.tId
+    key = player.key
+
+    error = False
+    req = apiCall('user', "", 'revives,timestamp', key)
+    if 'apiError' in req:
+        error = req
+    else:
+        revives = req.get("revives", dict({}))
+
+        # needs to convert to dict if empty because if empty returns []
+        if not len(revives):
+            revives = dict({})
+
+        # get database revives and delete 1 month old
+        player_revives = player.revive_set.all()
+        lastMonth = req.get("timestamp", 0) - 31 * 24 * 3600
+        player_revives.filter(timestamp__lt=lastMonth).delete()
+
+        for k, v in revives.items():
+            if not len(player_revives.filter(tId=int(k))) and v.get("timestamp", 0) > lastMonth:
+                del revives[k]["reviver_id"]
+                del revives[k]["reviver_name"]
+                del revives[k]["reviver_faction"]
+                del revives[k]["reviver_factionname"]
+                player.revive_set.create(tId=k, **v)
+
+        player.save()
+
+    return error
+
+
 def convertElaspedString(str):
     return str.replace("minute", "min").replace("hour", "hr").replace("second", "sec")

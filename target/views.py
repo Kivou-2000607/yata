@@ -29,6 +29,7 @@ from yata.handy import returnError
 from player.models import Player
 from chain.functions import BONUS_HITS
 from target.functions import updateAttacks
+from target.functions import updateRevives
 from target.functions import convertElaspedString
 
 
@@ -418,9 +419,9 @@ def revives(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            error = False
-            revives = dict({})
-            # insert code here ^^
+            error = updateRevives(player)
+
+            revives = player.revive_set.all()
 
             context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
             if error:
@@ -431,6 +432,28 @@ def revives(request):
 
         else:
             return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def toggleRevive(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            print('[view.target.toggleRevive] get player id from session and check POST')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+
+            r = player.revive_set.filter(tId=request.POST.get("reviveId", 0)).first()
+            if r is not None:
+                r.paid = not r.paid
+                r.save()
+
+            return render(request, 'target/revives-buttons.html', {"revive": r})
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception:
         return returnError()

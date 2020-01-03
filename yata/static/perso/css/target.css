@@ -28,7 +28,6 @@ table.target-categories td a:hover,
 table.target-categories td a:focus,
 table.target-categories td a:active { text-decoration: none; color: #447e9b; }
 
-
 table.target-attacks tr.zero-respect       { background:#ff00001e; }
 table.target-attacks tr.max-fair-fight       { background:#d9ead3ee; }
 table.target-attacks tr.good-fair-fight       { background:#d9ead3ae; }
@@ -41,7 +40,6 @@ table.target-attacks td.c { width: 15%; text-align: left; }
 table.target-attacks td.d { width: 15%; text-align: center; } /* x2 */
 table.target-attacks td.e { width: 5%; text-align: center; }
 
-
 table.target-targets td.a { width: 7%; text-align: left; } /* x2 */
 table.target-targets td.b { width: 10%; text-align: left; }
 table.target-targets td.c { width: 7%; text-align: center; } /* x3 */
@@ -51,10 +49,14 @@ table.target-targets td.f { width: 8%; text-align: center; }
 table.target-targets td.g { width: 3%; text-align: center; } /* x2  */
 table.target-targets td.h { width: 14%; text-align: left; }
 
-table.target-targets td.okay        { color:#0B8E14; }
-table.target-targets td.not-okay    { color:#CC3434; }
-table.target-targets i.not-okay    { color:#aaa; }
+table.target-targets td.okay { color:#0B8E14; }
+table.target-targets td.not-okay { color:#CC3434; }
+table.target-targets i.not-okay { color:#aaa; }
 table.target-targets td.status { cursor: default; }
+
+table.target-revives td.a { width: 30%; text-align: center; }
+table.target-revives td.b { width: 30%; text-align: left; }
+table.target-revives td.c { width: 10%; text-align: center; }
 
 input.target-list-note {
     height: 16px;

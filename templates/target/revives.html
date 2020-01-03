@@ -20,7 +20,45 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<h2 class="title">List of recent revives</span></h2>
+{% if revives %}
+
+<script>
+        $(document).ready(function() {
+            $("#target-revives").tablesorter({
+                textExtraction: {
+                  3: function(node, table, cellIndex) { return $(node).find("input.paid").val(); },
+                },
+                cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+        });
+</script>
+
+<h2 class="title">List of recent revives</h2>
 <div class="module">
-<p>I'm just being a troll here. I'm trying to get {{"kwartz"|playerURL:2002288|safe}} to code for YATA and it will be his first projet. Maybe if you push him he'll do it. <i class="far fa-kiss-wink-heart"></i></p>
+    <table id="target-revives" class="center trshadow target-revives">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Target</th>
+                <th>Faction</th>
+                <th>Paid</th>
+        </thead>
+        <tbody>
+        {% for v in revives %}
+        <tr>
+            <td class="a">{{v.timestamp|ts2date}}</td>
+            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
+            <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+            <td class="c">
+                {% include "target/revives-buttons.html" with revive=v %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
+
+{% else %}
+<div class="module rounded">
+    <span class="error">It seems you didn't make any revives this month...</span>
+</div>
+{% endif %}

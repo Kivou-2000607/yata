@@ -33,6 +33,17 @@
         reload.html('<i class="fas fa-spinner fa-pulse"></i>');
     });
 
+    // toggle revive from revives list button
+    $(document).on('click', 'a[id^="revives-list-toggle-"]', function(e){
+        e.preventDefault();
+        var reload = $(this).closest("td");
+        var reviveId = $(this).attr("id").split("-").pop();
+        reload.load( "/target/toggleRevive/", {
+            reviveId: reviveId,
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        }).html('<i class="fas fa-spinner fa-pulse"></i>');
+    });
+
     // refresh target from target list by clicking on the row
     $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)', function(e){
         e.preventDefault();

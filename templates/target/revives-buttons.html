@@ -1,0 +1,31 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<!-- toggle -->
+<form style="display: inline;">{% csrf_token %}
+    <a id="revives-list-toggle-{{revive.tId}}" href="{% url 'target:toggleRevive' %}">
+       {% if revive.paid %}
+           <i class="fas fa-toggle-on" title="Click if revive not paid for"></i>
+           <input class="paid" type="hidden" value="1">
+       {% else %}
+           <i class="fas fa-toggle-off" title="Click if revive paid for"></i>
+           <input class="paid" type="hidden" value="0">
+       {% endif %}
+    </a>
+</form>
