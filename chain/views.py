@@ -1738,9 +1738,9 @@ def armory(request):
                     armory[item][member] = [0, 0, 0, ""]
 
                 if ns[1] == "was":
-                    armory[item][member][0] += int(ns[3].replace("$", "").replace(",", ""))
+                    armory[item][member][0] += int(ns[3].replace("$", "").replace(",", "").replace(".", ""))
                 elif ns[1] == "deposited":
-                    armory[item][member][1] += int(ns[2].replace("$", "").replace(",", ""))
+                    armory[item][member][1] += int(ns[2].replace("$", "").replace(",", "").replace(".", ""))
 
             armoryType = {t: dict({}) for t in ITEM_TYPE}
             armoryType["Points"] = dict({})
