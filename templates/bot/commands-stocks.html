@@ -23,23 +23,31 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!wssb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
+<p>Give education's time left and BB ownership for all <tt>@wssb</tt>.</p>
 <p><b>Syntax:</b> <tt>!wssb</tt></p>
-<p><b>Help:</b> Give education's time left and BB ownership for all <tt>@wssb</tt>.</p>
 <p><b>Scope:</b> <tt>@wssb</tt> can use it in <tt>#wssb</tt>.</p>
 {# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!tcb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
+<p>Give bank investment's time left and BB ownership for all <tt>@tcb</tt>.</p>
 <p><b>Syntax:</b> <tt>!tcb</tt></p>
-<p><b>Help:</b> Give bank investment's time left and BB ownership for all <tt>@tcb</tt>.</p>
 <p><b>Scope:</b> <tt>@tcb</tt> can use it in <tt>#tcb</tt>.</p>
 {# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
-<h2 class="command-doc privacy-none">Notifications <span class="warning">(work in progress)</span>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-none">Command <tt>!trader</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Notifies <tt>@stock-alerts</tt> role in <tt>#stock-exchange</tt> good investments on the stock market. Triggers are when:
+<p>Gives or removes the <tt>@Trader</tt> role of the command author.</p>
+<p><b>Syntax:</b> <tt>!trader</tt></p>
+<p><b>Scope:</b> Anyone can use it anywhere.</p>
+{# <p class="privacy-none valid">No key needed.</p> #}
+</div>
+
+<h2 class="command-doc privacy-none">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Notifies <tt>@Trader</tt> role in <tt>#stocks</tt> for good investments on the stock market. Triggers are when:
 <ul>
     <li>forecast from bad to avg / good & shares available & price lower than trimestrial average</li>
     <li>new shares are injected by the system</li>

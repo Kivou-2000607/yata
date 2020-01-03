@@ -23,8 +23,8 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-master">Command <tt>!chain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
+<p>Regularly gives status on the chain and sends a notification to the chain faction roles (<tt>@Faction [factionId]</tt>) when chain is about to timeout. If <tt>&lt;factionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the master key holder's faction. The two optional parameters <tt>&lt;w=warningTime&gt;</tt> and <tt>&lt;n=notificationTime&gt;</tt> set the timeout notification threshold in seconds (default is 90 seconds) and the time between status update (default is 900 seconds = 10 minutes), respectively. It will stop watching on chain cooldown or if it catches a <tt>!stop</tt>.</p>
 <p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;factionID&gt;</tt> or <tt>!verify &lt;w=warningTime&gt; &lt;n=notificationTime&gt;</tt></p>
-<p><b>Help:</b> Regularly gives status on the chain and sends a notification to the chain faction roles (<tt>@Faction [factionId]</tt>) when chain is about to timeout. If <tt>&lt;factionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the master key holder's faction. The two optional parameters <tt>&lt;w=warningTime&gt;</tt> and <tt>&lt;n=notificationTime&gt;</tt> set the timeout notification threshold in seconds (default is 90 seconds) and the time between status update (default is 900 seconds = 10 minutes), respectively. It will stop watching on chain cooldown or if it catches a <tt>!stop</tt>.</p>
 <p><b>Example:</b> <tt>!chain 2356 w=30 n=120</tt> will watch the chain of faction <tt>2356</tt>, gives notifications if timeout < 30 seconds and gives status update every 2 minutes.</p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
 {# <p class="privacy-master warning">Use the master key to get chain information.</p> #}
@@ -32,8 +32,8 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-none">Command <tt>!stop</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
+<p>Tells the bot to stop watching a chain.</p>
 <p><b>Syntax:</b> <tt>!stop</tt></p>
-<p><b>Help:</b> Tells the bot to stop watching a chain.</p>
 <p><b>Warning:</b> This is not a <i>real</i> command in the sense that it does not directly stop the bot. Upon status update, the bot will read previous messages and if it catches a <tt>!stop</tt> it will <i>1)</i> stop watching and say so <i>2)</i> delete the <tt>!stop</tt> message. Thus it can take several minutes for the bot to actually stop (depending on parameter <tt>n</tt>). If you're watching several chains at the same time the next chain to notify will be stopped (yes it can be a mess quite quickly...).<p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
 {# <p class="privacy-none valid">No key needed.</p> #}
