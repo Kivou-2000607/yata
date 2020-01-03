@@ -369,7 +369,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / daysOld
                     vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    vp["comment"] = "{} with a current ratio of {:,.2g} people busted / day".format(vp["left"], ratio)
+                    vp["comment"] = "{:.1f} days with a current ratio of {:,.2g} people busted / day".format(vp["left"], ratio)
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "drugs":
@@ -624,14 +624,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     type = "Other attacks"
                     vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
                     wexp = userInfo.get("weaponexp", [])
-                    maxExp = ["{} {}".format(i + 1, k.get("name")) for i, k in enumerate(wexp) if k.get("exp") == 100]
-                    toMax = ['{} ({}%)'.format(k.get("name"), k.get("exp")) for k in wexp if k.get("exp") < 100 and k.get("exp") > 5]
+                    maxExp = [k for k in wexp if k.get("exp") == 100]
+                    sup5 = ['<b>{}</b> {} ({}%)'.format(i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if k.get("exp") > 5]
                     vp["current"] = len(maxExp)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    strA = "<b>Maxed</b><br>{}".format("<br>".join(maxExp)) if len(maxExp) else ""
-                    strB = "<b>To max (>5%)</b><br>{}".format("<br>".join(toMax)) if len(toMax) else ""
-                    if strA or strB:
-                        vp["comment"] = "{}<br>{}".format(strA, strB)
+                    if len(sup5):
+                        vp["comment"] = "{}".format(", ".join(sup5))
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [232]:
