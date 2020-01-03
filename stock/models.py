@@ -194,8 +194,8 @@ class Stock(models.Model):
         if not tPreviousShares and self.tAvailableShares:
             triggers["new"] = True
 
-        # trigger shares snapshot by the system
-        if tPreviousTotalShares < self.tTotalShares:
+        # trigger shares injection by the system
+        if self.tTotalShares > 1.05 * tPreviousTotalShares:
             triggers["injection"] = True
 
         # trigger more than 1% total
