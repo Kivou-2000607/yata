@@ -1728,7 +1728,6 @@ def armory(request):
 
             for k, v in fundsRaw.items():
                 ns = cleanhtml(v.get("news", "")).split(" ")
-                print(ns)
                 item = "Funds"
                 member = ns[0]
                 if item not in armory:

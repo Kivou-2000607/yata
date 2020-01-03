@@ -370,6 +370,7 @@ d = {
     219: 534607883,  # Social Butterfly
     246: 536984897,  # Pyramid Scheme
     166: 507297243,  # Stairway To Heaven
+    375: 994774255,  # Resolution
 
     # 12
     18: 978797305,  # Another Brick In The Wall

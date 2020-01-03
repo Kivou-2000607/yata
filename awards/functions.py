@@ -1926,10 +1926,11 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [309, 443, 459]:
-                    # 309 {'name': 'Christmas in Torn', 'description': 'Login on Christmas Day', 'type': 11, 'circulation': 50473, 'rarity': 'Common', 'awardType': 'Honor', 'img': 959806366, 'title': 'Christmas in Torn [309]: Common (50473)'}
-                    # 443 {'name': 'Trick or Treat', 'description': 'Login on Halloween', 'type': 11, 'circulation': 40866, 'rarity': 'Common', 'awardType': 'Honor', 'img': 513488839, 'title': 'Trick or Treat [443]: Common (40866)'}
-                    # 459 {'name': 'Torniversary', 'description': 'Login on November 15th', 'type': 11, 'circulation': 41332, 'rarity': 'Common', 'awardType': 'Honor', 'img': 332983521, 'title': 'Torniversary [459]: Common (41332)'}
+                elif int(k) in [309, 443, 459, 375]:
+                    # 309 {'name': 'Christmas in Torn', 'description': 'Login on Christmas Day', 'type': 11,
+                    # 443 {'name': 'Trick or Treat', 'description': 'Login on Halloween', 'type': 11,
+                    # 459 {'name': 'Torniversary', 'description': 'Login on November 15th', 'type': 11,
+                    # "375": { "name": "Resolution", "description": "Login on New Year's Day", "type": 11,
                     type = "Events"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
