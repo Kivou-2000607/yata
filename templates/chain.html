@@ -112,7 +112,9 @@
         if( !$( "#individal-report-"+memberId ).length ) {
             $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(e.currentTarget).closest('tr'));
         }
-        $("#individal-report-"+memberId).load( "/chain/renderIndividualReport/"+chainId+"/"+memberId, {
+        $("#individal-report-"+memberId).load( "/chain/renderIndividualReport/", {
+            chainId: chainId,
+            memberId: memberId,
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html('<td colspan="12" style="text-align: center;">'+spinner+'</td>');
     });
