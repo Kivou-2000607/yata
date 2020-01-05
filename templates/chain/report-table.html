@@ -213,7 +213,7 @@ $(document).ready(function() {
     <tbody>
         {% for c in counts %}
             {% if c.daysInFaction > -1 or c.wins > 0 %}
-            <tr {% if c.graph|length %}id="chain-ireport-{{chain.tId}}-{{c.attackerId}}"{% endif %} class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
+            <tr id="chain-ireport-{% if c.graph|length %}{{chain.tId}}-{{c.attackerId}}{%else%}joint-{{c.attackerId}}{% endif %}" class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if not c.beenThere %}not-there{% endif %} {% if c.wins < 1 %}zero-hits{% endif %}" >
                 <td class="a">{{ forloop.counter }}</td>
                 <td class="b dont-touch-me">{{c.name|playerURL:c.attackerId|safe}}</td>
 
@@ -249,7 +249,7 @@ $(document).ready(function() {
             <td class="c">{{c.respect|floatformat:2}}</td>
 
             <td class="c">
-                {% if c.totalHits %}
+                {% if totalHits %}
                     {{c.wins|add:c.bonus|mul:100|div:totalHits|floatformat:2}}%
                 {% else %}
                     -

@@ -29,7 +29,7 @@ urlpatterns = [
     re_path(r'^toggleArmoryRecord/$', views.toggleArmoryRecord, name='toggleArmoryRecord'),
     re_path(r'^resetArmoryRecord/$', views.resetArmoryRecord, name='resetArmoryRecord'),
     re_path(r'^chainThreshold/$', views.chainThreshold, name='chainThreshold'),
-    re_path(r'^renderIndividualReport/(?P<chainId>\w+)/(?P<memberId>\w+)$', views.renderIndividualReport, name='renderIndividualReport'),
+    re_path(r'^renderIndividualReport/$', views.renderIndividualReport, name='renderIndividualReport'),
 
     re_path(r'^walls/$', views.walls, name='walls'),
     re_path(r'^deleteWall/(?P<wallId>\w+)$', views.deleteWall, name='deleteWall'),
@@ -44,4 +44,8 @@ urlpatterns = [
 
     re_path(r'^territories/$', views.territories, name='territories'),
     re_path(r'^territoriesFullGraph/$', views.territoriesFullGraph, name='territoriesFullGraph'),
+
+    # re_path(r'^contracts/$', views.contracts, name='contracts'),
+    # re_path(r'^contract/(?P<contractId>\w+)$', views.contract, name='contract'),
+
     ]

@@ -23,6 +23,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.forms.models import model_to_dict
 
 from scipy import stats
 import numpy
@@ -827,7 +828,7 @@ def createReport(request, chainId):
 
 
 # action view
-def renderIndividualReport(request, chainId, memberId):
+def renderIndividualReport(request):
     try:
         if request.session.get('player') and request.method == 'POST':
             # get session info
@@ -842,50 +843,64 @@ def renderIndividualReport(request, chainId, memberId):
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
             print('[view.chain.renderIndividualReport] faction {} found'.format(factionId))
 
-            # get chain
-            chain = faction.chain_set.filter(tId=chainId).first()
-            if chain is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId)})
-            print('[view.chain.renderIndividualReport] chain {} found'.format(chainId))
-
-            # get report
-            report = chain.report_set.filter(chain=chain).first()
-            if report is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Report of chain {} not found in the database.'.format(chainId)})
-            print('[view.chain.renderIndividualReport] report of {} found'.format(chain))
-
-            # create graph
-            count = report.count_set.filter(attackerId=memberId).first()
-            if count is not None:
-                graphSplit = count.graph.split(',')
-                if len(graphSplit) > 1:
-                    print('[view.chain.renderIndividualReport] data found for graph of length {}'.format(len(graphSplit)))
-                    # compute average time for one bar
-                    bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
-                    graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
-                    cummulativeHits = 0
-                    for line in graphSplit:
-                        splt = line.split(':')
-                        cummulativeHits += int(splt[1])
-                        graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
-                        speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
-                        graph['info']['speedRate'] = speedRate
-                else:
-                    print('[view.chain.report] no data found for graph')
-                    graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
-
-                # context
-                context = dict({'graph': graph,  # for report
-                                'memberId': memberId})  # for selecting to good div
-
-                print('[view.chain.renderIndividualReport] render')
+            chainId = request.POST.get("chainId", 0)
+            memberId = request.POST.get("memberId", 0)
+            print(chainId)
+            if chainId in ["joint"]:
+                # get all chains from joint report
+                chains = faction.chain_set.filter(jointReport=True).order_by('start')
+                counts = []
+                for chain in chains:
+                    report = chain.report_set.first()
+                    count = report.count_set.filter(attackerId=memberId).first()
+                    counts.append(count)
+                context = dict({'counts': counts, 'memberId': memberId})
                 return render(request, 'chain/ireport.html', context)
             else:
-                print('[view.chain.renderIndividualReport] Error: no count...')
-                # context
-                context = dict({'graph': None,  # for report
-                                'memberId': memberId})  # for selecting to good div
-                return render(request, 'chain/ireport.html', context)
+                # get chain
+                chain = faction.chain_set.filter(tId=chainId).first()
+                if chain is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Chain {} not found in the database.'.format(chainId)})
+                print('[view.chain.renderIndividualReport] chain {} found'.format(chainId))
+
+                # get report
+                report = chain.report_set.filter(chain=chain).first()
+                if report is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Report of chain {} not found in the database.'.format(chainId)})
+                print('[view.chain.renderIndividualReport] report of {} found'.format(chain))
+
+                # create graph
+                count = report.count_set.filter(attackerId=memberId).first()
+                if count is not None:
+                    graphSplit = count.graph.split(',')
+                    if len(graphSplit) > 1:
+                        print('[view.chain.renderIndividualReport] data found for graph of length {}'.format(len(graphSplit)))
+                        # compute average time for one bar
+                        bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
+                        graph = {'data': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
+                        cummulativeHits = 0
+                        for line in graphSplit:
+                            splt = line.split(':')
+                            cummulativeHits += int(splt[1])
+                            graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                            speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
+                            graph['info']['speedRate'] = speedRate
+                    else:
+                        print('[view.chain.report] no data found for graph')
+                        graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
+
+                    # context
+                    context = dict({'graph': graph,  # for report
+                                    'memberId': memberId})  # for selecting to good div
+
+                    return render(request, 'chain/ireport.html', context)
+
+                else:
+                    print('[view.chain.renderIndividualReport] Error: no count...')
+                    # context
+                    context = dict({'graph': None,  # for report
+                                    'memberId': memberId})  # for selecting to good div
+                    return render(request, 'chain/ireport.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -2529,3 +2544,127 @@ def importFakeWall(request):
             return returnError(type=403, msg="You need to set a GET date. Don\'t try to be a smart ass.")
     except Exception:
         return returnError()
+
+
+# render view
+# def contracts(request):
+#     try:
+#         if request.session.get('player'):
+#             print('[view.chain.list] get player id from session')
+#             tId = request.session["player"].get("tId")
+#             player = Player.objects.filter(tId=tId).first()
+#             player.lastActionTS = int(timezone.now().timestamp())
+#             player.save()
+#
+#             key = player.key
+#             factionId = player.factionId
+#             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+#
+#             # get faction
+#             faction = Faction.objects.filter(tId=factionId).first()
+#             if faction is None:
+#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+#                 context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+#                 return render(request, page, context)
+#
+#             print(request.POST)
+#             if 'tsStart' in request.POST and 'tsEnd' in request.POST:
+#                 tsStart = int(request.POST['tsStart'])
+#                 tsEnd = int(request.POST['tsEnd'])
+#                 print(tsStart, tsEnd)
+#                 if tsStart < tsEnd:
+#                     faction.revivecontract_set.create(start=tsStart, end=tsEnd, computing=True, owner=True)
+#
+#             # get contracts
+#             contracts = faction.revivecontract_set.all().order_by('-end')
+#
+#             context = {'player': player, 'faction': faction, 'chaincat': True, 'contracts': contracts, 'view': {'contracts': True}}
+#
+#             return render(request, page, context)
+#
+#         else:
+#             return returnError(type=403, msg="You might want to log in.")
+#
+#     except Exception:
+#         return returnError()
+#
+#
+# def contract(request, contractId):
+#     try:
+#         if request.session.get('player'):
+#             print('[view.chain.list] get player id from session')
+#             tId = request.session["player"].get("tId")
+#             player = Player.objects.filter(tId=tId).first()
+#             player.lastActionTS = int(timezone.now().timestamp())
+#             player.save()
+#
+#             factionId = player.factionId
+#             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+#
+#             # get faction
+#             faction = Faction.objects.filter(tId=factionId).first()
+#             if faction is None:
+#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+#                 context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+#                 return render(request, page, context)
+#
+#             # get contracts
+#             contracts = faction.revivecontract_set.all()
+#
+#             # get contract
+#             contract = contracts.filter(pk=contractId).first()
+#             print(contract)
+#             if contract is None:
+#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+#                 context = {'player': player, 'faction': faction, selectError: "Contract not found."}
+#                 return render(request, page, context)
+#
+#             print('[view.chain.report] contract {} found'.format(contractId))
+#
+#             revives = dict({})
+#             for r in contract.revive_set.all():
+#                 revives[r.tId] = model_to_dict(r)
+#                 print(revives[r.tId])
+#                 # print(r)
+#
+#             breakdown = dict({"factions": dict({}), "revivers": dict({}), "targets": dict({})})
+#             # point of view of the revivers
+#             if contract.owner:
+#                 for k, v in revives.items():
+#                     # add reviver
+#                     if v["reviver_id"] in breakdown["revivers"]:
+#                         breakdown["revivers"][v["reviver_id"]]["revives"] += 1
+#                     else:
+#                         breakdown["revivers"][v["reviver_id"]] = {"revives": 1, "name": v["reviver_name"]}
+#
+#                     # add target
+#                     if v["target_id"] in breakdown["targets"]:
+#                         breakdown["targets"][v["target_id"]]["revives"] += 1
+#                     else:
+#                         breakdown["targets"][v["target_id"]] = {"revives": 1, "name": v["target_name"]}
+#
+#                     # add faction
+#                     if v["target_faction"] in breakdown["factions"]:
+#                         breakdown["factions"][v["target_faction"]]["revives"] += 1
+#                     else:
+#                         breakdown["factions"][v["target_faction"]] = {"revives": 1, "name": v["target_factionname"]}
+#
+#             print(breakdown)
+#
+#             # context
+#             context = dict({"player": player,
+#                             'chaincat': True,
+#                             'faction': faction,
+#                             'contracts': contracts,
+#                             'contract': contract,
+#                             'revives': revives,
+#                             'breakdown': breakdown,
+#                             'view': {'contracts': True, 'contract': True}})  # views
+#
+#             return render(request, page, context)
+#
+#         else:
+#             return returnError(type=403, msg="You might want to log in.")
+#
+#     except Exception:
+#         return returnError()
