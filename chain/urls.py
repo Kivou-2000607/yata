@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'^toggleLiveReport/$', views.toggleLiveReport, name='toggleLiveReport'),
     re_path(r'^toggleKey/(?P<id>\w+)$', views.toggleKey, name='toggleKey'),
     re_path(r'^togglePoster/$', views.togglePoster, name='togglePoster'),
+    re_path(r'^togglePosterHold/$', views.togglePosterHold, name='togglePosterHold'),
     re_path(r'^toggleArmoryRecord/$', views.toggleArmoryRecord, name='toggleArmoryRecord'),
     re_path(r'^resetArmoryRecord/$', views.resetArmoryRecord, name='resetArmoryRecord'),
     re_path(r'^chainThreshold/$', views.chainThreshold, name='chainThreshold'),

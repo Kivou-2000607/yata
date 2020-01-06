@@ -21,23 +21,28 @@ This file is part of yata.
 <form>{% csrf_token %}
     <p>
         {% if faction.poster %}
-            <span class="fa-stack fa-1x">
-                <i class="fas fa-scroll fa-stack-1x valid"></i>
-                {# <i class="fas fa-ban fa-stack-2x error"></i> #}
-            </span>
-            Upgrades poster is enabled. You can customize it <a href="{% url 'chain:tree' %}">here</a> or disable it here:
-            <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}">
-                 <i class="fas fa-toggle-on" title="Disable Poster"></i>
-            </a>
+            <span class="valid">Upgrades poster is enabled</span>.
+            {% if faction.posterHold %}
+                <span class="error">Automatic update of the poster is on hold</span>.
+            {% else %}
+                <span class="valid">Automatic update of your poster is on</span>.
+            {% endif %}
+            <br>
+            Enable/Disable poster: <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}"><i class="fas fa-toggle-on" title="Disable Poster"></i></a>
+            <br>
+            Customize poster: <a href="{% url 'chain:tree' %}">here</a>
+            <br>
+            {% if faction.posterHold %}
+                Resume automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'chain:togglePosterHold' %}"><i class="fas fa-play-circle" title="Resume update"></i></a>
+            {% else %}
+                Hold automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'chain:togglePosterHold' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
+            {% endif %}
+
         {% else %}
-            <span class="fa-stack fa-1x">
-                <i class="fas fa-scroll fa-stack-1x"></i>
-                <i class="fas fa-ban fa-stack-2x error"></i>
-            </span>
-            Upgrades poster is disabled. You can enable it here:
-            <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}">
-                <i class="fas fa-toggle-off" title="Enable Poster"></i>
-            </a>
+            <span class="error">Upgrades poster is disabled</span>.
+            <br>
+            Enable/Disable poster: <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}"><i class="fas fa-toggle-off" title="Disable Poster"></i></a>
+            <br>
             {% if messageDeleted %}
                 <span class="warning"> <i class="fas fa-exclamation-circle"></i>  Your poster has been deleted.</span>
             {% endif %}

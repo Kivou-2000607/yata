@@ -1464,10 +1464,10 @@ def togglePoster(request):
             print('[view.chain.togglePoster] faction {} found'.format(factionId))
 
             faction.poster = not faction.poster
-            faction.save()
 
             messageDeleted = False
             if not faction.poster:
+                faction.posterHold = False
                 url = "{}/trees/{}.png".format(settings.STATIC_ROOT, faction.tId)
                 if os.path.exists(url):
                     print('[view.chain.togglePoster] Delete faction {} poster at {}'.format(factionId, url))
@@ -1476,9 +1476,40 @@ def togglePoster(request):
                 else:
                     print('[view.chain.togglePoster] Try to delete faction {} poster at {} but file does not exist'.format(factionId, url))
 
+            faction.save()
+
             context = {'faction': faction}
             if messageDeleted:
                 context.update({'messageDeleted': messageDeleted})
+            return render(request, 'chain/aa-poster.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+# action view
+def togglePosterHold(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            print('[view.chain.togglePoster] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+            print('[view.chain.togglePoster] faction {} found'.format(factionId))
+
+            if faction.poster:
+                faction.posterHold = not faction.posterHold
+            faction.save()
+
+            context = {'faction': faction}
             return render(request, 'chain/aa-poster.html', context)
 
         else:

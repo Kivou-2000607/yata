@@ -28,9 +28,8 @@ import json
 class Command(BaseCommand):
     def handle(self, **options):
         print("[command.chain.tree] start")
-        for faction in Faction.objects.all():
+        for faction in Faction.objects.filter(poster=True).exclude(posterHold=True):
             print("[command.chain.tree] faction {}".format(faction))
-            if faction.poster:
-                factionTree(faction)
+            factionTree(faction)
 
         print("[command.chain.tree] end")

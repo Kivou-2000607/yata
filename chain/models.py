@@ -39,6 +39,7 @@ class Faction(models.Model):
     apiString = models.TextField(default="{}")
     posterOpt = models.TextField(default="{}")
     poster = models.BooleanField(default=False)
+    posterHold = models.BooleanField(default=False)
 
     factionTree = models.TextField(default="{}")
     simuTree = models.TextField(default="{}")
