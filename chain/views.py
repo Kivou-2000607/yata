@@ -1025,7 +1025,7 @@ def respectSimulator(request):
 
                 for branchId, branch in upgradeTree.items():
                     bname = branch["1"]['branch']
-                    uname = branch["1"]['name']
+                    uname = branch["1"]['name'].rstrip()
 
                     # create tooltip
                     details = []
@@ -1053,7 +1053,7 @@ def respectSimulator(request):
 
                     # modify name css id
                     if len(branch) > 1:
-                        uname = " ".join(uname.split(" ")[:-1])
+                        uname = " ".join(uname.split(" ")[:-1]).rstrip()
 
                     if bname in upgradeTreeReshaped:
                         upgradeTreeReshaped[bname][uname] = branch["1"]
@@ -1074,11 +1074,11 @@ def respectSimulator(request):
                 # create faction tree
                 for branchId, branch in factionTree.items():
                     bname = branch['branch']
-                    uname = branch['name']
+                    uname = branch['name'].rstrip()
 
                     # change name for levels branches
                     if upgradeTreeReshaped[bname].get(uname) is None:
-                        uname = " ".join(uname.split(" ")[:-1])
+                        uname = " ".join(uname.split(" ")[:-1]).rstrip()
 
                     order = branch["branchorder"]
                     multiplier = 2**(int(order) - 1) if order > 0 else 0
@@ -1241,9 +1241,9 @@ def respectSimulator(request):
                         # optimize branch order
                         for k, v in simuTree.items():
                             bname = v["branch"]
-                            uname = v["name"]
+                            uname = v["name"].rstrip()
                             if upgradeTreeReshaped[bname].get(uname) is None:
-                                uname = " ".join(uname.split(" ")[:-1])
+                                uname = " ".join(uname.split(" ")[:-1]).rstrip()
                             lvl = int(v["level"])
                             res = upgradeTreeReshaped[bname][uname]["respect"]
                             branchesCost[v["branch"]][3] += numpy.sum(res[:lvl + 1])
@@ -1286,11 +1286,11 @@ def respectSimulator(request):
                 # create simulation tree
                 for branchId, branch in simuTree.items():
                     bname = branch['branch']
-                    uname = branch['name']
+                    uname = branch['name'].rstrip()
 
                     # change name for levels branches
                     if upgradeTreeReshaped[bname].get(uname) is None:
-                        uname = " ".join(uname.split(" ")[:-1])
+                        uname = " ".join(uname.split(" ")[:-1]).rstrip()
 
                     order = int(branch["branchorder"])
                     multiplier = 2**(int(order) - 1) if order > 0 else 0
