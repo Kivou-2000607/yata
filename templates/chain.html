@@ -384,17 +384,19 @@
     });
 
     // share revive report
-    $(document).on('click', '.contract-share-faction', e=>{
+    $(document).on('click', '.contract-toggle-faction', e=>{
         e.preventDefault();
         console.log(e.currentTarget.id);
         var splt = e.currentTarget.id.split("-");
         var factionId = splt.pop();
         var contractId = splt.pop();
+        var type = splt.pop();
+        console.log(type)
         var reload = $(e.currentTarget).closest("td");
         $( "#content-update" ).load( "/chain/contract/"+contractId, {
             contractId: contractId,
             factionId: factionId,
-            sharing: true,
+            type: type,
             csrfmiddlewaretoken: getCookie("csrftoken")
         }, afterLoad);
         $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Adding contract ');

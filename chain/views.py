@@ -2586,6 +2586,28 @@ def contracts(request):
                 if tsStart < tsEnd:
                     faction.revivecontract_set.create(start=tsStart, end=tsEnd, computing=True, owner=True)
 
+            # modify end date
+            elif request.POST.get('tsEnd', False):
+                tsEnd = int(request.POST['tsEnd'])
+                contractId = int(request.POST['contractId'])
+                contract = faction.revivecontract_set.filter(pk=contractId).first()
+                if contract.start < tsEnd:
+                    if contract.end > tsEnd:
+                        # delete revive > end
+                        nrevives = 0
+                        for r in contract.revive_set.all():
+                            if r.timestamp > contract.end:
+                                r.delete()
+                            else:
+                                nrevives += 1
+                        contract.revivesContract = nrevives
+                    else:
+                        contract.computing = True
+
+                    contract.end = tsEnd
+                    contract.save()
+                    context = {'player': player, 'faction': faction, 'contract': contract}
+
             # get contracts
             contracts = faction.revivecontract_set.all().order_by('-end')
 
@@ -2629,67 +2651,86 @@ def contract(request, contractId):
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = {'player': player, 'faction': faction, selectError: "Contract not found."}
                 return render(request, page, context)
-
-            factions = json.loads(contract.factions)
             print('[view.chain.report] contract {} found'.format(contractId))
 
+            factionsRevivers = json.loads(contract.factionsRevivers)
+            factionsTargets = json.loads(contract.factionsTargets)
+
             # if click on shared
-            if request.POST.get("sharing", False):
-                if str(request.POST["factionId"]) in factions:
-                    del factions[request.POST["factionId"]]
+            if request.POST.get("type") == "revivers":
+                if int(request.POST["factionId"]) in factionsRevivers:
+                    factionsRevivers.remove(int(request.POST["factionId"]))
                 else:
-                    factions[request.POST["factionId"]] = True
-                contract.factions = json.dumps(factions)
+                    factionsRevivers.append(int(request.POST["factionId"]))
+                contract.factionsRevivers = json.dumps(factionsRevivers)
+            elif request.POST.get("type") == "targets":
+                if int(request.POST["factionId"]) in factionsTargets:
+                    factionsTargets.remove(int(request.POST["factionId"]))
+                else:
+                    factionsTargets.append(int(request.POST["factionId"]))
+                contract.factionsTargets = json.dumps(factionsTargets)
 
             revives = dict({})
-            nRevives = 0
+            revivesMade = 0
+            revivesReceived = 0
             contract.last = 0
             contract.first = 0
             for r in contract.revive_set.all():
                 revives[r.tId] = model_to_dict(r)
-                if str(r.target_faction) in factions:
+                if r.target_faction in factionsTargets:
                     revives[r.tId]["show"] = True
-                    nRevives += 1
+                    revivesReceived += 1
+                    contract.last = max(contract.last, r.timestamp) if contract.last else r.timestamp
+                    contract.first = min(contract.first, r.timestamp) if contract.first else r.timestamp
+                elif r.reviver_faction in factionsRevivers:
+                    revives[r.tId]["show"] = True
+                    revivesMade += 1
                     contract.last = max(contract.last, r.timestamp) if contract.last else r.timestamp
                     contract.first = min(contract.first, r.timestamp) if contract.first else r.timestamp
                 else:
                     revives[r.tId]["show"] = False
 
-            contract.revives = len(revives)
-            contract.revivesContract = nRevives
+            contract.revivesMade = revivesMade
+            contract.revivesReceived = revivesReceived
+            contract.revivesContract = len(revives)
             contract.save()
 
-            breakdown = dict({"factions": dict({}), "revivers": dict({}), "targets": dict({})})
+            breakdown = dict({"target_factions": dict({}), "reviver_factions": dict({}), "revivers": dict({}), "targets": dict({})})
             # point of view of the revivers
             if contract.owner:
                 for k, v in revives.items():
-                    # add faction
-                    if v["target_faction"] in breakdown["factions"]:
-                        breakdown["factions"][v["target_faction"]]["revives"] += 1
+                    # add traget faction
+                    if v["target_faction"] in breakdown["target_factions"]:
+                        breakdown["target_factions"][v["target_faction"]]["revives"] += 1
                     else:
-                        shared = True if str(v["target_faction"]) in factions else False
-                        breakdown["factions"][v["target_faction"]] = {"revives": 1, "name": v["target_factionname"], "shared": shared}
+                        shared = True if v["target_faction"] in factionsTargets else False
+                        breakdown["target_factions"][v["target_faction"]] = {"revives": 1, "name": v["target_factionname"], "show": shared}
 
-                    # if len(factions) and str(v["target_faction"]) not in factions:
-                    if str(v["target_faction"]) not in factions:
-                        breakdown["factions"][v["target_faction"]]
-                        continue
+                    # add reviver faction
+                    if v["reviver_faction"] in breakdown["reviver_factions"]:
+                        breakdown["reviver_factions"][v["reviver_faction"]]["revives"] += 1
+                    else:
+                        shared = True if v["reviver_faction"] in factionsRevivers else False
+                        breakdown["reviver_factions"][v["reviver_faction"]] = {"revives": 1, "name": v["reviver_factionname"], "show": shared}
 
                     # add reviver
-                    if v["reviver_id"] in breakdown["revivers"]:
-                        breakdown["revivers"][v["reviver_id"]]["revives"] += 1
-                    else:
-                        breakdown["revivers"][v["reviver_id"]] = {"revives": 1, "name": v["reviver_name"]}
+                    if v["reviver_faction"] in factionsRevivers:
+                        if v["reviver_id"] in breakdown["revivers"]:
+                            breakdown["revivers"][v["reviver_id"]]["revives"] += 1
+                        else:
+                            breakdown["revivers"][v["reviver_id"]] = {"revives": 1, "name": v["reviver_name"], "faction": v["reviver_faction"], "factionname": v["reviver_factionname"]}
 
                     # add target
-                    if v["target_id"] in breakdown["targets"]:
-                        breakdown["targets"][v["target_id"]]["revives"] += 1
-                    else:
-                        breakdown["targets"][v["target_id"]] = {"revives": 1, "name": v["target_name"], "faction": v["target_faction"], "factionname": v["target_factionname"]}
+                    if v["target_faction"] in factionsTargets:
+                        if v["target_id"] in breakdown["targets"]:
+                            breakdown["targets"][v["target_id"]]["revives"] += 1
+                        else:
+                            breakdown["targets"][v["target_id"]] = {"revives": 1, "name": v["target_name"], "faction": v["target_faction"], "factionname": v["target_factionname"]}
 
             # convert factions to dictionnary for the template
             # do not save
-            contract.factions = json.loads(contract.factions)
+            contract.factionsRevivers = json.loads(contract.factionsRevivers)
+            contract.factionsTargets = json.loads(contract.factionsTargets)
 
             # context
             context = dict({"player": player,

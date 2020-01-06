@@ -104,9 +104,24 @@ def factionURL(value, arg=0):
         return '-'
 
 
+@register.filter(name='factionURLShort')
+def factionURL(value, arg=0):
+    if str(arg) == "0":
+        return '-'
+    elif arg:
+        return '<a href="https://www.torn.com/factions.php?step=profile&ID={id}" target="_blank">{name}</a>'.format(name=value, id=arg)
+    else:
+        return '-'
+
+
 @register.filter(name='playerURL')
 def playerURL(value, arg):
     return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+
+
+@register.filter(name='playerURLShort')
+def playerURL(value, arg):
+    return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name}</a>'.format(name=value, id=arg)
 
 
 @register.filter(name='cleanhtml')

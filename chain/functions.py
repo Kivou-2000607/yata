@@ -822,7 +822,7 @@ def apiCallRevives(contract):
 
     # compute contract variables
     revives = contract.revive_set.all()
-    contract.revives = len(revives)
+    contract.revivesContract = len(revives)
     contract.first = revives.order_by("timestamp").first().timestamp
     contract.last = revives.order_by("-timestamp").first().timestamp
 

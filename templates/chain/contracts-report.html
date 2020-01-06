@@ -24,8 +24,7 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-        $(".contract-breakdown-targets").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1]]});
-        $(".contract-breakdown-revivers").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+        $(".contract-breakdown-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1]]});
         $(".contract-breakdown-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
     });
 </script>
@@ -35,13 +34,20 @@ This file is part of yata.
     <table class="tablesorter center trshadow contract-summary">
         <thead>
             <tr><th colspan="4">Contract summary</th></tr>
+            <tr><th colspan="2">Revivers</th><th colspan="2">Targets</th>
         </thead>
         <tbody>
             <tr>
-                <td><b>Number of revives</b></td>
-                <td>{{contract.revivesContract}}/{{contract.revives}}</td>
-                <td><b>Factions involved</b></td>
-                <td>{{contract.factions|length}}</td>
+                <td><b>Revives</b></td>
+                <td>{{contract.revivesMade}}/{{contract.revivesContract}}</td>
+                <td><b>Revives</b></td>
+                <td>{{contract.revivesReceived}}/{{contract.revivesContract}}</td>
+            </tr>
+            <tr>
+                <td><b>Factions</b></td>
+                <td>{{contract.factionsRevivers|length}}</td>
+                <td><b>Factions</b></td>
+                <td>{{contract.factionsTargets|length}}</td>
             </tr>
             <tr>
                 <td><b>From</b></td>
@@ -52,24 +58,68 @@ This file is part of yata.
         </tbody>
     </table>
     <hr class="sep">
-    <table class="tablesorter center-full-third trshadow contract-breakdown-revivers">
+
+    <table class="tablesorter center-full-fourth trshadow contract-breakdown-factions">
         <thead>
-            <tr><th colspan="2">Revivers</th></tr>
+            <tr>
+                <tr><th colspan="3">Revivers</th></tr>
+                <th>Faction</th>
+                <th>Made</th>
+                <th>Toggle</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for k, v in breakdown.reviver_factions.items %}
+        <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+            <td class="a">{{v.name|factionURLShort:k|safe}}</td>
+            <td class="b">{{v.revives}}</td>
+            <td class="c">{% include "chain/contracts-toggle.html" with type="revivers"%}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="tablesorter center-full-fourth trshadow contract-breakdown-players">
+        <thead>
+            <tr><th colspan="3">Revivers</th></tr>
             <tr>
                 <th>Player</th>
+                <th>Faction</th>
                 <th>Made</th>
             </tr>
         </thead>
         <tbody>
         {% for k, v in breakdown.revivers.items %}
         <tr>
-            <td class="a">{{v.name|playerURL:k|safe}}</td>
-            <td class="b">{{v.revives}}</td>
+            <td class="a">{{v.name|playerURLShort:k|safe}}</td>
+            <td class="b">{{v.factionname|factionURLShort:v.faction|safe}}</td>
+            <td class="c">{{v.revives}}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
-    <table class="tablesorter center-full-third trshadow contract-breakdown-targets">
+
+    <table class="tablesorter center-full-fourth trshadow contract-breakdown-factions">
+        <thead>
+            <tr>
+                <tr><th colspan="3">Targets</th></tr>
+                <th>Faction</th>
+                <th>Received</th>
+                <th>Toggle</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for k, v in breakdown.target_factions.items %}
+        <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+            <td class="a">{{v.name|factionURLShort:k|safe}}</td>
+            <td class="b">{{v.revives}}</td>
+            <td class="c">{% include "chain/contracts-toggle.html" with type="targets" %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="tablesorter center-full-fourth trshadow contract-breakdown-players">
         <thead>
             <tr><th colspan="3">Targets</th></tr>
             <tr>
@@ -81,64 +131,48 @@ This file is part of yata.
         <tbody>
         {% for k, v in breakdown.targets.items %}
         <tr>
-            <td class="a">{{v.name|playerURL:k|safe}}</td>
-            <td class="b">{{v.factionname|factionURL:v.faction|safe}}</td>
+            <td class="a">{{v.name|playerURLShort:k|safe}}</td>
+            <td class="b">{{v.factionname|factionURLShort:v.faction|safe}}</td>
             <td class="c">{{v.revives}}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
-    <table class="tablesorter center-full-third trshadow contract-breakdown-factions">
-        <thead>
-            <tr>
-                <tr><th colspan="3">Targets</th></tr>
-                <th>Faction</th>
-                <th>Received</th>
-                <th>Share</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for k, v in breakdown.factions.items %}
-        <tr {%if not v.shared%}style="opacity: 0.5"{%endif%}>
-            <td class="a">{{v.name|factionURL:k|safe}}</td>
-            <td class="b">{{v.revives}}</td>
-            <td class="c">{% include "chain/contracts-share.html" %}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+
     <hr class="sep">
 </div>
 
-<h2 class="title">List of revives for contract {{contract.pk}}</h2>
-<div class="module">
-    {% if revives|length %}
-    <table id="revives-list" class="tablesorter center-large trshadow revives-list">
-        <thead>
+<div class="catch-me">
+    <h2 class="title toggle-display rounded">Contract [{{contract.pk}}]: list of {{revives|length}} revives&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="module" style="display: none;">
+        {% if revives|length %}
+        <table id="revives-list" class="tablesorter center-large trshadow revives-list">
+            <thead>
+                <tr>
+                    {# <th>Revive [ID]</th> #}
+                    <th>Time</th>
+                    <th>Reviver</th>
+                    <th>Faction</th>
+                    <th>Target</th>
+                    <th>Faction</th>
+            </thead>
+            <tbody>
+            {% for k, v in revives.items %}
+            {%if v.show %}
             <tr>
-                <th>Revive [ID]</th>
-                <th>Time</th>
-                <th>Reviver</th>
-                <th>Faction</th>
-                <th>Target</th>
-                <th>Faction</th>
-        </thead>
-        <tbody>
-        {% for k, v in revives.items %}
-        {%if v.show %}
-        <tr>
-            <td class="a">Revive [{{k}}]</td>
-            <td class="b">{{v.timestamp|ts2date}}</td>
-            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
-            <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
-            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
-            <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
-        </tr>
-        {%endif%}
-        {% endfor %}
-        </tbody>
-    </table>
-    {% else%}
-        <p class="error">No revives recorded. Ask a AA member of your faction.</p>
-    {% endif %}
+                {# <td class="a">Revive [{{k}}]</td> #}
+                <td class="b">{{v.timestamp|ts2date}}</td>
+                <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
+                <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
+                <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
+                <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+            </tr>
+            {%endif%}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else%}
+            <p class="error">No revives recorded. Ask a AA member of your faction.</p>
+        {% endif %}
+    </div>
 </div>

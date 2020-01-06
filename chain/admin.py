@@ -40,6 +40,12 @@ from yata.handy import timestampToDate
 import json
 
 
+class ReviveAdmin(admin.ModelAdmin):
+    list_display = ['contract', 'timestamp']
+
+admin.site.register(Revive, ReviveAdmin)
+
+
 class ReviveContractAdmin(admin.ModelAdmin):
     list_display = ['faction', 'start', 'end', 'computing']
 

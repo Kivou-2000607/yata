@@ -195,8 +195,8 @@ table.center-large {
   margin-right:2.5%;
 }
 
-table.center-full-third {
-  width:33%;
+table.center-full-fourth {
+  width:24%;
   float:left;
   margin-left:0%;
   margin-right:0%;
@@ -231,7 +231,7 @@ table.center-large td {
     white-space: nowrap;
 }
 
-table.center-full-third th,
+table.center-full-fourth th,
 table.center th,
 table.center-medium th,
 table.center-large th { text-align: center; }

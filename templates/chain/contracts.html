@@ -108,6 +108,23 @@ This file is part of yata.
 
     });
 
+    $(function () {
+        $("#modify-date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var contractId = $input.closest('tr').attr('id').split('-').pop();
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $( "#content-update" ).load( "/chain/contracts/", {
+                    tsEnd: dUTC/1000,
+                    contractId: contractId,
+                    csrfmiddlewaretoken: getCookie("csrftoken")
+                },afterLoad);
+                $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract ');
+            },
+        });
+    });
+
     // create report
     $(document).on('click', '#create-contract', e=>{
         e.preventDefault();
@@ -163,20 +180,7 @@ This file is part of yata.
         </thead>
         <tbody>
         {% for contract in contracts %}
-        <tr>
-            <td class="a">Contract [{{contract.pk}}]</td>
-            <td class="b">{{contract.start|ts2date}}</td>
-            <td class="b">{{contract.end|ts2date}}</td>
-            <td class="b">{{contract.first|ts2date}}</td>
-            <td class="b">{{contract.last|ts2date}}</td>
-            <td class="b">{{contract.last|sub:contract.first|ts2time}}</td>
-
-            <td class="c"><b>{{contract.revives}}</b></td>
-
-            <td class="d" >
-                {% include "chain/contracts-buttons.html" with contract_faction=v %}
-            </td>
-        </tr>
+            <tr id="contract-list-{{contract.pk}}">{% include "chain/contracts-line.html" %}</tr>
         {% endfor %}
         </tbody>
     </table>

@@ -479,12 +479,14 @@ class ReviveContract(models.Model):
     owner = models.BooleanField(default=True)
 
     # number of revives
-    revives = models.IntegerField(default=0)
+    revivesMade = models.IntegerField(default=0)
+    revivesReceived = models.IntegerField(default=0)
     revivesContract = models.IntegerField(default=0)
     goal = models.IntegerField(default=0)
 
-    # share with factions
-    factions = models.TextField(default="{}")
+    # toggle factions
+    factionsRevivers = models.TextField(default="[]")
+    factionsTargets = models.TextField(default="[]")
 
 
 # class ReviveContractShared(models.Model):

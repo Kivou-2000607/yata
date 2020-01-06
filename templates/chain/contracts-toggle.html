@@ -21,14 +21,14 @@ This file is part of yata.
 
 {% if player.factionAA %}
     <form>{% csrf_token %}
-        {% if v.shared %}
-            <a  id="contract-share-faction-{{contract.pk}}-{{k}}" class="contract-share-faction" href="{% url 'chain:contract' contract.pk %}"><i class="far fa-eye" title="Report shared with faction. Click to stop sharing."></i></a>
+        {% if v.show %}
+            <a  id="contract-toggle-{{type}}-{{contract.pk}}-{{k}}" class="contract-toggle-faction" href="{% url 'chain:contract' contract.pk %}"><i class="far fa-eye" title="Report shared with faction. Click to stop sharing."></i></a>
         {%else%}
-            <a id="contract-share-faction-{{contract.pk}}-{{k}}" class="contract-share-faction" href="{% url 'chain:contract' contract.pk %}"><i class="far fa-eye-slash" title="Report not shared with faction. Click to share."></i></a>
+            <a id="contract-toggle-{{type}}-{{contract.pk}}-{{k}}" class="contract-toggle-faction" href="{% url 'chain:contract' contract.pk %}"><i class="far fa-eye-slash" title="Report not shared with faction. Click to share."></i></a>
         {%endif%}
     </form>
 {% else %}
-    {% if v.shared %}
+    {% if v.show %}
         <i class="far fa-eye" title="Report shared with faction."></i>
     {%else%}
         <i class="far fa-eye-slash" title="Report not shared with faction."></i>
