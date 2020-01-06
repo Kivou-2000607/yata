@@ -744,7 +744,7 @@ def apiCallRevives(contract):
     # recompute last
     tmp = contract.revive_set.order_by("-timestamp").first()
     if tmp is not None:
-        last = tmp.last
+        last = tmp.timestamp
     else:
         last = contract.start
 
