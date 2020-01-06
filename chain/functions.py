@@ -741,7 +741,12 @@ def apiCallRevives(contract):
     faction = contract.faction
     start = contract.start
     end = contract.end if contract.end else int(timezone.now().timestamp())
-    last = contract.last if contract.last else contract.start
+    # recompute last
+    tmp = contract.revive_set.order_by("-timestamp").first()
+    if tmp is not None:
+        last = tmp.last
+    else:
+        last = contract.start
 
     print("[function.chain.apiCallRevives] Contract from {} to {}".format(timestampToDate(start), timestampToDate(end)))
 
