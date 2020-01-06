@@ -29,6 +29,7 @@ import requests
 import time
 import numpy
 import json
+import random
 
 
 # global bonus hits
@@ -448,7 +449,7 @@ def fillReport(faction, members, chain, report, attacks):
     return chain, report, (binsCenter, histo), finished
 
 
-def updateMembers(faction, key=None, force=True):
+def updateMembers(faction, key=None, force=True, indRefresh=False):
     # it's not possible to delete all memebers and recreate the base
     # otherwise the target list will be lost
 
@@ -495,9 +496,13 @@ def updateMembers(faction, key=None, force=True):
                 memberDB.nnb = 0
                 memberDB.arson = 0
             else:
-                if memberDB.shareE:
+                if indRefresh and memberDB.shareE and memberDB.shareN:
+                    req = apiCall("user", "", "perks,bars,crimes", key=player.key)
+                    memberDB.updateEnergy(key=player.key, req=req)
+                    memberDB.updateNNB(key=player.key, req=req)
+                elif indRefresh and memberDB.shareE:
                     memberDB.updateEnergy(key=player.key)
-                if memberDB.shareN:
+                elif indRefresh and memberDB.shareN:
                     memberDB.updateNNB(key=player.key)
 
             memberDB.save()
@@ -729,3 +734,98 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
             faction.save()
 
     return json.loads(faction.factionTree), json.loads(faction.simuTree)
+
+
+def apiCallRevives(contract):
+    # short cuts
+    faction = contract.faction
+    start = contract.start
+    end = contract.end if contract.end else int(timezone.now().timestamp())
+    last = contract.last if contract.last else contract.start
+
+    print("[function.chain.apiCallRevives] Contract from {} to {}".format(timestampToDate(start), timestampToDate(end)))
+
+    # add + 2 s to the endTS
+    end += 2
+
+    # get existing revives (just the ids)
+    revives = [r.tId for r in contract.revive_set.all()]
+    print("[function.chain.apiCallRevives] {} existing revives".format(len(revives)))
+
+    # # last timestamp
+    # if len(revives):
+    #     lastRevive = contract.revive_set.order_by("-timestamp").first()
+    #     last = lastRevive.timestamp
+    # else:
+    #     last = start
+
+    # get key
+    keys = faction.getAllPairs(enabledKeys=True)
+    if not len(keys):
+        print("[function.chain.apiCallRevives] no key for faction {}   --> deleting contract".format(faction))
+        contract.delete()
+        return False, "no key in faction {} (delete contract)".format(faction)
+
+    keyHolder, key = random.choice(keys)
+
+    # make call
+    selection = "revives,timestamp&from={}&to={}".format(last, end)
+    req = apiCall("faction", faction.tId, selection, key, verbose=True)
+
+    # in case there is an API error
+    if "apiError" in req:
+        print('[function.chain.apiCallRevives] api key error: {}'.format((req['apiError'])))
+        if req['apiErrorCode'] in API_CODE_DELETE:
+            print("[function.chain.apiCallRevives]    --> deleting {}'s key'".format(keyHolder))
+            faction.delKey(keyHolder)
+        return False, "wrong master key in faction {} for user {} (blank turn)".format(faction, keyHolder)
+
+    # try to catch cache response
+    tornTS = int(req["timestamp"])
+    nowTS = int(timezone.now().timestamp())
+    cacheDiff = abs(nowTS - tornTS)
+
+    apiRevives = req.get("revives")
+
+    # in case empty payload
+    if not len(apiRevives):
+        contract.computing = False
+        contract.save()
+        return False, "Empty payload (stop computing)"
+
+    print("[function.chain.apiCallRevives] {} revives from the API".format(len(apiRevives)))
+
+    print("[function.chain.apiCallRevives] start {}".format(timestampToDate(start)))
+    print("[function.chain.apiCallRevives] end {}".format(timestampToDate(end)))
+    print("[function.chain.apiCallRevives] last before the call {}".format(timestampToDate(last)))
+
+    newEntry = 0
+    for k, v in apiRevives.items():
+        ts = int(v["timestamp"])
+
+        # stop because out of bound
+        # probably because of cache
+        if ts < last or ts > end:
+            return False, "timestamp out of bound for faction {} with cacheDiff = {} (added {} entry before exiting)".format(faction, cacheDiff, newEntry)
+
+        if int(k) not in revives:
+            contract.revive_set.create(tId=int(k), **v)
+            newEntry += 1
+            last = max(last, ts)
+
+    print("[function.chain.apiCallRevives] last after the call {}".format(timestampToDate(last)))
+
+    if not newEntry and len(apiRevives) > 1:
+        return False, "No new entry for faction {} with cacheDiff = {} (continue)".format(faction, cacheDiff)
+
+    # compute contract variables
+    revives = contract.revive_set.all()
+    contract.revives = len(revives)
+    contract.first = revives.order_by("timestamp").first().timestamp
+    contract.last = revives.order_by("-timestamp").first().timestamp
+
+    if len(apiRevives) < 2:
+        contract.computing = False
+
+    contract.save()
+    return True, "Everything's fine"

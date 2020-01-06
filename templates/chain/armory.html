@@ -52,7 +52,6 @@ $(function () {
     $("#pick-time-start").datetimepicker({
         step: 15,
         onChangeDateTime:function(dp,$input){
-            console.log(s)
             var d = new Date($input.val());
             var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
             $( "#content-update" ).load( "/chain/armory/", {
@@ -67,7 +66,6 @@ $(function () {
     $("#pick-time-end").datetimepicker({
         step: 15,
         onChangeDateTime:function(dp,$input){
-            console.log(s)
             var d = new Date($input.val());
             var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
             $( "#content-update" ).load( "/chain/armory/", {

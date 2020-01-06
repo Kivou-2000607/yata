@@ -32,10 +32,18 @@ from .models import Wall
 from .models import Territory
 from .models import Racket
 from .models import Stat
+from .models import Revive
+from .models import ReviveContract
 
 from yata.handy import timestampToDate
 
 import json
+
+
+class ReviveContractAdmin(admin.ModelAdmin):
+    list_display = ['faction', 'start', 'end', 'computing']
+
+admin.site.register(ReviveContract, ReviveContractAdmin)
 
 
 class FactionDataAdmin(admin.ModelAdmin):

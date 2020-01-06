@@ -1,0 +1,204 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+      $.tablesorter.addParser({
+          // set a unique id
+          id: 'ago',
+          is: function(s, table, cell, $cell) {
+              // return false so this parser is not auto detected
+              return false;
+          },
+          format: function(s, table, cell, cellIndex) {
+              // format your data for normalization
+              var ret = s.toLowerCase()
+              .replace(/days/,86400).replace(/day/,86400)
+              .replace(/hours/,3600).replace(/hour/,3600)
+              .replace(/hrs/,3600).replace(/hr/,3600)
+              .replace(/minutes/,60).replace(/minute/,60)
+              .replace(/mins/,60).replace(/min/,60).split(' ');
+              return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
+          },
+          // set type, either numeric or text
+          type: 'numeric',
+      });
+
+        $("#contract-list").tablesorter({headers: { 5: { sorter: 'ago' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+
+        $(function () {
+            $("#date-start").datetimepicker({
+                step: 15,
+                onChangeDateTime:function(dp,$input){
+                    var d = new Date($input.val());
+                    var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                    $("#ts-start").val(dUTC/1000);
+                    var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                    $("#date-start").html(s);
+
+                    $("#date-start").removeClass("error").addClass("valid");
+
+                    var tsStart = parseInt($("#ts-start").val());
+                    var tsEnd = parseInt($("#ts-end").val());
+                    if(!tsEnd) {
+                        $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date');
+                        $("#create-contract").hide()
+                    } else if(tsEnd < tsStart) {
+                        $("#date-end").removeClass("valid").addClass("error");
+                        $("#create-contract").hide()
+                    } else {
+                        $("#date-end").removeClass("error").addClass("valid");
+                        $("#create-contract").show()
+                    }
+
+                    // if $("#date-start").html {
+                    //     console.log()
+                    // }
+                },
+            });
+        });
+        $(function () {
+            $("#date-end").datetimepicker({
+                step: 15,
+                onChangeDateTime:function(dp,$input){
+                    var d = new Date($input.val());
+                    var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                    $("#ts-end").val(dUTC/1000);
+                    var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                    $("#date-end").html(s);
+
+                    $("#date-end").removeClass("error").addClass("valid");
+
+                    var tsStart = parseInt($("#ts-start").val());
+                    var tsEnd = parseInt($("#ts-end").val());
+                    if(!tsStart) {
+                        $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                        $("#create-contract").hide()
+                    } else if(tsEnd < tsStart) {
+                        $("#date-start").removeClass("valid").addClass("error");
+                        $("#create-contract").hide()
+                    } else {
+                        $("#date-start").removeClass("error").addClass("valid");
+                        $("#create-contract").show()
+                    }
+                },
+            });
+        });
+
+    });
+
+    // create report
+    $(document).on('click', '#create-contract', e=>{
+        e.preventDefault();
+        var tsStart = parseInt($("#ts-start").val());
+        var tsEnd = parseInt($("#ts-end").val());
+        $( "#content-update" ).load( "/chain/contracts/", {
+            tsStart: tsStart,
+            tsEnd: tsEnd,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Adding contract ');
+    });
+
+    // see report
+    $(document).on('click', '.contracts-see-list', e=>{
+        e.preventDefault();
+        var contractId = e.currentTarget.href.split("/").pop();
+        $( "#content-update" ).load( "/chain/contract/"+contractId, {
+            contractId: contractId,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report '+contractId);
+    });
+
+    // delete contract from list
+    $(document).on('click', '.contracts-delete-list', function(e){
+        e.preventDefault();
+        var contractId = e.currentTarget.href.split("/").pop();
+        var reload = $(this).closest('tr');
+        reload.load( "/chain/contracts/", {
+            contractId: contractId,
+            delete: true,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        }).remove();
+    });
+
+</script>
+
+<h2 class="title">List of contracts</h2>
+<div class="module">
+    {% if contracts|length %}
+    <table id="contract-list" class="tablesorter center-large trshadow contract-list">
+        <thead>
+            <tr>
+                <th>Contract [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>First</th>
+                <th>Last</th>
+                <th>Duration</th>
+                <th>Revives</th>
+                <th>Report</th>
+        </thead>
+        <tbody>
+        {% for contract in contracts %}
+        <tr>
+            <td class="a">Contract [{{contract.pk}}]</td>
+            <td class="b">{{contract.start|ts2date}}</td>
+            <td class="b">{{contract.end|ts2date}}</td>
+            <td class="b">{{contract.first|ts2date}}</td>
+            <td class="b">{{contract.last|ts2date}}</td>
+            <td class="b">{{contract.last|sub:contract.first|ts2time}}</td>
+
+            <td class="c"><b>{{contract.revives}}</b></td>
+
+            <td class="d" >
+                {% include "chain/contracts-buttons.html" with contract_faction=v %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else%}
+        <p class="error">No contracts recorded. Ask a AA member of your faction.</p>
+    {% endif %}
+</div>
+
+{% if player.factionAA %}
+<h2 class="title">Add a new contract</h2>
+<div class="module">
+    <p>To create a new contract select a starting and an ending date. You will be able to select factions for this contract in the report.</p>
+<form>
+    <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
+        <input id="ts-start" type="hidden" value="0">
+        <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+    </p>
+    <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
+        <input id="ts-end" type="hidden" value="0">
+        <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+    </p>
+    <p id="create-contract" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Create Contract</p>
+</from>
+</div>
+{% endif %}

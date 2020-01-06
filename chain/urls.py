@@ -45,7 +45,7 @@ urlpatterns = [
     re_path(r'^territories/$', views.territories, name='territories'),
     re_path(r'^territoriesFullGraph/$', views.territoriesFullGraph, name='territoriesFullGraph'),
 
-    # re_path(r'^contracts/$', views.contracts, name='contracts'),
-    # re_path(r'^contract/(?P<contractId>\w+)$', views.contract, name='contract'),
+    re_path(r'^contracts/$', views.contracts, name='contracts'),
+    re_path(r'^contract/(?P<contractId>\w+)$', views.contract, name='contract'),
 
     ]

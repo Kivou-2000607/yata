@@ -771,8 +771,14 @@ def updateMember(request):
                 member.shareE = -1
                 member.shareN = -1
                 member.save()
+            elif member.shareE > 0 and member.shareN > 0:
+                req = apiCall("user", "", "perks,bars,crimes", key=tmpP.key)
+                member.updateEnergy(key=tmpP.key, req=req)
+                member.updateNNB(key=tmpP.key, req=req)
             elif member.shareE > 0:
                 member.updateEnergy(key=tmpP.key)
+            elif member.shareN > 0:
+                member.updateNNB(key=tmpP.key)
 
             context = {"player": player, "member": member}
             return render(request, 'chain/members-line.html', context)
@@ -2528,18 +2534,17 @@ def importUpgrades(request):
 def importFakeWall(request):
     try:
         if request.method == 'GET' and len(request.GET) and request.GET.get("ts", False):
-                print(request.GET)
-                tId = request.session["player"].get("tId")
-                player = Player.objects.filter(tId=tId).first()
-                factionId = player.factionId
-                faction = Faction.objects.filter(tId=factionId).first()
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            factionId = player.factionId
+            faction = Faction.objects.filter(tId=factionId).first()
 
-                chain = faction.chain_set.filter(tId=1).first()
-                if chain is not None:
-                    chain.delete()
-                chain = faction.chain_set.create(tId=1, start=int(request.GET.get("ts", False)), end=int(timezone.now().timestamp()), wall=True)
+            chain = faction.chain_set.filter(tId=1).first()
+            if chain is not None:
+                chain.delete()
+            chain = faction.chain_set.create(tId=1, start=int(request.GET.get("ts", False)), end=int(timezone.now().timestamp()), wall=True)
 
-                return redirect('/chain/')
+            return redirect('/chain/')
         else:
             return returnError(type=403, msg="You need to set a GET date. Don\'t try to be a smart ass.")
     except Exception:
@@ -2547,124 +2552,159 @@ def importFakeWall(request):
 
 
 # render view
-# def contracts(request):
-#     try:
-#         if request.session.get('player'):
-#             print('[view.chain.list] get player id from session')
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#             player.lastActionTS = int(timezone.now().timestamp())
-#             player.save()
-#
-#             key = player.key
-#             factionId = player.factionId
-#             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
-#
-#             # get faction
-#             faction = Faction.objects.filter(tId=factionId).first()
-#             if faction is None:
-#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-#                 context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-#                 return render(request, page, context)
-#
-#             print(request.POST)
-#             if 'tsStart' in request.POST and 'tsEnd' in request.POST:
-#                 tsStart = int(request.POST['tsStart'])
-#                 tsEnd = int(request.POST['tsEnd'])
-#                 print(tsStart, tsEnd)
-#                 if tsStart < tsEnd:
-#                     faction.revivecontract_set.create(start=tsStart, end=tsEnd, computing=True, owner=True)
-#
-#             # get contracts
-#             contracts = faction.revivecontract_set.all().order_by('-end')
-#
-#             context = {'player': player, 'faction': faction, 'chaincat': True, 'contracts': contracts, 'view': {'contracts': True}}
-#
-#             return render(request, page, context)
-#
-#         else:
-#             return returnError(type=403, msg="You might want to log in.")
-#
-#     except Exception:
-#         return returnError()
-#
-#
-# def contract(request, contractId):
-#     try:
-#         if request.session.get('player'):
-#             print('[view.chain.list] get player id from session')
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#             player.lastActionTS = int(timezone.now().timestamp())
-#             player.save()
-#
-#             factionId = player.factionId
-#             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
-#
-#             # get faction
-#             faction = Faction.objects.filter(tId=factionId).first()
-#             if faction is None:
-#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-#                 context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-#                 return render(request, page, context)
-#
-#             # get contracts
-#             contracts = faction.revivecontract_set.all()
-#
-#             # get contract
-#             contract = contracts.filter(pk=contractId).first()
-#             print(contract)
-#             if contract is None:
-#                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-#                 context = {'player': player, 'faction': faction, selectError: "Contract not found."}
-#                 return render(request, page, context)
-#
-#             print('[view.chain.report] contract {} found'.format(contractId))
-#
-#             revives = dict({})
-#             for r in contract.revive_set.all():
-#                 revives[r.tId] = model_to_dict(r)
-#                 print(revives[r.tId])
-#                 # print(r)
-#
-#             breakdown = dict({"factions": dict({}), "revivers": dict({}), "targets": dict({})})
-#             # point of view of the revivers
-#             if contract.owner:
-#                 for k, v in revives.items():
-#                     # add reviver
-#                     if v["reviver_id"] in breakdown["revivers"]:
-#                         breakdown["revivers"][v["reviver_id"]]["revives"] += 1
-#                     else:
-#                         breakdown["revivers"][v["reviver_id"]] = {"revives": 1, "name": v["reviver_name"]}
-#
-#                     # add target
-#                     if v["target_id"] in breakdown["targets"]:
-#                         breakdown["targets"][v["target_id"]]["revives"] += 1
-#                     else:
-#                         breakdown["targets"][v["target_id"]] = {"revives": 1, "name": v["target_name"]}
-#
-#                     # add faction
-#                     if v["target_faction"] in breakdown["factions"]:
-#                         breakdown["factions"][v["target_faction"]]["revives"] += 1
-#                     else:
-#                         breakdown["factions"][v["target_faction"]] = {"revives": 1, "name": v["target_factionname"]}
-#
-#             print(breakdown)
-#
-#             # context
-#             context = dict({"player": player,
-#                             'chaincat': True,
-#                             'faction': faction,
-#                             'contracts': contracts,
-#                             'contract': contract,
-#                             'revives': revives,
-#                             'breakdown': breakdown,
-#                             'view': {'contracts': True, 'contract': True}})  # views
-#
-#             return render(request, page, context)
-#
-#         else:
-#             return returnError(type=403, msg="You might want to log in.")
-#
-#     except Exception:
-#         return returnError()
+def contracts(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.list] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            key = player.key
+            factionId = player.factionId
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # delete contract
+            if request.POST.get("delete", False):
+                contract = faction.revivecontract_set.filter(pk=request.POST["contractId"])
+                contract.delete()
+                # dummy render
+                return render(request, page)
+
+            # create contract
+            elif 'tsStart' in request.POST and 'tsEnd' in request.POST:
+                tsStart = int(request.POST['tsStart'])
+                tsEnd = int(request.POST['tsEnd'])
+                if tsStart < tsEnd:
+                    faction.revivecontract_set.create(start=tsStart, end=tsEnd, computing=True, owner=True)
+
+            # get contracts
+            contracts = faction.revivecontract_set.all().order_by('-end')
+
+            context = {'player': player, 'faction': faction, 'chaincat': True, 'contracts': contracts, 'view': {'contracts': True}}
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def contract(request, contractId):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.list] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            factionId = player.factionId
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get contracts
+            contracts = faction.revivecontract_set.all()
+
+            # get contract
+            contract = contracts.filter(pk=contractId).first()
+
+            if contract is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, 'faction': faction, selectError: "Contract not found."}
+                return render(request, page, context)
+
+            factions = json.loads(contract.factions)
+            print('[view.chain.report] contract {} found'.format(contractId))
+
+            # if click on shared
+            if request.POST.get("sharing", False):
+                if str(request.POST["factionId"]) in factions:
+                    del factions[request.POST["factionId"]]
+                else:
+                    factions[request.POST["factionId"]] = True
+                contract.factions = json.dumps(factions)
+
+            revives = dict({})
+            nRevives = 0
+            contract.last = 0
+            contract.first = 0
+            for r in contract.revive_set.all():
+                revives[r.tId] = model_to_dict(r)
+                if str(r.target_faction) in factions:
+                    revives[r.tId]["show"] = True
+                    nRevives += 1
+                    contract.last = max(contract.last, r.timestamp) if contract.last else r.timestamp
+                    contract.first = min(contract.first, r.timestamp) if contract.first else r.timestamp
+                else:
+                    revives[r.tId]["show"] = False
+
+            contract.revives = len(revives)
+            contract.revivesContract = nRevives
+            contract.save()
+
+            breakdown = dict({"factions": dict({}), "revivers": dict({}), "targets": dict({})})
+            # point of view of the revivers
+            if contract.owner:
+                for k, v in revives.items():
+                    # add faction
+                    if v["target_faction"] in breakdown["factions"]:
+                        breakdown["factions"][v["target_faction"]]["revives"] += 1
+                    else:
+                        shared = True if str(v["target_faction"]) in factions else False
+                        breakdown["factions"][v["target_faction"]] = {"revives": 1, "name": v["target_factionname"], "shared": shared}
+
+                    # if len(factions) and str(v["target_faction"]) not in factions:
+                    if str(v["target_faction"]) not in factions:
+                        breakdown["factions"][v["target_faction"]]
+                        continue
+
+                    # add reviver
+                    if v["reviver_id"] in breakdown["revivers"]:
+                        breakdown["revivers"][v["reviver_id"]]["revives"] += 1
+                    else:
+                        breakdown["revivers"][v["reviver_id"]] = {"revives": 1, "name": v["reviver_name"]}
+
+                    # add target
+                    if v["target_id"] in breakdown["targets"]:
+                        breakdown["targets"][v["target_id"]]["revives"] += 1
+                    else:
+                        breakdown["targets"][v["target_id"]] = {"revives": 1, "name": v["target_name"], "faction": v["target_faction"], "factionname": v["target_factionname"]}
+
+            # convert factions to dictionnary for the template
+            # do not save
+            contract.factions = json.loads(contract.factions)
+
+            # context
+            context = dict({"player": player,
+                            'chaincat': True,
+                            'faction': faction,
+                            'contracts': contracts,
+                            'contract': contract,
+                            'revives': revives,
+                            'breakdown': breakdown,
+                            'view': {'contract': True}})  # views
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()

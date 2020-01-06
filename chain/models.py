@@ -266,12 +266,14 @@ class Member(models.Model):
         if save:
             self.save()
 
-    def updateEnergy(self, key=None):
+    def updateEnergy(self, key=None, req=False):
         error = False
         if not self.shareE:
             self.energy = 0
         else:
-            req = apiCall("user", "", "bars", key=key)
+            if not req:
+                req = apiCall("user", "", "bars", key=key)
+
             # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
             # req = requests.get(url).json()
             if 'apiError' in req:
@@ -285,12 +287,14 @@ class Member(models.Model):
 
         return error
 
-    def updateNNB(self, key=None):
+    def updateNNB(self, key=None, req=False):
         error = False
         if not self.shareN:
             self.nnb = 0
         else:
-            req = apiCall("user", "", "perks,bars,crimes", key=key)
+            if not req:
+                req = apiCall("user", "", "perks,bars,crimes", key=key)
+
             if 'apiError' in req:
                 error = req
                 self.nnb = 0
@@ -457,3 +461,46 @@ class Racket(models.Model):
 class FactionData(models.Model):
     territoryTS = models.IntegerField(default=0)
     upgradeTree = models.TextField(default="{}", null=True, blank=True)
+
+
+class ReviveContract(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    # timestamp input by user
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=0)
+
+    # timestamp computed
+    first = models.IntegerField(default=0)
+    last = models.IntegerField(default=0)
+
+    # to compute
+    computing = models.BooleanField(default=True)
+    owner = models.BooleanField(default=True)
+
+    # number of revives
+    revives = models.IntegerField(default=0)
+    revivesContract = models.IntegerField(default=0)
+    goal = models.IntegerField(default=0)
+
+    # share with factions
+    factions = models.TextField(default="{}")
+
+
+# class ReviveContractShared(models.Model):
+#     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+#     contract = models.ForeignKey(ReviveContract, on_delete=models.CASCADE)
+
+
+class Revive(models.Model):
+    contract = models.ForeignKey(ReviveContract, on_delete=models.CASCADE)
+    tId = models.IntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+    reviver_id = models.IntegerField(default=0)
+    reviver_name = models.CharField(default="reviver_name", max_length=32)
+    reviver_faction = models.IntegerField(default=0)
+    reviver_factionname = models.CharField(default="reviver_factionname", null=True, blank=True, max_length=32)
+    target_id = models.IntegerField(default=0)
+    target_name = models.CharField(default="target_name", max_length=32)
+    target_faction = models.IntegerField(default=0)
+    target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=32)

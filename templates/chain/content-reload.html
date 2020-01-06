@@ -59,3 +59,9 @@ This file is part of yata.
 {% if view.bigBrother %}
     {% include "chain/big-brother.html" %}
 {% endif %}
+{% if view.contract %}
+    {% include "chain/contracts-report.html" %}
+{% endif %}
+{% if view.contracts %}
+    {% include "chain/contracts.html" %}
+{% endif %}
