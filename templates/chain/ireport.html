@@ -63,7 +63,7 @@ This file is part of yata.
 <td colspan="12">
 {% for c in counts %}
     <p>Chain of <b>{{c.report.chain.start|ts2date}} ({{c.report.chain.nHits}} hits)</b>
-        <span style="margin-left:10px;"><b>{{c.wins}}</b> hit{{c.wins|pluralize}} made {%if c.report.chain.nHits%}({{c.wins|add:c.bonus|mul:100|div:c.report.chain.nHits|floatformat:2}}%){%endif%}{%if c.war%} {{c.war|floatformat:0}} for war{%endif%}
+        <span style="margin-left:10px;"><b>{{c.wins}}</b> hit{{c.wins|pluralize}} made {%if c.report.chain.nHits%}({{c.wins|add:c.bonus|mul:100|div:c.report.chain.nHits|floatformat:2}}%){%endif%}{%if c.warhits%} {{c.warhits}} for war{%endif%}
     </p>
 {% endfor %}
 </td>
