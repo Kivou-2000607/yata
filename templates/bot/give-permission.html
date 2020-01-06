@@ -20,9 +20,9 @@ This file is part of yata.
 <form>{% csrf_token %}
     <p>
         {% if player.botPerm%}
-            <span class="valid"><i class="fas fa-lock-open"></i>&nbsp; The official YATA bot has your permission to use your API key.</span> <a id="discord-toggle-perm" href="{% url 'bot:togglePerm' %}">remove</a>
+            <span class="valid"><i class="fas fa-lock-open"></i>&nbsp; The official YATA bot has your permission to use your API key.</span> <a id="discord-toggle-perm" href="{% url 'bot:togglePerm' %}">Revoking permission&nbsp;&nbsp;<i class="far fa-thumbs-down"></i></a>
         {% else %}
-            <span class="error"><i class="fas fa-lock"></i>&nbsp; The official YATA bot does not have your permission to use your API key.</span> <a id="discord-toggle-perm" href="{% url 'bot:togglePerm' %}">give</a>
+            <span class="error"><i class="fas fa-lock"></i>&nbsp; The official YATA bot does not have your permission to use your API key.</span> <a id="discord-toggle-perm" href="{% url 'bot:togglePerm' %}">Granting permission&nbsp;&nbsp;<i class="far fa-thumbs-up"></i></a>
         {% endif %}
     </p>
 </form>

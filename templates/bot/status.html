@@ -1,0 +1,54 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+
+{% if player.tId > 0 %}
+<h2 class="title">Official Torn discord verification</h2>
+<div class="module">
+    <p>Most of the features will require that your account is official verified on the  <a href="https://www.torn.com/discord" target="_blank">official Torn discord server</a>. This is the only safe way to link your Torn and Discord account.</p>
+    <div id="discord-id">{% include "bot/discord-id.html" %}</div>
+</div>
+
+<h2 class="title">API keys management</h2>
+<div class="module">
+    <p>For some features, the YATA bot needs your API key. And some of these features can be triggered by a tier and display private data on a potentially public channel (see below for details). It will do so only if you give it permission to access it.
+    Even though discord admins don't have access to your key and are only able to use the bot functions, they can play with the roles and the permissions as they wish. If they have malicious intents they can use the bot functions without your knowledge.
+    So, before giving permission to the bot, make sure that <span class="warning">you <span style="text-decoration: underline;">trust the owners</span> of every servers you're in and that are running the YATA bot</span>. Check below the list of features requiring your permission.</p>
+
+    <h2 class="command-doc privacy-master">Master key for server admins&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+        <p>The bot requires at least one master key to be able to check discord users identity. Usually the person asking for the bot is putting their but adding others lower the load. No private data is ever pulled from master keys but still the bot requires your permission.</p>
+    </div>
+    <h2 class="command-doc privacy-personal-private">Stock sharing&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+        <p>If you happen to have the <tt>@wssb</tt> or <tt>@tcb</tt> role you're concerned. With your permission, the bot will be able to pull education time left and bank investement time left, respectively, and will make it visible to members of the server (supposed to be shared with <tt>@wssb</tt> and <tt>@tcb</tt> members).</p>
+    </div>
+    <h2 class="command-doc">Rule of thumb&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+        <p>Check the documentation below and look for the icons. Commands with:</p>
+        <h3 class="privacy-master">Requires permission for master key holders.</h3>
+        <h3 class="privacy-personal-private">Requires permission if the response is not given as a DM.</h3>
+    </div>
+
+    <hr class="sep">
+    <div id="discord-perm">{% include "bot/give-permission.html" %}</div>
+
+</div>
+{% endif %}
