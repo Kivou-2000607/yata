@@ -815,14 +815,14 @@ def apiCallRevives(contract):
 
     print("[function.chain.apiCallRevives] last after the call {}".format(timestampToDate(last)))
 
-    if not newEntry and len(apiRevives) > 1:
-        return False, "No new entry for faction {} with cacheDiff = {} (continue)".format(faction, cacheDiff)
-
     # compute contract variables
     revives = contract.revive_set.all()
     contract.revives = len(revives)
     contract.first = revives.order_by("timestamp").first().timestamp
     contract.last = revives.order_by("-timestamp").first().timestamp
+
+    if not newEntry and len(apiRevives) > 1:
+        return False, "No new entry for faction {} with cacheDiff = {} (continue)".format(faction, cacheDiff)
 
     if len(apiRevives) < 2:
         contract.computing = False
