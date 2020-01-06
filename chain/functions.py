@@ -581,21 +581,28 @@ def factionTree(faction, key=None):
 
     # get key
     if key is None:
-        name, key = faction.getRandomKey()
-        print("[function.chain.updateMembers] using {} key".format(name))
+        keyHolder, key = faction.getRandomKey()
+        if keyHolder == "0":
+            print("[function.chain.factionTree] no master key".format(keyHolder))
+            faction.posterHold = False
+            faction.poster = False
+            faction.save()
+            return 0
+
     else:
-        print("[function.chain.updateMembers] using personal key")
+        keyHolder is False
+        # print("[function.chain.updateMembers] using personal key")
 
     # call for upgrades
-    upgrades = apiCall('faction', faction.tId, 'upgrades', key, sub='upgrades')
-    if 'apiError' in upgrades:
-        print('[function.chain.factionTree] api key error: {}'.format((upgrades['apiError'])))
+    req = apiCall('faction', faction.tId, 'basic,upgrades', key, verbose=False)
+    if 'apiError' in req:
+        if req['apiErrorCode'] in API_CODE_DELETE and keyHolder:
+            print("[function.chain.factionTree]    --> deleting {}'s key'".format(keyHolder))
+            faction.delKey(keyHolder)
+        # print('[function.chain.factionTree] api key error: {}'.format((faction['apiError'])))
         return 0
 
-    faction = apiCall('faction', faction.tId, 'basic', key)
-    if 'apiError' in faction:
-        print('[function.chain.factionTree] api key error: {}'.format((faction['apiError'])))
-        return 0
+    upgrades = req["upgrades"]
 
     # building upgrades tree
     tree = dict({})
@@ -607,32 +614,32 @@ def factionTree(faction, key=None):
 
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    print("[function.chain.factionTree] background color: {}".format(background))
+    # print("[function.chain.factionTree] background color: {}".format(background))
     img = Image.new('RGBA', (5000, 5000), color=background)
 
     # choose font
     fontFamily = posterOpt.get('fontFamily', [0])[0]
     fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
-    print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
+    # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
     fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
     fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
     d = ImageDraw.Draw(img)
 
     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
-    print("[function.chain.factionTree] fontColor: {}".format(fontColor))
+    # print("[function.chain.factionTree] fontColor: {}".format(fontColor))
 
     # add title
-    txt = "{}".format(faction["name"])
+    txt = "{}".format(req["name"])
     d.text((10, 10), txt, font=fntBig, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
 
-    txt = "{:,} respect\n".format(faction["respect"])
+    txt = "{:,} respect\n".format(req["respect"])
     d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
-    print("[function.chain.factionTree] iconType: {}".format(iconType))
+    # print("[function.chain.factionTree] iconType: {}".format(iconType))
     for branch, upgrades in tree.items():
         icon = Image.open(settings.STATIC_ROOT + '/trees/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
         icon = icon.convert("RGBA")
@@ -649,11 +656,11 @@ def factionTree(faction, key=None):
         x = max(xTmp, x)
         y += yTmp
 
-        print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
+        # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
     # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
     img.crop((0, 0, x + 90 + 10, y)).save(url)
-    print('[function.chain.factionTree] image saved {}'.format(url))
+    # print('[function.chain.factionTree] image saved {}'.format(url))
 
 
 def updateFactionTree(faction, key=None, force=False, reset=False):

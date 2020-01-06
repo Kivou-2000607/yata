@@ -30,13 +30,15 @@ This file is part of yata.
             <br>
             Enable/Disable poster: <a id="chain-aa-toggle-poster" href="{% url 'chain:togglePoster' %}"><i class="fas fa-toggle-on" title="Disable Poster"></i></a>
             <br>
-            Customize poster: <a href="{% url 'chain:tree' %}">here</a>
-            <br>
             {% if faction.posterHold %}
                 Resume automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'chain:togglePosterHold' %}"><i class="fas fa-play-circle" title="Resume update"></i></a>
             {% else %}
                 Hold automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'chain:togglePosterHold' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
             {% endif %}
+            <br>
+            Customize poster: <a href="{% url 'chain:tree' %}">here</a>
+            <br>
+            Link to poster: <a href="https://yata.alwaysdata.net/static/trees/{{faction.tId}}.png" target="_blank">https://yata.alwaysdata.net/static/trees/{{faction.tId}}.png</a>
 
         {% else %}
             <span class="error">Upgrades poster is disabled</span>.
