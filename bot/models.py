@@ -27,6 +27,8 @@ class Guild(models.Model):
 
     # general options
     manageChannels = models.BooleanField(default=False)
+    allowedChannels = models.CharField(default="", blank=True, max_length=64)
+    allowedRoles = models.CharField(default="", blank=True, max_length=64)
     masterKeys = models.ManyToManyField(Player, blank=True)
 
     # stock module
@@ -38,7 +40,6 @@ class Guild(models.Model):
 
     # chain module
     chainModule = models.BooleanField(default=False)
-    chainChannel = models.CharField(default="", blank=True, max_length=16)
 
     # loot module
     lootModule = models.BooleanField(default=False)

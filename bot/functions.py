@@ -34,6 +34,14 @@ def saveBotsConfigs():
                                            "contact": guild.guildContactName,
                                            "contact_id": guild.guildContactId}
 
+            # allowed channels
+            if guild.allowedChannels:
+                var[guild.guildId]["admin"]["channels"] = guild.allowedChannels
+
+            # allowed roles
+            if guild.allowedRoles:
+                var[guild.guildId]["admin"]["roles"] = guild.allowedChannels
+
             # manage channels
             if guild.manageChannels:
                 var[guild.guildId]["channels"] = {"active": True}
@@ -57,8 +65,6 @@ def saveBotsConfigs():
             # chain
             if guild.chainModule:
                 var[guild.guildId]["chain"] = {"active": True}
-                if guild.chainChannel:
-                    var[guild.guildId]["chain"]["channel"] = guild.chainChannel
 
             # repository
             if guild.repoModule:
