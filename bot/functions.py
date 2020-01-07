@@ -36,11 +36,11 @@ def saveBotsConfigs():
 
             # allowed channels
             if guild.allowedChannels:
-                var[guild.guildId]["admin"]["channels"] = guild.allowedChannels
+                var[guild.guildId]["admin"]["channels"] = json.loads(guild.allowedChannels)
 
             # allowed roles
             if guild.allowedRoles:
-                var[guild.guildId]["admin"]["roles"] = guild.allowedChannels
+                var[guild.guildId]["admin"]["roles"] = json.loads(guild.allowedRoles)
 
             # manage channels
             if guild.manageChannels:
