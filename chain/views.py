@@ -1602,7 +1602,8 @@ def tree(request):
                         faction.posterOpt = json.dumps(posterOpt)
                         faction.save()
 
-                factionTree(faction)
+                if not faction.posterHold:
+                    factionTree(faction)
 
                 fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
                 posterOpt = json.loads(faction.posterOpt)
