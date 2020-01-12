@@ -1490,6 +1490,7 @@ def togglePoster(request):
     except Exception:
         return returnError()
 
+
 # action view
 def togglePosterHold(request):
     try:
@@ -2773,6 +2774,169 @@ def contract(request, contractId):
                             'revives': revives,
                             'breakdown': breakdown,
                             'view': {'contract': True}})  # views
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def attacks(request):
+    try:
+        if request.session.get('player'):
+            print('[view.chain.list] get player id from session')
+            tId = request.session["player"].get("tId")
+            player = Player.objects.filter(tId=tId).first()
+            player.lastActionTS = int(timezone.now().timestamp())
+            player.save()
+
+            factionId = player.factionId
+            page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # create new breakdown
+            if 'tsStart' in request.POST:
+                tss = int(request.POST.get("tsStart", 0))
+                tse = int(request.POST.get("tsEnd", 0))
+                if int(request.POST.get("live", False)):
+                    print("new live breakdown")
+                    faction.attacksbreakdown_set.all().delete()
+                    faction.attacksbreakdown_set.create(tss=tss, tse=0, live=True, computing=True)
+                elif tse:
+                    if tss < tse:
+                        print("new normal breakdown")
+                        faction.attacksbreakdown_set.all().delete()
+                        faction.attacksbreakdown_set.create(tss=tss, tse=tse, live=False, computing=True)
+
+
+            # if click on delete
+            if int(request.POST.get("delete", 0)):
+                faction.attacksbreakdown_set.all().delete()
+
+            # get breakdown
+            attacksBreakdown = faction.attacksbreakdown_set.first()
+            if attacksBreakdown is None:
+                context = dict({"player": player,
+                                'chaincat': True,
+                                'faction': faction,
+                                'attacksBreakdown': False,
+                                'view': {'attacks': True}})  # views
+                return render(request, page, context)
+
+            # if modify end date
+            if 'modifyEnd' in request.POST:
+                tse = int(request.POST.get("tsEnd", 0))
+                if attacksBreakdown.tss < tse:
+                    attacksBreakdown.tse = tse
+                    attacksBreakdown.live = False
+                    attacksBreakdown.computing = True
+                    attacksBreakdown.attack_set.filter(timestamp_ended__gt=tse).delete()
+                    attacksBreakdown.save()
+
+            attackerFactions = json.loads(attacksBreakdown.attackerFactions)
+            defenderFactions = json.loads(attacksBreakdown.defenderFactions)
+
+            # if click on toggle
+            if request.POST.get("type") == "attackers":
+                print(int(request.POST["factionId"]))
+                if int(request.POST["factionId"]) in attackerFactions:
+                    attackerFactions.remove(int(request.POST["factionId"]))
+                else:
+                    attackerFactions.append(int(request.POST["factionId"]))
+                attacksBreakdown.attackerFactions = json.dumps(attackerFactions)
+            elif request.POST.get("type") == "defenders":
+                if int(request.POST["factionId"]) in defenderFactions:
+                    defenderFactions.remove(int(request.POST["factionId"]))
+                else:
+                    defenderFactions.append(int(request.POST["factionId"]))
+                attacksBreakdown.defenderFactions = json.dumps(defenderFactions)
+            attacksBreakdown.save()
+
+            attacks = dict({})
+            attacksMade = 0
+            attacksReceived = 0
+            for r in attacksBreakdown.attack_set.all():
+                attacks[r.tId] = model_to_dict(r)
+                if not r.attacker_id:
+                    attacks[r.tId]["attacker_name"] = "Stealth"
+                    attacks[r.tId]["attacker_factionname"] = "Stealth"
+                    attacks[r.tId]["attacker_id"] = 1
+                    attacks[r.tId]["attacker_faction"] = 1
+
+                if attacks[r.tId]["defender_faction"] in defenderFactions:
+                    attacks[r.tId]["show"] = True
+                    attacksReceived += 1
+                elif attacks[r.tId]["attacker_faction"] in attackerFactions:
+                    attacks[r.tId]["show"] = True
+                    attacksMade += 1
+                else:
+                    attacks[r.tId]["show"] = False
+
+            attacksBreakdown.attacks = attacksMade
+            attacksBreakdown.defends = attacksReceived
+
+            breakdown = dict({"defender_factions": dict({}), "attacker_factions": dict({}), "attackers": dict({}), "defenders": dict({}), "players": dict({})})
+            for k, v in attacks.items():
+                winAtt = 0 if v["result"] in ["Lost"] else 1
+                winDef = 1 if v["result"] in ["Lost"] else 0
+
+                # add defender faction
+                if v["defender_faction"] in breakdown["defender_factions"]:
+                    breakdown["defender_factions"][v["defender_faction"]]["attacked"] += 1
+                    breakdown["defender_factions"][v["defender_faction"]]["defends"] += winDef
+                else:
+                    show = True if v["defender_faction"] in defenderFactions else False
+                    breakdown["defender_factions"][v["defender_faction"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_factionname"], "show": show}
+
+                # add attacker faction
+                if v["attacker_faction"] in breakdown["attacker_factions"]:
+                    breakdown["attacker_factions"][v["attacker_faction"]]["attacks"] += 1
+                    breakdown["attacker_factions"][v["attacker_faction"]]["wins"] += winAtt
+                else:
+                    show = True if v["attacker_faction"] in attackerFactions else False
+                    breakdown["attacker_factions"][v["attacker_faction"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_factionname"], "show": show}
+
+                # add attacker
+                if v["attacker_faction"] in attackerFactions:
+                    if v["attacker_id"] in breakdown["players"]:
+                        breakdown["players"][v["attacker_id"]]["attacks"] += 1
+                        breakdown["players"][v["attacker_id"]]["wins"] += winAtt
+                    else:
+                        breakdown["players"][v["attacker_id"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_name"], "faction": v["attacker_faction"], "factionname": v["attacker_factionname"]}
+
+                # add defender
+                if v["defender_faction"] in defenderFactions:
+                    if v["defender_id"] in breakdown["players"]:
+                        breakdown["players"][v["defender_id"]]["attacked"] += 1
+                        breakdown["players"][v["defender_id"]]["defends"] += winDef
+                    else:
+                        breakdown["players"][v["defender_id"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_name"], "faction": v["defender_faction"], "factionname": v["defender_factionname"]}
+
+            # # convert factions to dictionnary for the template
+            # # do not save
+            attackerFactions = json.loads(attacksBreakdown.attackerFactions)
+            defenderFactions = json.loads(attacksBreakdown.defenderFactions)
+
+            # context
+            context = dict({"player": player,
+                            'chaincat': True,
+                            'faction': faction,
+                            'attacksBreakdown': attacksBreakdown,
+                            'attacks': attacks,
+
+                            # 'contracts': contracts,
+                            # 'contract': contract,
+                            'breakdown': breakdown,
+                            'view': {'attacks': True}})  # views
 
             return render(request, page, context)
 

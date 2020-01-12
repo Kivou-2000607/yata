@@ -34,6 +34,8 @@ from .models import Racket
 from .models import Stat
 from .models import Revive
 from .models import ReviveContract
+from .models import Attack
+from .models import AttacksBreakdown
 
 from yata.handy import timestampToDate
 
@@ -50,6 +52,12 @@ class ReviveContractAdmin(admin.ModelAdmin):
     list_display = ['faction', 'start', 'end', 'computing']
 
 admin.site.register(ReviveContract, ReviveContractAdmin)
+
+
+class AttacksBreakdownAdmin(admin.ModelAdmin):
+    list_display = ['faction', 'tss', 'tse', 'live']
+
+admin.site.register(AttacksBreakdown, AttacksBreakdownAdmin)
 
 
 class FactionDataAdmin(admin.ModelAdmin):

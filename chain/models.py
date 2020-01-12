@@ -430,6 +430,43 @@ class Wall(models.Model):
         self.save()
 
 
+class AttacksBreakdown(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    tss = models.IntegerField(default=0)
+    tse = models.IntegerField(default=0)
+    live = models.BooleanField(default=False)
+    computing = models.BooleanField(default=True)
+    attackerFactions = models.TextField(default="[]")
+    defenderFactions = models.TextField(default="[]")
+
+class Attack(models.Model):
+    breakdown = models.ForeignKey(AttacksBreakdown, on_delete=models.CASCADE)
+
+    # API Fields
+    tId = models.IntegerField(default=0)
+    timestamp_started = models.IntegerField(default=0)
+    timestamp_ended = models.IntegerField(default=0)
+    attacker_id = models.IntegerField(default=0)
+    attacker_name = models.CharField(default="attacker_name", max_length=16, null=True, blank=True)
+    attacker_faction = models.IntegerField(default=0)
+    attacker_factionname = models.CharField(default="attacker_factionname", max_length=32, null=True, blank=True)
+    defender_id = models.IntegerField(default=0)
+    defender_name = models.CharField(default="defender_name", max_length=16, null=True, blank=True)
+    defender_faction = models.IntegerField(default=0)
+    defender_factionname = models.CharField(default="defender_factionname", max_length=32, null=True, blank=True)
+    result = models.CharField(default="result", max_length=32)
+    stealthed = models.IntegerField(default=0)
+    respect_gain = models.FloatField(default=0.0)
+    chain = models.IntegerField(default=0)
+    # mofifiers
+    fairFight = models.FloatField(default=0.0)
+    war = models.IntegerField(default=0)
+    retaliation = models.FloatField(default=0.0)
+    groupAttack = models.FloatField(default=0.0)
+    overseas = models.FloatField(default=0.0)
+    chainBonus = models.IntegerField(default=0)
+
+
 class Territory(models.Model):
     tId = models.CharField(default="XXX", max_length=3)
     sector = models.IntegerField(default=0)

@@ -1,0 +1,333 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<script>
+$(document).ready(function() {
+    $(".attacks-breakdown-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1]]});
+    $(".attacks-breakdown-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    $(".attacks-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+
+    $(function () {
+        $("#date-start").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-start").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-start").html(s);
+
+                $("#date-start").removeClass("error").addClass("valid");
+                $("#date-live").prop('checked', false);
+
+                var tsStart = parseInt($("#ts-start").val());
+                var tsEnd = parseInt($("#ts-end").val());
+                if(!tsEnd) {
+                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+                    $("#create-breakdown").hide()
+                } else if(tsEnd < tsStart) {
+                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#create-breakdown").hide()
+                } else {
+                    $("#date-end").removeClass("error").addClass("valid");
+                    $("#create-breakdown").show()
+                }
+
+                // if $("#date-start").html {
+                //     console.log()
+                // }
+            },
+        });
+    });
+    $('#date-live').on('change', e=>{
+        e.preventDefault();
+        var tsStart = parseInt($("#ts-start").val());
+        var tsEnd = parseInt($("#ts-end").val());
+        var live = $(e.currentTarget).prop('checked');
+        if(live) {
+            $("#date-end").addClass("valid").removeClass("error").html("Will be constantly udpated");
+            if(tsStart) {
+                $("#create-breakdown").show();
+            } else {
+                $("#create-breakdown").hide();
+            }
+        } else {
+            $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date');
+            $("#create-breakdown").hide();
+        }
+    });
+
+    $(function () {
+        $("#date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-end").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-end").html(s);
+                $("#date-end").removeClass("error").addClass("valid");
+
+                var tsStart = parseInt($("#ts-start").val());
+                var tsEnd = parseInt($("#ts-end").val());
+                if(!tsStart) {
+                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                    $("#create-breakdown").hide()
+                } else if(tsEnd < tsStart) {
+                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#create-breakdown").hide()
+                } else {
+                    $("#date-start").removeClass("error").addClass("valid");
+                    $("#create-breakdown").show()
+                }
+            },
+        });
+    });
+
+    // create breakdown
+    $('#create-breakdown').on('click', e=>{
+        e.preventDefault();
+        var tsStart = parseInt($("#ts-start").val());
+        var tsEnd = parseInt($("#ts-end").val());
+        if($("#date-live").prop('checked'))
+            var live = 1
+        else
+            var live = 0
+        $( "#content-update" ).load( "/chain/attacks/", {
+            tsStart: tsStart,
+            tsEnd: tsEnd,
+            live: live,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating breakdown ');
+    });
+
+    // delete breakdown
+    $('#delete-breakdown').on('click', e=>{
+        e.preventDefault();
+        $( "#content-update" ).load( "/chain/attacks/", {
+            delete: 1,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },afterLoad);
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Deleting breakdown ');
+    });
+
+    $(function () {
+        $("#modify-date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $( "#content-update" ).load( "/chain/attacks/", {
+                    tsEnd: dUTC/1000,
+                    modifyEnd: 1,
+                    csrfmiddlewaretoken: getCookie("csrftoken")
+                },afterLoad);
+                $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract ');
+            },
+        });
+    });
+
+});
+
+
+
+</script>
+
+<div class="module rounded">
+    <p class="neutral">beta...</p>
+</div>
+
+{%if attacksBreakdown%}
+    <h2 class="title">Attacks breakdown [{{attacksBreakdown.pk}}]</h2>
+    <div class="module">
+        <table class="tablesorter center trshadow contract-summary">
+            <thead>
+                <tr><th colspan="3">breakdown summary {% if player.factionAA%}<i id="delete-breakdown" class="fas fa-trash flush-right" style="cursor: pointer;"></i>{%endif%}</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>From: </b> {{attacksBreakdown.tss|ts2date}}</td>
+                    {%if attacksBreakdown.live%}
+                        <td id="modify-date-end" style="cursor: pointer" colspan="2">Live report</td>
+                    {%else%}
+                        <td id="modify-date-end" style="cursor: pointer"><b>To: </b> {{attacksBreakdown.tse|ts2date}}</td>
+                        <td>{%if attacksBreakdown.computing%}<span class="error">Computing</span>{%else%}<span class="valid">Finished</span>{%endif%}</td>
+                    {%endif%}
+                </tr>
+                <tr>
+                    <td><b>Attacks: </b> {{attacksBreakdown.attacks}}</td>
+                    <td><b>Defends: </b> {{attacksBreakdown.defends}}</td>
+                    <td><b>Total: </b> {{attacks|length}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="sep">
+
+        <table class="tablesorter center-full-fourth trshadow attacks-breakdown-factions">
+            <thead>
+                <tr>
+                    <tr><th colspan="4">Attackers</th></tr>
+                    <th>Faction</th>
+                    <th>Wins</th>
+                    <th>Attacks</th>
+                    <th>Toggle</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k, v in breakdown.attacker_factions.items %}
+            <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+                {%if k == 1%}
+                    <td class="a">Stealth</td>
+                {%else%}
+                    <td class="a">{{v.name|factionURLShort:k|safe}}</td>
+                {%endif%}
+                <td class="b">{{v.wins}}</td>
+                <td class="b">{{v.attacks}}</td>
+                {# <td class="b">{{v.defends}}</td> #}
+                <td class="c">{% include "chain/attacks-toggle.html" with type="attackers"%}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="tablesorter center-full-fourth trshadow attacks-breakdown-factions">
+            <thead>
+                <tr>
+                    <tr><th colspan="4">Defenders</th></tr>
+                    <th>Faction</th>
+                    <th>Wins</th>
+                    <th>Attacks</th>
+                    <th>Toggle</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k, v in breakdown.defender_factions.items %}
+            <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+                <td class="a">{{v.name|factionURLShort:k|safe}}</td>
+                <td class="b">{{v.defends}}</td>
+                <td class="b">{{v.attacked}}</td>
+                <td class="c">{% include "chain/attacks-toggle.html" with type="defenders" %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="tablesorter center-full-half trshadow attacks-breakdown-players">
+            <thead>
+                <tr><th colspan="6">Players</th></tr>
+                <tr>
+                    <th>Player</th>
+                    <th>Faction</th>
+                    <th>Hits</th>
+                    <th>Attacks</th>
+                    <th>Defends</th>
+                    <th>Attacked</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for k, v in breakdown.players.items %}
+            <tr>
+                <td class="a">{{v.name|playerURLShort:k|safe}}</td>
+                <td class="b">{{v.factionname|factionURLShort:v.faction|safe}}</td>
+                <td class="c">{{v.wins}}</td>
+                <td class="c">{{v.attacks}}</td>
+                <td class="c">{{v.defends}}</td>
+                <td class="c">{{v.attacked}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <hr class="sep">
+    </div>
+
+    <div class="catch-me">
+        <h2 class="title toggle-display rounded">Breakdown [{{attacksBreakdown.pk}}]: list of {{attacks|length}} attacks&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+        <div class="module" style="display: none;">
+            {% if attacks|length %}
+            <table id="attacks-list" class="tablesorter center-large trshadow attacks-list">
+                <thead>
+                    <tr>
+                        {# <th>Revive [ID]</th> #}
+                        <th>Start</th>
+                        <th>Attacker</th>
+                        <th>Faction</th>
+                        <th>Defender</th>
+                        <th>Faction</th>
+                        <th>Result</th>
+                        <th>Chain</th>
+                </thead>
+                <tbody>
+                {% for k, v in attacks.items %}
+                {%if v.show %}
+                <tr>
+                    {# <td class="a">Revive [{{k}}]</td> #}
+                    <td class="b">{{v.timestamp_started|ts2date}}</td>
+                    {%if v.attacker_id == 1%}
+                        <td>Stealth</td>
+                        <td>Stealth</td>
+                    {%else%}
+                        <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
+                        <td class="b">{{v.attacker_factionname|factionURL:v.attacker_faction|safe}}</td>
+                    {%endif%}
+                    <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
+                    <td class="b">{{v.defender_factionname|factionURL:v.defender_faction|safe}}</td>
+                    <td class="b">{{v.result}}</td>
+                    <td class="b">{%if v.chain%}{{v.chain}}{%endif%}</td>
+                </tr>
+                {%endif%}
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else%}
+                <p class="error">No attacks.</p>
+            {% endif %}
+        </div>
+    </div>
+{%else%}
+<div class="module rounded">
+    {% if player.factionAA %}
+        <p>To create a new breakdown select a starting date and either an ending date or make it live.</p>
+        <form>
+            <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
+                <input id="ts-start" type="hidden" value="0">
+                <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+            </p>
+            <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
+                <input id="ts-end" type="hidden" value="0">
+                <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+            </p>
+            <p><b><i class="fas fa-microphone-alt"></i>&nbsp;&nbsp;Make it live</b>:
+                <input id="ts-live" type="hidden" value="0">
+                <input id="date-live" type="checkbox">
+            </p>
+            <p id="create-breakdown" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
+        </from>
+    {%else%}
+        <p class="error">Ask a AA member</p>
+    {% endif %}
+</div>
+{%endif%}

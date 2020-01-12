@@ -743,8 +743,108 @@ def updateFactionTree(faction, key=None, force=False, reset=False):
     return json.loads(faction.factionTree), json.loads(faction.simuTree)
 
 
+def apiCallAttacksV2(breakdown):
+    # shortcuts
+    faction = breakdown.faction
+    tss = breakdown.tss
+    tse = breakdown.tse if breakdown.tse else int(timezone.now().timestamp())
+    # recompute last ts
+    tmp = breakdown.attack_set.order_by("-timestamp_ended").first()
+    if tmp is not None:
+        tsl = tmp.timestamp_ended
+    else:
+        tsl = breakdown.tss
+
+    print("[function.chain.apiCallAttacks] Breakdown from {} to {}. Live = {}".format(timestampToDate(tss), timestampToDate(tse), breakdown.live))
+
+    # add + 2 s to the endTS
+    tse += 2
+
+    # get existing attacks (just the ids)
+    attacks = [r.tId for r in breakdown.attack_set.all()]
+    print("[function.chain.apiCallAttacks] {} existing attacks".format(len(attacks)))
+
+    # get key
+    keys = faction.getAllPairs(enabledKeys=True)
+    if not len(keys):
+        print("[function.chain.apiCallAttacks] no key for faction {}   --> deleting breakdown".format(faction))
+        breakdown.delete()
+        return False, "no key in faction {} (delete contract)".format(faction)
+
+    keyHolder, key = random.choice(keys)
+
+    # make call
+    selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+    req = apiCall("faction", faction.tId, selection, key, verbose=True)
+
+    # in case there is an API error
+    if "apiError" in req:
+        print('[function.chain.apiCallAttacks] api key error: {}'.format((req['apiError'])))
+        if req['apiErrorCode'] in API_CODE_DELETE:
+            print("[function.chain.apiCallAttacks]    --> deleting {}'s key'".format(keyHolder))
+            faction.delKey(keyHolder)
+        return False, "wrong master key in faction {} for user {} (blank turn)".format(faction, keyHolder)
+
+    # try to catch cache response
+    tornTS = int(req["timestamp"])
+    nowTS = int(timezone.now().timestamp())
+    cacheDiff = abs(nowTS - tornTS)
+
+    apiAttacks = req.get("attacks")
+
+    # in case empty payload
+    if not len(apiAttacks):
+        breakdown.computing = False
+        breakdown.save()
+        return False, "Empty payload (stop computing)"
+
+    print("[function.chain.apiCallAttacks] {} attacks from the API".format(len(apiAttacks)))
+
+    print("[function.chain.apiCallAttacks] start {}".format(timestampToDate(tss)))
+    print("[function.chain.apiCallAttacks] end {}".format(timestampToDate(tse)))
+    print("[function.chain.apiCallAttacks] last before the call {}".format(timestampToDate(tsl)))
+
+    newEntry = 0
+    for k, v in apiAttacks.items():
+        ts = int(v["timestamp_ended"])
+
+        # stop because out of bound
+        # probably because of cache
+        # if int(v["timestamp_started"]) < tsl or int(v["timestamp_ended"]) > tse:
+        #     print(ts)
+        #     print(tsl)
+        #     print(tse)
+        #     return False, "timestamp out of bound for faction {} with cacheDiff = {} (added {} entry before exiting)".format(faction, cacheDiff, newEntry)
+
+        if int(k) not in attacks:
+            for tmpKey in ["fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus"]:
+                v[tmpKey] = float(v["modifiers"][tmpKey])
+            del v["modifiers"]
+            breakdown.attack_set.create(tId=int(k), **v)
+            newEntry += 1
+            tsl = max(tsl, ts)
+
+    print("[function.chain.apiCallAttacks] last after the call {}".format(timestampToDate(tsl)))
+
+    # compute contract variables
+    attacks = breakdown.attack_set.all()
+    # breakdown.revivesContract = len(revives)
+    # breakdown.first = revives.order_by("timestamp").first().timestamp
+    # breakdown.last = revives.order_by("-timestamp").first().timestamp
+
+    if not newEntry and len(apiAttacks) > 1:
+        return False, "No new entry for faction {} with cacheDiff = {} (continue)".format(faction, cacheDiff)
+
+    if len(apiAttacks) < 2 and not breakdown.live:
+        print("[function.chain.apiCallAttacks] no api entry for non live breakdown (stop)")
+        breakdown.computing = False
+
+    breakdown.save()
+    return True, "Everything's fine"
+
+
 def apiCallRevives(contract):
-    # short cuts
+    # shortcuts
     faction = contract.faction
     start = contract.start
     end = contract.end if contract.end else int(timezone.now().timestamp())

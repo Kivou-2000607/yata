@@ -14,6 +14,8 @@ urlpatterns = [
     re_path(r'^armory/$', views.armory, name='armory'),
     re_path(r'^respectSimulator/$', views.respectSimulator, name='respectSimulator'),
 
+    re_path(r'^attacks/$', views.attacks, name='attacks'),
+
     # members
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^toggleMemberShare/$', views.toggleMemberShare, name='toggleMemberShare'),

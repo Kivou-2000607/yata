@@ -1,0 +1,36 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+
+{% if player.factionAA %}
+    <form>{% csrf_token %}
+        {% if v.show %}
+            <a  id="attacks-toggle-{{type}}-{{contract.pk}}-{{k}}" class="attacks-toggle-faction" href="{% url 'chain:attacks' %}"><i class="far fa-eye" title="Report shared with faction. Click to stop sharing."></i></a>
+        {%else%}
+            <a id="attacks-toggle-{{type}}-{{contract.pk}}-{{k}}" class="attacks-toggle-faction" href="{% url 'chain:attacks' %}"><i class="far fa-eye-slash" title="Report not shared with faction. Click to share."></i></a>
+        {%endif%}
+    </form>
+{% else %}
+    {% if v.show %}
+        <i class="far fa-eye" title="Report shared with faction."></i>
+    {%else%}
+        <i class="far fa-eye-slash" title="Report not shared with faction."></i>
+    {%endif%}
+{% endif %}
