@@ -308,7 +308,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     type = "Organised crimes"
                     vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("organisedcrimes", 0)
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [248, 249, 250]:
