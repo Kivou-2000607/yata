@@ -45,6 +45,12 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
+            
+            # shouldn't happen
+            if player is None:
+                del request.session['player']
+                context = {'allNews': allNews, 'allDonations': allDonations}
+                
             player.lastActionTS = int(timezone.now().timestamp())
             player.active = True
             player.save()
@@ -140,6 +146,7 @@ def delete(request):
             except BaseException:
                 pass
             player.delete()
+            del request.session['player']
 
         print('[view.yata.delete] redirect to logout')
         return HttpResponseRedirect(reverse('logout'))
