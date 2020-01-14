@@ -436,7 +436,7 @@ d = {
     249: 359869168,  # Aiding And Abetting
     267: 856740501,  # Second Chance
     250: 689889266,  # Don't Drop It
-    322: 0,  # Miracle Worker
+    322: 389182165,  # Miracle Worker
 
     # 16
     239: 275270401,  # Middleman
