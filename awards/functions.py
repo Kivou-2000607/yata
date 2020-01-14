@@ -1421,8 +1421,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = "{:.1f} days as General in the army".format(vp["left"])
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [220]:
+                elif int(k) in [220, 322]:
                     # 220 {'name': 'The Affronted', 'description': 'Infuriate all interviewers in starter jobs', 'type': 0, 'circulation': 4630, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 384148528, 'title': 'The Affronted [220]: Rare (4630)'}
+                    # 322: {"name": "Miracle Worker","description": "Revive 10 people within 10 minutes","type": 15,
                     type = "City jobs"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
