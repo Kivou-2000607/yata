@@ -23,6 +23,9 @@ This file is part of yata.
 {% if errorMessageSub %}
     {% include "yata/error.html" with errorMessage=errorMessageSub %}
 {% endif %}
+{% if validMessageSub %}
+    {% include "yata/error.html" with validMessage=validMessageSub %}
+{% endif %}
 {% if view.liveReport %}
     {% include "chain/live.html" %}
 {% endif %}

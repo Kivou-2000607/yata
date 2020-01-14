@@ -141,6 +141,13 @@ div.error {
     border-radius: 6px;
     border: 1px;
 }
+div.valid {
+    font-weight: bold;
+    color: #0B8E14;
+    background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
+    border-radius: 6px;
+    border: 1px;
+}
 
 form.flush-right,
 span.flush-right,

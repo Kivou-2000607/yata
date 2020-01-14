@@ -52,20 +52,16 @@ This file is part of yata.
         {% endfor %}
       </tbody>
     </table>
-</div>
 
-{%if player.factionAA%}
-<h2 class="title">Add an entry</h2>
-<div class="module">
-  <form>
-    Select the Challenge you want update
+    {%if player.factionAA%}
+    <p><form>
+    Select a new challenge you want enter
       <select class="faction-bb-enter-challenge">
         <option selected disabled hidden>Select a challenge</option>
         {% for k, v in bridge.items %}
             <option value="{{k}}">{{v}}</option>
         {% endfor %}
       </select>
-  </form>
-    <!-- <p><b>Add an entry</b>: install <a href="/static/integration/challenges.user.js" target="_blank">this script</a> and go to the <a href="https://www.torn.com/factions.php?step=your#/tab=upgrades" target="_blank">Torn faction upgrade tree</a>. Open a branch with a challenge and click import.</p> -->
+  </form></p>
+  {%endif%}
 </div>
-{%endif%}

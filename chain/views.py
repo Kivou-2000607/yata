@@ -2379,41 +2379,80 @@ def bigBrother(request):
                 "attacksdamage": "Damage dealt",
                 "attacksdamaging": "Damage received",
                 "attacksrunaway": "Runaways",
+                "allgyms": "Energy training",
                 # "": "",
                 }
 
             error = False
+            message = False
             if request.POST.get('add', False) and player.factionAA:
                 addType = request.POST.get('add')
-                req = apiCall("faction", "", "timestamp,contributors&stat={}".format(addType), key=player.key)
-                if 'apiError' in req:
-                    error = req["apiError"] + " can't add challenge."
-                elif addType not in req["contributors"]:
-                    delay = 32 - (int(timezone.now().timestamp()) - int(req["timestamp"]))
-                    error = "You have to wait at least 30 seconds between different entry because of API cache (wait {}s).".format(delay)
+                ts = int(timezone.now().timestamp())
+                ts = ts - ts % 3600
+
+                # check if already added this hour
+                if faction.stat_set.filter(timestamp=ts).filter(name=addType).first() is not None:
+                    error = "{} already added this hour. Try later.".format(bridge[addType])
+                    req = False
                 else:
-                    ts = int(timezone.now().timestamp())
-                    ts = ts - ts % 3600
-                    if faction.stat_set.filter(timestamp=ts).filter(name=addType).first() is not None:
-                        error = "{} already added this hour Try later.".format(bridge[addType])
-                    else:
-                        newStat = dict({})
-                        newStat["timestamp"] = ts
-                        # newStat["type"] = addType
-                        newStat["name"] = addType
+                    req = apiCall("faction", "", "timestamp,contributors&stat={}".format(addType), key=player.key)
+
+                # check api error
+                if req and 'apiError' in req:
+                    error = req["apiError"] + " can't add challenge."
+
+                # check if wrong type (due to cache)
+                elif req and addType not in req["contributors"]:
+                    delay = 32 - (int(timezone.now().timestamp()) - int(req["timestamp"]))
+                    error = "You have to wait at least 30 seconds between different entries because of API cache (wait {}s).".format(delay)
+
+                # should be good -> add entry
+                elif req:
+                    newStat = dict({})
+                    newStat["timestamp"] = ts
+                    # newStat["type"] = addType
+                    newStat["name"] = addType
+                    contributors = dict({})
+                    members = faction.member_set.all()
+                    for k, v in [(k, v["contributed"]) for k, v in req["contributors"][addType].items() if v["in_faction"]]:
+                        m = members.filter(tId=int(k)).first()
+                        memberName = m.name if m is not None else "Player"
+                        contributors[k] = [memberName, v]
+                    newStat["contributors"] = json.dumps(contributors)
+                    faction.stat_set.create(**newStat)
+                    message = "{} added at {}".format(bridge[addType], timestampToDate(ts))
+
+            # get all stats
+            allStats = faction.stat_set.all().order_by('timestamp')
+
+            # add on the fly 4 gyms
+            # loop over unique ts
+            gymsKeys = ["gymstrength", "gymspeed", "gymdefense", "gymdexterity"]
+            for uniqueTS in set([s.timestamp for s in allStats]):
+                gyms = []
+                for tsStat in allStats.filter(timestamp=uniqueTS):
+                    if tsStat.name in gymsKeys:
+                        gyms.append(tsStat)
+
+                if len(gyms) == 4:
+                    if allStats.filter(name="allgyms", timestamp=uniqueTS).first() is None:
+                        print("create all gym")
+                        newStat = {"timestamp": gyms[0].timestamp, "name": "allgyms"}
                         contributors = dict({})
-                        members = faction.member_set.all()
-                        for k, v in [(k, v["contributed"]) for k, v in req["contributors"][addType].items() if v["in_faction"]]:
-                            m = members.filter(tId=int(k)).first()
-                            memberName = m.name if m is not None else "Player"
-                            contributors[k] = [memberName, v]
+                        for gym in gyms:
+                            for k, v in json.loads(gym.contributors).items():
+                                if k in contributors:
+                                    contributors[k][1] += v[1]
+                                else:
+                                    contributors[k] = v
                         newStat["contributors"] = json.dumps(contributors)
                         faction.stat_set.create(**newStat)
+                        allStats = faction.stat_set.all().order_by('timestamp')
 
             statsList = dict({})
             contributors = False
             comparison = False
-            for stat in faction.stat_set.all().order_by('timestamp'):
+            for stat in allStats:
                 # create entry if first iteration on this type
                 if stat.name not in statsList:
                     statsList[stat.name] = []
@@ -2429,7 +2468,7 @@ def bigBrother(request):
                 comparison = [name, tsA, tsB, str(name)]
 
                 # select first timestamp
-                stat = faction.stat_set.filter(name=name, timestamp=tsA).first()
+                stat = allStats.filter(name=name, timestamp=tsA).first()
                 contributors = dict({})
                 # in case they remove stat and select it before refraising
                 if stat is not None:
@@ -2439,7 +2478,7 @@ def bigBrother(request):
 
                     # select second timestamp
                     if tsB > 0:
-                        stat = faction.stat_set.filter(name=name, timestamp=tsB).first()
+                        stat = allStats.filter(name=name, timestamp=tsB).first()
                         for k, v in json.loads(stat.contributors).items():
                             memberName = bridge.get(k, k)
                             # update 3rd column if already in timestamp A
@@ -2455,6 +2494,8 @@ def bigBrother(request):
             context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': bridge, 'view': {'bigBrother': True}}
             if error:
                 context["apiErrorSub"] = error
+            if message:
+                context["validMessageSub"] = message
             if request.method == 'POST':
                 page = 'chain/content-reload.html' if request.POST.get('name') is None else 'chain/big-brother-table.html'
             else:
