@@ -59,7 +59,9 @@ This file is part of yata.
       <select class="faction-bb-enter-challenge">
         <option selected disabled hidden>Select a challenge</option>
         {% for k, v in bridge.items %}
-            <option value="{{k}}">{{v}}</option>
+	{%if k != "allgyms" %}
+        <Option Value="{{k}}">{{v}}</option>
+	{%endif%}
         {% endfor %}
       </select>
   </form></p>
