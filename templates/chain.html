@@ -306,7 +306,7 @@
     $(document).on('change', '.faction-bb-stats-list', e=>{
         e.preventDefault();
         var splt = $(e.currentTarget).val().split("-");
-
+        console.log(splt);
         if(splt.length == 2) {
             var tsB = 0;
             var tsA = splt.pop();
@@ -320,9 +320,22 @@
         $("#faction-big-brother-table").load( "/chain/bigBrother/", {
             tsA: tsA,
             tsB: tsB,
-            type: type,
+            name: type,
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).html(spinner);
+    });
+
+    // big brother add
+    $(document).on('change', '.faction-bb-enter-challenge', e=>{
+        e.preventDefault();
+        var add = $(e.currentTarget).val();
+        $("#content-update").load( "/chain/bigBrother/", {
+            add: add,
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+        $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Adding challenge '+add);
+
+
     });
 
     // big brother remove
@@ -333,7 +346,7 @@
 
         tr.load( "/chain/removeUpgrade/", {
             ts: splt.pop(),
-            type: splt.pop(),
+            name: splt.pop(),
             csrfmiddlewaretoken: getCookie("csrftoken")
         }).remove();
 

@@ -172,7 +172,7 @@ class StatAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['pk', 'faction', 'name', 'type']
+    list_display = ['pk', 'faction', 'name']
     search_fields = ['author']
 
 

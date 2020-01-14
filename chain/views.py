@@ -2381,26 +2381,55 @@ def bigBrother(request):
                 "attacksrunaway": "Runaways",
                 # "": "",
                 }
+
+            error = False
+            if request.POST.get('add', False) and player.factionAA:
+                addType = request.POST.get('add')
+                req = apiCall("faction", "", "timestamp,contributors&stat={}".format(addType), key=player.key)
+                if 'apiError' in req:
+                    error = req["apiError"] + " can't add challenge."
+                elif addType not in req["contributors"]:
+                    delay = 32 - (int(timezone.now().timestamp()) - int(req["timestamp"]))
+                    error = "You have to wait at least 30 seconds between different entry because of API cache (wait {}s).".format(delay)
+                else:
+                    ts = int(timezone.now().timestamp())
+                    ts = ts - ts % 3600
+                    if faction.stat_set.filter(timestamp=ts).filter(name=addType).first() is not None:
+                        error = "{} already added this hour Try later.".format(bridge[addType])
+                    else:
+                        newStat = dict({})
+                        newStat["timestamp"] = ts
+                        # newStat["type"] = addType
+                        newStat["name"] = addType
+                        contributors = dict({})
+                        members = faction.member_set.all()
+                        for k, v in [(k, v["contributed"]) for k, v in req["contributors"][addType].items() if v["in_faction"]]:
+                            m = members.filter(tId=int(k)).first()
+                            memberName = m.name if m is not None else "Player"
+                            contributors[k] = [memberName, v]
+                        newStat["contributors"] = json.dumps(contributors)
+                        faction.stat_set.create(**newStat)
+
             statsList = dict({})
             contributors = False
             comparison = False
             for stat in faction.stat_set.all().order_by('timestamp'):
                 # create entry if first iteration on this type
-                if stat.type not in statsList:
-                    statsList[stat.type] = []
+                if stat.name not in statsList:
+                    statsList[stat.name] = []
 
                 # enter contributors
                 realName = bridge.get(stat.name, stat.name)
-                statsList[stat.type].append([realName, stat.timestamp])
+                statsList[stat.name].append([realName, stat.timestamp])
 
-            if request.POST.get('type', False):
-                type = int(request.POST.get('type'))
+            if request.POST.get('name', False):
+                name = request.POST.get('name')
                 tsA = int(request.POST.get('tsA'))
                 tsB = int(request.POST.get('tsB'))
-                comparison = [type, tsA, tsB, str(type)]
+                comparison = [name, tsA, tsB, str(name)]
 
                 # select first timestamp
-                stat = faction.stat_set.filter(type=type, timestamp=tsA).first()
+                stat = faction.stat_set.filter(name=name, timestamp=tsA).first()
                 contributors = dict({})
                 # in case they remove stat and select it before refraising
                 if stat is not None:
@@ -2410,23 +2439,24 @@ def bigBrother(request):
 
                     # select second timestamp
                     if tsB > 0:
-                        stat = faction.stat_set.filter(type=type, timestamp=tsB).first()
+                        stat = faction.stat_set.filter(name=name, timestamp=tsB).first()
                         for k, v in json.loads(stat.contributors).items():
-                            name = bridge.get(k, k)
+                            memberName = bridge.get(k, k)
                             # update 3rd column if already in timestamp A
                             if k in contributors:
-                                contributors[name][2] = v[1]
+                                contributors[memberName][2] = v[1]
                             # add if new
                             else:
-                                contributors[name] = [v[0], 0, v[1]]
-                            c = contributors[name]
+                                contributors[memberName] = [v[0], 0, v[1]]
+                            c = contributors[memberName]
                             if not c[2] - c[1]:
-                                del contributors[name]
+                                del contributors[memberName]
 
-            context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'view': {'bigBrother': True}}
-
+            context = {'player': player, 'chaincat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': bridge, 'view': {'bigBrother': True}}
+            if error:
+                context["apiErrorSub"] = error
             if request.method == 'POST':
-                page = 'chain/content-reload.html' if request.POST.get('type') is None else 'chain/big-brother-table.html'
+                page = 'chain/content-reload.html' if request.POST.get('name') is None else 'chain/big-brother-table.html'
             else:
                 page = 'chain.html'
             return render(request, page, context)
@@ -2454,7 +2484,7 @@ def removeUpgrade(request):
                     return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
                 print('[view.chain.removeUpgrade] faction {} found'.format(factionId))
 
-                s = faction.stat_set.filter(type=request.POST.get('type')).filter(timestamp=request.POST.get('ts')).first()
+                s = faction.stat_set.filter(name=request.POST.get('name')).filter(timestamp=request.POST.get('ts')).first()
                 try:
                     s.delete()
                     m = "Okay"
@@ -2463,6 +2493,7 @@ def removeUpgrade(request):
                     m = str(e)
                     t = -1
 
+                print(m)
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
             else:
                 return returnError(type=403, msg="You need AA rights.")
@@ -2473,7 +2504,6 @@ def removeUpgrade(request):
 
     except Exception:
         return returnError()
-
 
 @csrf_exempt
 def importUpgrades(request):

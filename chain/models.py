@@ -186,7 +186,7 @@ class Stat(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     timestamp = models.IntegerField(default=0)
     name = models.CharField(default="stat type", max_length=64)
-    type = models.IntegerField(default=0)
+    # type = models.IntegerField(default=0)
     contributors = models.TextField(default="{}")
 
 
