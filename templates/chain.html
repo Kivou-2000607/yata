@@ -438,6 +438,19 @@
         $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Prout ');
     });
 
+    // show hide attack breakdown list
+    $(document).on('click', '.attacks-breakdown-see-all', e=>{
+        e.preventDefault();
+        var tr = $(e.currentTarget);
+        tr.parents("table").find("tr.hidden").toggle();
+        if (tr.find("i").hasClass("fa-eye")) {
+          tr.find("td").html('Hide all&nbsp;&nbsp;<i class="far fa-eye-slash"></i>')
+        } else {
+          tr.find("td").html('Show all&nbsp;&nbsp;<i class="far fa-eye"></i>')
+        }
+
+    });
+
 </script>
 {% endblock %}
 

@@ -33,6 +33,8 @@ li { font-size: 14px; }
 ul li { list-style-type: disclosure-closed; }
 ul ul li { list-style-type: disclosure-closed; }
 
+.hidden {display: none;}
+
 a.form-inline, form.form-inline { display: inline!important; }
 
 h2 a { color: #FFF!important; font-weight: bold; text-decoration: none;}

@@ -188,8 +188,8 @@ $(document).ready(function() {
 
         <table class="tablesorter center-full-fourth trshadow attacks-breakdown-factions">
             <thead>
-                <tr>
                     <tr><th colspan="4">Attackers</th></tr>
+                  <tr>
                     <th>Faction</th>
                     <th>Wins</th>
                     <th>Attacks</th>
@@ -198,7 +198,7 @@ $(document).ready(function() {
             </thead>
             <tbody>
             {% for k, v in breakdown.attacker_factions.items %}
-            <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+            <tr {%if v.attacks < 6%}class="hidden"{%endif%}{%if not v.show%}style="opacity: 0.5"{%endif%}>
                 {%if k == 1%}
                     <td class="a">Stealth</td>
                 {%else%}
@@ -206,17 +206,19 @@ $(document).ready(function() {
                 {%endif%}
                 <td class="b">{{v.wins}}</td>
                 <td class="b">{{v.attacks}}</td>
-                {# <td class="b">{{v.defends}}</td> #}
                 <td class="c">{% include "chain/attacks-toggle.html" with type="attackers"%}</td>
             </tr>
             {% endfor %}
             </tbody>
+            <tr class="attacks-breakdown-see-all" style="cursor: pointer">
+              <td colspan="4" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
+            </tr>
         </table>
 
         <table class="tablesorter center-full-fourth trshadow attacks-breakdown-factions">
             <thead>
-                <tr>
-                    <tr><th colspan="4">Defenders</th></tr>
+                  <tr><th colspan="4">Defenders</th></tr>
+                  <tr>
                     <th>Faction</th>
                     <th>Wins</th>
                     <th>Attacks</th>
@@ -225,7 +227,7 @@ $(document).ready(function() {
             </thead>
             <tbody>
             {% for k, v in breakdown.defender_factions.items %}
-            <tr {%if not v.show%}style="opacity: 0.5"{%endif%}>
+            <tr {%if v.attacked < 6%}class="hidden"{%endif%}{%if not v.show%}style="opacity: 0.5"{%endif%}>
                 <td class="a">{{v.name|factionURLShort:k|safe}}</td>
                 <td class="b">{{v.defends}}</td>
                 <td class="b">{{v.attacked}}</td>
@@ -233,6 +235,10 @@ $(document).ready(function() {
             </tr>
             {% endfor %}
             </tbody>
+            <tr class="attacks-breakdown-see-all" style="cursor: pointer">
+              <td colspan="4" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
+            </tr>
+            <table>
         </table>
 
         <table class="tablesorter center-full-half trshadow attacks-breakdown-players">
@@ -249,7 +255,7 @@ $(document).ready(function() {
             </thead>
             <tbody>
             {% for k, v in breakdown.players.items %}
-            <tr>
+            <tr {%if v.attacks|add:v.attacked < 6%}class="hidden"{%endif%}>
                 <td class="a">{{v.name|playerURLShort:k|safe}}</td>
                 <td class="b">{{v.factionname|factionURLShort:v.faction|safe}}</td>
                 <td class="c">{{v.wins}}</td>
@@ -259,6 +265,9 @@ $(document).ready(function() {
             </tr>
             {% endfor %}
             </tbody>
+            <tr class="attacks-breakdown-see-all" style="cursor: pointer">
+              <td colspan="6" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
+            </tr>
         </table>
 
         <hr class="sep">
@@ -325,7 +334,7 @@ $(document).ready(function() {
                 <input id="date-live" type="checkbox">
             </p>
             <p id="create-breakdown" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
-        </from>
+        </form>
     {%else%}
         <p class="error">Ask a AA member</p>
     {% endif %}
