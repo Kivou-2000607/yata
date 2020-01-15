@@ -19,32 +19,30 @@ This file is part of yata.
 
 {% load app_filters %}
 
+<h2 class="title">Guilds</h2>
+<div class="module">
 {% for app in apps %}
-{% for guildId, guild in app.variables.items %}
-<div class="catch-me">
-    <h2 class="title toggle-display rounded">{{app.name}} [{{app.id}}] on guild {{guild.admin.name}} [{{guildId}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="module" style="display: none;">
-                <h2>Owner</h2>
-                <p>{{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
-                <h2>Contact</h2>
-                <p>{{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
-                {% for module, options in guild.items %}
-                    {% if module != "admin" %}
-                        <h2>{{module}}</h2>
-                        <p>
-                            {% for k, v in options.items %}
-                                <b>{{k}}:</b> <i>{{v}}</i>
-                                {% if not forloop.last %}
-                                ,&nbsp;
-                                {% endif %}
-                            {% endfor %}
-                        </p>
-                    {% endif %}
-                {% endfor %}
-                {% if not forloop.last %}
-                <hr class="sep">
-                {% endif %}
+  <h1 class="module-doc">{{app.name}} [{{app.id}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+  <div class="module-doc">
+    {% for guildId, guild in app.variables.items %}
+        <h2 class="command-doc">{{guild.admin.name}} ({{guild.admin.contact}} [{{guild.admin.contact_id}}])&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="command-doc">
+          <p><b>Owner:</b> {{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
+          <p><b>Contact:</b> {{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
+          {% for module, options in guild.items %}
+              {% if module != "admin" %}
+                  <p><b>{{module}}:</b>
+                    {% for k, v in options.items %}
+                        {{k}}: <i>{{v}}</i>
+                        {% if not forloop.last %}
+                        ,&nbsp;
+                        {% endif %}
+                    {% endfor %}
+                  </p>
+              {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
     </div>
+{% endfor %}
 </div>
-{% endfor %}
-{% endfor %}
