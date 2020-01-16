@@ -29,7 +29,7 @@ from yata.handy import apiCall
 
 class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
-    name = models.CharField(default="MyFaction", max_length=200)
+    name = models.CharField(default="MyFaction", max_length=32)
     hitsThreshold = models.IntegerField(default=100)
     respect = models.IntegerField(default=0)
 
@@ -58,6 +58,8 @@ class Faction(models.Model):
 
     createLive = models.BooleanField(default=False)
     createReport = models.BooleanField(default=False)
+
+    discordName = models.CharField(default="", max_length=32, null=True, blank=True)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)

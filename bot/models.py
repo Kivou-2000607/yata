@@ -46,7 +46,9 @@ class Guild(models.Model):
 
     # verify module
     verifyModule = models.BooleanField(default=False)
+    verifyChangeName = models.BooleanField(default=True)
     verifyForce = models.BooleanField(default=False)
+    verifyAppendFacId = models.BooleanField(default=True)
     verifyFactions = models.ManyToManyField(Faction, blank=True)
     verifyFacsRole = models.CharField(default="", blank=True, max_length=16)
 

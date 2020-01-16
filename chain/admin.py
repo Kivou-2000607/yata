@@ -198,6 +198,7 @@ class FactionAdmin(admin.ModelAdmin):
     # inlines = [ChainInline, MemberInline]
     list_filter = ['createLive', 'createReport', 'armoryRecord']
     search_fields = ['name', 'tId']
+    exclude = ['factionTree', 'simuTree', 'memberStatus', 'armoryString', 'fundsString', 'networthString']
 
     # def live_chain(self, instance):
     #     return(bool(len(instance.chain_set.filter(tId=0))))
