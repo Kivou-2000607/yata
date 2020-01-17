@@ -441,6 +441,7 @@ class AttacksBreakdown(models.Model):
     attackerFactions = models.TextField(default="[]")
     defenderFactions = models.TextField(default="[]")
 
+
 class Attack(models.Model):
     breakdown = models.ForeignKey(AttacksBreakdown, on_delete=models.CASCADE)
 

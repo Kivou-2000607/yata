@@ -45,17 +45,20 @@ import json
 class ReviveAdmin(admin.ModelAdmin):
     list_display = ['contract', 'timestamp']
 
+
 admin.site.register(Revive, ReviveAdmin)
 
 
 class ReviveContractAdmin(admin.ModelAdmin):
     list_display = ['faction', 'start', 'end', 'computing']
 
+
 admin.site.register(ReviveContract, ReviveContractAdmin)
 
 
 class AttacksBreakdownAdmin(admin.ModelAdmin):
     list_display = ['faction', 'tss', 'tse', 'live']
+
 
 admin.site.register(AttacksBreakdown, AttacksBreakdownAdmin)
 
