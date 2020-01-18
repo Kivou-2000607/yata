@@ -104,6 +104,9 @@ class Player(models.Model):
         else:
             playerKey.value = key
             playerKey.save()
+        # temporary for the bot...
+        self.apikey = key
+        self.save()
         return
 
 
