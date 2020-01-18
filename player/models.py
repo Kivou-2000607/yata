@@ -100,7 +100,7 @@ class Player(models.Model):
     def addKey(self, key):
         playerKey = self.key_set.first()
         if playerKey is None:
-            self.key_set.create(value=key)
+            self.key_set.create(value=key, tId=self.tId)
         else:
             playerKey.value = key
             playerKey.save()
@@ -199,6 +199,7 @@ class PlayerData(models.Model):
 
 class Key(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    tId = models.IntegerField(default=0)
     value = models.SlugField(default="aaaa", max_length=16)  # key
     lastPulled = models.IntegerField(default=0)  # ts when last pulled
 

@@ -27,5 +27,5 @@ class Command(BaseCommand):
         for player in Player.objects.filter(validKey=True):
             key = player.key_set.first()
             if key is None:
-                player.key_set.create(value=player.apikey, lastPulled=player.lastUpdateTS)
+                player.addKey(player.apikey)
             print(player, len(player.key_set.all()))
