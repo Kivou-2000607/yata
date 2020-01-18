@@ -42,7 +42,7 @@ def index(request):
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
         player.active = True
-        key = player.key
+        key = player.getKey()
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
         player.bazaarInfo = "{}".format(len(playerList))
@@ -105,7 +105,6 @@ def custom(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            # key = player.key
             bazaarJson = json.loads(player.bazaarJson)
             playerList = bazaarJson.get("list", [])
 
@@ -148,7 +147,6 @@ def default(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -193,7 +191,6 @@ def sets(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -238,7 +235,6 @@ def all(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -283,7 +279,6 @@ def top10(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -375,7 +370,7 @@ def update(request, itemId):
             print('[view.bazaar.updateItem] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key
+            key = player.getKey()
             bazaarJson = json.loads(player.bazaarJson)
             playerList = bazaarJson.get("list", [])
 

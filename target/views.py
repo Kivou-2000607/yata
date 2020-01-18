@@ -117,7 +117,7 @@ def toggleTarget(request, targetId):
             print('[view.target.toggleTarget] get player id from session and check POST')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key
+            key = player.getKey()
             targetJson = json.loads(player.targetJson)
             attacks = targetJson.get("attacks") if "attacks" in targetJson else dict({})
             targets = targetJson.get("targets") if "targets" in targetJson else dict({})
@@ -190,7 +190,7 @@ def refresh(request, targetId):
             print('[view.target.refresh] get player id from session and check POST')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key
+            key = player.getKey()
             targetJson = json.loads(player.targetJson)
             attacks = targetJson.get("attacks", dict({}))
             targets = targetJson.get("targets", dict({}))
@@ -324,7 +324,7 @@ def add(request):
             print('[view.target.add] get player id from session and check POST')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key
+            key = player.getKey()
             targetJson = json.loads(player.targetJson)
 
             targetId = request.POST.get("targetId")

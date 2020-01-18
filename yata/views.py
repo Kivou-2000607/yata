@@ -28,13 +28,10 @@ import json
 import os
 import traceback
 
-from player.models import Donation
-from player.models import Player
-from player.models import PlayerData
-from player.models import News
+from player.models import *
+from player.functions import updatePlayer
 from chain.models import Faction
-from yata.handy import apiCall
-from yata.handy import returnError
+from yata.handy import *
 
 
 def index(request):
@@ -45,12 +42,12 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            
+
             # shouldn't happen
             if player is None:
                 del request.session['player']
                 context = {'allNews': allNews, 'allDonations': allDonations}
-                
+
             player.lastActionTS = int(timezone.now().timestamp())
             player.active = True
             player.save()
@@ -89,11 +86,11 @@ def login(request):
                 print('[view.yata.login] create new player')
                 player = Player.objects.create(tId=int(user.get('player_id')))
             print('[view.yata.login] update player')
-            player.key = p.get('key')
+            player.addKey(p.get('key'))
+            # player.key = p.get('key')
             player.active = True
-            player.update_info()
-            player.lastActionTS = int(timezone.now().timestamp())
-
+            player.lastActionTS = tsnow()
+            updatePlayer(player)
             print('[view.yata.login] save player')
             player.save()
 

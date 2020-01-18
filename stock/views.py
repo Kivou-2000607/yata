@@ -44,7 +44,7 @@ def index(request, select='all'):
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
         player.active = True
-        key = player.key
+        key = player.getKey()
 
         # update personal stocks
         error = False
@@ -208,6 +208,7 @@ def prices(request, tId, period=None):
 
     except Exception:
         return returnError()
+
 
 # API
 def alerts(request):

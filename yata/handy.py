@@ -17,12 +17,16 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from django.utils import timezone
+
+def tsnow():
+    return int(timezone.now().timestamp())
 
 def apiCall(section, id, selections, key, sub=None, verbose=True):
     import requests
 
     key = str(key)
-    
+
     # DEBUG live chain
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
     #     from django.utils import timezone
@@ -99,3 +103,13 @@ def returnError(type=500, msg=None, home=True):
     else:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip(), 'home': home}))
+
+
+def getPlayer(tId):
+    from player.models import Player
+
+    player = Player.objects.filter(tId=tId).first()
+    player.lastActionTS = tsnow()
+    player.active = True
+    player.save()
+    return player

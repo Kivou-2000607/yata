@@ -26,7 +26,7 @@ from chain.functions import BONUS_HITS
 
 def updateAttacks(player):
     tId = player.tId
-    key = player.key
+    key = player.getKey()
     targetJson = json.loads(player.targetJson)
 
     error = False
@@ -91,7 +91,7 @@ def updateAttacks(player):
 
 def updateRevives(player):
     tId = player.tId
-    key = player.key
+    key = player.getKey()
 
     error = False
     req = apiCall('user', "", 'revives,timestamp', key)

@@ -497,13 +497,13 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
                 memberDB.arson = 0
             else:
                 if indRefresh and memberDB.shareE and memberDB.shareN:
-                    req = apiCall("user", "", "perks,bars,crimes", key=player.key)
-                    memberDB.updateEnergy(key=player.key, req=req)
-                    memberDB.updateNNB(key=player.key, req=req)
+                    req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
+                    memberDB.updateEnergy(key=player.getKey(), req=req)
+                    memberDB.updateNNB(key=player.getKey(), req=req)
                 elif indRefresh and memberDB.shareE:
-                    memberDB.updateEnergy(key=player.key)
+                    memberDB.updateEnergy(key=player.getKey())
                 elif indRefresh and memberDB.shareN:
-                    memberDB.updateNNB(key=player.key)
+                    memberDB.updateNNB(key=player.getKey())
 
             memberDB.save()
 

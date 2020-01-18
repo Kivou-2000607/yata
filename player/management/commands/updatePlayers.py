@@ -25,6 +25,7 @@ import numpy
 import json
 
 from player.models import Player
+from player.functions import updatePlayer
 from awards.models import AwardsData
 
 
@@ -33,16 +34,15 @@ class Command(BaseCommand):
 
         # update players info
         print("[command.player.updateplayers] UPDATE PLAYERS")
-        playersId = Player.objects.filter(validKey=True).only("tId")
-        n = len(playersId)
-        for i, p in enumerate(playersId):
+        players = Player.objects.filter(validKey=True)
+        n = len(players)
+        for i, player in enumerate(players):
             try:
-                player = Player.objects.filter(tId=p.tId).first()
-                player.update_info(i=i + 1, n=n)
+                updatePlayer(player, i=i + 1, n=n)
             except BaseException as e:
                 print(f"[command.player.updateplayers]: {e}")
                 print(traceback.format_exc())
-        del playersId
+        del players
 
         # compute rank
         print("[command.player.updateplayers] COMPUTE RANKS")

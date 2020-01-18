@@ -60,7 +60,7 @@ def index(request):
             player = Player.objects.filter(tId=tId).first()
             player.lastActionTS = int(timezone.now().timestamp())
             player.active = True
-            key = player.key
+            key = player.getKey()
 
             # get user info
             user = apiCall('user', '', 'profile', key)
@@ -105,7 +105,7 @@ def index(request):
 
             if player.factionAA:
                 print('[view.chain.index] save AA key'.format(factionId))
-                faction.addKey(player.tId, player.key)
+                faction.addKey(player.tId, player.getKey())
                 faction.save()
                 if not len(faction.crontab_set.all()):
                     openCrontab = Crontab.objects.filter(open=True).all()
@@ -144,7 +144,7 @@ def live(request):
             player.save()
 
             factionId = player.factionId
-            key = player.key
+            key = player.getKey()
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
             cts = int(timezone.now().timestamp())
@@ -325,7 +325,7 @@ def list(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            key = player.key
+            key = player.getKey()
             factionId = player.factionId
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
@@ -482,7 +482,7 @@ def jointReport(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            key = player.key
+            key = player.getKey()
             factionId = player.factionId
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
@@ -644,7 +644,7 @@ def members(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            key = player.key
+            key = player.getKey()
             factionId = player.factionId
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
@@ -700,7 +700,7 @@ def toggleMemberShare(request):
             # toggle share energy
             if request.POST.get("type") == "energy":
                 member.shareE = 0 if member.shareE else 1
-                error = member.updateEnergy(key=player.key)
+                error = member.updateEnergy(key=player.getKey())
                 # handle api error
                 if error:
                     member.shareE = 0
@@ -712,7 +712,7 @@ def toggleMemberShare(request):
 
             elif request.POST.get("type") == "nerve":
                 member.shareN = 0 if member.shareN else 1
-                error = member.updateNNB(key=player.key)
+                error = member.updateNNB(key=player.getKey())
                 # handle api error
                 if error:
                     member.shareN = 0
@@ -772,13 +772,13 @@ def updateMember(request):
                 member.shareN = -1
                 member.save()
             elif member.shareE > 0 and member.shareN > 0:
-                req = apiCall("user", "", "perks,bars,crimes", key=tmpP.key)
-                member.updateEnergy(key=tmpP.key, req=req)
-                member.updateNNB(key=tmpP.key, req=req)
+                req = apiCall("user", "", "perks,bars,crimes", key=tmpP.getKey())
+                member.updateEnergy(key=tmpP.getKey(), req=req)
+                member.updateNNB(key=tmpP.getKey(), req=req)
             elif member.shareE > 0:
-                member.updateEnergy(key=tmpP.key)
+                member.updateEnergy(key=tmpP.getKey())
             elif member.shareN > 0:
-                member.updateNNB(key=tmpP.key)
+                member.updateNNB(key=tmpP.getKey())
 
             context = {"player": player, "member": member}
             return render(request, 'chain/members-line.html', context)
@@ -1010,14 +1010,14 @@ def respectSimulator(request):
             if player.factionAA:
                 faction = Faction.objects.filter(tId=player.factionId).first()
                 print('[view.chain.aa] player with AA. Faction {}'.format(faction))
-                faction.addKey(player.tId, player.key)
+                faction.addKey(player.tId, player.getKey())
                 faction.save()
 
                 # upgrade tree
                 if request.POST.get('reset', False):
-                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True, reset=True)
+                    factionTree, simuTree = updateFactionTree(faction, key=player.getKey(), force=True, reset=True)
                 else:
-                    factionTree, simuTree = updateFactionTree(faction, key=player.key, force=True)
+                    factionTree, simuTree = updateFactionTree(faction, key=player.getKey(), force=True)
                 upgradeTree = json.loads(FactionData.objects.first().upgradeTree)
 
                 upgradeTreeReshaped = dict({})
@@ -1347,7 +1347,7 @@ def aa(request):
             if player.factionAA:
                 faction = Faction.objects.filter(tId=player.factionId).first()
                 print('[view.chain.aa] player with AA. Faction {}'.format(faction))
-                faction.addKey(player.tId, player.key)
+                faction.addKey(player.tId, player.getKey())
                 faction.save()
 
                 # gives the faction a crontab if not
@@ -1362,7 +1362,7 @@ def aa(request):
                     print('[view.chain.aa] attributed to {} '.format(crontab))
 
                 # update members before to avoid coming here before having members
-                updateMembers(faction, key=player.key, force=False)
+                updateMembers(faction, key=player.getKey(), force=False)
 
                 # fill crontabs and keys
                 crontabs = dict({})
@@ -1637,7 +1637,7 @@ def armory(request):
 
             if player.factionAA:
                 print('[view.armory] player with AA. Faction {}'.format(faction))
-                req = apiCall('faction', player.factionId, 'armorynewsfull,fundsnewsfull', player.key)
+                req = apiCall('faction', player.factionId, 'armorynewsfull,fundsnewsfull', player.getKey())
                 if 'apiError' in req:
                     context = {'player': player, 'chaincat': True, 'faction': faction, "apiErrorSub": req["apiError"]}
                     page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
@@ -2074,7 +2074,7 @@ def importWall(request):
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
             # check if API key sent == API key in YATA
-            if HTTP_KEY != author.key:
+            if HTTP_KEY != author.getKey():
                 t = 0
                 m = "Your API key seems to be out of date in YATA, please log again"
                 print(m)
@@ -2395,7 +2395,7 @@ def bigBrother(request):
                     error = "{} already added this hour. Try later.".format(bridge[addType])
                     req = False
                 else:
-                    req = apiCall("faction", "", "timestamp,contributors&stat={}".format(addType), key=player.key)
+                    req = apiCall("faction", "", "timestamp,contributors&stat={}".format(addType), key=player.getKey())
 
                 # check api error
                 if req and 'apiError' in req:
@@ -2573,7 +2573,7 @@ def importUpgrades(request):
                 return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
             # check if API key sent == API key in YATA
-            if HTTP_KEY != author.key:
+            if HTTP_KEY != author.getKey():
                 t = 0
                 m = "Your API key seems to be out of date in YATA, please log again"
                 print(m)
@@ -2665,7 +2665,7 @@ def contracts(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            key = player.key
+            key = player.getKey()
             factionId = player.factionId
             page = 'chain/content-reload.html' if request.method == 'POST' else 'chain.html'
 
