@@ -103,21 +103,21 @@ def updatePlayer(player, i=None, n=None):
     #     faction.save()
 
     # update chain info
-    if self.factionId:
-        faction = Faction.objects.filter(tId=self.factionId).first()
+    if player.factionId:
+        faction = Faction.objects.filter(tId=player.factionId).first()
         if faction is None:
-            faction = Faction.objects.create(tId=self.factionId)
-        faction.name = self.factionNa
+            faction = Faction.objects.create(tId=player.factionId)
+        faction.name = player.factionNa
 
-        chains = apiCall("faction", "", "chains", self.key, verbose=False)
+        chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
         if chains.get("chains") is not None:
-            self.factionAA = True
-            self.chainInfo = "{} [AA]".format(self.factionNa)
-            faction.addKey(self.tId, self.key)
+            player.factionAA = True
+            player.chainInfo = "{} [AA]".format(player.factionNa)
+            faction.addKey(player.tId, player.getKey())
         else:
-            self.factionAA = False
-            self.chainInfo = "{}".format(self.factionNa)
-            faction.delKey(self.tId)
+            player.factionAA = False
+            player.chainInfo = "{}".format(player.factionNa)
+            faction.delKey(player.tId)
 
         faction.save()
 
