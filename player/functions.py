@@ -24,7 +24,8 @@ import json
 
 from yata.handy import apiCall
 from awards.functions import updatePlayerAwards
-from faction.models import Faction
+# from faction.models import Faction
+from chain.models import Faction
 from awards.models import AwardsData
 
 
@@ -84,20 +85,39 @@ def updatePlayer(player, i=None, n=None):
     player.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
 
     # update chain info
-    if player.factionId:
-        faction = Faction.objects.filter(tId=player.factionId).first()
-        if faction is None:
-            faction = Faction.objects.create(tId=player.factionId)
-        faction.name = player.factionNa
+    # if player.factionId:
+    #     faction = Faction.objects.filter(tId=player.factionId).first()
+    #     if faction is None:
+    #         faction = Faction.objects.create(tId=player.factionId)
+    #     faction.name = player.factionNa
+    #
+    #     chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
+    #     if chains.get("chains") is not None:
+    #         player.factionAA = True
+    #         player.chainInfo = "{} [AA]".format(player.factionNa)
+    #     else:
+    #         player.factionAA = False
+    #         player.chainInfo = "{}".format(player.factionNa)
+    #     faction.manageKey(player)
+    #
+    #     faction.save()
 
-        chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
+    # update chain info
+    if self.factionId:
+        faction = Faction.objects.filter(tId=self.factionId).first()
+        if faction is None:
+            faction = Faction.objects.create(tId=self.factionId)
+        faction.name = self.factionNa
+
+        chains = apiCall("faction", "", "chains", self.key, verbose=False)
         if chains.get("chains") is not None:
-            player.factionAA = True
-            player.chainInfo = "{} [AA]".format(player.factionNa)
+            self.factionAA = True
+            self.chainInfo = "{} [AA]".format(self.factionNa)
+            faction.addKey(self.tId, self.key)
         else:
-            player.factionAA = False
-            player.chainInfo = "{}".format(player.factionNa)
-        faction.manageKey(player)
+            self.factionAA = False
+            self.chainInfo = "{}".format(self.factionNa)
+            faction.delKey(self.tId)
 
         faction.save()
 
