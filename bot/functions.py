@@ -27,6 +27,10 @@ def saveBotsConfigs():
         var = dict({})
         # loop on configuration helpers attached to the bot
         for guild in bot.guild_set.all():
+            # old config
+            old = json.loads(bot.variables).get(str(guild.guildId), dict({}))
+
+            # admin
             var[guild.guildId] = dict({})
             var[guild.guildId]["admin"] = {"name": guild.guildName,
                                            "owner": guild.guildOwnerName,
@@ -50,9 +54,14 @@ def saveBotsConfigs():
             if guild.lootModule:
                 var[guild.guildId]["loot"] = {"active": True}
 
-            # loot module
+            # revive module
             if guild.reviveModule:
-                var[guild.guildId]["revive"] = {"active": True}
+                # get past connected/backlist servers
+                servers = old.get("revive", dict({})).get("servers", [])
+                blacklist = old.get("revive", dict({})).get("blacklist", [])
+                var[guild.guildId]["revive"] = {"active": True,
+                                                "servers": servers,
+                                                "blacklist": blacklist}
 
             # stocks
             if guild.stockModule:
