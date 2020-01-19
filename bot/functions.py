@@ -50,6 +50,10 @@ def saveBotsConfigs():
             if guild.lootModule:
                 var[guild.guildId]["loot"] = {"active": True}
 
+            # loot module
+            if guild.reviveModule:
+                var[guild.guildId]["revive"] = {"active": True}
+
             # stocks
             if guild.stockModule:
                 var[guild.guildId]["stocks"] = {"active": True}

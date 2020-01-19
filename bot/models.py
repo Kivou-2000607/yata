@@ -44,6 +44,9 @@ class Guild(models.Model):
     # loot module
     lootModule = models.BooleanField(default=False)
 
+    # loot module
+    reviveModule = models.BooleanField(default=False)
+
     # verify module
     verifyModule = models.BooleanField(default=False)
     verifyChangeName = models.BooleanField(default=True)
