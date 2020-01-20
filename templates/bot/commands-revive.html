@@ -1,0 +1,64 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<h1 class="module-doc">Module Revive&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<p>This module gives the possibility to send and receive revive calls mentionning <tt>@Reviver</tt> between throughout Discord servers. The destination servers can be configured by the server admin. The bot can potentially <b>send calls to servers that host the YATA bot</b> and have their revive module activated.
+<br />
+<span class="warning">Disclamer:</span> The bot does not handle the revive payments or contracts.</p>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!revive</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Sends a revive calls to the current server and to other servers (depending on your server's configuration). A revive call mention the role <tt>@Reviver</tt> and has the format:</p>
+<pre>
+@Reviver Kivou [2000607] from Nub Navy needs a revive https://www.torn.com/profiles.php?XID=2000607
+In hospital for 3h28min (hospitalized by Ched)
+</pre>
+<p>All messages of a call are deleted from the servers after 5 minutes.</p>
+<p><b>Syntax:</b> <tt>!revive</tt></p>
+<p><b>Aliases:</b> <tt>!r</tt></p>
+<p><b>Scope:</b> Anyone can use it in <tt>#revive</tt>.</p>
+</div>
+
+<h2 class="command-doc privacy-none">Command <tt>!reviver</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives or removes the <tt>@Reviver</tt> role of the command author.</p>
+<p><b>Syntax:</b> <tt>!reviver</tt></p>
+<p><b>Scope:</b> Anyone can use it anywhere.</p>
+</div>
+
+<h2 class="command-doc privacy-none">Command <tt>!reviveServers</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Allows server admin to set the different servers linked with them. They can set up two lists:
+    <ul>
+        <li><i>Server list:</i> the list of servers to which the calls will be sent.</li>
+        <li><i>Black list:</i> the list of servers from which the calls will be blocked (in case a server added you without your consent).</li>
+    </ul>
+</p>
+<p><b>Syntax:</b> <tt>!reviveServers</tt> or <tt>!reviveServers &lt;discordServerId&gt;</tt> or <tt>!reviveServers &lt;-discordServerId&gt;</tt></p>
+<p><b>Aliases:</b> <tt>!rs</tt></p>
+<ul>
+    <li><tt>!reviveServers</tt> list all the servers with the current settings (<tt>discordServerId</tt>/contact/send/receive/blacklist).</li>
+    <li><tt>!reviveServers &lt;discordServerId&gt;</tt> add the server to your <i>server list</i>.</li>
+    <li><tt>!reviveServers &lt;-discordServerId&gt;</tt> add the server to your <i>black list</i>.</li>
+</ul>
+<p><b>Scope:</b> Server admin can use it <tt>#yata-admin</tt>.</p>
+</div>
+
+</div>
