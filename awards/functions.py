@@ -1963,6 +1963,17 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = "With a current ratio of {:.2g} racing skills / day".format(ratio)
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [581]:
+                    # "581": {"name": "On Track", "description": "Earn 2,500 racing points","type": 0,
+                    type = "Racing"
+                    vp["goal"] = 2500
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("racingpointsearned", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / daysOld
+                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
+                    vp["comment"] = "With a current ratio of {:.2g} racing points / day".format(ratio)
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [571]:
                     # "571": { "name": "Chequered Past", "description": "Win 100 races", "type": 0,
                     type = "Racing"
