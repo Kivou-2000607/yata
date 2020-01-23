@@ -118,7 +118,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Grand theft auto": "Auto theft",
             "Theft": "Theft",
             "Drug dealing": "Drug deals",
-            "Arson": "Fraud crimes"}
+            "Fraud": "Fraud crimes"}
 
         crimeBridgeApp2API = {
             "Computer crimes": "computer_crimes",
