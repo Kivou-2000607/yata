@@ -1,0 +1,43 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load app_filters %}
+
+<td class="a">{{"Player"|playerURL:id|safe}} <span class="error">doesn't belong to the faction</span></td>
+
+<td class="b">
+    {% if k|length == 16 %}
+        <span class="fa-stack fa-1x">
+            <i class="fas fa-key fa-stack-1x valid"></i>
+            {# <i class="fas fa-circle fa-stack-2x valid"></i> #}
+        </span>
+        {# <i class="fas fa-check valid"></i> #}
+    {% else %}
+        <span class="fa-stack fa-1x">
+            <i class="fas fa-key fa-stack-1x"></i>
+            <i class="fas fa-ban fa-stack-2x error"></i>
+        </span>
+        {# <i class="fas fa-times error"></i> #}
+    {% endif %}
+</td>
+
+<td class="b">
+    <i class="fas fa-trash-alt" title="Delete key (not implemented yet)"></i> - <i class="fas fa-sync-alt" title="Refresh member list (not implement yet)"></i>
+</td>

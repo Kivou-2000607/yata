@@ -1,0 +1,32 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title">{{faction.name}} [{{faction.tId}}]</h2>
+<div class="module">
+    <p>Welcome to your faction section.</p>
+    {% if player.factionAA %}
+        <p>Ingame, you have AA permissions. It means that you'll be able to manage all the configurations.</p>
+    {%else%}
+        <p>Ingame, you don't have AA permissions.</p>
+    {%endif%}
+</div>

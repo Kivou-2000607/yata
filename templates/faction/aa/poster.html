@@ -1,0 +1,50 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+
+<form>{% csrf_token %}
+    <p><ul>
+        {% if faction.poster %}
+            <li><span class="valid">Upgrades poster is enabled</span></li>
+            <li>
+                {% if faction.posterHold %}
+                    <span class="error">Automatic update of the poster is on hold</span>
+                {% else %}
+                    <span class="valid">Automatic update of your poster is on</span>
+                {% endif %}
+            </li>
+            <li>
+                Enable/Disable poster: <a id="chain-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on" title="Disable Poster"></i></a>
+            </li>
+            <li>
+            {% if faction.posterHold %}
+                Resume automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-play-circle" title="Resume update"></i></a>
+            {% else %}
+                Hold automatic update: <a id="chain-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
+            {% endif %}
+            </li>
+            <li>Customize poster: <a href="{% url 'chain:tree' %}">here</a></li>
+            <li>Link to poster: <a href="https://yata.alwaysdata.net/static/trees/{{faction.tId}}.png" target="_blank">https://yata.alwaysdata.net/static/trees/{{faction.tId}}.png</a></li>
+
+        {% else %}
+            <li><span class="error">Upgrades poster is disabled</span></li>
+            <li>Enable/Disable poster: <a id="chain-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off" title="Disable Poster"></i></a></li>
+        {% endif %}
+    </ul></p>
+</form>
