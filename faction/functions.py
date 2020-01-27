@@ -464,7 +464,7 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
         key = faction.getKey()
 
     # call members and return error
-    membersAPI = apiCall('faction', '', 'basic', key, sub='members')
+    membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
     key.lastPulled = tsnow()
     key.reason = "Faction -> members"
     key.save()

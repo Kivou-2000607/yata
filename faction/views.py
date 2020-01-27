@@ -72,7 +72,7 @@ def configurations(request):
                 faction.manageKey(player)
 
                 # update members before to avoid coming here before having members
-                updateMembers(faction, key=player.getKey(), force=False)
+                updateMembers(faction, key=player.getKey(value=False), force=False)
 
                 # get keys
                 keys = faction.masterKeys.filter(useSelf=True)
