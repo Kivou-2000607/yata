@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'awards.apps.AwardsConfig',
     'target.apps.TargetConfig',
     'chain.apps.ChainConfig',
+    'faction.apps.FactionConfig',
     'bazaar.apps.BazaarConfig',
     'stock.apps.StockConfig',
     'loot.apps.LootConfig',

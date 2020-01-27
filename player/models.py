@@ -109,7 +109,6 @@ class Player(models.Model):
         self.save()
         return
 
-
     def update_discord_id(self):
         error = False
         discord = apiCall("user", "", "discord", self.getKey())
@@ -205,6 +204,11 @@ class Key(models.Model):
     tId = models.IntegerField(default=0)
     value = models.SlugField(default="aaaa", max_length=16)  # key
     lastPulled = models.IntegerField(default=0)  # ts when last pulled
+    reason = models.CharField(default="-", max_length=32)  # reason why it was pulled
+
+    # player can decide to tell YATA not use their key
+    useSelf = models.BooleanField(default=True)
+    useFact = models.BooleanField(default=True)
 
     def __str__(self):
         return "Key of {}".format(self.player)

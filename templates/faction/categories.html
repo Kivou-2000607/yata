@@ -1,0 +1,94 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center-large tdshadow faction-categories">
+    <tbody>
+    <tr>
+        {# <td> #}
+            {# <a href="{% url 'chain:live' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chain live</a> #}
+            {# <span style="margin-left:10px"> #}
+                {# {%if faction.liveChain%} #}
+                {# <i class="fa fa-play-circle valid"></i> #}
+                {# {%if faction.createLive%} #}
+                {# <i class="fa fa-microphone-alt valid"></i> #}
+                {# {% else %} #}
+                {# <i class="fa fa-microphone-alt-slash error"></i> #}
+                {# {% endif %} #}
+                {# {% else %} #}
+                {# <i class="fa fa-stop-circle error"></i> #}
+                {# {% endif %} #}
+            {# </span> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:list' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:jointReport' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Joint report</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:walls' %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;Walls</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:attacks' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Attacks</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:contracts' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a> #}
+        {# </td> #}
+    </tr>
+    <tr>
+        {# <td> #}
+            {# <a href="{% url 'chain:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:bigBrother' %}"><i class="fas fa-eye"></i>&nbsp;&nbsp;Big Brother</a> #}
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:armory' %}"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</a> #}
+            {# <span style="margin-left:10px"> #}
+                {# {%if faction.armoryRecord%} #}
+                    {# <i class="fa fa-microphone-alt valid"></i> #}
+                {# {% else %} #}
+                    {# <i class="fa fa-microphone-alt-slash error"></i> #}
+                {# {% endif %} #}
+            {# </span> #}
+
+        {# </td> #}
+        {# <td> #}
+            {# <a href="{% url 'chain:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a> #}
+        {# </td> #}
+        {% if player.factionAA %}
+            {# <td> #}
+                {# <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a> #}
+            {# </td> #}
+            <td>
+                <a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;AA options</a>
+            </td>
+            {# {% if faction.poster %} #}
+            {# <td> #}
+                {# <a href="{% url 'chain:tree' %}"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</a> #}
+            {# </td> #}
+            {# {% endif %} #}
+        {% endif %}
+    </tr>
+    </tbody>
+</table>
+</form>

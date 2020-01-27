@@ -1,0 +1,60 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title">{{faction.name}} Keys</h2>
+<div class="module">
+    <p>This is a summary of your faction's keys used for the creation of the chain reports.
+        YATA picks randomly among all enabled keys to make the API calls.<br />
+        If you don't want YATA to use your key you can disable it here.
+        If there is not at least one key enabled no report will ever be created.
+    </p>
+    <table class="center faction-aa-keys">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Key enabled</th>
+                <th>Enable/disable my key</th>
+                <th>Last pulled</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in keys %}
+                <tr>{% include "faction/aa/keys.html" %}</tr>
+            {% endfor %}
+            {% if faction.nKeys %}
+                <tr><td colspan="4"><span class="valid"><i class="fas fa-check"></i>&nbsp;&nbsp;You have {{faction.nKeys}} key{{faction.nKeys|pluralize}} enabled.</td></tr>
+            {% else %}
+                <tr><td colspan="4"><span class="warning"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;You don't have any key enabled. Your reports will never be updated.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<h2 class="title">{{faction.name}} Chains threshold</h2>
+<div class="module">
+    {% include "faction/aa/threshold.html" %}
+</div>
+<h2 class="title">{{faction.name}} Poster</h2>
+<div class="module">
+    {% include "faction/aa/poster.html" %}
+</div>

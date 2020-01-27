@@ -356,7 +356,6 @@ def hexa(tab):
     try:
         hexa = ""
         for i in tab:
-            print(i, "{:02x}".format(i))
             hexa = "{}{:02x}".format(hexa, i)
         return hexa
     except BaseException:
