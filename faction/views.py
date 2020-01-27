@@ -176,12 +176,16 @@ def configurationsPoster(request):
             context = {'faction': faction}
 
             # update poster if needed
+            url = "{}/posters/{}.png".format(settings.STATIC_ROOT, faction.tId)
             if faction.poster:
                 fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
                 posterOpt = json.loads(faction.posterOpt)
                 context['posterOpt'] = posterOpt
                 context['random'] = random.randint(0, 65535)
                 context['fonts'] = fntId
+            elif not faction.poster and os.path.exists(url):
+                os.remove(url)
+                context['posterDeleted'] = True
 
             return render(request, 'faction/aa/poster.html', context)
 
