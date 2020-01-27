@@ -93,7 +93,7 @@ class Player(models.Model):
     def __str__(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
-    def getKey(self, value=False):
+    def getKey(self, value=True):
         key = self.key_set.first()
         if key is None:
             return False
