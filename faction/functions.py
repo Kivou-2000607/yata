@@ -867,7 +867,7 @@ def updatePoster(faction):
         return 0
 
     # call for upgrades
-    req = apiCall('faction', faction.tId, 'basic,upgrades', key.value, verbose=True)
+    req = apiCall('faction', faction.tId, 'basic,upgrades', key.value, verbose=False)
     if 'apiError' in req and req['apiErrorCode'] in API_CODE_DELETE:
         print("[function.faction.updatePoster] Faction {}: del key {}".format(faction, key))
         faction.delKey(key=key)

@@ -44,7 +44,7 @@ This file is part of yata.
                 Hold automatic update: <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
             {% endif %}
             </li>
-            <li>Link to poster: <a href="{{baseUrl}}posters/{{faction.tId}}.png" target="_blank">{{baseUrl}}posters/{{faction.tId}}.png</a></li>
+            <li>Link to poster: <a href="{{baseUrl}}posters/{{faction.tId}}.png" target="_blank">https://yata.alwaysdata.net{{baseUrl}}posters/{{faction.tId}}.png</a></li>
 
         {% else %}
             <li><span class="error">Upgrades poster is disabled</span></li>
