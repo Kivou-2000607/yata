@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.conf import settings
+
+import os
+import json
 
 from yata.handy import *
 from faction.models import *
@@ -75,8 +79,16 @@ def configurations(request):
                 faction.nKeys = len(keys.filter(useFact=True))
                 faction.save()
 
-                # upgrade key
-                context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+                context = {'player': player, 'factioncat': True, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+
+                # add poster
+                if faction.poster:
+                    fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
+                    posterOpt = json.loads(faction.posterOpt)
+                    context['posterOpt'] = posterOpt
+                    context['random'] = random.randint(0, 65535)
+                    context['fonts'] = fntId
+
                 page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
                 return render(request, page, context)
 
@@ -154,9 +166,23 @@ def configurationsPoster(request):
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
 
+            # update poster
+            if request.method == "POST" and request.POST.get("posterConf"):
+                updatePosterConf(faction, request.POST.dict())
+                updatePoster(faction)
+
             faction.save()
 
             context = {'faction': faction}
+
+            # update poster if needed
+            if faction.poster:
+                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
+                posterOpt = json.loads(faction.posterOpt)
+                context['posterOpt'] = posterOpt
+                context['random'] = random.randint(0, 65535)
+                context['fonts'] = fntId
+
             return render(request, 'faction/aa/poster.html', context)
 
         else:

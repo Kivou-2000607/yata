@@ -50,7 +50,7 @@ class Faction(models.Model):
     # poster
     poster = models.BooleanField(default=False)
     posterHold = models.BooleanField(default=False)
-    # posterOpt = models.TextField(default="{}")
+    posterOpt = models.TextField(default="{}")
 
     # respect simulator: TODO
     # factionTree = models.TextField(default="{}")
@@ -90,13 +90,15 @@ class Faction(models.Model):
         # key.save()
         return key
 
-    def delKey(self, tId=None, player=None):
+    def delKey(self, tId=None, player=None, key=None):
         if player is not None:
             key = player.key_set.first()
             self.masterKeys.remove(key)
         elif tId is not None:
             player = Player.objects.filter(tId=tId).first()
             key = player.key_set.first()
+            self.masterKeys.remove(key)
+        elif key is not None:
             self.masterKeys.remove(key)
 
         return key
@@ -125,7 +127,6 @@ class Faction(models.Model):
     #     #     print("skip update members status", delta)
     #
     #     return json.loads(self.memberStatus)
-
 
 
 class Member(models.Model):

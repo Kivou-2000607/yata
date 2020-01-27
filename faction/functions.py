@@ -465,6 +465,10 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
 
     # call members and return error
     membersAPI = apiCall('faction', '', 'basic', key, sub='members')
+    key.lastPulled = tsnow()
+    key.reason = "Faction -> members"
+    key.save()
+
     if 'apiError' in membersAPI:
         return membersAPI
 
@@ -553,110 +557,6 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
     return faction.member_set.all()
 
 
-# def factionTree(faction, key=None):
-#     from django.conf import settings
-#     import os
-#     from PIL import Image
-#     from PIL import ImageDraw
-#     from PIL import ImageFont
-#
-#     url = "{}/trees/{}.png".format(settings.STATIC_ROOT, faction.tId)
-#     bridge = {"Criminality": 0,
-#               "Fortitude": 1,
-#               "Voracity": 2,
-#               "Toleration": 3,
-#               "Excursion": 4,
-#               "Steadfast": 5,
-#               "Aggression": 6,
-#               "Suppression": 7,
-#               }
-#
-#     posterOpt = json.loads(faction.posterOpt)
-#
-#     # get key
-#     if key is None:
-#         keyHolder, key = faction.getRandomKey()
-#         if keyHolder == "0":
-#             print("[function.chain.factionTree] no master key".format(keyHolder))
-#             faction.posterHold = False
-#             faction.poster = False
-#             faction.save()
-#             return 0
-#
-#     else:
-#         keyHolder is False
-#         # print("[function.chain.updateMembers] using personal key")
-#
-#     # call for upgrades
-#     req = apiCall('faction', faction.tId, 'basic,upgrades', key, verbose=False)
-#     if 'apiError' in req:
-#         if req['apiErrorCode'] in API_CODE_DELETE and keyHolder:
-#             print("[function.chain.factionTree]    --> deleting {}'s key'".format(keyHolder))
-#             faction.delKey(keyHolder)
-#         # print('[function.chain.factionTree] api key error: {}'.format((faction['apiError'])))
-#         return 0
-#
-#     upgrades = req["upgrades"]
-#
-#     # building upgrades tree
-#     tree = dict({})
-#     for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]['branchorder'], reverse=False):
-#         if upgrade['branch'] != 'Core':
-#             if tree.get(upgrade['branch']) is None:
-#                 tree[upgrade['branch']] = dict({})
-#             tree[upgrade['branch']][upgrade['name']] = upgrade
-#
-#     # create image background
-#     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-#     # print("[function.chain.factionTree] background color: {}".format(background))
-#     img = Image.new('RGBA', (5000, 5000), color=background)
-#
-#     # choose font
-#     fontFamily = posterOpt.get('fontFamily', [0])[0]
-#     fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
-#     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
-#     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
-#     fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
-#     fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
-#     d = ImageDraw.Draw(img)
-#
-#     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
-#     # print("[function.chain.factionTree] fontColor: {}".format(fontColor))
-#
-#     # add title
-#     txt = "{}".format(req["name"])
-#     d.text((10, 10), txt, font=fntBig, fill=fontColor)
-#     x, y = d.textsize(txt, font=fntBig)
-#
-#     txt = "{:,} respect\n".format(req["respect"])
-#     d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
-#     x, y = d.textsize(txt, font=fntBig)
-#
-#     iconType = posterOpt.get('iconType', [0])[0]
-#     # print("[function.chain.factionTree] iconType: {}".format(iconType))
-#     for branch, upgrades in tree.items():
-#         icon = Image.open(settings.STATIC_ROOT + '/trees/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
-#         icon = icon.convert("RGBA")
-#         img.paste(icon, (10, y), mask=icon)
-#
-#         txt = ""
-#         txt += "  {}\n".format(branch)
-#         for k, v in upgrades.items():
-#             txt += "    {}: {}\n".format(k, v["ability"])
-#         txt += "\n"
-#
-#         d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
-#         xTmp, yTmp = d.textsize(txt, font=fnt)
-#         x = max(xTmp, x)
-#         y += yTmp
-#
-#         # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
-#
-#     # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
-#     img.crop((0, 0, x + 90 + 10, y)).save(url)
-#     # print('[function.chain.factionTree] image saved {}'.format(url))
-#
-#
 # def updateFactionTree(faction, key=None, force=False, reset=False):
 #     # it's not possible to delete all memebers and recreate the base
 #     # otherwise the target list will be lost
@@ -935,3 +835,167 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
 #
 #     contract.save()
 #     return True, "Everything's fine"
+
+
+def updatePoster(faction):
+    from django.conf import settings
+    import os
+    from PIL import Image
+    from PIL import ImageDraw
+    from PIL import ImageFont
+
+    url = "{}/posters/{}.png".format(settings.STATIC_ROOT, faction.tId)
+    bridge = {"Criminality": 0,
+              "Fortitude": 1,
+              "Voracity": 2,
+              "Toleration": 3,
+              "Excursion": 4,
+              "Steadfast": 5,
+              "Aggression": 6,
+              "Suppression": 7,
+              }
+
+    posterOpt = json.loads(faction.posterOpt)
+
+    # get key
+    key = faction.getKey()
+    if key is None:
+        faction.posterHold = False
+        faction.poster = False
+        faction.save()
+        print("[function.faction.updatePoster] Faction {}: no key".format(faction))
+        return 0
+
+    # call for upgrades
+    req = apiCall('faction', faction.tId, 'basic,upgrades', key.value, verbose=True)
+    if 'apiError' in req and req['apiErrorCode'] in API_CODE_DELETE:
+        print("[function.faction.updatePoster] Faction {}: del key {}".format(faction, key))
+        faction.delKey(key=key)
+        return 0
+
+    key.lastPulled = tsnow()
+    key.reason = "Faction -> poster"
+    key.save()
+
+    upgrades = req["upgrades"]
+
+    # building upgrades tree
+    tree = dict({})
+    for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]['branchorder'], reverse=False):
+        if upgrade['branch'] != 'Core':
+            if tree.get(upgrade['branch']) is None:
+                tree[upgrade['branch']] = dict({})
+            tree[upgrade['branch']][upgrade['name']] = upgrade
+
+    # create image background
+    background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
+    # print("[function.chain.factionTree] background color: {}".format(background))
+    img = Image.new('RGBA', (5000, 5000), color=background)
+
+    # choose font
+    fontFamily = posterOpt.get('fontFamily', [0])[0]
+    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
+    # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
+    # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
+    fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
+    fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
+    d = ImageDraw.Draw(img)
+
+    fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
+    # print("[function.chain.factionTree] fontColor: {}".format(fontColor))
+
+    # add title
+    txt = "{}".format(req["name"])
+    d.text((10, 10), txt, font=fntBig, fill=fontColor)
+    x, y = d.textsize(txt, font=fntBig)
+
+    txt = "{:,} respect\n".format(req["respect"])
+    d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
+    x, y = d.textsize(txt, font=fntBig)
+
+    iconType = posterOpt.get('iconType', [0])[0]
+    # print("[function.chain.factionTree] iconType: {}".format(iconType))
+    for branch, upgrades in tree.items():
+        icon = Image.open(settings.STATIC_ROOT + '/posters/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
+        icon = icon.convert("RGBA")
+        img.paste(icon, (10, y), mask=icon)
+
+        txt = ""
+        txt += "  {}\n".format(branch)
+        for k, v in upgrades.items():
+            txt += "    {}: {}\n".format(k, v["ability"])
+        txt += "\n"
+
+        d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
+        xTmp, yTmp = d.textsize(txt, font=fnt)
+        x = max(xTmp, x)
+        y += yTmp
+
+        # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
+
+    # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
+    img.crop((0, 0, x + 90 + 10, y)).save(url)
+    # print('[function.chain.factionTree] image saved {}'.format(url))
+
+
+def updatePosterConf(faction, post):
+    t = post.get("t", False)
+    p = int(post.get("p", False))
+
+    # hexa color code
+    if p == 4:
+        hex = post.get("v").replace("#", "")[:8]
+        if len(hex) == 4:
+            tmp = hex
+            hex = ""
+            for i in range(4):
+                hex += tmp[i] + tmp[i]
+
+        elif len(hex) == 8:
+            pass
+
+        else:
+            hex = "FFFFFFFF"
+
+        try:
+            int(hex, 16)
+        except BaseException:
+            hex = "FFFFFFFF"
+
+        v = [int(hex[:2], 16), int(hex[2:4], 16), int(hex[4:6], 16), int(hex[6:8], 16)]
+
+    # decimal for one color
+    else:
+        v = int(post.get("v", False))
+
+    if t:
+        posterOpt = json.loads(faction.posterOpt)
+        if posterOpt.get(t, False):
+            if p == 4:
+                posterOpt[t] = v
+            else:
+                posterOpt[t][p] = v
+        else:
+            if t == "fontColor":
+                if p == 4:
+                    option = v
+                else:
+                    option = [0, 0, 0, 255]
+                    option[p] = v
+            elif t == "fontFamily":
+                option = [0]
+                option[p] = v
+            elif t == "iconType":
+                option = [0]
+                option[p] = v
+            elif t == "background":
+                if p == 4:
+                    option = v
+                else:
+                    option = [0, 0, 0, 0]
+                    option[p] = v
+
+            posterOpt[t] = option
+
+        faction.posterOpt = json.dumps(posterOpt)
+        faction.save()

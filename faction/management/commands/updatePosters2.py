@@ -1,4 +1,4 @@
-/*
+"""
 Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,15 +15,18 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-*/
+"""
 
-table.faction-categories td {
-    text-align: center;
-    width: 15%;
-    cursor: pointer;
-    border: 0;
-}
+from django.core.management.base import BaseCommand
 
-table.faction-aa-keys td { line-height: 28px; }
-table.faction-aa-keys td.a { width: 20%; text-align: left; } /* x1 */
-table.faction-aa-keys td.b { width: 20%; text-align: center; }  /* x4 */
+from faction.models import Faction
+from faction.functions import updatePoster
+
+import json
+
+
+class Command(BaseCommand):
+    def handle(self, **options):
+        for faction in Faction.objects.filter(poster=True).exclude(posterHold=True):
+            print("[command.faction.poster] faction {}".format(faction))
+            updatePoster(faction)
