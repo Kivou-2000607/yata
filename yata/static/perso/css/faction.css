@@ -27,3 +27,9 @@ table.faction-categories td {
 table.faction-aa-keys td { line-height: 28px; }
 table.faction-aa-keys td.a { width: 20%; text-align: left; } /* x1 */
 table.faction-aa-keys td.b { width: 20%; text-align: center; }  /* x4 */
+
+table.faction-members td.a { width: 15%; }
+table.faction-members td.b { width: 15%; text-align: right; cursor: pointer;}
+table.faction-members td.c { width: 30%; text-align: left;}
+table.faction-members td.d { width: 5%; text-align: center; cursor: pointer;}
+table.faction-members td.e { width: 12.5%; text-align: center; cursor: default;}  /* x2 */

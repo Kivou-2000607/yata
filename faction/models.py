@@ -57,10 +57,10 @@ class Faction(models.Model):
     # simuTree = models.TextField(default="{}")
     # treeUpda = models.IntegerField(default=0)
 
-    # members: TODO
+    # members
     membersUpda = models.IntegerField(default=0)
-    # memberStatusUpda = models.IntegerField(default=0)
-    # memberStatus = models.TextField(default="{}")
+    memberStatus = models.TextField(default="{}")  # dump all members status
+    memberStatusUpda = models.IntegerField(default=0)
 
     # armory / networth: TODO
     # armoryRecord = models.BooleanField(default=False)
@@ -109,24 +109,28 @@ class Faction(models.Model):
         else:
             return {k.player.tId: k.value for k in self.masterKeys.filter(useFact=True)}
 
-    # def updateMemberStatus(self):
-    #     # get now and delta update
-    #     now = int(timezone.now().timestamp())
-    #     delta = now - self.memberStatusUpda
-    #     if delta > 30:
-    #         key = self.getKey()
-    #         membersAPI = apiCall('faction', '', 'basic', key, sub='members')
-    #         if 'apiError' in membersAPI:
-    #             return json.loads(self.memberStatus)
-    #
-    #         # print("update members status", delta)
-    #         self.memberStatus = json.dumps(membersAPI)
-    #         self.memberStatusUpda = now
-    #         self.save()
-    #     # else:
-    #     #     print("skip update members status", delta)
-    #
-    #     return json.loads(self.memberStatus)
+    def updateMemberStatus(self, key=None):
+        # get now and delta update
+        now = tsnow()
+        delta = now - self.memberStatusUpda
+        if delta > 30:
+            key = self.getKey() if key is None else key
+            membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
+            key.lastPulled = now
+            key.reason = "Faction -> Members status"
+            key.save()
+
+            if 'apiError' in membersAPI:
+                return json.loads(self.memberStatus)
+
+            # print("update members status", delta)
+            self.memberStatus = json.dumps(membersAPI)
+            self.memberStatusUpda = now
+            self.save()
+        # else:
+        #     print("skip update members status", delta)
+
+        return json.loads(self.memberStatus)
 
 
 class Member(models.Model):

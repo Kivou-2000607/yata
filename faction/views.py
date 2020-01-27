@@ -9,6 +9,7 @@ from yata.handy import *
 from faction.models import *
 from faction.functions import *
 
+
 def index(request):
     try:
         if request.session.get('player'):
@@ -60,6 +61,8 @@ def index(request):
     except Exception:
         return returnError()
 
+
+# SECTION: configuration
 
 def configurations(request):
     try:
@@ -188,6 +191,154 @@ def configurationsPoster(request):
                 context['posterDeleted'] = True
 
             return render(request, 'faction/aa/poster.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# SECTION: members
+
+def members(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # update chains if AA
+            key = player.getKey(value=False)
+            members = updateMembers(faction, key=key, force=False)
+            error = False
+            if 'apiError' in members:
+                error = members
+
+            # get members
+            members = faction.member_set.all()
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'members': members, 'view': {'members': True}}
+            if error:
+                selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+                context.update({selectError: error["apiError"] + " Members not updated."})
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+# action view
+def updateMember(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if player is None:
+                return render(request, 'faction/members/line.html', {'member': False, 'errorMessage': 'Who are you?'})
+
+            # get faction (of the user, not the member)
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'faction/members/line.html', {'errorMessage': 'Faction {} not found'.format(factionId)})
+
+            # update members status for the faction (skip < 30s)
+            membersAPI = faction.updateMemberStatus(key=player.getKey(value=False))
+
+            # get member id
+            memberId = request.POST.get("memberId", 0)
+
+            # get member
+            member = faction.member_set.filter(tId=memberId).first()
+            if member is None:
+                return render(request, 'faction/members/line.html', {'errorMessage': 'Member {} not found in faction {}'.format(memberId, factionId)})
+
+            # update status
+            member.updateStatus(**membersAPI.get(memberId, dict({})).get("status"))
+
+            # update energy
+            tmpP = Player.objects.filter(tId=memberId).first()
+            if tmpP is None:
+                member.shareE = -1
+                member.shareN = -1
+                member.save()
+            elif member.shareE > 0 and member.shareN > 0:
+                req = apiCall("user", "", "perks,bars,crimes", key=tmpP.getKey())
+                member.updateEnergy(key=tmpP.getKey(), req=req)
+                member.updateNNB(key=tmpP.getKey(), req=req)
+            elif member.shareE > 0:
+                member.updateEnergy(key=tmpP.getKey())
+            elif member.shareN > 0:
+                member.updateNNB(key=tmpP.getKey())
+
+            context = {"player": player, "member": member}
+            return render(request, 'faction/members/line.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def toggleMemberShare(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'faction/members/energy.html', {'errorMessage': 'Faction {} not found'.format(factionId)})
+
+            # get member
+            member = faction.member_set.filter(tId=player.tId).first()
+            if member is None:
+                return render(request, 'faction/members/energy.html', {'errorMessage': 'Member {} not found'.format(player.tId)})
+
+            # toggle share energy
+            if request.POST.get("type") == "energy":
+                member.shareE = 0 if member.shareE else 1
+                error = member.updateEnergy(key=player.getKey())
+                # handle api error
+                if error:
+                    member.shareE = 0
+                    member.energy = 0
+                    return render(request, 'faction/members/energy.html', {'errorMessage': error.get('apiErrorString', 'error')})
+                else:
+                    context = {"player": player, "member": member}
+                    return render(request, 'faction/members/energy.html', context)
+
+            elif request.POST.get("type") == "nerve":
+                member.shareN = 0 if member.shareN else 1
+                error = member.updateNNB(key=player.getKey())
+                # handle api error
+                if error:
+                    member.shareN = 0
+                    member.nnb = 0
+                    return render(request, 'faction/members/nnb.html', {'errorMessage': error.get('apiErrorString', 'error')})
+                else:
+                    context = {"player": player, "member": member}
+                    return render(request, 'faction/members/nnb.html', context)
+
+                # member.save()
+            else:
+                return render(request, 'faction/members/energy.html', {'errorMessage': '?'})
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
