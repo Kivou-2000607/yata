@@ -176,8 +176,8 @@ d = {
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
     800: 956179599,  # Surplus
+    793: 144692020,  # Bandolier
     778: 0,  # Specialist
-    793: 0,  # Bandolier
 
     # 3
     39: 198010293,  # Woodland Camo
