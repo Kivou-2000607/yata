@@ -49,7 +49,7 @@ d = {
     571: 559214781,  # Chequered Past
     334: 204652023,  # Compulsive
     581: 832763049,  # On Track
-    
+
     # 1
     171: 228001376,  # Afghanistan
     172: 200538715,  # Albania
@@ -175,8 +175,9 @@ d = {
     143: 744664817,  # Pin Puller
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
-    778: 714786529,  # Specialist
     800: 956179599,  # Surplus
+    778: 0,  # Specialist
+    793: 0,  # Bandolier
 
     # 3
     39: 198010293,  # Woodland Camo
