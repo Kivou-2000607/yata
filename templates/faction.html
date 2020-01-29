@@ -29,7 +29,6 @@ const getCookie = (s)=>{
 //Store repeated html string (spinner)
 const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
 
-
 // nav links
 $(document).on('click', 'table.faction-categories td', e=>{
     e.preventDefault();
@@ -43,6 +42,7 @@ $(document).on('click', 'table.faction-categories td', e=>{
 
 {% include "faction/aa/script.js" %}
 {% include "faction/members/script.js" %}
+{% include "faction/chains/script.js" %}
 
 </script>
 {% endblock %}

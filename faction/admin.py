@@ -3,7 +3,7 @@ from django.contrib import admin
 from faction.models import *
 
 
-### Faction
+# Faction
 class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
@@ -11,17 +11,42 @@ class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'nKeys']
     search_fields = ['tId', 'name']
     raw_id_fields = ("masterKeys", )
-    # list_filter = ['createLive', 'createReport', 'armoryRecord']
-    # exclude = ['factionTree', 'simuTree', 'memberStatus', 'armoryString', 'fundsString', 'networthString']
 
 
+# Members
 class MemberAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'faction', 'shareE', 'shareN']
-    # search_fields = ['tId', 'name']
-    # raw_id_fields = ("masterKeys", )
     list_filter = ('faction__name', 'shareE', 'shareN')
     search_fields = ('faction__name', 'name', 'tId')
-    # exclude = ['factionTree', 'simuTree', 'memberStatus', 'armoryString', 'fundsString', 'networthString']
 
+
+# Chains
+# class CountInline(admin.TabularInline):
+#     model = Count
+#     extra = 0
+#     # show_change_link = True
+#     can_delete = False
+#     readonly_fields = ('name', 'attackerId', 'hits', 'bonus', 'wins', 'respect', 'fairFight', 'war', 'retaliation', 'groupAttack', 'overseas', 'daysInFaction', 'beenThere', 'watcher', 'warhits')
+#     exclude = ['graph']
+
+
+class ChainAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress']
+    list_filter = ('faction__name', 'live', 'report', 'computing', 'crontab')
+    search_fields = ('faction__name', 'tId')
+    exclude = ['graphs']
+    # inlines = [CountInline]
+
+
+class AttackChainAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'report']
+    search_fields = ('tId',)
+
+
+admin.site.register(AttackChain, AttackChainAdmin)
+admin.site.register(Chain, ChainAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Faction, FactionAdmin)

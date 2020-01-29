@@ -36,17 +36,17 @@ BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 
 API_CODE_DELETE = [2, 7]
 
 #
-# def getBonusHits(hitNumber, ts):
-#     # new report timestamp based on ched annoncement date
-#     # https://www.torn.com/forums.php#!p=threads&t=16067103
-#     import datetime
-#     import time
-#     if int(ts) < int(time.mktime(datetime.datetime(2018, 10, 30, 15, 00).timetuple())):
-#         # bonus respect values are 4.2*2**n
-#         return 4.2 * 2**(1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
-#     else:
-#         # bonus respect values are 10*2**(n-1)
-#         return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+def getBonusHits(hitNumber, ts):
+    # new report timestamp based on ched annoncement date
+    # https://www.torn.com/forums.php#!p=threads&t=16067103
+    import datetime
+    import time
+    if int(ts) < int(time.mktime(datetime.datetime(2018, 10, 30, 15, 00).timetuple())):
+        # bonus respect values are 4.2*2**n
+        return 4.2 * 2**(1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+    else:
+        # bonus respect values are 10*2**(n-1)
+        return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
 
 
 # def apiCallAttacks(faction, chain, key=None):
@@ -448,113 +448,114 @@ API_CODE_DELETE = [2, 7]
 #     return chain, report, (binsCenter, histo), finished
 
 
-def updateMembers(faction, key=None, force=True, indRefresh=False):
-    # it's not possible to delete all memebers and recreate the base
-    # otherwise the target list will be lost
-
-    now = int(timezone.now().timestamp())
-
-    # don't update if less than 1 hour ago and force is False
-    if not force and (now - faction.membersUpda) < 3600:
-        print("[function.chain.updateMembers] skip update member")
-        return faction.member_set.all()
-
-    # get key if needed
-    if key is None:
-        key = faction.getKey()
-
-    # call members and return error
-    membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
-    key.lastPulled = tsnow()
-    key.reason = "Faction -> members"
-    key.save()
-
-    if 'apiError' in membersAPI:
-        return membersAPI
-
-    membersDB = faction.member_set.all()
-    for m in membersAPI:
-        memberDB = membersDB.filter(tId=m).first()
-
-        # faction member already exists
-        if memberDB is not None:
-            # update basics
-            memberDB.name = membersAPI[m]['name']
-            memberDB.lastAction = membersAPI[m]['last_action']['relative']
-            memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
-            memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-
-            # update status
-            memberDB.updateStatus(**membersAPI[m]['status'])
-
-            # update energy/NNB
-            player = Player.objects.filter(tId=memberDB.tId).first()
-            if player is None:
-                memberDB.shareE = -1
-                memberDB.energy = 0
-                memberDB.shareN = -1
-                memberDB.nnb = 0
-                memberDB.arson = 0
-            else:
-                if indRefresh and memberDB.shareE and memberDB.shareN:
-                    req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
-                    memberDB.updateEnergy(key=player.getKey(), req=req)
-                    memberDB.updateNNB(key=player.getKey(), req=req)
-                elif indRefresh and memberDB.shareE:
-                    memberDB.updateEnergy(key=player.getKey())
-                elif indRefresh and memberDB.shareN:
-                    memberDB.updateNNB(key=player.getKey())
-
-            memberDB.save()
-
-        # member exists but from another faction
-        elif Member.objects.filter(tId=m).first() is not None:
-            memberTmp = Member.objects.filter(tId=m).first()
-            memberTmp.faction = faction
-            memberTmp.name = membersAPI[m]['name']
-            memberTmp.lastAction = membersAPI[m]['last_action']['relative']
-            memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
-            memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
-            memberTmp.updateStatus(**membersAPI[m]['status'])
-
-            # set shares to 0
-            player = Player.objects.filter(tId=memberTmp.tId).first()
-            memberTmp.shareE = -1 if player is None else 0
-            memberTmp.shareN = -1 if player is None else 0
-            memberTmp.energy = 0
-            memberTmp.nnb = 0
-            memberTmp.arson = 0
-
-            memberTmp.save()
-
-        # new member
-        else:
-            # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-            player = Player.objects.filter(tId=m).first()
-            memberNew = faction.member_set.create(
-                tId=m, name=membersAPI[m]['name'],
-                lastAction=membersAPI[m]['last_action']['relative'],
-                lastActionTS=membersAPI[m]['last_action']['timestamp'],
-                daysInFaction=membersAPI[m]['days_in_faction'],
-                shareE=-1 if player is None else 0,
-                shareN=-1 if player is None else 0,
-                )
-            memberNew.updateStatus(**membersAPI[m]['status'])
-
-    # delete old members
-    for m in membersDB:
-        if membersAPI.get(str(m.tId)) is None:
-            m.delete()
-
-    # remove AA keys from old members
-    for key in faction.masterKeys.all():
-        if not len(faction.member_set.filter(tId=key.tId)):
-            faction.delKey(tId=key.tId)
-
-    faction.nKeys = len(faction.masterKeys.filter(useFact=True))
-    faction.membersUpda = now
-    faction.save()
-    return faction.member_set.all()
+# def updateMembers(faction, key=None, force=True, indRefresh=False):
+#     # it's not possible to delete all memebers and recreate the base
+#     # otherwise the target list will be lost
+#
+#     now = int(timezone.now().timestamp())
+#
+#     # don't update if less than 1 hour ago and force is False
+#     if not force and (now - faction.membersUpda) < 3600:
+#         print("[function.chain.updateMembers] skip update member")
+#         return faction.member_set.all()
+#
+#     # get key if needed
+#     if key is None:
+#         key = faction.getKey()
+#
+#     # call members and return error
+#     membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
+#     key.lastPulled = tsnow()
+#     key.reason = "Faction -> members"
+#     key.save()
+#
+#     if 'apiError' in membersAPI:
+#         return membersAPI
+#
+#     membersDB = faction.member_set.all()
+#     for m in membersAPI:
+#         memberDB = membersDB.filter(tId=m).first()
+#
+#         # faction member already exists
+#         if memberDB is not None:
+#             # update basics
+#             memberDB.name = membersAPI[m]['name']
+#             memberDB.lastAction = membersAPI[m]['last_action']['relative']
+#             memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
+#             memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+#
+#             # update status
+#             memberDB.updateStatus(**membersAPI[m]['status'])
+#
+#             # update energy/NNB
+#             player = Player.objects.filter(tId=memberDB.tId).first()
+#             if player is None:
+#                 memberDB.shareE = -1
+#                 memberDB.energy = 0
+#                 memberDB.shareN = -1
+#                 memberDB.nnb = 0
+#                 memberDB.arson = 0
+#             else:
+#                 if indRefresh and memberDB.shareE and memberDB.shareN:
+#                     req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
+#                     memberDB.updateEnergy(key=player.getKey(), req=req)
+#                     memberDB.updateNNB(key=player.getKey(), req=req)
+#                 elif indRefresh and memberDB.shareE:
+#                     memberDB.updateEnergy(key=player.getKey())
+#                 elif indRefresh and memberDB.shareN:
+#                     memberDB.updateNNB(key=player.getKey())
+#
+#             memberDB.save()
+#
+#         # member exists but from another faction
+#         elif Member.objects.filter(tId=m).first() is not None:
+#             memberTmp = Member.objects.filter(tId=m).first()
+#             memberTmp.faction = faction
+#             memberTmp.name = membersAPI[m]['name']
+#             memberTmp.lastAction = membersAPI[m]['last_action']['relative']
+#             memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
+#             memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
+#             memberTmp.updateStatus(**membersAPI[m]['status'])
+#
+#             # set shares to 0
+#             player = Player.objects.filter(tId=memberTmp.tId).first()
+#             memberTmp.shareE = -1 if player is None else 0
+#             memberTmp.shareN = -1 if player is None else 0
+#             memberTmp.energy = 0
+#             memberTmp.nnb = 0
+#             memberTmp.arson = 0
+#
+#             memberTmp.save()
+#
+#         # new member
+#         else:
+#             # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+#             player = Player.objects.filter(tId=m).first()
+#             memberNew = faction.member_set.create(
+#                 tId=m, name=membersAPI[m]['name'],
+#                 lastAction=membersAPI[m]['last_action']['relative'],
+#                 lastActionTS=membersAPI[m]['last_action']['timestamp'],
+#                 daysInFaction=membersAPI[m]['days_in_faction'],
+#                 shareE=-1 if player is None else 0,
+#                 shareN=-1 if player is None else 0,
+#                 )
+#             memberNew.updateStatus(**membersAPI[m]['status'])
+#
+#     # delete old members
+#     for m in membersDB:
+#         if membersAPI.get(str(m.tId)) is None:
+#             m.delete()
+#
+#     # remove AA keys from old members
+#     for key in faction.masterKeys.all():
+#         if not len(faction.member_set.filter(tId=key.tId)):
+#             faction.delKey(tId=key.tId)
+#
+#     faction.nKeys = len(faction.masterKeys.filter(useFact=True))
+#     faction.membersUpda = now
+#     faction.memberStatusUpda = now
+#     faction.save()
+#     return faction.member_set.all()
 
 
 # def updateFactionTree(faction, key=None, force=False, reset=False):
@@ -635,8 +636,15 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
 #             faction.save()
 #
 #     return json.loads(faction.factionTree), json.loads(faction.simuTree)
-#
-#
+
+
+def modifiers2lvl1(v):
+    for tmpKey in ["fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus"]:
+        v[tmpKey] = float(v["modifiers"][tmpKey])
+    del v["modifiers"]
+    return v
+
+
 # def apiCallAttacksV2(breakdown):
 #     # shortcuts
 #     faction = breakdown.faction
@@ -735,8 +743,8 @@ def updateMembers(faction, key=None, force=True, indRefresh=False):
 #
 #     breakdown.save()
 #     return True, "Everything's fine"
-#
-#
+
+
 # def apiCallRevives(contract):
 #     # shortcuts
 #     faction = contract.faction

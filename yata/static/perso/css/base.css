@@ -433,3 +433,8 @@ span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 
 .warning { color: #FF8C00!important; font-weight: bold; }
 .neutral { color: #666!important; font-weight: bold; }
 .valid { color: #0B8E14!important; font-weight: bold; } */
+
+
+td.buttons a {
+    margin-right: 10px;
+}

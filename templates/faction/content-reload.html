@@ -17,6 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{# errors #}
 {% if apiErrorSub %}
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
@@ -26,15 +27,35 @@ This file is part of yata.
 {% if validMessageSub %}
     {% include "yata/error.html" with validMessage=validMessageSub %}
 {% endif %}
+
+{# index #}
 {% if view.index %}
     {% include "faction/index.html" %}
     {% include "faction/tutorials/index.html" %}
 {% endif %}
+
+{# aa #}
 {% if view.aa %}
     {% include "faction/aa/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
+
+{# members #}
 {% if view.members %}
     {% include "faction/members/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
+{# chain reports #}
+{% if view.report %}
+    {% include "faction/chains/report.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+{% if view.combined %}
+    {% include "faction/chains/combined.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+{% if view.chains %}
+    {% include "faction/chains/chains.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}

@@ -28,6 +28,22 @@ import re
 from yata.handy import *
 from player.models import Key
 from player.models import Player
+from faction.functions import *
+
+BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+OPEN_CRONTAB = [1, 2, 3]
+CHAIN_ATTACKS_STATUS = {
+    3: "Normal [continue]",
+    2: "Reached end of chain [stop]",
+    1: "Non new attack [stop]",
+    0: "Waiting for first call",
+    -1: "No enabled AA keys [stop]",
+    -2: "API key major error (key deleted) [continue]",
+    -3: "API key temporary error [continue]",
+    -4: "Probably cached response [continue]",
+    -5: "Empty payload [stop]",
+    -6: "No new entry [continue]",
+    }
 
 
 class Faction(models.Model):
@@ -42,6 +58,7 @@ class Faction(models.Model):
 
     # chain and attacks
     hitsThreshold = models.IntegerField(default=100)
+    lastAttacksPulled = models.IntegerField(default=0)
     # lastAPICall = models.IntegerField(default=0)
     # nAPICall = models.IntegerField(default=2)
     # createLive = models.BooleanField(default=False)
@@ -84,8 +101,8 @@ class Faction(models.Model):
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.save()
 
-    def getKey(self):
-        key = self.masterKeys.filter(useFact=True).order_by("lastPulled").first()
+    def getKey(self, useFact=True):
+        key = self.masterKeys.filter(useFact=useFact).order_by("lastPulled").first()
         # key.lastPulled = tsnow()
         # key.save()
         return key
@@ -108,6 +125,115 @@ class Faction(models.Model):
             return {k.player.tId: k.value for k in self.masterKeys.filter(useSelf=True)}
         else:
             return {k.player.tId: k.value for k in self.masterKeys.filter(useFact=True)}
+
+    def updateMembers(self, key=None, force=True, indRefresh=False):
+        # it's not possible to delete all memebers and recreate the base
+        # otherwise the target list will be lost
+
+        now = int(timezone.now().timestamp())
+
+        # don't update if less than 1 hour ago and force is False
+        if not force and (now - self.membersUpda) < 3600:
+            print("{} skip update member".format(self))
+            return self.member_set.all()
+
+        # get key if needed
+        if key is None:
+            key = self.getKey()
+
+        # call members and return error
+        membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
+        key.lastPulled = tsnow()
+        key.reason = "Faction -> members"
+        key.save()
+
+        if 'apiError' in membersAPI:
+            return membersAPI
+
+        membersDB = self.member_set.all()
+        for m in membersAPI:
+            memberDB = membersDB.filter(tId=m).first()
+
+            # faction member already exists
+            if memberDB is not None:
+                # update basics
+                memberDB.name = membersAPI[m]['name']
+                memberDB.lastAction = membersAPI[m]['last_action']['relative']
+                memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
+                memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+
+                # update status
+                memberDB.updateStatus(**membersAPI[m]['status'])
+
+                # update energy/NNB
+                player = Player.objects.filter(tId=memberDB.tId).first()
+                if player is None:
+                    memberDB.shareE = -1
+                    memberDB.energy = 0
+                    memberDB.shareN = -1
+                    memberDB.nnb = 0
+                    memberDB.arson = 0
+                else:
+                    if indRefresh and memberDB.shareE and memberDB.shareN:
+                        req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
+                        memberDB.updateEnergy(key=player.getKey(), req=req)
+                        memberDB.updateNNB(key=player.getKey(), req=req)
+                    elif indRefresh and memberDB.shareE:
+                        memberDB.updateEnergy(key=player.getKey())
+                    elif indRefresh and memberDB.shareN:
+                        memberDB.updateNNB(key=player.getKey())
+
+                memberDB.save()
+
+            # member exists but from another faction
+            elif Member.objects.filter(tId=m).first() is not None:
+                memberTmp = Member.objects.filter(tId=m).first()
+                memberTmp.faction = faction
+                memberTmp.name = membersAPI[m]['name']
+                memberTmp.lastAction = membersAPI[m]['last_action']['relative']
+                memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
+                memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
+                memberTmp.updateStatus(**membersAPI[m]['status'])
+
+                # set shares to 0
+                player = Player.objects.filter(tId=memberTmp.tId).first()
+                memberTmp.shareE = -1 if player is None else 0
+                memberTmp.shareN = -1 if player is None else 0
+                memberTmp.energy = 0
+                memberTmp.nnb = 0
+                memberTmp.arson = 0
+
+                memberTmp.save()
+
+            # new member
+            else:
+                # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+                player = Player.objects.filter(tId=m).first()
+                memberNew = self.member_set.create(
+                    tId=m, name=membersAPI[m]['name'],
+                    lastAction=membersAPI[m]['last_action']['relative'],
+                    lastActionTS=membersAPI[m]['last_action']['timestamp'],
+                    daysInFaction=membersAPI[m]['days_in_faction'],
+                    shareE=-1 if player is None else 0,
+                    shareN=-1 if player is None else 0,
+                    )
+                memberNew.updateStatus(**membersAPI[m]['status'])
+
+        # delete old members
+        for m in membersDB:
+            if membersAPI.get(str(m.tId)) is None:
+                m.delete()
+
+        # remove AA keys from old members
+        for key in self.masterKeys.all():
+            if not len(self.member_set.filter(tId=key.tId)):
+                self.delKey(tId=key.tId)
+
+        self.nKeys = len(self.masterKeys.filter(useFact=True))
+        self.membersUpda = now
+        self.memberStatusUpda = now
+        self.save()
+        return self.member_set.all()
 
     def updateMemberStatus(self, key=None):
         # get now and delta update
@@ -239,3 +365,495 @@ class Member(models.Model):
 
         self.save()
         return error
+
+
+class Chain(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    # torn api
+    tId = models.IntegerField(default=0)
+    chain = models.IntegerField(default=0)
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=0)
+    respect = models.FloatField(default=0)
+
+    # information to compute report
+    report = models.BooleanField(default=False)  # if report is computed/ing
+    computing = models.BooleanField(default=False)  # if currently computing
+    live = models.BooleanField(default=False)  # if live chain
+    update = models.IntegerField(default=0)  # ts of last update
+    last = models.IntegerField(default=0)  # ts of last attack
+    state = models.IntegerField(default=0)  # output status of last attack pulled
+    crontab = models.IntegerField(default=0)  # to see on which crontab the report will be computed
+
+    # information for the report
+    current = models.IntegerField(default=0)
+    attacks = models.IntegerField(default=0)
+    graphs = models.TextField(default="{}", null=True, blank=True)
+
+    # for the combined report
+    combine = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} chain [{}]".format(self.faction, self.tId)
+
+    def assignCrontab(self):
+        # check if already in a crontab
+        chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
+        if chain is None:
+            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in OPEN_CRONTAB}
+            self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
+        else:
+            self.crontab = chain.crontab
+        self.save()
+        return self.crontab
+
+    def getAttacks(self):
+        """ Fill chain with attacks
+        """
+
+        # shortcuts
+        faction = self.faction
+        tss = self.start
+        tse = self.end if self.end else tsnow()
+
+        # compute last ts
+        lastAttack = self.attackchain_set.order_by("-timestamp_ended").first()
+        tsl = self.start if lastAttack is None else lastAttack.timestamp_ended
+        self.last = tsl
+
+        print("{} live {}".format(self, self.live))
+        print("{} start {}".format(self, timestampToDate(tss)))
+        print("{} last  {}".format(self, timestampToDate(tsl)))
+        print("{} end   {}".format(self, timestampToDate(tse)))
+
+        # add + 2 s to the endTS
+        tse += 10
+
+        # get existing attacks (just the ids)
+        attacks = [r.tId for r in self.attackchain_set.all()]
+        print("{} {} existing attacks".format(self, len(attacks)))
+
+        # get key
+        key = faction.getKey(useFact=True)
+        if key is None:
+            print("{} no key".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.attackchain_set.all().delete()
+            self.state = -1
+            self.save()
+            return -1
+
+        # prevent cache response
+        delay = tsnow() - self.update
+        delay = min(tsnow() - faction.lastAttacksPulled, delay)
+        if delay < 32:
+            sleeptime = 32 - delay
+            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+            time.sleep(sleeptime)
+
+        # make call
+        selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+        self.update = tsnow()
+        faction.lastAttacksPulled = self.update
+        faction.save()
+
+        # in case there is an API error
+        if "apiError" in req:
+            print('{} api key error: {}'.format(self, req['apiError']))
+            if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                faction.delKey(key=key)
+                self.state = -2
+                self.save()
+                return -2
+            self.state = -3
+            self.save()
+            return -3
+
+        # try to catch cache response
+        tornTS = int(req["timestamp"])
+        nowTS = self.update
+        cache = abs(nowTS - tornTS)
+        print("{} cache = {}s".format(self, cache))
+
+        # in case cache
+        if cache > 5:
+            print('{} probably cached response... (blank turn)'.format(self))
+            self.state = -4
+            self.save()
+            return -4
+
+        apiAttacks = req["attacks"]
+
+        # in case empty payload
+        if not len(apiAttacks):
+            print('{} empty payload'.format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = -5
+            self.save()
+            return -5
+
+        print("{} {} attacks from the API".format(self, len(apiAttacks)))
+
+        newEntry = 0
+        current = 0
+        for k, v in apiAttacks.items():
+            ts = int(v["timestamp_ended"])
+
+            # probably because of cache
+            before = int(v["timestamp_ended"]) - self.last
+            after = int(v["timestamp_ended"]) - tse
+            if before < 0 or after > 0:
+                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+
+            newAttack = int(k) not in attacks
+            factionAttack = v["attacker_faction"] == faction.tId
+            # chainAttack = int(v["chain"])
+            if newAttack and factionAttack:
+                v = modifiers2lvl1(v)
+                self.attackchain_set.create(tId=int(k), **v)
+                newEntry += 1
+                tsl = max(tsl, ts)
+                current = max(current, v["chain"])
+                # print("{} attack [{}] current {}".format(self, k, current))
+
+        self.current = current
+        self.last = tsl
+
+        print("{} last  {}".format(self, timestampToDate(self.last)))
+        print("{} progress {} / {} ({})%".format(self, current, self.chain, self.progress()))
+
+        if not newEntry and len(apiAttacks) > 1:
+            print("{} no new entry with cache = {} (continue)".format(self, cache))
+            self.state = -6
+            self.save()
+            return -6
+
+        if len(apiAttacks) < 2 and not self.live:
+            print("{} no api entry for non live chain (stop)".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = 1
+            self.save()
+            return 1
+
+        if self.current == self.chain:
+            print("{} reached end of chain (stop)".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = 2
+            self.save()
+            return 2
+
+        self.state = 3
+        self.save()
+        return 3
+
+    def fillReport(self):
+        # get faction / key
+        faction = self.faction
+        key = faction.getKey()
+
+        # get members
+        members = faction.updateMembers(key=key, force=False)
+
+        # initialisation of variables before loop
+        nWRA = [0, 0.0, 0, 0]  # number of wins, respect and attacks, max count (should be = to number of wins)
+        bonus = []  # chain bonus
+        attacksForHisto = []  # record attacks timestamp histogram
+        attacksCriticalForHisto = dict({"30": [], "60": [], "90": []})  # record critical attacks timestamp histogram
+
+        # create attackers array on the fly to avoid db connection in the loop
+        attackers = dict({})
+        attackersHisto = dict({})
+        for m in members:
+            # 0: attacks
+            # 1: wins
+            # 2: fairFight
+            # 3: war
+            # 4: retaliation
+            # 5: groupAttack
+            # 6: overseas
+            # 7: chainBonus
+            # 8: respect_gain
+            # 9: daysInFaction
+            # 10: tId
+            # 11: sum(time(hit)-time(lasthit))
+            # 12: #bonuses
+            # 13: #war
+            attackers[m.tId] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.name, 0, 0, 0]
+
+        #  for debug
+        # PRINT_NAME = {"Thiirteen": 0,}
+        # chainIterator = []
+
+        # loop over attacks
+        lastTS = 0
+        for att in self.attackchain_set.order_by('timestamp_ended'):
+            attackerID = att.attacker_id
+            attackerName = att.attacker_name
+            # if attacker part of the faction at the time of the chain
+            if att.attacker_faction == faction.tId:
+                # if attacker not part of the faction at the time of the call
+                if attackerID not in attackers:
+                    # print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
+                    attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0, 0]  # add out of faction attackers on the fly
+
+                attackers[attackerID][0] += 1
+                nWRA[2] += 1
+
+                # if it's a hit
+                # if respect > 0.0 and chainCount == 0:
+                #     print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
+                #     for kk, vv in v.items():
+                #         print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
+                if att.chain:
+                    # chainIterator.append(v["chain"])
+                    # print("Time stamp:", att.timestamp_ended)
+
+                    # init lastTS for the first iteration of the loop
+                    lastTS = att.timestamp_ended if lastTS == 0 else lastTS
+
+                    # compute chain watcher version 2
+                    timeSince = att.timestamp_ended - lastTS
+                    attackers[attackerID][11] += timeSince
+                    lastTS = att.timestamp_ended
+
+                    # add to critical attack
+                    timeLeft = max(300 - timeSince, 0)
+                    if timeLeft < 30:
+                        attacksCriticalForHisto["30"].append(att.timestamp_ended)
+                    elif timeLeft < 60:
+                        attacksCriticalForHisto["60"].append(att.timestamp_ended)
+                    elif timeLeft < 90:
+                        attacksCriticalForHisto["90"].append(att.timestamp_ended)
+
+                    attacksForHisto.append(att.timestamp_ended)
+                    if attackerID in attackersHisto:
+                        attackersHisto[attackerID].append(att.timestamp_ended)
+                    else:
+                        attackersHisto[attackerID] = [att.timestamp_ended]
+
+                    nWRA[0] += 1
+                    nWRA[1] += att.respect_gain
+                    nWRA[3] = max(att.chain, nWRA[3])
+
+                    if att.chain in BONUS_HITS:
+                        attackers[attackerID][12] += 1
+                        r = getBonusHits(att.chain, att.timestamp_ended)
+                        # print('{} bonus {}: {} respects'.format(self, att.chain, r))
+                        bonus.append((att.chain, attackerID, attackerName, att.respect_gain, r, att.defender_id, att.defender_name))
+                    else:
+                        attackers[attackerID][1] += 1
+                        attackers[attackerID][2] += float(att.fairFight)
+                        attackers[attackerID][3] += float(att.war)
+                        attackers[attackerID][4] += float(att.retaliation)
+                        attackers[attackerID][5] += float(att.groupAttack)
+                        attackers[attackerID][6] += float(att.overseas)
+                        attackers[attackerID][7] += float(att.chainBonus)
+                        attackers[attackerID][8] += float(att.respect_gain) / float(att.chainBonus)
+                        if float(att.war) > 1.0:
+                            attackers[attackerID][13] += 1
+
+                # else:
+                #     print("[function.chain.fillReport] Attack {} -> {}: {} (respect {})".format(v['attacker_factionname'], v["defender_factionname"], v['result'], v['respect_gain']))
+                # if(v["attacker_name"] in PRINT_NAME):
+                #     if respect > 0.0:
+                #         PRINT_NAME[v["attacker_name"]] += 1
+                #         print("[function.chain.fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+                #     else:
+                #         print("[function.chain.fillReport] {} {} -> {}: {} respect".format(v['result'], v['attacker_name'], v["defender_name"], v['respect_gain']))
+
+        # for k, v in PRINT_NAME.items():
+        #     print("[function.chain.fillReport] {}: {}".format(k, v))
+        #
+        # for i in range(1001):
+        #     if i not in chainIterator:
+        #         print(i, "not in chain")
+
+        # create histogram
+        # chain.start = int(attacksForHisto[0])
+        # chain.end = int(attacksForHisto[-1])
+        diff = max(int(self.end - self.start), 1)
+        binsGapMinutes = 5
+        while diff / (binsGapMinutes * 60) > 256:
+            binsGapMinutes += 5
+
+        bins = [self.start]
+        for i in range(256):
+            add = bins[i] + (binsGapMinutes * 60)
+            if add > self.end:
+                break
+            bins.append(add)
+
+        # bins = max(min(int(diff / (5 * 60)), 256), 1)  # min is to limite the number of bins for long chains and max is to insure minimum 1 bin
+        # print('{} chain delta time: {} second'.format(self, diff))
+        # print('{} histogram bins delta time: {} second'.format(self, binsGapMinutes * 60))
+        # print('{} histogram number of bins: {}'.format(self, len(bins) - 1))
+
+        # fill attack histogram
+        histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
+        binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
+        graphs = dict({})
+        graphs["hits"] = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
+
+        # fill 30, 60, 90s critical attacks histogram
+        histo30, _ = numpy.histogram(attacksCriticalForHisto["30"], bins=bins)
+        histo60, _ = numpy.histogram(attacksCriticalForHisto["60"], bins=bins)
+        histo90, _ = numpy.histogram(attacksCriticalForHisto["90"], bins=bins)
+        graphs["crit"] = ','.join(['{}:{}:{}'.format(a, b, c) for (a, b, c) in zip(histo30, histo60, histo90)])
+
+        # potentially add this to chain to compare with API
+        if self.live:
+            self.chain = nWRA[0]  # update for live chains
+            self.respect = nWRA[1]  # update for live chains
+        self.attacks = nWRA[2]
+        self.save()
+
+        # fill the database with counts
+        print('{} fill database with counts'.format(self))
+        self.count_set.all().delete()
+        hitsForStats = []
+        for k, v in attackers.items():
+            # for stats later
+            if v[1]:
+                hitsForStats.append(v[1])
+
+            # time now - chain end - days old: determine if member was in the fac for the chain
+            delta = int(timezone.now().timestamp()) - self.end - v[9] * 24 * 3600
+            beenThere = True if (delta < 0 or v[9] < 0) else False
+            if k in attackersHisto:
+                histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
+                # watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
+                watcher = v[11] / float(diff)
+                graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
+            else:
+                graphTmp = ''
+                watcher = 0
+            # 0: attacks
+            # 1: wins
+            # 2: fairFight
+            # 3: war
+            # 4: retaliation
+            # 5: groupAttack
+            # 6: overseas
+            # 7: chainBonus
+            # 8:respect_gain
+            # 9: daysInFaction
+            # 10: tId
+            # 11: for chain watch
+            # 12: #bonuses
+            # 13: #war
+            self.count_set.create(attackerId=k,
+                                  name=v[10],
+                                  hits=v[0],
+                                  wins=v[1],
+                                  bonus=v[12],
+                                  fairFight=v[2],
+                                  war=v[3],
+                                  retaliation=v[4],
+                                  groupAttack=v[5],
+                                  overseas=v[6],
+                                  respect=v[8],
+                                  daysInFaction=v[9],
+                                  beenThere=beenThere,
+                                  graph=graphTmp,
+                                  watcher=watcher,
+                                  warhits=v[13])
+
+        # create attack stats
+        stats, statsBins = numpy.histogram(hitsForStats, bins=32)
+        statsBinsCenter = [int(0.5 * (a + b)) for (a, b) in zip(statsBins[0:-1], statsBins[1:])]
+        graphs["members"] = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(statsBinsCenter, stats)])
+        self.graphs = json.dumps(graphs)
+
+        # fill the database with bonus
+        print('{} fill database with bonus'.format(self))
+        self.bonus_set.all().delete()
+        for b in bonus:
+            self.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], targetId=b[5], targetName=b[6])
+
+        self.save()
+        return 0
+
+    def progress(self):
+        return int((100 * self.current) // float(max(1, self.chain)))
+
+    def displayCrontab(self):
+        if self.crontab > 0:
+            return "#{}".format(self.crontab)
+        elif self.crontab == 0:
+            return "No crontab assigned"
+        else:
+            return "Special crontab you lucky bastard..."
+
+
+class Count(models.Model):
+    chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
+    attackerId = models.IntegerField(default=0)
+    name = models.CharField(default="Duke", max_length=15)
+    hits = models.IntegerField(default=0)
+    bonus = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    respect = models.FloatField(default=0)
+    fairFight = models.FloatField(default=0)
+    war = models.FloatField(default=0)
+    retaliation = models.FloatField(default=0)
+    groupAttack = models.FloatField(default=0)
+    overseas = models.FloatField(default=0)
+    daysInFaction = models.IntegerField(default=0)
+    beenThere = models.BooleanField(default=False)
+    graph = models.TextField(default="", null=True, blank=True)
+    watcher = models.FloatField(default=0)
+    warhits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return("Count for {}".format(self.chain))
+
+
+class Bonus(models.Model):
+    chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
+    tId = models.IntegerField(default=0)
+    name = models.CharField(default="Duke", max_length=15)
+    hit = models.IntegerField(default=0)
+    respect = models.FloatField(default=0)
+    targetId = models.IntegerField(default=0)
+    targetName = models.CharField(default="Unkown", max_length=15)
+
+    def __str__(self):
+        return("Bonus for {}".format(self.chain))
+
+
+class AttackChain(models.Model):
+    report = models.ForeignKey(Chain, on_delete=models.CASCADE)
+
+    # API Fields
+    tId = models.IntegerField(default=0)
+    timestamp_started = models.IntegerField(default=0)
+    timestamp_ended = models.IntegerField(default=0)
+    attacker_id = models.IntegerField(default=0)
+    attacker_name = models.CharField(default="attacker_name", max_length=16, null=True, blank=True)
+    attacker_faction = models.IntegerField(default=0)
+    attacker_factionname = models.CharField(default="attacker_factionname", max_length=32, null=True, blank=True)
+    defender_id = models.IntegerField(default=0)
+    defender_name = models.CharField(default="defender_name", max_length=16, null=True, blank=True)
+    defender_faction = models.IntegerField(default=0)
+    defender_factionname = models.CharField(default="defender_factionname", max_length=32, null=True, blank=True)
+    result = models.CharField(default="result", max_length=32)
+    stealthed = models.IntegerField(default=0)
+    respect_gain = models.FloatField(default=0.0)
+    chain = models.IntegerField(default=0)
+    # mofifiers
+    fairFight = models.FloatField(default=0.0)
+    war = models.IntegerField(default=0)
+    retaliation = models.FloatField(default=0.0)
+    groupAttack = models.FloatField(default=0.0)
+    overseas = models.FloatField(default=0.0)
+    chainBonus = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Attack [{}]".format(self.tId)

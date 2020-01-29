@@ -1,0 +1,142 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<div>
+
+    <script>
+
+    $(function() {
+        $.tablesorter.addParser({
+            // set a unique id
+            id: 'ago',
+            is: function(s, table, cell, $cell) {
+                // return false so this parser is not auto detected
+                return false;
+            },
+            format: function(s, table, cell, cellIndex) {
+                // format your data for normalization
+                var ret = s.toLowerCase()
+                .replace(/days/,86400).replace(/day/,86400)
+                .replace(/hours/,3600).replace(/hour/,3600)
+                .replace(/hrs/,3600).replace(/hr/,3600)
+                .replace(/minutes/,60).replace(/minute/,60)
+                .replace(/mins/,60).replace(/min/,60).split(' ');
+                return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
+            },
+            // set type, either numeric or text
+            type: 'numeric',
+        });
+
+        $("#faction-jbonus").tablesorter({
+            headers: { 5: { sorter: 'ago' } },
+            cssAsc: 'up', cssDesc: 'down', sortList: [[4,1]],
+        });
+        // $("#faction-jbonus").bind("sortStart",function() {});
+    });
+
+    </script>
+
+    <h2 class="title">Combined report</h2>
+
+    <div class="module">
+
+        <br>
+        <table id="faction-jsummary" class="center trshadow faction-jsummary">
+            <thead>
+                <tr><th style="text-align: center;" colspan="5">Summary of the combined report made of the following chain{{chainsReport|length|pluralize}}</th></tr>
+                <tr>
+                    <th>Chain [ID]</th>
+                    <th>Date</th>
+                    <th>Hits</th>
+                    <th>Respect</th>
+                    <th>Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chain in chainsReport %}
+                    <tr><td class="a">#{{ forloop.counter }} Chain [{{chain.tId}}]</td>
+                        <td class="b">{{chain.start|ts2date}}</td>
+                        <td class="c"><b>{{chain.current}}</b> hits</td>
+                        <td class="c"><b>{{chain.respect|floatformat:2}}</b> respects</td>
+                        <td class="d buttons">
+                            <form>{% csrf_token %}
+                                <input class="faction-chain-id" type="hidden" value="{{chain.tId}}">
+                                <a  class="faction-chains-see" href="{% url 'faction:report' chain.tId %}"><i class="fas fa-eye" title="See report"></i></a>
+                                {% include "faction/chains/status.html" %}
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr><td style="text-align: right;" colspan="2"><b>Total</b></td>
+                    <td class="c"><b>{{total.nHits}}</b> hits</td>
+                    <td class="c"><b>{{total.respect|floatformat:2}}</b> respects</td>
+                </tr>
+                <tr><td style="text-align: right;" colspan="2"><b>Time spent chaining</b></td>
+                    <td style="text-align: center;" colspan="2"><b>{{chain.end|ts2time}}</b></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        {% include "faction/chains/report-table.html" with totalHits=total.nHits %}
+    </div>
+    <h2 class="title">Bonus Score</h2>
+    <div class="module">
+        <table class="center">
+            <thead><tr><th>Summary of all the bonus taken over the chains of the joint report</th></tr></thead>
+        </table>
+        <table id="faction-jbonus" class="tablesorter center trshadow faction-jbonus">
+            <thead>
+                <tr>
+                    <th>Name [id]</th>
+                    <th>Bonus</th>
+                    <th title="Respect earned with bonus">Respect</th>
+                    <th>Hits</th>
+                    <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Score</th>
+                    <th>Last action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for bonus in bonuses%}
+                    <tr>
+                        {% if bonus.5 %}
+                            <td class="a">{{bonus.1|playerURL:bonus.0|safe}}</td>
+                            {% if bonus.3 %}
+                                <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
+                            {% else %}
+                                <td class="b">&empty;</td>
+                            {% endif %}
+                            <td class="c">{{bonus.3|floatformat:0}}</td>
+                            <td class="c">{{bonus.4|floatformat:0}}</td>
+                            {% if bonus.3 %}
+                                <td class="c" title="{{bonus.4}} / {{bonus.3|floatformat:0}}">{{bonus.4|div:bonus.3|floatformat:2}}</td>
+                            {% else %}
+                                <td class="c" title="{{bonus.3}}">{{bonus.4|floatformat:2}}</td>
+                            {% endif %}
+                            <td class="d">{{bonus.5}}</td>
+                        {% endif %}
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>

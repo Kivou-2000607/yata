@@ -38,9 +38,9 @@ This file is part of yata.
                 {# {% endif %} #}
             {# </span> #}
         {# </td> #}
-        {# <td> #}
-            {# <a href="{% url 'chain:list' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a> #}
-        {# </td> #}
+        <td>
+            <a href="{% url 'faction:chains' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a>
+        </td>
         {# <td> #}
             {# <a href="{% url 'chain:jointReport' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Joint report</a> #}
         {# </td> #}
@@ -53,8 +53,8 @@ This file is part of yata.
         {# <td> #}
             {# <a href="{% url 'chain:contracts' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a> #}
         {# </td> #}
-    </tr>
-    <tr>
+    {# </tr> #}
+    {# <tr> #}
         <td>
             <a href="{% url 'faction:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a>
         </td>

@@ -34,3 +34,7 @@ This file is part of yata.
         <span><i class="fas fa-check"></i>&nbsp;&nbsp;{{validMessage}}</span>
     </div>
 {% endif %}
+
+{% if inlineError %}
+    <span class="error" title="{{inlineError}}"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{inlineError}}</span>
+{% endif %}
