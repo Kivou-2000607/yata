@@ -31,7 +31,7 @@ This file is part of yata.
 {# index #}
 {% if view.index %}
     {% include "faction/index.html" %}
-    {% include "faction/tutorials/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# aa #}
@@ -63,5 +63,22 @@ This file is part of yata.
 {# walls #}
 {% if view.walls %}
     {% include "faction/walls/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
+{# attack reports #}
+{% if view.attacksReports %}
+    <script>
+        $(function () {
+            console.log("Clear form values");
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% include "faction/attacks/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+{% if view.attacksReport %}
+    {% include "faction/attacks/report.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}

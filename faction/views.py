@@ -52,7 +52,7 @@ def index(request):
 
             # add/remove key depending of AA member
             faction.manageKey(player)
-            reports = faction.chain_set.filter(report=True).order_by('-start');
+            reports = faction.chain_set.filter(report=True).order_by('-start')
             context = {'player': player, 'faction': faction, 'reports': reports, 'factioncat': True, 'view': {'index': True}}
             return render(request, 'faction.html', context)
 
@@ -615,7 +615,6 @@ def iReport(request):
                         graph = {'data': [], 'info': {'binsTime': 5, 'criticalHits': 1, 'speedRate': 0}}
 
                     context = dict({'graph': graph, 'memberId': memberId})
-
                     return render(request, 'faction/chains/ireport.html', context)
 
                 else:
@@ -868,7 +867,6 @@ def manageWall(request):
                 if faction is None:
                     return render(request, 'yata/error.html', {'inlineError': 'Faction {} not found in the database.'.format(factionId)})
 
-                wallId = request.POST.get("wallId", 0) + "1"
                 wallId = request.POST.get("wallId", 0)
                 wall = Wall.objects.filter(tId=wallId).first()
                 if wall is None:
@@ -909,7 +907,6 @@ def manageWall(request):
         return returnError()
 
 
-# API
 @csrf_exempt
 def importWall(request):
     if request.method == 'POST':
@@ -1039,3 +1036,238 @@ def importWall(request):
 
     else:
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+
+
+# SECTION: attacks
+def attacksReports(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # delete contract
+            if request.POST.get("type") == "delete":
+                contract = faction.attacksreport_set.filter(pk=request.POST["contractId"])
+                contract.delete()
+                # dummy render
+                return render(request, page)
+
+            # create contract
+            message = False
+            if request.POST.get("type") == "new":
+                try:
+                    live = int(request.POST.get("live", 0))
+                    start = int(request.POST.get("start", 0))
+                    end = int(request.POST.get("end", 0))
+                    if start and live:
+                        report = faction.attacksreport_set.create(start=start, end=0, live=True, computing=True)
+                        c = report.assignCrontab()
+                        report.save()
+                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start))]
+                    elif start and end and start < end:
+                        report = faction.attacksreport_set.create(start=start, end=end, live=False, computing=True)
+                        c = report.assignCrontab()
+                        report.save()
+                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start), timestampToDate(end))]
+                    else:
+                        message = ["errorMessageSub", "Error while creating new report"]
+                except BaseException as e:
+                    message = ["errorMessageSub", "Error while creating new report: {}".format(e)]
+
+            # get reports
+            reports = faction.attacksreport_set.all().order_by('-end')
+            for report in reports:
+                report.status = REPORT_ATTACKS_STATUS[report.state]
+
+            context = {'player': player, 'faction': faction, 'factioncat': True, 'reports': reports, 'view': {'attacksReports': True}}
+            if message:
+                context[message[0]] = message[1]
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def manageAttacks(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            reportId = request.POST.get("reportId", 0)
+            report = AttacksReport.objects.filter(pk=reportId).first()
+            if report is None:
+                return render(request, 'yata/error.html', {'inlineError': 'Report {} not found in the database.'.format(reportId)})
+
+            # delete contract
+            if request.POST.get("type") == "delete":
+                report.delete()
+
+            return render(request, page)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def attacksReport(request, reportId):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get breakdown
+            report = faction.attacksreport_set.filter(pk=reportId).first()
+            if report is None:
+                context = dict({"player": player,
+                                'chaincat': True,
+                                'faction': faction,
+                                'report': False,
+                                'view': {'attacks': True}})  # views
+                return render(request, page, context)
+
+            # if modify end date
+            if 'modifyEnd' in request.POST:
+                tse = int(request.POST.get("end", 0))
+                if report.start < tse:
+                    report.end = tse
+                    report.live = False
+                    report.computing = True
+                    report.assignCrontab()
+                    report.attackreport_set.filter(timestamp_ended__gt=tse).delete()
+                    report.last = min(report.end, report.last)
+                    report.state = 0
+                    report.save()
+
+            attackerFactions = json.loads(report.attackerFactions)
+            defenderFactions = json.loads(report.defenderFactions)
+
+            # if click on toggle
+            if request.POST.get("type") == "attackers":
+                if int(request.POST["factionId"]) in attackerFactions:
+                    attackerFactions.remove(int(request.POST["factionId"]))
+                else:
+                    attackerFactions.append(int(request.POST["factionId"]))
+                report.attackerFactions = json.dumps(attackerFactions)
+            elif request.POST.get("type") == "defenders":
+                if int(request.POST["factionId"]) in defenderFactions:
+                    defenderFactions.remove(int(request.POST["factionId"]))
+                else:
+                    defenderFactions.append(int(request.POST["factionId"]))
+                report.defenderFactions = json.dumps(defenderFactions)
+            report.save()
+
+            attacks = dict({})
+            attacksMade = 0
+            attacksReceived = 0
+            for r in report.attackreport_set.all():
+                attacks[r.tId] = model_to_dict(r)
+                if not r.attacker_id:
+                    attacks[r.tId]["attacker_name"] = "Stealth"
+                    attacks[r.tId]["attacker_factionname"] = "Stealth"
+                    attacks[r.tId]["attacker_id"] = 1
+                    attacks[r.tId]["attacker_faction"] = 1
+
+                if attacks[r.tId]["defender_faction"] in defenderFactions:
+                    attacks[r.tId]["show"] = True
+                    attacksReceived += 1
+                elif attacks[r.tId]["attacker_faction"] in attackerFactions:
+                    attacks[r.tId]["show"] = True
+                    attacksMade += 1
+                else:
+                    attacks[r.tId]["show"] = False
+
+            report.attacks = attacksMade
+            report.defends = attacksReceived
+
+            breakdown = dict({"defender_factions": dict({}), "attacker_factions": dict({}), "attackers": dict({}), "defenders": dict({}), "players": dict({})})
+            for k, v in attacks.items():
+                winAtt = 0 if v["result"] in ["Lost"] else 1
+                winDef = 1 if v["result"] in ["Lost"] else 0
+
+                # add defender faction
+                if v["defender_faction"] in breakdown["defender_factions"]:
+                    breakdown["defender_factions"][v["defender_faction"]]["attacked"] += 1
+                    breakdown["defender_factions"][v["defender_faction"]]["defends"] += winDef
+                else:
+                    show = True if v["defender_faction"] in defenderFactions else False
+                    breakdown["defender_factions"][v["defender_faction"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_factionname"], "show": show}
+
+                # add attacker faction
+                if v["attacker_faction"] in breakdown["attacker_factions"]:
+                    breakdown["attacker_factions"][v["attacker_faction"]]["attacks"] += 1
+                    breakdown["attacker_factions"][v["attacker_faction"]]["wins"] += winAtt
+                else:
+                    show = True if v["attacker_faction"] in attackerFactions else False
+                    breakdown["attacker_factions"][v["attacker_faction"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_factionname"], "show": show}
+
+                # add attacker
+                if v["attacker_faction"] in attackerFactions:
+                    if v["attacker_id"] in breakdown["players"]:
+                        breakdown["players"][v["attacker_id"]]["attacks"] += 1
+                        breakdown["players"][v["attacker_id"]]["wins"] += winAtt
+                    else:
+                        breakdown["players"][v["attacker_id"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_name"], "faction": v["attacker_faction"], "factionname": v["attacker_factionname"]}
+
+                # add defender
+                if v["defender_faction"] in defenderFactions:
+                    if v["defender_id"] in breakdown["players"]:
+                        breakdown["players"][v["defender_id"]]["attacked"] += 1
+                        breakdown["players"][v["defender_id"]]["defends"] += winDef
+                    else:
+                        breakdown["players"][v["defender_id"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_name"], "faction": v["defender_faction"], "factionname": v["defender_factionname"]}
+
+            # # convert factions to dictionnary for the template
+            # # do not save
+            attackerFactions = json.loads(report.attackerFactions)
+            defenderFactions = json.loads(report.defenderFactions)
+
+            # context
+            report.status = REPORT_ATTACKS_STATUS[report.state]
+            context = dict({"player": player,
+                            'factioncat': True,
+                            'faction': faction,
+                            'report': report,
+                            'attacks': attacks,
+                            'breakdown': breakdown,
+                            'view': {'attacksReport': True}})  # views
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()

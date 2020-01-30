@@ -1,4 +1,4 @@
-// refresh member from member list by clicking on the row
+// delete wall
 $(document).on('click', '.wall-delete', function(e){
     e.preventDefault();
     var wallId = $(e.currentTarget).closest("td").attr("data-val");

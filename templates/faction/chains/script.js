@@ -17,7 +17,7 @@ $(document).on('click', '.faction-chains-create', e=>{
     e.preventDefault();
     var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
     var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/manageReport/", {
+    td.load( "/faction/report/manage/", {
         type: "create", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad).html(spinner);
 });
@@ -32,7 +32,7 @@ $(document).on('click', '.faction-chains-delete', e=>{
 
     var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
     var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/manageReport/", {
+    td.load( "/faction/report/manage/", {
         type: "delete", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad).html(spinner);
 });
@@ -49,7 +49,7 @@ $(document).on('click', '.faction-chains-combine', e=>{
     // handle toggle
     var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
     var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/manageReport/", {
+    td.load( "/faction/report/manage/", {
         type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad).html(spinner);
 
@@ -93,7 +93,7 @@ $(document).on('click', 'tr[id^="faction-ireport-"] > td:not(.dont-touch-me)', e
     if( !$( "#individal-report-"+memberId ).length ) {
         $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(e.currentTarget).closest('tr'));
     }
-    $("#individal-report-"+memberId).load( "/faction/iReport/", {
+    $("#individal-report-"+memberId).load( "/faction/report/individual/", {
         chainId: chainId,
         memberId: memberId,
         csrfmiddlewaretoken: getCookie("csrftoken")

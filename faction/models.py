@@ -35,7 +35,19 @@ OPEN_CRONTAB = [1, 2, 3]
 CHAIN_ATTACKS_STATUS = {
     3: "Normal [continue]",
     2: "Reached end of chain [stop]",
-    1: "Non new attack [stop]",
+    1: "No new attack [stop]",
+    0: "Waiting for first call",
+    -1: "No enabled AA keys [stop]",
+    -2: "API key major error (key deleted) [continue]",
+    -3: "API key temporary error [continue]",
+    -4: "Probably cached response [continue]",
+    -5: "Empty payload [stop]",
+    -6: "No new entry [continue]",
+    }
+REPORT_ATTACKS_STATUS = {
+    3: "Normal [continue]",
+    2: "Up to date [continue]",
+    1: "No new attack [stop]",
     0: "Waiting for first call",
     -1: "No enabled AA keys [stop]",
     -2: "API key major error (key deleted) [continue]",
@@ -46,6 +58,7 @@ CHAIN_ATTACKS_STATUS = {
     }
 
 
+# Faction
 class Faction(models.Model):
     # direct torn values
     tId = models.IntegerField(default=0, unique=True)
@@ -370,6 +383,7 @@ class Member(models.Model):
         return error
 
 
+# Chains
 class Chain(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
 
@@ -403,10 +417,10 @@ class Chain(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
-        if chain is None:
+        if chain is None or chain.crontab not in OPEN_CRONTAB:
             cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in OPEN_CRONTAB}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
-        else:
+        elif chain is not None:
             self.crontab = chain.crontab
         self.save()
         return self.crontab
@@ -543,33 +557,12 @@ class Chain(models.Model):
             return -6
 
         if len(apiAttacks) < 2 and not self.live:
-            print("{} no api entry for non live chain (stop)".format(self))
+            print("{} no api entry for non live report (stop)".format(self))
             self.computing = False
             self.crontab = 0
             self.state = 1
             self.save()
             return 1
-
-        if self.current == self.chain and not self.live:
-            print("{} reached end of chain (stop)".format(self))
-            self.computing = False
-            self.crontab = 0
-            self.state = 2
-            self.save()
-            return 2
-
-        # handle live chain
-        if self.live:
-            if req["chain"]["current"] < 10:
-                print("{} reached end of live chain (stop)".format(self))
-                self.computing = False
-                self.crontab = 0
-                self.state = 2
-                self.save()
-                return 2
-            else:
-                print("{} update values".format(self))
-                self.chain = req["chain"]["current"]
 
         self.state = 3
         self.save()
@@ -878,9 +871,10 @@ class AttackChain(models.Model):
     chainBonus = models.IntegerField(default=0)
 
     def __str__(self):
-        return "Attack [{}]".format(self.tId)
+        return "Attack for chain [{}]".format(self.tId)
 
 
+# Walls
 class Wall(models.Model):
     tId = models.IntegerField(default=0)
     tss = models.IntegerField(default=0)
@@ -913,3 +907,233 @@ class Wall(models.Model):
         self.result = req.get('result', 0)
 
         self.save()
+
+
+# Attacks report
+class AttacksReport(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=0)
+    last = models.IntegerField(default=0)
+    live = models.BooleanField(default=False)
+
+    # information for computing
+    computing = models.BooleanField(default=True)
+    state = models.IntegerField(default=0)  # output status of last attack pulled
+    crontab = models.IntegerField(default=0)
+    update = models.IntegerField(default=0)
+
+    # global information for the report
+    attackerFactions = models.TextField(default="[]")
+    defenderFactions = models.TextField(default="[]")
+    defends = models.IntegerField(default=0)
+    attacks = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{} attacks report [{}]".format(self.faction, self.pk)
+
+    def progress(self):
+        end = self.end if self.end else tsnow()
+        last = self.last if self.last else self.start
+        total = max(end - self.start, 1)
+        elaps = last - self.start
+        return int((100 * elaps) // float(total))
+
+    def displayCrontab(self):
+        if self.crontab > 0:
+            return "#{}".format(self.crontab)
+        elif self.crontab == 0:
+            return "No crontab assigned"
+        else:
+            return "Special crontab you lucky bastard..."
+
+    def assignCrontab(self):
+        # check if already in a crontab
+        report = self.faction.attacksreport_set.filter(computing=True).only("crontab").first()
+        if report is None or report.crontab not in OPEN_CRONTAB:
+            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in OPEN_CRONTAB}
+            self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
+        elif report is not None:
+            self.crontab = report.crontab
+        self.save()
+        return self.crontab
+
+    def getAttacks(self):
+        """ Fill report with attacks
+        """
+        # handle live chain
+        if self.live:
+            self.end = tsnow()
+
+        # shortcuts
+        faction = self.faction
+        tss = self.start
+        tse = self.end
+
+        # compute last ts
+        lastAttack = self.attackreport_set.order_by("-timestamp_ended").first()
+        tsl = self.start if lastAttack is None else lastAttack.timestamp_ended
+        self.last = tsl
+
+        print("{} live {}".format(self, self.live))
+        print("{} start {}".format(self, timestampToDate(tss)))
+        print("{} last  {}".format(self, timestampToDate(tsl)))
+        print("{} end   {}".format(self, timestampToDate(tse)))
+
+        # add + 2 s to the endTS
+        tse += 10
+
+        # get existing attacks (just the ids)
+        attacks = [r.tId for r in self.attackreport_set.all()]
+        print("{} {} existing attacks".format(self, len(attacks)))
+
+        # get key
+        key = faction.getKey(useFact=True)
+        if key is None:
+            print("{} no key".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.attackreport_set.all().delete()
+            self.state = -1
+            self.save()
+            return -1
+
+        # prevent cache response
+        delay = tsnow() - self.update
+        delay = min(tsnow() - faction.lastAttacksPulled, delay)
+        if delay < 32:
+            sleeptime = 32 - delay
+            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+            time.sleep(sleeptime)
+
+        # make call
+        selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+        key.reason = "Pull attacks for attacks report"
+        key.lastPulled = tsnow()
+        key.save()
+        self.update = tsnow()
+        faction.lastAttacksPulled = self.update
+        faction.save()
+
+        # in case there is an API error
+        if "apiError" in req:
+            print('{} api key error: {}'.format(self, req['apiError']))
+            if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                faction.delKey(key=key)
+                self.state = -2
+                self.save()
+                return -2
+            self.state = -3
+            self.save()
+            return -3
+
+        # try to catch cache response
+        tornTS = int(req["timestamp"])
+        nowTS = self.update
+        cache = abs(nowTS - tornTS)
+        print("{} cache = {}s".format(self, cache))
+
+        # in case cache
+        if cache > 5:
+            print('{} probably cached response... (blank turn)'.format(self))
+            self.state = -4
+            self.save()
+            return -4
+
+        apiAttacks = req["attacks"]
+
+        # in case empty payload
+        if not len(apiAttacks):
+            print('{} empty payload'.format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = -5
+            self.save()
+            return -5
+
+        print("{} {} attacks from the API".format(self, len(apiAttacks)))
+
+        newEntry = 0
+        for k, v in apiAttacks.items():
+            ts = int(v["timestamp_ended"])
+
+            # probably because of cache
+            before = int(v["timestamp_ended"]) - self.last
+            after = int(v["timestamp_ended"]) - tse
+            if before < 0 or after > 0:
+                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+
+            newAttack = int(k) not in attacks
+            factionAttack = v["attacker_faction"] == faction.tId
+            # chainAttack = int(v["chain"])
+            if newAttack:
+                v = modifiers2lvl1(v)
+                self.attackreport_set.create(tId=int(k), **v)
+                newEntry += 1
+                tsl = max(tsl, ts)
+
+                if factionAttack:
+                    self.attacks += 1
+                else:
+                    self.defends += 1
+
+        self.last = tsl
+
+        print("{} last  {}".format(self, timestampToDate(self.last)))
+        print("{} progress ({})%".format(self, self.progress()))
+
+        if not newEntry and len(apiAttacks) > 1:
+            print("{} no new entry with cache = {} (continue)".format(self, cache))
+            self.state = -6
+            self.save()
+            return -6
+
+        if len(apiAttacks) < 2 and not self.live:
+            print("{} no api entry for non live chain (stop)".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = 1
+            self.last = self.end
+            self.save()
+            return 1
+
+        if len(apiAttacks) < 2 and self.live:
+            print("{} no api entry for live chain (continue)".format(self))
+            self.state = 2
+            self.end = self.last
+            self.save()
+            return 2
+
+        self.state = 3
+        self.save()
+        return 3
+
+
+class AttackReport(models.Model):
+    report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
+
+    # API Fields
+    tId = models.IntegerField(default=0)
+    timestamp_started = models.IntegerField(default=0)
+    timestamp_ended = models.IntegerField(default=0)
+    attacker_id = models.IntegerField(default=0)
+    attacker_name = models.CharField(default="attacker_name", max_length=16, null=True, blank=True)
+    attacker_faction = models.IntegerField(default=0)
+    attacker_factionname = models.CharField(default="attacker_factionname", max_length=32, null=True, blank=True)
+    defender_id = models.IntegerField(default=0)
+    defender_name = models.CharField(default="defender_name", max_length=16, null=True, blank=True)
+    defender_faction = models.IntegerField(default=0)
+    defender_factionname = models.CharField(default="defender_factionname", max_length=32, null=True, blank=True)
+    result = models.CharField(default="result", max_length=32)
+    stealthed = models.IntegerField(default=0)
+    respect_gain = models.FloatField(default=0.0)
+    chain = models.IntegerField(default=0)
+    # mofifiers
+    fairFight = models.FloatField(default=0.0)
+    war = models.IntegerField(default=0)
+    retaliation = models.FloatField(default=0.0)
+    groupAttack = models.FloatField(default=0.0)
+    overseas = models.FloatField(default=0.0)
+    chainBonus = models.IntegerField(default=0)

@@ -34,8 +34,8 @@ class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress']
-    list_filter = ('faction__name', 'live', 'report', 'computing', 'crontab')
+    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress', 'state']
+    list_filter = ('faction__name', 'live', 'report', 'computing', 'crontab', 'state')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
     # inlines = [CountInline]
@@ -46,6 +46,18 @@ class AttackChainAdmin(admin.ModelAdmin):
     search_fields = ('tId',)
 
 
+class AttacksReportAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['__str__', 'start', 'end', 'live', 'computing', 'state', 'progress', 'state']
+    search_fields = ('pk', 'faction__name')
+    list_filter = ('live', 'computing', 'crontab', 'state')
+
+
+
+
+admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(AttackChain, AttackChainAdmin)
 admin.site.register(Chain, ChainAdmin)
 admin.site.register(Member, MemberAdmin)

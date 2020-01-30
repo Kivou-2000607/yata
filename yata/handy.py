@@ -77,10 +77,11 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
                  "apiErrorCode": int(err["error"]["code"])})
 
 
-def timestampToDate(timestamp):
+def timestampToDate(timestamp, fmt=False):
     import datetime
     import pytz
-    return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+    d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+    return d.strftime("%Y/%m/%d %I:%m TCT") if fmt else d
 
 
 def cleanhtml(raw_html):

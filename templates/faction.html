@@ -3,7 +3,7 @@
 
 {% block css%}
     <link rel="stylesheet" type="text/css" href={% static "perso/css/faction.css" %} />
-    {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" /> #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
 {% endblock%}
 
 {% block title%}
@@ -12,40 +12,17 @@
 
 {% block jquery %}
 {# for date picker #}
-{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script> #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
 
 <script>
-// update history on load
-const afterLoad = (r,s,x) =>{
-    window.history.pushState(null, document.title, x.url);
-};
-
-// parse cookie
-const getCookie = (s)=>{
-    let parse=RegExp(""+s+"[^;]+").exec(document.cookie);
-    return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
-};
-
-//Store repeated html string (spinner)
-const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
-
-// nav links
-$(document).on('click', 'table.faction-categories td', e=>{
-    e.preventDefault();
-    var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
-    $( "#content-update" ).load( "/faction/"+l+"/", {
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
-    $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Loading '+l)
-    $("div.error").hide();
-});
-
-{% include "faction/aa/script.js" %}
-{% include "faction/members/script.js" %}
-{% include "faction/chains/script.js" %}
-{% include "faction/walls/script.js" %}
-
+    {% include "faction/script.js" %}
+    {% include "faction/aa/script.js" %}
+    {% include "faction/attacks/script.js" %}
+    {% include "faction/chains/script.js" %}
+    {% include "faction/members/script.js" %}
+    {% include "faction/walls/script.js" %}
 </script>
+
 {% endblock %}
 
 {% block content %}

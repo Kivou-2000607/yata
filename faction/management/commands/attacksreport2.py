@@ -19,8 +19,10 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 
-from faction.models import Chain
-from faction.models import CHAIN_ATTACKS_STATUS
+import time
+
+from faction.models import AttacksReport
+from faction.models import REPORT_ATTACKS_STATUS
 
 
 class Command(BaseCommand):
@@ -30,10 +32,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         crontabId = options['crontab']
         print("open crontab {}".format(crontabId))
-        chain = Chain.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
-        if chain is not None:
-            state = chain.getAttacks()
+        report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
+        if report is not None:
+            # sleep 30s to avoid cache with chain reports
+            time.sleep(30)
+            state = report.getAttacks()
             type = "error" if state < 0 else "exit"
-            print("{} {} code {}: {}".format(chain, type, state, CHAIN_ATTACKS_STATUS.get(state, "code {}".format(state))))
-            if state in [0, 1, 2, 3]:
-                chain.fillReport()
+            print("{} {} code {}: {}".format(report, type, state, REPORT_ATTACKS_STATUS.get(state, "code {}".format(state))))
