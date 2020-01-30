@@ -21,12 +21,27 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<h2 class="title">{{faction.name}} [{{faction.tId}}]</h2>
-<div class="module">
-    <p>Welcome to your faction section.</p>
-    {% if player.factionAA %}
-        <p>Ingame, you have AA permissions. It means that you'll be able to manage all the configurations.</p>
-    {%else%}
-        <p>Ingame, you don't have AA permissions.</p>
-    {%endif%}
+<div class="module rounded">
+    <h3>Info</h3>
+    <p><b>Faction</b> <i>{{faction}}</i><br>
+       <b>AA</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br>
+   </p>
+   <p><h3>Direct links</h3>
+        <ul>
+            <li><a href="/faction/chains/">Chains</a></li>
+            <ul>
+                {% for report in reports %}
+                    {% if report.live %}
+                        <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    {% else %}
+                        <li><a href="/faction/report/{{report.tId}}">Chain [{{report.tId}}]</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    {% endif %}
+                {% endfor %}
+                <li><a href="/faction/report/cmobined">Combined report</li>
+            </ul>
+            <li><a href="/faction/walls/">Walls</a></li>
+            <li><a href="/faction/members/">Members</a></li>
+            <li><a href="/faction/configurations/">Configurations</a></li>
+        </ul>
+    </p>
 </div>

@@ -74,7 +74,11 @@ This file is part of yata.
                     {# faction #}
                     <td class="b">
                         <a href="{% url 'chain:index' %}" class="yata-link-chain" title="Faction">
-                            <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a><br>
+                            <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a>
+
+                            [<a href="{% url 'faction:index' %}" class="yata-link-faction" title="Faction"><b>v2&beta;</b></a>]
+
+                            <br>
                             <span>
                             {% if player.tId > 0 %}
                                 {% if player.chainInfo == "N/A" %}

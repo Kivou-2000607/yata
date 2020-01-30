@@ -1,9 +1,9 @@
 // toggle key
 $(document).on('click', '.faction-aa-toggle-key', e=>{
     e.preventDefault();
-    $(e.currentTarget).parents("tr").load( "/faction/configurationsKey/", {
+    $(e.currentTarget).parents("td").load( "/faction/configurationsKey/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<td colspan="5" style="text-align: center;">'+spinner+'</td>');
+    }).html(spinner);
 });
 
 

@@ -23,45 +23,31 @@ This file is part of yata.
 <table class="center-large tdshadow faction-categories">
     <tbody>
     <tr>
-        {# <td> #}
-            {# <a href="{% url 'chain:live' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chain live</a> #}
-            {# <span style="margin-left:10px"> #}
-                {# {%if faction.liveChain%} #}
-                {# <i class="fa fa-play-circle valid"></i> #}
-                {# {%if faction.createLive%} #}
-                {# <i class="fa fa-microphone-alt valid"></i> #}
-                {# {% else %} #}
-                {# <i class="fa fa-microphone-alt-slash error"></i> #}
-                {# {% endif %} #}
-                {# {% else %} #}
-                {# <i class="fa fa-stop-circle error"></i> #}
-                {# {% endif %} #}
-            {# </span> #}
-        {# </td> #}
+        <td><a href="{% url 'faction:chains' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a></td>
         <td>
-            <a href="{% url 'faction:chains' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a>
-        </td>
-        {# <td> #}
-            {# <a href="{% url 'chain:jointReport' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Joint report</a> #}
-        {# </td> #}
-        {# <td> #}
-            {# <a href="{% url 'chain:walls' %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;Walls</a> #}
-        {# </td> #}
-        {# <td> #}
             {# <a href="{% url 'chain:attacks' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Attacks</a> #}
-        {# </td> #}
-        {# <td> #}
-            {# <a href="{% url 'chain:contracts' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a> #}
-        {# </td> #}
-    {# </tr> #}
-    {# <tr> #}
-        <td>
-            <a href="{% url 'faction:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a>
+            <span class="neutral"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Attacks</span>
         </td>
-        {# <td> #}
+        <td>
+            {# <a href="{% url 'chain:contracts' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a> #}
+            <span class="neutral"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a>
+        </td>
+        <td><a href="{% url 'faction:walls' %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;Walls</a></td>
+        {% if player.factionAA %}
+            <td>
+                {# <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a> #}
+                <span class="neutral"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</span>
+            </td>
+        {% endif %}
+    </tr>
+    <tr>
+        <td><a href="{% url 'faction:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a></td>
+        <td>
             {# <a href="{% url 'chain:bigBrother' %}"><i class="fas fa-eye"></i>&nbsp;&nbsp;Big Brother</a> #}
-        {# </td> #}
-        {# <td> #}
+            <span class="neutral"><i class="fas fa-eye"></i>&nbsp;&nbsp;Big Brother</span>
+        </td>
+        <td>
+            <span class="neutral"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</span>
             {# <a href="{% url 'chain:armory' %}"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</a> #}
             {# <span style="margin-left:10px"> #}
                 {# {%if faction.armoryRecord%} #}
@@ -70,23 +56,15 @@ This file is part of yata.
                     {# <i class="fa fa-microphone-alt-slash error"></i> #}
                 {# {% endif %} #}
             {# </span> #}
-
-        {# </td> #}
-        {# <td> #}
+        </td>
+        <td>
             {# <a href="{% url 'chain:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a> #}
-        {# </td> #}
+            <span class="neutral"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</span>
+        </td>
         {% if player.factionAA %}
-            {# <td> #}
-                {# <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a> #}
-            {# </td> #}
             <td>
-                <a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;AA options</a>
+                <a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;Configurations</a>
             </td>
-            {# {% if faction.poster %} #}
-            {# <td> #}
-                {# <a href="{% url 'chain:tree' %}"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</a> #}
-            {# </td> #}
-            {# {% endif %} #}
         {% endif %}
     </tr>
     </tbody>

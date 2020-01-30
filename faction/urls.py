@@ -24,4 +24,9 @@ urlpatterns = [
     re_path(r'^iReport/$', views.iReport, name='iReport'),
     re_path(r'^combined/$', views.combined, name='combined'),
 
+    # SECTION: wall
+    re_path(r'^walls/$', views.walls, name='walls'),
+    re_path(r'^walls/manage/$', views.manageWall, name='manageWall'),
+    re_path(r'^walls/import/$', views.importWall, name='importWall'),
+
     ]

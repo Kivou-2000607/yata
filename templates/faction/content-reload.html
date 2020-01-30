@@ -56,6 +56,12 @@ This file is part of yata.
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 {% if view.chains %}
-    {% include "faction/chains/chains.html" %}
+    {% include "faction/chains/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
+{# walls #}
+{% if view.walls %}
+    {% include "faction/walls/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}

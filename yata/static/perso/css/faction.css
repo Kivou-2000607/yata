@@ -25,8 +25,9 @@ table.faction-categories td {
 }
 
 table.faction-aa-keys td { line-height: 28px; }
-table.faction-aa-keys td.a { width: 20%; text-align: left; } /* x1 */
-table.faction-aa-keys td.b { width: 20%; text-align: center; }  /* x4 */
+table.faction-aa-keys td.a { width: 30%; text-align: left; } /* x2 */
+table.faction-aa-keys td.b { width: 10%; text-align: center; }  /* x1 */
+table.faction-aa-keys td.c { width: 30%; text-align: center; }  /* x1 */
 
 table.faction-members td.a { width: 15%; }
 table.faction-members td.b { width: 15%; text-align: right; cursor: pointer;}
@@ -41,14 +42,16 @@ table.faction-chains td.d { width: 10%; text-align: center;} /* x3 */
 table.faction-chains td.e { width: 15%; }
 table.faction-chains td.e a { display: inline; }
 table.faction-chains td.e form { display: inline; }
+table.faction-chains tr.live       { background:#d9ead3; }
+table.faction-chains tr.live:hover { background:#b6d7a8; }
 
 table.faction-report td.a { width: 4%; text-align: center; }
 table.faction-report td.b { width: 15%; text-align: left; }
 table.faction-report td.c { width: 9%; text-align: center; }  /* x9 */
 table.faction-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.faction-report tr.zero-hits:hover { background:#ea9999; }
-table.faction-report tr.not-there       { background:#b6d7a8; }
-table.faction-report tr.not-there:hover { background:#93c47d; }
+/* table.faction-report tr.not-there       { background:#b6d7a8; } */
+/* table.faction-report tr.not-there:hover { background:#93c47d; } */
 table.faction-report tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 table.faction-report tr.zero-respect       { background:#f4cccc; }
 table.faction-report tr.zero-respect:hover { background:#ea9999; }
@@ -68,3 +71,13 @@ table.faction-jsummary td.a { width: 20%; text-align: left; }
 table.faction-jsummary td.b { width: 20%; text-align: left; }
 table.faction-jsummary td.c { width: 20%; text-align: center; } /* x2 */
 table.faction-jsummary td.d { width: 20%; text-align: center; }
+
+table.faction-walls td.a { width: 10%; text-align: left;} /* x1 */
+table.faction-walls td.b { width: 15%;  text-align: center;} /* x5 */
+table.faction-walls td.c { width: 5%; text-align: center;} /* x3 */
+
+
+table.faction-walls-breakdown td.a { width: 30%; text-align: left; }
+table.faction-walls-breakdown td.b { width: 10%; text-align: center; }
+table.faction-walls-breakdown td.c { width: 20%; text-align: right; }
+table.faction-walls-breakdown td.d { width: 20%; text-align: center; }

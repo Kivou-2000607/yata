@@ -30,7 +30,8 @@ from yata.handy import apiCall
 
 SECTION_CHOICES = (
     ('B', 'bazaar'),
-    ('F', 'faction'),
+    ('F', 'factionV2'),
+    ('C', 'faction'),
     ('T', 'target'),
     ('A', 'awards'),
     ('S', 'stock'),

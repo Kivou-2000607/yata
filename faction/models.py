@@ -91,6 +91,9 @@ class Faction(models.Model):
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
 
+    def fullname(self):
+        return "{} [{}]".format(self.name, self.tId)
+
     def manageKey(self, player):
         key = player.key_set.first()
         if player.factionAA and player.validKey:
@@ -144,7 +147,7 @@ class Faction(models.Model):
         # call members and return error
         membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
         key.lastPulled = tsnow()
-        key.reason = "Faction -> members"
+        key.reason = "Update member list"
         key.save()
 
         if 'apiError' in membersAPI:
@@ -243,7 +246,7 @@ class Faction(models.Model):
             key = self.getKey() if key is None else key
             membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
             key.lastPulled = now
-            key.reason = "Faction -> Members status"
+            key.reason = "Update member status"
             key.save()
 
             if 'apiError' in membersAPI:
@@ -411,11 +414,14 @@ class Chain(models.Model):
     def getAttacks(self):
         """ Fill chain with attacks
         """
+        # handle live chain
+        if self.live:
+            self.end = tsnow()
 
         # shortcuts
         faction = self.faction
         tss = self.start
-        tse = self.end if self.end else tsnow()
+        tse = self.end
 
         # compute last ts
         lastAttack = self.attackchain_set.order_by("-timestamp_ended").first()
@@ -454,8 +460,11 @@ class Chain(models.Model):
             time.sleep(sleeptime)
 
         # make call
-        selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+        selection = "chain,attacks,timestamp&from={}&to={}".format(tsl, tse)
         req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+        key.reason = "Pull attacks for chain report"
+        key.lastPulled = tsnow()
+        key.save()
         self.update = tsnow()
         faction.lastAttacksPulled = self.update
         faction.save()
@@ -541,13 +550,26 @@ class Chain(models.Model):
             self.save()
             return 1
 
-        if self.current == self.chain:
+        if self.current == self.chain and not self.live:
             print("{} reached end of chain (stop)".format(self))
             self.computing = False
             self.crontab = 0
             self.state = 2
             self.save()
             return 2
+
+        # handle live chain
+        if self.live:
+            if req["chain"]["current"] < 10:
+                print("{} reached end of live chain (stop)".format(self))
+                self.computing = False
+                self.crontab = 0
+                self.state = 2
+                self.save()
+                return 2
+            else:
+                print("{} update values".format(self))
+                self.chain = req["chain"]["current"]
 
         self.state = 3
         self.save()
@@ -857,3 +879,37 @@ class AttackChain(models.Model):
 
     def __str__(self):
         return "Attack [{}]".format(self.tId)
+
+
+class Wall(models.Model):
+    tId = models.IntegerField(default=0)
+    tss = models.IntegerField(default=0)
+    tse = models.IntegerField(default=0)
+    attackers = models.TextField(default="{}", null=True, blank=True)
+    defenders = models.TextField(default="{}", null=True, blank=True)
+    attackerFactionId = models.IntegerField(default=0)
+    attackerFactionName = models.CharField(default="AttackFaction", max_length=32)
+    defenderFactionId = models.IntegerField(default=0)
+    defenderFactionName = models.CharField(default="DefendFaction", max_length=32)
+    territory = models.CharField(default="AAA", max_length=3)
+    result = models.CharField(default="Unset", max_length=10)
+    factions = models.ManyToManyField(Faction, blank=True)
+    # array of the two faction ID. Toggle wall for a faction adds/removes the ID to this array
+    breakdown = models.TextField(default="[]", null=True, blank=True)
+    # temporary bool only here to pass breakdown of the faction to template
+    breakSingleFaction = models.BooleanField(default=False)
+
+    def update(self, req):
+        self.tId = int(req.get('tId'))
+        self.tss = int(req.get('tss'))
+        self.tse = int(req.get('tse'))
+        self.attackers = req.get('attackers')
+        self.defenders = req.get('defenders')
+        self.attackerFactionId = int(req.get('attackerFactionId'))
+        self.attackerFactionName = req.get('attackerFactionName')
+        self.defenderFactionId = int(req.get('defenderFactionId'))
+        self.defenderFactionName = req.get('defenderFactionName')
+        self.territory = req.get('territory')
+        self.result = req.get('result', 0)
+
+        self.save()

@@ -40,6 +40,7 @@ def sectionMessage(request):
     if request.session.get('player'):
         section = request.get_full_path().split("/")[1]
         # HACK because faction is under /chain/
+        section = 'factionV2' if section == 'faction' else section
         section = 'faction' if section == 'chain' else section
         section_short = ""
         for k, v in SECTION_CHOICES:

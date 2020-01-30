@@ -32,7 +32,6 @@ class Command(BaseCommand):
         chain = Chain.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
         if chain is not None:
             state = chain.getAttacks()
-            state = 0
             type = "error" if state < 0 else "exit"
             print("{} {} code {}: {}".format(chain, type, state, CHAIN_ATTACKS_STATUS.get(state, "code {}".format(state))))
             if state in [0, 1, 2]:

@@ -435,6 +435,6 @@ span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 
 .valid { color: #0B8E14!important; font-weight: bold; } */
 
 
-td.buttons a {
+td.buttons i {
     margin-right: 10px;
 }
