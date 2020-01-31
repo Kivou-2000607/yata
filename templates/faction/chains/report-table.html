@@ -147,7 +147,6 @@ $(document).ready(function() {
 </script>
 
 
-{% if chain.tId %}
 <table class="center-medium tdshadow chain-summary">
     <thead>
         {% if chain.live %}
@@ -176,7 +175,7 @@ $(document).ready(function() {
             <tr>
                 <td><b>Hits:</b> {{chain.chain}}</td>
                 <td><b>Respect:</b> {{chain.respect|floatformat:0|intcomma}}</td>
-                <td><b>Respect / Attacks:</b> {{chain.respect|div:chain.attacks|mul:chain.current|div:chain.chain|floatformat:2}}</td>
+                <td><b>Respect / Attacks:</b> {{chain.respect|div:chain.attacks|floatformat:2}}</td>
                 <td><b>Hits / Attacks:</b> {{chain.current}} / {{chain.attacks}} &nbsp;&nbsp; ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
             </tr>
         {% endif %}
@@ -189,7 +188,6 @@ $(document).ready(function() {
 </table>
 
 <hr class="sep">
-{%endif%}
 
 {% if counts|length %}
 <table class="center-large">
