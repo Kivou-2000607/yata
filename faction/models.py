@@ -556,13 +556,37 @@ class Chain(models.Model):
             self.save()
             return -6
 
-        if len(apiAttacks) < 2 and not self.live:
-            print("{} no api entry for non live report (stop)".format(self))
-            self.computing = False
-            self.crontab = 0
-            self.state = 1
-            self.save()
-            return 1
+
+        if self.live:
+            # stopping criterions of standard chains
+            if req["chain"]["current"] < 10:
+                print("{} reached end of live chain (stop)".format(self))
+                self.computing = False
+                self.crontab = 0
+                self.state = 2
+                self.save()
+                return 2
+            else:
+                print("{} update values".format(self))
+                self.chain = req["chain"]["current"]
+
+        else:
+            # stopping criterions of standard chains
+            if self.current == self.chain:
+                print("{} Reached end of chain (stop)".format(self))
+                self.computing = False
+                self.crontab = 0
+                self.state = 2
+                self.save()
+                return 2
+
+            if len(apiAttacks) < 2:
+                print("{} no api entry for non live report (stop)".format(self))
+                self.computing = False
+                self.crontab = 0
+                self.state = 1
+                self.save()
+                return 1
 
         self.state = 3
         self.save()
