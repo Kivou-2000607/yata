@@ -53,13 +53,16 @@ $(function () {
     <table class="tablesorter center trshadow contract-summary">
         <thead>
             <tr><th colspan="3">Report summary</tr>
+            {% if report.wall %}
+                <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
+            {% endif %}
         </thead>
         <tbody>
             <tr>
                 <td><b>From: </b> {{report.start|ts2date}}</td>
                 <input id="attacks-report-id" type="hidden" data-val="{{report.pk}}" value="{{report.pk}}">
                 <td id="modify-date-end" style="cursor: pointer"><b>To: </b> {{report.end|ts2date}}</td>
-                <td>{% include "faction/attacks/status.html"%}</td>
+                <td><b>Report status:</b> {% include "faction/attacks/status.html"%}</td>
             </tr>
             <tr>
                 <td><b>Attacks: </b> {{report.attacks}}</td>

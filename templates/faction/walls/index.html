@@ -44,9 +44,9 @@ This file is part of yata.
     });
 </script>
 
-{% if walls|length %}
     <h2 class="title">{{faction.name}}'s walls</h2>
     <div class="module">
+        {% if walls|length %}
         <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">
             <thead>
                 <tr>
@@ -81,8 +81,10 @@ This file is part of yata.
             {% endfor %}
             </tbody>
         </table>
+        {% else %}
+            <p class="error">No wall recorded. Only AA members can add walls with the script below.</p>
+        {% endif %}
     </div>
-{% endif %}
 
 {% for fac, TotalPlayers in summary.items %}
 <div class="catch-me">

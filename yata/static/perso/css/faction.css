@@ -73,8 +73,8 @@ table.faction-jsummary td.c { width: 20%; text-align: center; } /* x2 */
 table.faction-jsummary td.d { width: 20%; text-align: center; }
 
 table.faction-walls td.a { width: 10%; text-align: left;} /* x1 */
-table.faction-walls td.b { width: 15%;  text-align: center;} /* x5 */
-table.faction-walls td.c { width: 5%; text-align: center;} /* x3 */
+table.faction-walls td.b { width: 11%;  text-align: center;} /* x5 */
+table.faction-walls td.c { width: 10%; text-align: center;} /* x3 */
 
 table.faction-walls-breakdown td.a { width: 30%; text-align: left; }
 table.faction-walls-breakdown td.b { width: 10%; text-align: center; }

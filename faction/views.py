@@ -844,6 +844,8 @@ def walls(request):
                     summary[dFac]['Total'][1] += v["Joins"]
                     summary[dFac]['Total'][2] += v["Clears"]
 
+            for wall in walls:
+                wall.report = wall.getReport(faction)
             context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             return render(request, page, context)
@@ -873,9 +875,11 @@ def manageWall(request):
                     return render(request, 'yata/error.html', {'inlineError': 'Wall {} not found in the database.'.format(wallId)})
 
                 elif request.POST.get("type") == "delete":
+                    wall.attacksreport_set.filter(faction=faction).delete()
                     wall.factions.remove(faction)
                     if not len(wall.factions.all()):
                         wall.delete()
+                    return render(request, 'faction/walls/buttons.html')
 
                 elif request.POST.get("type") == "toggle":
 
@@ -893,6 +897,7 @@ def manageWall(request):
                     wall.breakdown = json.dumps(breakdown)
 
                 wall.save()
+                wall.report = wall.getReport(faction)
 
                 context = {"player": player, "wall": wall}
                 return render(request, 'faction/walls/buttons.html', context)
@@ -1063,7 +1068,21 @@ def attacksReports(request):
 
             # create contract
             message = False
-            if request.POST.get("type") == "new":
+            wallId = request.POST.get("wallId", 0)
+            if wallId:
+                wall = Wall.objects.filter(tId=wallId).first()
+                if wall is None:
+                    message = ["errorMessageSub", "Could not import Wall [{}]".format(wallId)]
+                elif len(faction.attacksreport_set.filter(start=wall.tss).filter(end=wall.tse)):
+                    message = ["errorMessageSub", "Wall [{}] already exists".format(wallId)]
+                else:
+                    report = faction.attacksreport_set.create(start=wall.tss, end=wall.tse, computing=True)
+                    report.wall.add(wall)
+                    c = report.assignCrontab()
+                    report.save()
+                    message = ["validMessageSub", "New wall created.<br>Start: {}<br>Ends: {}".format(timestampToDate(wall.tss), timestampToDate(wall.tse))]
+
+            elif request.POST.get("type") == "new":
                 try:
                     live = int(request.POST.get("live", 0))
                     start = int(request.POST.get("start", 0))

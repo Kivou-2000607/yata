@@ -915,6 +915,10 @@ class Wall(models.Model):
     # temporary bool only here to pass breakdown of the faction to template
     breakSingleFaction = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "Wall [{}]".format(self.tId)
+
+
     def update(self, req):
         self.tId = int(req.get('tId'))
         self.tss = int(req.get('tss'))
@@ -929,6 +933,15 @@ class Wall(models.Model):
         self.result = req.get('result', 0)
 
         self.save()
+
+    def getReport(self, faction):
+        # WARNING a wall does not belong to a single faction
+        # get potential report
+        report = self.attacksreport_set.first()
+        if report is None:
+            return False
+        else:
+            return report if faction in [f for f in self.factions.all()] else False
 
 
 # Attacks report
@@ -951,8 +964,11 @@ class AttacksReport(models.Model):
     defends = models.IntegerField(default=0)
     attacks = models.IntegerField(default=0)
 
+    # link to wall
+    wall = models.ManyToManyField(Wall, blank=True)
+
     def __str__(self):
-        return "{} attacks report [{}]".format(self.faction, self.pk)
+        return "{} report [{}]".format(self.faction, self.pk)
 
     def progress(self):
         end = self.end if self.end else tsnow()
