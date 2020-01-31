@@ -509,6 +509,11 @@ class Chain(models.Model):
             self.save()
             return -4
 
+        if self.live:
+            print("{} update values".format(self))
+            self.chain = req["chain"]["current"]
+
+
         apiAttacks = req["attacks"]
 
         # in case empty payload
@@ -523,7 +528,6 @@ class Chain(models.Model):
         print("{} {} attacks from the API".format(self, len(apiAttacks)))
 
         newEntry = 0
-        current = 0
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
 
@@ -541,10 +545,9 @@ class Chain(models.Model):
                 self.attackchain_set.create(tId=int(k), **v)
                 newEntry += 1
                 tsl = max(tsl, ts)
-                current = max(current, v["chain"])
+                self.current = max(self.current, v["chain"])
                 # print("{} attack [{}] current {}".format(self, k, current))
 
-        self.current = current
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -566,9 +569,6 @@ class Chain(models.Model):
                 self.state = 2
                 self.save()
                 return 2
-            else:
-                print("{} update values".format(self))
-                self.chain = req["chain"]["current"]
 
         else:
             # stopping criterions of standard chains
