@@ -748,7 +748,7 @@ class Chain(models.Model):
 
         # potentially add this to chain to compare with API
         if self.live:
-            self.chain = nWRA[0]  # update for live chains
+            # self.chain = nWRA[0]  # update for live chains
             self.respect = nWRA[1]  # update for live chains
         self.attacks = nWRA[2]
         self.save()
