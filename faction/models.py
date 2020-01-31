@@ -513,7 +513,6 @@ class Chain(models.Model):
             print("{} update values".format(self))
             self.chain = req["chain"]["current"]
 
-
         apiAttacks = req["attacks"]
 
         # in case empty payload
@@ -551,14 +550,8 @@ class Chain(models.Model):
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
-        print("{} progress {} / {} ({})%".format(self, current, self.chain, self.progress()))
-
-        if not newEntry and len(apiAttacks) > 1:
-            print("{} no new entry with cache = {} (continue)".format(self, cache))
-            self.state = -6
-            self.save()
-            return -6
-
+        print("{} new entries {}".format(self, newEntry))
+        print("{} progress {} / {} ({})%".format(self, self.current, self.chain, self.progress()))
 
         if self.live:
             # stopping criterions of standard chains
@@ -571,7 +564,12 @@ class Chain(models.Model):
                 return 2
 
         else:
-            # stopping criterions of standard chains
+            if not newEntry and len(apiAttacks) > 1 and self:
+                print("{} no new entry from payload (continue)".format(self))
+                self.state = -6
+                self.save()
+                return -6
+
             if self.current == self.chain:
                 print("{} Reached end of chain (stop)".format(self))
                 self.computing = False
