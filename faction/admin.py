@@ -43,9 +43,9 @@ class WallAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__']
+    list_display = ['__str__', 'attackerFactionName', 'defenderFactionName']
     # list_filter = ('faction__name', 'live', 'report', 'computing', 'crontab', 'state')
-    search_fields = ('faction__name', 'tId')
+    search_fields = ('attackerFactionName', 'defenderFactionName', 'tId')
     # exclude = ['graphs']
     # inlines = [CountInline]
 

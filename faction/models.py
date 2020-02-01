@@ -72,6 +72,7 @@ class Faction(models.Model):
     # chain and attacks
     hitsThreshold = models.IntegerField(default=100)
     lastAttacksPulled = models.IntegerField(default=0)
+    chainsUpda = models.IntegerField(default=0)
     # lastAPICall = models.IntegerField(default=0)
     # nAPICall = models.IntegerField(default=2)
     # createLive = models.BooleanField(default=False)

@@ -373,12 +373,17 @@ def chains(request):
 
             # update chains if AA
             error = False
-            if player.factionAA:
+            message = False
+            if player.factionAA and (tsnow() - faction.chainsUpda) > 15 * 60:
                 key = player.getKey()
                 req = apiCall('faction', faction.tId, 'chain,chains', key=key)
+                faction.chainsUpda = tsnow()
+                faction.save()
                 if 'apiError' in req:
                     error = req
                     req = dict({})
+                else:
+                    message = "Chain list updated"
 
                 chains = faction.chain_set.all()
                 for k, v in req["chains"].items():
@@ -406,15 +411,22 @@ def chains(request):
 
                 elif req["chain"]["current"] > 9:
                     if live is None:
+                        message = "New live report created"
                         live = faction.chain_set.create(tId=0, live=True, chain=req["chain"]["current"], start=req["chain"]["start"], end=tsnow())
                     else:
-                        live.chain = req["chain"]["current"]
-                        live.end = tsnow()
-                        live.save()
+                        if live.start != int(req["chain"]["start"]):
+                            message = "Old live report replaced by a new one"
+                            live.delete()
+                            live = faction.chain_set.create(tId=0, live=True, chain=req["chain"]["current"], start=req["chain"]["start"], end=tsnow())
+                        else:
+                            # message = "Update live report"
+                            live.chain = req["chain"]["current"]
+                            live.end = tsnow()
+                            live.save()
                 else:
 
                     if live is not None:
-                        print("delete live")
+                        message = "Live report deleted"
                         live.delete()
 
             # get chains
@@ -426,6 +438,10 @@ def chains(request):
             if error:
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
                 context.update({selectError: error["apiError"] + " List of chains not updated."})
+            if message:
+                selectMessage = 'validMessageSub' if request.method == 'POST' else 'validMessage'
+                context.update({selectMessage: message})
+
             return render(request, page, context)
 
         else:

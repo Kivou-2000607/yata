@@ -49,7 +49,7 @@ This file is part of yata.
     });
 </script>
 
-<h2 class="title">{{faction.name}}'s chains<form class="flush-right form-inline"><a id="faction-chain-combined" href=""><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a></form></h2>
+<h2 class="title">{{faction.name}}'s chains <form class="flush-right form-inline"><a id="faction-chain-combined" href=""><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a></form></h2>
 <div class="module">
     {% if chains|length %}
     <table id="faction-chains" class="tablesorter center-large trshadow faction-chains">
@@ -92,6 +92,7 @@ This file is part of yata.
         {% endfor %}
         </tbody>
     </table>
+    <p class="update-info">Last update of the list: {{faction.chainsUpda|ts2date}}</p>
     {% else%}
         <p class="error">No list recorded. Ask a AA member of your faction.</p>
     {% endif %}

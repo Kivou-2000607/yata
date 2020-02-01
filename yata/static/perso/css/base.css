@@ -438,3 +438,10 @@ span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 
 td.buttons i {
     margin-right: 10px;
 }
+
+p.update-info {
+    margin-top: 10px!important;
+    text-align: right;
+    color: #888;
+    font-style: italic;
+}
