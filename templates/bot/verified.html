@@ -17,14 +17,12 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<form>{% csrf_token %}
-    <p>Here is your status:
-        {% if player.dId%}
-            <span class="valid">Your discord account <tt>{{player.dId}}</tt> is officially verified by Torn.</span>
-        {% else %}
-            <span class="error">Your discord account is not officialy verified by Torn.&nbsp;&nbsp;<i class="fas fa-question-circle" title="Gog get your discord account verified on the official Torn discord."></i></span>
-        {% endif %}
-        <a id="discord-update-id" href="{% url 'bot:updateId' %}">&nbsp;&nbsp;<i class="fas fa-sync-alt" title="Update discord ID"></i></a>
-        {% if error %}&nbsp;&nbsp;<span class="error">{{error.apiErrorSub}}</span>{% endif %}
-    </p>
-</form>
+{% load app_filters %}
+
+{% if player.tId > 0 %}
+<h2 class="title"><i class="fas fa-check"></i>&nbsp;&nbsp;Official Torn discord verification</h2>
+<div class="module">
+    <p>Most of the features will require that your account is official verified on the  <a href="https://www.torn.com/discord" target="_blank">official Torn discord server</a>. This is the only safe way to link your Torn and Discord account.</p>
+    <div id="discord-id">{% include "bot/discord-id.html" %}</div>
+</div>
+{% endif %}

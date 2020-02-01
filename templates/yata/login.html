@@ -168,6 +168,9 @@ This file is part of yata.
             {% elif stockcat %}
                 <hr class="sep">
                 {% include "stock/categories.html" %}
+            {% elif botcat %}
+                <hr class="sep">
+                {% include "bot/categories.html" %}
             {% endif %}
 
         </div>

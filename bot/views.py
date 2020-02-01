@@ -34,10 +34,8 @@ import json
 def index(request):
     try:
         if request.session.get('player'):
-            print('[view.bot.index] get player id from session')
             tId = request.session["player"].get("tId")
         else:
-            print('[view.bot.index] anon session')
             tId = -1
 
         player = Player.objects.filter(tId=tId).first()
@@ -47,7 +45,7 @@ def index(request):
         error = player.update_discord_id()
 
         # get guilds
-        guilds = [[guild.guildName, guild.guildId] for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all()]
+        guilds = [guild for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("pk")]
 
         # this is just for me...
         apps = False
@@ -57,8 +55,60 @@ def index(request):
             for app in apps:
                 app["variables"] = json.loads(app["variables"])
 
-        context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error}
+        context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
+
+    except Exception:
+        return returnError()
+
+
+def documentation(request):
+    try:
+        if request.session.get('player'):
+            tId = request.session["player"].get("tId")
+        else:
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+
+        context = {"player": player, "botcat": True, "view": {"doc": True}}
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        return render(request, page, context)
+
+    except Exception:
+        return returnError()
+
+
+def welcome(request):
+    try:
+        if request.session.get('player'):
+            tId = request.session["player"].get("tId")
+        else:
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+        # get guilds
+        guilds = [guild for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("pk")]
+
+        context = {"player": player, "botcat": True, "guilds": guilds, "view": {"index": True}}
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        return render(request, page, context)
+
+    except Exception:
+        return returnError()
+
+def host(request):
+    try:
+        if request.session.get('player'):
+            tId = request.session["player"].get("tId")
+        else:
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+
+        context = {"player": player, "botcat": True, "view": {"host": True}}
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        return render(request, page, context)
 
     except Exception:
         return returnError()

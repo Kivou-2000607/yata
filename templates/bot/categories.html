@@ -17,14 +17,22 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<form>{% csrf_token %}
-    <p>Here is your status:
-        {% if player.dId%}
-            <span class="valid">Your discord account <tt>{{player.dId}}</tt> is officially verified by Torn.</span>
-        {% else %}
-            <span class="error">Your discord account is not officialy verified by Torn.&nbsp;&nbsp;<i class="fas fa-question-circle" title="Gog get your discord account verified on the official Torn discord."></i></span>
-        {% endif %}
-        <a id="discord-update-id" href="{% url 'bot:updateId' %}">&nbsp;&nbsp;<i class="fas fa-sync-alt" title="Update discord ID"></i></a>
-        {% if error %}&nbsp;&nbsp;<span class="error">{{error.apiErrorSub}}</span>{% endif %}
-    </p>
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow bot-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'bot:welcome' %}"><i class="fas fa-robot"></i>&nbsp;&nbsp;YATA bot</a>
+        </td>
+        <td>
+            <a href="{% url 'bot:documentation' %}"><i class="fas fa-book-reader"></i>&nbsp;&nbsp;Documentation</a>
+        </td>
+        <td>
+            <a href="{% url 'bot:host' %}"><i class="fas fa-laptop"></i>&nbsp;&nbsp;Host the bot</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </form>

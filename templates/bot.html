@@ -11,6 +11,17 @@
 
 {% block jquery %}
 <script>
+    // nev link 
+    $(document).on('click', 'table.bot-categories td', function(e){
+        e.preventDefault();
+        var l = $(this).children("a").attr("href").split("/")[2];
+        $( "#content-update" ).load( "/bot/"+l+"/", {
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        });
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading prices')
+        $("#content-update h2").addClass("grey");
+        $("div.error").hide();
+    });
 
     // update discord id
     $(document).on('click', '#discord-update-id', function(e){

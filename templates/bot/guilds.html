@@ -17,21 +17,26 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load app_filters %}
 
-<h2 class="title">Servers hosting the official YATA bot</h2>
+<h2 class="title"><i class="fas fa-server"></i>&nbsp;&nbsp;Servers hosting the official YATA bot</h2>
 <div class="module">
-    <table class="center">
+    <table class="center trshadow bot-guilds">
         <thead>
             <tr>
+                <th></th>
                 <th>Server name</th>
+                <th>Contact</th>
                 <th>Server id</th>
             </tr>
         </thead>
         <tbody>
-            {% for name, id in guilds %}
+            {% for g in guilds %}
             <tr>
-                <td>{{name}}</td>
-                <td><tt>{{id}}</tt></td>
+                <td class="a">#{{g.pk}}</td>
+                <td class="b">{{g.guildName}}</td>
+                <td class="c">{{g.guildContactName|playerURL:g.guildContactId|safe}}</td>
+                <td class="d"><tt>{{g.guildId}}</tt></td>
             </tr>
             {% endfor %}
         </tbody>
