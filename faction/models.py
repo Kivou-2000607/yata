@@ -205,7 +205,7 @@ class Faction(models.Model):
             # member exists but from another faction
             elif Member.objects.filter(tId=m).first() is not None:
                 memberTmp = Member.objects.filter(tId=m).first()
-                memberTmp.faction = faction
+                memberTmp.faction = self
                 memberTmp.name = membersAPI[m]['name']
                 memberTmp.lastAction = membersAPI[m]['last_action']['relative']
                 memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
