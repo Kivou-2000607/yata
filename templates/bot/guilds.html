@@ -33,7 +33,7 @@ This file is part of yata.
         <tbody>
             {% for g in guilds %}
             <tr>
-                <td class="a">#{{g.pk}}</td>
+                <td class="a">#{{forloop.counter}}</td>
                 <td class="b">{{g.guildName}}</td>
                 <td class="c">{{g.guildContactName|playerURL:g.guildContactId|safe}}</td>
                 <td class="d"><tt>{{g.guildId}}</tt></td>

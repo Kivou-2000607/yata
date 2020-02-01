@@ -19,6 +19,7 @@ This file is part of yata.
 
 {% load app_filters %}
 
+{% if apps %}
 <h2 class="title">Guilds</h2>
 <div class="module">
 {% for app in apps %}
@@ -46,3 +47,4 @@ This file is part of yata.
     </div>
 {% endfor %}
 </div>
+{% endif %}
