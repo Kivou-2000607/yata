@@ -26,7 +26,6 @@ class ChainAdmin(admin.ModelAdmin):
     list_filter = ('computing', 'report', 'live', 'crontab', 'state')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
-    # inlines = [CountInline]
 
 
 class AttacksReportAdmin(admin.ModelAdmin):
@@ -44,13 +43,21 @@ class WallAdmin(admin.ModelAdmin):
         css = {'all': ('perso/css/admin.css',)}
 
     list_display = ['__str__', 'attackerFactionName', 'defenderFactionName']
-    # list_filter = ('faction__name', 'live', 'report', 'computing', 'crontab', 'state')
     search_fields = ('attackerFactionName', 'defenderFactionName', 'tId')
-    # exclude = ['graphs']
-    # inlines = [CountInline]
 
 
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'news', 'timestamp']
+    list_filter = ('type', )
+    search_fields = ('faction__name', 'type')
 
+
+class LogAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'timestampday', 'timestamp']
+    search_fields = ('faction__name', 'type')
+
+admin.site.register(Log, LogAdmin)
+admin.site.register(News, NewsAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Wall, WallAdmin)
 admin.site.register(Chain, ChainAdmin)

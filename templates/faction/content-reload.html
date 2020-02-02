@@ -78,7 +78,13 @@ This file is part of yata.
     {% include "faction/attacks/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
+
 {% if view.attacksReport %}
     {% include "faction/attacks/report.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
+{% if view.armory %}
+    {% include "faction/armory/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}

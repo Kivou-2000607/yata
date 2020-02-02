@@ -94,6 +94,8 @@ class Faction(models.Model):
     memberStatusUpda = models.IntegerField(default=0)
 
     # armory / networth: TODO
+    armoryUpda = models.IntegerField(default=0)
+    armoryOld = models.IntegerField(default=8035200)
     # armoryRecord = models.BooleanField(default=False)
     # armoryString = models.TextField(default="{}")
     # fundsString = models.TextField(default="{}")
@@ -274,6 +276,77 @@ class Faction(models.Model):
         #     print("skip update members status", delta)
 
         return json.loads(self.memberStatus)
+
+    def updateLog(self):
+
+        # get key
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return False, "No keys to update the armory."
+
+        # api call
+        selection = 'armorynewsfull,fundsnewsfull,stats,donations,currency,basic,timestamp'
+        factionInfo = apiCall('faction', self.tId, selection, key.value, verbose=False)
+        if 'apiError' in factionInfo:
+            msg = "Update news ({})".format(factionInfo["apiErrorString"])
+            if factionInfo['apiErrorCode'] in [1, 2, 7, 10]:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+            else:
+                key.reason = msg
+                key.lastPulled = factionInfo.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            return False, "API error {}, armory not updated.".format(factionInfo["apiErrorString"])
+
+        now = factionInfo.get("timestamp", 0)
+
+        # update key
+        key.reason = "Update armory"
+        key.lastPulled = now
+        key.save()
+
+        # create/delete news
+        # self.armoryOld = 16070400  # 6 month
+        # self.armoryOld = 8035200  # 3 month
+        old = now - self.armoryOld
+        news = self.news_set.all()
+        news.filter(timestamp__lt=old).delete()
+        for type in ["armorynews", "fundsnews"]:
+            for k, v in factionInfo.get(type, dict({})).items():
+                newstype = news.filter(type=type)
+                if newstype.filter(tId=k).first() is None and v["timestamp"] > old:
+                    v["news"] = cleanhtml(v["news"])
+                    n = self.news_set.create(tId=k, type=type, **v)
+                    print("Create {}".format(n))
+
+        # remove old logs
+        self.log_set.filter(timestamp__lt=old).delete()
+
+        # add daily log
+        day = now - now % (3600 * 24)
+        logdict = factionInfo.get("stats", dict({}))
+        donationsmoney = 0
+        donationspoints = 0
+        for k, v in factionInfo.get("donations", dict({})).items():
+            donationspoints += v["points_balance"]
+            donationsmoney += v["money_balance"]
+            logdict["donationsmoney"] = donationsmoney
+            logdict["donationspoints"] = donationspoints
+            logdict["respect"] = factionInfo.get("respect", 0)
+            logdict["money"] = factionInfo.get("money", 0)
+            logdict["points"] = factionInfo.get("points", 0)
+        logdict["timestamp"] = now
+
+        log = self.log_set.update_or_create(timestampday=day, defaults=logdict)
+
+        # update faction
+        self.armoryUpda = now
+        self.save()
+        return True, "Armory updated"
 
 
 class Member(models.Model):
@@ -919,7 +992,6 @@ class Wall(models.Model):
     def __str__(self):
         return "Wall [{}]".format(self.tId)
 
-
     def update(self, req):
         self.tId = int(req.get('tId'))
         self.tss = int(req.get('tss'))
@@ -1176,3 +1248,75 @@ class AttackReport(models.Model):
     groupAttack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chainBonus = models.IntegerField(default=0)
+
+
+class News(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    type = models.CharField(default="typenews", max_length=16)
+    tId = models.IntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+    news = models.CharField(default="news", max_length=128)
+
+    def __str__(self):
+        return "{} {} [{}]".format(self.faction, self.type, self.tId)
+
+
+class Log(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    timestamp = models.IntegerField(default=0)
+    timestampday = models.IntegerField(default=0)
+
+    # armory
+    money = models.IntegerField(default=0)
+    donationsmoney = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+    donationspoints = models.IntegerField(default=0)
+
+    # respect
+    respect = models.IntegerField(default=0)
+
+    # stats
+    medicalitemsused = models.IntegerField(default=0)
+    criminaloffences = models.IntegerField(default=0)
+    organisedcrimerespect = models.IntegerField(default=0)
+    organisedcrimemoney = models.IntegerField(default=0)
+    organisedcrimesuccess = models.IntegerField(default=0)
+    organisedcrimefail = models.IntegerField(default=0)
+    attackswon = models.IntegerField(default=0)
+    attackslost = models.IntegerField(default=0)
+    attacksleave = models.IntegerField(default=0)
+    attacksmug = models.IntegerField(default=0)
+    attackshosp = models.IntegerField(default=0)
+    bestchain = models.IntegerField(default=0)
+    busts = models.IntegerField(default=0)
+    revives = models.IntegerField(default=0)
+    jails = models.IntegerField(default=0)
+    hosps = models.IntegerField(default=0)
+    medicalitemrecovery = models.IntegerField(default=0)
+    medicalcooldownused = models.IntegerField(default=0)
+    gymtrains = models.IntegerField(default=0)
+    gymstrength = models.IntegerField(default=0)
+    gymspeed = models.IntegerField(default=0)
+    gymdefense = models.IntegerField(default=0)
+    gymdexterity = models.IntegerField(default=0)
+    candyused = models.IntegerField(default=0)
+    alcoholused = models.IntegerField(default=0)
+    energydrinkused = models.IntegerField(default=0)
+    drugsused = models.IntegerField(default=0)
+    drugoverdoses = models.IntegerField(default=0)
+    rehabs = models.IntegerField(default=0)
+    caymaninterest = models.IntegerField(default=0)
+    traveltimes = models.IntegerField(default=0)
+    traveltime = models.IntegerField(default=0)
+    hunting = models.IntegerField(default=0)
+    attacksdamagehits = models.IntegerField(default=0)
+    attacksdamage = models.IntegerField(default=0)
+    hosptimegiven = models.IntegerField(default=0)
+    hosptimereceived = models.IntegerField(default=0)
+    attacksdamaging = models.IntegerField(default=0)
+    attacksrunaway = models.IntegerField(default=0)
+    highestterritories = models.IntegerField(default=0)
+    territoryrespect = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{} Log [{}]".format(self.faction, self.timestampday)

@@ -34,4 +34,7 @@ urlpatterns = [
     re_path(r'^attacks/manage/$', views.manageAttacks, name='manageAttacks'),
     re_path(r'^attacks/(?P<reportId>\w+)$', views.attacksReport, name='attacks'),
 
+    # SECTION: armory
+    re_path(r'^armory/$', views.armory, name='armory'),
+
     ]

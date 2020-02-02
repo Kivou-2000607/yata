@@ -1306,3 +1306,185 @@ def attacksReport(request, reportId):
 
     except Exception:
         return returnError()
+
+
+# SECTION: armory
+def armory(request):
+    from bazaar.models import BazaarData
+
+    try:
+        ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found in the database."}
+                return render(request, page, context)
+
+            # update and get news
+            if tsnow() - faction.armoryUpda > 60 * 15:
+                state, message = faction.updateLog()
+            else:
+                message = False
+                state = False
+            news = faction.news_set.order_by("-timestamp").all()
+
+            # get start/end ts
+            start = news.last().timestamp
+            end = news.first().timestamp
+
+            # filter start/end if asked
+            tss = int(request.POST.get("start", 0))
+            if tss:
+                print("filter tss {}".format(timestampToDate(tss)))
+                news = news.filter(timestamp__gt=tss - 1)
+            tse = int(request.POST.get("end", 0))
+            if tse:
+                print("filter tse {}".format(timestampToDate(tse)))
+                news = news.filter(timestamp__lt=tse + 1)
+
+            # get filtered start/end
+            fstart = news.last().timestamp
+            fend = news.first().timestamp
+
+            # record all timestamps
+            timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
+
+            armory = dict({})
+            timestamps["nObjects"] = 0
+            for new in news.filter(type="armorynews"):
+                k = new.tId
+                ns = new.news.split(" ")
+                btype = "?"
+                if 'used' in ns:
+                    member = ns[0]
+                    if ns[6] in ["points"]:
+                        item = ns[6].title()
+                        n = 25
+                    else:
+                        splt = " ".join(ns[6:-1]).split(":")
+                        if len(splt) > 1:
+                            btype = splt[-1].strip()
+                        item = splt[0].strip()
+                        # item = " ".join(ns[6:-1]).strip()
+                        n = 1
+
+                    timestamps["nObjects"] += n
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][0] += n
+                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
+                            if btype not in btypes:
+                                btypes.append(btype)
+                                armory[item][member][3] = ", ".join(btypes)
+                        else:
+                            armory[item][member] = [n, 0, 0, btype]
+                    else:
+                        # new item and new member [taken, given, filled]
+                        # print(btype)
+                        armory[item] = {member: [n, 0, 0, btype]}
+
+                elif 'deposited' in ns:
+                    member = ns[0]
+                    # print(ns)
+                    n = int(ns[2].replace(",", "").replace("$", ""))
+                    timestamps["nObjects"] += n
+                    if ns[-1] in ["points"]:
+                        item = ns[-1].title()
+                    else:
+                        splt = " ".join(ns[4:]).split(":")
+                        if len(splt) > 1:
+                            btype = splt[-1].strip()
+                        item = splt[0].strip()
+                        # item = " ".join(ns[4:]).strip()
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][1] += n
+                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
+                            if btype not in btypes:
+                                btypes.append(btype)
+                                armory[item][member][3] = ", ".join(btypes)
+                        else:
+                            armory[item][member] = [0, n, 0, btype]
+                    else:
+                        # new item and new member [taken, given]
+                        armory[item] = {member: [0, n, 0, btype]}
+
+                # elif 'gave' in ns:
+                #     print(ns)
+
+                elif 'filled' in ns:
+                    # print(ns)
+                    member = ns[0]
+                    item = "Blood Bag"
+                    timestamps["nObjects"] += 1
+                    if item in armory:
+                        if member in armory[item]:
+                            armory[item][member][2] += 1
+                        else:
+                            armory[item][member] = [0, 0, 1, btype]
+                    else:
+                        # new item and new member [taken, given, filled]
+                        armory[item] = {member: [0, 0, 1, btype]}
+
+            for new in news.filter(type="fundsnews"):
+                k = new.tId
+                ns = new.news.split(" ")
+                item = "Funds"
+                member = ns[0]
+                if item not in armory:
+                    # was given, deposited, dummy, dummy
+                    armory[item] = {member: [0, 0, 0, ""]}
+                if member not in armory[item]:
+                    armory[item][member] = [0, 0, 0, ""]
+
+                if ns[1] == "was":
+                    armory[item][member][0] += int(ns[3].replace("$", "").replace(",", "").replace(".", ""))
+                elif ns[1] == "deposited":
+                    armory[item][member][1] += int(ns[2].replace("$", "").replace(",", "").replace(".", ""))
+
+            armoryType = {t: dict({}) for t in ITEM_TYPE}
+            armoryType["Points"] = dict({})
+            armoryType["Funds"] = dict({})
+
+            for k, v in armory.items():
+                for t, i in ITEM_TYPE.items():
+                    # if k.split(" : ")[0] in i:
+                    if k in i:
+                        armoryType[t][k] = v
+                        break
+                if k in ["Points"]:
+                    armoryType["Points"][k] = v
+
+                if k in ["Funds"]:
+                    armoryType["Funds"][k] = v
+
+            logs = dict({})
+            if player.factionAA:
+                r = 0
+                m = 0
+                for i, log in enumerate(faction.log_set.order_by("timestamp").all()):
+                    if i:
+                        logs[log.timestamp] = [log.money, log.donationsmoney, log.money - log.donationsmoney, log.respect, (log.money - log.donationsmoney) - m, log.respect - r]
+                    r = log.respect
+                    m = log.money - log.donationsmoney
+
+            logs = sorted(logs.items(), key=lambda x: x[0], reverse=True)
+
+            context = {'player': player, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            if message:
+                err = "validMessage" if state else "errorMessage"
+                sub = "Sub" if request.method == 'POST' else ""
+                context[err + sub] = message
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()

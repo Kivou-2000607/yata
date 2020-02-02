@@ -21,7 +21,8 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div class="module rounded">
+<h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
+<div class="module">
     <h3>Info</h3>
     <p><b>Faction</b> <i>{{faction}}</i><br>
        <b>AA</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br>

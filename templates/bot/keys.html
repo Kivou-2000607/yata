@@ -21,8 +21,13 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-key"></i>&nbsp;&nbsp;API keys management</h2>
 <div class="module">
-    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem a set of master keys are given to the bot on setup. These keys are only use to do this verification procedure.
-    Thus, with this system, you have to be registered on YATA to use all the commands of the bot. When possible master keys are used as a fallback method or command options are. Check the documentation for more details.</p>
+    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, a set of master keys are given to the bot on setup. These keys are only used for this verification procedure.
+    Thus, with this system, you have:</p>
+    <ul>
+        <li>to be verified on the official discord server</li>
+        <li>to be registered on the YATA website</li>
+    </ul>
+    <p>to use all the commands of the bot. If you don't, when possible master keys are used as a fallback method. Check the documentation for more details.</p>
 
     <p>For some commands, the YATA bot pulls private informations. And some of these commands can be triggered by a tier, displaying private data on potentially public channels (see below for details). Don't worry, it will only do so only if you give it the permission.
     However, even though discord admins don't have access to your key directly and are only able to use the bot commands, they can play with the roles and the permissions as they wish.

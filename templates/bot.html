@@ -11,7 +11,7 @@
 
 {% block jquery %}
 <script>
-    // nev link 
+    // nev link
     $(document).on('click', 'table.bot-categories td', function(e){
         e.preventDefault();
         var l = $(this).children("a").attr("href").split("/")[2];
@@ -63,7 +63,6 @@
         e.preventDefault();
         // get h2 and div
         var h = $(this);
-        console.log(h);
         var d = $(this).next("div");
         var i = h.find("i[class^='fas fa-caret']");
         d.slideToggle("fast", function(){
