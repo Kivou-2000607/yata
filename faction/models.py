@@ -1267,13 +1267,13 @@ class Log(models.Model):
     timestampday = models.IntegerField(default=0)
 
     # armory
-    money = models.IntegerField(default=0)
-    donationsmoney = models.IntegerField(default=0)
+    money = models.BigIntegerField(default=0)
+    donationsmoney = models.BigIntegerField(default=0)
     points = models.IntegerField(default=0)
     donationspoints = models.IntegerField(default=0)
 
     # respect
-    respect = models.IntegerField(default=0)
+    respect = models.BigIntegerField(default=0)
 
     # stats
     medicalitemsused = models.IntegerField(default=0)
