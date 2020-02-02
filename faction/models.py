@@ -1255,7 +1255,7 @@ class News(models.Model):
     type = models.CharField(default="typenews", max_length=16)
     tId = models.IntegerField(default=0)
     timestamp = models.IntegerField(default=0)
-    news = models.CharField(default="news", max_length=256)
+    news = models.CharField(default="news", max_length=512)
 
     def __str__(self):
         return "{} {} [{}]".format(self.faction, self.type, self.tId)
