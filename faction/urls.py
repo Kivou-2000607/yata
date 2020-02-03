@@ -41,4 +41,9 @@ urlpatterns = [
     re_path(r'^bigbrother/$', views.bigBrother, name='bigBrother'),
     re_path(r'^bigbrother/remove/$', views.removeContributors, name='removeContributors'),
 
+    # SECTION: territories
+    re_path(r'^territories/$', views.territories, name='territories'),
+    re_path(r'^territories/fullmap/$', views.territoriesFullMap, name='territoriesFullMap'),
+
+
     ]

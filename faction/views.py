@@ -1629,3 +1629,146 @@ def removeContributors(request):
 
     except Exception:
         return returnError()
+
+
+# SECTION: territories
+def territories(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            # get faction territories
+            territories = Territory.objects.filter(faction=factionId)
+            n = len(territories)
+            x0 = 0.0
+            y0 = 0.0
+            summary = {"n": n, "daily_respect": 0.0}
+            if n:
+                for territory in territories:
+                    r = json.loads(territory.racket)
+                    if len(r):
+                        territory.racket = "{name}: {reward}".format(**r)
+                    else:
+                        territory.racket = ""
+                    x0 += territory.coordinate_x
+                    y0 += territory.coordinate_y
+                    territory.factionName = faction.name
+                    summary["daily_respect"] += territory.daily_respect
+                    summary["factionName"] = territory.factionName
+                    summary["faction"] = territory.faction
+
+                x0 /= n
+                y0 /= n
+                summary["coordinate_x"] = x0
+                summary["coordinate_y"] = y0
+
+            allTerritories = Territory.objects.all()
+
+            rackets = Racket.objects.all()
+            for racket in rackets:
+                t = allTerritories.filter(tId=racket.tId).first()
+                x = t.coordinate_x
+                y = t.coordinate_y
+                r = t.daily_respect
+                racket.coordinate_x = x
+                racket.coordinate_y = y
+                racket.daily_respect = r
+                racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
+                if racket.faction:
+                    tmp = Faction.objects.filter(tId=racket.faction).first()
+                    if tmp is not None:
+                        racket.factionName = tmp.name
+                    else:
+                        racket.factionName = "Faction"
+                else:
+                    racket.factionName = "-"
+
+            territoryUpda = FactionData.objects.first().territoryUpda
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'rackets': rackets, 'territoryUpda': territoryUpda, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def territoriesFullMap(request):
+    try:
+        if request.method == 'POST':
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            # get faction territories
+            territories = Territory.objects.filter(faction=factionId)
+            n = len(territories)
+            x0 = 2568.97
+            y0 = 2479.89
+            summary = {"n": n, "daily_respect": 0.0}
+            if n:
+                for territory in territories:
+                    r = json.loads(territory.racket)
+                    if len(r):
+                        territory.racket = "{name}: {reward}".format(**r)
+                    else:
+                        territory.racket = ""
+                    x0 += territory.coordinate_x
+                    y0 += territory.coordinate_y
+                    territory.factionName = faction.name
+                    summary["daily_respect"] += territory.daily_respect
+                    summary["factionName"] = territory.factionName
+                    summary["faction"] = territory.faction
+
+                x0 /= n
+                y0 /= n
+                summary["coordinate_x"] = x0
+                summary["coordinate_y"] = y0
+
+            allTerritories = Territory.objects.all()
+            for territory in allTerritories:
+                tmp = Faction.objects.filter(tId=territory.faction).first()
+                if tmp is not None:
+                    territory.factionName = tmp.name
+                else:
+                    territory.factionName = "Faction"
+
+            rackets = Racket.objects.all()
+            for racket in rackets:
+                t = allTerritories.filter(tId=racket.tId).first()
+                x = t.coordinate_x
+                y = t.coordinate_y
+                r = t.daily_respect
+                racket.coordinate_x = x
+                racket.coordinate_y = y
+                racket.daily_respect = r
+                racket.distance = ((x - x0)**2 + (y - y0)**2)**0.5
+                if racket.faction:
+                    tmp = Faction.objects.filter(tId=racket.faction).first()
+                    if tmp is not None:
+                        racket.factionName = tmp.name
+                    else:
+                        racket.factionName = "Faction"
+
+            context = {'faction': faction, 'rackets': rackets, 'territories': territories, 'summary': summary, 'allTerritories': allTerritories}
+            return render(request, 'faction/territories/fullmap.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()

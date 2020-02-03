@@ -102,10 +102,6 @@ class Faction(models.Model):
     hitsThreshold = models.IntegerField(default=100)
     lastAttacksPulled = models.IntegerField(default=0)
     chainsUpda = models.IntegerField(default=0)
-    # lastAPICall = models.IntegerField(default=0)
-    # nAPICall = models.IntegerField(default=2)
-    # createLive = models.BooleanField(default=False)
-    # createReport = models.BooleanField(default=False)
 
     # poster
     poster = models.BooleanField(default=False)
@@ -122,13 +118,9 @@ class Faction(models.Model):
     memberStatus = models.TextField(default="{}")  # dump all members status
     memberStatusUpda = models.IntegerField(default=0)
 
-    # armory / networth: TODO
+    # armory / networth
     armoryUpda = models.IntegerField(default=0)
     armoryOld = models.IntegerField(default=8035200)
-    # armoryRecord = models.BooleanField(default=False)
-    # armoryString = models.TextField(default="{}")
-    # fundsString = models.TextField(default="{}")
-    # networthString = models.TextField(default="{}")
 
     # discord
     # discordName = models.CharField(default="", max_length=64, null=True, blank=True)
@@ -1332,6 +1324,7 @@ class AttackReport(models.Model):
     chainBonus = models.IntegerField(default=0)
 
 
+# Armory
 class News(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     type = models.CharField(default="typenews", max_length=16)
@@ -1403,7 +1396,7 @@ class Log(models.Model):
     def __str__(self):
         return "{} Log [{}]".format(self.faction, self.timestampday)
 
-
+# Big brother
 class Contributors(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     timestamp = models.IntegerField(default=0)
@@ -1416,6 +1409,37 @@ class Contributors(models.Model):
         return format_html("{} {} contributors".format(self.faction, self.stat))
 
 
+# Territories
+class Territory(models.Model):
+    tId = models.CharField(default="XXX", max_length=3)
+    sector = models.IntegerField(default=0)
+    size = models.IntegerField(default=0)
+    density = models.IntegerField(default=0)
+    daily_respect = models.IntegerField(default=0)
+    coordinate_x = models.FloatField(default=0)
+    coordinate_y = models.FloatField(default=0)
+    faction = models.IntegerField(default=0)
+    racket = models.TextField(default="{}", null=True, blank=True)
+
+    def __str__(self):
+        return "Territory {} [{}]".format(self.tId, self.faction)
+
+
+class Racket(models.Model):
+    # territory = models.ForeignKey(Territory, on_delete=models.CASCADE)
+    tId = models.CharField(default="XXX", max_length=3)
+    name = models.CharField(default="Racket Name", max_length=200)
+    reward = models.CharField(default="Get nice things for free", max_length=200)
+    created = models.IntegerField(default=0)
+    changed = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    faction = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Racket {} [{}]".format(self.tId, self.faction)
+
+
+# Faction data
 class FactionData(models.Model):
     territoryUpda = models.IntegerField(default=0)
     crontabs = models.TextField(default="[1,2,3]")

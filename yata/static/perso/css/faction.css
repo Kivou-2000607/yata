@@ -138,3 +138,46 @@ select.faction-bb-stats-list {
   -webkit-appearance:none; /* Safari and Chrome */
   appearance:none;
 }
+
+table.faction-territory-summary td { width: 33%; border: 0; text-align: center; }
+table.faction-territory-list td.a { width: 10%; text-align: center;} /* x7 */
+table.faction-territory-list td.b { width: 30%;}
+table.faction-territory-list tr.racket       { background:#d9ead3; }
+table.faction-territory-list tr.racket:hover { background:#b6d7a8; }
+table.faction-racket-list td.a { width: 8%; text-align: center;} /* x3 */
+table.faction-racket-list td.b { width: 15%;} /* x3 */
+table.faction-racket-list td.c { width: 20%; text-align: center;} /* x2 */
+
+div.map-background,
+div.map-graph {
+    width: 650px;
+    height: 379px;
+    margin-left: 50%;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+div.map-background::after {
+  content: "";
+  background: url("/static/images/citymap/citymap.png");
+  background-size: 650px 379px;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+div.map-background.x2,
+div.map-graph.x2 {
+    width: 1300px;
+    height: 758px;
+}
+
+div.map-background.x2::after {
+    background-size: 1300px 758px;
+}
