@@ -84,7 +84,7 @@ This file is part of yata.
                                 {% if player.chainInfo == "N/A" %}
                                 &empty;
                                 {% else %}
-                                {{player.chainInfo}}
+                                {{player.chainInfo|safe}}
                                 {% endif %}
                             {% else %}
                                 Only shows rackets

@@ -92,7 +92,7 @@ $(document).ready(function() {
 
 </script>
 
-<h2 class="title">{{faction.name}}' attacks reports</h2>
+<h2 class="title">{{faction.name|safe}}' attacks reports</h2>
 <div class="module">
     {% if reports|length %}
     <table id="faction-attacks-report" class="tablesorter center-large trshadow faction-attacks-report">

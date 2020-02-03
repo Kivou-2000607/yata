@@ -44,7 +44,7 @@ This file is part of yata.
     });
 </script>
 
-    <h2 class="title">{{faction.name}}'s walls</h2>
+    <h2 class="title">{{faction.name|safe}}'s walls</h2>
     <div class="module">
         {% if walls|length %}
         <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">

@@ -32,13 +32,16 @@ def reset_chain(modeladmin, request, queryset):
         q.bonus_set.all().delete()
         q.assignCrontab()
     # queryset.objects.attackchain_set.all().delete()
+
+
 reset_chain.short_description = "Reset chain"
+
 
 class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress', 'state', 'status', 'dstart', 'dlast', 'dend']
+    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'update', 'current', 'chain', 'progress', 'state', 'status', 'start', 'last', 'end']
     list_filter = ('computing', 'report', 'live', 'crontab', 'state')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
@@ -47,12 +50,6 @@ class ChainAdmin(admin.ModelAdmin):
     def status(self, instance):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
-    def dstart(self, instance):
-        return timestampToDate(instance.start, fmt=True)
-    def dlast(self, instance):
-        return timestampToDate(instance.last, fmt=True)
-    def dend(self, instance):
-        return timestampToDate(instance.end, fmt=True)
 
 def reset_report(modeladmin, request, queryset):
     queryset.update(last=0,
@@ -66,14 +63,16 @@ def reset_report(modeladmin, request, queryset):
     for q in queryset:
         q.attackreport_set.all().delete()
         q.assignCrontab()
-    # queryset.objects.attackchain_set.all().delete()
+
+
 reset_report.short_description = "Reset report"
+
 
 class AttacksReportAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'state', 'progress', 'state', 'status', 'dstart', 'dlast', 'dend']
+    list_display = ['__str__', 'live', 'computing', 'state', 'update', 'progress', 'state', 'status', 'start', 'last', 'end']
     search_fields = ('pk', 'faction__name')
     list_filter = ('live', 'computing', 'crontab', 'state')
     autocomplete_fields = ['wall']
@@ -81,13 +80,6 @@ class AttacksReportAdmin(admin.ModelAdmin):
 
     def status(self, instance):
         return REPORT_ATTACKS_STATUS.get(instance.state, "?")
-
-    def dstart(self, instance):
-        return timestampToDate(instance.start, fmt=True)
-    def dlast(self, instance):
-        return timestampToDate(instance.last, fmt=True)
-    def dend(self, instance):
-        return timestampToDate(instance.end, fmt=True)
 
 
 class WallAdmin(admin.ModelAdmin):
