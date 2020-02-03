@@ -20,6 +20,7 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 from django.forms.models import model_to_dict
+from django.utils.html import format_html
 
 import json
 import requests
@@ -133,10 +134,10 @@ class Faction(models.Model):
     # discordName = models.CharField(default="", max_length=64, null=True, blank=True)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.tId)
+        return format_html("{} [{}]".format(self.name, self.tId))
 
     def fullname(self):
-        return "{} [{}]".format(self.name, self.tId)
+        return format_html("{} [{}]".format(self.name, self.tId))
 
     def manageKey(self, player):
         key = player.key_set.first()
