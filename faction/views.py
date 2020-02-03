@@ -1096,23 +1096,25 @@ def attacksReports(request):
                     report.wall.add(wall)
                     c = report.assignCrontab()
                     report.save()
-                    message = ["validMessageSub", "New wall created.<br>Start: {}<br>Ends: {}".format(timestampToDate(wall.tss), timestampToDate(wall.tse))]
+                    message = ["validMessageSub", "New wall created.<br>Start: {}<br>Ends: {}".format(timestampToDate(wall.tss, fmt=True), timestampToDate(wall.tse, fmt=True))]
 
             elif request.POST.get("type") == "new":
                 try:
                     live = int(request.POST.get("live", 0))
                     start = int(request.POST.get("start", 0))
                     end = int(request.POST.get("end", 0))
-                    if start and live:
+                    if start > tsnow():
+                        message = ["errorMessageSub", "Select a starting date in the past.<br>Start: {}".format(timestampToDate(start, fmt=True))]
+                    elif start and live:
                         report = faction.attacksreport_set.create(start=start, end=0, live=True, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start))]
+                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start, fmt=True))]
                     elif start and end and start < end:
                         report = faction.attacksreport_set.create(start=start, end=end, live=False, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start), timestampToDate(end))]
+                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
                     else:
                         message = ["errorMessageSub", "Error while creating new report"]
                 except BaseException as e:

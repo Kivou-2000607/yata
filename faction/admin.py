@@ -17,31 +17,77 @@ class FactionAdmin(admin.ModelAdmin):
 #     list_filter = ('faction__name', 'shareE', 'shareN')
 #     search_fields = ('faction__name', 'name', 'tId')
 
+def reset_chain(modeladmin, request, queryset):
+    queryset.update(last=0,
+                    update=0,
+                    computing=True,
+                    report=True,
+                    state=0,
+                    current=0,
+                    attacks=0,
+                    graphs="{}")
+    for q in queryset:
+        q.attackchain_set.all().delete()
+        q.count_set.all().delete()
+        q.bonus_set.all().delete()
+        q.assignCrontab()
+    # queryset.objects.attackchain_set.all().delete()
+reset_chain.short_description = "Reset chain"
 
 class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress', 'state', 'status']
+    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'current', 'chain', 'progress', 'state', 'status', 'dstart', 'dlast', 'dend']
     list_filter = ('computing', 'report', 'live', 'crontab', 'state')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
+    actions = [reset_chain]
 
     def status(self, instance):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
+    def dstart(self, instance):
+        return timestampToDate(instance.start, fmt=True)
+    def dlast(self, instance):
+        return timestampToDate(instance.last, fmt=True)
+    def dend(self, instance):
+        return timestampToDate(instance.end, fmt=True)
+
+def reset_report(modeladmin, request, queryset):
+    queryset.update(last=0,
+                    update=0,
+                    computing=True,
+                    state=0,
+                    attackerFactions="[]",
+                    defenderFactions="[]",
+                    defends=0,
+                    attacks=0)
+    for q in queryset:
+        q.attackreport_set.all().delete()
+        q.assignCrontab()
+    # queryset.objects.attackchain_set.all().delete()
+reset_report.short_description = "Reset report"
 
 class AttacksReportAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'start', 'end', 'live', 'computing', 'state', 'progress', 'state', 'status']
+    list_display = ['__str__', 'live', 'computing', 'state', 'progress', 'state', 'status', 'dstart', 'dlast', 'dend']
     search_fields = ('pk', 'faction__name')
     list_filter = ('live', 'computing', 'crontab', 'state')
     autocomplete_fields = ['wall']
+    actions = [reset_report]
 
     def status(self, instance):
         return REPORT_ATTACKS_STATUS.get(instance.state, "?")
+
+    def dstart(self, instance):
+        return timestampToDate(instance.start, fmt=True)
+    def dlast(self, instance):
+        return timestampToDate(instance.last, fmt=True)
+    def dend(self, instance):
+        return timestampToDate(instance.end, fmt=True)
 
 
 class WallAdmin(admin.ModelAdmin):
