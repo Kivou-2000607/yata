@@ -37,4 +37,8 @@ urlpatterns = [
     # SECTION: armory
     re_path(r'^armory/$', views.armory, name='armory'),
 
+    # SECTION: big brother
+    re_path(r'^bigbrother/$', views.bigBrother, name='bigBrother'),
+    re_path(r'^bigbrother/remove/$', views.removeContributors, name='removeContributors'),
+
     ]

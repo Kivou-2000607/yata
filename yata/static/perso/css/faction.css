@@ -115,3 +115,26 @@ table.faction-networth td.a { width: 10%; text-align: center; }  /* x1 */
 table.faction-networth td.b { width: 15%; text-align: right; }  /* x6 */
 table.faction-networth tr.today       { background:#d9ead3; }
 table.faction-networth tr.today:hover { background:#b6d7a8; }
+
+table.faction-bb-comparison td.a { width: 30%; text-align: left; }  /* x1 */
+table.faction-bb-comparison td.b { width: 25%; text-align: right; }  /* x2 */
+table.faction-bb-comparison td.c { width: 20%; text-align: center; }  /* x1 */
+
+select.faction-bb-stats-list {
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  overflow: hidden;
+  /* -webkit-appearance: none; */
+  font-weight: bold;
+  /* height: 16px; */
+  /* width: 20px; */
+  text-align: left;
+  /* margin-top: 2px;
+  margin-left: 5px; */
+  border-width: 0px;
+  background: #00000000;
+  -moz-appearance:none; /* Firefox */
+  -webkit-appearance:none; /* Safari and Chrome */
+  appearance:none;
+}

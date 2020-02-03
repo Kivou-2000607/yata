@@ -12,7 +12,9 @@ admin.site.register(DiscordApp, DiscordAppAdmin)
 
 
 class GuildAdmin(admin.ModelAdmin):
-    list_display = ['__str__']
+    list_display = ['__str__', 'guildContactName', 'guildContactId']
+    search_fields = ['guildContactName', 'guildContactId']
+    list_filter = ['guildContactName',]
     autocomplete_fields = ("masterKeys", "verifyFactions")
 
 

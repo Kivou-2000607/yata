@@ -3,12 +3,16 @@ from django.contrib import admin
 from .models import *
 from yata.handy import timestampToDate
 
+
 class KeyInline(admin.TabularInline):
     model = Key
     extra = 0
 
+
 class KeyAdmin(admin.ModelAdmin):
-    list_display = ['player']
+    list_display = ['player', 'useFact', 'useSelf']
+    search_fields = ['player__name', 'tId']
+
 
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
@@ -40,6 +44,7 @@ class DonationAdmin(admin.ModelAdmin):
 
 class PlayerDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
+
 
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)

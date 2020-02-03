@@ -64,7 +64,11 @@ This file is part of yata.
                 {% if r.live %}
                     <li><b>{{t}}:</b> <tt>Live</tt></li>
                 {% else %}
-                    <li><b>{{t}}:</b> <tt>{{r.tId}}</tt> ({{r.progress}}%)</li>
+                    {% if r.tId %}
+                        <li><b>{{t}}:</b> <tt>{{r.tId}}</tt> ({{r.progress}}%)</li>
+                    {% else %}
+                        <li><b>{{t}}:</b> <tt>{{r.pk}}</tt> ({{r.progress}}%)</li>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
     {% endfor %}

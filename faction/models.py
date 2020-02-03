@@ -57,6 +57,35 @@ REPORT_ATTACKS_STATUS = {
     -6: "No new entry [continue]",
     }
 
+BB_BRIDGE = {
+    "criminaloffences": "Offences",
+    "busts": "Busts",
+    "jails": "Jail sentences",
+    "drugsused": "Drugs taken",
+    "drugoverdoses": "Overdoses",
+    "gymstrength": "Energy on strength",
+    "gymspeed": "Energy on speed",
+    "gymdefense": "Energy on defense",
+    "gymdexterity": "Energy on dexterity",
+    "traveltime": "Hours of flight",
+    "hunting": "Hunts",
+    "rehabs": "Rehabs",
+    "caymaninterest": "Interest in Cayman",
+    "medicalcooldownused": "Medical cooldown",
+    "revives": "Revives",
+    "medicalitemrecovery": "Life recovered",
+    "hosptimereceived": "Hospital received",
+    "candyused": "Candy used",
+    "alcoholused": "Alcohol used",
+    "energydrinkused": "Energy drinks used",
+    "hosptimegiven": "Hospital given",
+    "attacksdamagehits": "Damaging hits",
+    "attacksdamage": "Damage dealt",
+    "attacksdamaging": "Damage received",
+    "attacksrunaway": "Runaways",
+    "allgyms": "Energy all stats",
+    }
+
 
 # Faction
 class Faction(models.Model):
@@ -321,7 +350,7 @@ class Faction(models.Model):
                 if newstype.filter(tId=k).first() is None and v["timestamp"] > old:
                     v["news"] = cleanhtml(v["news"])[:512]
                     n = self.news_set.create(tId=k, type=type, **v)
-                    print("Create {}".format(n))
+                    # print("Create {}".format(n))
 
         # remove old logs
         self.log_set.filter(timestamp__lt=old).delete()
@@ -347,6 +376,59 @@ class Faction(models.Model):
         self.armoryUpda = now
         self.save()
         return True, "Armory updated"
+
+    def addContribution(self, stat):
+
+        # get key
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return False, "No keys to add contribution."
+
+        # api call
+        selection = 'basic,contributors&stat={}'.format(stat)
+        contributors = apiCall('faction', self.tId, selection, key.value, verbose=False)
+        if 'apiError' in contributors:
+            msg = "Add contribution {} ({})".format(stat, contributors["apiErrorString"])
+            if contributors['apiErrorCode'] in [1, 2, 7, 10]:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+            else:
+                key.reason = msg
+                key.lastPulled = contributors.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            return False, "API error {}, contribution not added.".format(contributors["apiErrorString"])
+
+        # update key
+        key.reason = "Update Big Brother"
+        key.lastPulled = tsnow()
+        key.save()
+
+        mem = contributors["members"]
+        if stat in contributors["contributors"]:
+            con = contributors["contributors"][stat]
+            now = tsnow()
+            hour = now - now % (3600 // 4)
+            c = dict({})
+            for k, v in {k: v for k, v in con.items() if v["in_faction"]}.items():
+                c[k] = [mem.get(k, dict({"name": "Player"})).get("name"), v["contributed"]]
+
+            contrdict = {"timestamp": now, "contributors": json.dumps(c, separators=(',', ':'))}
+
+            if self.contributors_set.filter(stat=stat).filter(timestamphour=hour).filter(stat=stat).first() is None:
+                mod = "added"
+            else:
+                mod = "updated"
+            self.contributors_set.update_or_create(timestamphour=hour, stat=stat, defaults=contrdict)
+
+            return True, "{} contributors {}".format(BB_BRIDGE.get(stat, "?"), mod)
+
+        else:
+            print("{} not in API... that's weird".format(stat))
+            return False, "{} not in API... that's weird".format(stat)
 
 
 class Member(models.Model):
@@ -1320,3 +1402,15 @@ class Log(models.Model):
 
     def __str__(self):
         return "{} Log [{}]".format(self.faction, self.timestampday)
+
+
+class Contributors(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    timestamp = models.IntegerField(default=0)
+    timestamphour = models.IntegerField(default=0)
+
+    stat = models.CharField(default="stat", max_length=32)
+    contributors = models.TextField(default="{}")
+
+    def __str__(self):
+        return "{} {} contributors".format(self.faction, self.stat)

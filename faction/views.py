@@ -87,7 +87,7 @@ def configurations(request):
                 # get computing reports
                 reports = dict({})
                 reports["Chain report"] = [r for r in faction.chain_set.filter(computing=True).all()]
-                # reports["Live report"] = [] if faction.chain_set.filter(live=True).first() is not None else [("", "")]
+                reports["Attacks report"] = [r for r in faction.attacksreport_set.filter(computing=True).all()]
 
                 context = {'player': player, 'factioncat': True, "reports": reports, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
 
@@ -1485,6 +1485,145 @@ def armory(request):
 
         else:
             return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+# SECTION: big brother
+def bigBrother(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+
+            message = False
+            state = False
+            if request.POST.get('add', False) and player.factionAA:
+                state, message = faction.addContribution(request.POST.get('add'))
+
+            # get all stats
+            allContributors = faction.contributors_set.all().order_by('timestamp')
+
+            # add on the fly 4 gyms
+            # loop over unique ts
+            gymsKeys = ["gymstrength", "gymspeed", "gymdefense", "gymdexterity"]
+            for uniqueTS in set([s.timestamphour for s in allContributors]):
+                gyms = []
+                for tsCont in allContributors.filter(timestamphour=uniqueTS):
+                    if tsCont.stat in gymsKeys:
+                        gyms.append(tsCont)
+
+                if len(gyms) == 4:
+                    contributors = dict({})
+                    for gym in gyms:
+                        for k, v in json.loads(gym.contributors).items():
+                            if k in contributors:
+                                contributors[k][1] += v[1]
+                            else:
+                                contributors[k] = v
+                    newCont = {"timestamp": gyms[0].timestamp, "contributors": json.dumps(contributors)}
+                    faction.contributors_set.update_or_create(stat="allgyms", timestamphour=gyms[0].timestamphour, defaults=newCont)
+                    allContributors = faction.contributors_set.all().order_by('timestamp')
+
+            statsList = dict({})
+            contributors = False
+            comparison = False
+            for stat in allContributors:
+                # create entry if first iteration on this type
+                if stat.stat not in statsList:
+                    statsList[stat.stat] = []
+
+                # enter contributors
+                realName = BB_BRIDGE.get(stat.stat, stat.stat)
+                statsList[stat.stat].append([realName, stat.timestamp])
+
+            if request.POST.get('name', False):
+                name = request.POST.get('name')
+                tsA = int(request.POST.get('tsA'))
+                tsB = int(request.POST.get('tsB'))
+                comparison = [name, tsA, tsB, str(name)]
+
+                # select first timestamp
+                stat = allContributors.filter(stat=name, timestamp=tsA).first()
+                contributors = dict({})
+                # in case they remove stat and select it before refraising
+                if stat is not None:
+                    comparison[3] = BB_BRIDGE.get(stat.stat, stat.stat)
+                    for k, v in json.loads(stat.contributors).items():
+                        contributors[BB_BRIDGE.get(k, k)] = [v[0], v[1], 0]
+
+                    # select second timestamp
+                    if tsB > 0:
+                        stat = allContributors.filter(stat=name, timestamp=tsB).first()
+                        for k, v in json.loads(stat.contributors).items():
+                            memberName = BB_BRIDGE.get(k, k)
+                            # update 3rd column if already in timestamp A
+                            if k in contributors:
+                                contributors[memberName][2] = v[1]
+                            # add if new
+                            else:
+                                contributors[memberName] = [v[0], 0, v[1]]
+                            c = contributors[memberName]
+                            if not c[2] - c[1]:
+                                del contributors[memberName]
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'view': {'bb': True}}
+
+            if message:
+                err = "validMessage" if state else "errorMessage"
+                sub = "Sub" if request.method == 'POST' else ""
+                context[err + sub] = message
+
+            if request.method == 'POST':
+                page = 'faction/content-reload.html' if request.POST.get('name') is None else 'faction/bigbrother/table.html'
+            else:
+                page = 'faction.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def removeContributors(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if player.factionAA:
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                print('[view.chain.removeUpgrade] faction {} found'.format(factionId))
+
+                s = faction.contributors_set.filter(stat=request.POST.get('name')).filter(timestamp=request.POST.get('ts')).first()
+                try:
+                    s.delete()
+                    m = "Okay"
+                    t = 1
+                except BaseException as e:
+                    m = str(e)
+                    t = -1
+
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            else:
+                return returnError(type=403, msg="You need AA rights.")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception:
         return returnError()
