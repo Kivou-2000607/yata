@@ -90,7 +90,7 @@ BB_BRIDGE = {
 class Faction(models.Model):
     # direct torn values
     tId = models.IntegerField(default=0, unique=True)
-    name = models.CharField(default="MyFaction", max_length=32)
+    name = models.CharField(default="MyFaction", max_length=64)
     respect = models.IntegerField(default=0)
 
     # keys
@@ -130,7 +130,7 @@ class Faction(models.Model):
     # networthString = models.TextField(default="{}")
 
     # discord
-    # discordName = models.CharField(default="", max_length=32, null=True, blank=True)
+    # discordName = models.CharField(default="", max_length=64, null=True, blank=True)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
@@ -443,7 +443,7 @@ class Member(models.Model):
     # new status of december 2019
     description = models.CharField(default="", max_length=128, blank=True)
     details = models.CharField(default="", max_length=128, blank=True)
-    state = models.CharField(default="", max_length=32, blank=True)
+    state = models.CharField(default="", max_length=64, blank=True)
     color = models.CharField(default="", max_length=16, blank=True)
     until = models.IntegerField(default=0)
 
@@ -1030,12 +1030,12 @@ class AttackChain(models.Model):
     attacker_id = models.IntegerField(default=0)
     attacker_name = models.CharField(default="attacker_name", max_length=16, null=True, blank=True)
     attacker_faction = models.IntegerField(default=0)
-    attacker_factionname = models.CharField(default="attacker_factionname", max_length=32, null=True, blank=True)
+    attacker_factionname = models.CharField(default="attacker_factionname", max_length=64, null=True, blank=True)
     defender_id = models.IntegerField(default=0)
     defender_name = models.CharField(default="defender_name", max_length=16, null=True, blank=True)
     defender_faction = models.IntegerField(default=0)
-    defender_factionname = models.CharField(default="defender_factionname", max_length=32, null=True, blank=True)
-    result = models.CharField(default="result", max_length=32)
+    defender_factionname = models.CharField(default="defender_factionname", max_length=64, null=True, blank=True)
+    result = models.CharField(default="result", max_length=64)
     stealthed = models.IntegerField(default=0)
     respect_gain = models.FloatField(default=0.0)
     chain = models.IntegerField(default=0)
@@ -1059,9 +1059,9 @@ class Wall(models.Model):
     attackers = models.TextField(default="{}", null=True, blank=True)
     defenders = models.TextField(default="{}", null=True, blank=True)
     attackerFactionId = models.IntegerField(default=0)
-    attackerFactionName = models.CharField(default="AttackFaction", max_length=32)
+    attackerFactionName = models.CharField(default="AttackFaction", max_length=64)
     defenderFactionId = models.IntegerField(default=0)
-    defenderFactionName = models.CharField(default="DefendFaction", max_length=32)
+    defenderFactionName = models.CharField(default="DefendFaction", max_length=64)
     territory = models.CharField(default="AAA", max_length=3)
     result = models.CharField(default="Unset", max_length=10)
     factions = models.ManyToManyField(Faction, blank=True)
@@ -1313,12 +1313,12 @@ class AttackReport(models.Model):
     attacker_id = models.IntegerField(default=0)
     attacker_name = models.CharField(default="attacker_name", max_length=16, null=True, blank=True)
     attacker_faction = models.IntegerField(default=0)
-    attacker_factionname = models.CharField(default="attacker_factionname", max_length=32, null=True, blank=True)
+    attacker_factionname = models.CharField(default="attacker_factionname", max_length=64, null=True, blank=True)
     defender_id = models.IntegerField(default=0)
     defender_name = models.CharField(default="defender_name", max_length=16, null=True, blank=True)
     defender_faction = models.IntegerField(default=0)
-    defender_factionname = models.CharField(default="defender_factionname", max_length=32, null=True, blank=True)
-    result = models.CharField(default="result", max_length=32)
+    defender_factionname = models.CharField(default="defender_factionname", max_length=64, null=True, blank=True)
+    result = models.CharField(default="result", max_length=64)
     stealthed = models.IntegerField(default=0)
     respect_gain = models.FloatField(default=0.0)
     chain = models.IntegerField(default=0)
@@ -1408,7 +1408,7 @@ class Contributors(models.Model):
     timestamp = models.IntegerField(default=0)
     timestamphour = models.IntegerField(default=0)
 
-    stat = models.CharField(default="stat", max_length=32)
+    stat = models.CharField(default="stat", max_length=64)
     contributors = models.TextField(default="{}")
 
     def __str__(self):
