@@ -319,7 +319,7 @@ class Faction(models.Model):
             for k, v in factionInfo.get(type, dict({})).items():
                 newstype = news.filter(type=type)
                 if newstype.filter(tId=k).first() is None and v["timestamp"] > old:
-                    v["news"] = cleanhtml(v["news"])
+                    v["news"] = cleanhtml(v["news"])[:512]
                     n = self.news_set.create(tId=k, type=type, **v)
                     print("Create {}".format(n))
 
