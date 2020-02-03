@@ -31,7 +31,6 @@ from player.models import Player
 from faction.functions import *
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
-OPEN_CRONTAB = [1, 2, 3]
 CHAIN_ATTACKS_STATUS = {
     3: "Normal [continue]",
     2: "Reached end of chain [stop]",
@@ -573,8 +572,8 @@ class Chain(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
-        if chain is None or chain.crontab not in OPEN_CRONTAB:
-            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in OPEN_CRONTAB}
+        if chain is None or chain.crontab not in getCrontabs():
+            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif chain is not None:
             self.crontab = chain.crontab
@@ -1143,8 +1142,8 @@ class AttacksReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.attacksreport_set.filter(computing=True).only("crontab").first()
-        if report is None or report.crontab not in OPEN_CRONTAB:
-            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in OPEN_CRONTAB}
+        if report is None or report.crontab not in getCrontabs():
+            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             self.crontab = report.crontab
@@ -1414,3 +1413,12 @@ class Contributors(models.Model):
 
     def __str__(self):
         return "{} {} contributors".format(self.faction, self.stat)
+
+
+class FactionData(models.Model):
+    territoryUpda = models.IntegerField(default=0)
+    crontabs = models.TextField(default="[1,2,3]")
+    # upgradeTree = models.TextField(default="{}", null=True, blank=True)
+
+    def __str__(self):
+        return "Faction data [{}]".format(self.pk)

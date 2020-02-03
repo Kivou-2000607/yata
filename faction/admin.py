@@ -72,6 +72,11 @@ class ContributorsAdmin(admin.ModelAdmin):
     list_filter = ('stat', )
 
 
+class FactionDataAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+
+admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
 admin.site.register(Log, LogAdmin)
 admin.site.register(News, NewsAdmin)
