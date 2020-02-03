@@ -460,7 +460,7 @@ class Member(models.Model):
     arson = models.IntegerField(default=0)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.tId)
+        return format_html("{} [{}]".format(self.name, self.tId))
 
     def updateStatus(self, description=None, details=None, state=None, color=None, until=None, save=False, **args):
         # the **args is here to hade extra keys not needed
@@ -568,7 +568,7 @@ class Chain(models.Model):
     combine = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{} chain [{}]".format(self.faction, self.tId)
+        return format_html("{} chain [{}]".format(self.faction, self.tId))
 
     def assignCrontab(self):
         # check if already in a crontab
@@ -1005,7 +1005,7 @@ class Count(models.Model):
     warhits = models.IntegerField(default=0)
 
     def __str__(self):
-        return("Count for {}".format(self.chain))
+        return format_html("Count for {}".format(self.chain))
 
 
 class Bonus(models.Model):
@@ -1018,7 +1018,7 @@ class Bonus(models.Model):
     targetName = models.CharField(default="Unkown", max_length=15)
 
     def __str__(self):
-        return("Bonus for {}".format(self.chain))
+        return format_html("Bonus for {}".format(self.chain))
 
 
 class AttackChain(models.Model):
@@ -1049,7 +1049,7 @@ class AttackChain(models.Model):
     chainBonus = models.IntegerField(default=0)
 
     def __str__(self):
-        return "Attack for chain [{}]".format(self.tId)
+        return format_html("Attack for chain [{}]".format(self.tId))
 
 
 # Walls
@@ -1072,7 +1072,7 @@ class Wall(models.Model):
     breakSingleFaction = models.BooleanField(default=False)
 
     def __str__(self):
-        return "Wall [{}]".format(self.tId)
+        return format_html("Wall [{}]".format(self.tId))
 
     def update(self, req):
         self.tId = int(req.get('tId'))
@@ -1123,7 +1123,7 @@ class AttacksReport(models.Model):
     wall = models.ManyToManyField(Wall, blank=True)
 
     def __str__(self):
-        return "{} report [{}]".format(self.faction, self.pk)
+        return format_html("{} report [{}]".format(self.faction, self.pk))
 
     def progress(self):
         end = self.end if self.end else tsnow()
@@ -1340,7 +1340,7 @@ class News(models.Model):
     news = models.CharField(default="news", max_length=512)
 
     def __str__(self):
-        return "{} {} [{}]".format(self.faction, self.type, self.tId)
+        return format_html("{} {} [{}]".format(self.faction, self.type, self.tId))
 
 
 class Log(models.Model):
@@ -1413,7 +1413,7 @@ class Contributors(models.Model):
     contributors = models.TextField(default="{}")
 
     def __str__(self):
-        return "{} {} contributors".format(self.faction, self.stat)
+        return format_html("{} {} contributors".format(self.faction, self.stat))
 
 
 class FactionData(models.Model):
