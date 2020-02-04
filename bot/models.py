@@ -62,3 +62,13 @@ class Guild(models.Model):
 
     def __str__(self):
         return "{} on {} [{}]".format(self.configuration, self.guildName, self.guildId)
+
+
+class Chat(models.Model):
+    tId = models.IntegerField(default=0)
+    secret = models.CharField(default="secret", max_length=128)
+    update = models.IntegerField(default=0)
+    check = models.CharField(default="secret", max_length=128)
+
+    def __str__(self):
+        return "Secret key of {}".format(self.tId)

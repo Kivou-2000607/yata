@@ -1,14 +1,10 @@
 from django.contrib import admin
 
-from .models import DiscordApp
-from .models import Guild
+from .models import *
 
 
 class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
-
-
-admin.site.register(DiscordApp, DiscordAppAdmin)
 
 
 class GuildAdmin(admin.ModelAdmin):
@@ -18,4 +14,10 @@ class GuildAdmin(admin.ModelAdmin):
     autocomplete_fields = ("masterKeys", "verifyFactions")
 
 
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'tId', 'update']
+
+
+admin.site.register(Chat, ChatAdmin)
+admin.site.register(DiscordApp, DiscordAppAdmin)
 admin.site.register(Guild, GuildAdmin)

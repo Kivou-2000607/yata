@@ -21,11 +21,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
 
-from yata.handy import returnError
-from yata.handy import apiCall
+from yata.handy import *
 from player.models import Player
-from bot.models import DiscordApp
+from bot.models import *
 from bot.functions import saveBotsConfigs
 
 import json
@@ -182,3 +182,36 @@ def toggleNoti(request):
 
     except Exception:
         return returnError()
+
+
+@csrf_exempt
+def secret(request):
+    if request.method == 'POST':
+        try:
+            secret = Chat.objects.filter(pk=1).first()
+
+            HTTP_SECRET = request.META.get("HTTP_SECRET")
+            HTTP_UID = int(request.META.get("HTTP_UID"))
+            HTTP_CHECK = request.META.get("HTTP_CHECK")
+
+            if secret.check != HTTP_CHECK:
+                m = "You need to enter the check password"
+                t = -1
+                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+            secret.update = tsnow()
+            secret.tId = HTTP_UID
+            secret.secret = HTTP_SECRET
+            secret.save()
+
+            t = 1
+            m = "Secret imported thanks. Chats will live!"
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+        except BaseException as e:
+            t = 0
+            m = "Server error... YATA's been poorly coded: {}".format(e)
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+    else:
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
