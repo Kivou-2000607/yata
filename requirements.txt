@@ -16,3 +16,5 @@ Pillow==6.2.1
 # math modules
 numpy==1.18.0
 scipy==1.4.1
+
+pycrypto==2.6.1
