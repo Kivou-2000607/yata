@@ -114,6 +114,20 @@ class FactionDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
+class FactionTreeAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'branch', 'name', 'tId', 'level']
+    search_fields = ('branch',)
+    list_filter = ('branch',)
+
+
+class UpgradeAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'getTree', 'tId', 'level', 'branchorder', 'simu', ]
+    search_fields = ('faction__name', 'faction__tId', 'tId', 'level', 'unlocked',)
+    list_filter = ('tId', 'simu', )
+
+
+admin.site.register(Upgrade, UpgradeAdmin)
+admin.site.register(FactionTree, FactionTreeAdmin)
 admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
 admin.site.register(Log, LogAdmin)

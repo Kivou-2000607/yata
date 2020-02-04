@@ -1505,7 +1505,6 @@ def bigBrother(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
-
             message = False
             state = False
             if request.POST.get('add', False) and player.factionAA:
@@ -1768,6 +1767,41 @@ def territoriesFullMap(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+# SECTION: respect simulator
+def simulator(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            tree = faction.getFactionTree()
+            for k1, v1 in tree.items():
+                print("\n------\n{} New upgrade\n------\n".format(k1))
+                for k2, v2 in v1.items():
+                    print("{}-{} New level: {} {} {}".format(k1, k2, v2["shortname"], v2["branchorder"], v2["branchmultiplier"]))
+                    # print("---\n{}-{} New level\n---".format(k1, k2))
+                    # for k3, v3 in v2.items():
+                    #     print("{}-{} {}: {}".format(k1, k2, k3, v3))
+
+            # tmp
+            faction.respect = 0
+            totalRespect = {"faction": 0, "simu": 0}
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'totalRespect': totalRespect, 'tree': tree, 'view': {'simulator': True}}
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
             return returnError(type=403, msg=message)
 
     except Exception:

@@ -42,8 +42,8 @@ CHAIN_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [continue]",
-    }
+    -6: "No new entry [continue]"}
+
 REPORT_ATTACKS_STATUS = {
     3: "Normal [continue]",
     2: "Up to date [continue]",
@@ -54,8 +54,7 @@ REPORT_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [continue]",
-    }
+    -6: "No new entry [continue]"}
 
 BB_BRIDGE = {
     "criminaloffences": "Offences",
@@ -83,8 +82,7 @@ BB_BRIDGE = {
     "attacksdamage": "Damage dealt",
     "attacksdamaging": "Damage received",
     "attacksrunaway": "Runaways",
-    "allgyms": "Energy all stats",
-    }
+    "allgyms": "Energy all stats"}
 
 
 # Faction
@@ -255,8 +253,7 @@ class Faction(models.Model):
                     lastActionTS=membersAPI[m]['last_action']['timestamp'],
                     daysInFaction=membersAPI[m]['days_in_faction'],
                     shareE=-1 if player is None else 0,
-                    shareN=-1 if player is None else 0,
-                    )
+                    shareN=-1 if player is None else 0)
                 memberNew.updateStatus(**membersAPI[m]['status'])
 
         # delete old members
@@ -421,6 +418,103 @@ class Faction(models.Model):
         else:
             print("{} not in API... that's weird".format(stat))
             return False, "{} not in API... that's weird".format(stat)
+
+    def updateUpgrades(self):
+
+        # get key
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return False, "No keys to update faction upgrades"
+
+        # api call
+        upgrades = apiCall('faction', self.tId, "upgrades", key.value, verbose=False, sub="upgrades")
+        if 'apiError' in upgrades:
+            msg = "Add contribution {} ({})".format(stat, upgrades["apiErrorString"])
+            if upgrades['apiErrorCode'] in [1, 2, 7, 10]:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+            else:
+                key.reason = msg
+                key.lastPulled = upgrades.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            return False, "API error {}, faction upgrades not updated".format(contributors["apiErrorString"])
+
+        # update key
+        key.reason = "Update faction upgrades"
+        key.lastPulled = tsnow()
+        key.save()
+
+        # add upgrades
+        for k, v in upgrades.items():
+            for _ in ["ability", "basecost", "branch", "name"]:
+                del v[_]
+            print(self.upgrade_set.update_or_create(tId=k, level=v["level"], simu=False, defaults=v))
+
+        # remove old upgrades
+        for u in self.upgrade_set.filter(simu=False):
+            if str(u.tId) not in upgrades:
+                u.delete()
+            elif u.level != upgrades[str(u.tId)]["level"]:
+                u.delete()
+
+    def resetSimuUpgrades(self, update=False):
+        if update:
+            self.updateUpgrades()
+
+        # set all current
+        for u in self.upgrade_set.filter(simu=False):
+            v = dict({})
+            v["branchorder"] = u.branchorder
+            v["branchmultiplier"] = u.branchmultiplier
+            v["unlocked"] = u.unlocked
+            print(self.upgrade_set.update_or_create(tId=u.tId, level=u.level, simu=True, defaults=v))
+
+        # remove old
+        for u in self.upgrade_set.filter(simu=True):
+            if not len(self.upgrade_set.filter(simu=False, tId=u.tId, level=u.level)):
+                print("delete simu {}".format(u))
+                u.delete()
+
+    def getFactionTree(self, simu=False):
+        allUpgrades = FactionTree.objects.all().order_by("tId", "-level")
+        facUpgrades = Upgrade.objects.filter(simu=simu)
+
+        tree = dict({})
+        for u in allUpgrades:
+            # print(u)
+            if u.tId not in tree:
+                branchorder = 0
+                branchmultiplier = 0
+                unlocked = "None"
+                tree[u.tId] = dict({})
+
+            tree[u.tId][u.level] = {"tId": u.tId,
+                                    "level": u.level,
+                                    "branch": u.branch,
+                                    "name": u.name,
+                                    "ability": u.ability,
+                                    "challenge": u.challenge,
+                                    "base_cost": u.base_cost,
+                                    "shortname": u.shortname,
+                                    "maxlevel": u.maxlevel,
+                                    "branchorder": 0,
+                                    "branchmultiplier": 0,
+                                    "unlocked": "None"}
+            fu = facUpgrades.filter(tId=u.tId, level=u.level).first()
+            if fu is not None:
+                branchorder = fu.branchorder
+                branchmultiplier = fu.branchmultiplier
+                unlocked = fu.unlocked
+
+            tree[u.tId][u.level]["unlocked"] = unlocked
+            tree[u.tId][u.level]["branchorder"] = branchorder
+            tree[u.tId][u.level]["branchmultiplier"] = branchmultiplier
+
+        return tree
 
 
 class Member(models.Model):
@@ -1396,6 +1490,7 @@ class Log(models.Model):
     def __str__(self):
         return "{} Log [{}]".format(self.faction, self.timestampday)
 
+
 # Big brother
 class Contributors(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -1447,3 +1542,40 @@ class FactionData(models.Model):
 
     def __str__(self):
         return "Faction data [{}]".format(self.pk)
+
+
+class FactionTree(models.Model):
+    # api
+    tId = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    branch = models.CharField(default="branch", max_length=32)
+    name = models.CharField(default="name", max_length=32)
+    ability = models.CharField(default="ability", max_length=256)
+    challenge = models.CharField(default="challenge", max_length=256)
+    base_cost = models.IntegerField(default=0)
+
+    # additions field
+    shortname = models.CharField(default="name", max_length=32)
+    maxlevel = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{} - {} [{}] level {}/{}".format(self.branch, self.shortname, self.tId, self.level, self.maxlevel)
+
+
+class Upgrade(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    tId = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    branchorder = models.IntegerField(default=0)
+    branchmultiplier = models.IntegerField(default=0)
+    unlocked = models.CharField(default="branch", max_length=32)
+
+    # reserverd for simulation
+    simu = models.BooleanField(default=False)
+
+    def __str__(self):
+        return format_html("{} upgrade {} - {}".format(self.faction, self.tId, self.level))
+
+    def getTree(self):
+        return FactionTree.objects.filter(tId=self.tId, level=self.level).first()

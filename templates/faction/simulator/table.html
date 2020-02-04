@@ -1,0 +1,222 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+
+    // $(document).ready(function() {
+    //
+    //     $.tablesorter.addParser({
+    //         // set a unique id
+    //         id: 'dataVal',
+    //         // check if cell value has a numerical value
+    //         is: function(s, table, cell, $cell) {
+    //             return !isNaN($cell.attr("data-val"));
+    //         },
+    //         // format data for normalization
+    //         format: function(s, table, cell, cellIndex) {
+    //             return parseInt($(cell).attr("data-val"));
+    //         },
+    //         // set type, either numeric or text
+    //         type: 'numeric'
+    //     });
+    //
+    //     $("#chain-tree-sum").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,0]]});
+    //     $("#chain-tree-sum").tablesorter({sortList: [[3,0]]});
+    //     $("#chain-tree").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, cssAsc: 'up', cssDesc: 'down', sortList: [[2,0]]});
+    //     $("#chain-tree").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, sortList: [[2,0]]});
+    // });
+</script>
+<table class="center chain-tree-sum sticky">
+    <thead>
+        <tr>
+            <th colspan="6">Faction wise summary</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="2">Current state</th>
+            <th colspan="2">Simulation</th>
+            <th>Difference</th>
+        </tr>
+        <tr>
+            <th>Faction Respect</th>
+            <th>Respect Used</th>
+            <th>Respect available</th>
+            <th>Respect Used</th>
+            <th>Respect available</th>
+            <th>Respect Used</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="c"><b>{{faction.respect|intcomma}}</b></td>
+            <td class="c">{{totalRespect.faction|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:totalRespect.faction|signColor}}</td>
+            <td class="c">{{totalRespect.simu|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:totalRespect.simu|signColor}}</td>
+            <td class="c">{{totalRespect.faction|sub:totalRespect.simu|signColor}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<table id="chain-tree-sum" class="center-medium chain-tree-sum trshadow">
+    <thead>
+        <tr>
+            <th colspan="10">Branch wise summary</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th colspan="3">Current State</th>
+            <th colspan="6">Simulation</th>
+        </tr>
+        <tr>
+            <th>Branch</th>
+            <th>Base</th>
+            <th>Respect</th>
+            <th>Order</th>
+            <th>Base</th>
+            <th></th>
+            <th>Respect</th>
+            <th></th>
+            <th>Order</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b, cl in branchesCost.items %}
+        <tr {% if cl.5 > 6 %}class="max-order"{% endif %}>
+            {% if cl.3 or cl.3 > cl.0 or cl.3 < cl.0 %}
+                <td class="a"><b>{{b}}</b></td>
+                <td class="b">{{cl.0|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.1|emptyIfFalse|intcomma}}</td>
+                <td class="c">{{cl.2|emptyIfFalse}}</td>
+                <td class="b">{{cl.3|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.3|sub:cl.0|signColor:1}}</td>
+                <td class="b">{{cl.4|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.4|sub:cl.1|signColor:1}}</td>
+                <td class="c">{{cl.5|emptyIfFalse}}</td>
+                <td class="c">{{cl.5|sub:cl.2|signColor:1}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+
+<table id="chain-tree" class="center-medium chain-tree trshadow">
+    <thead>
+        <tr>
+            <th colspan="11">Simulator</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th colspan="3">Current State</th>
+            <th colspan="6">Simulation</th>
+        </tr>
+        <tr>
+            <th>Branch</th>
+            <th>Upgrade</th>
+            <th>Order</th>
+            <th>Level</th>
+            <th>Cost</th>
+            <th>Order</th>
+            <th></th>
+            <th>Level</th>
+            <th></th>
+            <th>Cost</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for branchId, branch in tree.items %}
+            {% for upgradeId, u in branch.items %}
+                {% if branchId == 'Core' %}
+                    <tr class="order-core">
+                {% else %}
+                    <tr class="order-{{u.simu_order}}">
+                {% endif %}
+                    <td class="a show-upgrade-details" title="{{u}}"><b>{{branchId}}</b>{%if u.unsets_completed%} <i class="fas fa-history error" title="Branch unset on {{u.unsets_completed|ts2date}}"></i>{%endif%}</td>
+                    <td class="b show-upgrade-details"><b>{{upgradeId}}</b></td>
+                    <td class="c">{{u.faction_order|emptyIfFalse}}</td>
+                    <td class="c">{{u.faction_level|emptyIfFalse}}</td>
+                    <td class="d">{{u.faction_cost|emptyIfFalse|intcomma}}</td>
+                    <td class="c" data-val="{{u.simu_order|emptyIfFalse}}">
+                        {% if branchId == "Core" %}
+                            {{u.simu_order}}
+                        {% else %}
+                            <select id="simu-tree-{{u.branchId}}-branchorder" class="faction-upgrade-tree">
+                                {% for i in "012345678"|make_list %}
+                                <option value="{{i}}" {% if forloop.counter0 is u.simu_order %}selected{% endif %}>{{i}}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </td>
+                    <td class="c">{{u.simu_order|sub:u.faction_order|signColor:1}}</td>
+                    <td class="c" data-val="{{u.simu_level|emptyIfFalse}}">
+                        <select id="simu-tree-{{u.branchId}}-level" class="faction-upgrade-tree">
+                            {% for r in u.respect %}
+                                <option value="{{forloop.counter0}}" {% if forloop.counter0 is u.simu_level %}selected{% endif %}>{{forloop.counter0}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="c">{{u.simu_level|sub:u.faction_level|signColor}}</td>
+                    <td class="d">{{u.simu_cost|intcomma}}</td>
+                    <td class="d">{{u.simu_cost|sub:u.faction_cost|signColor:1}}</td>
+                </tr>
+                <tr class="upgrade-details">
+                    <td colspan="11">
+                    <table class="center-full chain-tree-details">
+                        {% for detail in u.details %}
+                        <tr>
+                            <td class="a">{{detail.0}}</td>
+                            <td class="b">{{detail.1}}</td>
+                            <td class="c">{{detail.2}}</td>
+                            {% if u.challengedone < detail.3 %}
+                                <td class="d error" title="{{u.challengedone}} / {{detail.3}}">{{u.challengedone|div:detail.3|mul:100|floatformat:0}}%</td>
+                            {% else %}
+                                <td class="d valid" title="{{u.challengedone}} / {{detail.3}}">100%</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr class="sep">
+<p>
+    To do a simulation, modify the <b>order</b> of a branch or the <b>level</b> of an upgrade in the table above by clicking on the corresponding number (available modifications are in bold).<br>
+    Colored numbers will show you the difference between the current state and the simulation.
+<ul>
+    <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branch will be swap to two identical orders.</li>
+    <li>If you modify the <b>level</b> of an upgrade, the order of all the branches will be modified to <span class="valid">minimize the respect used</span> and, if needed, the levels of other upgrades of the branch will be <span class="valid">set to their minimal required values</span>.</li>
+    <li><b>Challenges</b> are not taken into account for the simulation. You can see the availability of the upgrade levels by clicking on the upgrade name.</li>
+</ul>
+</p>
+<p><i class="fas fa-toilet-paper"></i>&nbsp;&nbsp;You can reset to simulation to the current state by clicking on the reset button on the top right.
+</p>
+<p><span class="warning">Warning:</span> the simulations are saved on the fly for the faction (not for a member). Modifications of the upgrades by two members at the same time can lead to strange behaviors!</p>

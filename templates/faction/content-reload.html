@@ -70,7 +70,6 @@ This file is part of yata.
 {% if view.attacksReports %}
     <script>
         $(function () {
-            console.log("Clear form values");
             $('input').val(0);
             $('input').prop('checked', false);
         });
@@ -96,5 +95,10 @@ This file is part of yata.
 
 {% if view.territories %}
     {% include "faction/territories/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
+{% if view.simulator %}
+    {% include "faction/simulator/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
