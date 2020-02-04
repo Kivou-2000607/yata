@@ -188,24 +188,29 @@ def toggleNoti(request):
 def secret(request):
     if request.method == 'POST':
         try:
-            secret = Chat.objects.filter(pk=1).first()
+            from Crypto.Hash import SHA256
 
             HTTP_SECRET = request.META.get("HTTP_SECRET")
             HTTP_UID = int(request.META.get("HTTP_UID"))
             HTTP_CHECK = request.META.get("HTTP_CHECK")
 
-            if secret.check != HTTP_CHECK:
-                m = "You need to enter the check password"
-                t = -1
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            i = 0
+            for secret in Chat.objects.all():
 
-            secret.update = tsnow()
-            secret.tId = HTTP_UID
-            secret.secret = HTTP_SECRET
-            secret.save()
+                hash = SHA256.new()
+                hash.update(secret.check.encode('utf-8'))
+
+                if hash.hexdigest() != HTTP_CHECK:
+                    print("{} {} not checked".format(secret.uid, secret.name))
+                else:
+                    i += 1
+                    secret.update = tsnow()
+                    secret.uid = HTTP_UID
+                    secret.secret = HTTP_SECRET
+                    secret.save()
 
             t = 1
-            m = "Secret imported thanks. Chats will live!"
+            m = "{} secret(s) imported thanks. Chats will live!".format(i)
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
         except BaseException as e:

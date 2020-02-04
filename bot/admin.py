@@ -15,7 +15,7 @@ class GuildAdmin(admin.ModelAdmin):
 
 
 class ChatAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'tId', 'update']
+    list_display = ['__str__', 'name', 'uid']
 
 
 admin.site.register(Chat, ChatAdmin)
