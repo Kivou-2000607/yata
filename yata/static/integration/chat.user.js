@@ -10,13 +10,15 @@
 // @grant        GM_xmlhttpRequest
 // @connect      yata.alwaysdata.net
 // @require      https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/aes-js/3.1.2/index.js
 // ==/UserScript==
 
 var CHECK = '';
+var KEY = ''
 
 function setCookie() {
   var d = new Date();
-  d.setTime(d.getTime() + (60*60*1000));  // expire after 1 hour
+  d.setTime(d.getTime() + (60*60*1000)); // expire after 1 hour
   document.cookie = "yatachatsecret=true;expires="+ d.toUTCString()+";path=/";
 }
 
@@ -26,13 +28,28 @@ function setCookie() {
     var check_cookie = (document.cookie.match(/^(?:.*;)?\s*yatachatsecret\s*=\s*([^;]+)(?:.*)?$/)||[,null])[1]
 
     if(check_cookie == null) {
+        // hash the check key
+        var checkHash = sha256(CHECK)
+
         var secret = document.querySelector('script[src^="/js/chat/chat"').getAttribute("secret");
         var uid = document.querySelector('script[src^="/js/chat/chat"').getAttribute("uid");
+
+        // convert to bytes
+        var secretBytes = aesjs.utils.utf8.toBytes(secret);
+        var keyBytes = aesjs.utils.utf8.toBytes(KEY);
+        // initialization vector (random 16 bytes vector)
+        var ivBytes = new Array(16)
+        for (var i = 0; i < ivBytes.length; i++) { ivBytes[i] = Math.floor(Math.random() * 100); }
+        var iv = aesjs.utils.hex.fromBytes(ivBytes);
+        // encryption
+        var aesCbc = new aesjs.ModeOfOperation.cbc(keyBytes, ivBytes);
+        var secretCipherBytes = aesCbc.encrypt(secretBytes);
+        var secretCipher = aesjs.utils.hex.fromBytes(secretCipher);
 
         GM_xmlhttpRequest({
             method: "POST",
             url: "https://yata.alwaysdata.net/bot/secret/",
-            headers: {"secret": secret, "uid": uid, "check": sha256(CHECK)},
+            headers: {"secret": secretCipher, "uid": uid, "check": checkHash, "iv": iv},
             onload: resp=> {
                 let obj = JSON.parse(resp.responseText);
                 if ("message" in obj) {
