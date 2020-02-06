@@ -506,6 +506,37 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [611]:
+                    # "611": {"name": "War Machine", "description": "Achieve 1,000 finishing hits in every category","type": 2,
+                    type = "Finishing hits"
+                    nHits = int(v["description"].split(" ")[1].replace(",", ""))
+                    bridge = {"heahits": ["Heavy artillery", 0, ""],
+                              "chahits": ["Mechanical guns", 0, ""],
+                              "axehits": ["Clubbin weapons", 0, ""],
+                              "grehits": ["Temporary weapons", 0, ""],
+                              "machits": ["Machine guns", 0, ""],
+                              "pishits": ["Pistols", 0, ""],
+                              "rifhits": ["Rifles", 0, ""],
+                              "shohits": ["Shotguns", 0, ""],
+                              "smghits": ["Sub machin guns", 0, ""],
+                              "piehits": ["Piercing weapons", 0, ""],
+                              "slahits": ["Slashing weapons", 0, ""],
+                              "h2hhits": ["Hand to hand", 0, ""]}
+                    vp["goal"] = nHits * len(bridge)
+
+                    current = 0
+                    for fhit in bridge:
+                        n = userInfo.get("personalstats", dict({})).get(fhit, 0)
+                        current += min(n, nHits)
+                        bridge[fhit][1] = n
+                        bridge[fhit][2] = "error" if n < nHits else "valid"
+
+                    bridge = sorted(bridge.values(), key=lambda x: -x[1])
+                    vp["current"] = current
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = "<br>".join(['<b class={}>{}</b>: {:,d} ({:.0f}%)'.format(v[2], v[0], v[1], 100 * min(1, v[1] / nHits)) for v in bridge])
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [15, 16, 17]:
                     # 15 {'name': 'Kill Streaker 1', 'description': 'Achieve a best killstreak of 10', 'type': 8, 'circulation': 124231, 'rarity': 'Very Common'}
                     type = "Kill streak"
@@ -595,7 +626,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                 elif int(k) in [800, 793]:
                     # "800": {"name": "Surplus", "description": "Use 100 rounds of special ammunition", "type": 2,
-            		# "793": {"name": "Bandolier","description": "Use 1,000 rounds of special ammunition", "type": 2,
+                    # "793": {"name": "Bandolier","description": "Use 1,000 rounds of special ammunition", "type": 2,
                     type = "Fire rounds"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("specialammoused", 0)

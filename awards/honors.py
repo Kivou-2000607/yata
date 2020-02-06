@@ -177,6 +177,7 @@ d = {
     491: 638480635,  # Modded
     800: 956179599,  # Surplus
     793: 144692020,  # Bandolier
+    611: 433435448,  # War Machine
     778: 0,  # Specialist
 
     # 3
