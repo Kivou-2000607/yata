@@ -26,10 +26,17 @@ class Guild(models.Model):
     guildContactName = models.CharField(default="guild_contact", max_length=32)
 
     # general options
-    manageChannels = models.BooleanField(default=False)
-    allowedChannels = models.CharField(default="", blank=True, max_length=64)
-    allowedRoles = models.CharField(default="", blank=True, max_length=64)
     masterKeys = models.ManyToManyField(Player, blank=True)
+    manageChannels = models.BooleanField(default=True)
+
+    # verify module
+    verifyModule = models.BooleanField(default=False)
+    verifyForce = models.BooleanField(default=False)
+    verifyFactions = models.ManyToManyField(Faction, blank=True)
+    verifyFacsRole = models.CharField(default="", blank=True, max_length=16)
+    verifyAppendFacId = models.BooleanField(default=True)
+    verifyDailyVerify = models.BooleanField(default=False)
+    verifyDailyCheck = models.BooleanField(default=False)
 
     # stock module
     stockModule = models.BooleanField(default=False)
@@ -47,13 +54,9 @@ class Guild(models.Model):
     # loot module
     reviveModule = models.BooleanField(default=False)
 
-    # verify module
-    verifyModule = models.BooleanField(default=False)
-    verifyChangeName = models.BooleanField(default=True)
-    verifyForce = models.BooleanField(default=False)
-    verifyAppendFacId = models.BooleanField(default=True)
-    verifyFactions = models.ManyToManyField(Faction, blank=True)
-    verifyFacsRole = models.CharField(default="", blank=True, max_length=16)
+    # API module
+    allowedChannels = models.CharField(default="", blank=True, max_length=64)
+    allowedRoles = models.CharField(default="", blank=True, max_length=64)
 
     # verify repository
     repoModule = models.BooleanField(default=False)

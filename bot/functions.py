@@ -88,10 +88,12 @@ def saveBotsConfigs():
                 var[guild.guildId]["verify"] = {"active": True}
                 if guild.verifyAppendFacId:
                     var[guild.guildId]["verify"]["id"] = True
-                if guild.verifyChangeName:
-                    var[guild.guildId]["verify"]["change"] = True
                 if guild.verifyForce:
                     var[guild.guildId]["verify"]["force"] = True
+                if guild.verifyDailyVerify:
+                    var[guild.guildId]["verify"]["dailyverify"] = True
+                if guild.verifyDailyCheck:
+                    var[guild.guildId]["verify"]["dailycheck"] = True
                 if guild.verifyFacsRole:
                     var[guild.guildId]["verify"]["common"] = guild.verifyFacsRole
                 factions = dict({})
