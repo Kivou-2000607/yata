@@ -51,9 +51,9 @@ def index(request):
         apps = False
         if player.tId in [2000607]:
             saveBotsConfigs()
-            apps = DiscordApp.objects.values()
+            apps = DiscordApp.objects.order_by("pk").values()
             for app in apps:
-                app["variables"] = json.loads(app["variables"])
+                app["variables"] = sorted(json.loads(app["variables"]).items(), key=lambda x: x[1]["admin"]["pk"])
 
         context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
@@ -96,6 +96,7 @@ def welcome(request):
 
     except Exception:
         return returnError()
+
 
 def host(request):
     try:

@@ -32,7 +32,8 @@ def saveBotsConfigs():
 
             # admin
             var[guild.guildId] = dict({})
-            var[guild.guildId]["admin"] = {"name": guild.guildName,
+            var[guild.guildId]["admin"] = {"pk": guild.pk,
+                                           "name": guild.guildName,
                                            "owner": guild.guildOwnerName,
                                            "owner_id": guild.guildOwnerId,
                                            "contact": guild.guildContactName,
