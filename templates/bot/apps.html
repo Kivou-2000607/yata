@@ -25,8 +25,8 @@ This file is part of yata.
 {% for app in apps %}
   <h1 class="module-doc">{{app.name}} [{{app.id}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
   <div class="module-doc">
-    {% for guildId, guild in app.variables.items %}
-        <h2 class="command-doc">{{guild.admin.name}} ({{guild.admin.contact}} [{{guild.admin.contact_id}}])&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    {% for guildId, guild in app.variables %}
+        <h2 class="command-doc">#{{guild.admin.pk}} {{guild.admin.name}} ({{guild.admin.contact}} [{{guild.admin.contact_id}}])&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="command-doc">
           <p><b>Owner:</b> {{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
           <p><b>Contact:</b> {{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
