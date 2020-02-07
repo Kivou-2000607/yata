@@ -56,6 +56,18 @@ REPORT_ATTACKS_STATUS = {
     -5: "Empty payload [stop]",
     -6: "No new entry [continue]"}
 
+REPORT_REVIVES_STATUS = {
+    3: "Normal [continue]",
+    2: "Up to date [continue]",
+    1: "No new attack [stop]",
+    0: "Waiting for first call",
+    -1: "No enabled AA keys [stop]",
+    -2: "API key major error (key deleted) [continue]",
+    -3: "API key temporary error [continue]",
+    -4: "Probably cached response [continue]",
+    -5: "Empty payload [stop]",
+    -6: "No new entry [continue]"}
+
 BB_BRIDGE = {
     "criminaloffences": "Offences",
     "busts": "Busts",
@@ -99,6 +111,7 @@ class Faction(models.Model):
     # chain and attacks
     hitsThreshold = models.IntegerField(default=100)
     lastAttacksPulled = models.IntegerField(default=0)
+    lastRevivesPulled = models.IntegerField(default=0)
     chainsUpda = models.IntegerField(default=0)
 
     # poster
@@ -1288,7 +1301,7 @@ class AttacksReport(models.Model):
         # make call
         selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
         req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
-        key.reason = "Pull attacks for attacks report"
+        key.reason = "Pull attacks for report"
         key.lastPulled = tsnow()
         key.save()
         self.update = tsnow()
@@ -1313,7 +1326,6 @@ class AttacksReport(models.Model):
         nowTS = self.update
         cache = abs(nowTS - tornTS)
         print("{} cache = {}s".format(self, cache))
-
         # in case cache
         if cache > 5:
             print('{} probably cached response... (blank turn)'.format(self))
@@ -1334,6 +1346,7 @@ class AttacksReport(models.Model):
 
         print("{} {} attacks from the API".format(self, len(apiAttacks)))
 
+        # add attacks
         newEntry = 0
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
@@ -1416,6 +1429,216 @@ class AttackReport(models.Model):
     groupAttack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chainBonus = models.IntegerField(default=0)
+
+
+# Revive report
+class RevivesReport(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=0)
+    last = models.IntegerField(default=0)
+    live = models.BooleanField(default=True)
+
+    # information for computing
+    computing = models.BooleanField(default=True)
+    state = models.IntegerField(default=0)
+    crontab = models.IntegerField(default=0)
+    update = models.IntegerField(default=0)
+
+    # global information for the report
+    reviverFactions = models.TextField(default="[]")
+    targetFactions = models.TextField(default="[]")
+    revivesMade = models.IntegerField(default=0)
+    revivesReceived = models.IntegerField(default=0)
+
+    def __str__(self):
+        return format_html("{} revives [{}]".format(self.faction, self.pk))
+
+    def progress(self):
+        end = self.end if self.end else tsnow()
+        last = self.last if self.last else self.start
+        total = max(end - self.start, 1)
+        elaps = last - self.start
+        return int((100 * elaps) // float(total))
+
+    def displayCrontab(self):
+        if self.crontab > 0:
+            return "#{}".format(self.crontab)
+        elif self.crontab == 0:
+            return "No crontab assigned"
+        else:
+            return "Special crontab you lucky bastard..."
+
+    def assignCrontab(self):
+        # check if already in a crontab
+        report = self.faction.revivesreport_set.filter(computing=True).only("crontab").first()
+        if report is None or report.crontab not in getCrontabs():
+            cn = {c: len(RevivesReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+            self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
+        elif report is not None:
+            self.crontab = report.crontab
+        self.save()
+        return self.crontab
+
+    def getRevives(self):
+        """ Fill report with revives
+        """
+        # handle live report
+        if self.live:
+            self.end = tsnow()
+
+        # shortcuts
+        faction = self.faction
+        tss = self.start
+        tse = self.end
+
+        # compute last ts
+        lastRevive = self.revive_set.order_by("-timestamp").first()
+        tsl = self.start if lastRevive is None else lastRevive.timestamp
+        self.last = tsl
+
+        print("{} live {}".format(self, self.live))
+        print("{} start {}".format(self, timestampToDate(tss)))
+        print("{} last  {}".format(self, timestampToDate(tsl)))
+        print("{} end   {}".format(self, timestampToDate(tse)))
+
+        # add + 2 s to the endTS
+        tse += 10
+
+        # get existing revives (just the ids)
+        revives = [r.tId for r in self.revive_set.all()]
+        print("{} {} existing revives".format(self, len(revives)))
+
+        # get key
+        key = faction.getKey(useFact=True)
+        if key is None:
+            print("{} no key".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.revive_set.all().delete()
+            self.state = -1
+            self.save()
+            return -1
+
+        # prevent cache response
+        delay = tsnow() - self.update
+        delay = min(tsnow() - faction.lastRevivesPulled, delay)
+        if delay < 32:
+            sleeptime = 32 - delay
+            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+            time.sleep(sleeptime)
+
+        # make call
+        selection = "revives,timestamp&from={}&to={}".format(tsl, tse)
+        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+        key.reason = "Pull revives for report"
+        key.lastPulled = tsnow()
+        key.save()
+        self.update = tsnow()
+        faction.lastRevivesPulled = self.update
+        faction.save()
+
+        # in case there is an API error
+        if "apiError" in req:
+            print('{} api key error: {}'.format(self, req['apiError']))
+            if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                faction.delKey(key=key)
+                self.state = -2
+                self.save()
+                return -2
+            self.state = -3
+            self.save()
+            return -3
+
+        # try to catch cache response
+        tornTS = int(req["timestamp"])
+        nowTS = self.update
+        cache = abs(nowTS - tornTS)
+        print("{} cache = {}s".format(self, cache))
+        # in case cache
+        if cache > 5:
+            print('{} probably cached response... (blank turn)'.format(self))
+            self.state = -4
+            self.save()
+            return -4
+
+        apiRevives = req["revives"]
+
+        # in case empty payload
+        if not len(apiRevives):
+            print('{} empty payload'.format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = -5
+            self.save()
+            return -5
+
+        print("{} {} revives from the API".format(self, len(apiRevives)))
+
+        # add attacks
+        newEntry = 0
+        for k, v in apiRevives.items():
+            ts = int(v["timestamp"])
+
+            # probably because of cache
+            before = int(v["timestamp"]) - self.last
+            after = int(v["timestamp"]) - tse
+            if before < 0 or after > 0:
+                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+
+            a = self.revive_set.update_or_create(tId=int(k), defaults=v)
+            newEntry += 1
+            tsl = max(tsl, ts)
+            if v["reviver_faction"] == faction.tId:
+                self.revivesMade += 1
+            else:
+                self.revivesReceived += 1
+
+        self.last = tsl
+
+        print("{} last  {}".format(self, timestampToDate(self.last)))
+        print("{} progress ({})%".format(self, self.progress()))
+
+        if not newEntry and len(apiRevives) > 1:
+            print("{} no new entry with cache = {} (continue)".format(self, cache))
+            self.state = -6
+            self.save()
+            return -6
+
+        if len(apiRevives) < 2 and not self.live:
+            print("{} no api entry for non live chain (stop)".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = 1
+            self.last = self.end
+            self.save()
+            return 1
+
+        if len(apiRevives) < 2 and self.live:
+            print("{} no api entry for live chain (continue)".format(self))
+            self.state = 2
+            self.end = self.last
+            self.save()
+            return 2
+
+        self.state = 3
+        self.save()
+        return 3
+
+
+class Revive(models.Model):
+    report = models.ForeignKey(RevivesReport, on_delete=models.CASCADE)
+    tId = models.IntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+    reviver_id = models.IntegerField(default=0)
+    reviver_name = models.CharField(default="reviver_name", max_length=32)
+    reviver_faction = models.IntegerField(default=0)
+    reviver_factionname = models.CharField(default="reviver_factionname", null=True, blank=True, max_length=64)
+    target_id = models.IntegerField(default=0)
+    target_name = models.CharField(default="target_name", max_length=32)
+    target_faction = models.IntegerField(default=0)
+    target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
 
 
 # Armory

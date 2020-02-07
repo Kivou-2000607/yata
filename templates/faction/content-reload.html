@@ -83,6 +83,21 @@ This file is part of yata.
     {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
+{% if view.revivesReports %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% include "faction/revives/index.html" %}
+    {# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+{% if view.revivesReport %}
+  {% include "faction/revives/report.html" %}
+{# {% include "faction/tutorials/index.html" %} #}
+{% endif %}
+
 {% if view.armory %}
     {% include "faction/armory/index.html" %}
     {# {% include "faction/tutorials/index.html" %} #}

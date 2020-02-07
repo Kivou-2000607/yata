@@ -29,10 +29,15 @@ urlpatterns = [
     re_path(r'^walls/manage/$', views.manageWall, name='manageWall'),
     re_path(r'^walls/import/$', views.importWall, name='importWall'),
 
-    # SECTION: wall
+    # SECTION: attacks
     re_path(r'^attacks/$', views.attacksReports, name='attacks'),
     re_path(r'^attacks/manage/$', views.manageAttacks, name='manageAttacks'),
     re_path(r'^attacks/(?P<reportId>\w+)$', views.attacksReport, name='attacks'),
+
+    # SECTION: revives
+    re_path(r'^revives/$', views.revivesReports, name='revives'),
+    re_path(r'^revives/manage/$', views.manageRevives, name='manageRevives'),
+    re_path(r'^revives/(?P<reportId>\w+)$', views.revivesReport, name='revives'),
 
     # SECTION: armory
     re_path(r'^armory/$', views.armory, name='armory'),

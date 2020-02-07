@@ -1,0 +1,156 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<script>
+$(document).ready(function() {
+    $("#faction-revives-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+
+    $(function () {
+        $("#date-start").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-start").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-start").html(s);
+
+                $("#date-start").removeClass("error").addClass("valid");
+                $("#date-live").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!end) {
+                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+                    $("#create-report").hide()
+                } else if(end < start) {
+                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#create-report").hide()
+                } else {
+                    $("#date-end").removeClass("error").addClass("valid");
+                    $("#create-report").show()
+                }
+
+                // if $("#date-start").html {
+                //     console.log()
+                // }
+            },
+        });
+    });
+
+
+    $(function () {
+        $("#date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-end").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-end").html(s);
+                $("#date-end").removeClass("error").addClass("valid");
+                $("#date-live").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!start) {
+                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                    $("#create-report").hide()
+                } else if(end < start) {
+                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#create-report").hide()
+                } else {
+                    $("#date-start").removeClass("error").addClass("valid");
+                    $("#create-report").show()
+                }
+            },
+        });
+    });
+})
+
+</script>
+
+<h2 class="title"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;{{faction.name|safe}}' revives reports</h2>
+<div class="module">
+    {% if reports|length %}
+    <table id="faction-revives-report" class="tablesorter center-large trshadow faction-revives-report">
+        <thead>
+            <tr>
+                <th>Report [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Made</th>
+                <th>Received</th>
+                <th>Report</th>
+        </thead>
+        <tbody>
+        {% for report in reports %}
+        <tr class="faction-revives-report">
+            <td class="a">Report [{{report.pk}}]</td>
+            <td class="b">{{report.start|ts2date}}</td>
+            {% if report.end %}
+                <td class="b">{{report.end|ts2date}}</td>
+                <td class="b">{{report.end|sub:report.start|ts2time}}</td>
+            {% else %}
+                <td class="b">-</td>
+                <td class="b">-</td>
+            {% endif %}
+            <td class="c"><b>{{report.revivesMade}}</b></td>
+            <td class="c"><b>{{report.revivesReceived}}</b></td>
+
+            <td class="d buttons">
+                {% include "faction/revives/buttons.html" %}
+            </td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else%}
+        <p class="error">No reports recorded. Only AA members can add reports.</p>
+    {% endif %}
+</div>
+
+{% if player.factionAA %}
+<div class="module rounded">
+    <p>To create a new attack report select a starting date and either an ending date or make it live.</p>
+    <form>
+        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
+            <input id="ts-start" type="hidden" value="0">
+            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+        </p>
+        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
+            <input id="ts-end" type="hidden" value="0">
+            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+        </p>
+        <p><b><i class="fas fa-microphone-alt"></i>&nbsp;&nbsp;Make it live</b>:
+            <input id="ts-live" type="hidden" value="0">
+            <input id="date-live" type="checkbox">
+        </p>
+        <p id="create-report" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
+    </form>
+</div>
+{% endif %}

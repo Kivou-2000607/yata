@@ -26,10 +26,7 @@ This file is part of yata.
         <td><a href="{% url 'faction:chains' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a></td>
         <td><a href="{% url 'faction:attacks' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Attacks</a></td>
         <td><a href="{% url 'faction:walls' %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;Walls</a></td>
-        <td>
-            {# <a href="{% url 'chain:contracts' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a> #}
-            <span class="neutral"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</span>
-        </td>
+        <td><a href="{% url 'faction:revives' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a></td>
         {% if player.factionAA %}
             <td>
                 {# <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a> #}

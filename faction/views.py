@@ -1310,6 +1310,227 @@ def attacksReport(request, reportId):
         return returnError()
 
 
+# SECTION: revives
+def revivesReports(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # delete contract
+            if request.POST.get("type") == "delete":
+                contract = faction.revivesreport_set.filter(pk=request.POST["contractId"])
+                contract.delete()
+                # dummy render
+                return render(request, page)
+
+            # create contract
+            message = False
+            if request.POST.get("type") == "new":
+                try:
+                    live = int(request.POST.get("live", 0))
+                    start = int(request.POST.get("start", 0))
+                    end = int(request.POST.get("end", 0))
+                    if start > tsnow() or end > tsnow():
+                        message = ["errorMessageSub", "Select a starting date and ending date in the past.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
+                    elif start and live:
+                        report = faction.revivesreport_set.create(start=start, end=0, live=True, computing=True)
+                        c = report.assignCrontab()
+                        report.save()
+                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start, fmt=True))]
+                    elif start and end and start < end:
+                        report = faction.revivesreport_set.create(start=start, end=end, live=False, computing=True)
+                        c = report.assignCrontab()
+                        report.save()
+                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
+                    else:
+                        message = ["errorMessageSub", "Error while creating new report"]
+                except BaseException as e:
+                    message = ["errorMessageSub", "Error while creating new report: {}".format(e)]
+
+            # get reports
+            reports = faction.revivesreport_set.all().order_by('-end')
+            for report in reports:
+                report.status = REPORT_REVIVES_STATUS[report.state]
+
+            context = {'player': player, 'faction': faction, 'factioncat': True, 'reports': reports, 'view': {'revivesReports': True}}
+            if message:
+                context[message[0]] = message[1]
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def manageRevives(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            reportId = request.POST.get("reportId", 0)
+            report = RevivesReport.objects.filter(pk=reportId).first()
+            if report is None:
+                return render(request, 'yata/error.html', {'inlineError': 'Report {} not found in the database.'.format(reportId)})
+
+            # delete contract
+            if request.POST.get("type") == "delete":
+                report.delete()
+
+            return render(request, page)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def revivesReport(request, reportId):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get breakdown
+            report = faction.revivesreport_set.filter(pk=reportId).first()
+            print(report)
+            if report is None:
+                context = dict({"player": player,
+                                'chaincat': True,
+                                'faction': faction,
+                                'report': False,
+                                'view': {'revives': True}})  # views
+                return render(request, page, context)
+
+            # if modify end date
+            if 'modifyEnd' in request.POST:
+                tse = int(request.POST.get("end", 0))
+                if report.start < tse:
+                    report.end = tse
+                    report.live = False
+                    report.computing = True
+                    report.assignCrontab()
+                    report.revive_set.filter(timestamp__gt=tse).delete()
+                    report.last = min(report.end, report.last)
+                    report.state = 0
+                    report.save()
+
+            reviverFactions = json.loads(report.reviverFactions)
+            targetFactions = json.loads(report.targetFactions)
+
+            # if click on toggle
+            if request.POST.get("type") == "revivers":
+                if int(request.POST["factionId"]) in reviverFactions:
+                    reviverFactions.remove(int(request.POST["factionId"]))
+                else:
+                    reviverFactions.append(int(request.POST["factionId"]))
+                report.reviverFactions = json.dumps(reviverFactions)
+            elif request.POST.get("type") == "targets":
+                if int(request.POST["factionId"]) in targetFactions:
+                    targetFactions.remove(int(request.POST["factionId"]))
+                else:
+                    targetFactions.append(int(request.POST["factionId"]))
+                report.targetFactions = json.dumps(targetFactions)
+            report.save()
+
+            revives = dict({})
+            for r in report.revive_set.all():
+                revives[r.tId] = model_to_dict(r)
+                if revives[r.tId]["target_faction"] in targetFactions:
+                    revives[r.tId]["show"] = True
+                    report.revivesMade += 1
+                elif revives[r.tId]["reviver_faction"] in reviverFactions:
+                    revives[r.tId]["show"] = True
+                    report.revivesReceived += 1
+                else:
+                    revives[r.tId]["show"] = False
+
+            breakdown = dict({"target_factions": dict({}), "reviver_factions": dict({}), "revivers": dict({}), "targets": dict({}), "players": dict({})})
+            for k, v in revives.items():
+
+                # add target faction
+                if v["target_faction"] in breakdown["target_factions"]:
+                    breakdown["target_factions"][v["target_faction"]]["revived"] += 1
+                else:
+                    show = True if v["target_faction"] in targetFactions else False
+                    breakdown["target_factions"][v["target_faction"]] = {"revives": 0, "revived": 1, "name": v["target_factionname"], "show": show}
+
+                # add reviver faction
+                if v["reviver_faction"] in breakdown["reviver_factions"]:
+                    breakdown["reviver_factions"][v["reviver_faction"]]["revives"] += 1
+                else:
+                    show = True if v["reviver_faction"] in reviverFactions else False
+                    breakdown["reviver_factions"][v["reviver_faction"]] = {"revives": 1, "revived": 0, "name": v["reviver_factionname"], "show": show}
+
+                # add reviver
+                if v["reviver_faction"] in reviverFactions:
+                    if v["reviver_id"] in breakdown["players"]:
+                        breakdown["players"][v["reviver_id"]]["revives"] += 1
+                    else:
+                        breakdown["players"][v["reviver_id"]] = {"revives": 1, "revived": 0, "name": v["reviver_name"], "faction": v["reviver_faction"], "factionname": v["reviver_factionname"]}
+
+                # add target
+                if v["target_faction"] in targetFactions:
+                    if v["target_id"] in breakdown["players"]:
+                        breakdown["players"][v["target_id"]]["revived"] += 1
+                    else:
+                        breakdown["players"][v["target_id"]] = {"revives": 0, "revived": 1, "name": v["target_name"], "faction": v["target_faction"], "factionname": v["target_factionname"]}
+
+            # # convert factions to dictionnary for the template
+            # # do not save
+            reviverFactions = json.loads(report.reviverFactions)
+            targetFactions = json.loads(report.targetFactions)
+
+            # context
+            report.status = REPORT_REVIVES_STATUS[report.state]
+            context = dict({"player": player,
+                            'factioncat': True,
+                            'faction': faction,
+                            'report': report,
+                            'revives': revives,
+                            'breakdown': breakdown,
+                            'view': {'revivesReport': True}})  # views
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
 # SECTION: armory
 def armory(request):
     from bazaar.models import BazaarData

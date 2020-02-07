@@ -74,12 +74,25 @@ class AttacksReportAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'live', 'computing', 'state', 'update', 'progress', 'state', 'status', 'start', 'last', 'end']
     search_fields = ('pk', 'faction__name')
-    list_filter = ('live', 'computing', 'crontab', 'state')
+    list_filter = ('computing', 'live', 'crontab', 'state')
     autocomplete_fields = ['wall']
     actions = [reset_report]
 
     def status(self, instance):
         return REPORT_ATTACKS_STATUS.get(instance.state, "?")
+
+
+class RevivesReportAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+
+    list_display = ['__str__', 'live', 'computing', 'state', 'update', 'progress', 'state', 'status', 'start', 'last', 'end']
+    search_fields = ('pk', 'faction__name')
+    list_filter = ('computing', 'live', 'crontab', 'state')
+    # actions = [reset_report]
+
+    def status(self, instance):
+        return REPORT_REVIVES_STATUS.get(instance.state, "?")
 
 
 class WallAdmin(admin.ModelAdmin):
@@ -132,6 +145,7 @@ admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
 admin.site.register(Log, LogAdmin)
 admin.site.register(News, NewsAdmin)
+admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Wall, WallAdmin)
 admin.site.register(Chain, ChainAdmin)

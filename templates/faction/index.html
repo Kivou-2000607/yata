@@ -23,27 +23,26 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
 <div class="module">
-    <h3>Info</h3>
-    <p><b>Faction</b> <i>{{faction|safe}}</i><br>
-       <b>AA</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br>
-   </p>
-   <p><h3>Direct links</h3>
-        <ul>
-            <li><a href="/faction/chains/">Chains</a></li>
-            <ul>
-                {% for report in reports %}
-                    {% if report.live %}
-                        <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
-                    {% else %}
-                        <li><a href="/faction/report/{{report.tId}}">Chain [{{report.tId}}]</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
-                    {% endif %}
-                {% endfor %}
-                <li><a href="/faction/combined/">Combined report</li>
-            </ul>
-            <li><a href="/faction/attacks/">Attacks</a></li>
-            <li><a href="/faction/walls/">Walls</a></li>
-            <li><a href="/faction/members/">Members</a></li>
-            <li><a href="/faction/configurations/">Configurations</a></li>
-        </ul>
-    </p>
+    <!-- <h3>Info</h3> -->
+    <p><b>Faction:</b> <i>{{faction|safe}}</i></p>
+    <p><b>AA:</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br></p>
+   <!-- <h3>Direct links</h3> -->
+        <!-- <ul> -->
+            <!-- <li><a href="/faction/chains/">Chains</a></li> -->
+            <!-- <ul> -->
+                <!-- {% for report in reports %} -->
+                    <!-- {% if report.live %} -->
+                        <!-- <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li> -->
+                    <!-- {% else %} -->
+                        <!-- <li><a href="/faction/report/{{report.tId}}">Chain [{{report.tId}}]</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li> -->
+                    <!-- {% endif %} -->
+                <!-- {% endfor %} -->
+                <!-- <li><a href="/faction/combined/">Combined report</li> -->
+            <!-- </ul> -->
+            <!-- <li><a href="/faction/attacks/">Attacks</a></li> -->
+            <!-- <li><a href="/faction/walls/">Walls</a></li> -->
+            <!-- <li><a href="/faction/members/">Members</a></li> -->
+            <!-- <li><a href="/faction/configurations/">Configurations</a></li> -->
+        <!-- </ul> -->
+    <!-- </p> -->
 </div>
