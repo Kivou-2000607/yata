@@ -71,10 +71,25 @@ class Chat(models.Model):
     name = models.CharField(default="secret", max_length=128)
     uid = models.IntegerField(default=0)
     secret = models.CharField(default="secret", max_length=128)
-    update = models.IntegerField(default=0)
     check = models.CharField(default="check", max_length=128)
     key = models.CharField(default="key", max_length=128)
     hookurl = models.CharField(default="url", max_length=512)
 
     def __str__(self):
-        return "Secret key of {} [{}]".format(self.name, self.uid)
+        return "Chat {}".format(self.name)
+
+    def setNewestSecret(self):
+        cred = self.credential_set.all().order_by("-timestamp").first()
+        self.secret = cred.secret
+        self.uid = cred.uid
+        self.save()
+
+
+class Credential(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    uid = models.IntegerField(default=0)
+    secret = models.CharField(default="secret", max_length=128)
+    timestamp = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Credential [{}] for {}".format(self.uid, self.chat)

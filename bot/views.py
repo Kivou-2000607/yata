@@ -192,7 +192,6 @@ def secret(request):
             from Crypto.Hash import SHA256
             from Crypto.Cipher import AES
             from binascii import unhexlify
-            from binascii import hexlify
 
             # the secret key is encrypted with AES
             cipher_secret = request.META.get("HTTP_SECRET")
@@ -202,7 +201,7 @@ def secret(request):
             hash_check = request.META.get("HTTP_CHECK")
             uid = int(request.META.get("HTTP_UID"))
 
-            i = 0
+            rooms = []
             for chat in Chat.objects.all():
 
                 # hash the check key and compare to the hash sent
@@ -210,23 +209,33 @@ def secret(request):
                 hash.update(chat.check.encode('utf-8'))
 
                 if hash.hexdigest() != hash_check:
-                    print("{} {} check don't match".format(chat.uid, chat.name))
+                    t = -1
+                    m = "Wrong check key."
+                    return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
                 else:
-                    print("{} {} checked".format(chat.uid, chat.name))
                     obj = AES.new(chat.key, AES.MODE_CBC, unhexlify(iv))
                     secret = obj.decrypt(unhexlify(cipher_secret)).decode('utf-8')
-                    i += 1
-                    chat.update = tsnow()
-                    chat.uid = uid
-                    chat.secret = secret
-                    chat.save()
 
-            t = 1
-            m = "{} secret(s) imported thanks. Chats will live!".format(i)
+                    cred, _ = chat.credential_set.get_or_create(uid=uid)
+                    if cred.secret != secret:
+                        rooms.append(chat.name)
+                        cred.secret = secret
+                        cred.timestamp = tsnow()
+                        cred.save()
+
+                    chat.setNewestSecret()
+
+            if len(rooms):
+                t = 1
+                m = "Secret imported for {}. Thanks, chats will live!".format(", ".join(rooms))
+            else:
+                t = 1
+                m = "Secret was already up to date... All good dude!"
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
         except BaseException as e:
-            t = 0
+            t = -2
             m = "Server error... YATA's been poorly coded: {}".format(e)
             return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 

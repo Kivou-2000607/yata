@@ -35,10 +35,25 @@ class GuildAdmin(admin.ModelAdmin):
                 )
 
 
+class CredentialInline(admin.TabularInline):
+    model = Credential
+    extra = 0
+    show_change_link = True
+    can_delete = True
+    readonly_fields = ('uid', 'secret', 'timestamp',)
+
+
+class CredentialAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'uid', 'timestamp']
+    list_filter = ['chat__name']
+
+
 class ChatAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'name', 'uid']
+    inlines = [CredentialInline,]
 
 
+admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
 admin.site.register(DiscordApp, DiscordAppAdmin)
 admin.site.register(Guild, GuildAdmin)
