@@ -79,7 +79,7 @@ This file is part of yata.
         </td>
         {% if player.factionAA %}
             <td>
-                <a href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a>
+                <a class="error" title="You should start moving to the new faction version" href="{% url 'chain:respectSimulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a>
             </td>
             <td>
                 <a class="error" title="You should start moving to the new faction version" href="{% url 'chain:aa' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;AA options</a>

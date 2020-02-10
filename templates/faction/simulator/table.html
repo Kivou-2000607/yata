@@ -46,13 +46,12 @@ This file is part of yata.
     //     $("#faction-simulator").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, sortList: [[2,0]]});
     // });
 </script>
-<table class="center faction-simulator-sum sticky">
+<table class="center faction-simulator-sum">
     <thead>
         <tr>
             <th colspan="6">Faction wise summary</th>
         </tr>
         <tr>
-            <th></th>
             <th colspan="2">Current state</th>
             <th colspan="2">Simulation</th>
             <th>Difference</th>
@@ -66,14 +65,16 @@ This file is part of yata.
             <th>Respect Used</th>
         </tr>
     </thead>
+</table>
+<table class="center faction-simulator-sum sticky">
     <tbody>
         <tr>
             <td class="c"><b>{{faction.respect|intcomma}}</b></td>
-            <td class="c">{{totalRespect.faction|intcomma}}</td>
-            <td class="c">{{faction.respect|sub:totalRespect.faction|signColor}}</td>
-            <td class="c">{{totalRespect.simu|intcomma}}</td>
-            <td class="c">{{faction.respect|sub:totalRespect.simu|signColor}}</td>
-            <td class="c">{{totalRespect.faction|sub:totalRespect.simu|signColor}}</td>
+            <td class="c">{{respect.Total.faction_cost|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:respect.Total.faction_cost|signColor}}</td>
+            <td class="c">{{respect.Total.simu_cost|intcomma}}</td>
+            <td class="c">{{faction.respect|sub:respect.Total.simu_cost|signColor}}</td>
+            <td class="c">{{respect.Total.faction_cost|sub:respect.Total.simu_cost|signColor}}</td>
         </tr>
     </tbody>
 </table>
@@ -103,19 +104,22 @@ This file is part of yata.
         </tr>
     </thead>
     <tbody>
-        {% for b, cl in branchesCost.items %}
-        <tr {% if cl.5 > 6 %}class="max-order"{% endif %}>
-            {% if cl.3 or cl.3 > cl.0 or cl.3 < cl.0 %}
+        {% for b, cl in respect.items %}
+        <tr {% if cl.simu_order > 6 %}class="max-order"{% endif %}>
+            {% if cl.simu_base or cl.simu_base > cl.faction_base or cl.simu_base < cl.faction_base %}
                 <td class="a"><b>{{b}}</b></td>
-                <td class="b">{{cl.0|emptyIfFalse|intcomma}}</td>
-                <td class="b">{{cl.1|emptyIfFalse|intcomma}}</td>
-                <td class="c">{{cl.2|emptyIfFalse}}</td>
-                <td class="b">{{cl.3|emptyIfFalse|intcomma}}</td>
-                <td class="b">{{cl.3|sub:cl.0|signColor:1}}</td>
-                <td class="b">{{cl.4|emptyIfFalse|intcomma}}</td>
-                <td class="b">{{cl.4|sub:cl.1|signColor:1}}</td>
-                <td class="c">{{cl.5|emptyIfFalse}}</td>
-                <td class="c">{{cl.5|sub:cl.2|signColor:1}}</td>
+                <td class="b">{{cl.faction_base|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.faction_cost|emptyIfFalse|intcomma}}</td>
+                <td class="c">{{cl.faction_order|emptyIfFalse}}</td>
+
+                <td class="b">{{cl.simu_base|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.simu_base|sub:cl.faction_base|signColor:1}}</td>
+
+                <td class="b">{{cl.simu_cost|emptyIfFalse|intcomma}}</td>
+                <td class="b">{{cl.simu_cost|sub:cl.faction_cost|signColor:1}}</td>
+
+                <td class="c">{{cl.simu_order|emptyIfFalse}}</td>
+                <td class="c">{{cl.simu_order|sub:cl.faction_order|signColor:1}}</td>
             {% endif %}
         </tr>
         {% endfor %}
@@ -157,7 +161,7 @@ This file is part of yata.
                     <tr class="order-{{u.simu_order}}">
                 {% endif %}
                     <td class="a show-upgrade-details" title="{{u}}"><b>{{branchId}}</b>{%if u.unsets_completed %} <i class="fas fa-history error" title="Branch unset on {{u.unsets_completed|ts2date}}"></i>{%endif%}</td>
-                    <td class="b show-upgrade-details"><b>[{{u.id}}] {{upgradeId}}</b></td>
+                    <td class="b show-upgrade-details"><b>{{upgradeId}}</b></td>
                     <td class="c">{{u.faction_order|emptyIfFalse}}</td>
                     <td class="c">{{u.faction_level|emptyIfFalse}}</td>
                     <td class="d">{{u.faction_cost|emptyIfFalse|intcomma}}</td>
@@ -193,17 +197,4 @@ This file is part of yata.
         {% endfor %}
     </tbody>
 </table>
-
-<hr class="sep">
-<p>
-    To do a simulation, modify the <b>order</b> of a branch or the <b>level</b> of an upgrade in the table above by clicking on the corresponding number (available modifications are in bold).<br>
-    Colored numbers will show you the difference between the current state and the simulation.
-<ul>
-    <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branches will be changed to avoid identical orders.</li>
-    <li>If you modify the <b>level</b> of an upgrade, the order of all the branches will be modified to <span class="valid">minimize the respect used</span> and, if needed, the levels of other upgrades of the branch will be <span class="valid">set to their minimal required values</span>.</li>
-    <li><b>Challenges</b> are not taken into account for the simulation. You can see the availability of the upgrade levels by clicking on the upgrade name.</li>
-</ul>
-</p>
-<p><i class="fas fa-toilet-paper"></i>&nbsp;&nbsp;You can reset to simulation to the current state by clicking on the reset button on the top right.
-</p>
-<p><span class="warning">Warning:</span> the simulations are saved on the fly for the faction (not for a member). Modifications of the upgrades by two members at the same time can lead to strange behaviors!</p>
+<p class="update-info">Last upgrades update: {{faction.upgradesUpda|ts2date}}<br>Last challenges update: {{faction.armoryUpda|ts2date}}</p>

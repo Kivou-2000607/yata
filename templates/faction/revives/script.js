@@ -1,27 +1,27 @@
-$(document).on('change', '#date-live', e=>{
+$(document).on('change', '#date-live-revives', e=>{
     e.preventDefault();
-    var start = parseInt($("#ts-start").val());
-    var end = parseInt($("#ts-end").val());
+    var start = parseInt($("#ts-start-revives").val());
+    var end = parseInt($("#ts-end-revives").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").addClass("valid").removeClass("error").html("Will be constantly udpated");
+        $("#date-end-revives").addClass("valid").removeClass("error").html("Will be constantly udpated");
         if(start) {
-            $("#create-report").show();
+            $("#create-report-revives").show();
         } else {
-            $("#create-report").hide();
+            $("#create-report-revives").hide();
         }
     } else {
-        $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
-        $("#create-report").hide();
+        $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+        $("#create-report-revives").hide();
     }
 });
 
 // create report
-$(document).on('click', '#create-report', e=>{
+$(document).on('click', '#create-report-revives', e=>{
     e.preventDefault();
-    var start = parseInt($("#ts-start").val());
-    var end = parseInt($("#ts-end").val());
-    if($("#date-live").prop('checked')) {
+    var start = parseInt($("#ts-start-revives").val());
+    var end = parseInt($("#ts-end-revives").val());
+    if($("#date-live-revives").prop('checked')) {
         var live = 1;
         var end = 0;
     } else {

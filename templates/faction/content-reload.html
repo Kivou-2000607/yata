@@ -31,39 +31,32 @@ This file is part of yata.
 {# index #}
 {% if view.index %}
     {% include "faction/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# aa #}
 {% if view.aa %}
     {% include "faction/aa/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# members #}
 {% if view.members %}
     {% include "faction/members/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# chain reports #}
 {% if view.report %}
     {% include "faction/chains/report.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 {% if view.combined %}
     {% include "faction/chains/combined.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 {% if view.chains %}
     {% include "faction/chains/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# walls #}
 {% if view.walls %}
     {% include "faction/walls/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {# attack reports #}
@@ -75,12 +68,10 @@ This file is part of yata.
         });
     </script>
     {% include "faction/attacks/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.attacksReport %}
     {% include "faction/attacks/report.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.revivesReports %}
@@ -91,29 +82,24 @@ This file is part of yata.
         });
     </script>
     {% include "faction/revives/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 {% if view.revivesReport %}
   {% include "faction/revives/report.html" %}
-{# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.armory %}
     {% include "faction/armory/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.bb %}
     {% include "faction/bigbrother/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.territories %}
     {% include "faction/territories/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
 {% endif %}
 
 {% if view.simulator %}
     {% include "faction/simulator/index.html" %}
-    {# {% include "faction/tutorials/index.html" %} #}
+    {% include "faction/tutorials/simulator.html" %}
 {% endif %}

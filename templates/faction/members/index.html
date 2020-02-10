@@ -47,7 +47,7 @@ This file is part of yata.
 
 <script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
 
-<h2 class="title">{{faction.name|safe}}'s members<span class="flush-right"><b>Status update:</b> {{faction.memberStatusUpda|ts2date}}&nbsp;&nbsp;<b>List update:</b> {{faction.membersUpda|ts2date}}</span><form class="form-inline"><a id="member-refresh" class="flush-right" href=""><i class="fas fa-sync-alt"></i>&nbsp;Refresh status</a></form></h2>
+<h2 class="title"><i class="fas fa-users"></i>&nbsp;&nbsp;{{faction.name|safe}}'s members<span class="flush-right"><b>Status update:</b> {{faction.memberStatusUpda|ts2date}}&nbsp;&nbsp;<b>List update:</b> {{faction.membersUpda|ts2date}}</span><form class="form-inline"><a id="member-refresh" class="flush-right" href=""><i class="fas fa-sync-alt"></i>&nbsp;Refresh status</a></form></h2>
 <div class="module">
     <table id="faction-members" class="tablesorter center-medium trshadow faction-members">
         <thead>

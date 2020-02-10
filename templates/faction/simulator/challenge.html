@@ -24,7 +24,7 @@ This file is part of yata.
 <td colspan="11">
 <table class="center-full faction-simulator-details">
     {% for challenge in challenges %}
-    <tr>
+    <tr title="{% if challenge.progress.0 > 0 %}{{challenge.name}}: {{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}} ({{challenge.progress.0|div:challenge.progress.1|mul:100|floatformat:0|intcomma}}%){% endif %}">
         <td class="a">{{challenge.name}}</td>
         <td class="b">{{challenge.ability}}</td>
         <td class="c">{{challenge.challenge}}</td>
@@ -33,7 +33,7 @@ This file is part of yata.
           {% elif challenge.progress.0 < challenge.progress.1 %}
             <td class="d error" style="cursor: help" title="{{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}}">{{challenge.progress.0|div:challenge.progress.1|mul:100|floatformat:0}}%</td>
         {% else %}
-            <td class="d valid" style="cursor: help" title="{{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}}">100%</td>
+            <td class="d valid" style="cursor: help">100%</td>
         {% endif %}
     </tr>
     {% endfor %}

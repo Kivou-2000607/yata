@@ -28,32 +28,32 @@ $(document).ready(function() {
     $("#faction-revives-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
 
     $(function () {
-        $("#date-start").datetimepicker({
+        $("#date-start-revives").datetimepicker({
             step: 15,
             onChangeDateTime:function(dp,$input){
                 var d = new Date($input.val());
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-                $("#ts-start").val(dUTC/1000);
+                $("#ts-start-revives").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-start").html(s);
+                $("#date-start-revives").html(s);
 
-                $("#date-start").removeClass("error").addClass("valid");
-                $("#date-live").prop('checked', false);
+                $("#date-start-revives").removeClass("error").addClass("valid");
+                $("#date-live-revives").prop('checked', false);
 
-                var start = parseInt($("#ts-start").val());
-                var end = parseInt($("#ts-end").val());
+                var start = parseInt($("#ts-start-revives").val());
+                var end = parseInt($("#ts-end-revives").val());
                 if(!end) {
-                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
-                    $("#create-report").hide()
+                    $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+                    $("#create-report-revives").hide()
                 } else if(end < start) {
-                    $("#date-end").removeClass("valid").addClass("error");
-                    $("#create-report").hide()
+                    $("#date-end-revives").removeClass("valid").addClass("error");
+                    $("#create-report-revives").hide()
                 } else {
-                    $("#date-end").removeClass("error").addClass("valid");
-                    $("#create-report").show()
+                    $("#date-end-revives").removeClass("error").addClass("valid");
+                    $("#create-report-revives").show()
                 }
 
-                // if $("#date-start").html {
+                // if $("#date-start-revives").html {
                 //     console.log()
                 // }
             },
@@ -62,28 +62,28 @@ $(document).ready(function() {
 
 
     $(function () {
-        $("#date-end").datetimepicker({
+        $("#date-end-revives").datetimepicker({
             step: 15,
             onChangeDateTime:function(dp,$input){
                 var d = new Date($input.val());
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-                $("#ts-end").val(dUTC/1000);
+                $("#ts-end-revives").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-end").html(s);
-                $("#date-end").removeClass("error").addClass("valid");
-                $("#date-live").prop('checked', false);
+                $("#date-end-revives").html(s);
+                $("#date-end-revives").removeClass("error").addClass("valid");
+                $("#date-live-revives").prop('checked', false);
 
-                var start = parseInt($("#ts-start").val());
-                var end = parseInt($("#ts-end").val());
+                var start = parseInt($("#ts-start-revives").val());
+                var end = parseInt($("#ts-end-revives").val());
                 if(!start) {
-                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
-                    $("#create-report").hide()
+                    $("#date-start-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                    $("#create-report-revives").hide()
                 } else if(end < start) {
-                    $("#date-start").removeClass("valid").addClass("error");
-                    $("#create-report").hide()
+                    $("#date-start-revives").removeClass("valid").addClass("error");
+                    $("#create-report-revives").hide()
                 } else {
-                    $("#date-start").removeClass("error").addClass("valid");
-                    $("#create-report").show()
+                    $("#date-start-revives").removeClass("error").addClass("valid");
+                    $("#create-report-revives").show()
                 }
             },
         });
@@ -139,18 +139,18 @@ $(document).ready(function() {
     <p>To create a new attack report select a starting date and either an ending date or make it live.</p>
     <form>
         <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
-            <input id="ts-start" type="hidden" value="0">
-            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+            <input id="ts-start-revives" type="hidden" value="0">
+            <span id="date-start-revives" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
         </p>
         <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
-            <input id="ts-end" type="hidden" value="0">
-            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+            <input id="ts-end-revives" type="hidden" value="0">
+            <span id="date-end-revives" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
         </p>
         <p><b><i class="fas fa-microphone-alt"></i>&nbsp;&nbsp;Make it live</b>:
-            <input id="ts-live" type="hidden" value="0">
-            <input id="date-live" type="checkbox">
+            <input id="ts-live-revives" type="hidden" value="0">
+            <input id="date-live-revives" type="checkbox">
         </p>
-        <p id="create-report" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
+        <p id="create-report-revives" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
     </form>
 </div>
 {% endif %}

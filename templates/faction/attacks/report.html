@@ -48,7 +48,7 @@ $(function () {
 
 </script>
 
-<h2 class="title">Attacks report [{{report.pk}}]</h2>
+<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;Attacks report [{{report.pk}}]</h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -161,7 +161,7 @@ $(function () {
 </div>
 
 <div class="catch-me">
-    <h2 class="title toggle-display rounded">Attacks report [{{report.pk}}]: list of {{attacks|length}} attacks&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h2 class="title toggle-display rounded"><i class="fas fa-list"></i>&nbsp;&nbsp;Attacks report [{{report.pk}}]: list of {{attacks|length}} attacks&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
     <div class="module" style="display: none;">
         {% if attacks|length %}
         <table id="faction-attacks-list" class="tablesorter center-large trshadow faction-attacks-list">

@@ -8,8 +8,6 @@ $(document).on('change', 'select[id^="simu-tree-"]', e=>{
 
     var value = $(e.currentTarget.selectedOptions).attr("value");
 
-    console.log(modification, shortname, value)
-
     $("#faction-upgrade-tree").load( "/faction/simulator/", {
         change: true,
         modification: modification,
@@ -17,6 +15,7 @@ $(document).on('change', 'select[id^="simu-tree-"]', e=>{
         value: value,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
+    $(e.currentTarget.parentElement).html(spinner);
 });
 
 // reset upgrade tree

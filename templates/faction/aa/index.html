@@ -21,7 +21,7 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<h2 class="title">Keys</h2>
+<h2 class="title"><i class="fas fa-key"></i>&nbsp;&nbsp;Keys</h2>
 <div class="module">
     <p>This is a summary of your faction's keys used for the creation of the reports (chains/attacks/revives) and for the poster updates.<br />
         This keys corresponds to AA members that have used YATA.
@@ -53,28 +53,12 @@ This file is part of yata.
         </tbody>
     </table>
 </div>
-<h2 class="title">Reports</h2>
+<h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;Reports</h2>
 <div class="module">
     <h3>Select chain threshold</h3>
     {% include "faction/aa/threshold.html" %}
-    <h3>Your reports currently being computed</h3>
-    <ul>
-    {% for t, rs in reports.items %}
-            {% for r in rs %}
-                {% if r.live %}
-                    <li><b>{{t}}:</b> <tt>Live</tt></li>
-                {% else %}
-                    {% if r.tId %}
-                        <li><b>{{t}}:</b> <tt>{{r.tId}}</tt> ({{r.progress}}%)</li>
-                    {% else %}
-                        <li><b>{{t}}:</b> <tt>{{r.pk}}</tt> ({{r.progress}}%)</li>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-    {% endfor %}
-    </ul>
 </div>
-<h2 class="title">Poster</h2>
+<h2 class="title"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</h2>
 <div class="module">
     {% include "faction/aa/poster.html" %}
 </div>

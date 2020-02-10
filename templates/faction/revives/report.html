@@ -48,7 +48,7 @@ $(function () {
 
 </script>
 
-<h2 class="title">Revive report [{{report.pk}}]</h2>
+<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revive report [{{report.pk}}]</h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -146,7 +146,7 @@ $(function () {
 </div>
 
 <div class="catch-me">
-    <h2 class="title toggle-display rounded"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]: list of {{revives|length}} revives&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h2 class="title toggle-display rounded"><i class="fas fa-list"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]: list of {{revives|length}} revives&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
     <div class="module" style="display: none;">
         {% if revives|length %}
         <table id="faction-revives-list" class="tablesorter center-large trshadow faction-revives-list">

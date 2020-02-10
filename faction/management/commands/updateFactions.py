@@ -33,6 +33,7 @@ class Command(BaseCommand):
             print("[command.faction.update] faction {}".format(faction))
             try:
                 faction.updateLog()
+                faction.updateUpgrades()
                 # faction.resetSimuUpgrades(update=True)
                 # faction.getFactionTree()
             except BaseException as e:

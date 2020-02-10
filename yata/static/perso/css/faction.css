@@ -205,7 +205,7 @@ select.faction-upgrade-tree {
     padding: 0;
     margin: 0;
     cursor: pointer;
-   overflow: hidden;
+    overflow: hidden;
     /* -webkit-appearance: none; */
     font-weight: bold;
     /* height: 16px; */
@@ -230,6 +230,11 @@ table.faction-simulator-sum td.a { width: 10%; text-align: left; }  /* x1 */
 table.faction-simulator-sum td.b { width: 10%; text-align: right; } /* x6 */
 table.faction-simulator-sum td.c { width: 6%; text-align: center; }  /* x5 */
 table.faction-simulator-sum tr.max-order { text-decoration: line-through; opacity: 0.5; font-style: oblique; }  /* x5 */
+table.faction-simulator-sum.sticky tr{
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px #888;
+    box-shadow: inner 0 0 5px #888;
+}
 
 table.faction-simulator tr { border-radius: 4px;}
 table.faction-simulator tr.order-1 { background-color: #447e9b11}
@@ -241,10 +246,10 @@ table.faction-simulator tr.order-6 { background-color: #447e9b66}
 table.faction-simulator tr.order-7 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.faction-simulator tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.faction-simulator tr.order-core { background-color: #0001}
-table.faction-simulator td.show-upgrade-details { cursor: help;}
+table.faction-simulator td.show-upgrade-details { cursor: help; height: 30px;}
 table.faction-simulator-details td.a { width: 15%; text-align: left; }  /* x1 */
 table.faction-simulator-details td.b { width: 40%; text-align: left; } /* x1 */
-table.faction-simulator-details td.c { width: 40%; text-align: left; }  /* x1 */
-table.faction-simulator-details td.d { width: 5%; text-align: right; }  /* x1 */
+table.faction-simulator-details td.c { width: 35%; text-align: left; }  /* x1 */
+table.faction-simulator-details td.d { width: 10%; text-align: right; }  /* x1 */
 
-tr.upgrade-details {display: none;  padding: 0; background-color: #eeee; color: #555}
+tr.upgrade-details {cursor: pointer; display: none;  padding: 0; background-color: #eeee; color: #555}

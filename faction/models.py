@@ -103,6 +103,8 @@ class Faction(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="MyFaction", max_length=64)
     respect = models.IntegerField(default=0)
+    maxmembers = models.IntegerField(default=0)
+    daysold = models.IntegerField(default=0)
 
     # keys
     masterKeys = models.ManyToManyField(Key, blank=True)
@@ -120,9 +122,7 @@ class Faction(models.Model):
     posterOpt = models.TextField(default="{}")
 
     # respect simulator: TODO
-    # factionTree = models.TextField(default="{}")
-    # simuTree = models.TextField(default="{}")
-    # treeUpda = models.IntegerField(default=0)
+    upgradesUpda = models.IntegerField(default=0)
 
     # members
     membersUpda = models.IntegerField(default=0)
@@ -340,6 +340,11 @@ class Faction(models.Model):
         key.lastPulled = now
         key.save()
 
+        # update faction
+        self.maxmembers = max(self.maxmembers, len(factionInfo["members"]))
+        self.daysold = factionInfo["age"]
+        self.respect = factionInfo["respect"]
+
         # create/delete news
         # self.armoryOld = 16070400  # 6 month
         # self.armoryOld = 8035200  # 3 month
@@ -445,7 +450,7 @@ class Faction(models.Model):
         # api call
         upgrades = apiCall('faction', self.tId, "upgrades", key.value, verbose=False, sub="upgrades")
         if 'apiError' in upgrades:
-            msg = "Add contribution {} ({})".format(stat, upgrades["apiErrorString"])
+            msg = "Update faction upgrades ({})".format(upgrades["apiErrorString"])
             if upgrades['apiErrorCode'] in [1, 2, 7, 10]:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
@@ -454,7 +459,7 @@ class Faction(models.Model):
                 key.lastPulled = upgrades.get("timestamp", 0)
                 key.save()
                 print("{} {}".format(self, msg))
-            return False, "API error {}, faction upgrades not updated".format(contributors["apiErrorString"])
+            return False, "API error {}, faction upgrades not updated".format(upgrades["apiErrorString"])
 
         # update key
         key.reason = "Update faction upgrades"
@@ -472,7 +477,11 @@ class Faction(models.Model):
             t = FactionTree.objects.filter(tId=k, level=v["level"]).first()
             v["shortname"] = t.shortname
             v["branch"] = t.branch
-            print(self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v))
+            self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
+
+        self.upgradesUpda = tsnow()
+        self.save()
+        return True, "Faction upgrades updated"
 
     def resetSimuUpgrades(self, update=False):
         if update:
@@ -491,7 +500,7 @@ class Faction(models.Model):
             v["shortname"] = u.shortname
             v["active"] = True
             v["level"] = u.level
-            print(self.upgrade_set.update_or_create(tId=u.tId, simu=True, defaults=v))
+            self.upgrade_set.update_or_create(tId=u.tId, simu=True, defaults=v)
 
     def getBranchesCosts(self, simu=True):
         allUpgrades = FactionTree.objects.all().order_by("tId", "-level")
@@ -507,8 +516,6 @@ class Faction(models.Model):
         return branchCost
 
     def setSimuDependencies(self, upgrade, unset=False):
-        print("set dependencies for", upgrade)
-
         # change branch level if the modification of the subbranch requires it
         # lvl: level reuired
         # {sb: [[b1, lvl1], [b2, lvl2]]}
@@ -554,7 +561,6 @@ class Faction(models.Model):
             12: [[11, 2]]}  # territory
 
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, [])]:
-            print("YAAAA", tId, lvl)
             u = FactionTree.objects.filter(tId=tId).first()
             v = {"active": True, "shortname": u.shortname, "branch": u.branch}
             up, _ = self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
@@ -598,7 +604,7 @@ class Faction(models.Model):
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, []) if b[1] > upgrade.level]:
             u = FactionTree.objects.filter(tId=tId).first()
             v = {"level": 1, "active": False, "shortname": u.shortname, "branch": u.branch}
-            print(self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v))
+            self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
 
         # special case for steadfast
         r = {
@@ -641,15 +647,15 @@ class Faction(models.Model):
 
         if r.get(upgrade.tId) is not None:
             if unset:
-                print([i for i, v in r.items() if upgrade.tId in v])
                 for u in [FactionTree.objects.filter(tId=i).first() for i, v in r.items() if upgrade.tId in v]:
-                    v = {"shortname": u.shortname, "branch": u.branch, "active": False}
+                    v = {"shortname": u.shortname, "branch": u.branch, "level": 1, "active": False}
                     self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
             else:
                 for u in [FactionTree.objects.filter(tId=i).first() for i in r.get(upgrade.tId)]:
                     v = {"shortname": u.shortname, "branch": u.branch, "active": True}
                     self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
 
+        # set branch order
         for k, v in self.optimizedSimu().items():
             self.upgrade_set.filter(simu=True, branch=k).update(branchorder=v)
 
@@ -702,9 +708,11 @@ class Faction(models.Model):
                 faction_order = 0
                 faction_level = 0
                 faction_cost = 0
+                faction_base = 0
                 simu_order = 0
                 simu_level = 0
                 simu_cost = 0
+                simu_base = 0
                 unsets_completed = 0
 
             # add faction
@@ -714,41 +722,66 @@ class Faction(models.Model):
                 faction_level = max(fu.level, faction_level)
                 if fu.unsets_completed:
                     unsets_completed = fu.unsets_completed
-
             if u.branch == 'Core' and faction_level:
                 faction_cost += u.base_cost
+                faction_base += u.base_cost
             if faction_order:
                 faction_cost += 2**(faction_order - 1) * (u.base_cost)
+                faction_base += u.base_cost
             tree[u.branch][u.shortname]["faction_order"] = faction_order
             tree[u.branch][u.shortname]["faction_level"] = faction_level
             tree[u.branch][u.shortname]["faction_cost"] = faction_cost
+            tree[u.branch][u.shortname]["faction_base"] = faction_base
             tree[u.branch][u.shortname]["unsets_completed"] = unsets_completed
             tree[u.branch][u.shortname]["id"] = u.tId
+
             maxorder[u.branch][0] = max(maxorder[u.branch][0], faction_order)
 
             # add simu
             fu = simUpgrades.filter(tId=u.tId, level=u.level).first()
             if fu is not None:
-                simu_order = max(fu.branchorder, simu_order) if not optimize else simuOrders.get(u.branch, 10)
+                simu_order = max(fu.branchorder, simu_order) if not optimize else simuOrders.get(u.branch, -1)
                 simu_level = max(fu.level, simu_level)
             if u.branch == 'Core' and simu_level:
                 simu_cost += u.base_cost
+                simu_base += u.base_cost
             if simu_order:
                 simu_cost += 2**(simu_order - 1) * (u.base_cost)
+                simu_base += u.base_cost
             tree[u.branch][u.shortname]["simu_order"] = simu_order
             tree[u.branch][u.shortname]["simu_level"] = simu_level
             tree[u.branch][u.shortname]["simu_cost"] = simu_cost
+            tree[u.branch][u.shortname]["simu_base"] = simu_base
             maxorder[u.branch][1] = max(maxorder[u.branch][1], simu_order)
-
             tree[u.branch][u.shortname]["level_list"] = range(u.maxlevel + 1)
 
+            #
+            # respect[u.branch]["simu"] += simu_cost
+            # respect["Total"]["simu"] += simu_cost
+            # if u.branch == 'Core':
+            #     print(u, respect[u.branch]["faction"] )
+
+        respect = dict({"Total": dict({"simu_cost": 0, "faction_cost": 0})})
+
         for k1, v1 in tree.items():
+            respect[k1] = dict({"simu_cost": 0, "faction_cost": 0,
+                                "simu_base": 0, "faction_base": 0,
+                                "simu_order": 0, "faction_order": 0})
             for k2, v2 in v1.items():
                 v2["faction_order"] = maxorder[k1][0]
                 v2["simu_order"] = maxorder[k1][1]
-                # print(k1, k2, v2)
 
-        return tree
+                respect[k1]["simu_cost"] += v2["simu_cost"]
+                respect[k1]["faction_cost"] += v2["faction_cost"]
+                respect[k1]["simu_base"] += v2["simu_base"]
+                respect[k1]["faction_base"] += v2["faction_base"]
+                respect[k1]["simu_order"] = v2["simu_order"]
+                respect[k1]["faction_order"] = v2["faction_order"]
+
+            respect["Total"]["simu_cost"] += respect[k1]["simu_cost"]
+            respect["Total"]["faction_cost"] += respect[k1]["faction_cost"]
+
+        return tree, respect
 
 
 class Member(models.Model):
@@ -2017,12 +2050,19 @@ class FactionTree(models.Model):
         if self.challenge == "No challenge":
             return -1, -1
 
-        if self.tId in [8, 11]:
-            return -1, -1
+        elif self.tId == 8:
+            goal = int(self.challenge.split(" ")[1])
+            curr = faction.maxmembers
+            return curr, goal
 
         elif self.tId == 10:
             goal = int(self.challenge.split(" ")[-1])
             curr = log.bestchain
+            return curr, goal
+
+        elif self.tId == 11:
+            goal = int(self.challenge.split(" ")[-2])
+            curr = faction.daysold
             return curr, goal
 
         elif self.tId == 12:
@@ -2035,8 +2075,129 @@ class FactionTree(models.Model):
             curr = log.criminaloffences
             return curr, goal
 
+        elif self.tId == 15:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.jails
+            return curr, goal
+
+        elif self.tId in [16, 17]:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.busts
+            return curr, goal
+
+        elif self.tId == 18:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.medicalcooldownused
+            return curr, goal
+
+        elif self.tId == 19:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.revives
+            return curr, goal
+
+        elif self.tId == 21:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.medicalitemrecovery
+            return curr, goal
+
+        elif self.tId == 22:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.hosptimereceived
+            return curr, goal
+
+        elif self.tId == 23:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.candyused
+            return curr, goal
+
+        elif self.tId == 24:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.energydrinkused
+            return curr, goal
+
+        elif self.tId == 26:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.alcoholused
+            return curr, goal
+
+        elif self.tId == 27:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.drugsused
+            return curr, goal
+
+        elif self.tId == 28:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.drugoverdoses
+            return curr, goal
+
+        elif self.tId == 31:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.hunting
+            return curr, goal
+
+        elif self.tId == 32:
+            goal = int(self.challenge.split(" ")[1].replace(",", "").replace("$", ""))
+            curr = log.caymaninterest
+            return curr, goal
+
+        elif self.tId == 34:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.traveltime
+            return curr, goal
+
+        elif self.tId == 35:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.rehabs
+            return curr, goal
+
+        elif self.tId == 36:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.gymstrength
+            return curr, goal
+
+        elif self.tId == 37:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.gymspeed
+            return curr, goal
+
+        elif self.tId == 38:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.gymdefense
+            return curr, goal
+
+        elif self.tId == 39:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.gymdexterity
+            return curr, goal
+
+        elif self.tId == 40:
+            goal = int(self.challenge.split(" ")[-2].replace(",", ""))
+            curr = log.hosptimegiven
+            return curr, goal
+
+        elif self.tId == 41:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.attacksdamage
+            return curr, goal
+
+        elif self.tId == 44:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.attacksdamagehits
+            return curr, goal
+
+        elif self.tId == 45:
+            goal = int(self.challenge.split(" ")[1].replace(",", ""))
+            curr = log.attacksdamaging
+            return curr, goal
+
+        elif self.tId == 48:
+            goal = int(self.challenge.split(" ")[-2].replace(",", ""))
+            curr = log.attacksrunaway
+            return curr, goal
+
         else:
             return 6, 10
+
 
 class Upgrade(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

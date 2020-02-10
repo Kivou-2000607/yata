@@ -239,10 +239,6 @@ th.border-left { border-left: 0.5px dashed; } */
     position: sticky;
     top: 0;
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
-    -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px #888;
-    box-shadow: 0 0 5px #888;
-    padding: 1px;
 }
 
 table.center td,

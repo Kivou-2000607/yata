@@ -52,8 +52,10 @@ def index(request):
 
             # add/remove key depending of AA member
             faction.manageKey(player)
-            reports = faction.chain_set.filter(report=True).order_by('-start')
-            context = {'player': player, 'faction': faction, 'reports': reports, 'factioncat': True, 'view': {'index': True}}
+            chainsreports = faction.chain_set.filter(computing=True).order_by('-start')
+            attacksreports = faction.attacksreport_set.filter(computing=True).order_by('-start')
+            revivesreports = faction.revivesreport_set.filter(computing=True).order_by('-start')
+            context = {'player': player, 'faction': faction, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'factioncat': True, 'view': {'index': True}}
             return render(request, 'faction.html', context)
 
         else:
@@ -84,12 +86,7 @@ def configurations(request):
                 faction.nKeys = len(keys.filter(useFact=True))
                 faction.save()
 
-                # get computing reports
-                reports = dict({})
-                reports["Chain report"] = [r for r in faction.chain_set.filter(computing=True).all()]
-                reports["Attacks report"] = [r for r in faction.attacksreport_set.filter(computing=True).all()]
-
-                context = {'player': player, 'factioncat': True, "reports": reports, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+                context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
 
                 # add poster
                 if faction.poster:
@@ -2005,6 +2002,13 @@ def simulator(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
+            # update if needed
+            if tsnow() - faction.upgradesUpda > 3600 * 24:
+                state, message = faction.updateUpgrades()
+            else:
+                state = False
+                message = False
+
             # if modifications
             optimize = False
             forceOrder = False
@@ -2018,13 +2022,16 @@ def simulator(request):
                     # get FactionTree
                     if level:
                         u = FactionTree.objects.filter(shortname=shortname, level=level).first()
-                        v = {"active": True, "shortname": u.shortname, "branch": u.branch, "level": u.level}
+                        v = {"active": True, "level": level, "branch": u.branch, "tId": u.tId}
+                        faction.upgrade_set.update_or_create(simu=True, shortname=shortname, defaults=v)
                         faction.setSimuDependencies(u)
                     else:
                         u = FactionTree.objects.filter(shortname=shortname, level=1).first()
+                        v = {"active": False, "level": 1, "branch": u.branch, "tId": u.tId}
+                        faction.upgrade_set.update_or_create(simu=True, shortname=shortname, defaults=v)
                         faction.setSimuDependencies(u, unset=True)
 
-                # change level
+                # change order
                 if request.POST.get("modification") == "branchorder":
                     branch = request.POST.get("shortname")
                     order = int(request.POST.get("value"))
@@ -2039,12 +2046,14 @@ def simulator(request):
             elif request.POST.get("refresh"):
                 faction.updateUpgrades()
 
-            tree = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
+            tree, respect = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
 
-            # tmp
-            faction.respect = 0
-            totalRespect = {"faction": 0, "simu": 0}
-            context = {'player': player, 'factioncat': True, 'faction': faction, 'totalRespect': totalRespect, 'tree': tree, 'view': {'simulator': True}}
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'respect': respect, 'tree': tree, 'view': {'simulator': True}}
+            if message:
+                err = "validMessage" if state else "errorMessage"
+                sub = "Sub" if request.method == 'POST' else ""
+                context[err + sub] = message
+
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             if request.method == 'POST':
                 page = 'faction/simulator/table.html' if (request.POST.get("reset") or request.POST.get("change") or request.POST.get("refresh")) else 'faction/content-reload.html'
@@ -2072,8 +2081,8 @@ def simulatorChallenge(request):
 
             challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId"))
             for ch in challenges:
-                print(ch.tId, ch.name)
                 ch.progress = ch.progress(faction)
+
             context = {"challenges": challenges}
             page = 'faction/simulator/challenge.html'
             return render(request, page, context)

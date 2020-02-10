@@ -23,26 +23,45 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
 <div class="module">
-    <!-- <h3>Info</h3> -->
     <p><b>Faction:</b> <i>{{faction|safe}}</i></p>
     <p><b>AA:</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br></p>
-   <!-- <h3>Direct links</h3> -->
-        <!-- <ul> -->
-            <!-- <li><a href="/faction/chains/">Chains</a></li> -->
-            <!-- <ul> -->
-                <!-- {% for report in reports %} -->
-                    <!-- {% if report.live %} -->
-                        <!-- <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li> -->
-                    <!-- {% else %} -->
-                        <!-- <li><a href="/faction/report/{{report.tId}}">Chain [{{report.tId}}]</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li> -->
-                    <!-- {% endif %} -->
-                <!-- {% endfor %} -->
-                <!-- <li><a href="/faction/combined/">Combined report</li> -->
-            <!-- </ul> -->
-            <!-- <li><a href="/faction/attacks/">Attacks</a></li> -->
-            <!-- <li><a href="/faction/walls/">Walls</a></li> -->
-            <!-- <li><a href="/faction/members/">Members</a></li> -->
-            <!-- <li><a href="/faction/configurations/">Configurations</a></li> -->
-        <!-- </ul> -->
-    <!-- </p> -->
+    <p><b>Reports currently being computed</b></p>
+    <ul>
+
+        {% if chainsreports|length %}<li>Chains</li>
+        <ul>
+            {% for report in chainsreports %}
+                {% if report.live %}
+                    <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href="/faction/report/{{report.tId}}">Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if attacksreports|length %}<li>Attacks reports</li>
+            <ul>
+            {% for report in attacksreports %}
+                {% if report.live %}
+                    <li><a href="/faction/attacks/{{report.pk}}">Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href="/faction/attacks/{{report.pk}}">Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if attacksreports|length %}<li>Revives reports</li>
+            <ul>
+            {% for report in revivesreports %}
+                {% if report.live %}
+                    <li><a href="/faction/revives/{{report.pk}}">Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% else %}
+                    <li><a href="/faction/revives/{{report.pk}}">Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </ul>
 </div>
