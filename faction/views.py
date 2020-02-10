@@ -2005,20 +2005,52 @@ def simulator(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
-            tree = faction.getFactionTree()
-            for k1, v1 in tree.items():
-                print("\n------\n{} New upgrade\n------\n".format(k1))
-                for k2, v2 in v1.items():
-                    print("{}-{} New level: {} {} {}".format(k1, k2, v2["shortname"], v2["branchorder"], v2["branchmultiplier"]))
-                    # print("---\n{}-{} New level\n---".format(k1, k2))
-                    # for k3, v3 in v2.items():
-                    #     print("{}-{} {}: {}".format(k1, k2, k3, v3))
+            # if modifications
+            optimize = False
+            forceOrder = False
+            if request.POST.get("change"):
+                optimize=True
+                # change level
+                if request.POST.get("modification") == "level":
+                    shortname = request.POST.get("shortname")
+                    level = int(request.POST.get("value"))
+
+                    # get FactionTree
+                    if level:
+                        u = FactionTree.objects.filter(shortname=shortname, level=level).first()
+                        v = {"active": True, "shortname": u.shortname, "branch": u.branch, "level": u.level}
+                        faction.setSimuDependencies(u)
+                    else:
+                        u = FactionTree.objects.filter(shortname=shortname, level=1).first()
+                        faction.setSimuDependencies(u, unset=True)
+
+                # change level
+                if request.POST.get("modification") == "branchorder":
+                    branch = request.POST.get("shortname")
+                    order = int(request.POST.get("value"))
+                    if order:
+                        forceOrder = [branch, order]
+                    else:
+                        faction.upgrade_set.filter(simu=True, branch=branch).update(branchorder=0, level=1, active=False)
+
+
+            elif request.POST.get("reset"):
+                faction.resetSimuUpgrades(update=False)
+
+            elif request.POST.get("refresh"):
+                faction.updateUpgrades()
+
+            tree = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
 
             # tmp
             faction.respect = 0
             totalRespect = {"faction": 0, "simu": 0}
             context = {'player': player, 'factioncat': True, 'faction': faction, 'totalRespect': totalRespect, 'tree': tree, 'view': {'simulator': True}}
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            if request.method == 'POST':
+                page = 'faction/simulator/table.html' if (request.POST.get("reset") or request.POST.get("change") or request.POST.get("refresh")) else 'faction/content-reload.html'
+            else:
+                page = 'faction.html'
             return render(request, page, context)
 
         else:

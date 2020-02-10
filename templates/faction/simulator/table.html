@@ -40,13 +40,13 @@ This file is part of yata.
     //         type: 'numeric'
     //     });
     //
-    //     $("#chain-tree-sum").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,0]]});
-    //     $("#chain-tree-sum").tablesorter({sortList: [[3,0]]});
-    //     $("#chain-tree").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, cssAsc: 'up', cssDesc: 'down', sortList: [[2,0]]});
-    //     $("#chain-tree").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, sortList: [[2,0]]});
+    //     $("#faction-simulator-sum").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,0]]});
+    //     $("#faction-simulator-sum").tablesorter({sortList: [[3,0]]});
+    //     $("#faction-simulator").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, cssAsc: 'up', cssDesc: 'down', sortList: [[2,0]]});
+    //     $("#faction-simulator").tablesorter({headers: {5: {sorter: 'dataVal'}, 6: {sorter: 'dataVal'}}, sortList: [[2,0]]});
     // });
 </script>
-<table class="center chain-tree-sum sticky">
+<table class="center faction-simulator-sum sticky">
     <thead>
         <tr>
             <th colspan="6">Faction wise summary</th>
@@ -79,7 +79,7 @@ This file is part of yata.
 </table>
 
 <br>
-<table id="chain-tree-sum" class="center-medium chain-tree-sum trshadow">
+<table id="faction-simulator-sum" class="center-medium faction-simulator-sum trshadow">
     <thead>
         <tr>
             <th colspan="10">Branch wise summary</th>
@@ -123,7 +123,7 @@ This file is part of yata.
 </table>
 <br>
 
-<table id="chain-tree" class="center-medium chain-tree trshadow">
+<table id="faction-simulator" class="center-medium faction-simulator trshadow">
     <thead>
         <tr>
             <th colspan="11">Simulator</th>
@@ -164,9 +164,11 @@ This file is part of yata.
                     <td class="c" data-val="{{u.simu_order|emptyIfFalse}}">
                         {% if branchId == "Core" %}
                             {{u.simu_order}}
+                        {% elif u.simu_order == 0%}
+                            {{u.simu_order}}
                         {% else %}
-                            <select id="simu-tree-{{u.branchId}}-branchorder" class="faction-upgrade-tree">
-                                {% for i in "012345678"|make_list %}
+                            <select id="simu-tree-{{branchId}}-branchorder" class="faction-upgrade-tree">
+                                {% for i in "0123456"|make_list %}
                                 <option value="{{i}}" {% if forloop.counter0 is u.simu_order %}selected{% endif %}>{{i}}</option>
                                 {% endfor %}
                             </select>
@@ -174,8 +176,8 @@ This file is part of yata.
                     </td>
                     <td class="c">{{u.simu_order|sub:u.faction_order|signColor:1}}</td>
                     <td class="c" data-val="{{u.simu_level|emptyIfFalse}}">
-                        <select id="simu-tree-{{u.branchId}}-level" class="faction-upgrade-tree">
-                            {% for r in u.respect %}
+                        <select id="simu-tree-{{upgradeId}}-level" class="faction-upgrade-tree">
+                            {% for r in u.level_list %}
                                 <option value="{{forloop.counter0}}" {% if forloop.counter0 is u.simu_level %}selected{% endif %}>{{forloop.counter0}}</option>
                             {% endfor %}
                         </select>
@@ -186,7 +188,7 @@ This file is part of yata.
                 </tr>
                 <tr class="upgrade-details">
                     <td colspan="11">
-                    <table class="center-full chain-tree-details">
+                    <table class="center-full faction-simulator-details">
                         {% for detail in u.details %}
                         <tr>
                             <td class="a">{{detail.0}}</td>
@@ -212,7 +214,7 @@ This file is part of yata.
     To do a simulation, modify the <b>order</b> of a branch or the <b>level</b> of an upgrade in the table above by clicking on the corresponding number (available modifications are in bold).<br>
     Colored numbers will show you the difference between the current state and the simulation.
 <ul>
-    <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branch will be swap to two identical orders.</li>
+    <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branches will be changed to avoid identical orders.</li>
     <li>If you modify the <b>level</b> of an upgrade, the order of all the branches will be modified to <span class="valid">minimize the respect used</span> and, if needed, the levels of other upgrades of the branch will be <span class="valid">set to their minimal required values</span>.</li>
     <li><b>Challenges</b> are not taken into account for the simulation. You can see the availability of the upgrade levels by clicking on the upgrade name.</li>
 </ul>

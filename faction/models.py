@@ -461,71 +461,292 @@ class Faction(models.Model):
         key.lastPulled = tsnow()
         key.save()
 
+        # deactivate all upgrades
+        self.upgrade_set.filter(simu=False).update(active=False, unlocked="")
+
         # add upgrades
         for k, v in upgrades.items():
             for _ in ["ability", "basecost", "branch", "name"]:
                 del v[_]
+            v["active"] = True
+            t = FactionTree.objects.filter(tId=k, level=v["level"]).first()
+            v["shortname"] = t.shortname
+            v["branch"] = t.branch
             print(self.upgrade_set.update_or_create(tId=k, level=v["level"], simu=False, defaults=v))
-
-        # remove old upgrades
-        for u in self.upgrade_set.filter(simu=False):
-            if str(u.tId) not in upgrades:
-                u.delete()
-            elif u.level != upgrades[str(u.tId)]["level"]:
-                u.delete()
 
     def resetSimuUpgrades(self, update=False):
         if update:
             self.updateUpgrades()
 
+        # deactivate all simu
+        self.upgrade_set.filter(simu=True).update(active=False, level=1)
+
         # set all current
-        for u in self.upgrade_set.filter(simu=False):
+        for u in self.upgrade_set.filter(simu=False, active=True):
             v = dict({})
+            v["branch"] = u.branch
             v["branchorder"] = u.branchorder
             v["branchmultiplier"] = u.branchmultiplier
-            v["unlocked"] = u.unlocked
-            print(self.upgrade_set.update_or_create(tId=u.tId, level=u.level, simu=True, defaults=v))
+            v["unlocked"] = ""
+            v["shortname"] = u.shortname
+            v["active"] = True
+            v["level"] = u.level
+            print(self.upgrade_set.update_or_create(tId=u.tId, simu=True, defaults=v))
 
-        # remove old
-        for u in self.upgrade_set.filter(simu=True):
-            if not len(self.upgrade_set.filter(simu=False, tId=u.tId, level=u.level)):
-                print("delete simu {}".format(u))
-                u.delete()
-
-    def getFactionTree(self, simu=False):
+    def getBranchesCosts(self, simu=True):
         allUpgrades = FactionTree.objects.all().order_by("tId", "-level")
-        facUpgrades = Upgrade.objects.filter(simu=simu)
+        branchCost = dict({})
+        for upgrade in self.upgrade_set.filter(simu=simu, active=True):
+            branch = upgrade.getTree().branch
+            if branch not in branchCost:
+                branchCost[branch] = 0
+
+            for u in allUpgrades.filter(shortname=upgrade.shortname, level__lte=upgrade.level):
+                branchCost[branch] += u.base_cost
+
+        return branchCost
+
+    def setSimuDependencies(self, upgrade, unset=False):
+        print("set dependencies for", upgrade)
+
+        # change branch level if the modification of the subbranch requires it
+        # lvl: level reuired
+        # {sb: [[b1, lvl1], [b2, lvl2]]}
+        r = {
+            # Toleration
+            27: [[29, 1]],  # side effect
+            28: [[29, 13]],  # overdosing
+
+            # Criminality
+            13: [[14, 2]],  # nerve
+            15: [[14, 2]],  # jail time
+            17: [[14, 2], [15, 10]],  # bust skill
+            16: [[14, 2], [15, 10], [17, 10]],  # bust nerve
+
+            # Excrusion
+            34: [[33, 2]],  # travel cost
+            31: [[33, 3]],  # hunting
+            35: [[33, 8]],  # rehab
+            32: [[33, 9]],  # oversea banking
+
+            # Supression
+            45: [[46, 3]],  # maximum life
+            48: [[47, 7]],  # escape
+
+            # Agression
+            44: [[43, 10]],  # accuracy
+            40: [[42, 3]],  # hospitalization
+            41: [[42, 15]],  # damage
+
+            # Fortitude
+            18: [[20, 2]],  # medical cooldown
+            19: [[20, 13]],  # reviving
+            21: [[20, 4]],  # life regeneration
+            22: [[20, 4], [21, 5]],  # medical effectiveness
+
+            # Voracity
+            23: [[25, 2]],  # candy effect
+            24: [[25, 15]],  # energy drink effect
+            26: [[25, 9]],  # alcohol effect
+
+            # Core
+            10: [[11, 2]],  # chaining
+            12: [[11, 2]],  # territory
+            }
+
+        for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, [])]:
+            print("YAAAA", tId, lvl)
+            u = FactionTree.objects.filter(tId=tId).first()
+            v = {"active": True, "shortname": u.shortname, "branch": u.branch}
+            up, _ = self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+            up.level = max(lvl, up.level)
+            up.save()
+
+        # change subbranch level to zero if the modification of the branch requires it
+        # sb: sub branch
+        # b: b branch
+        # {b: [[sb1, lvl1], [sb2, lvl2]]}
+        r = {
+            # Toleration
+            29: [[27, 1], [28, 13]],  # addiction
+
+            # Criminality
+            17: [[16, 10]],  # bust skill
+            15: [[17, 10], [16, 10]],  # jail time
+            14: [[15, 2], [13, 2], [17, 2], [16, 2]],  # crimes
+
+            # Excrusion
+            33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
+
+            # Supression
+            46: [[45, 3]],  # defense
+            47: [[48, 7]],  # dexterity
+
+            # Agression
+            43: [[44, 10]],  # speed
+            42: [[40, 3], [41, 15]],  # strength
+
+            # Fortitude
+            20: [[18, 2], [21, 4], [22, 4], [19, 13]],   # hospitalization time
+            21: [[22, 5]],   # life regeneration
+
+            # Voracity
+            25: [[23, 2], [24, 15], [26, 9]],  # booster cooldown
+
+            # Core
+            11: [[10, 2], [12, 2]],  # capacity
+            }
+
+        for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, []) if b[1] > upgrade.level]:
+            u = FactionTree.objects.filter(tId=tId).first()
+            v = {"level": 1, "active": False, "shortname": u.shortname, "branch": u.branch}
+            print(self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v))
+
+        # special case for steadfast
+        r = {
+            37: [36, 38, 39],  # speed training
+            36: [37, 38, 39],  # strength training
+            38: [39, 36, 37],  # defense training
+            39: [38, 36, 37],  # dexterity training
+            }
+
+        if r.get(upgrade.tId, False):
+            # max the close branch to 10
+            if upgrade.level > 10:
+                u = FactionTree.objects.filter(tId=r.get(upgrade.tId)[0]).first()
+                v = {"shortname": u.shortname, "branch": u.branch}
+                up, _ = self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+                up.level = min(10, up.level)
+                up.save()
+
+            if upgrade.level > 15:
+                u = FactionTree.objects.filter(tId=r.get(upgrade.tId)[1]).first()
+                v = {"shortname": u.shortname, "branch": u.branch}
+                up, _ = self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+                up.level = min(15, up.level)
+                up.save()
+                u = FactionTree.objects.filter(tId=r.get(upgrade.tId)[2]).first()
+                v = {"shortname": u.shortname, "branch": u.branch}
+                up, _ = self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+                up.level = min(15, up.level)
+                up.save()
+
+        # special case for core
+        r = {
+            1: [],  # weapon armory
+            2: [1],  # armor armory
+            3: [1, 2],  # tempory armory
+            4: [1, 2],  # medical armory
+            5: [1, 2, 3],  # booster armory
+            6: [1, 2, 4],  # drug armory
+            7: [1, 2, 3, 4, 5, 6],  # point storage
+            8: [1, 2, 3, 4, 5, 6, 7],  # laboratory
+            }
+
+        if r.get(upgrade.tId) is not None:
+            if unset:
+                print([i for i, v in r.items() if upgrade.tId in v])
+                for u in [FactionTree.objects.filter(tId=i).first() for i, v in r.items() if upgrade.tId in v]:
+                    v = {"shortname": u.shortname, "branch": u.branch, "active": False}
+                    self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+            else:
+                for u in [FactionTree.objects.filter(tId=i).first() for i in r.get(upgrade.tId)]:
+                    v = {"shortname": u.shortname, "branch": u.branch, "active": True}
+                    self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
+
+        for k, v in self.optimizedSimu().items():
+            self.upgrade_set.filter(simu=True, branch=k).update(branchorder=v)
+
+
+
+    def optimizedSimu(self, forceOrder=False):
+        branchCost = self.getBranchesCosts(simu=True)
+
+        order = 1
+        orders = dict({})
+        for k, v in sorted(branchCost.items(), key=lambda x: -x[1]):
+            if k == 'Core':
+                orders[k] = 0
+            else:
+                orders[k] = order
+                order += 1
+
+        if not forceOrder:
+            return orders
+
+        fb = forceOrder[0]  # branch name to force
+        fo = forceOrder[1]  # branch order to force
+        for k, v in orders.items():
+            if k == fb:  # change order of the branch
+                orders[k] = fo
+            elif v <= fo:  # decrease by 1 the value of the branch if below or equal force
+                orders[k] = max(orders[k] - 1, 0)  # to handle core = 0
+            # elif v > fo:  # increase by 1 the value of the branch if above force
+            #     orders[k] += 1
+
+        return orders
+
+    def getFactionTree(self, optimize=True, forceOrder=False):
+        allUpgrades = FactionTree.objects.all().order_by("tId", "-level")
+        facUpgrades = self.upgrade_set.filter(simu=False, active=True)
+        simUpgrades = self.upgrade_set.filter(simu=True, active=True)
+
+        if optimize:
+            simuOrders = self.optimizedSimu(forceOrder=forceOrder)
+        else:
+            simuOrders = dict({})
 
         tree = dict({})
+        maxorder = dict({})
         for u in allUpgrades:
-            # print(u)
-            if u.tId not in tree:
-                branchorder = 0
-                branchmultiplier = 0
-                unlocked = "None"
-                tree[u.tId] = dict({})
+            if u.branch not in tree:
+                tree[u.branch] = dict({})
+                maxorder[u.branch] = [0, 0]
 
-            tree[u.tId][u.level] = {"tId": u.tId,
-                                    "level": u.level,
-                                    "branch": u.branch,
-                                    "name": u.name,
-                                    "ability": u.ability,
-                                    "challenge": u.challenge,
-                                    "base_cost": u.base_cost,
-                                    "shortname": u.shortname,
-                                    "maxlevel": u.maxlevel,
-                                    "branchorder": 0,
-                                    "branchmultiplier": 0,
-                                    "unlocked": "None"}
+            if u.shortname not in tree[u.branch]:
+                tree[u.branch][u.shortname] = dict({})
+                faction_order = 0
+                faction_level = 0
+                faction_cost = 0
+                simu_order = 0
+                simu_level = 0
+                simu_cost = 0
+
+            # add faction
             fu = facUpgrades.filter(tId=u.tId, level=u.level).first()
             if fu is not None:
-                branchorder = fu.branchorder
-                branchmultiplier = fu.branchmultiplier
-                unlocked = fu.unlocked
+                faction_order = max(fu.branchorder, faction_order)
+                faction_level = max(fu.level, faction_level)
+            if u.branch == 'Core' and faction_level:
+                faction_cost += u.base_cost
+            if faction_order:
+                faction_cost += 2**(faction_order - 1) * (u.base_cost)
+            tree[u.branch][u.shortname]["faction_order"] = faction_order
+            tree[u.branch][u.shortname]["faction_level"] = faction_level
+            tree[u.branch][u.shortname]["faction_cost"] = faction_cost
+            maxorder[u.branch][0] = max(maxorder[u.branch][0], faction_order)
 
-            tree[u.tId][u.level]["unlocked"] = unlocked
-            tree[u.tId][u.level]["branchorder"] = branchorder
-            tree[u.tId][u.level]["branchmultiplier"] = branchmultiplier
+            # add simu
+            fu = simUpgrades.filter(tId=u.tId, level=u.level).first()
+            if fu is not None:
+                simu_order = max(fu.branchorder, simu_order) if not optimize else simuOrders.get(u.branch, 10)
+                simu_level = max(fu.level, simu_level)
+            if u.branch == 'Core' and simu_level:
+                simu_cost += u.base_cost
+            if simu_order:
+                simu_cost += 2**(simu_order - 1) * (u.base_cost)
+            tree[u.branch][u.shortname]["simu_order"] = simu_order
+            tree[u.branch][u.shortname]["simu_level"] = simu_level
+            tree[u.branch][u.shortname]["simu_cost"] = simu_cost
+            maxorder[u.branch][1] = max(maxorder[u.branch][1], simu_order)
+
+            tree[u.branch][u.shortname]["level_list"] = range(u.maxlevel + 1)
+
+        for k1, v1 in tree.items():
+            for k2, v2 in v1.items():
+                v2["faction_order"] = maxorder[k1][0]
+                v2["simu_order"] = maxorder[k1][1]
+                # print(k1, k2, v2)
 
         return tree
 
@@ -1301,7 +1522,7 @@ class AttacksReport(models.Model):
         # make call
         selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
         req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
-        key.reason = "Pull attacks for report"
+        key.reason = "Pull attacks for attacks report"
         key.lastPulled = tsnow()
         key.save()
         self.update = tsnow()
@@ -1326,6 +1547,7 @@ class AttacksReport(models.Model):
         nowTS = self.update
         cache = abs(nowTS - tornTS)
         print("{} cache = {}s".format(self, cache))
+
         # in case cache
         if cache > 5:
             print('{} probably cached response... (blank turn)'.format(self))
@@ -1792,10 +2014,17 @@ class Upgrade(models.Model):
     level = models.IntegerField(default=0)
     branchorder = models.IntegerField(default=0)
     branchmultiplier = models.IntegerField(default=0)
-    unlocked = models.CharField(default="branch", max_length=32)
+    unlocked = models.CharField(default="branch", max_length=32, null=True, blank=True)
 
     # reserverd for simulation
     simu = models.BooleanField(default=False)
+
+    # active or not (to avoid deleting changes)
+    active = models.BooleanField(default=False)
+
+    # to link with branch FactionTree
+    shortname = models.CharField(default="name", max_length=32)
+    branch = models.CharField(default="name", max_length=32)
 
     def __str__(self):
         return format_html("{} upgrade {} - {}".format(self.faction, self.tId, self.level))

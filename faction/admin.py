@@ -129,14 +129,14 @@ class FactionDataAdmin(admin.ModelAdmin):
 
 class FactionTreeAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'branch', 'name', 'tId', 'level']
-    search_fields = ('branch',)
-    list_filter = ('branch',)
+    search_fields = ('branch', 'shortname')
+    list_filter = ('branch', 'shortname')
 
 
 class UpgradeAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'getTree', 'tId', 'level', 'branchorder', 'simu', ]
+    list_display = ['__str__', 'getTree', 'shortname', 'branch', 'tId', 'level', 'branchorder', 'active', 'simu', ]
     search_fields = ('faction__name', 'faction__tId', 'tId', 'level', 'unlocked',)
-    list_filter = ('tId', 'simu', )
+    list_filter = ('active', 'simu', 'branch', 'shortname' )
 
 
 admin.site.register(Upgrade, UpgradeAdmin)

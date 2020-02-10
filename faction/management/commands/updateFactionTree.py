@@ -50,6 +50,7 @@ class Command(BaseCommand):
                 # get short name
                 splt = v["name"].split(" ")
                 v["shortname"] = " ".join(splt[:-1]) if re.match(r"([IVX]{1,5})", splt[-1]) else v["name"]
+                v["shortname"] = v["shortname"].strip()
 
                 # update database
                 print(FactionTree.objects.update_or_create(tId=tId, level=level, defaults=v))

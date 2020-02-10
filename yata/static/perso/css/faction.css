@@ -198,3 +198,49 @@ div.map-graph.x2 {
 div.map-background.x2::after {
     background-size: 1300px 758px;
 }
+
+
+
+select.faction-upgrade-tree {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+   overflow: hidden;
+    /* -webkit-appearance: none; */
+    font-weight: bold;
+    /* height: 16px; */
+    width: 20px;
+    text-align: center;
+    /* margin-top: 2px;
+    margin-left: 5px; */
+    border-width: 0px;
+    background: #00000000;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+}
+
+table.faction-simulator td { vertical-align: middle; }
+table.faction-simulator td.a { width: 12%; text-align: left; }  /* x1 */
+table.faction-simulator td.b { width: 16%; text-align: left; } /* x1 */
+table.faction-simulator td.c { width: 7%; text-align: center; }  /* x6 */
+table.faction-simulator td.d { width: 10%; text-align: right; }  /* x3 */
+
+table.faction-simulator-sum td.a { width: 10%; text-align: left; }  /* x1 */
+table.faction-simulator-sum td.b { width: 10%; text-align: right; } /* x6 */
+table.faction-simulator-sum td.c { width: 6%; text-align: center; }  /* x5 */
+table.faction-simulator-sum tr.max-order { text-decoration: line-through; opacity: 0.5; font-style: oblique; }  /* x5 */
+
+table.faction-simulator tr { border-radius: 4px;}
+table.faction-simulator tr.order-1 { background-color: #447e9b11}
+table.faction-simulator tr.order-2 { background-color: #447e9b22}
+table.faction-simulator tr.order-3 { background-color: #447e9b33}
+table.faction-simulator tr.order-4 { background-color: #447e9b44}
+table.faction-simulator tr.order-5 { background-color: #447e9b55}
+table.faction-simulator tr.order-6 { background-color: #447e9b66}
+table.faction-simulator tr.order-7 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
+table.faction-simulator tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
+table.faction-simulator tr.order-core { background-color: #0001}
+table.faction-simulator td.show-upgrade-details { cursor: help;}
+
+tr.upgrade-details {display: none;  padding: 0; background-color: #eeee; color: #555}
