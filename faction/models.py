@@ -462,7 +462,7 @@ class Faction(models.Model):
         key.save()
 
         # deactivate all upgrades
-        self.upgrade_set.filter(simu=False).update(active=False, unlocked="")
+        self.upgrade_set.filter(simu=False).update(active=False, level=1, unlocked="")
 
         # add upgrades
         for k, v in upgrades.items():
@@ -472,7 +472,7 @@ class Faction(models.Model):
             t = FactionTree.objects.filter(tId=k, level=v["level"]).first()
             v["shortname"] = t.shortname
             v["branch"] = t.branch
-            print(self.upgrade_set.update_or_create(tId=k, level=v["level"], simu=False, defaults=v))
+            print(self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v))
 
     def resetSimuUpgrades(self, update=False):
         if update:
@@ -551,8 +551,7 @@ class Faction(models.Model):
 
             # Core
             10: [[11, 2]],  # chaining
-            12: [[11, 2]],  # territory
-            }
+            12: [[11, 2]]}  # territory
 
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, [])]:
             print("YAAAA", tId, lvl)
@@ -594,8 +593,7 @@ class Faction(models.Model):
             25: [[23, 2], [24, 15], [26, 9]],  # booster cooldown
 
             # Core
-            11: [[10, 2], [12, 2]],  # capacity
-            }
+            11: [[10, 2], [12, 2]]}  # capacity
 
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, []) if b[1] > upgrade.level]:
             u = FactionTree.objects.filter(tId=tId).first()
@@ -607,8 +605,7 @@ class Faction(models.Model):
             37: [36, 38, 39],  # speed training
             36: [37, 38, 39],  # strength training
             38: [39, 36, 37],  # defense training
-            39: [38, 36, 37],  # dexterity training
-            }
+            39: [38, 36, 37]}  # dexterity training
 
         if r.get(upgrade.tId, False):
             # max the close branch to 10
@@ -640,8 +637,7 @@ class Faction(models.Model):
             5: [1, 2, 3],  # booster armory
             6: [1, 2, 4],  # drug armory
             7: [1, 2, 3, 4, 5, 6],  # point storage
-            8: [1, 2, 3, 4, 5, 6, 7],  # laboratory
-            }
+            8: [1, 2, 3, 4, 5, 6, 7]}  # laboratory
 
         if r.get(upgrade.tId) is not None:
             if unset:
@@ -656,8 +652,6 @@ class Faction(models.Model):
 
         for k, v in self.optimizedSimu().items():
             self.upgrade_set.filter(simu=True, branch=k).update(branchorder=v)
-
-
 
     def optimizedSimu(self, forceOrder=False):
         branchCost = self.getBranchesCosts(simu=True)
@@ -711,12 +705,16 @@ class Faction(models.Model):
                 simu_order = 0
                 simu_level = 0
                 simu_cost = 0
+                unsets_completed = 0
 
             # add faction
             fu = facUpgrades.filter(tId=u.tId, level=u.level).first()
             if fu is not None:
                 faction_order = max(fu.branchorder, faction_order)
                 faction_level = max(fu.level, faction_level)
+                if fu.unsets_completed:
+                    unsets_completed = fu.unsets_completed
+
             if u.branch == 'Core' and faction_level:
                 faction_cost += u.base_cost
             if faction_order:
@@ -724,6 +722,8 @@ class Faction(models.Model):
             tree[u.branch][u.shortname]["faction_order"] = faction_order
             tree[u.branch][u.shortname]["faction_level"] = faction_level
             tree[u.branch][u.shortname]["faction_cost"] = faction_cost
+            tree[u.branch][u.shortname]["unsets_completed"] = unsets_completed
+            tree[u.branch][u.shortname]["id"] = u.tId
             maxorder[u.branch][0] = max(maxorder[u.branch][0], faction_order)
 
             # add simu
@@ -2006,6 +2006,37 @@ class FactionTree(models.Model):
     def __str__(self):
         return "{} - {} [{}] level {}/{}".format(self.branch, self.shortname, self.tId, self.level, self.maxlevel)
 
+    def progress(self, faction):
+        # get last log
+        log = faction.log_set.all().order_by("-timestamp").first()
+        if log is None:
+            print("no log")
+            return -1, -1
+
+        # return done, to be done
+        if self.challenge == "No challenge":
+            return -1, -1
+
+        if self.tId in [8, 11]:
+            return -1, -1
+
+        elif self.tId == 10:
+            goal = int(self.challenge.split(" ")[-1])
+            curr = log.bestchain
+            return curr, goal
+
+        elif self.tId == 12:
+            goal = int(self.ability.split(" ")[-2]) - 1
+            curr = log.highestterritories
+            return curr, goal
+
+        elif self.tId == 13:
+            goal = int(self.challenge.split(" ")[-2].replace(",", ""))
+            curr = log.criminaloffences
+            return curr, goal
+
+        else:
+            return 6, 10
 
 class Upgrade(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -2014,7 +2045,8 @@ class Upgrade(models.Model):
     level = models.IntegerField(default=0)
     branchorder = models.IntegerField(default=0)
     branchmultiplier = models.IntegerField(default=0)
-    unlocked = models.CharField(default="branch", max_length=32, null=True, blank=True)
+    unlocked = models.CharField(default="unlocked", max_length=32, null=True, blank=True)
+    unsets_completed = models.IntegerField(default=0)
 
     # reserverd for simulation
     simu = models.BooleanField(default=False)

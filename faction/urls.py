@@ -52,6 +52,6 @@ urlpatterns = [
 
     # SECTION: territories
     re_path(r'^simulator/$', views.simulator, name='simulator'),
-    # re_path(r'^territories/fullmap/$', views.territoriesFullMap, name='territoriesFullMap'),
+    re_path(r'^simulator/challenge/$', views.simulatorChallenge, name='simulatorChallenge'),
 
 ]

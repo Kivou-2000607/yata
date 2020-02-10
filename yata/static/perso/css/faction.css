@@ -242,5 +242,9 @@ table.faction-simulator tr.order-7 { text-decoration: line-through; opacity: 0.5
 table.faction-simulator tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
 table.faction-simulator tr.order-core { background-color: #0001}
 table.faction-simulator td.show-upgrade-details { cursor: help;}
+table.faction-simulator-details td.a { width: 15%; text-align: left; }  /* x1 */
+table.faction-simulator-details td.b { width: 40%; text-align: left; } /* x1 */
+table.faction-simulator-details td.c { width: 40%; text-align: left; }  /* x1 */
+table.faction-simulator-details td.d { width: 5%; text-align: right; }  /* x1 */
 
 tr.upgrade-details {display: none;  padding: 0; background-color: #eeee; color: #555}

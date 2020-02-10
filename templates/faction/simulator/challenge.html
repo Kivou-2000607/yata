@@ -1,0 +1,41 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<td colspan="11">
+<table class="center-full faction-simulator-details">
+    {% for challenge in challenges %}
+    <tr>
+        <td class="a">{{challenge.name}}</td>
+        <td class="b">{{challenge.ability}}</td>
+        <td class="c">{{challenge.challenge}}</td>
+        {% if challenge.progress.0 < 0 %}
+            <td class="d">-</td>
+          {% elif challenge.progress.0 < challenge.progress.1 %}
+            <td class="d error" style="cursor: help" title="{{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}}">{{challenge.progress.0|div:challenge.progress.1|mul:100|floatformat:0}}%</td>
+        {% else %}
+            <td class="d valid" style="cursor: help" title="{{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}}">100%</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+</td>

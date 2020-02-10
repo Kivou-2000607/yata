@@ -2009,7 +2009,7 @@ def simulator(request):
             optimize = False
             forceOrder = False
             if request.POST.get("change"):
-                optimize=True
+                optimize = True
                 # change level
                 if request.POST.get("modification") == "level":
                     shortname = request.POST.get("shortname")
@@ -2033,7 +2033,6 @@ def simulator(request):
                     else:
                         faction.upgrade_set.filter(simu=True, branch=branch).update(branchorder=0, level=1, active=False)
 
-
             elif request.POST.get("reset"):
                 faction.resetSimuUpgrades(update=False)
 
@@ -2055,6 +2054,32 @@ def simulator(request):
 
         else:
             message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def simulatorChallenge(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId"))
+            for ch in challenges:
+                print(ch.tId, ch.name)
+                ch.progress = ch.progress(faction)
+            context = {"challenges": challenges}
+            page = 'faction/simulator/challenge.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception:

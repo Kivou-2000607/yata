@@ -36,8 +36,20 @@ $(document).on('click', '#faction-tree-refresh', e=>{
     }).html(spinner);
 });
 
-// // show/hide upgrades details
-// $(document).on('click', '.show-upgrade-details', e=>{
-//     e.preventDefault();
-//     $(e.currentTarget.parentElement.nextElementSibling).slideToggle();
-// });
+// show upgrades details
+$(document).on('click', '.show-upgrade-details', e=>{
+    e.preventDefault();
+    var tr = $(e.currentTarget.parentElement.nextElementSibling);
+    var upgradeId = tr.attr("id").split("-").pop();
+    tr.load( "/faction/simulator/challenge/", {
+        upgradeId: upgradeId,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).show().html('<td colspan="11">' + spinner + '</td>');
+
+});
+
+// hide upgrades details
+$(document).on('click', '.upgrade-details', e=>{
+    e.preventDefault();
+    $(e.currentTarget).hide();
+});

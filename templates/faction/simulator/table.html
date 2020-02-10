@@ -156,8 +156,8 @@ This file is part of yata.
                 {% else %}
                     <tr class="order-{{u.simu_order}}">
                 {% endif %}
-                    <td class="a show-upgrade-details" title="{{u}}"><b>{{branchId}}</b>{%if u.unsets_completed%} <i class="fas fa-history error" title="Branch unset on {{u.unsets_completed|ts2date}}"></i>{%endif%}</td>
-                    <td class="b show-upgrade-details"><b>{{upgradeId}}</b></td>
+                    <td class="a show-upgrade-details" title="{{u}}"><b>{{branchId}}</b>{%if u.unsets_completed %} <i class="fas fa-history error" title="Branch unset on {{u.unsets_completed|ts2date}}"></i>{%endif%}</td>
+                    <td class="b show-upgrade-details"><b>[{{u.id}}] {{upgradeId}}</b></td>
                     <td class="c">{{u.faction_order|emptyIfFalse}}</td>
                     <td class="c">{{u.faction_level|emptyIfFalse}}</td>
                     <td class="d">{{u.faction_cost|emptyIfFalse|intcomma}}</td>
@@ -186,23 +186,8 @@ This file is part of yata.
                     <td class="d">{{u.simu_cost|intcomma}}</td>
                     <td class="d">{{u.simu_cost|sub:u.faction_cost|signColor:1}}</td>
                 </tr>
-                <tr class="upgrade-details">
-                    <td colspan="11">
-                    <table class="center-full faction-simulator-details">
-                        {% for detail in u.details %}
-                        <tr>
-                            <td class="a">{{detail.0}}</td>
-                            <td class="b">{{detail.1}}</td>
-                            <td class="c">{{detail.2}}</td>
-                            {% if u.challengedone < detail.3 %}
-                                <td class="d error" title="{{u.challengedone}} / {{detail.3}}">{{u.challengedone|div:detail.3|mul:100|floatformat:0}}%</td>
-                            {% else %}
-                                <td class="d valid" title="{{u.challengedone}} / {{detail.3}}">100%</td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </td>
+                <tr id="upgrade-details-{{upgradeId}}" class="upgrade-details">
+                    {% include "faction/simulator/challenge.html" %}
                 </tr>
             {% endfor %}
         {% endfor %}
