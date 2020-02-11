@@ -134,7 +134,7 @@ class Faction(models.Model):
     armoryOld = models.IntegerField(default=8035200)
 
     # discord
-    # discordName = models.CharField(default="", max_length=64, null=True, blank=True)
+    discordName = models.CharField(default="", max_length=64, null=True, blank=True)
 
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
@@ -923,6 +923,11 @@ class Chain(models.Model):
     def __str__(self):
         return format_html("{} chain [{}]".format(self.faction, self.tId))
 
+    def elapsed(self):
+        last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
+        end = "{:.1f} days".format((self.end - self.start) / (60 * 60 * 24)) if self.end else "-"
+        return "{} / {}".format(last, end)
+
     def assignCrontab(self):
         # check if already in a crontab
         chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
@@ -1478,6 +1483,11 @@ class AttacksReport(models.Model):
     def __str__(self):
         return format_html("{} report [{}]".format(self.faction, self.pk))
 
+    def elapsed(self):
+        last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
+        end = "{:.1f} days".format((self.end - self.start) / (60 * 60 * 24)) if self.end else "-"
+        return "{} / {}".format(last, end)
+
     def progress(self):
         end = self.end if self.end else tsnow()
         last = self.last if self.last else self.start
@@ -1708,6 +1718,11 @@ class RevivesReport(models.Model):
 
     def __str__(self):
         return format_html("{} revives [{}]".format(self.faction, self.pk))
+
+    def elapsed(self):
+        last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
+        end = "{:.1f} days".format((self.end - self.start) / (60 * 60 * 24)) if self.end else "-"
+        return "{} / {}".format(last, end)
 
     def progress(self):
         end = self.end if self.end else tsnow()

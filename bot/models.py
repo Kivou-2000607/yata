@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from player.models import Player
-from chain.models import Faction
+from faction.models import Faction
 
 
 # bot

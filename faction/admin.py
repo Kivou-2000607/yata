@@ -41,14 +41,14 @@ class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'report', 'computing', 'crontab', 'update', 'current', 'chain', 'progress', 'state', 'status', 'start', 'last', 'end']
-    list_filter = ('computing', 'report', 'live', 'crontab', 'state')
+    list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
+    list_filter = ('computing', 'live', 'crontab', 'state', 'report')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
     actions = [reset_chain]
 
     def status(self, instance):
-        return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
+        return CHAIN_CHAINS_STATUS.get(instance.state, "?")
 
 
 def reset_report(modeladmin, request, queryset):
@@ -72,7 +72,7 @@ class AttacksReportAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'state', 'update', 'progress', 'state', 'status', 'start', 'last', 'end']
+    list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
     list_filter = ('computing', 'live', 'crontab', 'state')
     autocomplete_fields = ['wall']
@@ -86,7 +86,7 @@ class RevivesReportAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'state', 'update', 'progress', 'state', 'status', 'start', 'last', 'end']
+    list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
     list_filter = ('computing', 'live', 'crontab', 'state')
     # actions = [reset_report]

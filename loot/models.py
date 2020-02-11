@@ -72,7 +72,6 @@ class NPC(models.Model):
 
             lootTimings[i + 1] = {"lvl": i + 1, "ts": ts, "due": due, "pro": int(pro), "next": next}
 
-
         current = 5 - lootTimings[5]['next']
         if lvl is None:
             return lootTimings

@@ -64,8 +64,7 @@ def timings(request):
                 "update": npc.updateTS,
                 "status": npc.status,
                 "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
-                "levels": {'current': c['lvl'], 'next': n['lvl']}
-                }
+                "levels": {'current': c['lvl'], 'next': n['lvl']}}
 
         return HttpResponse(json.dumps(npcs, separators=(',', ':')), content_type="application/json")
 

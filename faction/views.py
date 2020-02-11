@@ -74,8 +74,12 @@ def configurations(request):
             # get player
             player = getPlayer(request.session["player"].get("tId"))
 
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
             if player.factionAA:
-                faction = Faction.objects.filter(tId=player.factionId).first()
                 faction.manageKey(player)
 
                 # update members before to avoid coming here before having members
