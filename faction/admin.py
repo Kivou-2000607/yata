@@ -48,7 +48,7 @@ class ChainAdmin(admin.ModelAdmin):
     actions = [reset_chain]
 
     def status(self, instance):
-        return CHAIN_CHAINS_STATUS.get(instance.state, "?")
+        return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
 
 def reset_report(modeladmin, request, queryset):
@@ -136,7 +136,7 @@ class FactionTreeAdmin(admin.ModelAdmin):
 class UpgradeAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'getTree', 'shortname', 'branch', 'tId', 'level', 'branchorder', 'active', 'simu', ]
     search_fields = ('faction__name', 'faction__tId', 'tId', 'level', 'unlocked',)
-    list_filter = ('active', 'simu', 'branch', 'shortname' )
+    list_filter = ('active', 'simu', 'branch', 'shortname')
 
 
 admin.site.register(Upgrade, UpgradeAdmin)

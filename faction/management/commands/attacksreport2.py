@@ -35,6 +35,7 @@ class Command(BaseCommand):
         report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
         if report is not None:
             # sleep 30s to avoid cache with chain reports
+            print("sleep for 30 seconds")
             time.sleep(30)
             state = report.getAttacks()
             type = "error" if state < 0 else "exit"

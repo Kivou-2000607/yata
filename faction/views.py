@@ -73,6 +73,7 @@ def configurations(request):
         if request.session.get('player'):
             # get player
             player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()

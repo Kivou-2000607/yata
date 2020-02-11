@@ -54,7 +54,8 @@ REPORT_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [continue]"}
+    -6: "No new entry [continue]",
+    -7: "Run for more than a week [stop]"}
 
 REPORT_REVIVES_STATUS = {
     3: "Normal [continue]",
@@ -66,7 +67,8 @@ REPORT_REVIVES_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [continue]"}
+    -6: "No new entry [continue]",
+    -7: "Run for more than a week [stop]"}
 
 BB_BRIDGE = {
     "criminaloffences": "Offences",
@@ -818,6 +820,14 @@ class Member(models.Model):
     def updateStatus(self, description=None, details=None, state=None, color=None, until=None, save=False, **args):
         # the **args is here to hade extra keys not needed
         if description is not None:
+            splt = description.split("data-time=")
+            if len(splt) > 1:
+                try:
+                    ts = int(splt[1].split(">")[0])
+                    description = "{} {:.1f} minutes".format(cleanhtml(description), ts / 60)
+                except BaseException as e:
+                    print(e)
+                    description = "{} ?? minutes".format(cleanhtml(description))
             self.description = description
         if details is not None:
             self.details = details
@@ -1536,6 +1546,17 @@ class AttacksReport(models.Model):
         print("{} last  {}".format(self, timestampToDate(tsl)))
         print("{} end   {}".format(self, timestampToDate(tse)))
 
+        # check if not running for too long
+        week = 60 * 60 * 24 * 7
+        if self.last - self.start > week:
+            weekAgo = tsnow() - week
+            self.computing = False
+            self.crontab = 0
+            self.attackreport_set.filter(timestamp_ended__gt=weekAgo).delete()
+            self.state = -7
+            self.save()
+            return -7
+
         # add + 2 s to the endTS
         tse += 10
 
@@ -1771,6 +1792,18 @@ class RevivesReport(models.Model):
         print("{} start {}".format(self, timestampToDate(tss)))
         print("{} last  {}".format(self, timestampToDate(tsl)))
         print("{} end   {}".format(self, timestampToDate(tse)))
+
+        # check if not running for too long
+        week = 60 * 60 * 24 * 7
+        if self.last - self.start > week:
+            weekAgo = tsnow() - week
+            self.computing = False
+            self.crontab = 0
+            self.revive_set.filter(timestamp__gt=weekAgo).delete()
+            self.live = False
+            self.state = -7
+            self.save()
+            return -7
 
         # add + 2 s to the endTS
         tse += 10
