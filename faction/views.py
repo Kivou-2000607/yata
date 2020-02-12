@@ -75,37 +75,36 @@ def configurations(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
-            if player.factionAA:
-                faction.manageKey(player)
+            faction.manageKey(player)
 
-                # update members before to avoid coming here before having members
-                faction.updateMembers(key=player.getKey(value=False), force=False)
+            # update members before to avoid coming here before having members
+            faction.updateMembers(key=player.getKey(value=False), force=False)
 
-                # get keys
-                keys = faction.masterKeys.filter(useSelf=True)
-                faction.nKeys = len(keys.filter(useFact=True))
-                faction.save()
+            # get keys
+            keys = faction.masterKeys.filter(useSelf=True)
+            faction.nKeys = len(keys.filter(useFact=True))
+            faction.save()
 
-                context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+            context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
 
-                # add poster
-                if faction.poster:
-                    fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
-                    posterOpt = json.loads(faction.posterOpt)
-                    context['posterOpt'] = posterOpt
-                    context['random'] = random.randint(0, 65535)
-                    context['fonts'] = fntId
+            # add poster
+            if faction.poster:
+                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
+                posterOpt = json.loads(faction.posterOpt)
+                context['posterOpt'] = posterOpt
+                context['random'] = random.randint(0, 65535)
+                context['fonts'] = fntId
 
-                page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
-                return render(request, page, context)
-
-            else:
-                return returnError(type=403, msg="You need AA rights.")
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            return render(request, page, context)
 
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -118,6 +117,10 @@ def configurationsKey(request):
     try:
         if request.session.get('player') and request.method == 'POST':
             player = getPlayer(request.session["player"].get("tId"))
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             key = player.key_set.first()
             key.useFact = not key.useFact
             key.save()
@@ -138,6 +141,9 @@ def configurationsThreshold(request):
         if request.session.get('player') and request.method == 'POST':
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
@@ -165,6 +171,9 @@ def configurationsPoster(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
@@ -181,7 +190,6 @@ def configurationsPoster(request):
             # update poster
             if request.method == "POST" and request.POST.get("posterConf"):
                 updatePosterConf(faction, request.POST.dict())
-                updatePoster(faction)
 
             faction.save()
 
@@ -195,6 +203,7 @@ def configurationsPoster(request):
                 context['posterOpt'] = posterOpt
                 context['random'] = random.randint(0, 65535)
                 context['fonts'] = fntId
+                updatePoster(faction)
             elif not faction.poster and os.path.exists(url):
                 os.remove(url)
                 context['posterDeleted'] = True
@@ -459,6 +468,9 @@ def manageReport(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
             context = {"player": player}
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
 
             # get faction
             chainId = request.POST.get("chainId", -1)
@@ -882,45 +894,45 @@ def manageWall(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            if player.factionAA:
-                faction = Faction.objects.filter(tId=factionId).first()
-                if faction is None:
-                    return render(request, 'yata/error.html', {'inlineError': 'Faction {} not found in the database.'.format(factionId)})
-
-                wallId = request.POST.get("wallId", 0)
-                wall = Wall.objects.filter(tId=wallId).first()
-                if wall is None:
-                    return render(request, 'yata/error.html', {'inlineError': 'Wall {} not found in the database.'.format(wallId)})
-
-                elif request.POST.get("type") == "delete":
-                    wall.attacksreport_set.filter(faction=faction).delete()
-                    wall.factions.remove(faction)
-                    if not len(wall.factions.all()):
-                        wall.delete()
-                    return render(request, 'faction/walls/buttons.html')
-
-                elif request.POST.get("type") == "toggle":
-
-                    breakdown = json.loads(wall.breakdown)
-
-                    if str(faction.tId) in breakdown:
-                        # the wall was on we turn it off
-                        breakdown = [id for id in breakdown if id != str(faction.tId)]
-                        wall.breakSingleFaction = False
-                    else:
-                        # the wall was off we turn it on
-                        breakdown.append(str(faction.tId))
-                        wall.breakSingleFaction = True
-
-                    wall.breakdown = json.dumps(breakdown)
-
-                wall.save()
-                wall.report = wall.getReport(faction)
-
-                context = {"player": player, "wall": wall}
-                return render(request, 'faction/walls/buttons.html', context)
-            else:
+            if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'inlineError': 'Faction {} not found in the database.'.format(factionId)})
+
+            wallId = request.POST.get("wallId", 0)
+            wall = Wall.objects.filter(tId=wallId).first()
+            if wall is None:
+                return render(request, 'yata/error.html', {'inlineError': 'Wall {} not found in the database.'.format(wallId)})
+
+            elif request.POST.get("type") == "delete":
+                wall.attacksreport_set.filter(faction=faction).delete()
+                wall.factions.remove(faction)
+                if not len(wall.factions.all()):
+                    wall.delete()
+                return render(request, 'faction/walls/buttons.html')
+
+            elif request.POST.get("type") == "toggle":
+
+                breakdown = json.loads(wall.breakdown)
+
+                if str(faction.tId) in breakdown:
+                    # the wall was on we turn it off
+                    breakdown = [id for id in breakdown if id != str(faction.tId)]
+                    wall.breakSingleFaction = False
+                else:
+                    # the wall was off we turn it on
+                    breakdown.append(str(faction.tId))
+                    wall.breakSingleFaction = True
+
+                wall.breakdown = json.dumps(breakdown)
+
+            wall.save()
+            wall.report = wall.getReport(faction)
+
+            context = {"player": player, "wall": wall}
+            return render(request, 'faction/walls/buttons.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -1145,6 +1157,9 @@ def manageAttacks(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
             # get faction
@@ -1199,6 +1214,10 @@ def attacksReport(request, reportId):
 
             # if modify end date
             if 'modifyEnd' in request.POST:
+
+                if not player.factionAA:
+                    return returnError(type=403, msg="You need AA rights.")
+
                 tse = int(request.POST.get("end", 0))
                 if report.start < tse:
                     report.end = tse
@@ -1382,6 +1401,9 @@ def manageRevives(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
             # get faction
@@ -1426,7 +1448,6 @@ def revivesReport(request, reportId):
 
             # get breakdown
             report = faction.revivesreport_set.filter(pk=reportId).first()
-            print(report)
             if report is None:
                 context = dict({"player": player,
                                 'chaincat': True,
@@ -1778,7 +1799,7 @@ def bigBrother(request):
                 # select first timestamp
                 stat = allContributors.filter(stat=name, timestamp=tsA).first()
                 contributors = dict({})
-                # in case they remove stat and select it before refraising
+                # in case they remove stat and select it before refresh
                 if stat is not None:
                     comparison[3] = BB_BRIDGE.get(stat.stat, stat.stat)
                     for k, v in json.loads(stat.contributors).items():
@@ -1798,6 +1819,11 @@ def bigBrother(request):
                             c = contributors[memberName]
                             if not c[2] - c[1]:
                                 del contributors[memberName]
+
+                    # delete contributors out of faction for ts2
+                    todel = [k for k, v in contributors.items() if not v[2]]
+                    for tId in todel:
+                        del contributors[tId]
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'view': {'bb': True}}
 
@@ -1826,24 +1852,23 @@ def removeContributors(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            if player.factionAA:
-                faction = Faction.objects.filter(tId=factionId).first()
-                if faction is None:
-                    return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-                print('[view.chain.removeUpgrade] faction {} found'.format(factionId))
-
-                s = faction.contributors_set.filter(stat=request.POST.get('name')).filter(timestamp=request.POST.get('ts')).first()
-                try:
-                    s.delete()
-                    m = "Okay"
-                    t = 1
-                except BaseException as e:
-                    m = str(e)
-                    t = -1
-
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            else:
+            if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            s = faction.contributors_set.filter(stat=request.POST.get('name')).filter(timestamp=request.POST.get('ts')).first()
+            try:
+                s.delete()
+                m = "Okay"
+                t = 1
+            except BaseException as e:
+                m = str(e)
+                t = -1
+
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -2003,6 +2028,9 @@ def simulator(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
@@ -2080,12 +2108,16 @@ def simulatorChallenge(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
-            challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId"))
+            challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId")).order_by("level")
             for ch in challenges:
+                print(ch)
                 ch.progress = ch.progress(faction)
 
             context = {"challenges": challenges}

@@ -32,10 +32,17 @@ class Command(BaseCommand):
         for faction in Faction.objects.filter(nKeys__gt=0):
             print("[command.faction.update] faction {}".format(faction))
             try:
-                faction.updateLog()
-                faction.updateUpgrades()
-                # faction.resetSimuUpgrades(update=True)
-                # faction.getFactionTree()
+                print("[command.faction.update] faction {}: check keys".format(faction))
+                faction.checkKeys()
+                if faction.nKeys > 0:
+                    print("[command.faction.update] faction {}: update logs".format(faction))
+                    faction.updateLog()
+                    print("[command.faction.update] faction {}: update upgrades".format(faction))
+                    faction.updateUpgrades()
+                    # faction.resetSimuUpgrades(update=True)
+                    # faction.getFactionTree()
+                else:
+                    print("[command.faction.update] faction {}: no more keys".format(faction))
             except BaseException as e:
                 print("[command.faction.update] {}".format(e))
 

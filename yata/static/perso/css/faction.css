@@ -137,6 +137,11 @@ table.faction-bb-comparison td.a { width: 30%; text-align: left; }  /* x1 */
 table.faction-bb-comparison td.b { width: 25%; text-align: right; }  /* x2 */
 table.faction-bb-comparison td.c { width: 20%; text-align: center; }  /* x1 */
 
+table.faction-bb-challenges td.aa { width: 40%; text-align: left; }  /* x1 */
+table.faction-bb-challenges td.ab { width: 40%; text-align: right; }  /* x1 */
+table.faction-bb-challenges td.b { width: 40%; text-align: center; }  /* x1 */
+table.faction-bb-challenges td.c { width: 20%; text-align: center; }  /* x1 */
+
 select.faction-bb-stats-list {
   padding: 0;
   margin: 0;

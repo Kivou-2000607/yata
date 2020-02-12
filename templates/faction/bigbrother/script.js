@@ -48,3 +48,17 @@ $(document).on('click', '.faction-bb-delete', e=>{
     }).remove();
 
 });
+
+// big toggle challenges view
+$(document).on('click', 'tr[id^="faction-bb-challenges-toggle-"]', e=>{
+    e.preventDefault();
+    var tog = $(e.currentTarget);
+    var stat = tog.attr("id").split("-").pop()
+    var toshow = $(".faction-bb-challenges-catch-" + stat);
+    toshow.toggle();
+
+    var i = tog.find("i.fa-caret-right");
+    if(toshow.css("display") == "none") i.removeClass("fa-rotate-90")
+    else i.addClass("fa-rotate-90")
+
+});

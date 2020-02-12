@@ -179,6 +179,36 @@ class Faction(models.Model):
         else:
             return {k.player.tId: k.value for k in self.masterKeys.filter(useFact=True)}
 
+    def checkKeys(self):
+        masterKeys = self.masterKeys.all()
+
+        for key in masterKeys:
+            # check currency for AA perm (smallest payload and give )
+            req = apiCall("faction", "", "currency", key.value, verbose=False)
+
+            if 'apiError' in req:
+                code = req['apiErrorCode']
+                if code in [1, 2, 10]:
+                    # delete key
+                    print("{} delete {} (API error {})".format(self, key, code))
+                    key.delete()
+                elif code in [7]:
+                    # remove key
+                    print("{} remove {} (API error {})".format(self, key, code))
+                    self.masterKeys.remove(key)
+
+            elif req['faction_id'] != self.tId:
+                # remove key
+                print("{} remove {} (changed faction)".format(self, key))
+                self.masterKeys.remove(key)
+
+            key.lastPulled = tsnow()
+            key.reason = "Check AA perm"
+            key.save()
+
+        self.nKeys = len(self.getKeys())
+        self.save()
+
     def updateMembers(self, key=None, force=True, indRefresh=False):
         # it's not possible to delete all memebers and recreate the base
         # otherwise the target list will be lost
