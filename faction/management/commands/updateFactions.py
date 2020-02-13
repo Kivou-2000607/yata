@@ -32,6 +32,8 @@ class Command(BaseCommand):
         for faction in Faction.objects.filter(nKeys__gt=0):
             print("[command.faction.update] faction {}".format(faction))
             try:
+                print("[command.faction.update] faction {}: clean history".format(faction))
+                faction.cleanHistory()
                 print("[command.faction.update] faction {}: check keys".format(faction))
                 faction.checkKeys()
                 if faction.nKeys > 0:

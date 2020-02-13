@@ -133,7 +133,14 @@ class Faction(models.Model):
 
     # armory / networth
     armoryUpda = models.IntegerField(default=0)
-    armoryOld = models.IntegerField(default=8035200)
+    # armoryOld = models.IntegerField(default=8035200)
+
+    # history options
+    armoryHist = models.CharField(default="three_months", max_length=16)
+    chainsHist = models.CharField(default="one_year", max_length=16)
+    attacksHist = models.CharField(default="three_months", max_length=16)
+    revivesHist = models.CharField(default="three_months", max_length=16)
+    liveLength = models.CharField(default="one_week", max_length=16)
 
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
@@ -143,6 +150,51 @@ class Faction(models.Model):
 
     def fullname(self):
         return format_html("{} [{}]".format(self.name, self.tId))
+
+    def getHist(self, key):
+        if key == "armory":
+            return HISTORY_TIMES.get(self.armoryHist, 3600)
+        elif key == "chains":
+            return HISTORY_TIMES.get(self.chainsHist, 3600)
+        elif key == "attacks":
+            return HISTORY_TIMES.get(self.attacksHist, 3600)
+        elif key == "revives":
+            return HISTORY_TIMES.get(self.revivesHist, 3600)
+        elif key == "live":
+            return HISTORY_TIMES.get(self.liveLength, 3600)
+        else:
+            return 3600
+
+    def getHistName(self, key):
+        if key == "armory":
+            timeKey = self.armoryHist
+        elif key == "chains":
+            timeKey = self.chainsHist
+        elif key == "attacks":
+            timeKey = self.attacksHist
+        elif key == "revives":
+            timeKey = self.revivesHist
+        elif key == "live":
+            timeKey = self.liveLength
+        else:
+            timeKey = "one_hour"
+
+        return " ".join([k for k in timeKey.split("_")])
+
+    def cleanHistory(self):
+        # clean chains
+        old = tsnow() - self.getHist("chains")
+        print(self.chain_set.filter(start__lt=old).delete())
+        # clean attacks reports
+        old = tsnow() - self.getHist("attacks")
+        print(self.attacksreport_set.filter(start__lt=old).delete())
+        # clean revives reports
+        old = tsnow() - self.getHist("revives")
+        print(self.revivesreport_set.filter(start__lt=old).delete())
+        # clean news
+        old = tsnow() - self.getHist("armory")
+        print(self.news_set.filter(timestamp__lt=old).delete())
+        print(self.log_set.filter(timestamp__lt=old).delete())
 
     def manageKey(self, player):
         key = player.key_set.first()
@@ -378,18 +430,15 @@ class Faction(models.Model):
         self.respect = factionInfo["respect"]
 
         # create/delete news
-        # self.armoryOld = 16070400  # 6 month
-        # self.armoryOld = 8035200  # 3 month
-        old = now - self.armoryOld
+        old = now - self.getHist("armory")
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
         for type in ["armorynews", "fundsnews"]:
             for k, v in factionInfo.get(type, dict({})).items():
                 newstype = news.filter(type=type)
-                if newstype.filter(tId=k).first() is None and v["timestamp"] > old:
+                if v["timestamp"] > old:
                     v["news"] = cleanhtml(v["news"])[:512]
-                    n = self.news_set.create(tId=k, type=type, **v)
-                    # print("Create {}".format(n))
+                    self.news_set.get_or_create(tId=k, type=type, defaults=v)
 
         # remove old logs
         self.log_set.filter(timestamp__lt=old).delete()

@@ -93,6 +93,13 @@ def configurations(request):
             faction.nKeys = len(keys.filter(useFact=True))
             faction.save()
 
+            # tmp variables to pass for templates
+            faction.armoryTime = faction.getHistName("armory")
+            faction.chainsTime = faction.getHistName("chains")
+            faction.attacksTime = faction.getHistName("attacks")
+            faction.revivesTime = faction.getHistName("revives")
+            faction.liveTime = faction.getHistName("live")
+
             context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
 
             # add poster
@@ -398,14 +405,11 @@ def chains(request):
 
                 chains = faction.chain_set.all()
                 for k, v in req["chains"].items():
-                    chain = chains.filter(tId=k).first()
-                    old = tsnow() - int(v['end']) > 3600 * 24 * 31 * 6
-                    if chain is None:
-                        if v['chain'] >= faction.hitsThreshold and not old:
-                            faction.chain_set.create(tId=k, **v)
-                    else:
-                        if v['chain'] < faction.hitsThreshold or old:
-                            chain.delete()
+                    old = tsnow() - int(v['end']) > faction.getHist("chains")
+                    if v['chain'] < faction.hitsThreshold or old:
+                        chains.filter(tId=k).delete()
+                    elif v['chain'] >= faction.hitsThreshold and not old:
+                        faction.chain_set.update_or_create(tId=k, defaults=v)
 
                 # check if live chain
                 live = chains.filter(live=True).first()
@@ -1110,25 +1114,29 @@ def attacksReports(request):
                     report.wall.add(wall)
                     c = report.assignCrontab()
                     report.save()
-                    message = ["validMessageSub", "New wall created.<br>Start: {}<br>Ends: {}".format(timestampToDate(wall.tss, fmt=True), timestampToDate(wall.tse, fmt=True))]
+                    message = ["validMessageSub", "New wall created.<br>Starts: {}<br>Ends: {}".format(timestampToDate(wall.tss, fmt=True), timestampToDate(wall.tse, fmt=True))]
 
             elif request.POST.get("type") == "new":
                 try:
                     live = int(request.POST.get("live", 0))
                     start = int(request.POST.get("start", 0))
                     end = int(request.POST.get("end", 0))
-                    if start > tsnow():
-                        message = ["errorMessageSub", "Select a starting date in the past.<br>Start: {}".format(timestampToDate(start, fmt=True))]
+                    if tsnow() - start > faction.getHist("attacks"):
+                        message = ["errorMessageSub", "Starting date too far in the past (limit is {}).<br>Starts: {}".format(faction.getHistName("attacks"), timestampToDate(start, fmt=True))]
+                    elif live and tsnow() - start > faction.getHist("live"):
+                        message = ["errorMessageSub", "Starting date too far in the past for a live record (limit is {}).<br>Starts: {}".format(faction.getHistName("live"), timestampToDate(start, fmt=True))]
+                    elif start > tsnow():
+                        message = ["errorMessageSub", "Select a starting date in the past.<br>Starts: {}".format(timestampToDate(start, fmt=True))]
                     elif start and live:
                         report = faction.attacksreport_set.create(start=start, end=0, live=True, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start, fmt=True))]
+                        message = ["validMessageSub", "New live report created.<br>Starts: {}".format(timestampToDate(start, fmt=True))]
                     elif start and end and start < end:
                         report = faction.attacksreport_set.create(start=start, end=end, live=False, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
+                        message = ["validMessageSub", "New report created.<br>Starts: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
                     else:
                         message = ["errorMessageSub", "Error while creating new report"]
                 except BaseException as e:
@@ -1361,18 +1369,22 @@ def revivesReports(request):
                     live = int(request.POST.get("live", 0))
                     start = int(request.POST.get("start", 0))
                     end = int(request.POST.get("end", 0))
-                    if start > tsnow() or end > tsnow():
-                        message = ["errorMessageSub", "Select a starting date and ending date in the past.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
+                    if tsnow() - start > faction.getHist("revives"):
+                        message = ["errorMessageSub", "Starting date too far in the past (limit is {}).<br>Starts: {}".format(faction.getHistName("revives"), timestampToDate(start, fmt=True))]
+                    elif live and tsnow() - start > faction.getHist("live"):
+                        message = ["errorMessageSub", "Starting date too far in the past for a live record (limit is {}).<br>Starts: {}".format(faction.getHistName("live"), timestampToDate(start, fmt=True))]
+                    elif start > tsnow() or end > tsnow():
+                        message = ["errorMessageSub", "Select a starting date and ending date in the past.<br>Starts: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
                     elif start and live:
                         report = faction.revivesreport_set.create(start=start, end=0, live=True, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New live report created.<br>Start: {}".format(timestampToDate(start, fmt=True))]
+                        message = ["validMessageSub", "New live report created.<br>Starts: {}".format(timestampToDate(start, fmt=True))]
                     elif start and end and start < end:
                         report = faction.revivesreport_set.create(start=start, end=end, live=False, computing=True)
                         c = report.assignCrontab()
                         report.save()
-                        message = ["validMessageSub", "New report created.<br>Start: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
+                        message = ["validMessageSub", "New report created.<br>Starts: {}<br>Ends: {}".format(timestampToDate(start, fmt=True), timestampToDate(end, fmt=True))]
                     else:
                         message = ["errorMessageSub", "Error while creating new report"]
                 except BaseException as e:

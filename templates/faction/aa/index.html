@@ -53,9 +53,17 @@ This file is part of yata.
         </tbody>
     </table>
 </div>
-<h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;Reports</h2>
+<h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;Reports and logging history</h2>
 <div class="module">
-    <h3>Select chain threshold</h3>
+    <h3>History length</h3>
+    <ul>
+      <li>Armory / networth: <i>{{faction.armoryTime}}</i></li>
+      <li>Chains reports: <i>{{faction.chainsTime}}</i></li>
+      <li>Attacks reports: <i>{{faction.attacksTime}}</i></li>
+      <li>Revives reports: <i>{{faction.revivesTime}}</i></li>
+      <li>Live length: <i>{{faction.liveTime}}</i></li>
+    </ul>
+    <h3>Chain threshold</h3>
     {% include "faction/aa/threshold.html" %}
 </div>
 <h2 class="title"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</h2>

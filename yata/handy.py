@@ -19,8 +19,26 @@ This file is part of yata.
 
 from django.utils import timezone
 
+HISTORY_TIMES = {
+    "one_day": 86400,
+    "one_week": 604800,
+    "two_weeks": 1209600,
+    "one_month": 2678400,
+    "two_months": 5356800,
+    "three_months": 8035200,
+    "six_months": 16070400,
+    "one_year": 32140800,
+    "two_years": 64281600,
+}
+
+
+def histTime(key):
+    return " ".join([k for k in key.split("_")])
+
+
 def tsnow():
     return int(timezone.now().timestamp())
+
 
 def apiCall(section, id, selections, key, sub=None, verbose=True):
     import requests
