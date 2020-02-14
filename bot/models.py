@@ -28,6 +28,7 @@ class Guild(models.Model):
     # general options
     masterKeys = models.ManyToManyField(Player, blank=True)
     manageChannels = models.BooleanField(default=True)
+    systemChannel = models.CharField(default='', blank=True, max_length=32)
 
     # verify module
     verifyModule = models.BooleanField(default=False)
@@ -37,31 +38,36 @@ class Guild(models.Model):
     verifyAppendFacId = models.BooleanField(default=True)
     verifyDailyVerify = models.BooleanField(default=False)
     verifyDailyCheck = models.BooleanField(default=False)
+    verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64)
 
     # stock module
     stockModule = models.BooleanField(default=False)
     stockWSSB = models.BooleanField(default=False)
     stockTCB = models.BooleanField(default=False)
-    stockChannel = models.CharField(default="", blank=True, max_length=16)
     stockAlerts = models.BooleanField(default=False)
+    stockChannels = models.CharField(default='["stocks"]', blank=True, max_length=64)
 
     # chain module
     chainModule = models.BooleanField(default=False)
+    chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64)
 
     # loot module
     lootModule = models.BooleanField(default=False)
+    lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64)
 
     # loot module
     reviveModule = models.BooleanField(default=False)
+    reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64)
 
     # API module
-    allowedChannels = models.CharField(default="", blank=True, max_length=64)
-    allowedRoles = models.CharField(default="", blank=True, max_length=64)
+    apiModule = models.BooleanField(default=True)
+    apiChannels = models.CharField(default='["*"]', blank=True, max_length=64)
+    apiRoles = models.CharField(default='["*"]', blank=True, max_length=64)
 
     # verify repository
-    repoModule = models.BooleanField(default=False)
-    repoName = models.CharField(default="repo_token", max_length=64)
-    repoToken = models.CharField(default="repo_name", max_length=32)
+    # repoModule = models.BooleanField(default=False)
+    # repoName = models.CharField(default="repo_token", max_length=64)
+    # repoToken = models.CharField(default="repo_name", max_length=32)
 
     def __str__(self):
         return "{} on {} [{}]".format(self.configuration, self.guildName, self.guildId)

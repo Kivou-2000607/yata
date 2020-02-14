@@ -9,8 +9,8 @@ class DiscordAppAdmin(admin.ModelAdmin):
 
 class GuildAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'guildContactName', 'guildContactId']
-    search_fields = ['guildContactName', 'guildContactId']
-    list_filter = ['guildContactName']
+    search_fields = ['guildContactName', 'guildName']
+    list_filter = ['configuration__name', 'guildContactName', 'guildName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
 
     fieldsets = (
@@ -21,16 +21,22 @@ class GuildAdmin(admin.ModelAdmin):
                     'fields': ('masterKeys', 'manageChannels')
                 }),
                 ('Verify module', {
-                    'fields': ('verifyModule', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
+                    'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
                 }),
                 ('Stock module', {
-                    'fields': ('stockModule', 'stockWSSB', 'stockTCB', 'stockAlerts', 'stockChannel')
+                    'fields': ('stockModule', 'stockChannels', 'stockWSSB', 'stockTCB', 'stockAlerts')
                 }),
-                ('Other module', {
-                    'fields': ('chainModule', 'lootModule', 'reviveModule',)
+                ('Revive module', {
+                    'fields': ('reviveModule', 'reviveChannels')
+                }),
+                ('Loot module', {
+                    'fields': ('lootModule', 'lootChannels')
+                }),
+                ('Chain module', {
+                    'fields': ('chainModule', 'chainChannels')
                 }),
                 ('API module', {
-                    'fields': ('allowedChannels', 'allowedRoles')
+                    'fields': ('apiModule', 'apiChannels', 'apiRoles')
                 }),
                 )
 

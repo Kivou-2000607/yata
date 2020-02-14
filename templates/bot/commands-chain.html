@@ -27,7 +27,6 @@ This file is part of yata.
 <p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;factionID&gt;</tt> or <tt>!verify &lt;w=warningTime&gt; &lt;n=notificationTime&gt;</tt></p>
 <p><b>Example:</b> <tt>!chain 2356 w=30 n=120</tt> will watch the chain of faction <tt>2356</tt>, gives notifications if timeout < 30 seconds and gives status update every 2 minutes.</p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
-{# <p class="privacy-master warning">Use the master key to get chain information.</p> #}
 </div>
 
 <h2 class="command-doc privacy-none">Command <tt>!stopchain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
@@ -36,7 +35,6 @@ This file is part of yata.
 <p><b>Syntax:</b> <tt>!stopchain</tt></p>
 <p><b>Warning:</b> This is not a <i>real</i> command in the sense that it does not directly stop the bot. Upon status update, the bot will read previous messages and if it catches a <tt>!stopchain</tt> it will <i>1)</i> stop watching and say so <i>2)</i> delete the <tt>!stop</tt> message. Thus it can take several minutes for the bot to actually stop (depending on parameter <tt>n</tt>). If you're watching several chains at the same time the next chain to notify will be stopped (yes it can be a mess quite quickly...).<p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
-{# <p class="privacy-none valid">No key needed.</p> #}
 </div>
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!retal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
@@ -44,7 +42,6 @@ This file is part of yata.
 <p>Sends a notification to the author's faction role (<tt>@Faction [factionId]</tt>) on incoming attacks. It will stop watching retals if it catches a <tt>!stopretal</tt>.</p>
 <p><b>Syntax:</b> <tt>!retal</tt></p>
 <p><b>Scope:</b> Anyone with AA permission can use it in <tt>#chain</tt>.</p>
-{# <p class="privacy-master warning">Use the master key to get chain information.</p> #}
 </div>
 
 <h2 class="command-doc privacy-none">Command <tt>!stopretal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
@@ -53,7 +50,28 @@ This file is part of yata.
 <p><b>Syntax:</b> <tt>!stopretal</tt></p>
 <p><b>Warning:</b> Same as <tt>!stopchain</tt>.<p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
-{# <p class="privacy-none valid">No key needed.</p> #}
+</div>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!fly</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives the list of members that are flying for faction <tt>&lt;factionID&gt;</tt> if given or author key holder's faction otherwise.</p>
+<p><b>Syntax:</b> <tt>!fly</tt> or <tt>!fly &lt;factionID&gt;</tt></p>
+<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
+</div>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!hosp</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives the list of members that are hospitalized for faction <tt>&lt;factionID&gt;</tt> if given or author key holder's faction otherwise. Members are sorted by last action and direct link to profile is given.</p>
+<p><b>Syntax:</b> <tt>!hosp</tt> or <tt>!hosp &lt;factionID&gt;</tt></p>
+<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
+</div>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!okay</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives the list of members that are okay for faction <tt>&lt;factionID&gt;</tt> if given or author key holder's faction otherwise. Members are sorted by last action and direct link to profile is given.</p>
+<p><b>Syntax:</b> <tt>!okay</tt> or <tt>!okay &lt;factionID&gt;</tt></p>
+<p><b>Aliases:</b> <tt>!ok</tt></p>
+<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
 </div>
 
 </div>
