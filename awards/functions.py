@@ -1957,11 +1957,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [309, 443, 459, 375]:
+                elif int(k) in [309, 443, 459, 375, 731]:
                     # 309 {'name': 'Christmas in Torn', 'description': 'Login on Christmas Day', 'type': 11,
                     # 443 {'name': 'Trick or Treat', 'description': 'Login on Halloween', 'type': 11,
                     # 459 {'name': 'Torniversary', 'description': 'Login on November 15th', 'type': 11,
                     # "375": { "name": "Resolution", "description": "Login on New Year's Day", "type": 11,
+                    # "731": {"name": "Tornication", "description": "Login on Valentine's Day", "type": 11,
                     type = "Events"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0

@@ -374,6 +374,7 @@ d = {
     246: 536984897,  # Pyramid Scheme
     166: 507297243,  # Stairway To Heaven
     375: 994774255,  # Resolution
+    731: 782638013,  # Tornication
 
     # 12
     18: 978797305,  # Another Brick In The Wall
