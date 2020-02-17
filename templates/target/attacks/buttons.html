@@ -18,14 +18,14 @@ This file is part of yata.
 {% endcomment %}
 
 <!-- toggle -->
+{% if target.attacker %}
 <form style="display: inline;">{% csrf_token %}
-    <a id="revives-list-toggle-{{revive.tId}}" href="{% url 'target:toggleRevive' %}">
-       {% if revive.paid %}
-           <i class="fas fa-toggle-on" title="Click if revive not paid for"></i>
-           <input class="paid" type="hidden" value="1">
+    <a id="targets-toggle-{{target.defender_id}}" class="attack-list-toggle" href="{% url 'target:target' %}">
+       {% if target.defender_id in targets %}
+           <i class="fas fa-toggle-on" title="Remove target"></i>
        {% else %}
-           <i class="fas fa-toggle-off" title="Click if revive paid for"></i>
-           <input class="paid" type="hidden" value="0">
+           <i class="fas fa-toggle-off" title="Add target"></i>
        {% endif %}
     </a>
 </form>
+{% endif %}

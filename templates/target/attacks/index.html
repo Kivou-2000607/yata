@@ -1,0 +1,91 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if attacks %}
+
+<script>
+        $(document).ready(function() {
+            $("#target-attacks").tablesorter({
+                textExtraction: {
+                  7: function(node, table, cellIndex) {return $(node).attr("data-val");},
+                },
+                cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+        });
+</script>
+
+<h2 class="title">List of recent attacks</h2>
+<div class="module">
+    <table id="target-attacks" class="center-medium trshadow target-attacks">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Attacker</th>
+                <th>Defender</th>
+                <th>Result</th>
+                <th>&asymp;Level</th>
+                <th style="text-align: center;">Flat respect</th>
+                <th style="text-align: center;">Fair fight</th>
+                <th style="text-align: center;">Save</th>
+        </thead>
+        <tbody>
+        {% for v in attacks %}
+        <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.fairFight == 3 %}max-fair-fight{% elif v.fairFight|div:2 > 1 %}good-fair-fight{% elif v.fairFight == 0 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}">
+            <td class="a">{{v.timestamp_ended|ts2date}}</td>
+            <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
+            <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
+            <td class="c">{{v.result}}</td>
+            {% if v.attacker is False %}
+                <td class="e">-</td>
+                <td class="d">-</td>
+                <td class="d">{{v.fairFight|floatformat:2}}</td>
+            {% elif not v.flatRespect %}
+                <td class="e">-</td>
+                <td class="d">-</td>
+                <td class="d">-</td>
+            {% elif v.bonus > 0 %}
+                <td colspan="3" style="text-align: center;">Bonus: {{v.bonus}}</td>
+            {% elif v.war > 1 %}
+                <td class="e">{{v.level|floatformat:0}}</td>
+                <td class="d">{{v.flatRespect|floatformat:2}}</td>
+                <td class="d">War</td>
+            {% else %}
+                <td class="e">{{v.level|floatformat:0}}</td>
+                <td class="d">{{v.flatRespect|floatformat:2}}</td>
+                <td class="d">{{v.fairFight|floatformat:2}}</td>
+            {% endif %}
+            <td class="e" data-val="{% if not v.attacker %}0{% elif v.defender_id in targets %}1{%else%}-1{% endif %}">
+                <div class="catch-buttons-attack-{{v.defender_id}}">
+                    {% include "target/attacks/buttons.html" with target=v %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="update-info">Last update of the list: {{player.attacksUpda|ts2date}}</p>
+</div>
+
+{% else %}
+<div class="module rounded">
+    <span class="error">It seems you didn't make any attack...</span>
+</div>
+{% endif %}

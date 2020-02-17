@@ -49,7 +49,7 @@ This file is part of yata.
             <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
             <td class="c">
-                {% include "target/revives-buttons.html" with revive=v %}
+                {% include "target/revives/buttons.html" with revive=v %}
             </td>
         </tr>
         {% endfor %}
