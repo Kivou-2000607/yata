@@ -57,7 +57,7 @@ class Target(models.Model):
     # target general info
     target_id = models.IntegerField(default=0)
     name = models.CharField(default="target_name", max_length=16)
-    rank = models.CharField(default="rank", max_length=32)
+    rank = models.CharField(default="rank", max_length=128)
     level = models.IntegerField(default=0)
     age = models.IntegerField(default=0)
 
@@ -73,10 +73,10 @@ class Target(models.Model):
     last_action_relative = models.CharField(default="last_action_relative", max_length=32, null=True, blank=True)
 
     # status
-    status_description = models.CharField(default="status_description", max_length=32, null=True, blank=True)
+    status_description = models.CharField(default="status_description", max_length=64, null=True, blank=True)
     status_details = models.CharField(default="status_details", max_length=32, null=True, blank=True)
     status_state = models.CharField(default="status_state", max_length=32, null=True, blank=True)
-    status_color = models.CharField(default="status_color", max_length=16, null=True, blank=True)
+    status_color = models.CharField(default="green", max_length=16, null=True, blank=True)
     status_until = models.IntegerField(default=0)
 
     # faction
