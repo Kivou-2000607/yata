@@ -39,7 +39,7 @@ This file is part of yata.
     <td class="c">{{target.fairFight|floatformat:2}}</td>
     <td class="c"><b title="{{target.fairFight|floatformat:2}} x {{target.baseRespect|floatformat:2}}">{{target.flatRespect|floatformat:2}}</b></td>
     {# <td class="c">{{target.flat_respect|mul:target.fairFight|floatformat:2}}</td> #}
-    <td class="d">
+    <td class="d" data-val="{{target.life_current}}">
         <div class="life-bar" title="{{target.life_current}}/{{target.life_max}}">
             <span style="width: {{target.life_current|div:target.life_max|mul:100|floatformat:0}}%;"></span>
         </div>
@@ -60,7 +60,7 @@ This file is part of yata.
         <td class="h no-padding dont-touch-me">
             {% include "target/targets/note.html" %}
         </td>
-        <td class="g dont-touch-me">
+        <td class="g dont-touch-me" data-val='{% if target.status_state.0 == "O" %}1{%else%}0{% endif %}'>
             <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class='fas fa-crosshairs {% if target.status_state.0 == "O" %}error{% endif %}' title="Attack target"></i></a>
         </td>
         <td class="g dont-touch-me">
