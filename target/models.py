@@ -74,7 +74,7 @@ class Target(models.Model):
 
     # status
     status_description = models.CharField(default="status_description", max_length=64, null=True, blank=True)
-    status_details = models.CharField(default="status_details", max_length=32, null=True, blank=True)
+    status_details = models.CharField(default="status_details", max_length=128, null=True, blank=True)
     status_state = models.CharField(default="status_state", max_length=32, null=True, blank=True)
     status_color = models.CharField(default="green", max_length=16, null=True, blank=True)
     status_until = models.IntegerField(default=0)
