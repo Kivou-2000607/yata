@@ -189,14 +189,15 @@ class TargetInfo(models.Model):
                     # if not war, not problem we know FF
                     self.fairFight = last_attack.fairFight
                     self.flatRespect = last_attack.flatRespect
+                    self.baseRespect = last_attack.baseRespect
 
                 elif self.flatRespect < 0.1:
                     # we update flat respect to be base respect if unknown
                     self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0)
-                    self.flatRespect = 0.25 * (math.log(float(target.level)) + 1.0)
+                    self.fairFight = max(last_attack.fairFight, self.fairFight)
+                    self.flatRespect = self.baseRespect * self.fairFight
 
                 self.last_attack_timestamp = last_attack.timestamp_ended
-                self.baseRespect = last_attack.baseRespect
                 self.result = last_attack.result
                 self.last_attack_attacker = last_attack.attacker
                 self.update_timestamp = target.update_timestamp
@@ -225,6 +226,9 @@ class TargetInfo(models.Model):
                   "fairFight": self.fairFight,
                   "flatRespect": self.flatRespect,
                   "baseRespect": self.baseRespect,
+
+                  # additional fields for rendering
+                  "win": 0 if self.result in ["Lost", "Assist", "Timeout"] else 1,
                   }
 
         return False, target.target_id, target_dic
