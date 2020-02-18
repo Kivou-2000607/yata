@@ -49,20 +49,19 @@ def updateAttacks(player):
             print("ignore", v)
             continue
 
-        v["attacker"] = True
-
         if int(v["defender_id"]) == player.tId:
-            # case defender
             v["attacker"] = False
-            v["bonus"] = 0
+            v["targetId"] = v["attacker_id"]
+        else:
+            v["attacker"] = True
+            v["targetId"] = v["defender_id"]
 
-        elif v["chain"] in BONUS_HITS:
+        if v["chain"] in BONUS_HITS:
             # case attacker and bonus hit
             v["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
             v["bonus"] = v["chain"]
 
         else:
-            # case attacker and not bonus hit
             allModifiers = 1.0
             for mod, val in v['modifiers'].items():
                 allModifiers *= float(val)

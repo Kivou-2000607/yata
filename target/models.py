@@ -1,5 +1,7 @@
 from django.db import models
 
+import math
+
 from player.models import Player
 from yata.handy import *
 
@@ -36,14 +38,15 @@ class Attack(models.Model):
     chain = models.IntegerField(default=0)
     # mofifiers
     fairFight = models.FloatField(default=0.0)
-    war = models.IntegerField(default=0)
-    retaliation = models.FloatField(default=0.0)
-    groupAttack = models.FloatField(default=0.0)
-    overseas = models.FloatField(default=0.0)
-    chainBonus = models.IntegerField(default=0)
+    war = models.FloatField(default=1.0)
+    retaliation = models.FloatField(default=1.0)
+    groupAttack = models.FloatField(default=1.0)
+    overseas = models.FloatField(default=1.0)
+    chainBonus = models.FloatField(default=1.0)
 
     # perso fields
     attacker = models.BooleanField(default=False)
+    targetId = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)
     baseRespect = models.FloatField(default=0.0)
     flatRespect = models.FloatField(default=0.0)
@@ -143,6 +146,7 @@ class Target(models.Model):
         if self.status_state == "Hospital":
             # return "H for {}".format(self.status_until - tsnow())
             return self.status_description.replace("In hospital", "H")
+            return self.status_description.replace("In jail", "J")
         else:
             return self.status_description
 
@@ -156,7 +160,8 @@ class TargetInfo(models.Model):
     # last update (for personnal info, can be different than target.update_timestamp)
     update_timestamp = models.IntegerField(default=0)
     last_attack_timestamp = models.IntegerField(default=0)
-    fairFight = models.FloatField(default=0)
+    last_attack_attacker = models.BooleanField(default=0)
+    fairFight = models.FloatField(default=1.0)
     baseRespect = models.FloatField(default=0)
     flatRespect = models.FloatField(default=0)
     result = models.CharField(default="", max_length=16, null=True, blank=True)
@@ -176,13 +181,23 @@ class TargetInfo(models.Model):
                 return req, target.target_id, target
 
             # update player part of the target
-            last_attack = self.player.attack_set.filter(defender_id=target.target_id, attacker=True, bonus=False, war=1.0).order_by("timestamp_ended").last()
+            last_attack = self.player.attack_set.filter(targetId=target.target_id, bonus=False).order_by("timestamp_ended").last()
 
             if last_attack is not None:
                 self.last_attack_timestamp = last_attack.timestamp_ended
-                self.fairFight = last_attack.fairFight
+                self.last_attack_attacker = last_attack.attacker
                 self.baseRespect = last_attack.baseRespect
-                self.flatRespect = last_attack.flatRespect
+
+                if not last_attack.war and not attacker:
+                    # if not war, not problem we know FF
+                    self.fairFight = last_attack.fairFight
+                    self.flatRespect = last_attack.flatRespect
+
+                elif self.flatRespect < 0.1:
+                    # we update flat respect to be base respect if unknown
+                    self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0)
+                    self.flatRespect = 0.25 * (math.log(float(target.level)) + 1.0)
+
                 self.result = last_attack.result
                 self.update_timestamp = target.update_timestamp
                 self.save()

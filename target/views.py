@@ -204,7 +204,7 @@ def target(request):
                         # delete target
                         targetInfo.delete()
 
-                    context = {"target": {"attacker": True, "defender_id": target_id}, "targets": getTargets(player), "ts": tsnow()}
+                    context = {"v": {"targetId": target_id}, "targets": getTargets(player), "ts": tsnow()}
                     return render(request, 'target/attacks/buttons.html', context)
 
             else:

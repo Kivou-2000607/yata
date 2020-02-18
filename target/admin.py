@@ -6,8 +6,6 @@ from target.models import *
 class TargetAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'update_timestamp', 'n_players']
-    # autocomplete_fields = ("masterKeys", )
-    # search_fields = ['tId', 'name']
 
     def n_players(self, instance):
         return len(TargetInfo.objects.only("target_id").filter(target_id=instance.target_id))
@@ -16,8 +14,12 @@ class TargetAdmin(admin.ModelAdmin):
 class TargetInfoAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'update_timestamp', ]
-    # autocomplete_fields = ("masterKeys", )
-    # search_fields = ['tId', 'name']
+
+
+class AttackAdmin(admin.ModelAdmin):
+
+    list_display = ['__str__' ]
 
 admin.site.register(Target, TargetAdmin)
+admin.site.register(Attack, AttackAdmin)
 admin.site.register(TargetInfo, TargetInfoAdmin)

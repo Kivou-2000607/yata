@@ -1,3 +1,22 @@
+function fancyTimeFormat(time)
+{   // From https://stackoverflow.com/a/11486026
+    // Hours, minutes and seconds
+    var hrs = ~~(time / 3600);
+    var mins = ~~((time % 3600) / 60);
+    var secs = ~~time % 60;
+
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    var ret = "";
+
+    if (hrs > 0) {
+        ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
+
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
+}
+
 // refresh target from target list by clicking on the row
 $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)', function(e){
     e.preventDefault();
@@ -90,49 +109,30 @@ window.setInterval(function(){
         var tsStatus = parseInt($.trim(status.attr("data-val")));
         var tsNow = parseInt(Date.now() / 1000)
 
-        // add/remove flash if tsStatus < tsRefresh
-        if (tsStatus) {
-            if(tsStatus < tsNow) {
-                statusStr = "OUT"
-                status.addClass('need-refresh');
-                $(this).addClass('need-refresh');
-            } else {
-                status.removeClass('need-refresh');
-                $(this).removeClass('need-refresh');
-
-                statusStr = status.text().substring(0, 6);
-
-                // update hosp time
-                sStatus = tsStatus - tsNow
-                mStatus = Math.floor(sStatus / 60);
-                sStatus = sStatus % 60;
-                if (mStatus) {
-                    spad = ("0"+sStatus.toString()).slice(-2);
-                    statusStr += mStatus.toString()+" mins "+spad+" s"
-                } else {
-                    statusStr += sStatus.toString()+" s"
-                }
-
-            }
-
-            // update hosp time
-            status.text(statusStr)
-        }
-
         // transform notations if > 2 hours
-        if ( tsNow - tsRefresh > 7199 ) {
+        if ( tsNow - tsRefresh > 7200 ) {
             $(this).html("> 2 hrs");
             tr.addClass("old-refresh");
+            $(this).removeClass('need-refresh');
+            status.removeClass('need-refresh');
         } else {
-            sRefresh = tsNow - tsRefresh
-            mRefresh = Math.floor(sRefresh / 60);
-            sRefresh = sRefresh % 60;
-            if (mRefresh) {
-                spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html(mRefresh.toString()+" mins "+spad+" s");
-            } else {
-                $(this).html(sRefresh.toString()+" s");
+
+            // add/remove flash if tsStatus < tsRefresh
+            if (tsStatus && tsRefresh) {
+                if(tsStatus < tsNow) {
+                    statusStr = "Out since " + fancyTimeFormat(tsNow - tsStatus) + " s"
+                    status.addClass('need-refresh');
+                    $(this).addClass('need-refresh');
+                } else {
+                    status.removeClass('need-refresh');
+                    $(this).removeClass('need-refresh');
+                    statusStr = status.text().substring(0, 6);
+                    statusStr += fancyTimeFormat(tsStatus - tsNow)
+                }
+                // update hosp time
+                status.html(statusStr)
             }
+            $(this).html(fancyTimeFormat(tsNow - tsRefresh))
         }
 
     });

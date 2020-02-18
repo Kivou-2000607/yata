@@ -1,4 +1,4 @@
-{% comment %}
+"""
 Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,15 +15,19 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
+"""
 
-<!-- toggle -->
-<form style="display: inline;">{% csrf_token %}
-    <a class="attack-list-toggle" href="{% url 'target:target' %}">
-       {% if v.targetId in targets %}
-           <i class="fas fa-toggle-on" title="Remove target"></i>
-       {% else %}
-           <i class="fas fa-toggle-off" title="Add target"></i>
-       {% endif %}
-    </a>
-</form>
+from django.core.management.base import BaseCommand
+
+import json
+
+from player.models import Player
+from target.functions import *
+
+
+class Command(BaseCommand):
+    def handle(self, **options):
+        for player in Player.objects.all():
+            if player.attack_set.first() is not None:
+                print(player)
+                updateAttacks(player)
