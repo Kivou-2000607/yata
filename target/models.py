@@ -160,7 +160,7 @@ class TargetInfo(models.Model):
     # last update (for personnal info, can be different than target.update_timestamp)
     update_timestamp = models.IntegerField(default=0)
     last_attack_timestamp = models.IntegerField(default=0)
-    last_attack_attacker = models.BooleanField(default=0)
+    last_attack_attacker = models.BooleanField(default=True)
     fairFight = models.FloatField(default=1.0)
     baseRespect = models.FloatField(default=0)
     flatRespect = models.FloatField(default=0)
@@ -184,9 +184,6 @@ class TargetInfo(models.Model):
             last_attack = self.player.attack_set.filter(targetId=target.target_id, bonus=False).order_by("timestamp_ended").last()
 
             if last_attack is not None:
-                self.last_attack_timestamp = last_attack.timestamp_ended
-                self.last_attack_attacker = last_attack.attacker
-                self.baseRespect = last_attack.baseRespect
 
                 if not last_attack.war and not attacker:
                     # if not war, not problem we know FF
@@ -198,7 +195,10 @@ class TargetInfo(models.Model):
                     self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0)
                     self.flatRespect = 0.25 * (math.log(float(target.level)) + 1.0)
 
+                self.last_attack_timestamp = last_attack.timestamp_ended
+                self.baseRespect = last_attack.baseRespect
                 self.result = last_attack.result
+                self.last_attack_attacker = last_attack.attacker
                 self.update_timestamp = target.update_timestamp
                 self.save()
 
@@ -218,6 +218,7 @@ class TargetInfo(models.Model):
                   "update_timestamp": min(target.update_timestamp, tsnow()),
 
                   # player target information
+                  "last_attack_attacker": self.last_attack_attacker,
                   "last_attack_timestamp": self.last_attack_timestamp,
                   "note": self.note,
                   "result": self.result,

@@ -216,8 +216,9 @@ def target(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except BaseException as e:
+        context = {"apiErrorLine": "Error while updating target: {}".format(e)}
+        return render(request, 'target/targets/line.html', context)
 
 
 def revives(request):

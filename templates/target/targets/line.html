@@ -28,7 +28,7 @@ This file is part of yata.
         {% if target.last_attack_attacker %}
             <td class="a" title="Last attack on {{target.last_attack_timestamp|ts2date}}"><span class="{% if target.flatRespect %}player-status-green{%else%}player-status-red{% endif %}"> {{target.result}}</span></td>
         {% else %}
-            <td class="a" title="Last attacked on {{target.last_attack_timestamp|ts2date}}"><span class="{% if target.flatRespect %}player-status-red{%else%}player-status-green{% endif %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;{{target.result}}</span></td>
+            <td class="a" title="Last attacked on {{target.last_attack_timestamp|ts2date}}"><span class="{% if target.flatRespect %}player-status-red{%else%}player-status-green{% endif %}"><i class="fas fa-shield-alt"></i>&nbsp;{{target.result}}</span></td>
         {% endif %}
     {% else %}
         <td colspan="2"><i>No recent attacks</i></td>
