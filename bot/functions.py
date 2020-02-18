@@ -80,7 +80,10 @@ def saveBotsConfigs():
 
             # chain
             if guild.chainModule:
-                var[guild.guildId]["chain"] = {"active": True, "channels": json.loads(guild.chainChannels)}
+                # retal = old.get("chain", dict({})).get("retal", dict({}))
+                var[guild.guildId]["chain"] = {"active": True,
+                                               "channels": json.loads(guild.chainChannels),
+                                               "retal": retal}
 
             # repository
             # if guild.repoModule:
