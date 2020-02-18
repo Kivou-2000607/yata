@@ -575,6 +575,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = "{:.1f} days with a current ratio of {:.2g} defends won / day.".format(vp["left"], ratio)
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [719]:
+                    # "719": {"name": "Invictus", "description": "Successfully defend against someone who has at least double your battle stats", "type": 8,
+                    type = "Defends"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [27]:
                     # 27 {'name': 'Night Walker', 'description': 'Make 100 stealthed attacks', 'type': 8, 'circulation': 50474, 'rarity': 'Common', 'awardType': 'Honor'}
                     type = "Other attacks"

@@ -312,6 +312,7 @@ d = {
     781: 235478737,  # Riddled
     741: 257870729,  # Obliteration
     786: 401026803,  # Annihilation
+    719: 0,  # Invictus
     476: 0,  # Chainer 5
 
     # 9
