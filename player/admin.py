@@ -17,17 +17,18 @@ class KeyAdmin(admin.ModelAdmin):
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
+
     list_display = ['tId', 'name', 'botPerm', 'active', 'validKey', 'dId']
     search_fields = ['name', 'tId']
     list_filter = ['active', 'validKey']
     inlines = [KeyInline]
+    exclude = ['apikey', 'targetJson', 'bazaarJson', 'awardsJson', 'stocksJson']
 
     def last_update(self, instance):
         return timestampToDate(instance.lastUpdateTS)
 
     def last_action(self, instance):
         return timestampToDate(instance.lastActionTS)
-
 
 class NewsAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'date', 'type', 'authorName', 'authorId', 'read']

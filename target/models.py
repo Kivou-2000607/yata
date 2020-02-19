@@ -5,6 +5,7 @@ import math
 from player.models import Player
 from yata.handy import *
 
+ATTACK_LOST = ["Lost", "Assist", "Timeout", "Escape"]
 
 class Revive(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -228,7 +229,7 @@ class TargetInfo(models.Model):
                   "baseRespect": self.baseRespect,
 
                   # additional fields for rendering
-                  "win": 0 if self.result in ["Lost", "Assist", "Timeout"] else 1,
+                  "win": 0 if self.result in ATTACK_LOST else 1,
                   }
 
         return False, target.target_id, target_dic

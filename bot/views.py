@@ -26,7 +26,7 @@ from django.views.decorators.csrf import csrf_exempt
 from yata.handy import *
 from player.models import Player
 from bot.models import *
-from bot.functions import saveBotsConfigs
+from bot.functions import *
 
 import json
 
@@ -51,6 +51,7 @@ def index(request):
         apps = False
         if player.tId in [2000607]:
             saveBotsConfigs()
+            deleteOldBots()
             apps = DiscordApp.objects.order_by("pk").values()
             for app in apps:
                 app["variables"] = sorted(json.loads(app["variables"]).items(), key=lambda x: x[1]["admin"]["pk"])

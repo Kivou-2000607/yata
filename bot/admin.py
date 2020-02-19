@@ -1,17 +1,39 @@
 from django.contrib import admin
 
-from .models import *
+import json
 
+from .models import *
+from .functions import saveGuildConfig
+
+admin.site.disable_action('delete_selected')
 
 class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
 
 
+def update_guild(modeladmin, request, queryset):
+    for q in queryset:
+        saveGuildConfig(q)
+
+update_guild.short_description = "Push guild setup to bot configurations"
+
 class GuildAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'guildContactName', 'guildContactId']
+    list_display = ['__str__', 'configuration', 'guildContactName', 'guildContactId', 'validMasterKey', 'guildId', 'guildName']
     search_fields = ['guildContactName', 'guildName']
     list_filter = ['configuration__name', 'guildContactName', 'guildName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
+    actions = [update_guild]
+
+    def validMasterKey(self, instance):
+        try:
+            v = json.loads(instance.configuration.variables)
+            keys = v.get(str(instance.guildId), dict({})).get("keys")
+            return True if len(keys) else False
+
+        except BaseException:
+            return False
+
+    validMasterKey.boolean = True
 
     fieldsets = (
                 ('Server and contact', {

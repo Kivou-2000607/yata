@@ -31,15 +31,24 @@ This file is part of yata.
           <p><b>Owner:</b> {{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
           <p><b>Contact:</b> {{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
           {% for module, options in guild.items %}
-              {% if module != "admin" %}
+              {% if module != "admin" and module != "keys" %}
                   <p><b>{{module}}:</b>
                     {% for k, v in options.items %}
-                        {{k}}: <i>{{v}}</i>
+                        {% if k == "retal" %}
+                            {{k}}: <i>{% for id in v.keys %}{{id}} {% endfor %}</i>
+                        {% else %}
+                            {{k}}: <i>{{v}}</i>
+                        {% endif %}
                         {% if not forloop.last %}
                         ,&nbsp;
                         {% endif %}
                     {% endfor %}
                   </p>
+              {% endif %}
+              {% if module == "keys" %}
+                {% for k, v in options.items %}
+                    <p><b>{{module}}:</b> <i class="valid">{{k}}</i></p>
+                {% endfor%}
               {% endif %}
           {% endfor %}
         </div>
