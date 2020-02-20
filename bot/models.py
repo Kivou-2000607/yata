@@ -63,7 +63,7 @@ class Guild(models.Model):
     reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64)
 
     # API module
-    apiModule = models.BooleanField(default=True)
+    apiModule = models.BooleanField(default=False)
     apiChannels = models.CharField(default='["*"]', blank=True, max_length=64)
     apiRoles = models.CharField(default='["*"]', blank=True, max_length=64)
 
