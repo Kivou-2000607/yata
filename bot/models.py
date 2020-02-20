@@ -10,6 +10,7 @@ class DiscordApp(models.Model):
     name = models.CharField(default="BOT_NAME", max_length=32)
     token = models.CharField(default="BOT_TOKEN", max_length=512, unique=True)
     variables = models.TextField(default="{}")
+    administrators = models.TextField(default="{}")
 
     def __str__(self):
         return "{}".format(self.name)
