@@ -242,3 +242,18 @@ def secret(request):
 
     else:
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+
+
+def admin(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+
+            context = {"player": player, "botcat": True, "view": {"admin": True}}
+            return render(request, 'bot.html', context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()

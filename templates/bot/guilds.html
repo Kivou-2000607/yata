@@ -26,7 +26,8 @@ This file is part of yata.
             <tr>
                 <th></th>
                 <th>Server name</th>
-                <th>Contact</th>
+                <th>Server admin</th>
+                <th>Bot admin</th>
                 <th>Server id</th>
             </tr>
         </thead>
@@ -36,6 +37,7 @@ This file is part of yata.
                 <td class="a">#{{forloop.counter}}</td>
                 <td class="b">{{g.guildName}}</td>
                 <td class="c">{{g.guildContactName|playerURL:g.guildContactId|safe}}</td>
+                <td class="c">{{g.botContactName|playerURL:g.botContactId|safe}}</td>
                 <td class="d"><tt>{{g.guildId}}</tt></td>
             </tr>
             {% endfor %}
