@@ -41,7 +41,7 @@ class GuildAdmin(admin.ModelAdmin):
 
     fieldsets = (
                 ('Server and contact', {
-                    'fields': ('configuration', 'guildId', 'guildName', 'botOwnerName', 'botContactId', 'guildOwnerName', 'guildContactId', 'guildContactName')
+                    'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactId', 'guildContactName')
                 }),
                 ('General Settings', {
                     'fields': ('masterKeys', 'manageChannels')

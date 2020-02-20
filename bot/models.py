@@ -18,55 +18,55 @@ class DiscordApp(models.Model):
 
 # bot configuration on a guild
 class Guild(models.Model):
-    configuration = models.ForeignKey(DiscordApp, on_delete=models.CASCADE)
-    guildId = models.BigIntegerField(default=0)
-    guildName = models.CharField(default="guild_name", max_length=32)
-    guildOwnerId = models.BigIntegerField(default=0)
-    guildOwnerName = models.CharField(default="guild_owner", max_length=32)
-    guildContactId = models.IntegerField(default=0)
-    guildContactName = models.CharField(default="guild_contact", max_length=32)
-    botContactId = models.IntegerField(default=2000607)
-    botContactName = models.CharField(default="Kivou", max_length=32)
+    configuration = models.ForeignKey(DiscordApp, on_delete=models.CASCADE, help_text="Select the bot")
+    guildId = models.BigIntegerField(default=0, help_text="Get the server ID from the message sent by the bot when it joined the server")
+    guildName = models.CharField(default="guild_name", max_length=32, help_text="")
+    guildOwnerId = models.BigIntegerField(default=0, help_text="Automatically filled by the bot")
+    guildOwnerName = models.CharField(default="guild_owner", max_length=32, help_text="Automatically filled by the bot")
+    guildContactId = models.IntegerField(default=0, help_text="The torn ID of the player that want the bot")
+    guildContactName = models.CharField(default="guild_contact", max_length=32, help_text="The torn name of the player that want the bot")
+    botContactId = models.IntegerField(default=0, help_text="Your torn ID")
+    botContactName = models.CharField(default="", max_length=32, help_text="Your torn name")
 
 
     # general options
-    masterKeys = models.ManyToManyField(Player, blank=True)
-    manageChannels = models.BooleanField(default=True)
-    systemChannel = models.CharField(default='', blank=True, max_length=32)
+    masterKeys = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
+    manageChannels = models.BooleanField(default=True, help_text="The bot will create channels and roles. Better keep True at least on setup.")
+    systemChannel = models.CharField(default='', blank=True, max_length=32, help_text="Dummy")
 
     # verify module
-    verifyModule = models.BooleanField(default=False)
-    verifyForce = models.BooleanField(default=False)
-    verifyFactions = models.ManyToManyField(Faction, blank=True)
-    verifyFacsRole = models.CharField(default="", blank=True, max_length=16)
-    verifyAppendFacId = models.BooleanField(default=True)
-    verifyDailyVerify = models.BooleanField(default=False)
-    verifyDailyCheck = models.BooleanField(default=False)
-    verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64)
+    verifyModule = models.BooleanField(default=False, help_text="Enable the Verify module")
+    verifyForce = models.BooleanField(default=False, help_text="PM players on join or not")
+    verifyFactions = models.ManyToManyField(Faction, blank=True, help_text="Enter faction ID or name to find the faction. If it doesn't show up it means that the faction is not on YATA.")
+    verifyFacsRole = models.CharField(default="", blank=True, max_length=16, help_text="Name of the faction role.")
+    verifyAppendFacId = models.BooleanField(default=True, help_text="Append or not the ID in the faction role.")
+    verifyDailyVerify = models.BooleanField(default=False, help_text="Do automatic '!verifyAll force' every 12 hours")
+    verifyDailyCheck = models.BooleanField(default=False, help_text="Do automatic '!checkFactions force' every 12 hours")
+    verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64, help_text="Name of the verify channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
     # stock module
-    stockModule = models.BooleanField(default=False)
-    stockWSSB = models.BooleanField(default=False)
-    stockTCB = models.BooleanField(default=False)
-    stockAlerts = models.BooleanField(default=False)
-    stockChannels = models.CharField(default='["stocks"]', blank=True, max_length=64)
+    stockModule = models.BooleanField(default=False, help_text="Enable the Stock module")
+    stockWSSB = models.BooleanField(default=False, help_text="Enable WSSB")
+    stockTCB = models.BooleanField(default=False, help_text="Enable TCB")
+    stockAlerts = models.BooleanField(default=False, help_text="Enable Alerts")
+    stockChannels = models.CharField(default='["stocks"]', blank=True, max_length=64, help_text="Name of the stock alert channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
     # chain module
-    chainModule = models.BooleanField(default=False)
-    chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64)
+    chainModule = models.BooleanField(default=False, help_text="Enable the Chain module")
+    chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64, help_text="Name of the chain channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
     # loot module
-    lootModule = models.BooleanField(default=False)
-    lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64)
+    lootModule = models.BooleanField(default=False, help_text="Enable the Loot module")
+    lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64, help_text="Name of the loot channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
-    # loot module
-    reviveModule = models.BooleanField(default=False)
-    reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64)
+    # revive module
+    reviveModule = models.BooleanField(default=False, help_text="Enable the Revive module")
+    reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64, help_text="Name of the revive channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
     # API module
-    apiModule = models.BooleanField(default=False)
-    apiChannels = models.CharField(default='["*"]', blank=True, max_length=64)
-    apiRoles = models.CharField(default='["*"]', blank=True, max_length=64)
+    apiModule = models.BooleanField(default=False, help_text="Enable the API module")
+    apiChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where API commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    apiRoles = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the role allowed to use the API commands. Keep [\"*\"] for all roles allowed. It has to be the exact role name: [\"RoleA\", \"MyOtherRole\"] (no @)")
 
     # verify repository
     # repoModule = models.BooleanField(default=False)
