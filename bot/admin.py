@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
 import json
 
@@ -14,26 +15,29 @@ class DiscordAppAdmin(admin.ModelAdmin):
 def update_guild(modeladmin, request, queryset):
     for q in queryset:
         saveGuildConfig(q)
-
-update_guild.short_description = "Push guild setup to bot configurations"
+update_guild.short_description = "Push guild setup to bot configuration"
 
 class GuildAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'configuration', 'guildContactName', 'guildContactId', 'validMasterKey', 'guildId', 'guildName']
-    search_fields = ['guildContactName', 'guildName']
-    list_filter = ['configuration__name', 'guildContactName', 'guildName']
+    list_display = ['guildName', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
+    # search_fields = ['guildContactName', 'guildName', 'botContactName']
+    list_filter = ['configuration__name', 'botContactName', 'guildContactName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
     actions = [update_guild]
 
-    def validMasterKey(self, instance):
-        try:
-            v = json.loads(instance.configuration.variables)
-            keys = v.get(str(instance.guildId), dict({})).get("keys")
-            return True if len(keys) else False
+    def key(self, instance):
+        v = json.loads(instance.configuration.variables)
+        keys = v.get(str(instance.guildId), dict({})).get("keys", [])
+        return len(keys)
 
-        except BaseException:
-            return False
+    def owner(self, instance):
+        return '{name} [{id}]'.format(name=instance.guildOwnerName, id=instance.guildOwnerId)
 
-    validMasterKey.boolean = True
+    def contact(self, instance):
+        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.guildContactName, id=instance.guildContactId))
+
+    def admin(self, instance):
+        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.botContactName, id=instance.botContactId))
+
 
     fieldsets = (
                 ('Server and contact', {

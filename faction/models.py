@@ -440,7 +440,7 @@ class Faction(models.Model):
                     v["news"] = cleanhtml(v["news"])[:512]
                     self.news_set.get_or_create(tId=k, type=type, defaults=v)
 
-        # remove old logs
+        # delete old logs
         self.log_set.filter(timestamp__lt=old).delete()
 
         # add daily log

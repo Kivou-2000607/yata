@@ -226,7 +226,6 @@ def configurationsPoster(request):
 
 
 # SECTION: members
-
 def members(request):
     try:
         if request.session.get('player'):
