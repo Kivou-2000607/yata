@@ -26,6 +26,14 @@ This file is part of yata.
         <form>{% csrf_token %}
             <input class="faction-chain-id" type="hidden" value="{{chain.tId}}">
             <a class="faction-chains-see" href="{% url 'faction:report' chain.tId %}"><i class="fas fa-eye" title="See report"></i></a>
+            {% if not chain.live %}
+              <a class="faction-chains-cooldown" href="">
+                  {% if chain.cooldown %}
+                      <i class="fas fa-ice-cream valid" title="Remove cooldown"></i>
+                  {% else %}
+                      <i class="fas fa-ice-cream error" title="Add cooldown"></i>
+                  {% endif %}
+            {% endif %}
             <a class="faction-chains-combine" href="">
                 {% if chain.combine %}
                     <i class="fas fa-toggle-on" title="Remove from combined report"></i>

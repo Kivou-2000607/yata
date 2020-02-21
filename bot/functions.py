@@ -21,6 +21,7 @@ from bot.models import DiscordApp
 
 import json
 
+
 def deleteOldBots():
     for bot in DiscordApp.objects.all():
         print(bot)
@@ -35,17 +36,20 @@ def deleteOldBots():
         bot.variables = json.dumps(var)
         bot.save()
 
+
 def saveBotsConfigs():
 
     # loop over all bots
     for bot in DiscordApp.objects.all():
         saveBotConfigs(bot)
 
+
 def saveBotConfigs(bot):
 
     # loop over all
     for guild in bot.guild_set.all():
         saveGuildConfig(guild)
+
 
 def saveGuildConfig(guild):
     # get bot
@@ -60,11 +64,11 @@ def saveGuildConfig(guild):
     # admin
     var[str(guild.guildId)] = dict({})
     var[str(guild.guildId)]["admin"] = {"pk": guild.pk,
-                                   "name": guild.guildName,
-                                   "owner": guild.guildOwnerName,
-                                   "owner_id": guild.guildOwnerId,
-                                   "contact": guild.guildContactName,
-                                   "contact_id": guild.guildContactId}
+                                        "name": guild.guildName,
+                                        "owner": guild.guildOwnerName,
+                                        "owner_id": guild.guildOwnerId,
+                                        "contact": guild.guildContactName,
+                                        "contact_id": guild.guildContactId}
 
     # # allowed channels
     # if guild.allowedChannels:
@@ -91,9 +95,9 @@ def saveGuildConfig(guild):
         servers = old.get("revive", dict({})).get("servers", [])
         blacklist = old.get("revive", dict({})).get("blacklist", [])
         var[str(guild.guildId)]["revive"] = {"active": True,
-                                        "channels": json.loads(guild.reviveChannels),
-                                        "servers": servers,
-                                        "blacklist": blacklist}
+                                             "channels": json.loads(guild.reviveChannels),
+                                             "servers": servers,
+                                             "blacklist": blacklist}
 
     # stocks
     if guild.stockModule:
@@ -109,8 +113,8 @@ def saveGuildConfig(guild):
     if guild.chainModule:
         retal = old.get("chain", dict({})).get("retal", dict({}))
         var[str(guild.guildId)]["chain"] = {"active": True,
-                                       "channels": json.loads(guild.chainChannels),
-                                       "retal": retal}
+                                            "channels": json.loads(guild.chainChannels),
+                                            "retal": retal}
 
     # repository
     # if guild.repoModule:
@@ -137,8 +141,8 @@ def saveGuildConfig(guild):
     # API module
     if guild.apiModule:
         var[str(guild.guildId)]["api"] = {"active": True,
-                                     "channels": json.loads(guild.apiChannels),
-                                     "roles": json.loads(guild.apiRoles)}
+                                          "channels": json.loads(guild.apiChannels),
+                                          "roles": json.loads(guild.apiRoles)}
 
     # loop over yata users to get their keys
     if len(guild.masterKeys.all()):

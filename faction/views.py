@@ -493,6 +493,18 @@ def manageReport(request):
             if request.POST.get("type", False) == "create":
                 chain.report = True
                 chain.computing = True
+                chain.cooldown = False
+                c = chain.assignCrontab()
+                print("report assigned to {}".format(c))
+                chain.save()
+
+            if request.POST.get("type", False) == "cooldown":
+                if chain.cooldown:
+                    chain.attackchain_set.filter(timestamp_ended__gt=chain.end).delete()
+
+                chain.report = True
+                chain.cooldown = not chain.cooldown
+                chain.computing = True
                 c = chain.assignCrontab()
                 print("report assigned to {}".format(c))
                 chain.save()

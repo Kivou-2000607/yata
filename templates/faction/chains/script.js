@@ -22,6 +22,16 @@ $(document).on('click', '.faction-chains-create', e=>{
     }, afterLoad).html(spinner);
 });
 
+// create report
+$(document).on('click', '.faction-chains-cooldown', e=>{
+    e.preventDefault();
+    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var td = $(e.currentTarget).parents("td");
+    td.load( "/faction/report/manage/", {
+        type: "cooldown", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }, afterLoad).html(spinner);
+});
+
 // delete report
 $(document).on('click', '.faction-chains-delete', e=>{
     e.preventDefault();

@@ -42,7 +42,7 @@ CHAIN_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [continue]"}
+    -6: "No new entry [stop]"}
 
 REPORT_ATTACKS_STATUS = {
     3: "Normal [continue]",
@@ -1005,12 +1005,16 @@ class Chain(models.Model):
     current = models.IntegerField(default=0)
     attacks = models.IntegerField(default=0)
     graphs = models.TextField(default="{}", null=True, blank=True)
+    cooldown = models.BooleanField(default=False)
 
     # for the combined report
     combine = models.BooleanField(default=False)
 
     def __str__(self):
         return format_html("{} chain [{}]".format(self.faction, self.tId))
+
+    def cdTime(self):
+        return "{:.1f} mins".format(self.chain / 6. if self.cooldown else 0)
 
     def elapsed(self):
         last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
@@ -1045,10 +1049,13 @@ class Chain(models.Model):
         tsl = self.start if lastAttack is None else lastAttack.timestamp_ended
         self.last = tsl
 
-        print("{} live {}".format(self, self.live))
-        print("{} start {}".format(self, timestampToDate(tss)))
-        print("{} last  {}".format(self, timestampToDate(tsl)))
-        print("{} end   {}".format(self, timestampToDate(tse)))
+        print("{} live    {}".format(self, self.live))
+        print("{} start   {}".format(self, timestampToDate(tss)))
+        print("{} last    {}".format(self, timestampToDate(tsl)))
+        print("{} end     {}".format(self, timestampToDate(tse)))
+        if self.cooldown:
+            tse += self.chain * 10
+            print("{} with cd {}".format(self, timestampToDate(tse)))
 
         # add + 2 s to the endTS
         tse += 10
@@ -1141,13 +1148,19 @@ class Chain(models.Model):
 
             newAttack = int(k) not in attacks
             factionAttack = v["attacker_faction"] == faction.tId
+            respect = float(v["respect_gain"]) > 0
             # chainAttack = int(v["chain"])
-            if newAttack and factionAttack:
+            # if newAttack and factionAttack:
+            if newAttack and factionAttack and respect:
                 v = modifiers2lvl1(v)
-                self.attackchain_set.create(tId=int(k), **v)
+                self.attackchain_set.get_or_create(tId=int(k), defaults=v)
                 newEntry += 1
                 tsl = max(tsl, ts)
-                self.current = max(self.current, v["chain"])
+                if int(v["timestamp_ended"]) - self.end < 0:  # case we're before cooldown
+                    self.current = max(self.current, v["chain"])
+                elif self.cooldown:  # case we're after cooldown and we want cooldown
+                    self.current += 1
+
                 # print("{} attack [{}] current {}".format(self, k, current))
 
         self.last = tsl
@@ -1157,7 +1170,6 @@ class Chain(models.Model):
         print("{} progress {} / {} ({})%".format(self, self.current, self.chain, self.progress()))
 
         if self.live:
-            # stopping criterions of standard chains
             if req["chain"]["current"] < 10:
                 print("{} reached end of live chain (stop)".format(self))
                 self.computing = False
@@ -1167,13 +1179,8 @@ class Chain(models.Model):
                 return 2
 
         else:
-            if not newEntry and len(apiAttacks) > 1 and self:
-                print("{} no new entry from payload (continue)".format(self))
-                self.state = -6
-                self.save()
-                return -6
 
-            if self.current == self.chain:
+            if self.current == self.chain and not self.cooldown:
                 print("{} Reached end of chain (stop)".format(self))
                 self.computing = False
                 self.crontab = 0
@@ -1188,6 +1195,14 @@ class Chain(models.Model):
                 self.state = 1
                 self.save()
                 return 1
+
+            if not newEntry and len(apiAttacks) > 1:
+                print("{} no new entry from payload (stop)".format(self))
+                self.computing = False
+                self.crontab = 0
+                self.state = -6
+                self.save()
+                return -6
 
         self.state = 3
         self.save()
@@ -1251,7 +1266,8 @@ class Chain(models.Model):
                 #     print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
                 #     for kk, vv in v.items():
                 #         print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
-                if att.chain:
+                # if att.chain:
+                if att.respect_gain:
                     # chainIterator.append(v["chain"])
                     # print("Time stamp:", att.timestamp_ended)
 
