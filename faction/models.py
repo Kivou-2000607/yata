@@ -1002,8 +1002,8 @@ class Chain(models.Model):
     crontab = models.IntegerField(default=0)  # to see on which crontab the report will be computed
 
     # information for the report
-    current = models.IntegerField(default=0)
-    attacks = models.IntegerField(default=0)
+    current = models.IntegerField(default=0)  # only modified in getAttacks
+    attacks = models.IntegerField(default=0)  # only modified in fillReport
     graphs = models.TextField(default="{}", null=True, blank=True)
     cooldown = models.BooleanField(default=False)
 
@@ -1056,6 +1056,8 @@ class Chain(models.Model):
         if self.cooldown:
             tse += self.chain * 10
             print("{} with cd {}".format(self, timestampToDate(tse)))
+        else:
+            self.current = min(self.current, self.chain)
 
         # add + 2 s to the endTS
         tse += 10
@@ -1151,14 +1153,14 @@ class Chain(models.Model):
             respect = float(v["respect_gain"]) > 0
             # chainAttack = int(v["chain"])
             # if newAttack and factionAttack:
-            if newAttack and factionAttack and respect:
+            if newAttack and factionAttack:
                 v = modifiers2lvl1(v)
                 self.attackchain_set.get_or_create(tId=int(k), defaults=v)
                 newEntry += 1
                 tsl = max(tsl, ts)
                 if int(v["timestamp_ended"]) - self.end < 0:  # case we're before cooldown
                     self.current = max(self.current, v["chain"])
-                elif self.cooldown:  # case we're after cooldown and we want cooldown
+                elif self.cooldown and respect:  # case we're after cooldown and we want cooldown
                     self.current += 1
 
                 # print("{} attack [{}] current {}".format(self, k, current))
@@ -1267,7 +1269,7 @@ class Chain(models.Model):
                 #     for kk, vv in v.items():
                 #         print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
                 # if att.chain:
-                if att.respect_gain:
+                if att.respect_gain > 0.0:
                     # chainIterator.append(v["chain"])
                     # print("Time stamp:", att.timestamp_ended)
 
@@ -1437,6 +1439,7 @@ class Chain(models.Model):
         return 0
 
     def progress(self):
+        # print("progress", float((100 * self.current) / float(max(1, self.chain))))
         return int((100 * self.current) // float(max(1, self.chain)))
 
     def displayCrontab(self):
