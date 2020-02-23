@@ -33,7 +33,7 @@ class Guild(models.Model):
     masterKeys = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
     manageChannels = models.BooleanField(default=True, help_text="The bot will create channels and roles. Better keep True at least on setup.")
     welcomeMessage = models.BooleanField(default=True, help_text="The bot sends a welcome message in the system channel.")
-    welcomeMessageText = models.TextField(default="", help_text="Welcome message automatically starts with \"Welcome @member.\" Then it appends what you put here. You can put #channel and @role in plain text they'll be mentionned if they exist. If you put nothing it will just say \"Welcome @member.\"")
+    welcomeMessageText = models.TextField(default="", blank=True, help_text="Welcome message automatically starts with \"Welcome @member.\" Then it appends what you put here. You can put #channel and @role in plain text they'll be mentionned if they exist. If you put nothing it will just say \"Welcome @member.\"")
     systemChannel = models.CharField(default='', blank=True, max_length=32, help_text="Dummy")
 
     # verify module
