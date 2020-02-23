@@ -556,7 +556,7 @@ def report(request, chainId):
                 chain.status = CHAIN_ATTACKS_STATUS[chain.state]
 
             # get chain
-            chain = faction.chain_set.filter(tId=chainId).first()
+            chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
             if chain is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
