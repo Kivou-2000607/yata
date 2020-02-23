@@ -1067,6 +1067,8 @@ class Chain(models.Model):
 
         # add + 2 s to the endTS
         tse += self.addToEnd
+        if self.addToEnd:
+            print("{} end+    {}".format(self, timestampToDate(tse)))
 
         # get existing attacks (just the ids)
         attacks = [r.tId for r in self.attackchain_set.all()]
@@ -1164,7 +1166,7 @@ class Chain(models.Model):
                 self.attackchain_set.get_or_create(tId=int(k), defaults=v)
                 newEntry += 1
                 tsl = max(tsl, ts)
-                if int(v["timestamp_ended"]) - self.end < 0:  # case we're before cooldown
+                if int(v["timestamp_ended"]) - self.end - self.addToEnd <= 0:  # case we're before cooldown
                     self.current = max(self.current, v["chain"])
                 elif self.cooldown and respect:  # case we're after cooldown and we want cooldown
                     self.current += 1
@@ -1206,7 +1208,6 @@ class Chain(models.Model):
                     return 1
 
                 elif self.addToEnd > 3600:
-                    # add 10 seconds
                     print("{} didn't find last attack even looking after 1 hour (stop)".format(self))
                     self.computing = False
                     self.crontab = 0
