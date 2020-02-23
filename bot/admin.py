@@ -8,6 +8,7 @@ from .functions import saveGuildConfig
 
 admin.site.disable_action('delete_selected')
 
+
 class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
 
@@ -17,9 +18,10 @@ def update_guild(modeladmin, request, queryset):
         saveGuildConfig(q)
 update_guild.short_description = "Push guild setup to bot configuration"
 
+
 class GuildAdmin(admin.ModelAdmin):
     list_display = ['guildName', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
-    # search_fields = ['guildContactName', 'guildName', 'botContactName']
+    search_fields = ['guildContactName', 'guildName', 'botContactName']
     list_filter = ['configuration__name', 'botContactName', 'guildContactName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
     actions = [update_guild]
@@ -38,13 +40,12 @@ class GuildAdmin(admin.ModelAdmin):
     def admin(self, instance):
         return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.botContactName, id=instance.botContactId))
 
-
     fieldsets = (
                 ('Server and contact', {
                     'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactId', 'guildContactName')
                 }),
                 ('General Settings', {
-                    'fields': ('masterKeys', 'manageChannels')
+                    'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')
                 }),
                 ('Verify module', {
                     'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
@@ -82,7 +83,7 @@ class CredentialAdmin(admin.ModelAdmin):
 
 class ChatAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'name', 'uid']
-    inlines = [CredentialInline,]
+    inlines = [CredentialInline, ]
 
 
 admin.site.register(Credential, CredentialAdmin)

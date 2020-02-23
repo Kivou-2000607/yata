@@ -85,23 +85,29 @@ def saveGuildConfig(guild):
     if guild.systemChannel:
         var[str(guild.guildId)]["admin"]["system"] = guild.systemChannel
 
+    if guild.welcomeMessage:
+        var[str(guild.guildId)]["admin"]["welcome"] = guild.welcomeMessageText
+
     # loot module
     if guild.lootModule:
-        var[str(guild.guildId)]["loot"] = {"active": True, "channels": json.loads(guild.lootChannels)}
+        channels = [c.lower() for c in json.loads(guild.lootChannels)]
+        var[str(guild.guildId)]["loot"] = {"active": True, "channels": channels}
 
     # revive module
     if guild.reviveModule:
         # get past connected/backlist servers
         servers = old.get("revive", dict({})).get("servers", [])
         blacklist = old.get("revive", dict({})).get("blacklist", [])
+        channels = [c.lower() for c in json.loads(guild.reviveChannels)]
         var[str(guild.guildId)]["revive"] = {"active": True,
-                                             "channels": json.loads(guild.reviveChannels),
+                                             "channels": channels,
                                              "servers": servers,
                                              "blacklist": blacklist}
 
     # stocks
     if guild.stockModule:
-        var[str(guild.guildId)]["stocks"] = {"active": True, "channels": json.loads(guild.stockChannels)}
+        channels = [c.lower() for c in json.loads(guild.stockChannels)]
+        var[str(guild.guildId)]["stocks"] = {"active": True, "channels": channels}
         if guild.stockWSSB:
             var[str(guild.guildId)]["stocks"]["wssb"] = True
         if guild.stockTCB:
@@ -112,8 +118,9 @@ def saveGuildConfig(guild):
     # chain
     if guild.chainModule:
         retal = old.get("chain", dict({})).get("retal", dict({}))
+        channels = [c.lower() for c in json.loads(guild.chainChannels)]
         var[str(guild.guildId)]["chain"] = {"active": True,
-                                            "channels": json.loads(guild.chainChannels),
+                                            "channels": channels,
                                             "retal": retal}
 
     # repository
@@ -122,7 +129,8 @@ def saveGuildConfig(guild):
 
     # verify
     if guild.verifyModule:
-        var[str(guild.guildId)]["verify"] = {"active": True, "channels": json.loads(guild.verifyChannels)}
+        channels = [c.lower() for c in json.loads(guild.verifyChannels)]
+        var[str(guild.guildId)]["verify"] = {"active": True, "channels": channels}
         if guild.verifyAppendFacId:
             var[str(guild.guildId)]["verify"]["id"] = True
         if guild.verifyForce:
@@ -140,8 +148,9 @@ def saveGuildConfig(guild):
 
     # API module
     if guild.apiModule:
+        channels = [c.lower() for c in json.loads(guild.apiChannels)]
         var[str(guild.guildId)]["api"] = {"active": True,
-                                          "channels": json.loads(guild.apiChannels),
+                                          "channels": channels,
                                           "roles": json.loads(guild.apiRoles)}
 
     # loop over yata users to get their keys
