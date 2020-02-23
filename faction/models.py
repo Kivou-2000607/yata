@@ -33,6 +33,8 @@ from faction.functions import *
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 CHAIN_ATTACKS_STATUS = {
+    6: "No new entry with cooldown [stop]",
+    4: "Should have reached the end [continue]",
     3: "Normal [continue]",
     2: "Reached end of chain [stop]",
     1: "No new attack [stop]",
@@ -42,7 +44,8 @@ CHAIN_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry [stop]"}
+    -6: "No new entry without cooldown [stop]",
+    -7: "No new entry (looked 1h after end) [stop]"}
 
 REPORT_ATTACKS_STATUS = {
     3: "Normal [continue]",
@@ -1007,6 +1010,9 @@ class Chain(models.Model):
     graphs = models.TextField(default="{}", null=True, blank=True)
     cooldown = models.BooleanField(default=False)
 
+    # blameched variables
+    addToEnd = models.IntegerField(default=0)  # add seconds to end timestamp if chain didn't reach last hit
+
     # for the combined report
     combine = models.BooleanField(default=False)
 
@@ -1060,7 +1066,7 @@ class Chain(models.Model):
             self.current = min(self.current, self.chain)
 
         # add + 2 s to the endTS
-        tse += 10
+        tse += self.addToEnd
 
         # get existing attacks (just the ids)
         attacks = [r.tId for r in self.attackchain_set.all()]
@@ -1191,20 +1197,37 @@ class Chain(models.Model):
                 return 2
 
             if len(apiAttacks) < 2:
-                print("{} no api entry for non live report (stop)".format(self))
-                self.computing = False
-                self.crontab = 0
-                self.state = 1
+                if self.cooldown:
+                    print("{} no api entry for non live report cooldown (stop)".format(self))
+                    self.computing = False
+                    self.crontab = 0
+                    self.state = 1
+                    self.save()
+                    return 1
+
+                elif self.addToEnd > 3600:
+                    # add 10 seconds
+                    print("{} didn't find last attack even looking after 1 hour (stop)".format(self))
+                    self.computing = False
+                    self.crontab = 0
+                    self.state = -7
+                    self.save()
+                    return -7
+
+                # add 10 seconds
+                print("{} no api entry for non live report no cooldown (continue)".format(self))
+                self.addToEnd += 10
+                self.state = 4
                 self.save()
-                return 1
+                return 4
 
             if not newEntry and len(apiAttacks) > 1:
                 print("{} no new entry from payload (stop)".format(self))
                 self.computing = False
                 self.crontab = 0
-                self.state = -6
+                self.state = 6 if self.cooldown else -6
                 self.save()
-                return -6
+                return 6 if self.cooldown else -6
 
         self.state = 3
         self.save()
