@@ -23,9 +23,8 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-personal-public">Command <tt>!chain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Regularly gives status on the chain and sends a notification to the chain faction role (<tt>@Faction [factionId]</tt>) when chain is about to timeout. If <tt>&lt;factionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the key author's faction. The two optional parameters <tt>&lt;w=warningTime&gt;</tt> and <tt>&lt;n=notificationTime&gt;</tt> set the timeout notification threshold in seconds (default is 90 seconds) and the time between status update (default is 900 seconds = 10 minutes), respectively. It will stop watching on chain cooldown or if it catches a <tt>!stop</tt>.</p>
-<p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;factionID&gt;</tt> or <tt>!verify &lt;w=warningTime&gt; &lt;n=notificationTime&gt;</tt></p>
-<p><b>Example:</b> <tt>!chain 2356 w=30 n=120</tt> will watch the chain of faction <tt>2356</tt>, gives notifications if timeout < 30 seconds and gives status update every 2 minutes.</p>
+<p>Regularly gives status on the chain and sends a notification to <tt>&lt;@Role&gt;</tt> (if given) when chain is about to timeout (90s). If <tt>&lt;factionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the key author's faction. It will stop watching on chain cooldown or if it catches a <tt>!stopchain</tt>.</p>
+<p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;factionID&gt;</tt> or <tt>!chain &lt;@Role&gt;</tt> or <tt>!verify &lt;factionID&gt; &lt;@Role&gt;</tt></p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
 </div>
 
@@ -33,23 +32,29 @@ This file is part of yata.
 <div class="command-doc">
 <p>Tells the bot to stop watching a chain.</p>
 <p><b>Syntax:</b> <tt>!stopchain</tt></p>
-<p><b>Warning:</b> This is not a <i>real</i> command in the sense that it does not directly stop the bot. Upon status update, the bot will read previous messages and if it catches a <tt>!stopchain</tt> it will <i>1)</i> stop watching and say so <i>2)</i> delete the <tt>!stop</tt> message. Thus it can take several minutes for the bot to actually stop (depending on parameter <tt>n</tt>). If you're watching several chains at the same time the next chain to notify will be stopped (yes it can be a mess quite quickly...).<p>
+<p><b>Warning:</b> This is not a <i>real</i> command in the sense that it does not directly stop the bot. Upon status update, the bot will read previous messages and if it catches a <tt>!stopchain</tt> it will <i>1)</i> stop watching and say so <i>2)</i> delete the <tt>!stopchain</tt> message. Thus it can take up to 90s for the bot to actually stop. If you're watching several chains at the same time the next chain to notify will be stopped (yes it can be a mess quite quickly...).<p>
 <p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
 </div>
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!retal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Sends a notification to the author's faction role (<tt>@Faction [factionId]</tt>) on incoming attacks. It will stop watching retals if it catches a <tt>!stopretal</tt>.</p>
-<p><b>Syntax:</b> <tt>!retal</tt></p>
+<p>Sends a message on incoming attacks of the author's faction. It mentions <tt>&lt;@Role&gt;</tt> if given. Several retals can be launched by different members. Type <tt>!retal</tt> a second will stop the retal watching.</p>
+<p><b>Syntax:</b> <tt>!retal</tt> or <tt>!retal</tt> <tt>&lt;@Role&gt;</tt></p>
 <p><b>Scope:</b> Anyone with AA permission can use it in <tt>#chain</tt>.</p>
+</div>
+
+<h2 class="command-doc privacy-none">Command <tt>!retals</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>List all the current retal watchings of the server.</p>
+<p><b>Syntax:</b> <tt>!retals</tt></p>
+<p><b>Scope:</b> Admins can use it in <tt>#yata-admin</tt>.</p>
 </div>
 
 <h2 class="command-doc privacy-none">Command <tt>!stopretal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Tells the bot to stop watching a retals.</p>
-<p><b>Syntax:</b> <tt>!stopretal</tt></p>
-<p><b>Warning:</b> Same as <tt>!stopchain</tt>.<p>
-<p><b>Scope:</b> Anyone can use it in <tt>#chain</tt>.</p>
+<p>Stops the retal launched by user which Torn ID is &lt;tornID&gt;</tt>.</p>
+<p><b>Syntax:</b> <tt>!stopretal &lt;tornID&gt;</tt></p>
+<p><b>Scope:</b> Admins can use it in <tt>#yata-admin</tt>.</p>
 </div>
 
 <h2 class="command-doc privacy-personal-public">Command <tt>!fly</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
