@@ -21,6 +21,13 @@ textarea.vLargeTextField {
     height: 1.5em!important;
 }
 
+input.vBigIntegerField {
+    width: 20em!important;
+}
+input.vIntegerField {
+    width: 15em!important;
+}
+
 
 p.datetime > input {
     display: inline;

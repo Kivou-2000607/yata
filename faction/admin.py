@@ -41,8 +41,8 @@ class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
-    list_filter = ('computing', 'live', 'crontab', 'state', 'report')
+    list_display = ['__str__', 'live', 'computing', 'cooldown', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
+    list_filter = ('computing', 'live', 'cooldown', 'crontab', 'state', 'report')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
     actions = [reset_chain]

@@ -20,6 +20,9 @@ update_guild.short_description = "Push guild setup to bot configuration"
 
 
 class GuildAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('perso/css/admin.css',)}
+    
     list_display = ['guildName', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
     search_fields = ['guildContactName', 'guildName', 'botContactName']
     list_filter = ['configuration__name', 'botContactName', 'guildContactName']
