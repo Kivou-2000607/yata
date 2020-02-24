@@ -38,7 +38,8 @@ class Command(BaseCommand):
 
             if chain.live and state == 2:
                 print("{} End of live chain. Delete.".format(chain))
-                continue
-                
+                chain.delete()
+                return
+
             if state in [0, 1, 2, 3]:
                 chain.fillReport()

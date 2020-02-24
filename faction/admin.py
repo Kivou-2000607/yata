@@ -31,10 +31,13 @@ def reset_chain(modeladmin, request, queryset):
         q.count_set.all().delete()
         q.bonus_set.all().delete()
         q.assignCrontab()
-    # queryset.objects.attackchain_set.all().delete()
+
+def restart_special(modeladmin, request, queryset):
+    queryset.update(computing=True, crontab=11)
 
 
 reset_chain.short_description = "Reset chain"
+restart_special.short_description = "Restart computing (crontab 11)"
 
 
 class ChainAdmin(admin.ModelAdmin):
@@ -45,7 +48,7 @@ class ChainAdmin(admin.ModelAdmin):
     list_filter = ('computing', 'live', 'cooldown', 'crontab', 'state', 'report')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
-    actions = [reset_chain]
+    actions = [reset_chain, restart_special]
 
     def status(self, instance):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
