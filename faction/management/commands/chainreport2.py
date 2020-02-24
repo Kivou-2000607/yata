@@ -35,8 +35,10 @@ class Command(BaseCommand):
             state = chain.getAttacks()
             type = "error" if state < 0 else "exit"
             print("{} {} code {}: {}".format(chain, type, state, CHAIN_ATTACKS_STATUS.get(state, "code {}".format(state))))
+
             if chain.live and state == 2:
                 print("{} End of live chain. Delete.".format(chain))
-
+                continue
+                
             if state in [0, 1, 2, 3]:
                 chain.fillReport()
