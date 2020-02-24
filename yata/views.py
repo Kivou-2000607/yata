@@ -30,7 +30,7 @@ import traceback
 
 from player.models import *
 from player.functions import updatePlayer
-from chain.models import Faction
+from faction.models import Faction
 from yata.handy import *
 
 

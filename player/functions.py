@@ -24,8 +24,8 @@ import json
 
 from yata.handy import apiCall
 from awards.functions import updatePlayerAwards
-# from faction.models import Faction
-from chain.models import Faction
+from faction.models import Faction
+# from chain.models import Faction
 from awards.models import AwardsData
 
 
@@ -35,7 +35,7 @@ def updatePlayer(player, i=None, n=None):
     """
 
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
-    print(player.key_set.all())
+
     # API Calls
     user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp', player.getKey(), verbose=False)
 
@@ -59,48 +59,30 @@ def updatePlayer(player, i=None, n=None):
     # skip if not yata active and no valid key
     if not player.active and not player.validKey:
         player.key_set.all().delete()
-        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, player, player.lastActionTS, player.active, player.validKey))
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
         # player.delete()
         player.save()
         return 0
 
     # skip if api error (not invalid key)
     elif 'apiError' in user:
-        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, player, player.lastActionTS, player.active, player.validKey, user["apiError"]))
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey, user["apiError"]))
         player.save()
         return 0
 
     # skip if not active in torn since last update
     # elif player.lastUpdateTS > int(user.get("last_action")["timestamp"]):
-    #     print("[player.functions.updatePlayer] {}{} skip since not active since last update".format(progress, player))
+    #     print("[player.functions.updatePlayer] {}{} skip since not active since last update".format(progress, player.nameAligned()))
     #     return 0
 
     # do update
     else:
-        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1}".format(progress, player, player.lastActionTS, player.active, player.validKey))
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
 
     # update basic info (and chain)
     player.name = user.get("name", "?")
     player.factionId = user.get("faction", dict({})).get("faction_id", 0)
     player.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
-
-    # update chain info
-    # if player.factionId:
-    #     faction = Faction.objects.filter(tId=player.factionId).first()
-    #     if faction is None:
-    #         faction = Faction.objects.create(tId=player.factionId)
-    #     faction.name = player.factionNa
-    #
-    #     chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
-    #     if chains.get("chains") is not None:
-    #         player.factionAA = True
-    #         player.chainInfo = "{} [AA]".format(player.factionNa)
-    #     else:
-    #         player.factionAA = False
-    #         player.chainInfo = "{}".format(player.factionNa)
-    #     faction.manageKey(player)
-    #
-    #     faction.save()
 
     # update chain info
     if player.factionId:
@@ -113,11 +95,10 @@ def updatePlayer(player, i=None, n=None):
         if chains.get("chains") is not None:
             player.factionAA = True
             player.chainInfo = "{} [AA]".format(player.factionNa)
-            faction.addKey(player.tId, player.getKey())
         else:
             player.factionAA = False
             player.chainInfo = "{}".format(player.factionNa)
-            faction.delKey(player.tId)
+        faction.manageKey(player)
 
         faction.save()
 
@@ -135,6 +116,7 @@ def updatePlayer(player, i=None, n=None):
     else:
         updatePlayerAwards(player, tornAwards, user)
     player.awardsUpda = int(timezone.now().timestamp())
+    # player.awardsJson = "{}"
 
     # clean '' targets
     targetsAttacks = json.loads(player.targetJson)

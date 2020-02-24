@@ -43,7 +43,7 @@ class Player(models.Model):
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
-    apikey = models.CharField(default="AAAA", max_length=16)
+    # apikey = models.CharField(default="AAAA", max_length=16)
 
     # BooleanField states
     active = models.BooleanField(default=True)
@@ -93,6 +93,9 @@ class Player(models.Model):
     notifications = models.TextField(default="{}")
 
     def __str__(self):
+        return "{} [{}]".format(self.name, self.tId)
+
+    def nameAligned(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
     def getKey(self, value=True):
