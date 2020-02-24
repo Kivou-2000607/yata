@@ -18,7 +18,8 @@ class TargetInfoAdmin(admin.ModelAdmin):
 
 class AttackAdmin(admin.ModelAdmin):
 
-    list_display = ['__str__' ]
+    list_display = ['__str__']
+
 
 admin.site.register(Target, TargetAdmin)
 admin.site.register(Attack, AttackAdmin)

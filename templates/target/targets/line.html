@@ -44,11 +44,11 @@ This file is part of yata.
     <td class="c"><b title="{{target.fairFight|floatformat:2}} x {{target.baseRespect|floatformat:2}}">{{target.flatRespect|floatformat:2}}</b></td>
     {# <td class="c">{{target.flat_respect|mul:target.fairFight|floatformat:2}}</td> #}
     <td class="d" data-val="{{target.life_current}}">
-        <div class="life-bar" title="{{target.life_current}}/{{target.life_max}}">
-            <span style="width: {{target.life_current|div:target.life_max|mul:100|floatformat:0}}%;"></span>
+        <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
+            <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
         </div>
     </td>
-    <td class='e status player-status-{{target.status_color}}' title="{{target.status_details|cleanhtml}}" data-val="{{target.status_until}}">{{target.status_description}}</td>
+    <td class='e status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
     <td class="f update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}">
         {% now "U" as ts %}
         {% with seconds=ts|sub:target.update_timestamp%}
@@ -72,6 +72,10 @@ This file is part of yata.
             <form style="display: inline;">{% csrf_token %}
                 <a id="target-list-delete-{{targetId}}" class="target-list-delete" href=""><i class="fas fa-trash-alt" title="Delete target"></i></a>
             </form>
+        </td>
+        <td class="g dont-touch-me">
+            <!-- add to faction -->
+            {% include "target/targets/faction.html" %}
         </td>
     {% else %}
         <td colspan="3"><span class="error"><i class="far fa-dizzy"></i>&nbsp;&nbsp;No recorded id. Will be deleted soon.</span></td>

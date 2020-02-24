@@ -3,9 +3,11 @@ from django.db import models
 import math
 
 from player.models import Player
+from faction.models import Faction
 from yata.handy import *
 
 ATTACK_LOST = ["Lost", "Assist", "Timeout", "Escape"]
+
 
 class Revive(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -89,6 +91,9 @@ class Target(models.Model):
     faction_faction_id = models.IntegerField(default=0)
     faction_faction_dif = models.IntegerField(default=0)
 
+    # link with faction
+    faction = models.ManyToManyField(Faction, blank=True)
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.target_id)
 
@@ -103,7 +108,7 @@ class Target(models.Model):
 
         if req.get("life") is None:
             self.life_current = 0
-            self.life_max = 1
+            self.life_maximum = 1
         else:
             self.life_current = req["life"].get("current", 0)
             self.life_maximum = req["life"].get("maximum", 1)
@@ -147,6 +152,7 @@ class Target(models.Model):
         if self.status_state == "Hospital":
             # return "H for {}".format(self.status_until - tsnow())
             return self.status_description.replace("In hospital", "H")
+        elif self.status_state == "Jail":
             return self.status_description.replace("In jail", "J")
         else:
             return self.status_description
@@ -174,7 +180,7 @@ class TargetInfo(models.Model):
     def getTarget(self, update=False):
         target, _ = Target.objects.get_or_create(target_id=self.target_id)
         if update:
-            req = apiCall("user", target.target_id, "profile,timestamp", self.player.getKey(), verbose=True)
+            req = apiCall("user", target.target_id, "profile,timestamp", self.player.getKey())
 
             # update common part of the target
             error, target = target.updateFromApi(req)
@@ -205,31 +211,31 @@ class TargetInfo(models.Model):
                 self.save()
 
         target_dic = {
-                  # global target information
-                  "name": target.name,
-                  "life_current": target.life_current,
-                  "life_max": target.life_maximum,
-                  "status_description": target.customDescription(),
-                  "status_details": target.status_details,
-                  "status_color": target.status_color,
-                  "status_state": target.status_state,
-                  "status_until": target.status_until,
-                  "level": target.level,
-                  "last_action_relative": target.last_action_relative,
-                  "last_action_timestamp": target.last_action_timestamp,
-                  "update_timestamp": min(target.update_timestamp, tsnow()),
+            # global target information
+            "name": target.name,
+            "life_current": target.life_current,
+            "life_maximum": target.life_maximum,
+            "status_description": target.customDescription(),
+            "status_details": target.status_details,
+            "status_color": target.status_color,
+            "status_state": target.status_state,
+            "status_until": target.status_until,
+            "level": target.level,
+            "last_action_relative": target.last_action_relative,
+            "last_action_timestamp": target.last_action_timestamp,
+            "update_timestamp": min(target.update_timestamp, tsnow()),
 
-                  # player target information
-                  "last_attack_attacker": self.last_attack_attacker,
-                  "last_attack_timestamp": self.last_attack_timestamp,
-                  "note": self.note,
-                  "result": self.result,
-                  "fairFight": self.fairFight,
-                  "flatRespect": self.flatRespect,
-                  "baseRespect": self.baseRespect,
+            # player target information
+            "last_attack_attacker": self.last_attack_attacker,
+            "last_attack_timestamp": self.last_attack_timestamp,
+            "note": self.note,
+            "result": self.result,
+            "fairFight": self.fairFight,
+            "flatRespect": self.flatRespect,
+            "baseRespect": self.baseRespect,
 
-                  # additional fields for rendering
-                  "win": 0 if self.result in ATTACK_LOST else 1,
-                  }
+            # additional fields for rendering
+            "win": 0 if self.result in ATTACK_LOST else 1,
+        }
 
         return False, target.target_id, target_dic

@@ -5,6 +5,7 @@ from . import views
 app_name = "faction"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
+    re_path(r'^target/$', views.target, name='target'),
 
     # SECTION: configuration
     re_path(r'^configurations/$', views.configurations, name='configurations'),

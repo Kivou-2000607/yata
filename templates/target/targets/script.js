@@ -32,6 +32,19 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
     reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
 });
 
+// toggle faction target
+$(document).on('click', 'a.target-list-faction', function(e){
+    e.preventDefault();
+    var targetId = $(this).attr("id").split("-").pop();
+    var reload = $(this).closest("td");
+    reload.load( "/faction/target/", {
+        targetId: targetId,
+        type: "toggle",
+        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    });
+    reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+});
+
 // delete target from target list button
 $(document).on('click', 'a.target-list-delete', function(e){
     e.preventDefault();

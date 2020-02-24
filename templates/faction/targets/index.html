@@ -1,0 +1,39 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<table id="target-targets" class="tablesorter center-medium trshadow target-targets">
+    <thead>
+        <tr>
+            <th title="Name of the target">Name</th>
+            <th title="Level of the target">Level</th>
+            <th title="Last action of the target">Last action</th>
+            <th title="Life of the target">Life</th>
+            <th title="Status of the target">Status</th>
+            <th title="Time since last update">Update</th>
+            <th title="Delete"></th>
+    </thead>
+    <tbody>
+    {% for target in targets %}
+        <tr id="target-list-refresh-{{target.target_id}}" data-val="{{target.target_id}}">
+          {# <td>{{target}}</td> #}
+            {% include "faction/targets/line.html" %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

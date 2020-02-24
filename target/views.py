@@ -39,11 +39,13 @@ def index(request):
             player = getPlayer(request.session["player"].get("tId"))
 
             targets = getTargets(player)
+            # get faction
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            factionTargets = [] if faction is None else faction.getTargetsId()
 
             player.targetInfo = len(targets)
             player.save()
-
-            context = {"player": player, "targetcat": True, "targets": targets, "ts": tsnow(), "view": {"targets": True}}
+            context = {"player": player, "targetcat": True, "factionTargets": factionTargets, "targets": targets, "ts": tsnow(), "view": {"targets": True}}
             return render(request, 'target.html', context)
 
         else:
@@ -83,7 +85,11 @@ def targets(request):
 
             targets = getTargets(player)
 
-            context = {"player": player, "targetcat": True, "targets": targets, "ts": tsnow(), "view": {"targets": True}}
+            # get faction
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            factionTargets = [] if faction is None else faction.getTargetsId()
+
+            context = {"player": player, "targetcat": True, "targets": targets, "factionTargets": factionTargets, "ts": tsnow(), "view": {"targets": True}}
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
             return render(request, page, context)
 
@@ -160,7 +166,9 @@ def target(request):
                     if error:
                         context = {"apiErrorLine": "Error while updating {}: {}".format(target, error.get("apiError", "Unknown error"))}
                     else:
-                        context = {"target": target, "targetId": target_id, "ts": tsnow()}
+                        faction = Faction.objects.filter(tId=player.factionId).first()
+                        factionTargets = [] if faction is None else faction.getTargetsId()
+                        context = {"player": player, "factionTargets": factionTargets, "target": target, "targetId": target_id, "ts": tsnow()}
 
                     return render(request, 'target/targets/line.html', context)
 

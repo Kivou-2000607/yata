@@ -9,6 +9,7 @@ import json
 
 from yata.handy import *
 from faction.models import *
+from target.models import Target
 from faction.functions import *
 
 
@@ -50,12 +51,14 @@ def index(request):
                 faction.name = user.get("faction")["faction_name"]
                 faction.save()
 
+            targets = faction.target_set.all()
+
             # add/remove key depending of AA member
             faction.manageKey(player)
             chainsreports = faction.chain_set.filter(computing=True).order_by('-start')
             attacksreports = faction.attacksreport_set.filter(computing=True).order_by('-start')
             revivesreports = faction.revivesreport_set.filter(computing=True).order_by('-start')
-            context = {'player': player, 'faction': faction, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'factioncat': True, 'view': {'index': True}}
+            context = {'player': player, 'faction': faction, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'factioncat': True, 'view': {'index': True}}
             return render(request, 'faction.html', context)
 
         else:
@@ -64,6 +67,68 @@ def index(request):
 
     except Exception:
         return returnError()
+
+
+def target(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                context = {"apiErrorLine": 'Faction {} not found in the database.'.format(factionId)}
+                return render(request, 'faction/targets/line.html', context)
+
+            if request.POST.get("type", False):
+
+                if request.POST["type"] == "update":
+                    # update target
+                    target_id = int(request.POST["targetId"])
+                    target, _ = faction.target_set.get_or_create(target_id=target_id)
+                    req = apiCall("user", target.target_id, "profile,timestamp", player.getKey())
+                    error, target = target.updateFromApi(req)
+                    if error:
+                        context = {"apiErrorLine": "Error while updating {}: {}".format(target, req.get("apiError", "Unknown error"))}
+                    else:
+                        context = {"player": player, "target": target, "ts": tsnow()}
+                    return render(request, 'faction/targets/line.html', context)
+
+                elif request.POST["type"] == "delete":
+                    # update target
+                    target_id = int(request.POST["targetId"])
+                    target = faction.target_set.filter(target_id=target_id).first()
+                    if target is not None:
+                        faction.target_set.remove(target)
+
+                    return render(request, 'faction/targets/line.html')
+
+                elif request.POST["type"] == "toggle":
+                    # toggle target (warning this sends requests to the target section)
+                    target_id = int(request.POST["targetId"])
+                    target = faction.target_set.filter(target_id=target_id).first()
+                    if target is None:
+                        target, _ = Target.objects.get_or_create(target_id=target_id)
+                        faction.target_set.add(target)
+                    else:
+                        faction.target_set.remove(target)
+
+                    factionTargets = faction.getTargetsId()
+                    context = {"targetId": target_id, "player": player, "factionTargets": factionTargets}
+                    return render(request, 'target/targets/faction.html', context)
+
+            # should not happen
+            context = {"apiErrorLine": 'Wrong action.'}
+            return render(request, 'faction/targets/line.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except BaseException as e:
+        context = {"apiErrorLine": "Error while updating target: {}".format(e)}
+        return render(request, 'faction/targets/line.html', context)
 
 
 # SECTION: configuration

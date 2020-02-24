@@ -16,13 +16,15 @@ class DiscordAppAdmin(admin.ModelAdmin):
 def update_guild(modeladmin, request, queryset):
     for q in queryset:
         saveGuildConfig(q)
+
+
 update_guild.short_description = "Push guild setup to bot configuration"
 
 
 class GuildAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
-    
+
     list_display = ['guildName', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
     search_fields = ['guildContactName', 'guildName', 'botContactName']
     list_filter = ['configuration__name', 'botContactName', 'guildContactName']
@@ -47,28 +49,28 @@ class GuildAdmin(admin.ModelAdmin):
                 ('Server and contact', {
                     'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactId', 'guildContactName')
                 }),
-                ('General Settings', {
-                    'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')
-                }),
-                ('Verify module', {
-                    'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
-                }),
-                ('Stock module', {
-                    'fields': ('stockModule', 'stockChannels', 'stockWSSB', 'stockTCB', 'stockAlerts')
-                }),
-                ('Revive module', {
-                    'fields': ('reviveModule', 'reviveChannels')
-                }),
-                ('Loot module', {
-                    'fields': ('lootModule', 'lootChannels')
-                }),
-                ('Chain module', {
-                    'fields': ('chainModule', 'chainChannels')
-                }),
-                ('API module', {
-                    'fields': ('apiModule', 'apiChannels', 'apiRoles')
-                }),
-                )
+        ('General Settings', {
+            'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')
+        }),
+        ('Verify module', {
+            'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
+        }),
+        ('Stock module', {
+            'fields': ('stockModule', 'stockChannels', 'stockWSSB', 'stockTCB', 'stockAlerts')
+        }),
+        ('Revive module', {
+            'fields': ('reviveModule', 'reviveChannels')
+        }),
+        ('Loot module', {
+            'fields': ('lootModule', 'lootChannels')
+        }),
+        ('Chain module', {
+            'fields': ('chainModule', 'chainChannels')
+        }),
+        ('API module', {
+            'fields': ('apiModule', 'apiChannels', 'apiRoles')
+        }),
+    )
 
 
 class CredentialInline(admin.TabularInline):

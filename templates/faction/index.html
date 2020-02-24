@@ -23,9 +23,10 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
 <div class="module">
-    <p><b>Faction:</b> <i>{{faction|safe}}</i></p>
-    <p><b>AA:</b> {% if player.factionAA %}<i class="valid">Yes</i>{% else %}<i class="error">No</i>{% endif %}<br></p>
-    <p><b>Reports currently being computed</b></p>
+    <h1>Faction target list</h1>
+    {% include "faction/targets/index.html" %}
+
+    <h1>Reports currently being computed</h1>
     <ul>
 
         {% if chainsreports|length %}<li>Chains</li>

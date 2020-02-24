@@ -184,6 +184,9 @@ class Faction(models.Model):
 
         return " ".join([k for k in timeKey.split("_")])
 
+    def getTargetsId(self):
+        return [t.target_id for t in self.target_set.all()]
+
     def cleanHistory(self):
         # clean chains
         old = tsnow() - self.getHist("chains")
