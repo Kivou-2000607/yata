@@ -132,7 +132,7 @@ def returnError(type=500, msg=None, home=True):
 def getPlayer(tId):
     from player.models import Player
 
-    player = Player.objects.filter(tId=tId).first()
+    player, _ = Player.objects.get_or_create(tId=tId)
     player.lastActionTS = tsnow()
     player.active = True
     player.save()

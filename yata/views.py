@@ -48,10 +48,11 @@ def index(request):
                 del request.session['player']
                 context = {'allNews': allNews, 'allDonations': allDonations}
 
-            player.lastActionTS = int(timezone.now().timestamp())
-            player.active = True
-            player.save()
-            context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
+            else:
+                player.lastActionTS = int(timezone.now().timestamp())
+                player.active = True
+                player.save()
+                context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
         else:
             context = {'allNews': allNews, 'allDonations': allDonations}
 
