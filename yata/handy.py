@@ -99,7 +99,12 @@ def timestampToDate(timestamp, fmt=False):
     import datetime
     import pytz
     d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
-    return d.strftime("%Y/%m/%d %I:%m TCT") if fmt else d
+    if fmt is False:
+        return d
+    elif type(fmt) == bool and fmt:
+        return d.strftime("%Y/%m/%d %I:%m TCT")
+    else:
+        return d.strftime(fmt)
 
 
 def cleanhtml(raw_html):

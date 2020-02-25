@@ -559,6 +559,8 @@ def manageReport(request):
                 chain.report = True
                 chain.computing = True
                 chain.cooldown = False
+                chain.status = 1
+                chain.addToEnd = 10
                 c = chain.assignCrontab()
                 print("report assigned to {}".format(c))
                 chain.save()
@@ -570,7 +572,7 @@ def manageReport(request):
                 chain.report = True
                 chain.cooldown = not chain.cooldown
                 chain.computing = True
-                chain.state = 0
+                chain.state = 1
                 c = chain.assignCrontab()
                 print("report assigned to {}".format(c))
                 chain.save()

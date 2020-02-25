@@ -32,19 +32,47 @@ from player.models import Player
 from faction.functions import *
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+# CHAIN_ATTACKS_STATUS = {
+#     5: "No new entry [stop]",
+#     4: "Should have reached the end [continue]",
+#     3: "Normal [continue]",
+#     2: "Reached end of chain [stop]",
+#     1: "No new attack [stop]",
+#     0: "Waiting for first call",
+#     -1: "No enabled AA keys [stop]",
+#     -2: "API key major error (key deleted) [continue]",
+#     -3: "API key temporary error [continue]",
+#     -4: "Probably cached response [continue]",
+#     -5: "Empty payload [stop]",
+#     # -6: "No new entry without cooldown [stop]",
+#     -6: "No new entry (looked 1h after end) [stop]"}
+
 CHAIN_ATTACKS_STATUS = {
-    5: "No new entry [stop]",
-    4: "Should have reached the end [continue]",
-    3: "Normal [continue]",
-    2: "Reached end of chain [stop]",
-    1: "No new attack [stop]",
-    0: "Waiting for first call",
+
+    # cooldown
+    52: "No new attacks [stop]",
+    32: "No new entries [continue]",
+    12: "Computing [continue]",
+
+    # no cooldown
+    51: "Reached end of chain [stop]",
+    21: "Looking after end of chain [continue]",
+    11: "Computing [continue]",
+
+    # live
+    50: "Reached end of chain [stop]",
+    10: "Computing [continue]",
+
+    # init
+    1: "Waiting for first call",
+    0: "No reports",
+
+    # errors
     -1: "No enabled AA keys [stop]",
     -2: "API key major error (key deleted) [continue]",
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    # -6: "No new entry without cooldown [stop]",
     -6: "No new entry (looked 1h after end) [stop]"}
 
 REPORT_ATTACKS_STATUS = {
@@ -1084,9 +1112,9 @@ class Chain(models.Model):
             self.computing = False
             self.crontab = 0
             self.attackchain_set.all().delete()
-            self.state = -1
+            self.state = self.state
             self.save()
-            return -1
+            return self.state
 
         # prevent cache response
         delay = tsnow() - self.update
@@ -1114,10 +1142,10 @@ class Chain(models.Model):
                 faction.delKey(key=key)
                 self.state = -2
                 self.save()
-                return -2
+                return self.state
             self.state = -3
             self.save()
-            return -3
+            return self.state
 
         # try to catch cache response
         tornTS = int(req["timestamp"])
@@ -1130,7 +1158,7 @@ class Chain(models.Model):
             print('{} probably cached response... (blank turn)'.format(self))
             self.state = -4
             self.save()
-            return -4
+            return self.state
 
         if self.live:
             print("{} update values".format(self))
@@ -1145,13 +1173,14 @@ class Chain(models.Model):
             self.crontab = 0
             self.state = -5
             self.save()
-            return -5
+            return self.state
 
         print("{} {} attacks from the API".format(self, len(apiAttacks)))
 
         newEntry = 0
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
+            tsl = max(tsl, ts)
 
             # probably because of cache
             before = int(v["timestamp_ended"]) - self.last
@@ -1168,7 +1197,7 @@ class Chain(models.Model):
                 v = modifiers2lvl1(v)
                 self.attackchain_set.get_or_create(tId=int(k), defaults=v)
                 newEntry += 1
-                tsl = max(tsl, ts)
+                # tsl = max(tsl, ts)
                 if int(v["timestamp_ended"]) - self.end - self.addToEnd <= 0:  # case we're before cooldown
                     self.current = max(self.current, v["chain"])
                 elif self.cooldown and respect:  # case we're after cooldown and we want cooldown
@@ -1188,30 +1217,29 @@ class Chain(models.Model):
                 print("{} reached end of live chain [stop]".format(self))
                 self.computing = False
                 self.crontab = 0
-                self.state = 2
+                self.state = 50
                 self.save()
-                return 2
+                return self.state
 
         elif self.cooldown:
 
             # not live and with cooldown
 
             if len(apiAttacks) < 2:
-                # (nearly) empty payload
+                # (nearly) empty payload can occur when faction stop attacking  or reveiving attacks before end of cooldown
                 print("{} no api entry (not live) (cooldown) [stop]".format(self))
                 self.computing = False
                 self.crontab = 0
-                self.state = 1
+                self.state = 52
                 self.save()
-                return 1
+                return self.state
 
             if not newEntry and len(apiAttacks) > 1:
-                print("{} no new entry from payload (not live) (cooldown) [stop]".format(self))
-                self.computing = False
-                self.crontab = 0
-                self.state = 5
+                # (no new entry
+                print("{} no new entry from payload (not live) (cooldown) [continue]".format(self))
+                self.state = 32
                 self.save()
-                return 5
+                return self.state
 
         else:
 
@@ -1219,9 +1247,9 @@ class Chain(models.Model):
                 print("{} Reached end of chain (not live) (no cooldown) [stop]".format(self))
                 self.computing = False
                 self.crontab = 0
-                self.state = 2
+                self.state = 51
                 self.save()
-                return 2
+                return self.state
 
             if len(apiAttacks) < 2 or not newEntry:
                 # empty api call
@@ -1233,15 +1261,15 @@ class Chain(models.Model):
                     self.crontab = 0
                     self.state = -6
                     self.save()
-                    return -6
+                    return self.state
 
                 else:
                     # add 10 seconds
                     print("{} no new entry (not live) (no cooldown) [continue]".format(self))
                     self.addToEnd += 10
-                    self.state = 4
+                    self.state = 21
                     self.save()
-                    return 4
+                    return self.state
 
             # if not newEntry and len(apiAttacks) > 1:
             #     print("{} no new entry from payload (not live) (no cooldown) [continue]".format(self))
@@ -1251,9 +1279,16 @@ class Chain(models.Model):
             #     self.save()
             #     return -6
 
-        self.state = 3
+        # all good continue computing status
+        if self.live:
+            self.state = 10
+        elif self.cooldown:
+            self.state = 12
+        else:
+            self.state = 11
+
         self.save()
-        return 3
+        return self.state
 
     def fillReport(self):
         # get faction / key

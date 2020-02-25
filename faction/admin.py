@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from faction.models import *
-
+from yata.handy import timestampToDate
 
 class FactionAdmin(admin.ModelAdmin):
     class Media:
@@ -27,10 +27,12 @@ def reset_chain(modeladmin, request, queryset):
                     attacks=0,
                     graphs="{}")
     for q in queryset:
-        q.attackchain_set.all().delete()
+        print("{} delete attack: {}".format(q, q.attackchain_set.all().delete()))
         q.count_set.all().delete()
         q.bonus_set.all().delete()
-        q.assignCrontab()
+        n = q.assignCrontab()
+        print("{} assign crontab {}".format(q, n))
+
 
 def restart_special(modeladmin, request, queryset):
     queryset.update(computing=True, crontab=11)
@@ -44,8 +46,8 @@ class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'cooldown', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
-    list_filter = ('computing', 'live', 'cooldown', 'crontab', 'state', 'report')
+    list_display = ['__str__', 'live', 'computing', 'cooldown', 'progress', 'chain', 'crontab', 'state', 'status', '_update', '_start', '_last', '_end', 'elapsed']
+    list_filter = ('computing', 'live', 'cooldown', 'state', 'report', 'crontab')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
     actions = [reset_chain, restart_special]
@@ -53,6 +55,14 @@ class ChainAdmin(admin.ModelAdmin):
     def status(self, instance):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
+    def _start(self, instance):
+        return timestampToDate(instance.start, fmt="%m/%d %I:%m")
+    def _update(self, instance):
+        return timestampToDate(instance.update, fmt="%m/%d %I:%m")
+    def _last(self, instance):
+        return timestampToDate(instance.last, fmt="%m/%d %I:%m")
+    def _end(self, instance):
+        return timestampToDate(instance.end, fmt="%m/%d %I:%m")
 
 def reset_report(modeladmin, request, queryset):
     queryset.update(last=0,
@@ -77,7 +87,7 @@ class AttacksReportAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
-    list_filter = ('computing', 'live', 'crontab', 'state')
+    list_filter = ('computing', 'live', 'state', 'crontab')
     autocomplete_fields = ['wall']
     actions = [reset_report]
 
@@ -91,7 +101,7 @@ class RevivesReportAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
-    list_filter = ('computing', 'live', 'crontab', 'state')
+    list_filter = ('computing', 'live', 'state', 'crontab')
     # actions = [reset_report]
 
     def status(self, instance):

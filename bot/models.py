@@ -28,7 +28,6 @@ class Guild(models.Model):
     botContactId = models.IntegerField(default=0, help_text="Your torn ID")
     botContactName = models.CharField(default="", max_length=32, help_text="Your torn name")
 
-
     # general options
     masterKeys = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
     manageChannels = models.BooleanField(default=True, help_text="The bot will create channels and roles. Better keep True at least on setup.")
