@@ -75,6 +75,15 @@ This file is part of yata.
             $(this).closest("div").fadeOut(2000);
         });
 
+        // pagination breakdown
+        $(document).on('click', 'a.page-link', function(e){
+            e.preventDefault();
+            var reload = $(e.currentTarget).closest("div.pagination-list");
+            reload.load( $(e.currentTarget).attr("href"), function() {});
+            reload.html(spinner);
+        });
+
+
         // show/hide module
         $(document).on('click', 'h2.toggle-display', function(e){
             e.preventDefault();

@@ -92,6 +92,9 @@ This file is part of yata.
 {% if view.armory %}
     {% include "faction/armory/index.html" %}
 {% endif %}
+{% if view.armoryList %}
+    {% include "faction/armory/news.html" %}
+{% endif %}
 
 {% if view.bb %}
     {% include "faction/bigbrother/index.html" %}

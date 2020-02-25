@@ -441,3 +441,15 @@ p.update-info {
     color: #888;
     font-style: italic;
 }
+
+div.pagination-list {
+  width: 100%;
+  text-align: center;
+}
+
+div.pagination {
+  margin: 10px;
+}
+a.page-link {
+  margin: 5px;
+}

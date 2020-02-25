@@ -103,7 +103,7 @@ $(document).ready(function() {
 
 
 {% if armory|length %}
-<h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown</h2>
+<h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown<a href="{% url 'faction:armoryList' %}" class="flush-right"><i class="fas fa-eye"></i>&nbsp;&nbsp;See list of news</a></h2>
 <div class="module chain-armory">
     <table class="center faction-armory-filter">
         <thead>
@@ -245,3 +245,13 @@ $(document).ready(function() {
     <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
 </div>
 {% endif %}
+
+
+<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of news</h2>
+<div class="module">
+
+  <div class="pagination-list">
+    {% include "faction/armory/news.html"%}
+  </div>
+
+</div>

@@ -1235,7 +1235,8 @@ class Chain(models.Model):
                 return self.state
 
             if not newEntry and len(apiAttacks) > 1:
-                # (no new entry
+                # no new entry should happen only if full payload doesn't count for the chain
+                # last attack ts is still updated so next call should be different
                 print("{} no new entry from payload (not live) (cooldown) [continue]".format(self))
                 self.state = 32
                 self.save()
@@ -2132,6 +2133,9 @@ class News(models.Model):
 
     def __str__(self):
         return format_html("{} {} [{}]".format(self.faction, self.type, self.tId))
+
+    def typeReadable(self):
+        return self.type[:-4].capitalize()
 
 
 class Log(models.Model):

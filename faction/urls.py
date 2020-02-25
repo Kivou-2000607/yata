@@ -42,6 +42,7 @@ urlpatterns = [
 
     # SECTION: armory
     re_path(r'^armory/$', views.armory, name='armory'),
+    re_path(r'^armory/news/$', views.armoryList, name='armoryList'),
 
     # SECTION: big brother
     re_path(r'^bigbrother/$', views.bigBrother, name='bigBrother'),

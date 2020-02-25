@@ -36,10 +36,13 @@ class Command(BaseCommand):
             type = "error" if state < 0 else "exit"
             print("{} {} code {}: {}".format(chain, type, state, CHAIN_ATTACKS_STATUS.get(state, "code {}".format(state))))
 
-            if chain.live and state == 2:
+            if chain.live and state == 50:
                 print("{} End of live chain. Delete.".format(chain))
                 chain.delete()
                 return
 
-            if state in [0, 1, 2, 3]:
+            if state in [10, 11, 21, 51, 12, 32, 52]:
                 chain.fillReport()
+
+            if state in [51, 52]:
+                chain.attackchain_set.all().delete()

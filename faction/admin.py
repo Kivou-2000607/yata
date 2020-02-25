@@ -3,6 +3,7 @@ from django.contrib import admin
 from faction.models import *
 from yata.handy import timestampToDate
 
+
 class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
@@ -17,6 +18,14 @@ class FactionAdmin(admin.ModelAdmin):
 #     list_filter = ('faction__name', 'shareE', 'shareN')
 #     search_fields = ('faction__name', 'name', 'tId')
 
+class AttackChainAdmin(admin.StackedInline):
+    model = AttackChain
+    extra = 0
+    fields = ["tId"]
+    max_num = 10
+    readonly_fields = ["tId"]
+    can_delete = False
+
 def reset_chain(modeladmin, request, queryset):
     queryset.update(last=0,
                     update=0,
@@ -30,39 +39,62 @@ def reset_chain(modeladmin, request, queryset):
         print("{} delete attack: {}".format(q, q.attackchain_set.all().delete()))
         q.count_set.all().delete()
         q.bonus_set.all().delete()
-        n = q.assignCrontab()
-        print("{} assign crontab {}".format(q, n))
+        print("{} assign crontab {}".format(q, q.assignCrontab()))
 
 
-def restart_special(modeladmin, request, queryset):
+def start_computing_special(modeladmin, request, queryset):
     queryset.update(computing=True, crontab=11)
 
 
+def stop_computing(modeladmin, request, queryset):
+    queryset.update(computing=False, crontab=0)
+
+
+def start_computing(modeladmin, request, queryset):
+    queryset.update(computing=True)
+
+
+def delete_attacks(modeladmin, request, queryset):
+    for q in queryset:
+        print("{} delete attack: {}".format(q, q.attackchain_set.all().delete()))
+
+
+def assign_crontab(modeladmin, request, queryset):
+    for q in queryset:
+        print("{} assign crontab {}".format(q, q.assignCrontab()))
+
+
+def delete_chain(modeladmin, request, queryset):
+    for q in queryset:
+        q.delete()
+
+
 reset_chain.short_description = "Reset chain"
-restart_special.short_description = "Restart computing (crontab 11)"
+start_computing_special.short_description = "Start computing (crontab 11)"
+start_computing.short_description = "Start computing"
+stop_computing.short_description = "Stop computing"
+delete_attacks.short_description = "Delete all attacks"
+assign_crontab.short_description = "Assign Crontab"
+delete_chain.short_description = "Delete chain"
 
 
 class ChainAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['__str__', 'live', 'computing', 'cooldown', 'progress', 'chain', 'crontab', 'state', 'status', '_update', '_start', '_last', '_end', 'elapsed']
+    list_display = ['__str__', 'live', 'computing', 'cooldown', 'current', 'attacks', 'chain', 'progress', 'crontab', 'state', 'status', '_update', 'elapsed']
     list_filter = ('computing', 'live', 'cooldown', 'state', 'report', 'crontab')
     search_fields = ('faction__name', 'tId')
     exclude = ['graphs']
-    actions = [reset_chain, restart_special]
+    actions = [reset_chain, start_computing, start_computing_special, stop_computing, assign_crontab, delete_attacks, delete_chain]
+    # inlines = [AttackChainAdmin]
 
     def status(self, instance):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
-    def _start(self, instance):
-        return timestampToDate(instance.start, fmt="%m/%d %I:%m")
     def _update(self, instance):
         return timestampToDate(instance.update, fmt="%m/%d %I:%m")
-    def _last(self, instance):
-        return timestampToDate(instance.last, fmt="%m/%d %I:%m")
-    def _end(self, instance):
-        return timestampToDate(instance.end, fmt="%m/%d %I:%m")
+
 
 def reset_report(modeladmin, request, queryset):
     queryset.update(last=0,
@@ -152,12 +184,12 @@ class UpgradeAdmin(admin.ModelAdmin):
     list_filter = ('active', 'simu', 'branch', 'shortname')
 
 
-admin.site.register(Upgrade, UpgradeAdmin)
-admin.site.register(FactionTree, FactionTreeAdmin)
+# admin.site.register(Upgrade, UpgradeAdmin)
+# admin.site.register(FactionTree, FactionTreeAdmin)
 admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
-admin.site.register(Log, LogAdmin)
-admin.site.register(News, NewsAdmin)
+# admin.site.register(Log, LogAdmin)
+# admin.site.register(News, NewsAdmin)
 admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Wall, WallAdmin)

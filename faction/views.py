@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 import os
 import json
@@ -1813,12 +1814,58 @@ def armory(request):
 
             logs = sorted(logs.items(), key=lambda x: x[0], reverse=True)
 
-            context = {'player': player, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            paginator = Paginator(news, 25)
+            page_number = request.GET.get('page')
+            news = paginator.get_page(page_number)
+
+            context = {'player': player, 'news': news, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             if message:
                 err = "validMessage" if state else "errorMessage"
                 sub = "Sub" if request.method == 'POST' else ""
                 context[err + sub] = message
             return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def armoryList(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found in the database."}
+                return render(request, page, context)
+            news = faction.news_set.order_by("-timestamp").all()
+
+            # get start/end ts
+            start = news.last().timestamp
+            end = news.first().timestamp
+
+            # filter start/end if asked
+            tss = int(request.POST.get("start", 0))
+            if tss:
+                news = news.filter(timestamp__gt=tss - 1)
+            tse = int(request.POST.get("end", 0))
+            if tse:
+                news = news.filter(timestamp__lt=tse + 1)
+
+            paginator = Paginator(news, 25)
+            page_number = request.GET.get('page')
+            news = paginator.get_page(page_number)
+
+            if page_number is not None:
+                context = {'player': player, 'news': news, 'factioncat': True, 'faction': faction, 'view': {'armoryList': True}}
+                return render(request, 'faction/armory/news.html', context)
+            else:
+                return returnError(type=403, msg="You need to get a page.")
 
         else:
             return returnError(type=403, msg="You might want to log in.")
