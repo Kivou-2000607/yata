@@ -32,6 +32,7 @@ urlpatterns = [
 
     # SECTION: attacks
     re_path(r'^attacks/$', views.attacksReports, name='attacks'),
+    re_path(r'^attacks/list/(?P<reportId>\w+)$', views.attacksList, name='attacksList'),
     re_path(r'^attacks/manage/$', views.manageAttacks, name='manageAttacks'),
     re_path(r'^attacks/(?P<reportId>\w+)$', views.attacksReport, name='attacks'),
 

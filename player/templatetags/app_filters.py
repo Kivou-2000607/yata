@@ -116,7 +116,12 @@ def factionURL(value, arg=0):
 
 @register.filter(name='playerURL')
 def playerURL(value, arg):
-    return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+    if str(arg) == "0":
+        return '-'
+    elif arg:
+        return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+    else:
+        return '-'
 
 
 @register.filter(name='playerURLShort')

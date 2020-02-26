@@ -27,7 +27,6 @@ This file is part of yata.
 $(document).ready(function() {
     $(".faction-attacks-report-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1], [5,1], [3,1], [4,1]]});
     $(".faction-attacks-report-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
-    $(".faction-attacks-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
 });
 
 $(function () {
@@ -53,7 +52,7 @@ $(function () {
     <table class="tablesorter center trshadow contract-summary">
         <thead>
             <tr><th colspan="3">Report summary</tr>
-            {% if report.wall %}
+            {% if report.wall > 0 %}
                 <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
             {% endif %}
         </thead>
@@ -160,46 +159,9 @@ $(function () {
     <hr class="sep">
 </div>
 
-<div class="catch-me">
-    <h2 class="title toggle-display rounded"><i class="fas fa-list"></i>&nbsp;&nbsp;Attacks report [{{report.pk}}]: list of {{attacks|length}} attacks&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="module" style="display: none;">
-        {% if attacks|length %}
-        <table id="faction-attacks-list" class="tablesorter center-large trshadow faction-attacks-list">
-            <thead>
-                <tr>
-                    {# <th>Revive [ID]</th> #}
-                    <th>Start</th>
-                    <th>Attacker</th>
-                    <th>Faction</th>
-                    <th>Defender</th>
-                    <th>Faction</th>
-                    <th>Result</th>
-                    <th>Chain</th>
-            </thead>
-            <tbody>
-            {% for k, v in attacks.items %}
-            {%if v.show %}
-            <tr>
-                {# <td class="a">Revive [{{k}}]</td> #}
-                <td class="a">{{v.timestamp_started|ts2date}}</td>
-                {%if v.attacker_id == 1%}
-                    <td class="b">Stealth</td>
-                    <td class="b">Stealth</td>
-                {%else%}
-                    <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
-                    <td class="b">{{v.attacker_factionname|factionURL:v.attacker_faction|safe}}</td>
-                {%endif%}
-                <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
-                <td class="b">{{v.defender_factionname|factionURL:v.defender_faction|safe}}</td>
-                <td class="c">{{v.result}}</td>
-                <td class="d">{%if v.chain %}{{v.chain}}{%endif%}</td>
-            </tr>
-            {%endif%}
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else%}
-            <p class="error">No attacks.</p>
-        {% endif %}
-    </div>
+<h2 class="title toggle-display"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
+<div class="module">
+  <div class="pagination-list">
+    {% include "faction/attacks/attacks.html" %}
+  </div>
 </div>

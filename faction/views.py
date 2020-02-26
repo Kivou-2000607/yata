@@ -1400,6 +1400,10 @@ def attacksReport(request, reportId):
             attackerFactions = json.loads(report.attackerFactions)
             defenderFactions = json.loads(report.defenderFactions)
 
+            paginator = Paginator(tuple(attacks.values()), 25)
+            page_number = request.GET.get('page')
+            attacks = paginator.get_page(page_number)
+
             # context
             report.status = REPORT_ATTACKS_STATUS[report.state]
             context = dict({"player": player,
@@ -1411,6 +1415,42 @@ def attacksReport(request, reportId):
                             'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def attacksList(request, reportId):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, 'yata/error.html', context)
+
+            # get breakdown
+            report = faction.attacksreport_set.filter(pk=reportId).first()
+            if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Report {} not found.".format(reportId)}
+                return render(request, 'yata/error.html', context)
+
+            attacks = report.attackreport_set.all()
+            paginator = Paginator(tuple(attacks.values()), 25)
+            page_number = request.GET.get('page')
+
+            if page_number is not None:
+                return render(request, 'faction/attacks/attacks.html', {'report': report, 'attacks': paginator.get_page(page_number)})
+            else:
+                return returnError(type=403, msg="You need to get a page.")
 
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -1842,7 +1882,7 @@ def armoryList(request):
             if faction is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = {'player': player, selectError: "Faction not found in the database."}
-                return render(request, page, context)
+                return render(request, 'yata/error.html', context)
             news = faction.news_set.order_by("-timestamp").all()
 
             # get start/end ts
@@ -1859,11 +1899,9 @@ def armoryList(request):
 
             paginator = Paginator(news, 25)
             page_number = request.GET.get('page')
-            news = paginator.get_page(page_number)
 
             if page_number is not None:
-                context = {'player': player, 'news': news, 'factioncat': True, 'faction': faction, 'view': {'armoryList': True}}
-                return render(request, 'faction/armory/news.html', context)
+                return render(request, 'faction/armory/news.html', {'news': paginator.get_page(page_number)})
             else:
                 return returnError(type=403, msg="You need to get a page.")
 
