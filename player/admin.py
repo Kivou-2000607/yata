@@ -12,7 +12,7 @@ class KeyInline(admin.TabularInline):
 class KeyAdmin(admin.ModelAdmin):
     list_display = ['player', 'useFact', 'useSelf']
     search_fields = ['player__name', 'tId']
-
+    readonly_fields = ['player', ]
 
 class PlayerAdmin(admin.ModelAdmin):
     class Media:

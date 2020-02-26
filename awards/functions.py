@@ -1126,7 +1126,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     # 539 {'name': 'Bibliophile', 'description': 'Read 10 books', 'type': 16, 'circulation': 384, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'achieve': 0}
                     type = "Consume"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    bookIcon = userInfo.get("icons", dict({})).get("icon68", False)
+                    icons = userInfo.get("icons")
+                    bookIcon = icons.get("icon68", False) if isinstance(icons, dict) else False
                     if bookIcon:
                         tmp = bookIcon.split("-")[-1].strip().split(",")
                         currentBook = 31. - float(tmp[0].split()[0]) + float(tmp[1].split()[0]) / 24. + float(tmp[2].split()[0]) / 24. / 60.
