@@ -178,6 +178,7 @@ d = {
     800: 956179599,  # Surplus
     793: 144692020,  # Bandolier
     611: 433435448,  # War Machine
+    791: 891318875,  # Quartermaster
     778: 0,  # Specialist
 
     # 3

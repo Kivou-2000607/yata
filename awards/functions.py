@@ -631,9 +631,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [800, 793]:
+                elif int(k) in [800, 793, 791]:
                     # "800": {"name": "Surplus", "description": "Use 100 rounds of special ammunition", "type": 2,
                     # "793": {"name": "Bandolier","description": "Use 1,000 rounds of special ammunition", "type": 2,
+                    # "791": { "name": "Quartermaster","description": "Use 10,000 rounds of special ammunition", "type": 2,
                     type = "Fire rounds"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("specialammoused", 0)
