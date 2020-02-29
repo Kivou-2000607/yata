@@ -6,7 +6,7 @@ import json
 from .models import *
 from .functions import saveGuildConfig
 
-admin.site.disable_action('delete_selected')
+# admin.site.disable_action('delete_selected')
 
 
 class DiscordAppAdmin(admin.ModelAdmin):

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 import os
 import json
@@ -133,7 +134,6 @@ def target(request):
 
 
 # SECTION: configuration
-
 def configurations(request):
     try:
         if request.session.get('player'):
@@ -1300,6 +1300,32 @@ def attacksReport(request, reportId):
                                 'view': {'attacks': True}})  # views
                 return render(request, page, context)
 
+
+            if request.GET.get('p_fa') is not None:
+                print("coucou")
+                paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
+                p_fa = request.GET.get('p_fa')
+                factionsA = paginator.get_page(p_fa)
+                page = "faction/attacks/factionsA.html"
+                context = {"player": player, "faction": faction, "report": report, "factionsA": factionsA}
+                return render(request, page, context)
+
+            if request.GET.get('p_fd') is not None:
+                paginator = Paginator(report.attacksfaction_set.exclude(attacked=0).order_by("-defends", "-attacked"), 10)
+                p_fd = request.GET.get('p_fd')
+                factionsD = paginator.get_page(p_fd)
+                page = "faction/attacks/factionsD.html"
+                context = {"player": player, "faction": faction, "report": report, "factionsD": factionsD}
+                return render(request, page, context)
+
+            if request.GET.get('p_pl') is not None:
+                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                p_pl = request.GET.get('p_pl')
+                players = paginator.get_page(p_pl)
+                page = "faction/attacks/players.html"
+                context = {"player": player, "faction": faction, "report": report, "players": players}
+                return render(request, page, context)
+
             # if modify end date
             if 'modifyEnd' in request.POST:
 
@@ -1321,97 +1347,68 @@ def attacksReport(request, reportId):
             defenderFactions = json.loads(report.defenderFactions)
 
             # if click on toggle
+            p_fa = False
+            p_fd = False
             if request.POST.get("type") == "attackers":
-                if int(request.POST["factionId"]) in attackerFactions:
-                    attackerFactions.remove(int(request.POST["factionId"]))
-                else:
-                    attackerFactions.append(int(request.POST["factionId"]))
-                report.attackerFactions = json.dumps(attackerFactions)
+                try:
+                    f = int(request.POST["factionId"])
+                    if f in attackerFactions:
+                        attackerFactions.remove(int(request.POST["factionId"]))
+                        report.attacksfaction_set.filter(faction_id=f).update(showA=False)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(showA=False)
+                    else:
+                        attackerFactions.append(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(showA=True)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(showA=True)
+                    report.attackerFactions = json.dumps(attackerFactions)
+                    report.save()
+                    p_fa = request.POST["page"]
+                except BaseException as e:
+                    print("Error toggle faction {}".format(e))
+
             elif request.POST.get("type") == "defenders":
-                if int(request.POST["factionId"]) in defenderFactions:
-                    defenderFactions.remove(int(request.POST["factionId"]))
-                else:
-                    defenderFactions.append(int(request.POST["factionId"]))
-                report.defenderFactions = json.dumps(defenderFactions)
-            report.save()
-
-            attacks = dict({})
-            attacksMade = 0
-            attacksReceived = 0
-            for r in report.attackreport_set.all():
-                attacks[r.tId] = model_to_dict(r)
-                if not r.attacker_id:
-                    attacks[r.tId]["attacker_name"] = "Stealth"
-                    attacks[r.tId]["attacker_factionname"] = "Stealth"
-                    attacks[r.tId]["attacker_id"] = 1
-                    attacks[r.tId]["attacker_faction"] = 1
-
-                if attacks[r.tId]["defender_faction"] in defenderFactions:
-                    attacks[r.tId]["show"] = True
-                    attacksReceived += 1
-                elif attacks[r.tId]["attacker_faction"] in attackerFactions:
-                    attacks[r.tId]["show"] = True
-                    attacksMade += 1
-                else:
-                    attacks[r.tId]["show"] = False
-
-            report.attacks = attacksMade
-            report.defends = attacksReceived
-
-            breakdown = dict({"defender_factions": dict({}), "attacker_factions": dict({}), "attackers": dict({}), "defenders": dict({}), "players": dict({})})
-            for k, v in attacks.items():
-                winAtt = 0 if v["result"] in ["Lost"] else 1
-                winDef = 1 if v["result"] in ["Lost"] else 0
-
-                # add defender faction
-                if v["defender_faction"] in breakdown["defender_factions"]:
-                    breakdown["defender_factions"][v["defender_faction"]]["attacked"] += 1
-                    breakdown["defender_factions"][v["defender_faction"]]["defends"] += winDef
-                else:
-                    show = True if v["defender_faction"] in defenderFactions else False
-                    breakdown["defender_factions"][v["defender_faction"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_factionname"], "show": show}
-
-                # add attacker faction
-                if v["attacker_faction"] in breakdown["attacker_factions"]:
-                    breakdown["attacker_factions"][v["attacker_faction"]]["attacks"] += 1
-                    breakdown["attacker_factions"][v["attacker_faction"]]["wins"] += winAtt
-                else:
-                    show = True if v["attacker_faction"] in attackerFactions else False
-                    breakdown["attacker_factions"][v["attacker_faction"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_factionname"], "show": show}
-
-                # add attacker
-                if v["attacker_faction"] in attackerFactions:
-                    if v["attacker_id"] in breakdown["players"]:
-                        breakdown["players"][v["attacker_id"]]["attacks"] += 1
-                        breakdown["players"][v["attacker_id"]]["wins"] += winAtt
+                try:
+                    f = int(request.POST["factionId"])
+                    if f in defenderFactions:
+                        defenderFactions.remove(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(showD=False)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(showD=False)
                     else:
-                        breakdown["players"][v["attacker_id"]] = {"attacks": 1, "wins": winAtt, "attacked": 0, "defends": 0, "name": v["attacker_name"], "faction": v["attacker_faction"], "factionname": v["attacker_factionname"]}
+                        defenderFactions.append(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(showD=True)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(showD=True)
+                    report.defenderFactions = json.dumps(defenderFactions)
+                    report.save()
+                    p_fd = request.POST["page"]
+                except BaseException as e:
+                    print("Error toggle faction {}".format(e))
 
-                # add defender
-                if v["defender_faction"] in defenderFactions:
-                    if v["defender_id"] in breakdown["players"]:
-                        breakdown["players"][v["defender_id"]]["attacked"] += 1
-                        breakdown["players"][v["defender_id"]]["defends"] += winDef
-                    else:
-                        breakdown["players"][v["defender_id"]] = {"attacks": 0, "wins": 0, "attacked": 1, "defends": winDef, "name": v["defender_name"], "faction": v["defender_faction"], "factionname": v["defender_factionname"]}
+            paginator = Paginator(report.attackreport_set.order_by("-timestamp_ended"), 25)
+            p_at = request.GET.get('p_at')
+            attacks = paginator.get_page(p_at)
 
-            # # convert factions to dictionnary for the template
-            # # do not save
-            attackerFactions = json.loads(report.attackerFactions)
-            defenderFactions = json.loads(report.defenderFactions)
+            paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
+            p_fa = request.GET.get('p_fa') if not p_fa else p_fa
+            factionsA = paginator.get_page(p_fa)
 
-            paginator = Paginator(tuple(attacks.values()), 25)
-            page_number = request.GET.get('page')
-            attacks = paginator.get_page(page_number)
+            paginator = Paginator(report.attacksfaction_set.exclude(attacked=0).order_by("-defends", "-attacked"), 10)
+            p_fd = request.GET.get('p_fd') if not p_fd else p_fd
+            factionsD = paginator.get_page(p_fd)
+
+            paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            p_pl = request.GET.get('p_pl')
+            players = paginator.get_page(p_pl)
 
             # context
             report.status = REPORT_ATTACKS_STATUS[report.state]
             context = dict({"player": player,
                             'factioncat': True,
                             'faction': faction,
+                            'factionsA': factionsA,
+                            'factionsD': factionsD,
+                            'players': players,
                             'report': report,
                             'attacks': attacks,
-                            'breakdown': breakdown,
                             'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
@@ -1443,9 +1440,9 @@ def attacksList(request, reportId):
                 context = {'player': player, selectError: "Report {} not found.".format(reportId)}
                 return render(request, 'yata/error.html', context)
 
-            attacks = report.attackreport_set.all()
+            attacks = report.attackreport_set.order_by("-timestamp_ended")
             paginator = Paginator(tuple(attacks.values()), 25)
-            page_number = request.GET.get('page')
+            page_number = request.GET.get('p_at')
 
             if page_number is not None:
                 return render(request, 'faction/attacks/attacks.html', {'report': report, 'attacks': paginator.get_page(page_number)})

@@ -79,10 +79,9 @@ This file is part of yata.
         $(document).on('click', 'a.page-link', function(e){
             e.preventDefault();
             var reload = $(e.currentTarget).closest("div.pagination-list");
-            console.log(reload);
-            console.log(reload.css("height"));
             reload.load( $(e.currentTarget).attr("href"), function() {});
-            reload.html('<div style="height: '+reload.css("height")+'; margin-top: 10px;">'+spinner+'</div>');
+            // reload.html('<div style="height: '+reload.css("height")+'; margin-top: 10px;">'+spinner+'</div>');
+            $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
         });
 
 

@@ -38,5 +38,6 @@ class Command(BaseCommand):
             print("sleep for 30 seconds")
             time.sleep(30)
             state = report.getAttacks()
-            type = "error" if state < 0 else "exit"
-            print("{} {} code {}: {}".format(report, type, state, REPORT_ATTACKS_STATUS.get(state, "code {}".format(state))))
+            report.fillReport()
+            # type = "error" if state < 0 else "exit"
+            # print("{} {} code {}: {}".format(report, type, state, REPORT_ATTACKS_STATUS.get(state, "code {}".format(state))))

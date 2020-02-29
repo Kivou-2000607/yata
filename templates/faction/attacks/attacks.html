@@ -23,26 +23,29 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<div class="pagination">
-    <span class="step-links">
-        {% if attacks.has_previous %}
-            <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?page=1">&laquo; first</a>
-            <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?page={{ attacks.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            {{ attacks.number }}/{{ attacks.paginator.num_pages }}
-        </span>
-
-        {% if attacks.has_next %}
-            <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?page={{ attacks.next_page_number }}">next</a>
-            <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?page={{ attacks.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
-
 <table class="center-medium trshadow faction-attacks-list">
     <thead>
+        <tr><td colspan="7">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if attacks.has_previous %}
+                        <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?p_at=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ attacks.number }}/{{ attacks.paginator.num_pages }}
+                    </span>
+
+                    {% if attacks.has_next %}
+                        <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+
         <tr>
             <th>Start</th>
             <th>Attacker</th>

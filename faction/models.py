@@ -1867,6 +1867,98 @@ class AttacksReport(models.Model):
         self.save()
         return 3
 
+    def fillReport(self):
+
+        allAttacks = self.attackreport_set.all()
+
+        # put stealth as faction id = -1
+        allAttacks.filter(attacker_id=0).update(attacker_faction=-1)
+
+        self.attacks = len(allAttacks.filter(attacker_faction=self.faction.tId))
+        self.defends = len(allAttacks.exclude(attacker_faction=self.faction.tId))
+
+        # create factions and players
+        for attack in allAttacks:
+            # attacker faction
+            self.attacksfaction_set.get_or_create(faction_id=attack.attacker_faction, faction_name=attack.attacker_factionname)
+            # defender faction
+            self.attacksfaction_set.get_or_create(faction_id=attack.defender_faction, faction_name=attack.defender_factionname)
+            # attacker
+            self.attacksplayer_set.get_or_create(player_id=attack.attacker_id,
+                                                 player_name=attack.attacker_name,
+                                                 player_faction_id=attack.attacker_faction,
+                                                 player_faction_name=attack.attacker_factionname)
+            # defender
+            self.attacksplayer_set.get_or_create(player_id=attack.defender_id,
+                                                 player_name=attack.defender_name,
+                                                 player_faction_id=attack.defender_faction,
+                                                 player_faction_name=attack.defender_factionname)
+
+        # get factions hits
+        for afac in self.attacksfaction_set.all():
+            _att = allAttacks.filter(attacker_faction=afac.faction_id)
+            afac.hits = len(_att.exclude(result="Lost"))
+            afac.attacks = len(_att)
+            _att = allAttacks.filter(defender_faction=afac.faction_id)
+            afac.defends = len(_att.exclude(result="Lost"))
+            afac.attacked = len(_att)
+            afac.save()
+
+        # get players hits
+        for apla in self.attacksplayer_set.all():
+            _att = allAttacks.filter(attacker_id=apla.player_id)
+            apla.hits = len(_att.exclude(result="Lost"))
+            apla.attacks = len(_att)
+            _att = allAttacks.filter(defender_id=apla.player_id)
+            apla.defends = len(_att.exclude(result="Lost"))
+            apla.attacked = len(_att)
+            apla.save()
+
+        # set show/hide
+        self.attacksfaction_set.all().update(showA=False, showD=False)
+        self.attacksplayer_set.all().update(showA=False, showD=False)
+        for f in json.loads(self.attackerFactions):
+            self.attacksfaction_set.filter(faction_id=int(f)).update(showA=True)
+            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showA=True)
+
+        for f in json.loads(self.defenderFactions):
+            self.attacksfaction_set.filter(faction_id=int(f)).update(showD=True)
+            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showD=True)
+
+        self.save()
+
+
+class AttacksFaction(models.Model):
+    report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
+
+    faction_id = models.IntegerField(default=0)
+    faction_name = models.CharField(default="faction_name", max_length=64, null=True, blank=True)
+
+    hits = models.IntegerField(default=0)
+    attacks = models.IntegerField(default=0)
+    defends = models.IntegerField(default=0)
+    attacked = models.IntegerField(default=0)
+
+    showA = models.BooleanField(default=False)
+    showD = models.BooleanField(default=False)
+
+
+class AttacksPlayer(models.Model):
+    report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
+
+    player_id = models.IntegerField(default=0)
+    player_name = models.CharField(default="player_name", max_length=16, null=True, blank=True)
+    player_faction_id = models.IntegerField(default=0)
+    player_faction_name = models.CharField(default="faction_name", max_length=64, null=True, blank=True)
+
+    hits = models.IntegerField(default=0)
+    attacks = models.IntegerField(default=0)
+    defends = models.IntegerField(default=0)
+    attacked = models.IntegerField(default=0)
+
+    showA = models.BooleanField(default=False)
+    showD = models.BooleanField(default=False)
+
 
 class AttackReport(models.Model):
     report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)

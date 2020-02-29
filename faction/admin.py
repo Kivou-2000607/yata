@@ -96,7 +96,7 @@ class ChainAdmin(admin.ModelAdmin):
         return timestampToDate(instance.update, fmt="%m/%d %I:%m")
 
 
-def reset_report(modeladmin, request, queryset):
+def reset_report_a(modeladmin, request, queryset):
     queryset.update(last=0,
                     update=0,
                     computing=True,
@@ -109,9 +109,19 @@ def reset_report(modeladmin, request, queryset):
         q.attackreport_set.all().delete()
         q.assignCrontab()
 
+reset_report_a.short_description = "Reset report"
 
-reset_report.short_description = "Reset report"
+class AttacksFactionAdmin(admin.TabularInline):
+    model = AttacksFaction
+    readonly_fields = ["faction_id", "faction_name", "hits", "attacks", "defends", "attacked", "showA", "showD"]
+    extra = 0
+    can_delete = False
 
+class AttacksPlayerAdmin(admin.TabularInline):
+    model = AttacksPlayer
+    readonly_fields = ["player_id", "player_name", "player_faction_id", "player_faction_name", "hits", "attacks", "defends", "attacked", "showA", "showD"]
+    extra = 0
+    can_delete = False
 
 class AttacksReportAdmin(admin.ModelAdmin):
     class Media:
@@ -121,7 +131,8 @@ class AttacksReportAdmin(admin.ModelAdmin):
     search_fields = ('pk', 'faction__name')
     list_filter = ('computing', 'live', 'state', 'crontab')
     autocomplete_fields = ['wall']
-    actions = [reset_report]
+    actions = [reset_report_a, start_computing, assign_crontab]
+    # inlines = [AttacksFactionAdmin, AttacksPlayerAdmin]
 
     def status(self, instance):
         return REPORT_ATTACKS_STATUS.get(instance.state, "?")

@@ -79,10 +79,10 @@ table.faction-attacks-report td.b { width: 15%; text-align: center; } /* 3 */
 table.faction-attacks-report td.c { width: 15%; text-align: center; } /* 2 */
 table.faction-attacks-report td.d { width: 15%; text-align: left; }
 
-table.faction-attacks-report-players td.a { width: 20%; }
+table.faction-attacks-report-players td.a { width: 20%; text-align: left;}
 table.faction-attacks-report-players td.b { width: 40%; text-align: center; }
 table.faction-attacks-report-players td.c { width: 10%; text-align: center; }
-table.faction-attacks-report-factions td.a { width: 40%; }
+table.faction-attacks-report-factions td.a { width: 40%; text-align: left;}
 table.faction-attacks-report-factions td.b { width: 20%; text-align: center; }
 table.faction-attacks-report-factions td.c { width: 20%; text-align: center; }
 

@@ -21,26 +21,28 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div class="pagination">
-    <span class="step-links">
-        {% if news.has_previous %}
-            <a class="page-link" href="{% url 'faction:armoryList' %}?page=1">&laquo; first</a>
-            <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            {{ news.number }}/{{ news.paginator.num_pages }}
-        </span>
-
-        {% if news.has_next %}
-            <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.next_page_number }}">next</a>
-            <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
 
 <table class="center faction-armory-news-list">
   <thead>
+  <tr><td colspan="3">
+      <div class="pagination">
+          <span class="step-links">
+              {% if news.has_previous %}
+                  <a class="page-link" href="{% url 'faction:armoryList' %}?page=1">&laquo; first</a>
+                  <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.previous_page_number }}">previous</a>
+              {% endif %}
+
+              <span class="current">
+                  {{ news.number }}/{{ news.paginator.num_pages }}
+              </span>
+
+              {% if news.has_next %}
+                  <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.next_page_number }}">next</a>
+                  <a class="page-link" href="{% url 'faction:armoryList' %}?page={{ news.paginator.num_pages }}">last &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  </td></tr>
   <tr>
     <th>Type</th>
     <th>News</th>

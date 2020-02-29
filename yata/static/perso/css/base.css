@@ -223,6 +223,7 @@ table.center-full-fourth {
   float:left;
   margin-left:0%;
   margin-right:0%;
+  border: 1px solid #eee;
 }
 
 table.center-full {
@@ -447,9 +448,9 @@ div.pagination-list {
   text-align: center;
 }
 
-div.pagination {
+/* div.pagination {
   margin: 10px;
-}
+} */
 a.page-link {
   margin: 5px;
 }
