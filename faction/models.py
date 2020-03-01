@@ -1883,8 +1883,7 @@ class AttacksReport(models.Model):
         # create factions and players
         allFId = [f.faction_id for f in self.attacksfaction_set.all().only("faction_id")]
         allPId = [p.player_id for p in self.attacksplayer_set.all().only("player_id")]
-        for i, attack in enumerate(allAttacks):
-            print(i)
+        for attack in allAttacks:
             # attacker faction
             if attack.attacker_faction not in allFId:
                 self.attacksfaction_set.get_or_create(faction_id=attack.attacker_faction, faction_name=attack.attacker_factionname)

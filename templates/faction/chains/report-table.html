@@ -147,6 +147,7 @@ $(document).ready(function() {
 </script>
 
 
+{% if chain.tId %}
 <table class="center-medium tdshadow chain-summary">
     <thead>
         {% if chain.live %}
@@ -188,6 +189,7 @@ $(document).ready(function() {
 </table>
 
 <hr class="sep">
+{% endif %}
 
 {% if counts|length %}
 <table class="center-large">
