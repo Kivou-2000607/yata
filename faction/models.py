@@ -1868,7 +1868,7 @@ class AttacksReport(models.Model):
         return 3
 
     def fillReport(self):
-
+        print("{} fill report".format(self))
         allAttacks = self.attackreport_set.all()
 
         # put stealth as faction id = -1
@@ -1877,6 +1877,9 @@ class AttacksReport(models.Model):
         self.attacks = len(allAttacks.filter(attacker_faction=self.faction.tId))
         self.defends = len(allAttacks.exclude(attacker_faction=self.faction.tId))
 
+        print("{} attacks {} {}".format(self, self.attacks, self.defends))
+
+        print("{} set players and factions".format(self))
         # create factions and players
         for attack in allAttacks:
             # attacker faction
@@ -1894,7 +1897,9 @@ class AttacksReport(models.Model):
                                                  player_faction_id=attack.defender_faction,
                                                  player_faction_name=attack.defender_factionname)
 
+
         # get factions hits
+        print("{} set factions hits".format(self))
         for afac in self.attacksfaction_set.all():
             _att = allAttacks.filter(attacker_faction=afac.faction_id)
             afac.hits = len(_att.exclude(result="Lost"))
@@ -1905,6 +1910,7 @@ class AttacksReport(models.Model):
             afac.save()
 
         # get players hits
+        print("{} set players hits".format(self))
         for apla in self.attacksplayer_set.all():
             _att = allAttacks.filter(attacker_id=apla.player_id)
             apla.hits = len(_att.exclude(result="Lost"))
@@ -1915,6 +1921,7 @@ class AttacksReport(models.Model):
             apla.save()
 
         # set show/hide
+        print("{} show hide".format(self))
         self.attacksfaction_set.all().update(showA=False, showD=False)
         self.attacksplayer_set.all().update(showA=False, showD=False)
         for f in json.loads(self.attackerFactions):
