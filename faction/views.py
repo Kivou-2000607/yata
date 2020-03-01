@@ -1300,6 +1300,9 @@ def attacksReport(request, reportId):
                                 'view': {'attacks': True}})  # views
                 return render(request, page, context)
 
+            o_pl = int(request.GET.get('o_pl', 0))
+            orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
+            order = orders[o_pl]
 
             if request.GET.get('p_fa') is not None:
                 paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
@@ -1317,12 +1320,15 @@ def attacksReport(request, reportId):
                 context = {"player": player, "faction": faction, "report": report, "factionsD": factionsD}
                 return render(request, page, context)
 
-            if request.GET.get('p_pl') is not None:
-                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            if request.GET.get('p_pl') is not None or request.GET.get('o_pl') is not None:
+                if order:
+                    paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by(order), 10)
+                else:
+                    paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
                 p_pl = request.GET.get('p_pl')
                 players = paginator.get_page(p_pl)
                 page = "faction/attacks/players.html"
-                context = {"player": player, "faction": faction, "report": report, "players": players}
+                context = {"player": player, "faction": faction, "report": report, "players": players, "o_pl": o_pl}
                 return render(request, page, context)
 
             # if modify end date
@@ -1401,7 +1407,10 @@ def attacksReport(request, reportId):
             p_fd = request.GET.get('p_fd') if not p_fd else p_fd
             factionsD = paginator.get_page(p_fd)
 
-            paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            if order:
+                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by(order), 10)
+            else:
+                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
             p_pl = request.GET.get('p_pl')
             players = paginator.get_page(p_pl)
 
@@ -1415,6 +1424,7 @@ def attacksReport(request, reportId):
                             'players': players,
                             'report': report,
                             'attacks': attacks,
+                             "o_pl": o_pl,
                             'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
