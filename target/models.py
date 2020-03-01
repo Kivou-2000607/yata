@@ -191,22 +191,30 @@ class TargetInfo(models.Model):
             last_attack = self.player.attack_set.filter(targetId=target.target_id, bonus=False).order_by("timestamp_ended").last()
 
             if last_attack is not None:
-
-                if not last_attack.war and not attacker:
+                isWar = last_attack.war - 1.0 < 0.001
+                attacker = last_attack.attacker_id == self.player.tId
+                if isWar and attacker:
                     # if not war, not problem we know FF
                     self.fairFight = last_attack.fairFight
                     self.flatRespect = last_attack.flatRespect
                     self.baseRespect = last_attack.baseRespect
 
-                elif self.flatRespect < 0.1:
+                elif self.flatRespect < 0.01:
                     # we update flat respect to be base respect if unknown
-                    self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0)
+                    self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
                     self.fairFight = max(last_attack.fairFight, self.fairFight)
                     self.flatRespect = self.baseRespect * self.fairFight
 
                 self.last_attack_timestamp = last_attack.timestamp_ended
                 self.result = last_attack.result
                 self.last_attack_attacker = last_attack.attacker
+                self.update_timestamp = target.update_timestamp
+                self.save()
+
+            if self.flatRespect < 0.01:
+                # we update flat respect to be base respect if unknown
+                self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
+                self.flatRespect = self.baseRespect * self.fairFight
                 self.update_timestamp = target.update_timestamp
                 self.save()
 
