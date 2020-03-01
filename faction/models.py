@@ -1881,22 +1881,30 @@ class AttacksReport(models.Model):
 
         print("{} set players and factions".format(self))
         # create factions and players
-        for attack in allAttacks:
+        allFId = [f.faction_id for f in self.attacksfaction_set.all().only("faction_id")]
+        allPId = [p.player_id for p in self.attacksplayer_set.all().only("player_id")]
+        for i, attack in enumerate(allAttacks):
+            print(i)
             # attacker faction
-            self.attacksfaction_set.get_or_create(faction_id=attack.attacker_faction, faction_name=attack.attacker_factionname)
-            # defender faction
-            self.attacksfaction_set.get_or_create(faction_id=attack.defender_faction, faction_name=attack.defender_factionname)
-            # attacker
-            self.attacksplayer_set.get_or_create(player_id=attack.attacker_id,
-                                                 player_name=attack.attacker_name,
-                                                 player_faction_id=attack.attacker_faction,
-                                                 player_faction_name=attack.attacker_factionname)
-            # defender
-            self.attacksplayer_set.get_or_create(player_id=attack.defender_id,
-                                                 player_name=attack.defender_name,
-                                                 player_faction_id=attack.defender_faction,
-                                                 player_faction_name=attack.defender_factionname)
+            if attack.attacker_faction not in allFId:
+                self.attacksfaction_set.get_or_create(faction_id=attack.attacker_faction, faction_name=attack.attacker_factionname)
 
+            # defender faction
+            if attack.defender_faction not in allFId:
+                self.attacksfaction_set.get_or_create(faction_id=attack.defender_faction, faction_name=attack.defender_factionname)
+
+            # attacker
+            if attack.attacker_id not in allPId:
+                self.attacksplayer_set.get_or_create(player_id=attack.attacker_id,
+                                                     player_name=attack.attacker_name,
+                                                     player_faction_id=attack.attacker_faction,
+                                                     player_faction_name=attack.attacker_factionname)
+            # defender
+            if attack.defender_id not in allPId:
+                self.attacksplayer_set.get_or_create(player_id=attack.defender_id,
+                                                     player_name=attack.defender_name,
+                                                     player_faction_id=attack.defender_faction,
+                                                     player_faction_name=attack.defender_factionname)
 
         # get factions hits
         print("{} set factions hits".format(self))
