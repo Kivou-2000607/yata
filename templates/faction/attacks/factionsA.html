@@ -35,7 +35,7 @@ This file is part of yata.
     </thead>
     <tbody>
     {% for f in factionsA %}
-    <tr {%if not f.showD %}style="opacity: 0.5"{%endif%}>
+    <tr {%if not f.showA %}style="opacity: 0.5"{%endif%}>
         {%if f.faction_id == -1%}
             <td class="a">Stealth</td>
         {%else%}

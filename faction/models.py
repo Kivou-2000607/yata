@@ -21,6 +21,7 @@ from django.db import models
 from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.utils.html import format_html
+from django.core.exceptions import MultipleObjectsReturned
 
 import json
 import requests
@@ -1929,13 +1930,22 @@ class AttacksReport(models.Model):
 
         print("{} update factions".format(self))
         for k, v in f_set.items():
-            f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
-            # string = "Create faction" if s else "Update faction"
-            # print("{} {} {}".format(self, string, f))
+            if v["attacks"] + v["defends"] > 0.01 * (self.attacks + self.defends):
+                try:
+                    f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
+                except MultipleObjectsReturned:
+                    self.attacksfaction_set.fitler(faction_id=k).delete()
+                    f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
 
         print("{} update players".format(self))
         for k, v in p_set.items():
-            p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+            if v["attacks"] + v["defends"] > 0.01 * (self.attacks + self.defends):
+                try:
+                    p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+                except MultipleObjectsReturned:
+                    self.attacksplayer_set.filter(player_id=k).delete()
+                    p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+
             # string = "Create player" if s else "Update player"
             # print("{} {} {}".format(self, string, p))
 
