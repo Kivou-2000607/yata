@@ -1899,7 +1899,7 @@ class AttacksReport(models.Model):
             # handle defender faction
             if attack.defender_faction in f_set:
                 n = [f_set[attack.defender_faction][k] for k in ["hits", "attacks", "defends", "attacked"]]
-                n[2] = n[2] + 1 if not won else n[2]
+                n[2] = n[2] if won else n[2] + 1
                 n[3] = n[3] + 1
             else:
                 n = [0, 0, 0 if won else 1, 1]
@@ -1920,10 +1920,10 @@ class AttacksReport(models.Model):
             # handle defender player
             if attack.defender_id in p_set:
                 n = [p_set[attack.defender_id][k] for k in ["hits", "attacks", "defends", "attacked"]]
-                n[2] = n[2] + 1 if not won else n[2]
+                n[2] = n[2] if won else n[2] + 1
                 n[3] = n[3] + 1
             else:
-                n = [0, 0, 1 if won else 0, 1]
+                n = [0, 0, 0 if won else 1, 1]
             p_set[attack.defender_id] = {"player_id": attack.defender_id, "player_name": attack.defender_name,
                                          "player_faction_id": attack.defender_faction, "player_faction_name": attack.defender_factionname,
                                          "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
@@ -1939,12 +1939,13 @@ class AttacksReport(models.Model):
 
         print("{} update players".format(self))
         for k, v in p_set.items():
-            try:
-                p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
-            except MultipleObjectsReturned:
-                print("{} ERROR with {} {}".format(self, k, v))
-                self.attacksplayer_set.filter(player_id=k).delete()
-                p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+            if v["attacks"] + v["defends"] > 0.01 * (self.attacks + self.defends):
+                try:
+                    p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+                except MultipleObjectsReturned:
+                    print("{} ERROR with {} {}".format(self, k, v))
+                    self.attacksplayer_set.filter(player_id=k).delete()
+                    p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
 
             # string = "Create player" if s else "Update player"
             # print("{} {} {}".format(self, string, p))
