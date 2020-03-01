@@ -1878,54 +1878,66 @@ class AttacksReport(models.Model):
         self.defends = len(allAttacks.exclude(attacker_faction=self.faction.tId))
 
         print("{} attacks {} {}".format(self, self.attacks, self.defends))
-
-        print("{} set players and factions".format(self))
+        print("{} set players and factions counts".format(self))
         # create factions and players
-        allFId = [f.faction_id for f in self.attacksfaction_set.all().only("faction_id")]
-        allPId = [p.player_id for p in self.attacksplayer_set.all().only("player_id")]
+        f_set = dict({})
+        p_set = dict({})
         for attack in allAttacks:
-            # attacker faction
-            if attack.attacker_faction not in allFId:
-                self.attacksfaction_set.get_or_create(faction_id=attack.attacker_faction, faction_name=attack.attacker_factionname)
+            won = attack.result not in ["Lost"]
 
-            # defender faction
-            if attack.defender_faction not in allFId:
-                self.attacksfaction_set.get_or_create(faction_id=attack.defender_faction, faction_name=attack.defender_factionname)
+            # handle attacker faction
+            if attack.attacker_faction in f_set:
+                n = [f_set[attack.attacker_faction][k] for k in ["hits", "attacks", "defends", "attacked"]]
+                n[0] = n[0] + 1 if won else n[0]
+                n[1] = n[1] + 1
+            else:
+                n = [1 if won else 0, 1, 0, 0]
+            f_set[attack.attacker_faction] = {"faction_id": attack.attacker_faction, "faction_name": attack.attacker_factionname,
+                                              "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
 
-            # attacker
-            if attack.attacker_id not in allPId:
-                self.attacksplayer_set.get_or_create(player_id=attack.attacker_id,
-                                                     player_name=attack.attacker_name,
-                                                     player_faction_id=attack.attacker_faction,
-                                                     player_faction_name=attack.attacker_factionname)
-            # defender
-            if attack.defender_id not in allPId:
-                self.attacksplayer_set.get_or_create(player_id=attack.defender_id,
-                                                     player_name=attack.defender_name,
-                                                     player_faction_id=attack.defender_faction,
-                                                     player_faction_name=attack.defender_factionname)
+            # handle defender faction
+            if attack.defender_faction in f_set:
+                n = [f_set[attack.defender_faction][k] for k in ["hits", "attacks", "defends", "attacked"]]
+                n[2] = n[2] + 1 if not won else n[2]
+                n[3] = n[3] + 1
+            else:
+                n = [0, 0, 0 if won else 1, 1]
+            f_set[attack.defender_faction] = {"faction_id": attack.defender_faction, "faction_name": attack.defender_factionname,
+                                              "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
 
-        # get factions hits
-        print("{} set factions hits".format(self))
-        for afac in self.attacksfaction_set.all():
-            _att = allAttacks.filter(attacker_faction=afac.faction_id)
-            afac.hits = len(_att.exclude(result="Lost"))
-            afac.attacks = len(_att)
-            _att = allAttacks.filter(defender_faction=afac.faction_id)
-            afac.defends = len(_att.exclude(result="Lost"))
-            afac.attacked = len(_att)
-            afac.save()
+            # handle attacker player
+            if attack.attacker_id in p_set:
+                n = [p_set[attack.attacker_id][k] for k in ["hits", "attacks", "defends", "attacked"]]
+                n[0] = n[0] + 1 if won else n[0]
+                n[1] = n[1] + 1
+            else:
+                n = [1 if won else 0, 1, 0, 0]
+            p_set[attack.attacker_id] = {"player_id": attack.attacker_id, "player_name": attack.attacker_name,
+                                         "player_faction_id": attack.attacker_faction, "player_faction_name": attack.attacker_factionname,
+                                         "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
 
-        # get players hits
-        print("{} set players hits".format(self))
-        for apla in self.attacksplayer_set.all():
-            _att = allAttacks.filter(attacker_id=apla.player_id)
-            apla.hits = len(_att.exclude(result="Lost"))
-            apla.attacks = len(_att)
-            _att = allAttacks.filter(defender_id=apla.player_id)
-            apla.defends = len(_att.exclude(result="Lost"))
-            apla.attacked = len(_att)
-            apla.save()
+            # handle defender player
+            if attack.defender_id in p_set:
+                n = [p_set[attack.defender_id][k] for k in ["hits", "attacks", "defends", "attacked"]]
+                n[0] = n[0] + 1 if won else n[0]
+                n[1] = n[1] + 1
+            else:
+                n = [1 if won else 0, 1, 0, 0]
+            p_set[attack.defender_id] = {"player_id": attack.defender_id, "player_name": attack.defender_name,
+                                         "player_faction_id": attack.defender_faction, "player_faction_name": attack.defender_factionname,
+                                         "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
+
+        print("{} update factions".format(self))
+        for k, v in f_set.items():
+            f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
+            string = "Create faction" if s else "Update faction"
+            print("{} {} {}".format(self, string, f))
+
+        print("{} update players".format(self))
+        for k, v in p_set.items():
+            p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+            string = "Create player" if s else "Update player"
+            print("{} {} {}".format(self, string, p))
 
         # set show/hide
         print("{} show hide".format(self))
@@ -1956,6 +1968,9 @@ class AttacksFaction(models.Model):
     showA = models.BooleanField(default=False)
     showD = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "{} [{}]: {} {} {} {}".format(self.faction_name, self.faction_id, self.hits, self.attacks, self.defends, self.attacked)
+
 
 class AttacksPlayer(models.Model):
     report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
@@ -1972,6 +1987,9 @@ class AttacksPlayer(models.Model):
 
     showA = models.BooleanField(default=False)
     showD = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} [{}]: {} {} {} {}".format(self.player_name, self.player_id, self.hits, self.attacks, self.defends, self.attacked)
 
 
 class AttackReport(models.Model):
