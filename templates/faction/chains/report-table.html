@@ -147,7 +147,7 @@ $(document).ready(function() {
 </script>
 
 
-{% if chain.tId %}
+{% if chain.tId or chain.live %}
 <table class="center-medium tdshadow chain-summary">
     <thead>
         {% if chain.live %}
