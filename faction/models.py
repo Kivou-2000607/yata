@@ -1930,14 +1930,14 @@ class AttacksReport(models.Model):
         print("{} update factions".format(self))
         for k, v in f_set.items():
             f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
-            string = "Create faction" if s else "Update faction"
-            print("{} {} {}".format(self, string, f))
+            # string = "Create faction" if s else "Update faction"
+            # print("{} {} {}".format(self, string, f))
 
         print("{} update players".format(self))
         for k, v in p_set.items():
             p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
-            string = "Create player" if s else "Update player"
-            print("{} {} {}".format(self, string, p))
+            # string = "Create player" if s else "Update player"
+            # print("{} {} {}".format(self, string, p))
 
         # set show/hide
         print("{} show hide".format(self))

@@ -71,3 +71,14 @@ $(document).on('click', '.faction-attacks-report-toggle', e=>{
     }, afterLoad);
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');
 });
+
+// show hide
+$(document).on('click', '#faction-attacks-report-update', e=>{
+    e.preventDefault();
+    var reportId = $(e.currentTarget).attr("data-val");
+    $( "#content-update" ).load( "/faction/attacks/" + reportId, {
+        reportId: reportId, update: true,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }, afterLoad);
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+});

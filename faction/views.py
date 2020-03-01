@@ -1302,7 +1302,6 @@ def attacksReport(request, reportId):
 
 
             if request.GET.get('p_fa') is not None:
-                print("coucou")
                 paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
                 p_fa = request.GET.get('p_fa')
                 factionsA = paginator.get_page(p_fa)
@@ -1342,6 +1341,13 @@ def attacksReport(request, reportId):
                     report.last = min(report.end, report.last)
                     report.state = 0
                     report.save()
+
+            if 'update' in request.POST:
+
+                if not player.factionAA:
+                    return returnError(type=403, msg="You need AA rights.")
+
+                report.fillReport()
 
             attackerFactions = json.loads(report.attackerFactions)
             defenderFactions = json.loads(report.defenderFactions)
