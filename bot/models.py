@@ -21,12 +21,13 @@ class Guild(models.Model):
     configuration = models.ForeignKey(DiscordApp, on_delete=models.CASCADE, help_text="Select the bot")
     guildId = models.BigIntegerField(default=0, help_text="Get the server ID from the message sent by the bot when it joined the server")
     guildName = models.CharField(default="guild_name", max_length=32, help_text="")
-    guildOwnerId = models.BigIntegerField(default=0, help_text="Automatically filled by the bot")
-    guildOwnerName = models.CharField(default="guild_owner", max_length=32, help_text="Automatically filled by the bot")
+    guildOwnerId = models.BigIntegerField(default=0, help_text="Automatically filled by the bot (automatic)")
+    guildOwnerName = models.CharField(default="guild_owner", max_length=32, help_text="Automatically filled by the bot (automatic)")
     guildContactId = models.IntegerField(default=0, help_text="The torn ID of the player that want the bot")
     guildContactName = models.CharField(default="guild_contact", max_length=32, help_text="The torn name of the player that want the bot")
     botContactId = models.IntegerField(default=0, help_text="Your torn ID")
     botContactName = models.CharField(default="", max_length=32, help_text="Your torn name")
+    guildJoinedTime = models.IntegerField(default=0, help_text="Timestamp when the bot joined the guild (automatic)")
 
     # general options
     masterKeys = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")

@@ -68,6 +68,7 @@ def saveGuildConfig(guild):
                                         "owner": guild.guildOwnerName,
                                         "owner_id": guild.guildOwnerId,
                                         "contact": guild.guildContactName,
+                                        "joined_at": guild.guildJoinedTime,
                                         "contact_id": guild.guildContactId}
 
     # # allowed channels
