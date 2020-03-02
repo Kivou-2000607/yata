@@ -155,7 +155,7 @@ class Faction(models.Model):
     posterHold = models.BooleanField(default=False)
     posterOpt = models.TextField(default="{}")
 
-    # respect simulator: TODO
+    # respect simulator
     upgradesUpda = models.IntegerField(default=0)
 
     # members
@@ -469,6 +469,8 @@ class Faction(models.Model):
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
         for type in ["armorynews", "fundsnews"]:
+            if isinstance(factionInfo.get(type), list):
+                continue
             for k, v in factionInfo.get(type, dict({})).items():
                 newstype = news.filter(type=type)
                 if v["timestamp"] > old:
@@ -564,18 +566,21 @@ class Faction(models.Model):
             return False, "No keys to update faction upgrades"
 
         # api call
-        upgrades = apiCall('faction', self.tId, "upgrades", key.value, verbose=False, sub="upgrades")
-        if 'apiError' in upgrades:
-            msg = "Update faction upgrades ({})".format(upgrades["apiErrorString"])
-            if upgrades['apiErrorCode'] in [1, 2, 7, 10]:
+        facInfo = apiCall('faction', self.tId, "basic,upgrades", key.value, verbose=False)
+        if 'apiError' in facInfo:
+            msg = "Update faction upgrades ({})".format(facInfo["apiErrorString"])
+            if facInfo['apiErrorCode'] in [1, 2, 7, 10]:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
                 key.reason = msg
-                key.lastPulled = upgrades.get("timestamp", 0)
+                key.lastPulled = facInfo.get("timestamp", 0)
                 key.save()
                 print("{} {}".format(self, msg))
-            return False, "API error {}, faction upgrades not updated".format(upgrades["apiErrorString"])
+            return False, "API error {}, faction upgrades not updated".format(facInfo["apiErrorString"])
+
+        upgrades = facInfo["upgrades"]
+        self.respect = facInfo.get("respect", 0)
 
         # update key
         key.reason = "Update faction upgrades"
@@ -2407,7 +2412,6 @@ class FactionTree(models.Model):
         # get last log
         log = faction.log_set.all().order_by("-timestamp").first()
         if log is None:
-            print("no log")
             return -1, -1
 
         # return done, to be done
