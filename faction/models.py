@@ -598,6 +598,7 @@ class Faction(models.Model):
             t = FactionTree.objects.filter(tId=k, level=v["level"]).first()
             v["shortname"] = t.shortname
             v["branch"] = t.branch
+            v["unsets_completed"] = v.get("unsets_completed", 0)
             self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
 
         self.upgradesUpda = tsnow()
