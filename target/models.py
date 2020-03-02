@@ -245,6 +245,6 @@ class TargetInfo(models.Model):
 
             # additional fields for rendering
             "win": 0 if self.result in ATTACK_LOST else 1,
-        }
+            }
 
         return False, target.target_id, target_dic

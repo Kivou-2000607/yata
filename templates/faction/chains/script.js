@@ -36,8 +36,10 @@ $(document).on('click', '.faction-chains-cooldown', e=>{
 $(document).on('click', '.faction-chains-delete', e=>{
     e.preventDefault();
     // handle n combined
-    n = parseInt($("#n-combined").text());
-    if ($(e.currentTarget).siblings("a").children("i").hasClass("fa-toggle-on")) n -= 1;
+    var n = parseInt($("#n-combined").text());
+    if ($(e.currentTarget).siblings("a").children("i").hasClass("fa-toggle-on")) {
+        n -= 1;
+    }
     $("#n-combined").html(n);
 
     var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
@@ -51,9 +53,12 @@ $(document).on('click', '.faction-chains-delete', e=>{
 $(document).on('click', '.faction-chains-combine', e=>{
     e.preventDefault();
     // handle n combined
-    n = parseInt($("#n-combined").text());
-    if($(e.currentTarget).children("i").hasClass("fa-toggle-off")) n += 1;
-    else n -= 1;
+    var n = parseInt($("#n-combined").text());
+    if($(e.currentTarget).children("i").hasClass("fa-toggle-off")) {
+        n += 1;
+    } else {
+        n -= 1;
+    }
     $("#n-combined").html(n);
 
     // handle toggle
