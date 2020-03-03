@@ -23,14 +23,14 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
 <div class="module">
-    {% if events|length %}
     <h1>Faction Events</h1>
+    {% if events|length %}
     <div class="faction-event-container">
         {% for event in events %}
             {% include "faction/events/index.html" %}
         {% endfor %}
-     {% endif %}
     </div>
+    {% endif %}
 
     <h1>Reports currently being computed</h1>
     <ul>

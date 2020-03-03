@@ -53,7 +53,7 @@ $(function () {
         <tr>
             <td>{{event.timestamp|ts2date}}</td>
             <td>{{event.title}}</td>
-            <td><form>{% csrf_token %}<a class="faction-event-delete" href="" data-val="{{event.pk}}">delete</a></form></td>
+            <td><form>{% csrf_token %}<a class="faction-event-delete" href="" data-val="{{event.pk}}"><i class="fas fa-trash-alt"></i></a></form></td>
         </tr>
         {% endfor %}
     </tbody>
