@@ -318,3 +318,74 @@ div.life-bar > span {
   -o-animation:      need-refresh 2s infinite; /* Opera 12+ */
   animation:         need-refresh 2s infinite; /* IE 10+ */
 }
+
+div.faction-event-container {
+    width: 80%;
+    margin-left: 10%;
+    overflow: hidden;
+}
+div.faction-event {
+    float:left;
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+}
+
+div.faction-event-urgent {
+    background-color: #FF191922;
+}
+div.faction-event-urgent:hover {
+    background-color: #FF191955;
+}
+
+div.faction-event-soon {
+    background-color: #FFB01922;
+}
+div.faction-event-soon:hover {
+    background-color: #FFB01955;
+}
+
+div.faction-event > span.event-title {
+    font-size: 16px;
+    font-weight: bold;
+    display: inline;
+}
+div.faction-event > span.event-date {
+    font-size: 16px;
+    font-weight: bold;
+    display: inline;
+    float: right;
+    text-align: right;
+    margin-left: 5px;
+}
+div.faction-event > p.event-description {
+    font-size: 14px;
+    font-style: oblique;
+    display: block;
+}
+
+div.faction-event > span.event-countdown {
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 10px;
+    display: block;
+    font-size: 18px;
+}
+
+div.faction-event > span.event-stack {
+    font-weight: bold;
+    font-style: oblique;
+    font-size: 14px;
+}
+div.faction-event > span.event-stack-date {
+    font-size: 14px;
+    font-style: oblique;
+    display: inline;
+    float: right;
+    text-align: right;
+}
+div.faction-event > span.event-stack-countdown {
+    font-size: 14px;
+}

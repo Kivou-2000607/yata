@@ -53,6 +53,12 @@ This file is part of yata.
         </tbody>
     </table>
 </div>
+
+<h2 class="title"><i class="fas fa-calendar"></i>&nbsp;&nbsp;Events</h2>
+<div class="module">
+    {% include "faction/aa/events.html" %}
+</div>
+
 <h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;Reports and logging history</h2>
 <div class="module">
     <h3>History length</h3>
@@ -66,7 +72,10 @@ This file is part of yata.
     <h3>Chain threshold</h3>
     {% include "faction/aa/threshold.html" %}
 </div>
+
 <h2 class="title"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</h2>
 <div class="module">
-    {% include "faction/aa/poster.html" %}
+    <div id="faction-aa-event">
+        {% include "faction/aa/poster.html" %}
+    </div>
 </div>

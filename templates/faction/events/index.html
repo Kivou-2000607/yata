@@ -1,0 +1,41 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<div class="faction-event">
+    <span class="event-title">{{event.title}}</span>
+    {% if event.timestamp %}
+        <span class="event-date">{{event.timestamp|ts2date:"%Y/%m/%d"}}<br/>{{event.timestamp|ts2date:"%I:%M %p"}} TCT</span>
+    {% endif %}
+    {% if event.description %}
+        <p class="event-description">{{event.description}}</p>
+    {% endif %}
+    <span class="event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></span>
+    {% if event.stack and event.timestamp %}
+        <hr class="sep">
+        <span class="event-stack">Stacking</span>
+        <span class="event-stack-date">{{event.timestamp|sub:100800|ts2date:"%Y/%m/%d %I:%M %p"}} TCT</span>
+        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-spinner fa-pulse"></i></span>
+    {% endif %}
+</div>

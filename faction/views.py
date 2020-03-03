@@ -60,7 +60,8 @@ def index(request):
             chainsreports = faction.chain_set.filter(computing=True).order_by('-start')
             attacksreports = faction.attacksreport_set.filter(computing=True).order_by('-start')
             revivesreports = faction.revivesreport_set.filter(computing=True).order_by('-start')
-            context = {'player': player, 'faction': faction, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'factioncat': True, 'view': {'index': True}}
+            events = faction.event_set.order_by('timestamp')
+            context = {'player': player, 'faction': faction, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'events': events, 'factioncat': True, 'view': {'index': True}}
             return render(request, 'faction.html', context)
 
         else:
@@ -166,7 +167,8 @@ def configurations(request):
             faction.revivesTime = faction.getHistName("revives")
             faction.liveTime = faction.getHistName("live")
 
-            context = {'player': player, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+            events = faction.event_set.order_by('timestamp')
+            context = {'player': player, "events": events, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
 
             # add poster
             if faction.poster:
@@ -200,6 +202,45 @@ def configurationsKey(request):
 
             context = {"player": player, "key": key}
             return render(request, 'faction/aa/keys.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
+def configurationsEvent(request):
+    try:
+        if request.session.get('player') and request.method == 'POST':
+            player = getPlayer(request.session["player"].get("tId"))
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            if request.POST.get("type") == "delete":
+                # delete event
+                faction.event_set.filter(pk=request.POST.get("eventId")).delete()
+                # dummy return
+                return render(request, 'faction/aa/events.html')
+
+            elif request.POST.get("type") == "create":
+                v = dict({})
+                v["title"] = request.POST.get("title") if request.POST.get("title")[:63] else "{} event".format(faction.name)[:63]
+                v["description"] = request.POST.get("description")[:255]
+                print(len(v["description"]))
+                v["timestamp"] = request.POST.get("ts")
+                v["stack"] = bool(request.POST.get("stack"))
+                faction.event_set.create(**v)
+
+            events = faction.event_set.order_by('timestamp')
+            context = {"player": player, "events": events}
+            return render(request, 'faction/aa/events.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

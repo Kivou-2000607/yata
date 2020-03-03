@@ -23,12 +23,17 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Your faction</h2>
 <div class="module">
-    <h1>Faction target list</h1>
-    {% include "faction/targets/index.html" %}
+    {% if events|length %}
+    <h1>Faction Events</h1>
+    <div class="faction-event-container">
+        {% for event in events %}
+            {% include "faction/events/index.html" %}
+        {% endfor %}
+     {% endif %}
+    </div>
 
     <h1>Reports currently being computed</h1>
     <ul>
-
         {% if chainsreports|length %}<li>Chains</li>
         <ul>
             {% for report in chainsreports %}
@@ -53,7 +58,7 @@ This file is part of yata.
             </ul>
         {% endif %}
 
-        {% if attacksreports|length %}<li>Revives reports</li>
+        {% if revivesreports|length %}<li>Revives reports</li>
             <ul>
             {% for report in revivesreports %}
                 {% if report.live %}
@@ -65,4 +70,7 @@ This file is part of yata.
             </ul>
         {% endif %}
     </ul>
+    <h1>Faction target list</h1>
+    {% include "faction/targets/index.html" %}
+
 </div>

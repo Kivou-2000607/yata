@@ -2593,3 +2593,15 @@ class Upgrade(models.Model):
 
     def getTree(self):
         return FactionTree.objects.filter(tId=self.tId, level=self.level).first()
+
+
+class Event(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    timestamp = models.IntegerField(default=0)
+    title = models.CharField(default="Title", max_length=64)
+    description = models.CharField(default="Short description", max_length=256, null=True, blank=True)
+    stack = models.BooleanField(default=False)
+
+    def __str__(self):
+        return format_html("{} event {}".format(self.faction, self.title))

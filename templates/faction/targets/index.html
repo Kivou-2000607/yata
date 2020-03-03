@@ -17,6 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% if targets|length %}
 <table id="target-targets" class="tablesorter center-medium trshadow target-targets">
     <thead>
         <tr>
@@ -37,3 +38,4 @@ This file is part of yata.
     {% endfor %}
     </tbody>
 </table>
+{% endif %}

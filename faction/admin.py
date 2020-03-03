@@ -3,6 +3,10 @@ from django.contrib import admin
 from faction.models import *
 from yata.handy import timestampToDate
 
+class EventAdmin(admin.TabularInline):
+    model = Event
+    extra = 1
+
 
 class FactionAdmin(admin.ModelAdmin):
     class Media:
@@ -11,6 +15,7 @@ class FactionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'nKeys']
     autocomplete_fields = ("masterKeys", )
     search_fields = ['tId', 'name']
+    inlines = [EventAdmin, ]
 
 
 # class MemberAdmin(admin.ModelAdmin):

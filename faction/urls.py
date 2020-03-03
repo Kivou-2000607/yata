@@ -12,6 +12,7 @@ urlpatterns = [
     re_path(r'^configurations/key/$', views.configurationsKey, name='configurationsKey'),
     re_path(r'^configurations/threshold/$', views.configurationsThreshold, name='configurationsThreshold'),
     re_path(r'^configurations/poster/$', views.configurationsPoster, name='configurationsPoster'),
+    re_path(r'^configurations/event/$', views.configurationsEvent, name='configurationsEvent'),
 
     # SECTION: members
     re_path(r'^members/$', views.members, name='members'),

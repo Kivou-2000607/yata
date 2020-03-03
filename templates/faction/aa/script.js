@@ -42,3 +42,29 @@ $(document).on('change', '[id^="faction-poster-"]', e=>{
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<p>'+spinner+'</p>');
 });
+
+// events delete
+$(document).on('click', 'a.faction-event-delete', e=>{
+    e.preventDefault();
+    $(e.currentTarget).closest("tr").load( "/faction/configurations/event/", {
+        type: "delete",
+        eventId: $(e.currentTarget).attr("data-val"),
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).remove();
+});
+
+// events delete
+$(document).on('click', 'input#faction-event-create', e=>{
+    e.preventDefault();
+    var form = $(e.currentTarget).closest("form");
+    var stack = 0;
+    if(form.find("#event-stack").prop('checked')) stack = 1
+    $(e.currentTarget).closest("div.module").load( "/faction/configurations/event/", {
+        type: "create",
+        title: form.find("#event-title").val(),
+        description: form.find("#event-description").val(),
+        ts: form.find("#event-ts").val(),
+        stack: stack,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
+});
