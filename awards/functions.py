@@ -2003,8 +2003,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     top = int(vp["description"].split(" ")[2].replace(",", ""))
 
                     hof = userInfo.get("halloffame")
-                    if "respect" in hof:
-                        del hof["respect"]
+                    todel = []
+                    for k, v in hof.items():
+                        if not v["rank"] or k in ["respect"]:
+                            todel.append(k)
+                    for k in todel:
+                        del hof[k]
                     hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
                     vp["goal"] = top
                     vp["current"] =  hof[0][1]["rank"]
