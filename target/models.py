@@ -39,6 +39,8 @@ class Attack(models.Model):
     stealthed = models.IntegerField(default=0)
     respect_gain = models.FloatField(default=0.0)
     chain = models.IntegerField(default=0)
+    code = models.SlugField(default="0", max_length=32)
+
     # mofifiers
     fairFight = models.FloatField(default=0.0)
     war = models.FloatField(default=1.0)
