@@ -233,9 +233,9 @@ def configurationsEvent(request):
                 v = dict({})
                 v["title"] = request.POST.get("title") if request.POST.get("title")[:63] else "{} event".format(faction.name)[:63]
                 v["description"] = request.POST.get("description")[:255]
-                print(len(v["description"]))
                 v["timestamp"] = request.POST.get("ts")
-                v["stack"] = bool(request.POST.get("stack"))
+                stack = int(request.POST.get("stack", 0))
+                v["stack"] = bool(stack)
                 faction.event_set.create(**v)
 
             events = faction.event_set.order_by('timestamp')
