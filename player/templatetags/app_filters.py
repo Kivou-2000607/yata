@@ -20,6 +20,9 @@ This file is part of yata.
 from django import template
 from django.conf import settings
 from django.utils.html import format_html
+from django.utils.html import escape
+
+import re
 
 register = template.Library()
 
@@ -349,10 +352,10 @@ def parseReportFile(report):
 def signColor(i, inv=False):
     if i > 0:
         cl = "error" if inv else "valid"
-        return format_html('<span class="{}">{:+,.0f}</span>'.format(cl, i))
+        return format_html('<span class="{}">{:+,.0f}</span>'.format(escape(cl), i))
     elif i < 0:
         cl = "valid" if inv else "error"
-        return format_html('<span class="{}">{:+,.0f}</span>'.format(cl, i))
+        return format_html('<span class="{}">{:+,.0f}</span>'.format(escape(cl), i))
     else:
         return ''
 
@@ -366,3 +369,15 @@ def hexa(tab):
         return hexa
     except BaseException:
         return "FFFFFFFF"
+
+
+@register.filter(name="trURL")
+def trURL(string):
+    regex = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+    words = []
+    for w in string.split():
+        if re.match(regex, w):
+            words.append(format_html('<a href="{}" target="_blank">{}</a>', escape(w), escape(w)))
+        else:
+            words.append(escape(w))
+    return format_html(" ".join(words))

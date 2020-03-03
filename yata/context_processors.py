@@ -18,30 +18,27 @@ This file is part of yata.
 """
 from django.utils import timezone
 
-from player.models import News
+# from player.models import News
 from player.models import Player
 from player.models import Message
 from player.models import SECTION_CHOICES
 from loot.models import NPC
 
 
-def news(request):
-    if request.session.get('player'):
-        tId = request.session["player"].get("tId")
-        player = Player.objects.filter(tId=tId).first()
-        news = News.objects.all().order_by("-date").first()
-        news = False if news in player.news_set.all() or news.date > (timezone.datetime.now(timezone.utc) + timezone.timedelta(weeks=2)) else news
-        return {"lastNews": news}
-    else:
-        return {}
+# def news(request):
+#     if request.session.get('player'):
+#         tId = request.session["player"].get("tId")
+#         player = Player.objects.filter(tId=tId).first()
+#         news = News.objects.all().order_by("-date").first()
+#         news = False if news in player.news_set.all() or news.date > (timezone.datetime.now(timezone.utc) + timezone.timedelta(weeks=2)) else news
+#         return {"lastNews": news}
+#     else:
+#         return {}
 
 
 def sectionMessage(request):
     if request.session.get('player'):
         section = request.get_full_path().split("/")[1]
-        # HACK because faction is under /chain/
-        section = 'factionV2' if section == 'faction' else section
-        section = 'faction' if section == 'chain' else section
         section_short = ""
         for k, v in SECTION_CHOICES:
             if v == section:

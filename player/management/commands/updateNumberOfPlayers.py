@@ -27,5 +27,5 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         print("[command.player.updateplayers] COMPUTE #PLAYERS")
-        nPlayers = PlayerData.objects.first()
+        nPlayers, _ = PlayerData.objects.get_or_create(pk=1)
         nPlayers.updateNumberOfPlayers()

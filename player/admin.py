@@ -30,9 +30,9 @@ class PlayerAdmin(admin.ModelAdmin):
     def last_action(self, instance):
         return timestampToDate(instance.lastActionTS)
 
-class NewsAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'date', 'type', 'authorName', 'authorId', 'read']
-    filter_horizontal = ('player',)
+# class NewsAdmin(admin.ModelAdmin):
+#     list_display = ['__str__', 'date', 'type', 'authorName', 'authorId', 'read']
+#     filter_horizontal = ('player',)
 
 
 class MessageAdmin(admin.ModelAdmin):
@@ -50,6 +50,6 @@ class PlayerDataAdmin(admin.ModelAdmin):
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Message, MessageAdmin)
-admin.site.register(News, NewsAdmin)
+# admin.site.register(News, NewsAdmin)
 admin.site.register(Donation, DonationAdmin)
 admin.site.register(PlayerData, PlayerDataAdmin)

@@ -30,8 +30,7 @@ from yata.handy import apiCall
 
 SECTION_CHOICES = (
     ('B', 'bazaar'),
-    ('F', 'factionV2'),
-    ('C', 'faction'),
+    ('F', 'faction'),
     ('T', 'target'),
     ('A', 'awards'),
     ('S', 'stock'),
@@ -130,19 +129,19 @@ class Player(models.Model):
         return error
 
 
-class News(models.Model):
-    player = models.ManyToManyField(Player, blank=True)
-    type = models.CharField(default="Info", max_length=16)
-    text = models.TextField()
-    authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
-    authorName = models.CharField(default="Kivou", max_length=32)
-    date = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return "{} of {:%Y/%M/%d} by {}".format(self.type, self.date, self.authorName)
-
-    def read(self):
-        return len(self.player.all())
+# class News(models.Model):
+#     player = models.ManyToManyField(Player, blank=True)
+#     type = models.CharField(default="Info", max_length=16)
+#     text = models.TextField()
+#     authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
+#     authorName = models.CharField(default="Kivou", max_length=32)
+#     date = models.DateTimeField(default=timezone.now)
+#
+#     def __str__(self):
+#         return "{} of {:%Y/%M/%d} by {}".format(self.type, self.date, self.authorName)
+#
+#     def read(self):
+#         return len(self.player.all())
 
 
 class Message(models.Model):

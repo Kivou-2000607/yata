@@ -29,7 +29,7 @@ This file is part of yata.
         <span class="event-date">{{event.timestamp|ts2date:"%Y/%m/%d"}}<br/>{{event.timestamp|ts2date:"%I:%M %p"}} TCT</span>
     {% endif %}
     {% if event.description %}
-        <p class="event-description">{{event.description}}</p>
+        <p class="event-description">{{event.description|trURL}}</p>
     {% endif %}
     <span class="event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></span>
     {% if event.stack and event.timestamp %}

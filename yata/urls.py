@@ -26,7 +26,7 @@ urlpatterns = [
     # app
     re_path(r'^player/', include('player.urls')),
     re_path(r'^bazaar/', include('bazaar.urls')),
-    re_path(r'^chain/', include('chain.urls')),
+    # re_path(r'^chain/', include('chain.urls')),
     re_path(r'^awards/', include('awards.urls')),
     re_path(r'^target/', include('target.urls')),
     re_path(r'^stock/', include('stock.urls')),
