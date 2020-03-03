@@ -17,6 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load app_filters %}
+
 <!-- toggle -->
 <form style="display: inline;">{% csrf_token %}
     <a class="attack-list-toggle" href="{% url 'target:target' %}">
@@ -27,3 +29,8 @@ This file is part of yata.
        {% endif %}
     </a>
 </form>
+{% if v.code == "0" %}
+    <i class="fas fa-eye-slash" title="no log"></i>
+{% else %}
+    <a href="{{v.code|attackLog}}" target="_blank"><i class="fas fa-eye" title="see log"></i></a>
+{% endif %}

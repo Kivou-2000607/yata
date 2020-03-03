@@ -381,3 +381,8 @@ def trURL(string):
         else:
             words.append(escape(w))
     return format_html(" ".join(words))
+
+
+@register.filter(name="attackLog")
+def attackLog(code):
+    return 'https://www.torn.com/loader.php?sid=attackLog&ID={}'.format(code)

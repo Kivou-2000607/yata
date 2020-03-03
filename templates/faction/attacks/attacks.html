@@ -23,7 +23,7 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<table class="center-medium trshadow faction-attacks-list">
+<table class="center-large trshadow faction-attacks-list">
     <thead>
         <tr><td colspan="7">
             <div class="pagination">
@@ -54,6 +54,7 @@ This file is part of yata.
             <th>Faction</th>
             <th>Result</th>
             <th>Chain</th>
+            <th>Log</th>
     </thead>
     <tbody>
     {% for v in attacks %}
@@ -71,6 +72,11 @@ This file is part of yata.
           <td class="b">{{v.defender_factionname|factionURL:v.defender_faction|safe}}</td>
           <td class="c">{{v.result}}</td>
           <td class="d">{%if v.chain %}{{v.chain}}{%endif%}</td>
+          {% if v.code == "0" %}
+            <td class="d"><i class="fas fa-eye-slash" title="no log"></td>
+         {% else %}
+            <td class="d"><a href="{{v.code|attackLog}}" target="_blank"><i class="fas fa-eye" title="see log"></i></td>
+         {% endif %}
       </tr>
     {% endfor %}
     </tbody>

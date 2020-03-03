@@ -46,7 +46,6 @@ def updateAttacks(player):
 
         # ignore stealth
         if v.get("attacker_name") is None:
-            print("ignore", v)
             continue
 
         if int(v["defender_id"]) == player.tId:
@@ -76,6 +75,9 @@ def updateAttacks(player):
 
         v = modifiers2lvl1(v)
         player.attack_set.get_or_create(tId=int(k), defaults=v)
+
+    old = tsnow() - 2678400  # 1 month old
+    player.attack_set.filter(timestamp_ended__lt=old).delete()
 
     player.attacksUpda = int(timestamp)
     player.save()
