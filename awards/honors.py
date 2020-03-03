@@ -360,6 +360,7 @@ d = {
     498: 914416584,  # Shielded
     690: 662053219,  # Ripped
     704: 174689730,  # Shredded
+    700: 706832937,  # Leaderboard
 
     # 11
     163: 431464057,  # Fascination

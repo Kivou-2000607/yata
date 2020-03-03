@@ -37,7 +37,7 @@ def updatePlayer(player, i=None, n=None):
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
     # API Calls
-    user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp', player.getKey(), verbose=False)
+    user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp,hof', player.getKey(), verbose=False)
 
     # set active
     player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31

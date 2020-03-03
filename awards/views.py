@@ -54,7 +54,7 @@ def index(request):
         error = False
         tornAwards = AwardsData.objects.first().loadAPICall()
         if tId > 0:
-            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,weaponexp', player.getKey())
+            userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', player.getKey())
         else:
             userInfo = dict({})
 

@@ -1927,10 +1927,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
             "Perks": dict(),
             "Racing": dict(),
             "Awards": dict(),
-            "Church": dict(),
             "Missions": dict(),
             "Maximum": dict(),
-            "Events": dict()})
+            "Events": dict(),
+            "Other": dict()})
 
         for k, v in tornAwards["honors"].items():
             if int(v["type"]) in [0, 2, 11, 14, 17]:
@@ -1960,10 +1960,58 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                 elif int(k) in [316]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
-                    type = "Church"
+                    type = "Other"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+                    #
+                    # # "611": {"name": "War Machine", "description": "Achieve 1,000 finishing hits in every category","type": 2,
+                    # type = "Finishing hits"
+                    # nHits = int(v["description"].split(" ")[1].replace(",", ""))
+                    # bridge = {"heahits": ["Heavy artillery", 0, ""],
+                    #           "chahits": ["Mechanical guns", 0, ""],
+                    #           "axehits": ["Clubbin weapons", 0, ""],
+                    #           "grehits": ["Temporary weapons", 0, ""],
+                    #           "machits": ["Machine guns", 0, ""],
+                    #           "pishits": ["Pistols", 0, ""],
+                    #           "rifhits": ["Rifles", 0, ""],
+                    #           "shohits": ["Shotguns", 0, ""],
+                    #           "smghits": ["Sub machin guns", 0, ""],
+                    #           "piehits": ["Piercing weapons", 0, ""],
+                    #           "slahits": ["Slashing weapons", 0, ""],
+                    #           "h2hhits": ["Hand to hand", 0, ""]}
+                    # vp["goal"] = nHits * len(bridge)
+                    #
+                    # current = 0
+                    # for fhit in bridge:
+                    #     n = userInfo.get("personalstats", dict({})).get(fhit, 0)
+                    #     current += min(n, nHits)
+                    #     bridge[fhit][1] = n
+                    #     bridge[fhit][2] = "error" if n < nHits else "valid"
+                    #
+                    # bridge = sorted(bridge.values(), key=lambda x: -x[1])
+                    # vp["current"] = current
+                    # vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    # vp["comment"] = "<br>".join(['<b class={}>{}</b>: {:,d} ({:.0f}%)'.format(v[2], v[0], v[1], 100 * min(1, v[1] / nHits)) for v in bridge])
+                    # awards[type]["h_" + k] = vp
+
+                elif int(k) in [700]:
+            		# "700": {"name": "Leaderboard","description": "Achieve top 250 in one of the personal Hall of Fame leaderboards","type": 0,"circulation": 0,
+                    type = "Other"
+
+                    top = int(vp["description"].split(" ")[2].replace(",", ""))
+
+                    hof = userInfo.get("halloffame")
+                    if "respect" in hof:
+                        del hof["respect"]
+                    hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
+                    vp["goal"] = top
+                    vp["current"] =  hof[0][1]["rank"]
+                    vp["achieve"] = min(1, float(vp["goal"]) / float(vp["current"]))
+
+                    vp["comment"] = "<br>".join(['<b class={}>{}</b>: #{:,d} ({:,d})'.format("error" if i else "valid", k.title(), v["rank"], v["value"]) for i, (k, v) in enumerate(hof)])
+
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [309, 443, 459, 375, 731]:
