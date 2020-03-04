@@ -2003,18 +2003,22 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     top = int(vp["description"].split(" ")[2].replace(",", ""))
 
                     hof = userInfo.get("halloffame")
-                    todel = []
-                    for k, v in hof.items():
-                        if not v["rank"] or k in ["respect"]:
-                            todel.append(k)
-                    for k in todel:
-                        del hof[k]
-                    hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
-                    vp["goal"] = top
-                    vp["current"] =  hof[0][1]["rank"]
-                    vp["achieve"] = min(1, float(vp["goal"]) / float(vp["current"]))
+                    if hof is not None:
+                        todel = []
+                        for k, v in hof.items():
+                            if not v["rank"] or k in ["respect"]:
+                                todel.append(k)
+                        for k in todel:
+                            del hof[k]
+                        hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
+                        vp["goal"] = top
+                        vp["current"] =  hof[0][1]["rank"]
+                        vp["achieve"] = min(1, float(vp["goal"]) / float(vp["current"]))
 
-                    vp["comment"] = "<br>".join(['<b class={}>{}</b>: #{:,d} ({:,d})'.format("error" if i else "valid", k.title(), v["rank"], v["value"]) for i, (k, v) in enumerate(hof)])
+                        vp["comment"] = "<br>".join(['<b class={}>{}</b>: #{:,d} ({:,d})'.format("error" if i else "valid", k.title(), v["rank"], v["value"]) for i, (k, v) in enumerate(hof)])
+                    else:
+                        vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                        vp["current"] = 1 if int(k) in honors_awarded else 0
 
                     awards[type]["h_" + k] = vp
 
