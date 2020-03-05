@@ -70,6 +70,10 @@ class Guild(models.Model):
     apiChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where API commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
     apiRoles = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the role allowed to use the API commands. Keep [\"*\"] for all roles allowed. It has to be the exact role name: [\"RoleA\", \"MyOtherRole\"] (no @)")
 
+    # Crimes module
+    crimesModule = models.BooleanField(default=False, help_text="Enable Crimes module")
+    crimesChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where OC commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+
     # verify repository
     # repoModule = models.BooleanField(default=False)
     # repoName = models.CharField(default="repo_token", max_length=64)

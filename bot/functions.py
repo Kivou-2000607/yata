@@ -124,6 +124,14 @@ def saveGuildConfig(guild):
                                             "channels": channels,
                                             "retal": retal}
 
+    # crimes
+    if guild.crimesModule:
+        oc = old.get("crimes", dict({})).get("oc", dict({}))
+        channels = [c.lower() for c in json.loads(guild.crimesChannels)]
+        var[str(guild.guildId)]["crimes"] = {"active": True,
+                                             "channels": channels,
+                                             "oc": oc}
+
     # repository
     # if guild.repoModule:
     #     var[str(guild.guildId)]["repository"] = {"active": True, "name": guild.repoName, "token": guild.repoToken}
