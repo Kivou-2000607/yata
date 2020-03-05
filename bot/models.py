@@ -72,7 +72,7 @@ class Guild(models.Model):
 
     # Crimes module
     crimesModule = models.BooleanField(default=False, help_text="Enable Crimes module")
-    crimesChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where OC commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    crimesChannels = models.CharField(default='["oc"]', blank=True, max_length=64, help_text="Name of the channels where OC commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
 
     # verify repository
     # repoModule = models.BooleanField(default=False)
