@@ -25,7 +25,7 @@ class GuildAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['guildName', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
+    list_display = ['guildName', 'guildId', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
     search_fields = ['guildContactName', 'guildName', 'botContactName']
     list_filter = ['configuration__name', 'botContactName', 'guildContactName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
