@@ -90,7 +90,7 @@ table.bot-guilds td.a { width: 5%; text-align: center; }  /* x1 */
 table.bot-guilds td.b { width: 20%; text-align: left; }  /* x1 */
 table.bot-guilds td.c { width: 17.5%; text-align: left; }  /* x2 */
 table.bot-guilds td.d { width: 20%; text-align: center; }  /* x1 */
-table.bot-guilds td.e { width: 20%; text-align: center; }  /* x1 */
+table.bot-guilds td.e { width: 15%; text-align: center; }  /* x1 */
 
 
 img.bot-tuto {width: 500px; margin: 5px 20px; padding: 5px; border-radius: 5px; border: solid 1px #447e9b;}

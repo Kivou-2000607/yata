@@ -19,10 +19,11 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<table class="center-full trshadow bot-guilds">
+<table class="center-large trshadow bot-guilds">
     <thead>
         <tr>
-            <th></th>
+            <th>#</th>
+            <th>ID</th>
             <th>Server name</th>
             <th>Server admin</th>
             <th>Bot admin</th>
@@ -33,7 +34,8 @@ This file is part of yata.
     <tbody>
         {% for g in guilds %}
         <tr>
-            <td class="a">{{g.n}} / {{g.pk}}</td>
+            <td class="a" title="# {{g.n}}"><tt>{{g.n|stringformat:"02d"}}</tt></td>
+            <td class="a" title="ID {{g.pk}}"><tt>{{g.pk|stringformat:"02d"}}</tt></td>
             <td class="b">{{g.guildName}}</td>
             <td class="c">{{g.guildContactName|playerURL:g.guildContactId|safe}}</td>
             <td class="c">{{g.botContactName|playerURL:g.botContactId|safe}}</td>
