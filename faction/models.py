@@ -33,20 +33,7 @@ from player.models import Player
 from faction.functions import *
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
-# CHAIN_ATTACKS_STATUS = {
-#     5: "No new entry [stop]",
-#     4: "Should have reached the end [continue]",
-#     3: "Normal [continue]",
-#     2: "Reached end of chain [stop]",
-#     1: "No new attack [stop]",
-#     0: "Waiting for first call",
-#     -1: "No enabled AA keys [stop]",
-#     -2: "API key major error (key deleted) [continue]",
-#     -3: "API key temporary error [continue]",
-#     -4: "Probably cached response [continue]",
-#     -5: "Empty payload [stop]",
-#     # -6: "No new entry without cooldown [stop]",
-#     -6: "No new entry (looked 1h after end) [stop]"}
+MINIMAL_API_ATTACKS_STOP = 10
 
 CHAIN_ATTACKS_STATUS = {
 
@@ -538,7 +525,8 @@ class Faction(models.Model):
             now = tsnow()
             hour = now - now % (3600 // 4)
             c = dict({})
-            for k, v in {k: v for k, v in con.items() if v["in_faction"]}.items():
+            # for k, v in {k: v for k, v in con.items() if v["in_faction"]}.items():
+            for k, v in {k: v for k, v in con.items()}.items():
                 c[k] = [mem.get(k, dict({"name": "Player"})).get("name"), v["contributed"]]
 
             contrdict = {"timestamp": now, "contributors": json.dumps(c, separators=(',', ':'))}
@@ -1119,7 +1107,7 @@ class Chain(models.Model):
             self.computing = False
             self.crontab = 0
             self.attackchain_set.all().delete()
-            self.state = self.state
+            self.state = -1
             self.save()
             return self.state
 
@@ -1232,7 +1220,7 @@ class Chain(models.Model):
 
             # not live and with cooldown
 
-            if len(apiAttacks) < 2:
+            if len(apiAttacks) < MINIMAL_API_ATTACKS_STOP:
                 # (nearly) empty payload can occur when faction stop attacking  or reveiving attacks before end of cooldown
                 print("{} no api entry (not live) (cooldown) [stop]".format(self))
                 self.computing = False
@@ -1856,7 +1844,7 @@ class AttacksReport(models.Model):
             self.save()
             return -6
 
-        if len(apiAttacks) < 2 and not self.live:
+        if len(apiAttacks) < MINIMAL_API_ATTACKS_STOP and not self.live:
             print("{} no api entry for non live chain [stop]".format(self))
             self.computing = False
             self.crontab = 0

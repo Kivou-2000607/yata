@@ -1332,13 +1332,23 @@ def attacksReport(request, reportId):
                 return render(request, page, context)
 
             # get breakdown
+            if not reportId.isdigit():
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player,
+                selectError: "Wrong report ID: {}.".format(reportId),
+                'factioncat': True,
+                'faction': faction,
+                'report': False})  # views
+                return render(request, page, context)
+
             report = faction.attacksreport_set.filter(pk=reportId).first()
             if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = dict({"player": player,
-                                'chaincat': True,
+                                selectError: "Report {} not found.".format(reportId),
+                                'factioncat': True,
                                 'faction': faction,
-                                'report': False,
-                                'view': {'attacks': True}})  # views
+                                'report': False})  # views
                 return render(request, page, context)
 
             o_pl = int(request.GET.get('o_pl', 0))
@@ -1633,13 +1643,23 @@ def revivesReport(request, reportId):
                 return render(request, page, context)
 
             # get breakdown
+            if not reportId.isdigit():
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player,
+                selectError: "Wrong report ID: {}.".format(reportId),
+                'factioncat': True,
+                'faction': faction,
+                'report': False})  # views
+                return render(request, page, context)
+
             report = faction.revivesreport_set.filter(pk=reportId).first()
             if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = dict({"player": player,
-                                'chaincat': True,
+                                selectError: "Report {} not found.".format(reportId),
+                                'factioncat': True,
                                 'faction': faction,
-                                'report': False,
-                                'view': {'revives': True}})  # views
+                                'report': False})  # views
                 return render(request, page, context)
 
             # if modify end date
@@ -2050,10 +2070,10 @@ def bigBrother(request):
                             if not c[2] - c[1]:
                                 del contributors[memberName]
 
-                    # delete contributors out of faction for ts2
-                    todel = [k for k, v in contributors.items() if not v[2]]
-                    for tId in todel:
-                        del contributors[tId]
+                        # delete contributors out of faction for ts2
+                        todel = [k for k, v in contributors.items() if not v[2]]
+                        for tId in todel:
+                            del contributors[tId]
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'view': {'bb': True}}
 

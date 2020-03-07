@@ -102,7 +102,7 @@ def timestampToDate(timestamp, fmt=False):
     if fmt is False:
         return d
     elif type(fmt) == bool and fmt:
-        return d.strftime("%Y/%m/%d %I:%m TCT")
+        return d.strftime("%Y/%m/%d %H:%M TCT")
     else:
         return d.strftime(fmt)
 

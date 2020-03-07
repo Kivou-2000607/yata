@@ -187,9 +187,11 @@ def target(request):
                     target_id = int(request.POST["targetId"])
                     targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
                     targetInfo.getTarget(update=True)
+                    faction = Faction.objects.filter(tId=player.factionId).first()
+                    factionTargets = [] if faction is None else faction.getTargetsId()
 
                     targets = getTargets(player)
-                    context = {"targets": targets, "targetId": target_id, "ts": tsnow()}
+                    context = {"player": player, "targets": targets, "factionTargets": factionTargets, "targetId": target_id, "ts": tsnow()}
 
                     return render(request, 'target/targets/index.html', context)
 

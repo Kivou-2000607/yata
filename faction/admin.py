@@ -98,7 +98,7 @@ class ChainAdmin(admin.ModelAdmin):
         return CHAIN_ATTACKS_STATUS.get(instance.state, "?")
 
     def _update(self, instance):
-        return timestampToDate(instance.update, fmt="%m/%d %I:%m")
+        return timestampToDate(instance.update, fmt="%m/%d %H:%M")
 
 
 def reset_report_a(modeladmin, request, queryset):
