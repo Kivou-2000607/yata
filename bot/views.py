@@ -22,6 +22,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from yata.handy import *
 from player.models import Player
@@ -45,7 +46,16 @@ def index(request):
         error = player.update_discord_id()
 
         # get guilds
-        guilds = [guild for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("pk")]
+        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
+        n = len(guilds)
+        for i, g in enumerate(guilds):
+            g.n = n - i
+        paginator = Paginator(guilds, 25)
+        page = request.GET.get('page')
+        guilds = paginator.get_page(page)
+
+        if request.GET.get('page') is not None:
+            return render(request, "bot/guilds-list.html", {"guilds": guilds})
 
         # this is just for me...
         apps = False

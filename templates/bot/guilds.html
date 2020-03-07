@@ -21,31 +21,7 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-server"></i>&nbsp;&nbsp;Servers hosting the official YATA bot</h2>
 <div class="module">
-    <table class="center trshadow bot-guilds">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Server name</th>
-                <th>Server admin</th>
-                <th>Bot admin</th>
-                <th>Server id</th>
-                <th>Joined</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for g in guilds %}
-            <tr>
-                <td class="a">#{{forloop.counter}}</td>
-                <td class="b">{{g.guildName}}</td>
-                <td class="c">{{g.guildContactName|playerURL:g.guildContactId|safe}}</td>
-                <td class="c">{{g.botContactName|playerURL:g.botContactId|safe}}</td>
-                <td class="d"><tt>{{g.guildId}}</tt></td>
-                <td class="e">{{g.guildJoinedTime|ts2date:"%Y/%m/%d"}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-    </ul>
+    <div class="pagination-list">
+        {% include "bot/guilds-list.html" %}
+    </div>
 </div>

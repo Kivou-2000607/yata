@@ -61,10 +61,13 @@ This file is part of yata.
     {% block jquery %}{% endblock %}
     <script>
 
+        const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
+
+
         $(document).on('click', 'a[class^="yata-link"]', function(e){
             $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+$(this).attr("title"))
-            $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
+            $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+$(this).attr("title"))
+            $(this).html(spinner);
         });
 
         $(document).on('click', 'a.news-read', function(e){
