@@ -32,9 +32,6 @@ const getCookie = (s)=>{
     return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
 };
 
-//Store repeated html string (spinner)
-const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
-
 // nav links
 $(document).on('click', 'table.faction-categories td', e=>{
     e.preventDefault();
