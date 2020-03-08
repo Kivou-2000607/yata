@@ -398,6 +398,7 @@ def updateMember(request):
 
             # update status
             member.updateStatus(**membersAPI.get(memberId, dict({})).get("status"))
+            member.updateLastAction(**membersAPI.get(memberId, dict({})).get("last_action"))
 
             # update energy
             tmpP = Player.objects.filter(tId=memberId).first()

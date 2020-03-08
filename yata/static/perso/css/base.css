@@ -456,3 +456,8 @@ div.pagination-list {
 a.page-link {
   margin: 5px;
 }
+
+
+i.online-status-Offline {color: #666}
+i.online-status-Online {color: #0B8E14}
+i.online-status-Idle {color: #FF8C00}

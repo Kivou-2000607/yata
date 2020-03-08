@@ -25,23 +25,15 @@ This file is part of yata.
 <div id="reload-member-table">
 <script>
     $(document).ready(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'dataVal',
-            // check if cell value has a numerical value
-            is: function(s, table, cell, $cell) {
-              return !isNaN($cell.attr("data-val"));
+        $("#faction-members").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) {return $(node).attr("data-val");},
+              2: function(node, table, cellIndex) {return $(node).attr("data-val");},
+              6: function(node, table, cellIndex) {return $(node).attr("data-val");},
             },
-            // format data for normalization
-            format: function(s, table, cell, cellIndex) {
-                if ($(cell).attr("data-val") == "") return "";
-                else return parseInt($(cell).attr("data-val"));
-            },
-            // set type, either numeric or text
-            type: 'numeric'
-        });
 
-        $("#faction-members").tablesorter({headers: { 1: { sorter: 'dataVal' }, 5: { sorter: 'dataVal' } }, cssAsc: 'up', cssDesc: 'down', sortList: [[0,0]]});
+            cssAsc: 'up', cssDesc: 'down', sortList: [[1,0]]
+        });
     });
 </script>
 
@@ -52,6 +44,7 @@ This file is part of yata.
     <table id="faction-members" class="tablesorter center-medium trshadow faction-members">
         <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Last action</th>
                 <th>Status</th>

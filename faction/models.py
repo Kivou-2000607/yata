@@ -315,12 +315,11 @@ class Faction(models.Model):
             if memberDB is not None:
                 # update basics
                 memberDB.name = membersAPI[m]['name']
-                memberDB.lastAction = membersAPI[m]['last_action']['relative']
-                memberDB.lastActionTS = membersAPI[m]['last_action']['timestamp']
                 memberDB.daysInFaction = membersAPI[m]['days_in_faction']
 
                 # update status
                 memberDB.updateStatus(**membersAPI[m]['status'])
+                memberDB.updateLastAction(**membersAPI[m]['last_action'])
 
                 # update energy/NNB
                 player = Player.objects.filter(tId=memberDB.tId).first()
@@ -347,10 +346,9 @@ class Faction(models.Model):
                 memberTmp = Member.objects.filter(tId=m).first()
                 memberTmp.faction = self
                 memberTmp.name = membersAPI[m]['name']
-                memberTmp.lastAction = membersAPI[m]['last_action']['relative']
-                memberTmp.lastActionTS = membersAPI[m]['last_action']['timestamp']
                 memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
                 memberTmp.updateStatus(**membersAPI[m]['status'])
+                memberTmp.updateLastAction(**membersAPI[m]['last_action'])
 
                 # set shares to 0
                 player = Player.objects.filter(tId=memberTmp.tId).first()
@@ -374,6 +372,7 @@ class Faction(models.Model):
                     shareE=-1 if player is None else 0,
                     shareN=-1 if player is None else 0)
                 memberNew.updateStatus(**membersAPI[m]['status'])
+                memberNew.updateLastAction(**membersAPI[m]['last_action'])
 
         # delete old members
         for m in membersDB:
@@ -903,6 +902,7 @@ class Member(models.Model):
     # last action
     lastAction = models.CharField(default="-", max_length=200)
     lastActionTS = models.IntegerField(default=0)
+    lastActionStatus = models.CharField(default="Offline", max_length=16)
 
     # new status of december 2019
     description = models.CharField(default="", max_length=128, blank=True)
@@ -945,6 +945,17 @@ class Member(models.Model):
             self.color = color
         if until is not None:
             self.until = until
+        if save:
+            self.save()
+
+    def updateLastAction(self, status=None, timestamp=None, relative=None, save=False, **args):
+        # the **args is here to hade extra keys not needed
+        if status is not None:
+            self.lastActionStatus = status
+        if relative is not None:
+            self.lastAction = relative
+        if timestamp is not None:
+            self.lastActionTS = timestamp
         if save:
             self.save()
 

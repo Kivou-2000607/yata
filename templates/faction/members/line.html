@@ -22,8 +22,9 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if errorMessage %}
-    <td colspan="13" class="error" style="text-align: center;">{{errorMessage}}</td>
+    <td colspan="14" class="error" style="text-align: center;">{{errorMessage}}</td>
 {% else %}
+    <td class="f" title="{{member.lastActionStatus}}" data-val='{% if member.lastActionStatus == "Offline" %}-1{% elif member.lastActionStatus == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{member.lastActionStatus}}"></i></td>
     <td class="a dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
     <td class="b" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
     <td class="c player-status-{{member.color}}">{{member.description|cleanhtml}}
