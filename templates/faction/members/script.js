@@ -6,7 +6,7 @@ $(document).on('click', 'tr.faction-member-refresh > td:not(.dont-touch-me)', fu
     reload.load( "/faction/updateMember/", {
         memberId: memberId,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<td colspan="6" style="text-align: center;">'+spinner+'</td>');
+    }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');
 });
 
 // toggle member shareE
@@ -44,7 +44,7 @@ $(document).on('click', '#member-refresh', function(e){
                 reload.load( "/faction/updateMember/", {
                     memberId: memberId,
                     csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-                }).html('<td colspan="6" style="text-align: center;">'+spinner+'</td>');
+                }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');
             }, wait);
         })(i);
         i++;

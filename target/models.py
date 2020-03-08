@@ -79,6 +79,7 @@ class Target(models.Model):
     # last action (ts)
     last_action_timestamp = models.IntegerField(default=0)
     last_action_relative = models.CharField(default="last_action_relative", max_length=32, null=True, blank=True)
+    last_action_status = models.CharField(default="Offline", max_length=16)
 
     # status
     status_description = models.CharField(default="status_description", max_length=64, null=True, blank=True)
@@ -142,9 +143,11 @@ class Target(models.Model):
         if req.get("last_action") is None:
             self.last_action_timestamp = 0
             self.last_action_relative = "?"
+            self.last_action_status = "Offline"
         else:
             self.last_action_timestamp = req["last_action"].get("timestamp", 0)
             self.last_action_relative = req["last_action"].get("relative", "?")
+            self.last_action_status = req["last_action"].get("status", "Offline")
 
         self.update_timestamp = req.get("timestamp", 0)
         self.save()
@@ -234,6 +237,7 @@ class TargetInfo(models.Model):
             "level": target.level,
             "last_action_relative": target.last_action_relative,
             "last_action_timestamp": target.last_action_timestamp,
+            "last_action_status": target.last_action_status,
             "update_timestamp": min(target.update_timestamp, tsnow()),
 
             # player target information

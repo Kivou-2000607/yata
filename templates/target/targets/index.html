@@ -25,10 +25,11 @@ This file is part of yata.
                 textExtraction: {
                   0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-                  7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-                  10: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
-                  11: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  11: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
+                  12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
                 cssAsc: 'up',
                 cssDesc: 'down',
@@ -52,6 +53,7 @@ This file is part of yata.
                 <th title="Name of the target">Name</th>
                 <th title="Level of the target">Level</th>
                 <!-- <th title="">Rank</th> -->
+                <th title="Online status"><i class="fas fa-circle"></i></th>
                 <th title="Last action of the target">Last action</th>
                 <th title="Fair fight bonus of the last attack">Fair Fight</th>
                 <th title="Flat respect (fair fight) x (base respect) = (fair fight) x 0.25(ln(level) + 1)">Flat Respect</th>

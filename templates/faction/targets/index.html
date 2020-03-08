@@ -18,11 +18,34 @@ This file is part of yata.
 {% endcomment %}
 
 {% if targets|length %}
+
+
+
+<script>
+
+        $(document).ready(function() {
+            $("#target-targets").tablesorter({
+                textExtraction: {
+                  2: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+                cssAsc: 'up',
+                cssDesc: 'down',
+                sortList: [[0,0]]
+            });
+        });
+</script>
+
+
+
 <table id="target-targets" class="tablesorter center-medium trshadow target-targets">
     <thead>
         <tr>
             <th title="Name of the target">Name</th>
             <th title="Level of the target">Level</th>
+            <th title="Online status"><i class="fas fa-circle"></i></th>
             <th title="Last action of the target">Last action</th>
             <th title="Life of the target">Life</th>
             <th title="Status of the target">Status</th>

@@ -25,15 +25,16 @@ This file is part of yata.
 {% elif target %}
   <td class="a dont-touch-me">{{target.name|playerURL:target.target_id|safe}}</td>
   <td class="b">{{target.level}}</td>
-  <td class="c" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
-  <td class="d" data-val="{{target.life_current}}">
+  <td class="c" title="{{target.last_action_status}}" data-val='{% if target.last_action_status == "Offline" %}-1{% elif target.last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{target.last_action_status}}"></i></td>
+  <td class="d" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
+  <td class="e" data-val="{{target.life_current}}">
       <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
           <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
       </div>
   </td>
   {# <td class='e status player-status-{{target.status_color}}' title="{{target.status_details}}" data-val=""></td> #}
-  <td class='e status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.customDescription}}</td>
-  <td class="f update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}">
+  <td class='f status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.customDescription}}</td>
+  <td class="g update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}">
       {% now "U" as ts %}
       {% with seconds=ts|sub:target.update_timestamp%}
           {% if seconds > 7199 %}
@@ -44,7 +45,7 @@ This file is part of yata.
       {% endwith %}
   </td>
 {% endif %}
-<td class="g dont-touch-me">
+<td class="h dont-touch-me">
   {% if player.factionAA %}
     <!-- delete -->
     <form style="display: inline;">{% csrf_token %}

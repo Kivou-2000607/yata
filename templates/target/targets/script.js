@@ -29,7 +29,7 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
         type: "update",
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
-    reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html('<td colspan="14" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
 });
 
 // toggle faction target
