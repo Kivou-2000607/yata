@@ -21,14 +21,14 @@ This file is part of yata.
 
 {% if player.factionAA %}
     <form>{% csrf_token %}
-        {% if show %}
-            <a  id="faction-revives-report-toggle-{{type}}-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-revives-report-toggle" href=""><i class="far fa-eye" title="Click to stop seeing players."></i></a>
+        {% if f.show %}
+            <a  id="faction-revives-report-toggle-{{report.pk}}-{{factions.number}}-{{o_fa}}" data-val="{{f.faction_id}}" class="faction-revives-report-toggle" href=""><i class="far fa-eye" title="Click to stop seeing players."></i></a>
         {%else%}
-            <a id="faction-revives-report-toggle-{{type}}-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-revives-report-toggle" href=""><i class="far fa-eye-slash" title="Click to see players."></i></a>
+            <a id="faction-revives-report-toggle-{{report.pk}}-{{factions.number}}-{{o_fa}}" data-val="{{f.faction_id}}" class="faction-revives-report-toggle" href=""><i class="far fa-eye-slash" title="Click to see players."></i></a>
         {%endif%}
     </form>
 {% else %}
-    {% if show %}
+    {% if f.show %}
         <i class="far fa-eye" title="Players shown."></i>
     {%else%}
         <i class="far fa-eye-slash" title="Players not shown."></i>

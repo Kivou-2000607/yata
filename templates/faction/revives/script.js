@@ -59,12 +59,12 @@ $(document).on('click', '.faction-revives-report-toggle', e=>{
     e.preventDefault();
     var splt = e.currentTarget.id.split("-");
     var factionId = $(e.currentTarget).attr("data-val");
+    var order = splt.pop();
     var page = splt.pop();
     var reportId = splt.pop();
-    var type = splt.pop();
     var reload = $(e.currentTarget).closest("td");
     $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, factionId: factionId, type: type, page: page,
+        reportId: reportId, factionId: factionId, type: "toggle", o_pl: order, page: page,
         csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad);
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');

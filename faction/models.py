@@ -2043,8 +2043,7 @@ class RevivesReport(models.Model):
     update = models.IntegerField(default=0)
 
     # global information for the report
-    reviverFactions = models.TextField(default="[]")
-    targetFactions = models.TextField(default="[]")
+    factions = models.TextField(default="[]")
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
@@ -2312,15 +2311,11 @@ class RevivesReport(models.Model):
 
         # set show/hide
         print("{} show hide".format(self))
-        self.revivesfaction_set.all().update(showA=False, showD=False)
-        self.revivesplayer_set.all().update(showA=False, showD=False)
-        for f in json.loads(self.reviverFactions):
-            self.revivesfaction_set.filter(faction_id=int(f)).update(showA=True)
-            self.revivesplayer_set.filter(player_faction_id=int(f)).update(showA=True)
-
-        for f in json.loads(self.targetFactions):
-            self.revivesfaction_set.filter(faction_id=int(f)).update(showD=True)
-            self.revivesplayer_set.filter(player_faction_id=int(f)).update(showD=True)
+        self.revivesfaction_set.all().update(show=False)
+        self.revivesplayer_set.all().update(show=False)
+        for f in json.loads(self.factions):
+            self.revivesfaction_set.filter(faction_id=int(f)).update(show=True)
+            self.revivesplayer_set.filter(player_faction_id=int(f)).update(show=True)
 
         self.save()
 
@@ -2334,8 +2329,7 @@ class RevivesFaction(models.Model):
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
-    showA = models.BooleanField(default=False)
-    showD = models.BooleanField(default=False)
+    show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.faction_name, self.faction_id, self.revivesMade, self.revivesReceived)
@@ -2352,8 +2346,7 @@ class RevivesPlayer(models.Model):
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
-    showA = models.BooleanField(default=False)
-    showD = models.BooleanField(default=False)
+    show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.player_name, self.player_id, self.revivesMade, self.revivesReceived)

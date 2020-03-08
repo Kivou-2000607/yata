@@ -43,7 +43,7 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revive report [{{report.pk}}]<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span></h2>
+<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span></h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -57,25 +57,22 @@ $(function () {
                 <td><b>Report status:</b> {% include "faction/revives/status.html"%}</td>
             </tr>
             <tr>
-                <td><b>Made: </b> {{report.revivesMade}}</td>
-                <td><b>Received: </b> {{report.revivesReceived}}</td>
-                <td><b>Total: </b> {{revives|length}}</td>
+                <td><b>Made: </b> {{report.revivesMade|intcomma}}</td>
+                <td><b>Received: </b> {{report.revivesReceived|intcomma}}</td>
+                <td><b>Total: </b> {{report.revivesReceived|add:report.revivesMade|intcomma}}</td>
             </tr>
         </tbody>
     </table>
     <hr class="sep">
 
-    {% if factionsR|length or factionsT|length %}
+    {% if factions|length %}
         <div class="pagination-list">
-            {% include "faction/revives/factionsR.html"%}
-        </div>
-        <div class="pagination-list">
-            {% include "faction/revives/factionsT.html"%}
+            {% include "faction/revives/factions.html"%}
         </div>
         <div class="pagination-list">
             {% include "faction/revives/players.html"%}
         </div>
-        <hr class="sep">
+        <hr style="opacity: 0;">
     {% else %}
         <p class="warning">No report found. Please click on update report on the top right of this section.</p>
     {% endif %}

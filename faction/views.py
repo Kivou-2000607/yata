@@ -1682,74 +1682,54 @@ def revivesReport(request, reportId):
 
                 report.fillReport()
 
-            o_pl = int(request.GET.get('o_pl', 0))
-            orders = [False, ["-revivesMade", "-revivesReceived"], ["-revivesReceived", "-revivesMade"]]
-            order = orders[o_pl]
+            o_pl = int(request.GET.get('o_pl', 0)) if int(request.GET.get('o_pl', 0)) else int(request.POST.get('o_pl', 0))
+            orders_pl = [False, ["-revivesMade", "-revivesReceived"], ["-revivesReceived", "-revivesMade"]]
+            order_pl = orders_pl[o_pl]
 
-            if request.GET.get('p_fr') is not None:
-                paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
-                p_fr = request.GET.get('p_fr')
-                factionsR = paginator.get_page(p_fr)
-                page = "faction/revives/factionsR.html"
-                context = {"player": player, "faction": faction, "report": report, "factionsR": factionsR}
-                return render(request, page, context)
+            o_fa = int(request.GET.get('o_fa', 0)) if int(request.GET.get('o_fa', 0)) else int(request.POST.get('o_pl', 0))
+            orders_fa = [False, ["-revivesMade", "-revivesReceived"], ["-revivesReceived", "-revivesMade"]]
+            order_fa = orders_fa[o_fa]
 
-            if request.GET.get('p_ft') is not None:
-                paginator = Paginator(report.revivesfaction_set.exclude(revivesReceived=0).order_by("-revivesReceived", "-revivesMade"), 10)
-                p_ft = request.GET.get('p_ft')
-                factionsT = paginator.get_page(p_ft)
-                page = "faction/revives/factionsT.html"
-                context = {"player": player, "faction": faction, "report": report, "factionsT": factionsT}
+            if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
+                if order_fa:
+                    paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by(order_fa[0], order_fa[1]), 10)
+                else:
+                    paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
+                p_fa = request.GET.get('p_fa')
+                factions = paginator.get_page(p_fa)
+                page = "faction/revives/factions.html"
+                context = {"player": player, "faction": faction, "report": report, "factions": factions, "o_fa": o_fa}
                 return render(request, page, context)
 
             if request.GET.get('p_pl') is not None or request.GET.get('o_pl') is not None:
-                if order:
-                    paginator = Paginator(report.revivesplayer_set.filter(Q(showA=True) | Q(showD=True)).order_by(order[0], order[1]), 10)
+                if order_pl:
+                    paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]), 10)
                 else:
-                    paginator = Paginator(report.revivesplayer_set.filter(Q(showA=True) | Q(showD=True)).order_by("-revivesMade", "-revivesReceived"), 10)
+                    paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade", "-revivesReceived"), 10)
                 p_pl = request.GET.get('p_pl')
                 players = paginator.get_page(p_pl)
                 page = "faction/revives/players.html"
                 context = {"player": player, "faction": faction, "report": report, "players": players, "o_pl": o_pl}
                 return render(request, page, context)
 
-            reviverFactions = json.loads(report.reviverFactions)
-            targetFactions = json.loads(report.targetFactions)
+            factions = json.loads(report.factions)
 
             # if click on toggle
-            p_fr = False
-            p_ft = False
-            if request.POST.get("type") == "revivers":
+            p_fa = False
+            if request.POST.get("type") == "toggle":
                 try:
                     f = int(request.POST["factionId"])
-                    if f in reviverFactions:
-                        reviverFactions.remove(int(request.POST["factionId"]))
-                        report.revivesfaction_set.filter(faction_id=f).update(showA=False)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(showA=False)
+                    if f in factions:
+                        factions.remove(int(request.POST["factionId"]))
+                        report.revivesfaction_set.filter(faction_id=f).update(show=False)
+                        report.revivesplayer_set.filter(player_faction_id=f).update(show=False)
                     else:
-                        reviverFactions.append(f)
-                        report.revivesfaction_set.filter(faction_id=f).update(showA=True)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(showA=True)
-                    report.reviverFactions = json.dumps(reviverFactions)
+                        factions.append(f)
+                        report.revivesfaction_set.filter(faction_id=f).update(show=True)
+                        report.revivesplayer_set.filter(player_faction_id=f).update(show=True)
+                    report.factions = json.dumps(factions)
                     report.save()
-                    p_fr = request.POST["page"]
-                except BaseException as e:
-                    print("Error toggle faction {}".format(e))
-
-            elif request.POST.get("type") == "targets":
-                try:
-                    f = int(request.POST["factionId"])
-                    if f in targetFactions:
-                        targetFactions.remove(f)
-                        report.revivesfaction_set.filter(faction_id=f).update(showD=False)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(showD=False)
-                    else:
-                        targetFactions.append(f)
-                        report.revivesfaction_set.filter(faction_id=f).update(showD=True)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(showD=True)
-                    report.targetFactions = json.dumps(targetFactions)
-                    report.save()
-                    p_fr = request.POST["page"]
+                    p_fa = request.POST["page"]
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
@@ -1757,18 +1737,17 @@ def revivesReport(request, reportId):
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
 
-            paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
-            p_fr = request.GET.get('p_fr') if not p_fr else p_fr
-            factionsR = paginator.get_page(p_fr)
-
-            paginator = Paginator(report.revivesfaction_set.exclude(revivesReceived=0).order_by("-revivesReceived", "-revivesMade"), 10)
-            p_ft = request.GET.get('p_ft') if not p_ft else p_ft
-            factionsT = paginator.get_page(p_ft)
-
-            if order:
-                paginator = Paginator(report.revivesplayer_set.filter(Q(showA=True) | Q(showD=True)).order_by(order[0], order[1]), 10)
+            if order_fa:
+                paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by(order_fa[0], order_fa[1]), 10)
             else:
-                paginator = Paginator(report.revivesplayer_set.filter(Q(showA=True) | Q(showD=True)).order_by("-revivesMade", "-revivesReceived"), 10)
+                paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
+            p_fa = request.GET.get('p_fa') if not p_fa else p_fa
+            factions = paginator.get_page(p_fa)
+
+            if order_pl:
+                paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]), 10)
+            else:
+                paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade", "-revivesReceived"), 10)
             p_pl = request.GET.get('p_pl')
             players = paginator.get_page(p_pl)
 
@@ -1777,12 +1756,12 @@ def revivesReport(request, reportId):
             context = dict({"player": player,
                             'factioncat': True,
                             'faction': faction,
-                            'factionsR': factionsR,
-                            'factionsT': factionsT,
+                            'factions': factions,
                             'players': players,
                             'report': report,
                             'revives': revives,
                              "o_pl": o_pl,
+                             "o_fa": o_fa,
                             'view': {'revivesReport': True}})  # views
 
             return render(request, page, context)

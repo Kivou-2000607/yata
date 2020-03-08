@@ -209,6 +209,7 @@ table.center-full-half {
   float:left;
   margin-left:0%;
   margin-right:0%;
+  border: 1px solid #eee;
 }
 
 table.center-full-third {
@@ -216,6 +217,7 @@ table.center-full-third {
   float:left;
   margin-left:0%;
   margin-right:0%;
+  border: 1px solid #eee;
 }
 
 table.center-full-fourth {

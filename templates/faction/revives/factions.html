@@ -22,38 +22,41 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-<table class="center-full-fourth trshadow faction-revives-report-factions">
+
+<table class="center-full-half trshadow faction-revives-report-factions">
     <thead>
-            <tr><th colspan="3">Revivers</th></tr>
+            <tr><th colspan="4">Factions</th></tr>
           <tr>
             <th>Faction</th>
-            <th>Made</th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa=1">Made</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa=2">Received</a></th>
             <th>Toggle&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle" title="Click on the eyes to see the players"></i></th>
         </tr>
     </thead>
     <tbody>
-    {% for f in factionsR %}
-    <tr {%if not f.showA %}style="opacity: 0.5"{%endif%}>
+    {% for f in factions %}
+    <tr {%if not f.show %}style="opacity: 0.5"{%endif%}>
         <td class="a">{{f.faction_name|factionURLShort:f.faction_id|safe}}</td>
         <td class="b">{{f.revivesMade}}</td>
-        <td class="c">{% include "faction/revives/toggle.html" with type="revivers" show=f.showA page=factionsR.number%}</td>
+        <td class="b">{{f.revivesReceived}}</td>
+        <td class="c">{% include "faction/revives/toggle.html" %}</td>
     </tr>
     {% endfor %}
     <tr><td colspan="4">
         <div class="pagination" style="margin:0;">
             <span class="step-links">
-                {% if factionsR.has_previous %}
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?p_fr=1">&laquo; first</a>
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?p_fr={{ factionsR.previous_page_number }}">previous</a>
+                {% if factions.has_previous %}
+                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa=1">&laquo; first</a>
+                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
-                    {{ factionsR.number }}/{{ factionsR.paginator.num_pages }}
+                    {{ factions.number }}/{{ factions.paginator.num_pages }}
                 </span>
 
-                {% if factionsR.has_next %}
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?p_fr={{ factionsR.next_page_number }}">next</a>
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?p_fr={{ factionsR.paginator.num_pages }}">last &raquo;</a>
+                {% if factions.has_next %}
+                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}">next</a>
+                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
