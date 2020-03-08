@@ -2265,7 +2265,7 @@ class RevivesReport(models.Model):
 
             # handle target faction
             if revive.target_faction in f_set:
-                n = [f_set[revive.reviver_faction][k] for k in ["revivesMade", "revivesReceived"]]
+                n = [f_set[revive.target_faction][k] for k in ["revivesMade", "revivesReceived"]]
                 n[1] = n[1] + 1
             else:
                 n = [0, 1]
@@ -2284,7 +2284,7 @@ class RevivesReport(models.Model):
 
             # handle defender player
             if revive.target_id in p_set:
-                n = [p_set[revive.reviver_id][k] for k in ["revivesMade", "revivesReceived"]]
+                n = [p_set[revive.target_id][k] for k in ["revivesMade", "revivesReceived"]]
                 n[1] = n[1] + 1
             else:
                 n = [0, 1]
@@ -2372,6 +2372,8 @@ class Revive(models.Model):
     target_faction = models.IntegerField(default=0)
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
 
+    def __str__(self):
+        return "{} -> {}".format(self.reviver_factionname, self.target_factionname)
 
 # Armory
 class News(models.Model):
