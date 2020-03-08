@@ -2319,8 +2319,8 @@ class RevivesReport(models.Model):
             self.revivesplayer_set.filter(player_faction_id=int(f)).update(showA=True)
 
         for f in json.loads(self.targetFactions):
-            self.attacksfaction_set.filter(faction_id=int(f)).update(showD=True)
-            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showD=True)
+            self.revivesfaction_set.filter(faction_id=int(f)).update(showD=True)
+            self.revivesplayer_set.filter(player_faction_id=int(f)).update(showD=True)
 
         self.save()
 
