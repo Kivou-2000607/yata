@@ -1694,10 +1694,10 @@ def revivesReport(request, reportId):
                 context = {"player": player, "faction": faction, "report": report, "factionsR": factionsR}
                 return render(request, page, context)
 
-            if request.GET.get('p_fd') is not None:
+            if request.GET.get('p_ft') is not None:
                 paginator = Paginator(report.revivesfaction_set.exclude(revivesReceived=0).order_by("-revivesReceived", "-revivesMade"), 10)
-                p_fd = request.GET.get('p_fd')
-                factionsD = paginator.get_page(p_fd)
+                p_ft = request.GET.get('p_ft')
+                factionsT = paginator.get_page(p_ft)
                 page = "faction/revives/factionsT.html"
                 context = {"player": player, "faction": faction, "report": report, "factionsT": factionsT}
                 return render(request, page, context)
