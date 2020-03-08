@@ -37,3 +37,4 @@ class Command(BaseCommand):
             state = report.getRevives()
             type = "error" if state < 0 else "exit"
             print("{} {} code {}: {}".format(report, type, state, REPORT_REVIVES_STATUS.get(state, "code {}".format(state))))
+            # report.fillReport()

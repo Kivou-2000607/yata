@@ -24,11 +24,6 @@ This file is part of yata.
 
 
 <script>
-$(document).ready(function() {
-    $(".faction-revives-report-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1], [5,1], [3,1], [4,1]]});
-    $(".faction-revives-report-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
-    $(".faction-revives-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
-});
 
 $(function () {
     $("#modify-date-end").datetimepicker({
@@ -48,7 +43,7 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revive report [{{report.pk}}]</h2>
+<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revive report [{{report.pk}}]<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span></h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -70,112 +65,25 @@ $(function () {
     </table>
     <hr class="sep">
 
-    <table class="tablesorter center-full-fourth trshadow faction-revives-report-factions">
-        <thead>
-                <tr><th colspan="3">Revivers</th></tr>
-              <tr>
-                <th>Faction</th>
-                <th>Made</th>
-                <th>Toggle</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for k, v in breakdown.reviver_factions.items %}
-        <tr {%if v.revives < 6  and not v.show%}class="hidden"{%endif%}{%if not v.show%}style="opacity: 0.5"{%endif%}>
-            <td class="a">{{v.name|factionURLShort:k|safe}}</td>
-            <td class="b">{{v.revives}}</td>
-            <td class="c">{% include "faction/revives/toggle.html" with type="revivers"%}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-        <tr class="faction-revives-report-see-all" style="cursor: pointer">
-          <td colspan="3" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
-        </tr>
-    </table>
-
-    <table class="tablesorter center-full-fourth trshadow faction-revives-report-factions">
-        <thead>
-              <tr><th colspan="3">Targets</th></tr>
-              <tr>
-                <th>Faction</th>
-                <th>Received</th>
-                <th>Toggle</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for k, v in breakdown.target_factions.items %}
-        <tr {%if v.revived < 6 and not v.show %}class="hidden"{%endif%}{%if not v.show%}style="opacity: 0.5"{%endif%}>
-            <td class="a">{{v.name|factionURLShort:k|safe}}</td>
-            <td class="b">{{v.revived}}</td>
-            <td class="c">{% include "faction/revives/toggle.html" with type="targets" %}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-        <tr class="faction-revives-report-see-all" style="cursor: pointer">
-          <td colspan="3" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
-        </tr>
-        <table>
-    </table>
-
-    <table class="tablesorter center-full-half trshadow faction-revives-report-players">
-        <thead>
-            <tr><th colspan="4">Players</th></tr>
-            <tr>
-                <th>Player</th>
-                <th>Faction</th>
-                <th>Made</th>
-                <th>Received</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for k, v in breakdown.players.items %}
-        <tr {%if v.revives|add:v.revived < 6%}class="hidden"{%endif%}>
-            <td class="a">{{v.name|playerURLShort:k|safe}}</td>
-            <td class="b">{{v.factionname|factionURLShort:v.faction|safe}}</td>
-            <td class="c">{{v.revives}}</td>
-            <td class="c">{{v.revived}}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-        <tr class="faction-revives-report-see-all" style="cursor: pointer">
-          <td colspan="4" style="text-align: center;">Show all&nbsp;&nbsp;<i class="far fa-eye"></i></td>
-        </tr>
-    </table>
-
-    <hr class="sep">
+    {% if factionsR|length or factionsT|length %}
+        <div class="pagination-list">
+            {% include "faction/revives/factionsR.html"%}
+        </div>
+        <div class="pagination-list">
+            {% include "faction/revives/factionsT.html"%}
+        </div>
+        <div class="pagination-list">
+            {% include "faction/revives/players.html"%}
+        </div>
+        <hr class="sep">
+    {% else %}
+        <p class="warning">No report found. Please click on update report on the top right of this section.</p>
+    {% endif %}
 </div>
 
-<div class="catch-me">
-    <h2 class="title toggle-display rounded"><i class="fas fa-list"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]: list of {{revives|length}} revives&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="module" style="display: none;">
-        {% if revives|length %}
-        <table id="faction-revives-list" class="tablesorter center-large trshadow faction-revives-list">
-            <thead>
-                <tr>
-                    {# <th>Revive [ID]</th> #}
-                    <th>Start</th>
-                    <th>Reviver</th>
-                    <th>Faction</th>
-                    <th>Target</th>
-                    <th>Faction</th>
-            </thead>
-            <tbody>
-            {% for k, v in revives.items %}
-            {%if v.show %}
-            <tr>
-                {# <td class="a">Revive [{{k}}]</td> #}
-                <td class="a">{{v.timestamp|ts2date}}</td>
-                <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
-                <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
-                <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
-                <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
-            </tr>
-            {%endif%}
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else%}
-            <p class="error">No revives.</p>
-        {% endif %}
+<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of revives</h2>
+<div class="module">
+    <div class="pagination-list">
+        {% include "faction/revives/revives.html" %}
     </div>
 </div>

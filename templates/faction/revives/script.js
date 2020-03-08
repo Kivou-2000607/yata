@@ -54,31 +54,29 @@ $(document).on('click', '.faction-revives-reports-see', e=>{
     $("div.error").hide();
 });
 
-
 // show hide
 $(document).on('click', '.faction-revives-report-toggle', e=>{
     e.preventDefault();
     var splt = e.currentTarget.id.split("-");
-    var factionId = splt.pop();
+    var factionId = $(e.currentTarget).attr("data-val");
+    var page = splt.pop();
     var reportId = splt.pop();
     var type = splt.pop();
     var reload = $(e.currentTarget).closest("td");
-    console.log(reportId);
     $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, factionId: factionId, type: type,
+        reportId: reportId, factionId: factionId, type: type, page: page,
         csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad);
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');
 });
 
-// show hide attack breakdown list
-$(document).on('click', '.faction-revives-report-see-all', e=>{
+// show hide
+$(document).on('click', '#faction-revives-report-update', e=>{
     e.preventDefault();
-    var tr = $(e.currentTarget);
-    tr.parents("table").find("tr.hidden").toggle();
-    if (tr.find("i").hasClass("fa-eye")) {
-      tr.find("td").html('Hide small contributions&nbsp;&nbsp;<i class="far fa-eye-slash"></i>')
-    } else {
-      tr.find("td").html('Show all&nbsp;&nbsp;<i class="far fa-eye"></i>')
-    }
+    var reportId = $(e.currentTarget).attr("data-val");
+    $( "#content-update" ).load( "/faction/revives/" + reportId, {
+        reportId: reportId, update: true,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }, afterLoad);
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
 });

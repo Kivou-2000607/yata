@@ -2240,6 +2240,124 @@ class RevivesReport(models.Model):
         self.save()
         return 3
 
+    def fillReport(self):
+        print("{} fill report".format(self))
+        allRevives = self.revive_set.all()
+
+        self.revivesMade = len(allRevives.filter(reviver_faction=self.faction.tId))
+        self.revivesReceived = len(allRevives.exclude(reviver_faction=self.faction.tId))
+
+        print("{} revives {} {}".format(self, self.revivesMade, self.revivesReceived))
+        print("{} set players and factions counts".format(self))
+        # create factions and players
+        f_set = dict({})
+        p_set = dict({})
+        for revive in allRevives:
+
+            # handle reviver faction
+            if revive.reviver_faction in f_set:
+                n = [f_set[revive.reviver_faction][k] for k in ["revivesMade", "revivesReceived"]]
+                n[0] = n[0] + 1
+            else:
+                n = [1, 0]
+            f_set[revive.reviver_faction] = {"faction_id": revive.reviver_faction, "faction_name": revive.reviver_factionname,
+                                             "revivesMade": n[0], "revivesReceived": n[1]}
+
+            # handle target faction
+            if revive.target_faction in f_set:
+                n = [f_set[revive.reviver_faction][k] for k in ["revivesMade", "revivesReceived"]]
+                n[1] = n[1] + 1
+            else:
+                n = [0, 1]
+            f_set[revive.target_faction] = {"faction_id": revive.target_faction, "faction_name": revive.target_factionname,
+                                            "revivesMade": n[0], "revivesReceived": n[1]}
+
+            # handle reviver player
+            if revive.reviver_id in p_set:
+                n = [p_set[revive.reviver_id][k] for k in ["revivesMade", "revivesReceived"]]
+                n[0] = n[0] + 1
+            else:
+                n = [1, 0]
+            p_set[revive.reviver_id] = {"player_id": revive.reviver_id, "player_name": revive.reviver_name,
+                                        "player_faction_id": revive.reviver_faction, "player_faction_name": revive.reviver_factionname,
+                                        "revivesMade": n[0], "revivesReceived": n[1]}
+
+            # handle defender player
+            if revive.target_id in p_set:
+                n = [p_set[revive.reviver_id][k] for k in ["revivesMade", "revivesReceived"]]
+                n[1] = n[1] + 1
+            else:
+                n = [0, 1]
+            p_set[revive.target_id] = {"player_id": revive.target_id, "player_name": revive.target_name,
+                                       "player_faction_id": revive.target_faction, "player_faction_name": revive.target_factionname,
+                                       "revivesMade": n[0], "revivesReceived": n[1]}
+
+        print("{} update factions".format(self))
+        for k, v in f_set.items():
+            try:
+                f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
+            except MultipleObjectsReturned:
+                print("{} ERROR with {} {}".format(self, k, v))
+                self.revivesfaction_set.fitler(faction_id=k).delete()
+                f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
+
+        print("{} update players".format(self))
+        for k, v in p_set.items():
+            try:
+                p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
+            except MultipleObjectsReturned:
+                print("{} ERROR with {} {}".format(self, k, v))
+                self.revivesplayer_set.filter(player_id=k).delete()
+                p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
+
+        # set show/hide
+        print("{} show hide".format(self))
+        self.revivesfaction_set.all().update(showA=False, showD=False)
+        self.revivesplayer_set.all().update(showA=False, showD=False)
+        for f in json.loads(self.reviverFactions):
+            self.revivesfaction_set.filter(faction_id=int(f)).update(showA=True)
+            self.revivesplayer_set.filter(player_faction_id=int(f)).update(showA=True)
+
+        for f in json.loads(self.targetFactions):
+            self.attacksfaction_set.filter(faction_id=int(f)).update(showD=True)
+            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showD=True)
+
+        self.save()
+
+
+class RevivesFaction(models.Model):
+    report = models.ForeignKey(RevivesReport, on_delete=models.CASCADE)
+
+    faction_id = models.IntegerField(default=0)
+    faction_name = models.CharField(default="faction_name", max_length=64, null=True, blank=True)
+
+    revivesMade = models.IntegerField(default=0)
+    revivesReceived = models.IntegerField(default=0)
+
+    showA = models.BooleanField(default=False)
+    showD = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} [{}]: {} {}".format(self.faction_name, self.faction_id, self.revivesMade, self.revivesReceived)
+
+
+class RevivesPlayer(models.Model):
+    report = models.ForeignKey(RevivesReport, on_delete=models.CASCADE)
+
+    player_id = models.IntegerField(default=0)
+    player_name = models.CharField(default="player_name", max_length=16, null=True, blank=True)
+    player_faction_id = models.IntegerField(default=0)
+    player_faction_name = models.CharField(default="faction_name", max_length=64, null=True, blank=True)
+
+    revivesMade = models.IntegerField(default=0)
+    revivesReceived = models.IntegerField(default=0)
+
+    showA = models.BooleanField(default=False)
+    showD = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} [{}]: {} {}".format(self.player_name, self.player_id, self.revivesMade, self.revivesReceived)
+
 
 class Revive(models.Model):
     report = models.ForeignKey(RevivesReport, on_delete=models.CASCADE)

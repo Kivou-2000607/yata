@@ -39,6 +39,7 @@ urlpatterns = [
 
     # SECTION: revives
     re_path(r'^revives/$', views.revivesReports, name='revives'),
+    re_path(r'^revives/list/(?P<reportId>\w+)$', views.revivesList, name='revivesList'),
     re_path(r'^revives/manage/$', views.manageRevives, name='manageRevives'),
     re_path(r'^revives/(?P<reportId>\w+)$', views.revivesReport, name='revives'),
 

@@ -71,20 +71,23 @@ $(function () {
         </tbody>
     </table>
     <hr class="sep">
-
-    <div class="pagination-list">
-        {% include "faction/attacks/factionsA.html"%}
-    </div>
-    <div class="pagination-list">
-        {% include "faction/attacks/factionsD.html"%}
-    </div>
-    <div class="pagination-list">
-        {% include "faction/attacks/players.html"%}
-    </div>
-    <hr class="sep">
+    {% if factionsA|length or factionsB|length %}
+        <div class="pagination-list">
+            {% include "faction/attacks/factionsA.html"%}
+        </div>
+        <div class="pagination-list">
+            {% include "faction/attacks/factionsD.html"%}
+        </div>
+        <div class="pagination-list">
+            {% include "faction/attacks/players.html"%}
+        </div>
+        <hr class="sep">
+    {% else %}
+        <p class="warning">No report found. Please click on update report on the top right of this section.</p>
+    {% endif %}
 </div>
 
-<h2 class="title toggle-display"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
+<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
 <div class="module">
   <div class="pagination-list">
     {% include "faction/attacks/attacks.html" %}

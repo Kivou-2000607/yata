@@ -1,0 +1,71 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<table class="center-full-half trshadow faction-revives-report-players">
+    <thead>
+        <tr><th colspan="4">Players</th></tr>
+        <tr>
+            <th>Player</th>
+            <th>Faction</th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl=1">Made</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl=2">Received</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if players|length %}
+        {% for p in players %}
+            <tr>
+                <td class="a">{{p.player_name|playerURLShort:p.player_id|safe}}</td>
+                <td class="b">{{p.player_faction_name|factionURLShort:p.player_faction_id|safe}}</td>
+                <td class="c">{{p.revivesMade}}</td>
+                <td class="c">{{p.revivesReceived}}</td>
+            </tr>
+        {% endfor %}
+        <tr><td colspan="4">
+            <div class="pagination" style="margin:0;" >
+                <span class="step-links">
+                    {% if players.has_previous %}
+                        <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl={{o_pl}}&p_pl=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl={{o_pl}}&p_pl={{ players.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ players.number }}/{{ players.paginator.num_pages }}
+                    </span>
+
+                    {% if players.has_next %}
+                        <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl={{o_pl}}&p_pl={{ players.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_pl={{o_pl}}&p_pl={{ players.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="4">No players found. Click on the eyes to select factions players.</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

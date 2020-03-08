@@ -1,0 +1,69 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<table id="faction-revives-list" class="center-large trshadow faction-revives-list">
+    <thead>
+        <tr><td colspan="5">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if revives.has_previous %}
+                        <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ revives.number }}/{{ revives.paginator.num_pages }}
+                    </span>
+
+                    {% if revives.has_next %}
+                        <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+
+        <tr>
+            {# <th>Revive [ID]</th> #}
+            <th>Start</th>
+            <th>Reviver</th>
+            <th>Faction</th>
+            <th>Target</th>
+            <th>Faction</th>
+    </thead>
+    <tbody>
+    {% for v in revives %}
+        <tr>
+            {# <td class="a">{{v}}</td> #}
+            <td class="a">{{v.timestamp|ts2date}}</td>
+            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
+            <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
+            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
+            <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
