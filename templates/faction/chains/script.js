@@ -51,23 +51,35 @@ $(document).on('click', '.faction-chains-delete', e=>{
 
 // toggle combine report
 $(document).on('click', '.faction-chains-combine', e=>{
+    console.log("YATA: Hello, you pushed toggle");
     e.preventDefault();
+    console.log("YATA: you passed prevet default");
     // handle n combined
     var n = parseInt($("#n-combined").text());
+    console.log("YATA: you parsed n:" + n);
     if($(e.currentTarget).children("i").hasClass("fa-toggle-off")) {
+        console.log("YATA: n+1:" + n);
         n += 1;
+        console.log("YATA: n+1:" + n);
     } else {
+        console.log("YATA: n-1:" + n);
         n -= 1;
+        console.log("YATA: n-1:" + n);
     }
+    console.log("YATA: before getting combined");
     $("#n-combined").html(n);
+    console.log("YATA: after getting combined");
 
     // handle toggle
     var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    console.log("YATA: chain id"+chainId);
     var td = $(e.currentTarget).parents("td");
+    console.log("YATA: chain td");
+    console.log(td);
     td.load( "/faction/report/manage/", {
         type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, afterLoad).html(spinner);
-
+    console.log("YATA: and now we are after sending the request");
 });
 
 // see report
