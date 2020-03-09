@@ -1,3 +1,22 @@
+"""
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+"""
+
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.conf import settings
@@ -396,9 +415,14 @@ def updateMember(request):
             if member is None:
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Member {} not found in faction {}'.format(memberId, factionId)})
 
-            # update status
-            member.updateStatus(**membersAPI.get(memberId, dict({})).get("status"))
-            member.updateLastAction(**membersAPI.get(memberId, dict({})).get("last_action"))
+            # update status and last action
+            try:
+                status = membersAPI.get(memberId, dict({})).get("status")
+                member.updateStatus(**status)
+                lastAction = membersAPI.get(memberId, dict({})).get("status")
+                member.updateLastAction(**lastAction)
+            except BaseException as e:
+                return render(request, 'faction/members/line.html', {'errorMessage': 'Error with member {}: {}'.format(memberId, e)})
 
             # update energy
             tmpP = Player.objects.filter(tId=memberId).first()
