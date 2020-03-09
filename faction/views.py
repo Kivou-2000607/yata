@@ -1670,11 +1670,7 @@ def revivesReport(request, reportId):
             # get breakdown
             if not reportId.isdigit():
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player,
-                selectError: "Wrong report ID: {}.".format(reportId),
-                'factioncat': True,
-                'faction': faction,
-                'report': False})  # views
+                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
                 return render(request, page, context)
 
             report = faction.revivesreport_set.filter(pk=reportId).first()
@@ -1758,7 +1754,7 @@ def revivesReport(request, reportId):
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
-            paginator = Paginator(report.revive_set.order_by("-timestamp"), 25)
+            paginator = Paginator(report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp"), 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
 
@@ -1818,12 +1814,13 @@ def revivesList(request, reportId):
                 context = {'player': player, selectError: "Report {} not found.".format(reportId)}
                 return render(request, 'yata/error.html', context)
 
-            revives = report.revive_set.order_by("-timestamp")
-            paginator = Paginator(revives, 25)
-            page_number = request.GET.get('p_re')
+            factions = json.loads(report.factions)
+            paginator = Paginator(report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp"), 25)
+            p_re = request.GET.get('p_re')
+            revives = paginator.get_page(p_re)
 
-            if page_number is not None:
-                return render(request, 'faction/revives/revives.html', {'report': report, 'revives': paginator.get_page(page_number)})
+            if p_re is not None:
+                return render(request, 'faction/revives/revives.html', {'report': report, 'revives': revives})
             else:
                 return returnError(type=403, msg="You need to get a page.")
 
