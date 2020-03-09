@@ -2379,6 +2379,7 @@ class Revive(models.Model):
     def __str__(self):
         return "{} -> {}".format(self.reviver_factionname, self.target_factionname)
 
+
 # Armory
 class News(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

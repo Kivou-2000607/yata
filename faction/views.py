@@ -1693,9 +1693,9 @@ def revivesReport(request, reportId):
 
             if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
                 if order_fa:
-                    paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by(order_fa[0], order_fa[1]), 10)
+                    paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
                 else:
-                    paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
+                    paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade", "-revivesReceived"), 10)
                 p_fa = request.GET.get('p_fa')
                 factions = paginator.get_page(p_fa)
                 page = "faction/revives/factions.html"
@@ -1739,9 +1739,9 @@ def revivesReport(request, reportId):
             revives = paginator.get_page(p_re)
 
             if order_fa:
-                paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by(order_fa[0], order_fa[1]), 10)
+                paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
             else:
-                paginator = Paginator(report.revivesfaction_set.exclude(revivesMade=0).order_by("-revivesMade", "-revivesReceived"), 10)
+                paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade", "-revivesReceived"), 10)
             p_fa = request.GET.get('p_fa') if not p_fa else p_fa
             factions = paginator.get_page(p_fa)
 
@@ -1761,8 +1761,8 @@ def revivesReport(request, reportId):
                             'players': players,
                             'report': report,
                             'revives': revives,
-                             "o_pl": o_pl,
-                             "o_fa": o_fa,
+                            'o_pl': o_pl,
+                            'o_fa': o_fa,
                             'view': {'revivesReport': True}})  # views
 
             return render(request, page, context)
