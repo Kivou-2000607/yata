@@ -53,18 +53,21 @@ $(document).on('click', 'a.faction-event-delete', e=>{
     }).remove();
 });
 
-// events delete
+// events create
 $(document).on('click', 'input#faction-event-create', e=>{
     e.preventDefault();
     var form = $(e.currentTarget).closest("form");
     var stack = 0;
     if(form.find("#event-stack").prop('checked')) stack = 1
+    var reset = 0;
+    if(form.find("#event-reset").prop('checked')) reset = 1
     $(e.currentTarget).closest("div.module").load( "/faction/configurations/event/", {
         type: "create",
         title: form.find("#event-title").val(),
         description: form.find("#event-description").val(),
         ts: form.find("#event-ts").val(),
         stack: stack,
+        reset: reset,
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });

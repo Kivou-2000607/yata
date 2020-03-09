@@ -255,6 +255,8 @@ def configurationsEvent(request):
                 v["timestamp"] = request.POST.get("ts")
                 stack = int(request.POST.get("stack", 0))
                 v["stack"] = bool(stack)
+                reset = int(request.POST.get("reset", 0))
+                v["reset"] = bool(reset)
                 faction.event_set.create(**v)
 
             events = faction.event_set.order_by('timestamp')
@@ -1359,11 +1361,7 @@ def attacksReport(request, reportId):
             # get breakdown
             if not reportId.isdigit():
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player,
-                selectError: "Wrong report ID: {}.".format(reportId),
-                'factioncat': True,
-                'faction': faction,
-                'report': False})  # views
+                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
                 return render(request, page, context)
 
             report = faction.attacksreport_set.filter(pk=reportId).first()

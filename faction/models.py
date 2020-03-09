@@ -2719,6 +2719,7 @@ class Event(models.Model):
     title = models.CharField(default="Title", max_length=64)
     description = models.CharField(default="Short description", max_length=256, null=True, blank=True)
     stack = models.BooleanField(default=False)
+    reset = models.BooleanField(default=False)
 
     def __str__(self):
         return format_html("{} event {}".format(self.faction, self.title))
