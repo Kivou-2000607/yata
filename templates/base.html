@@ -28,41 +28,35 @@ This file is part of yata.
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
 
+    <!-- perso -->
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
+    <script type="text/javascript" src='{% static "perso/js/yata.js" %}'></script>
+
     <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/tooltip.css" %} />
-    {% block css%}{% endblock %}
+    <!-- jquery -->
+    <script type="text/javascript" src='{% static "thirdparty/js/jquery-3.4.1.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "thirdparty/js/jquery-ui-1.12.1.min.js" %}'></script>
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/css/jquery-3.4.1.min.css" %}'>
 
-    <!-- load jquery from https://code.jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    	    crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-    		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-    		crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!-- tooltips  -->
+    <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/css/tooltip.css" %}' />
 
-    <!-- load table sorter  -->
-    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.js" %}></script>
-
-    <!-- load mathjax  -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <!-- tablesorter  -->
+    <script type="text/javascript" src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
 
     <!-- google charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <!-- scripts jquery perso -->
+    <!-- local css -->
+    {% block css%}{% endblock %}
+    <!-- local js -->
     {% block jquery %}{% endblock %}
     <script>
-
-        const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
-
 
         $(document).on('click', 'a[class^="yata-link"]', function(e){
             $("#content-update h2").addClass("grey");
