@@ -15,7 +15,7 @@ $(document).on('click', '#faction-chain-combined', e=>{
 // create report
 $(document).on('click', '.faction-chains-create', e=>{
     e.preventDefault();
-    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var chainId = $(e.currentTarget).attr("data-val");
     var td = $(e.currentTarget).parents("td");
     td.load( "/faction/report/manage/", {
         type: "create", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
@@ -25,7 +25,7 @@ $(document).on('click', '.faction-chains-create', e=>{
 // create report
 $(document).on('click', '.faction-chains-cooldown', e=>{
     e.preventDefault();
-    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var chainId = $(e.currentTarget).attr("data-val");
     var td = $(e.currentTarget).parents("td");
     td.load( "/faction/report/manage/", {
         type: "cooldown", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
@@ -42,7 +42,7 @@ $(document).on('click', '.faction-chains-delete', e=>{
     }
     $("#n-combined").html(n);
 
-    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var chainId = $(e.currentTarget).attr("data-val");
     var td = $(e.currentTarget).parents("td");
     td.load( "/faction/report/manage/", {
         type: "delete", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
@@ -71,7 +71,7 @@ $(document).on('click', '.faction-chains-combine', e=>{
     console.log("YATA: after getting combined");
 
     // handle toggle
-    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var chainId = $(e.currentTarget).attr("data-val");
     console.log("YATA: chain id"+chainId);
     var td = $(e.currentTarget).parents("td");
     console.log("YATA: chain td");
@@ -85,7 +85,7 @@ $(document).on('click', '.faction-chains-combine', e=>{
 // see report
 $(document).on('click', '.faction-chains-see', e=>{
     e.preventDefault();
-    var chainId = $(e.currentTarget).siblings("input.faction-chain-id").val();
+    var chainId = $(e.currentTarget).attr("data-val");
     $("#content-update").load( "/faction/report/" + chainId, {
         chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     },afterLoad);
