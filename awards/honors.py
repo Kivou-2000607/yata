@@ -460,7 +460,8 @@ d = {
     716: 877813810,  # Wipeout
     717: 254193787,  # Foul Play
     743: 273202925,  # Lavish
-
+    699: 0,  # Collector
+    
     # 17
     371: 668653618,  # Protege
     664: 309095716,  # Mercenary

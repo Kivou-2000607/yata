@@ -1043,6 +1043,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [699]:
+                    # "699": {"name": "Collector","description": "Maintain an impressive display case of collectible items", "type": 16,
+                    type = "Other items"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [273]:
                     # 273 {'name': 'Bargain Hunter', 'description': 'Win 10 auctions', 'type': 16, 'circulation': 8415, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
                     type = "Other items"
