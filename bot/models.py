@@ -1,9 +1,21 @@
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+import re
 
 from player.models import Player
 from faction.models import Faction
 
+def channel_names_reg(value):
+    # thanks Pyrit [2111649]
+    match = re.match(r"\[\s*((\"[a-z])+(\-?[a-z])*\"\s*,{1}\s*)*((\"[a-z])+(\-?[a-z])*\"\s*)?\]", value)
+    if match is None and value != '["*"]':
+        raise ValidationError(
+            _('%(value)s is not valid'),
+            params={'value': value},
+        )
 
 # bot
 class DiscordApp(models.Model):
@@ -44,35 +56,35 @@ class Guild(models.Model):
     verifyAppendFacId = models.BooleanField(default=True, help_text="Append or not the ID in the faction role.")
     verifyDailyVerify = models.BooleanField(default=False, help_text="Do automatic '!verifyAll force' every 12 hours")
     verifyDailyCheck = models.BooleanField(default=False, help_text="Do automatic '!checkFactions force' every 12 hours")
-    verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64, help_text="Name of the verify channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64, help_text="Name of the verify channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # stock module
     stockModule = models.BooleanField(default=False, help_text="Enable the Stock module")
     stockWSSB = models.BooleanField(default=False, help_text="Enable WSSB")
     stockTCB = models.BooleanField(default=False, help_text="Enable TCB")
     stockAlerts = models.BooleanField(default=False, help_text="Enable Alerts")
-    stockChannels = models.CharField(default='["stocks"]', blank=True, max_length=64, help_text="Name of the stock alert channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    stockChannels = models.CharField(default='["stocks"]', blank=True, max_length=64, help_text="Name of the stock alert channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # chain module
     chainModule = models.BooleanField(default=False, help_text="Enable the Chain module")
-    chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64, help_text="Name of the chain channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64, help_text="Name of the chain channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # loot module
     lootModule = models.BooleanField(default=False, help_text="Enable the Loot module")
-    lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64, help_text="Name of the loot channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64, help_text="Name of the loot channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # revive module
     reviveModule = models.BooleanField(default=False, help_text="Enable the Revive module")
-    reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64, help_text="Name of the revive channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    reviveChannels = models.CharField(default='["revive"]', blank=True, max_length=64, help_text="Name of the revive channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # API module
     apiModule = models.BooleanField(default=False, help_text="Enable the API module")
-    apiChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where API commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    apiChannels = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the channels where API commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
     apiRoles = models.CharField(default='["*"]', blank=True, max_length=64, help_text="Name of the role allowed to use the API commands. Keep [\"*\"] for all roles allowed. It has to be the exact role name: [\"RoleA\", \"MyOtherRole\"] (no @)")
 
     # Crimes module
     crimesModule = models.BooleanField(default=False, help_text="Enable Crimes module")
-    crimesChannels = models.CharField(default='["oc"]', blank=True, max_length=64, help_text="Name of the channels where OC commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]")
+    crimesChannels = models.CharField(default='["oc"]', blank=True, max_length=64, help_text="Name of the channels where OC commands are allowed. Keep [\"*\"] for all channels allowed. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # verify repository
     # repoModule = models.BooleanField(default=False)
