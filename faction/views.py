@@ -1771,7 +1771,7 @@ def revivesReport(request, reportId):
             # get the filtered revives
             revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
             if report.filter >= 10:
-                revives_set = revives_set.filter(target_online_status="Online")
+                revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
                 revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
             paginator = Paginator(revives_set, 25)
@@ -1837,7 +1837,7 @@ def revivesList(request, reportId):
             factions = json.loads(report.factions)
             revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
             if report.filter >= 10:
-                revives_set = revives_set.filter(target_online_status="Online")
+                revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
                 revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
             paginator = Paginator(revives_set, 25)

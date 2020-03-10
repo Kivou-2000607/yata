@@ -55,8 +55,6 @@ def getCrontabs():
     return crontabs if len(crontabs) else [1]
 
 
-
-
 # def updateFactionTree(faction, key=None, force=False, reset=False):
 #     # it's not possible to delete all memebers and recreate the base
 #     # otherwise the target list will be lost

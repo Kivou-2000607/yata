@@ -2223,8 +2223,10 @@ class RevivesReport(models.Model):
             if before < 0 or after > 0:
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
-            v["target_hospital_reason"] = "Unkown"  # random.choice(["Hospitalized", "Mugged", "Leave"])
-            v["target_online_status"] = "Unkown"  # random.choice(["Online", "Idle", "Offline"])
+            # flatten last action
+            v["target_last_action_status"] = v["target_last_action"].get("status", "Unkown")
+            v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
+            del v["target_last_action"]
             a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
@@ -2280,7 +2282,7 @@ class RevivesReport(models.Model):
                                "revivesReceived", "revivesReceivedH", "revivesReceivedO", "revivesReceivedB"]
         for revive in allRevives:
 
-            online = 1 if revive.target_online_status in ["Online"] else 0
+            online = 1 if revive.target_last_action_status in ["Online"] else 0
             hospitalized = 1 if revive.target_hospital_reason in ["Hospitalized"] else 0
             both = 1 if (hospitalized and online) else 0
 
@@ -2465,8 +2467,9 @@ class Revive(models.Model):
     target_name = models.CharField(default="target_name", max_length=32)
     target_faction = models.IntegerField(default=0)
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
-    target_online_status = models.CharField(default="Unkown", max_length=16)
-    target_hospital_reason = models.CharField(default="Unkown", max_length=32)
+    target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
+    target_last_action_timestamp = models.IntegerField(default=0)
+    target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=32)
 
     def __str__(self):
         return "{} -> {}".format(self.reviver_factionname, self.target_factionname)
