@@ -2223,8 +2223,8 @@ class RevivesReport(models.Model):
             if before < 0 or after > 0:
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
-            v["target_hospital_reason"] = random.choice(["Hospitalized", "Mugges", "Leave"])
-            v["target_online_status"] = random.choice(["Online", "Idle", "Offline"])
+            v["target_hospital_reason"] = "Unkown"  # random.choice(["Hospitalized", "Mugged", "Leave"])
+            v["target_online_status"] = "Unkown"  # random.choice(["Online", "Idle", "Offline"])
             a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
