@@ -23,27 +23,27 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<script>
+{# <script> #}
 
-$(function () {
-    $("#modify-date-end").datetimepicker({
-        step: 15,
-        onChangeDateTime:function(dp,$input){
-            var d = new Date($input.val());
-            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-            var reportId = $("input#revive-report-id").attr("data-val");
-            $( "#content-update" ).load( "/faction/revives/" + reportId, {
-                end: dUTC/1000, modifyEnd: 1,
-                csrfmiddlewaretoken: getCookie("csrftoken")
-            },afterLoad);
-            $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract ');
-        },
-    });
-});
+{# $(function () { #}
+    {# $("#modify-date-end").datetimepicker({ #}
+        {# step: 15, #}
+        {# onChangeDateTime:function(dp,$input){ #}
+            {# var d = new Date($input.val()); #}
+            {# var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()); #}
+            {# var reportId = $("input#revive-report-id").attr("data-val"); #}
+            {# $( "#content-update" ).load( "/faction/revives/" + reportId, { #}
+                {# end: dUTC/1000, modifyEnd: 1, #}
+                {# csrfmiddlewaretoken: getCookie("csrftoken") #}
+            {# },afterLoad); #}
+            {# $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract '); #}
+        {# }, #}
+    {# }); #}
+{# }); #}
 
-</script>
+{# </script> #}
 
-<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span></h2>
+<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Revives report [{{report.pk}}]{%include "faction/revives/filter-buttons.html"%}&nbsp;&nbsp;Compute report</a></span><span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span></h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>

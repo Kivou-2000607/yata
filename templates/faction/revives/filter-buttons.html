@@ -1,0 +1,13 @@
+{% if report.filter == 0 %}
+    <span id="faction-revives-report-online" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only online</a></span>
+    <span id="faction-revives-report-hospit" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only hospitalized</a></span>
+{% elif report.filter == 10 %}
+    <span id="faction-revives-report-online" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only online</a></span>
+    <span id="faction-revives-report-hospit" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only hospitalized</a></span>
+{% elif report.filter == 1 %}
+    <span id="faction-revives-report-online" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only online</a></span>
+    <span id="faction-revives-report-hospit" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only hospitalized</a></span>
+{% elif report.filter == 11 %}
+    <span id="faction-revives-report-online" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only online</a></span>
+    <span id="faction-revives-report-hospit" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only hospitalized</a></span>
+{% endif %}

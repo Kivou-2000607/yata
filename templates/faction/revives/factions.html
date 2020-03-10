@@ -22,7 +22,6 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
 <table class="center-full-half trshadow faction-revives-report-factions">
     <thead>
             <tr><th colspan="4">Factions</th></tr>
@@ -37,8 +36,8 @@ This file is part of yata.
     {% for f in factions %}
     <tr {%if not f.show %}style="opacity: 0.5"{%endif%}>
         <td class="a">{{f.faction_name|factionURLShort:f.faction_id|safe}}</td>
-        <td class="b">{{f.revivesMade}}</td>
-        <td class="b">{{f.revivesReceived}}</td>
+        <td class="b" title='{% include "faction/revives/factions-tooltip.html" with type=0%}'>{{f.revivesMadeDisp}}</span></td>
+        <td class="b" title='{% include "faction/revives/factions-tooltip.html" with type=1%}'>{{f.revivesReceivedDisp}}</td>
         <td class="c">{% include "faction/revives/toggle.html" %}</td>
     </tr>
     {% endfor %}

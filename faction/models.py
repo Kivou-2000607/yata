@@ -26,6 +26,7 @@ from django.core.exceptions import MultipleObjectsReturned
 import json
 import requests
 import re
+import random
 
 from yata.handy import *
 from player.models import Key
@@ -1941,7 +1942,7 @@ class AttacksReport(models.Model):
                 f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
             except MultipleObjectsReturned:
                 print("{} ERROR with {} {}".format(self, k, v))
-                self.attacksfaction_set.fitler(faction_id=k).delete()
+                self.attacksfaction_set.filter(faction_id=k).delete()
                 f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
 
         print("{} update players".format(self))
@@ -2055,11 +2056,22 @@ class RevivesReport(models.Model):
 
     # global information for the report
     factions = models.TextField(default="[]")
+    filter = models.IntegerField(default=0)  # 0: no filters, 10: online, 01: hosp, 11: both
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
     def __str__(self):
         return format_html("{} revives [{}]".format(self.faction, self.pk))
+
+    def getFilterExt(self):
+        if self.filter == 1:
+            return "H"
+        elif self.filter == 10:
+            return "O"
+        elif self.filter == 11:
+            return "B"
+        else:
+            return ""
 
     def elapsed(self):
         last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
@@ -2211,6 +2223,8 @@ class RevivesReport(models.Model):
             if before < 0 or after > 0:
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
+            v["target_hospital_reason"] = random.choice(["Hospitalized", "Mugges", "Leave"])
+            v["target_online_status"] = random.choice(["Online", "Idle", "Offline"])
             a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
@@ -2262,45 +2276,67 @@ class RevivesReport(models.Model):
         # create factions and players
         f_set = dict({})
         p_set = dict({})
+        revives_count_types = ["revivesMade", "revivesMadeH", "revivesMadeO", "revivesMadeB",
+                               "revivesReceived", "revivesReceivedH", "revivesReceivedO", "revivesReceivedB"]
         for revive in allRevives:
+
+            online = 1 if revive.target_online_status in ["Online"] else 0
+            hospitalized = 1 if revive.target_hospital_reason in ["Hospitalized"] else 0
+            both = 1 if (hospitalized and online) else 0
 
             # handle reviver faction
             if revive.reviver_faction in f_set:
-                n = [f_set[revive.reviver_faction][k] for k in ["revivesMade", "revivesReceived"]]
+                n = [f_set[revive.reviver_faction][k] for k in revives_count_types]
                 n[0] = n[0] + 1
+                n[1] = n[1] + hospitalized
+                n[2] = n[2] + online
+                n[3] = n[3] + both
             else:
-                n = [1, 0]
+                n = [1, hospitalized, online, both, 0, 0, 0, 0]
             f_set[revive.reviver_faction] = {"faction_id": revive.reviver_faction, "faction_name": revive.reviver_factionname,
-                                             "revivesMade": n[0], "revivesReceived": n[1]}
+                                             "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                                             "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
             # handle target faction
             if revive.target_faction in f_set:
-                n = [f_set[revive.target_faction][k] for k in ["revivesMade", "revivesReceived"]]
-                n[1] = n[1] + 1
+                n = [f_set[revive.target_faction][k] for k in revives_count_types]
+                n[4] = n[4] + 1
+                n[5] = n[5] + hospitalized
+                n[6] = n[6] + online
+                n[7] = n[7] + both
             else:
-                n = [0, 1]
+                n = [0, 0, 0, 0, 1, hospitalized, online, both]
             f_set[revive.target_faction] = {"faction_id": revive.target_faction, "faction_name": revive.target_factionname,
-                                            "revivesMade": n[0], "revivesReceived": n[1]}
+                                            "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                                            "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
             # handle reviver player
             if revive.reviver_id in p_set:
-                n = [p_set[revive.reviver_id][k] for k in ["revivesMade", "revivesReceived"]]
+                n = [p_set[revive.reviver_id][k] for k in revives_count_types]
                 n[0] = n[0] + 1
+                n[1] = n[1] + hospitalized
+                n[2] = n[2] + online
+                n[3] = n[3] + both
             else:
-                n = [1, 0]
+                n = [1, hospitalized, online, both, 0, 0, 0, 0]
             p_set[revive.reviver_id] = {"player_id": revive.reviver_id, "player_name": revive.reviver_name,
                                         "player_faction_id": revive.reviver_faction, "player_faction_name": revive.reviver_factionname,
-                                        "revivesMade": n[0], "revivesReceived": n[1]}
+                                        "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                                        "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
             # handle defender player
             if revive.target_id in p_set:
-                n = [p_set[revive.target_id][k] for k in ["revivesMade", "revivesReceived"]]
-                n[1] = n[1] + 1
+                n = [p_set[revive.target_id][k] for k in revives_count_types]
+                n[4] = n[4] + 1
+                n[5] = n[5] + hospitalized
+                n[6] = n[6] + online
+                n[7] = n[7] + both
             else:
-                n = [0, 1]
+                n = [0, 0, 0, 0, 1, hospitalized, online, both]
             p_set[revive.target_id] = {"player_id": revive.target_id, "player_name": revive.target_name,
                                        "player_faction_id": revive.target_faction, "player_faction_name": revive.target_factionname,
-                                       "revivesMade": n[0], "revivesReceived": n[1]}
+                                       "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                                       "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
         print("{} update factions".format(self))
         for k, v in f_set.items():
@@ -2308,7 +2344,7 @@ class RevivesReport(models.Model):
                 f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
             except MultipleObjectsReturned:
                 print("{} ERROR with {} {}".format(self, k, v))
-                self.revivesfaction_set.fitler(faction_id=k).delete()
+                self.revivesfaction_set.filter(faction_id=k).delete()
                 f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
 
         print("{} update players".format(self))
@@ -2340,10 +2376,37 @@ class RevivesFaction(models.Model):
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
+    revivesMadeH = models.IntegerField(default=0)
+    revivesMadeO = models.IntegerField(default=0)
+    revivesMadeB = models.IntegerField(default=0)
+    revivesReceivedH = models.IntegerField(default=0)
+    revivesReceivedO = models.IntegerField(default=0)
+    revivesReceivedB = models.IntegerField(default=0)
+
     show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.faction_name, self.faction_id, self.revivesMade, self.revivesReceived)
+
+    def revivesMadeDisp(self):
+        if self.report.filter == 1:
+            return self.revivesMadeH
+        elif self.report.filter == 10:
+            return self.revivesMadeO
+        elif self.report.filter == 11:
+            return self.revivesMadeB
+        else:
+            return self.revivesMade
+
+    def revivesReceivedDisp(self):
+        if self.report.filter == 1:
+            return self.revivesReceivedH
+        elif self.report.filter == 10:
+            return self.revivesReceivedO
+        elif self.report.filter == 11:
+            return self.revivesReceivedB
+        else:
+            return self.revivesReceived
 
 
 class RevivesPlayer(models.Model):
@@ -2357,10 +2420,37 @@ class RevivesPlayer(models.Model):
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
 
+    revivesMadeH = models.IntegerField(default=0)
+    revivesMadeO = models.IntegerField(default=0)
+    revivesMadeB = models.IntegerField(default=0)
+    revivesReceivedH = models.IntegerField(default=0)
+    revivesReceivedO = models.IntegerField(default=0)
+    revivesReceivedB = models.IntegerField(default=0)
+
     show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.player_name, self.player_id, self.revivesMade, self.revivesReceived)
+
+    def revivesMadeDisp(self):
+        if self.report.filter == 1:
+            return self.revivesMadeH
+        elif self.report.filter == 10:
+            return self.revivesMadeO
+        elif self.report.filter == 11:
+            return self.revivesMadeB
+        else:
+            return self.revivesMade
+
+    def revivesReceivedDisp(self):
+        if self.report.filter == 1:
+            return self.revivesReceivedH
+        elif self.report.filter == 10:
+            return self.revivesReceivedO
+        elif self.report.filter == 11:
+            return self.revivesReceivedB
+        else:
+            return self.revivesReceived
 
 
 class Revive(models.Model):
@@ -2375,6 +2465,8 @@ class Revive(models.Model):
     target_name = models.CharField(default="target_name", max_length=32)
     target_faction = models.IntegerField(default=0)
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
+    target_online_status = models.CharField(default="Unkown", max_length=16)
+    target_hospital_reason = models.CharField(default="Unkown", max_length=32)
 
     def __str__(self):
         return "{} -> {}".format(self.reviver_factionname, self.target_factionname)

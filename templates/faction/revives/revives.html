@@ -32,6 +32,8 @@ This file is part of yata.
             <th>Faction</th>
             <th>Target</th>
             <th>Faction</th>
+            <th title="Hospital reason">Hospital</th>
+            <th title="Online status"><i class="fas fa-circle"></i></th>
     </thead>
     <tbody>
     {% if revives|length %}
@@ -43,6 +45,8 @@ This file is part of yata.
             <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
             <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+            <td class="c">{{v.target_hospital_reason}}</td>
+            <td class="d" title="{{v.target_online_status}}" data-val='{% if v.target_online_status == "Offline" %}-1{% elif v.target_online_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_online_status}}"></i></td>
         </tr>
     {% endfor %}
 

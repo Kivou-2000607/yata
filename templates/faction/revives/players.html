@@ -38,8 +38,8 @@ This file is part of yata.
             <tr>
                 <td class="a">{{p.player_name|playerURLShort:p.player_id|safe}}</td>
                 <td class="b">{{p.player_faction_name|factionURLShort:p.player_faction_id|safe}}</td>
-                <td class="c">{{p.revivesMade}}</td>
-                <td class="c">{{p.revivesReceived}}</td>
+                <td class="c" title='{% include "faction/revives/players-tooltip.html" with type=0%}'>{{p.revivesMadeDisp}}</td>
+                <td class="c" title='{% include "faction/revives/players-tooltip.html" with type=1%}'>{{p.revivesReceivedDisp}}</td>
             </tr>
         {% endfor %}
         <tr><td colspan="4">

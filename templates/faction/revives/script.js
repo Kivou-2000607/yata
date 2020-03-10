@@ -80,3 +80,15 @@ $(document).on('click', '#faction-revives-report-update', e=>{
     }, afterLoad);
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
 });
+
+// filters
+$(document).on('click', 'span[id^="faction-revives-report-"]', e=>{
+    e.preventDefault();
+    var reportId = $(e.currentTarget).attr("data-val");
+    var type = e.currentTarget.id.split("-").pop();
+    $( "#content-update" ).load( "/faction/revives/" + reportId, {
+        reportId: reportId, type: type,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }, afterLoad);
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+});

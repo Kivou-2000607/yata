@@ -1682,17 +1682,31 @@ def revivesReport(request, reportId):
                 return render(request, page, context)
 
             # if modify end date
-            if 'modifyEnd' in request.POST:
-                tse = int(request.POST.get("end", 0))
-                if report.start < tse:
-                    report.end = tse
-                    report.live = False
-                    report.computing = True
-                    report.assignCrontab()
-                    report.revive_set.filter(timestamp__gt=tse).delete()
-                    report.last = min(report.end, report.last)
-                    report.state = 0
-                    report.save()
+            # if 'modifyEnd' in request.POST:
+            #     tse = int(request.POST.get("end", 0))
+            #     if report.start < tse:
+            #         report.end = tse
+            #         report.live = False
+            #         report.computing = True
+            #         report.assignCrontab()
+            #         report.revive_set.filter(timestamp__gt=tse).delete()
+            #         report.last = min(report.end, report.last)
+            #         report.state = 0
+            #         report.save()
+
+            if 'type' in request.POST:
+                if not player.factionAA:
+                    return returnError(type=403, msg="You need AA rights.")
+
+                type = request.POST["type"]
+                online = not report.filter >= 10 if type == "online" else report.filter >= 10
+                hospit = not bool(report.filter % 10) if type == "hospit" else bool(report.filter % 10)
+
+                filter = 1 if hospit else 0
+                report.filter = filter + 10 if online else filter
+                report.save()
+
+                # report.fillReport()
 
             if 'update' in request.POST:
 
@@ -1701,19 +1715,21 @@ def revivesReport(request, reportId):
 
                 report.fillReport()
 
+            e = report.getFilterExt()
+
             o_pl = int(request.GET.get('o_pl', 0)) if int(request.GET.get('o_pl', 0)) else int(request.POST.get('o_pl', 0))
-            orders_pl = [False, ["-revivesMade", "-revivesReceived"], ["-revivesReceived", "-revivesMade"]]
+            orders_pl = [False, ["-revivesMade" + e, "-revivesReceived" + e], ["-revivesReceived" + e, "-revivesMade" + e]]
             order_pl = orders_pl[o_pl]
 
             o_fa = int(request.GET.get('o_fa', 0)) if int(request.GET.get('o_fa', 0)) else int(request.POST.get('o_pl', 0))
-            orders_fa = [False, ["-revivesMade", "-revivesReceived"], ["-revivesReceived", "-revivesMade"]]
+            orders_fa = [False, ["-revivesMade" + e, "-revivesReceived" + e], ["-revivesReceived" + e, "-revivesMade" + e]]
             order_fa = orders_fa[o_fa]
 
             if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
                 if order_fa:
                     paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
                 else:
-                    paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade", "-revivesReceived"), 10)
+                    paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade" + e, "-revivesReceived" + e), 10)
                 p_fa = request.GET.get('p_fa')
                 factions = paginator.get_page(p_fa)
                 page = "faction/revives/factions.html"
@@ -1724,7 +1740,7 @@ def revivesReport(request, reportId):
                 if order_pl:
                     paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]), 10)
                 else:
-                    paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade", "-revivesReceived"), 10)
+                    paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade" + e, "-revivesReceived" + e), 10)
                 p_pl = request.GET.get('p_pl')
                 players = paginator.get_page(p_pl)
                 page = "faction/revives/players.html"
@@ -1752,21 +1768,27 @@ def revivesReport(request, reportId):
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
-            paginator = Paginator(report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp"), 25)
+            # get the filtered revives
+            revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
+            if report.filter >= 10:
+                revives_set = revives_set.filter(target_online_status="Online")
+            if bool(report.filter % 10):
+                revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
+            paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
 
             if order_fa:
                 paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
             else:
-                paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade", "-revivesReceived"), 10)
+                paginator = Paginator(report.revivesfaction_set.order_by("-revivesMade" + e, "-revivesReceived" + e), 10)
             p_fa = request.GET.get('p_fa') if not p_fa else p_fa
             factions = paginator.get_page(p_fa)
 
             if order_pl:
                 paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]), 10)
             else:
-                paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade", "-revivesReceived"), 10)
+                paginator = Paginator(report.revivesplayer_set.filter(show=True).order_by("-revivesMade" + e, "-revivesReceived" + e), 10)
             p_pl = request.GET.get('p_pl')
             players = paginator.get_page(p_pl)
 
@@ -1813,7 +1835,12 @@ def revivesList(request, reportId):
                 return render(request, 'yata/error.html', context)
 
             factions = json.loads(report.factions)
-            paginator = Paginator(report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp"), 25)
+            revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
+            if report.filter >= 10:
+                revives_set = revives_set.filter(target_online_status="Online")
+            if bool(report.filter % 10):
+                revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
+            paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
 
