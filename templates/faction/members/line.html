@@ -18,6 +18,7 @@ This file is part of yata.
 {% endcomment %}
 
 {% load humanize %}
+{% load static %}
 {% load mathfilters %}
 {% load app_filters %}
 
@@ -29,11 +30,11 @@ This file is part of yata.
     <td class="b" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
     <td class="c player-status-{{member.color}}">{{member.description|cleanhtml}}
         {% if member.details and member.until%}
-            <span class="thelp flush-right" title="{{member.details|cleanhtml}}<br>Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}&#10;Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
         {% elif member.details %}
-            <span class="thelp flush-right" title="{{member.details|cleanhtml}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}"><i class="fas fa-question-circle"></i></span>
         {% elif member.until %}
-            <span class="thelp flush-right" title="Until {{member.until|ts2date}}." rel="tooltip"><i class="fas fa-question-circle"></i></span>
+            <span class="thelp flush-right" title="Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
         {% endif %}
     </td>
     <td class="d" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>

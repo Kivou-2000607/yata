@@ -16,6 +16,7 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
+{% load static %}
 
 {% if errorMessage %}
     <span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
@@ -35,9 +36,9 @@ This file is part of yata.
     </span>
 {% else %}
     {% if member.shareE == -1 %}
-        <span class="error" title="{{member.name}} is not on YATA" rel="tooltip"><i class="fas fa-user-slash"></i></span>
+        <span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
     {% elif member.shareE == 0 %}
-        <span class="warning" title="{{member.name}} does not wish to share" rel="tooltip"><i class="fas fa-user-times"></i></span>
+        <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
     {% elif member.shareE == 1 %}
         {{member.energy}}
     {% endif %}
