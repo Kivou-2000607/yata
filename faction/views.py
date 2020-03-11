@@ -1780,7 +1780,7 @@ def revivesReport(request, reportId):
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
-                revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
+                revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
@@ -1846,7 +1846,7 @@ def revivesList(request, reportId):
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
-                revives_set = revives_set.filter(target_hospital_reason="Hospitalized")
+                revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
