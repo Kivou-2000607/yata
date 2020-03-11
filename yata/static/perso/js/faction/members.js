@@ -3,7 +3,7 @@ $(document).on('click', 'tr.faction-member-refresh > td:not(.dont-touch-me)', fu
     e.preventDefault();
     var reload = $(this).closest("tr");
     var memberId = reload.attr("data-val");
-    reload.load( "/faction/updateMember/", {
+    reload.load( "/faction/members/update/", {
         memberId: memberId,
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');
@@ -13,7 +13,7 @@ $(document).on('click', 'tr.faction-member-refresh > td:not(.dont-touch-me)', fu
 $(document).on('click', '.faction-member-shareE', e=>{
     e.preventDefault();
     var td = $(e.currentTarget.offsetParent);
-    td.load( "/faction/toggleMemberShare/", {
+    td.load( "/faction/members/toggle/", {
         type: "energy",
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
@@ -23,7 +23,7 @@ $(document).on('click', '.faction-member-shareE', e=>{
 $(document).on('click', '.faction-member-shareN', e=>{
     e.preventDefault();
     var td = $(e.currentTarget.offsetParent);
-    td.load( "/faction/toggleMemberShare/", {
+    td.load( "/faction/members/toggle/", {
         type: "nerve",
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
@@ -41,7 +41,7 @@ $(document).on('click', '#member-refresh', function(e){
         if(i) { wait = 1000; }
         (function(index) {
             setTimeout(function() {
-                reload.load( "/faction/updateMember/", {
+                reload.load( "/faction/members/update/", {
                     memberId: memberId,
                     csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
                 }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');

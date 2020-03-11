@@ -31,8 +31,6 @@ $(document).on('change', '.faction-bb-enter-challenge', e=>{
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Adding challenge '+add);
-
-
 });
 
 // big brother remove

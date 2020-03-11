@@ -41,3 +41,21 @@ function fancyTimeFormat(time)
     ret += "" + secs;
     return ret;
 }
+
+const nav = (url) =>{
+     window.history.pushState(null, document.title, url);
+};
+
+// const nav = (r,s,x,url) =>{
+//     console.log(r);
+//     console.log(s);
+//     console.log(x);
+//     console.log(url);
+//     window.history.pushState(r, document.title, url);
+// };
+
+// parse cookie
+const getCookie = (s)=>{
+    let parse=RegExp(""+s+"[^;]+").exec(document.cookie);
+    return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
+};

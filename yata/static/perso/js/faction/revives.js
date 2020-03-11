@@ -30,7 +30,7 @@ $(document).on('click', '#create-report-revives', e=>{
     $( "#content-update" ).load( "/faction/revives/", {
         start: start, end: end, live: live, type: "new",
         csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating report ');
 });
 
@@ -49,7 +49,7 @@ $(document).on('click', '.faction-revives-reports-see', e=>{
     var reportId = $(e.currentTarget).attr("data-val");
     $("#content-update").load( "/faction/revives/" + reportId, {
         reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    }, nav("/faction/revives/" + reportId));
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report');
     $("div.error").hide();
 });

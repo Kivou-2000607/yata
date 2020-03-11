@@ -22,11 +22,10 @@ $(document).on('click', '.wall-toggle', e=>{
 $(document).on('click', '.wall-report-add', e=>{
     e.preventDefault();
     var wallId = $(e.currentTarget).closest("td").attr("data-val");
-    console.log(wallId);
     $( "#content-update" ).load( "/faction/attacks/", {
         type: "new", wallId: wallId,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    }, nav("/faction/attacks/"));
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating report ');
 });
 
@@ -34,10 +33,9 @@ $(document).on('click', '.wall-report-add', e=>{
 $(document).on('click', '.wall-report-see', e=>{
     e.preventDefault();
     var reportId = $(e.currentTarget).attr("data-val");
-    console.log(reportId);
     $("#content-update").load( "/faction/attacks/" + reportId, {
         reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    }, nav("/faction/attacks/" + reportId));
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report');
     $("div.error").hide();
 });

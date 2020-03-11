@@ -16,15 +16,15 @@ urlpatterns = [
 
     # SECTION: members
     re_path(r'^members/$', views.members, name='members'),
-    re_path(r'^updateMember/$', views.updateMember, name='updateMember'),
-    re_path(r'^toggleMemberShare/$', views.toggleMemberShare, name='toggleMemberShare'),
+    re_path(r'^members/update/$', views.updateMember, name='updateMember'),
+    re_path(r'^members/toggle/$', views.toggleMemberShare, name='toggleMemberShare'),
 
     # SECTION: chain
     re_path(r'^chains/$', views.chains, name='chains'),
-    re_path(r'^report/(?P<chainId>\w+)$', views.report, name='report'),
-    re_path(r'^report/manage/$', views.manageReport, name='manageReport'),
-    re_path(r'^report/individual/$', views.iReport, name='iReport'),
-    re_path(r'^combined/$', views.combined, name='combined'),
+    re_path(r'^chains/manage/$', views.manageReport, name='manageReport'),
+    re_path(r'^chains/individual/$', views.iReport, name='iReport'),
+    re_path(r'^chains/combined/$', views.combined, name='combined'),
+    re_path(r'^chains/(?P<chainId>\w+)$', views.report, name='report'),
 
     # SECTION: wall
     re_path(r'^walls/$', views.walls, name='walls'),

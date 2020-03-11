@@ -49,7 +49,7 @@ $(document).on('click', '.faction-attacks-reports-see', e=>{
     var reportId = $(e.currentTarget).attr("data-val");
     $("#content-update").load( "/faction/attacks/" + reportId, {
         reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    }, nav("/faction/attacks/" + reportId));
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report');
     $("div.error").hide();
 });

@@ -74,6 +74,13 @@ This file is part of yata.
 
 {% if view.attacksReport %}
     {% include "faction/attacks/report.html" %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% include "faction/attacks/index.html" %}
 {% endif %}
 
 {% if view.revivesReports %}

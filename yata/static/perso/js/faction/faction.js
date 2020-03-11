@@ -1,12 +1,7 @@
 // update history on load
 const afterLoad = (r,s,x) =>{
+    console.log(x);
     window.history.pushState(null, document.title, x.url);
-};
-
-// parse cookie
-const getCookie = (s)=>{
-    let parse=RegExp(""+s+"[^;]+").exec(document.cookie);
-    return decodeURIComponent(!!parse ? parse.toString().replace(/^[^=]+./,"") : "");
 };
 
 // nav links
@@ -15,7 +10,7 @@ $(document).on('click', 'table.faction-categories td', e=>{
     var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
     $( "#content-update" ).load( "/faction/"+l+"/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    }, nav("/faction/"+l+"/"));
     $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Loading '+l)
     $("div.error").hide();
 });

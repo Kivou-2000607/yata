@@ -35,6 +35,7 @@ from faction.functions import *
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 MINIMAL_API_ATTACKS_STOP = 10
+CACHE_RESPONSE = 10
 
 CHAIN_ATTACKS_STATUS = {
 
@@ -1161,7 +1162,7 @@ class Chain(models.Model):
         print("{} cache = {}s".format(self, cache))
 
         # in case cache
-        if cache > 5:
+        if cache > CACHE_RESPONSE:
             print('{} probably cached response... (blank turn)'.format(self))
             self.state = -4
             self.save()
@@ -1259,7 +1260,7 @@ class Chain(models.Model):
                 self.save()
                 return self.state
 
-            if len(apiAttacks) < 2 or not newEntry:
+            if len(apiAttacks) < MINIMAL_API_ATTACKS_STOP or not newEntry:
                 # empty api call
 
                 if self.addToEnd > 3600:
@@ -1801,7 +1802,7 @@ class AttacksReport(models.Model):
         print("{} cache = {}s".format(self, cache))
 
         # in case cache
-        if cache > 5:
+        if cache > CACHE_RESPONSE:
             print('{} probably cached response... (blank turn)'.format(self))
             self.state = -4
             self.save()
@@ -2193,7 +2194,7 @@ class RevivesReport(models.Model):
         cache = abs(nowTS - tornTS)
         print("{} cache = {}s".format(self, cache))
         # in case cache
-        if cache > 5:
+        if cache > CACHE_RESPONSE:
             print('{} probably cached response... (blank turn)'.format(self))
             self.state = -4
             self.save()
@@ -2246,7 +2247,7 @@ class RevivesReport(models.Model):
             self.save()
             return -6
 
-        if len(apiRevives) < 2 and not self.live:
+        if len(apiRevives) < MINIMAL_API_ATTACKS_STOP and not self.live:
             print("{} no api entry for non live chain [stop]".format(self))
             self.computing = False
             self.crontab = 0

@@ -38,9 +38,9 @@ This file is part of yata.
         <ul>
             {% for report in chainsreports %}
                 {% if report.live %}
-                    <li><a href="/faction/report/{{report.tId}}">Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:report" report.tId %}'>Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href="/faction/report/{{report.tId}}">Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -50,9 +50,9 @@ This file is part of yata.
             <ul>
             {% for report in attacksreports %}
                 {% if report.live %}
-                    <li><a href="/faction/attacks/{{report.pk}}">Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href="/faction/attacks/{{report.pk}}">Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
             </ul>
@@ -62,9 +62,9 @@ This file is part of yata.
             <ul>
             {% for report in revivesreports %}
                 {% if report.live %}
-                    <li><a href="/faction/revives/{{report.pk}}">Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                    <li><a href='{% url "faction:revives" report.pk %}'>Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% else %}
-                    <li><a href="/faction/revives/{{report.pk}}">Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% endif %}
             {% endfor %}
             </ul>

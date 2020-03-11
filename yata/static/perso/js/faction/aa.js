@@ -24,10 +24,12 @@ $(document).on('change', '#faction-aa-change-threshold', e=>{
 $(document).on('click', 'a[id^=faction-aa-toggle-poster]', e=>{
     e.preventDefault();
     type = e.currentTarget.id.split("-").pop();
-    $(e.currentTarget).parents("div#faction-poster-main").load( "/faction/configurations/poster/", {
+    var reload = $(e.currentTarget).parents("div#faction-poster-main");
+    var divspinner = '<div style="text-align: center; height: '+reload.css("height")+';">'+spinner+'</div>'
+    reload.load( "/faction/configurations/poster/", {
         type: type,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<p>'+spinner+'</p>');
+    }).html(divspinner);
 });
 
 // parameters
@@ -37,10 +39,12 @@ $(document).on('change', '[id^="faction-poster-"]', e=>{
     var id = $(e.currentTarget).attr("id").split("-");
     var p = id.pop();
     var t = id.pop();
-    $(e.currentTarget).parents("div#faction-poster-main").load( "/faction/configurations/poster/", {
+    var reload = $(e.currentTarget).parents("div#faction-poster-main");
+    var divspinner = '<div style="text-align: center; height: '+reload.css("height")+';">'+spinner+'</div>'
+    reload.load( "/faction/configurations/poster/", {
         posterConf: 1, t: t, p: p, v: v,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<p>'+spinner+'</p>');
+    }).html(divspinner);
 });
 
 // events delete
