@@ -23,7 +23,7 @@ class Revive(models.Model):
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
     target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
-    target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=32)
+    target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
 
     paid = models.BooleanField(default=False)
 
