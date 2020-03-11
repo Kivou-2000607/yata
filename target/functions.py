@@ -117,12 +117,13 @@ def updateRevives(player):
         player_revives.filter(timestamp__lt=lastMonth).delete()
 
         for k, v in revives.items():
-            if not len(player_revives.filter(tId=int(k))) and v.get("timestamp", 0) > lastMonth:
-                del revives[k]["reviver_id"]
-                del revives[k]["reviver_name"]
-                del revives[k]["reviver_faction"]
-                del revives[k]["reviver_factionname"]
-                player.revive_set.create(tId=k, **v)
+            exists = len(player_revives.filter(tId=int(k)))
+            old = v.get("timestamp", 0) < lastMonth
+            if not old:
+                revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unkown")
+                revives[k]["target_last_action_timestamp"] = revives[k]["target_last_action"].get("timestamp", 0)
+                del v["target_last_action"]
+                print(player.revive_set.update_or_create(tId=k, defaults=v))
 
         player.save()
 

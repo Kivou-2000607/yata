@@ -13,10 +13,18 @@ class Revive(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0)
     timestamp = models.IntegerField(default=0)
+    reviver_id = models.IntegerField(default=0)
+    reviver_name = models.CharField(default="reviver_name", max_length=32)
+    reviver_faction = models.IntegerField(default=0)
+    reviver_factionname = models.CharField(default="reviver_factionname", null=True, blank=True, max_length=64)
     target_id = models.IntegerField(default=0)
     target_name = models.CharField(default="target_name", max_length=32)
     target_faction = models.IntegerField(default=0)
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
+    target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
+    target_last_action_timestamp = models.IntegerField(default=0)
+    target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=32)
+
     paid = models.BooleanField(default=False)
 
 

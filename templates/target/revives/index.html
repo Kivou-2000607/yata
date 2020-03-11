@@ -26,7 +26,8 @@ This file is part of yata.
         $(document).ready(function() {
             $("#target-revives").tablesorter({
                 textExtraction: {
-                  3: function(node, table, cellIndex) { return $(node).find("input.paid").val(); },
+                  6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  7: function(node, table, cellIndex) { return $(node).find("input.paid").val(); },
                 },
                 cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
         });
@@ -34,21 +35,29 @@ This file is part of yata.
 
 <h2 class="title">List of recent revives</h2>
 <div class="module">
-    <table id="target-revives" class="center trshadow target-revives">
+    <table id="target-revives" class="center-medium trshadow target-revives">
         <thead>
             <tr>
                 <th>Time</th>
+                <th>Reviver</th>
+                <th>Faction</th>
                 <th>Target</th>
                 <th>Faction</th>
+                <th title="Hospital reason">Hospital</th>
+                <th title="Online status"><i class="fas fa-circle"></i></th>
                 <th>Paid</th>
         </thead>
         <tbody>
         {% for v in revives %}
         <tr>
             <td class="a">{{v.timestamp|ts2date}}</td>
+            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
+            <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
             <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
-            <td class="c">
+            <td class="c">{{v.target_hospital_reason}}</td>
+            <td class="d" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
+            <td class="e">
                 {% include "target/revives/buttons.html" with revive=v %}
             </td>
         </tr>
