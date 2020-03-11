@@ -2284,7 +2284,7 @@ class RevivesReport(models.Model):
         for revive in allRevives:
 
             online = 1 if revive.target_last_action_status in ["Online"] else 0
-            hospitalized = 1 if revive.target_hospital_reason in ["Hospitalized"] else 0
+            hospitalized = 1 if revive.target_hospital_reason.split(" ")[0] in ["Hospitalized"] else 0
             both = 1 if (hospitalized and online) else 0
 
             # handle reviver faction

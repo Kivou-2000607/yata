@@ -55,7 +55,7 @@ This file is part of yata.
             <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
             <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
-            <td class="c">{{v.target_hospital_reason}}</td>
+            <td class="c">{{v.target_hospital_reason|cleanhtml}}</td>
             <td class="d" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
             <td class="e">
                 {% include "target/revives/buttons.html" with revive=v %}
