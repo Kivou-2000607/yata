@@ -1798,6 +1798,8 @@ def revivesReport(request, reportId):
             for r in revives_set:
                 revivers[r.reviver_id] = r.reviver_name
                 targets[r.target_id] = r.target_name
+            revivers = sorted(revivers.items(), key=lambda x: x[0])
+            targets = sorted(targets.items(), key=lambda x: x[0])
 
             if order_fa:
                 paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
@@ -1865,7 +1867,6 @@ def revivesList(request, reportId):
                     report.player_filter = int(request.POST["playerId"])
                 report.save()
 
-            print(report.player_filter)
             factions = json.loads(report.factions)
 
             if report.player_filter:
@@ -1886,6 +1887,9 @@ def revivesList(request, reportId):
             for r in revives_set:
                 revivers[r.reviver_id] = r.reviver_name
                 targets[r.target_id] = r.target_name
+            revivers = sorted(revivers.items(), key=lambda x: x[0])
+            targets = sorted(targets.items(), key=lambda x: x[0])
+
             if p_re is not None:
                 return render(request, 'faction/revives/revives.html', {'report': report, 'revives': revives, 'revivers': revivers, 'targets': targets})
             else:

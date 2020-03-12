@@ -2,16 +2,16 @@
     {% if type == "targets" %}
         <select class="faction-revive-header-filter">
             <option value="0" selected="selected" disabled>Targets</option>
-            {% for tId, name in targets.items %}
-                <option value="{{report.pk}}-{{tId}}">{{name}} [{{tId}}]</option>
+            {% for t in targets %}
+                <option value="{{report.pk}}-{{t.0}}">{{t.1}} [{{t.0}}]</option>
             {% endfor %}
             <option value="{{report.pk}}-{{report.player_filter}}">All</option>
         </select>
     {% else %}
         <select class="faction-revive-header-filter">
             <option value="0" selected="selected" disabled>Revivers</option>
-            {% for tId, name in revivers.items %}
-            <option value="{{report.pk}}-{{tId}}">{{name}} [{{tId}}]</option>
+            {% for t in revivers %}
+            <option value="{{report.pk}}-{{t.0}}">{{t.1}} [{{t.0}}]</option>
             {% endfor %}
             <option value="{{report.pk}}-{{report.player_filter}}">All</option>
         </select>
