@@ -1724,11 +1724,11 @@ def revivesReport(request, reportId):
 
             e = report.getFilterExt()
 
-            o_pl = int(request.GET.get('o_pl', 0)) if int(request.GET.get('o_pl', 0)) else int(request.POST.get('o_pl', 0))
+            o_pl = int(request.GET.get('o_pl', 1)) if int(request.GET.get('o_pl', 1)) else int(request.POST.get('o_pl', 1))
             orders_pl = [False, ["-revivesMade" + e, "-revivesReceived" + e], ["-revivesReceived" + e, "-revivesMade" + e]]
             order_pl = orders_pl[o_pl]
 
-            o_fa = int(request.GET.get('o_fa', 0)) if int(request.GET.get('o_fa', 0)) else int(request.POST.get('o_pl', 0))
+            o_fa = int(request.GET.get('o_fa', 1)) if int(request.GET.get('o_fa', 1)) else int(request.POST.get('o_pl', 1))
             orders_fa = [False, ["-revivesMade" + e, "-revivesReceived" + e], ["-revivesReceived" + e, "-revivesMade" + e]]
             order_fa = orders_fa[o_fa]
 
@@ -1879,7 +1879,7 @@ def revivesList(request, reportId):
             if bool(report.filter % 10):
                 revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
             paginator = Paginator(revives_set, 25)
-            p_re = request.GET.get('p_re', 0)
+            p_re = request.GET.get('p_re', 1)
             revives = paginator.get_page(p_re)
 
             revivers = dict({})
@@ -1935,10 +1935,12 @@ def armory(request):
             # filter start/end if asked
             tss = int(request.POST.get("start", 0))
             if tss:
+                tss = min(int(request.POST.get("start", 0)), end)
                 print("filter tss {}".format(timestampToDate(tss)))
                 news = news.filter(timestamp__gt=tss - 1)
             tse = int(request.POST.get("end", 0))
             if tse:
+                tse = max(int(request.POST.get("end", 0)), start)
                 print("filter tse {}".format(timestampToDate(tse)))
                 news = news.filter(timestamp__lt=tse + 1)
 
@@ -2058,21 +2060,25 @@ def armory(request):
                 if k in ["Funds"]:
                     armoryType["Funds"][k] = v
 
-            logs = dict({})
             if player.factionAA:
+                logs = faction.log_set.order_by("timestamp").all()
+                logtmp = dict({})
                 r = 0
                 m = 0
-                for i, log in enumerate(faction.log_set.order_by("timestamp").all()):
-                    if i:
-                        logs[log.timestamp] = [log.money, log.donationsmoney, log.money - log.donationsmoney, log.respect, (log.money - log.donationsmoney) - m, log.respect - r]
+                for log in logs:
+                    logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
+                    m = (log.money - log.donationsmoney)
                     r = log.respect
-                    m = log.money - log.donationsmoney
 
-            logs = sorted(logs.items(), key=lambda x: x[0], reverse=True)
+                logs = faction.log_set.order_by("-timestamp").all()
+                for log in logs:
+                    log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
+                    log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
+                logs = Paginator(logs, 7).get_page(1)
+            else:
+                logs = []
 
-            paginator = Paginator(news, 25)
-            page_number = request.GET.get('page')
-            news = paginator.get_page(page_number)
+            news = Paginator(news, 50).get_page(1)
 
             context = {'player': player, 'news': news, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             if message:
@@ -2088,7 +2094,7 @@ def armory(request):
         return returnError()
 
 
-def armoryList(request):
+def armoryNews(request):
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
@@ -2113,13 +2119,48 @@ def armoryList(request):
             if tse:
                 news = news.filter(timestamp__lt=tse + 1)
 
-            paginator = Paginator(news, 25)
-            page_number = request.GET.get('page')
+            news = Paginator(news, 50).get_page(request.GET.get('page'))
+            return render(request, 'faction/armory/news.html', {'news': news})
 
-            if page_number is not None:
-                return render(request, 'faction/armory/news.html', {'news': paginator.get_page(page_number)})
-            else:
-                return returnError(type=403, msg="You need to get a page.")
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def armoryLogs(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found in the database."}
+                return render(request, 'yata/error.html', context)
+
+            if not player.factionAA:
+                return render(request, 'faction/armory/logs.html', {'logs': []})
+
+            logs = faction.log_set.order_by("timestamp").all()
+            logtmp = dict({})
+            r = 0
+            m = 0
+            for log in logs:
+                logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
+                m = (log.money - log.donationsmoney)
+                r = log.respect
+
+            logs = faction.log_set.order_by("-timestamp").all()
+            for log in logs:
+                log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
+                log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
+
+            logs = Paginator(logs, 7).get_page(request.GET.get('page'))
+
+            return render(request, 'faction/armory/logs.html', {'logs': logs})
 
         else:
             return returnError(type=403, msg="You might want to log in.")

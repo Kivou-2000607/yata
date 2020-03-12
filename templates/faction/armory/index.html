@@ -103,7 +103,7 @@ $(document).ready(function() {
 
 
 {% if armory|length %}
-<h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown<a href="{% url 'faction:armoryList' %}" class="flush-right"><i class="fas fa-eye"></i>&nbsp;&nbsp;See list of news</a></h2>
+<h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown</h2>
 <div class="module chain-armory">
     <table class="center faction-armory-filter">
         <thead>
@@ -188,8 +188,8 @@ $(document).ready(function() {
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Faction Money', 'Respect'],
-            {% for a, v in logs %}
-                [new Date({{a|mul:1000}}), {{v.2}}, {{v.3}}],
+            {% for log in logs %}
+                [new Date({{log.timestamp|mul:1000}}), {{log.money|sub:log.donationsmoney}}, {{log.respect}}],
             {% endfor %}
         ]);
 
@@ -215,33 +215,11 @@ $(document).ready(function() {
 
     <hr class="sep">
 
-    <table class="center-medium trshadow faction-networth">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Vault</th>
-            <th>Deposit</th>
-            <th>Faction Money</th>
-            <th>Money gain</th>
-            <th>Respect</th>
-            <th>Respect gain</th>
-        </tr>
-        </thead>
-        <tbody>
-            {% for a, v in logs %}
-            <tr {% if forloop.first %}class="today"{% endif %}>
+    <div class="pagination-list">
+      {% include "faction/armory/logs.html"%}
+    </div>
 
-                <td class="a" data-val="{{a}}">{{a|ts2date:"%Y/%m/%d"}}</td>
-                <td class="b">${{v.0|intcomma}}</td>
-                <td class="b">${{v.1|intcomma}}</td>
-                <td class="b">${{v.2|intcomma}}</td>
-                <td class="b">{{v.4|signColor|intcomma}}</td>
-                <td class="b">{{v.3|intcomma}}</td>
-                <td class="b">{{v.5|signColor|intcomma}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
     <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
 </div>
 {% endif %}
