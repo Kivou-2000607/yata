@@ -63,13 +63,13 @@ This file is part of yata.
             $(this).html(spinner);
         });
 
-        $(document).on('click', 'a.news-read', function(e){
-            e.preventDefault();
-            $(this).closest("form").load("/player/readNews/", {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $(this).closest("div").fadeOut(2000);
-        });
+        // $(document).on('click', 'a.news-read', function(e){
+        //     e.preventDefault();
+        //     $(this).closest("form").load("/player/readNews/", {
+        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        //     });
+        //     $(this).closest("div").fadeOut(2000);
+        // });
 
         // pagination breakdown
         $(document).on('click', 'a.page-link', function(e){

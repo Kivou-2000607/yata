@@ -190,18 +190,21 @@ table.center {
   width:50%;
   margin-left:25%;
   margin-right:25%;
+  border: 1px solid #eee;
 }
 
 table.center-medium {
   width:65%;
   margin-left:17.5%;
   margin-right:17.5%;
+  border: 1px solid #eee;
 }
 
 table.center-large {
   width:95%;
   margin-left:2.5%;
   margin-right:2.5%;
+  border: 1px solid #eee;
 }
 
 table.center-full-half {

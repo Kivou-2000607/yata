@@ -1775,8 +1775,17 @@ def revivesReport(request, reportId):
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
-            # get the filtered revives
-            revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
+            # handle player filter
+            report.player_filter = 0
+            report.save()
+
+            if report.player_filter:
+                revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
+            else:
+                revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+
+            # revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+            revives_set = report.revive_set.filter(revivesFilter).order_by("-timestamp")
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
@@ -1784,6 +1793,11 @@ def revivesReport(request, reportId):
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
+            revivers = dict({})
+            targets = dict({})
+            for r in revives_set:
+                revivers[r.reviver_id] = r.reviver_name
+                targets[r.target_id] = r.target_name
 
             if order_fa:
                 paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
@@ -1810,6 +1824,8 @@ def revivesReport(request, reportId):
                             'revives': revives,
                             'o_pl': o_pl,
                             'o_fa': o_fa,
+                            'revivers': revivers,
+                            'targets': targets,
                             'view': {'revivesReport': True}})  # views
 
             return render(request, page, context)
@@ -1822,6 +1838,7 @@ def revivesReport(request, reportId):
 
 
 def revivesList(request, reportId):
+    print(request.POST)
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
@@ -1841,18 +1858,36 @@ def revivesList(request, reportId):
                 context = {'player': player, selectError: "Report {} not found.".format(reportId)}
                 return render(request, 'yata/error.html', context)
 
+            if request.POST.get("type", False) and request.POST["type"] == "filter":
+                if report.player_filter == int(request.POST["playerId"]):
+                    report.player_filter = 0
+                else:
+                    report.player_filter = int(request.POST["playerId"])
+                report.save()
+
+            print(report.player_filter)
             factions = json.loads(report.factions)
-            revives_set = report.revive_set.filter(Q(reviver_faction__in=factions) | Q(target_faction__in=factions)).order_by("-timestamp")
+
+            if report.player_filter:
+                revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
+            else:
+                revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+            revives_set = report.revive_set.filter(revivesFilter).order_by("-timestamp")
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
                 revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
             paginator = Paginator(revives_set, 25)
-            p_re = request.GET.get('p_re')
+            p_re = request.GET.get('p_re', 0)
             revives = paginator.get_page(p_re)
 
+            revivers = dict({})
+            targets = dict({})
+            for r in revives_set:
+                revivers[r.reviver_id] = r.reviver_name
+                targets[r.target_id] = r.target_name
             if p_re is not None:
-                return render(request, 'faction/revives/revives.html', {'report': report, 'revives': revives})
+                return render(request, 'faction/revives/revives.html', {'report': report, 'revives': revives, 'revivers': revivers, 'targets': targets})
             else:
                 return returnError(type=403, msg="You need to get a page.")
 

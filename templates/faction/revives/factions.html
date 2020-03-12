@@ -38,7 +38,7 @@ This file is part of yata.
         <td class="a">{{f.faction_name|factionURLShort:f.faction_id|safe}}</td>
         <td class="b" title='{% include "faction/revives/factions-tooltip.html" with type=0%}'>{{f.revivesMadeDisp}}</span></td>
         <td class="b" title='{% include "faction/revives/factions-tooltip.html" with type=1%}'>{{f.revivesReceivedDisp}}</td>
-        <td class="c">{% include "faction/revives/toggle.html" %}</td>
+        <td class="c">{% include "faction/revives/factions-toggle.html" %}</td>
     </tr>
     {% endfor %}
     <tr><td colspan="4">

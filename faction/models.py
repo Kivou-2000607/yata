@@ -2057,6 +2057,7 @@ class RevivesReport(models.Model):
 
     # global information for the report
     factions = models.TextField(default="[]")
+    player_filter = models.IntegerField(default=0)
     filter = models.IntegerField(default=0)  # 0: no filters, 10: online, 01: hosp, 11: both
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)

@@ -28,9 +28,9 @@ This file is part of yata.
         <tr>
             {# <th>Revive [ID]</th> #}
             <th>Start</th>
-            <th>Reviver</th>
+            <th>{% include "faction/revives/revives-header-filter.html" with type="revivers" %}</th>
             <th>Faction</th>
-            <th>Target</th>
+            <th>{% include "faction/revives/revives-header-filter.html" with type="targets" %}</th>
             <th>Faction</th>
             <th title="Hospital reason">Hospital</th>
             <th title="Online status"><i class="fas fa-circle"></i></th>
@@ -41,16 +41,16 @@ This file is part of yata.
         <tr>
             {# <td class="a">{{v}}</td> #}
             <td class="a">{{v.timestamp|ts2date}}</td>
-            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
+            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.reviver_id %}</td>
             <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
-            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
+            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.target_id %}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
             <td class="c">{{v.target_hospital_reason|cleanhtml}}</td>
             <td class="d" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
         </tr>
     {% endfor %}
 
-    <tr><td colspan="5">
+    <tr><td colspan="7">
         <div class="pagination">
             <span class="step-links">
                 {% if revives.has_previous %}
@@ -72,7 +72,7 @@ This file is part of yata.
     </tbody>
     {% else %}
     <tr>
-      <td colspan="5">No revives found. Click on the eyes in the faction table to select factions.</td>
+      <td colspan="7">No revives found. Click on the eyes in the faction table to select factions.</td>
     </tr>
     {% endif %}
 </table>
