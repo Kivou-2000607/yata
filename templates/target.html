@@ -10,12 +10,10 @@
 {% endblock %}
 
 {% block jquery %}
-<script>
-    {% include "target/script.js" %}
-    {% include "target/attacks/script.js" %}
-    {% include "target/revives/script.js" %}
-    {% include "target/targets/script.js" %}
-</script>
+<script type="text/javascript" src='{% static "perso/js/targets/main.js" %}'></script>
+<script type="text/javascript" src='{% static "perso/js/targets/attacks.js" %}'></script>
+<script type="text/javascript" src='{% static "perso/js/targets/revives.js" %}'></script>
+<script type="text/javascript" src='{% static "perso/js/targets/targets.js" %}'></script>
 {% endblock %}
 
 {% block content %}

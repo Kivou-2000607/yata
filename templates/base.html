@@ -32,7 +32,6 @@ This file is part of yata.
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
     <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
-    <script type="text/javascript" src='{% static "perso/js/yata.js" %}'></script>
 
     <!-- load fontawesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
@@ -51,99 +50,22 @@ This file is part of yata.
     <!-- google charts -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <!-- yata main js -->
+    {% if player.factionId|stringformat:"i" in '' %}
+        <script type="text/javascript" src='{% static "perso/js/spinner-ban.js" %}'></script>
+    {% else %}
+        <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script>
+    {% endif %}
+    <script type="text/javascript" src='{% static "perso/js/yata.js" %}'></script>
+
     <!-- local css -->
     {% block css%}{% endblock %}
     <!-- local js -->
     {% block jquery %}{% endblock %}
-    <script>
-
-        $(document).on('click', 'a[class^="yata-link"]', function(e){
-            $("#content-update h2").addClass("grey");
-            $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+$(this).attr("title"))
-            $(this).html(spinner);
-        });
-
-        // $(document).on('click', 'a.news-read', function(e){
-        //     e.preventDefault();
-        //     $(this).closest("form").load("/player/readNews/", {
-        //         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        //     });
-        //     $(this).closest("div").fadeOut(2000);
-        // });
-
-        // pagination breakdown
-        $(document).on('click', 'a.page-link', function(e){
-            e.preventDefault();
-            var reload = $(e.currentTarget).closest("div.pagination-list");
-            reload.load( $(e.currentTarget).attr("href"), function() {});
-            // reload.html('<div style="height: '+reload.css("height")+'; margin-top: 10px;">'+spinner+'</div>');
-            $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
-        });
 
 
-        // show/hide module
-        $(document).on('click', 'h2.toggle-display', function(e){
-            e.preventDefault();
-            var h = $(this);
-            // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
-            if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
-                var i = h.find("i.fa-caret-right");
-                var div = h.closest(".catch-me").children("div");
-                if(div.css("display") == "none") {
-                    h.removeClass("rounded");
-                    i.addClass("fa-rotate-90");
-                }
-                div.slideToggle("fast", function(){
-                    if(div.css("display") == "none") {
-                        h.addClass("rounded");
-                        i.removeClass("fa-rotate-90");
-                    }
-                });
-            }
-        });
-
-        // refresh timer target update
-        window.setInterval(function(){
-            $("span#loot-countdown").each(function() {
-                var timeRefresh = $.trim($(this).text());
-                var splitRefresh = timeRefresh.split(" ");
-                var sRefresh = 0;
-                if (splitRefresh.length == 2) {
-                    sRefresh = parseInt(splitRefresh[0]);
-                } else if (splitRefresh.length == 4) {
-                    sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
-                } else if (splitRefresh.length == 6) {
-                    sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
-                }
-
-                sRefresh --;
-                sRefresh = Math.max(sRefresh, 0)
-                if (sRefresh == 0) {
-                    $(this).parent("span").addClass("error");
-                    $(this).parent("span").html("NOW");
-                }
-                hRefresh = Math.floor(sRefresh / 3600);
-                sRefresh = sRefresh % 3600;
-                mRefresh = Math.floor(sRefresh / 60);
-                sRefresh = sRefresh % 60;
-                if (hRefresh) {
-                    spad = ("0"+sRefresh.toString()).slice(-2);
-                    $(this).html(hRefresh.toString()+" hrs "+mRefresh.toString()+" mins "+spad+" s");
-                }
-                else if (mRefresh) {
-                    spad = ("0"+sRefresh.toString()).slice(-2);
-                    $(this).html(mRefresh.toString()+" mins "+spad+" s");
-                } else {
-                    $(this).html(sRefresh.toString()+" s");
-                }
-            });
-        }, 1000);
-
-    </script>
 
     <!-- favicon -->
-    {# <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} /> #}
-    {# <link rel="icon" type="image/svg+xml" href={% static "logo/yata.icon.svg" %} /> #}
     <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
 
     <!-- meta  -->
