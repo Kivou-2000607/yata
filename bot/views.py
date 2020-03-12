@@ -99,7 +99,16 @@ def welcome(request):
 
         player = Player.objects.filter(tId=tId).first()
         # get guilds
-        guilds = [guild for guild in DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("pk")]
+        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
+        n = len(guilds)
+        for i, g in enumerate(guilds):
+            g.n = n - i
+        paginator = Paginator(guilds, 25)
+        page = request.GET.get('page')
+        guilds = paginator.get_page(page)
+
+        if request.GET.get('page') is not None:
+            return render(request, "bot/guilds-list.html", {"guilds": guilds})
 
         context = {"player": player, "botcat": True, "guilds": guilds, "view": {"index": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
