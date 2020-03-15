@@ -190,7 +190,7 @@ class PlayerData(models.Model):
     ipsBan = models.TextField(default="[]")
 
     def updateNumberOfPlayers(self):
-        players = Player.objects.exclude(tId=-1)
+        players = Player.objects.only("tId", "active", "validKey", "lastActionTS").exclude(tId=-1)
 
         self.nTotal = len(players)
         self.nValid = len(players.filter(active=True).exclude(validKey=False))
