@@ -67,7 +67,7 @@ $(document).ready(function() {
 
           var data = google.visualization.arrayToDataTable([
             ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
-            {% for a,b,c in graph.data %}
+            {% for a,b,c,d in graph.data %}
                 [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
              {% endfor %}
           ]);
@@ -166,11 +166,10 @@ $(document).ready(function() {
             </td>
         </tr>
         {% if chain.live %}
-            {% if graph.info.reg|length == 2 %}
-                <br>
-                With the current hit rate, next bonus will be on {{graph.info.ETALast}}<br>
-                With the global hit rate, next bonus will be on {{graph.info.ETA}}
-            {% endif %}
+            <tr>
+                <td colspan="2">With the current hit rate, next bonus will be on {{graph.info.ETALast}}</td>
+                <td colspan="2">With the global hit rate, next bonus will be on {{graph.info.ETA}}</td>
+            </tr>
         {% endif %}
         {% if chain.attacks > 0 %}
             <tr>

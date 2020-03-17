@@ -32,6 +32,7 @@ from yata.handy import *
 from faction.models import *
 from target.models import Target
 from faction.functions import *
+from scipy import stats
 
 
 def index(request):
@@ -709,14 +710,40 @@ def report(request, chainId):
                 bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
                 graph = {'data': [], 'dataCrit': [], 'dataStat': [], 'info': {'binsTime': bins, 'criticalHits': int(bins) / 5}}
                 cummulativeHits = 0
-                for line, lineCrit in zip(graphSplit, graphSplitCrit):
+                x = numpy.zeros(len(graphSplit))
+                y = numpy.zeros(len(graphSplit))
+                for i, (line, lineCrit) in enumerate(zip(graphSplit, graphSplitCrit)):
                     splt = line.split(':')
                     spltCrit = lineCrit.split(':')
                     cummulativeHits += int(splt[1])
-                    graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits])
+                    graph['data'].append([timestampToDate(int(splt[0])), int(splt[1]), cummulativeHits, int(splt[0])])
                     graph['dataCrit'].append([timestampToDate(int(splt[0])), int(spltCrit[0]), int(spltCrit[1]), int(spltCrit[2])])
                     speedRate = cummulativeHits * 300 / float((int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])))  # hits every 5 minutes
                     graph['info']['speedRate'] = speedRate
+                    x[i] = int(splt[0])
+                    y[i] = cummulativeHits
+
+                # get linear regressions
+                if chain.live:
+                    #  y = ax + b (y: hits, x: timestamp)
+                    a, b, _, _, _ = stats.linregress(x[-20:], y[-20:])
+                    print("[view.chain.index] linreg a={} b={}".format(a, b))
+                    a = max(a, 0.00001)
+                    try:
+                        ETA = timestampToDate(int((chain.getNextBonus() - b) / a))
+                    except BaseException as e:
+                        ETA = "unable to compute EAT ({})".format(e)
+                    graph['info']['ETALast'] = ETA
+                    graph['info']['regLast'] = [a, b]
+
+                    a, b, _, _, _ = stats.linregress(x, y)
+                    print("[view.chain.index] linreg a={} b={}".format(a, b))
+                    try:
+                        ETA = timestampToDate(int((chain.getNextBonus() - b) / a))
+                    except BaseException as e:
+                        ETA = "unable to compute EAT ({})".format(e)
+                    graph['info']['ETA'] = ETA
+                    graph['info']['reg'] = [a, b]
 
                 if len(graphSplitStat) > 1:
                     for line in graphSplitStat:

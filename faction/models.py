@@ -1077,6 +1077,12 @@ class Chain(models.Model):
         self.save()
         return self.crontab
 
+    def getNextBonus(self):
+        for i in BONUS_HITS:
+            if i >= self.current:
+                return i
+        return 100000
+
     def getAttacks(self):
         """ Fill chain with attacks
         """
