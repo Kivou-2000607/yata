@@ -314,6 +314,7 @@ d = {
     741: 257870729,  # Obliteration
     786: 401026803,  # Annihilation
     719: 240076845,  # Invictus
+    834: 0,  # Lead Salad
     476: 0,  # Chainer 5
 
     # 9
