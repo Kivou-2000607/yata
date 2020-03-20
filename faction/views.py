@@ -1519,8 +1519,8 @@ def attacksReport(request, reportId):
             report.status = REPORT_ATTACKS_STATUS[report.state]
             # get reports
             reports = faction.attacksreport_set.all().order_by('-end')
-            for report in reports:
-                report.status = REPORT_ATTACKS_STATUS[report.state]
+            for _ in reports:
+                _.status = REPORT_ATTACKS_STATUS[_.state]
 
 
             context = dict({"player": player,
