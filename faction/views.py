@@ -1319,8 +1319,8 @@ def attacksReports(request):
 
             # get reports
             reports = faction.attacksreport_set.all().order_by('-end')
-            for report in reports:
-                report.status = REPORT_ATTACKS_STATUS[report.state]
+            for _ in reports:
+                _.status = REPORT_ATTACKS_STATUS[_.state]
 
             context = {'player': player, 'faction': faction, 'factioncat': True, 'reports': reports, 'view': {'attacksReports': True}}
             if message:
