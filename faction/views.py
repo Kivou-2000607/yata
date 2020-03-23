@@ -621,6 +621,15 @@ def manageReport(request):
             if chain is None:
                 return render(request, 'yata/error.html', {'inlineError': 'Chain {} not found in the database.'.format(chainId)})
 
+            if request.POST.get("type", False) == "share":
+                if chain.shareId == "":
+                    chain.shareId = randomSlug()
+                else:
+                    chain.shareId = ""
+                chain.save()
+                context = {"chain": chain}
+                return render(request, 'faction/chains/share.html', context)
+
             if request.POST.get("type", False) == "combine":
                 chain.combine = not chain.combine
                 chain.save()
@@ -671,33 +680,41 @@ def manageReport(request):
         return returnError()
 
 
-def report(request, chainId):
+def report(request, chainId, share=False):
     try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
+        if request.session.get('player') or share == "share":
 
             # get page
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
-            # get faction
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-                return render(request, page, context)
+            if share == "share":
+                # if shared report
+                chain = Chain.objects.filter(shareId=chainId).first()
+                if chain is None:
+                    return returnError(type=404, msg="Shared report {} not found.".format(chainId))
 
-            chains = faction.chain_set.order_by('-end')
-            combined = len(chains.filter(combine=True))
-            for chain in chains:
-                chain.status = CHAIN_ATTACKS_STATUS[chain.state]
+            else:
+                player = getPlayer(request.session["player"].get("tId"))
+                factionId = player.factionId
+                faction = Faction.objects.filter(tId=factionId).first()
 
-            # get chain
-            chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
-            if chain is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
-                return render(request, page, context)
+                # get faction
+                if faction is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                    return render(request, page, context)
+
+                chains = faction.chain_set.order_by('-end')
+                combined = len(chains.filter(combine=True))
+                for chain in chains:
+                    chain.status = CHAIN_ATTACKS_STATUS[chain.state]
+
+                # get chain
+                chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
+                if chain is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
+                    return render(request, page, context)
 
             # create graph
             graphs = json.loads(chain.graphs)
@@ -757,16 +774,25 @@ def report(request, chainId):
             # context
             counts = chain.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect'))
             chain.status = CHAIN_ATTACKS_STATUS[chain.state]
-            context = dict({"player": player,
-                            'factioncat': True,
-                            'faction': faction,
-                            'combined': combined,
-                            'chain': chain,  # for general info
-                            'chains': chains,  # for chain list after report
-                            'counts': counts,  # for report
-                            'bonus': chain.bonus_set.all(),  # for report
-                            'graph': graph,  # for report
-                            'view': {'chains': True, 'report': True}})  # views
+            if share == "share":
+                context = dict({'skipheader': True,
+                                'share': True,
+                                'chain': chain,  # for general info
+                                'counts': counts,  # for report
+                                'bonus': chain.bonus_set.all(),  # for report
+                                'graph': graph,  # for report
+                                'view': {'report': True}})  # views
+            else:
+                context = dict({"player": player,
+                                'factioncat': True,
+                                'faction': faction,
+                                'combined': combined,
+                                'chain': chain,  # for general info
+                                'chains': chains,  # for chain list after report
+                                'counts': counts,  # for report
+                                'bonus': chain.bonus_set.all(),  # for report
+                                'graph': graph,  # for report
+                                'view': {'chains': True, 'report': True}})  # views
 
             return render(request, page, context)
 
@@ -1357,6 +1383,16 @@ def manageAttacks(request):
             if report is None:
                 return render(request, 'yata/error.html', {'inlineError': 'Report {} not found in the database.'.format(reportId)})
 
+            # toggle share
+            if request.POST.get("type", False) == "share":
+                if report.shareId == "":
+                    report.shareId = randomSlug()
+                else:
+                    report.shareId = ""
+                report.save()
+                context = {"report": report}
+                return render(request, 'faction/attacks/share.html', context)
+
             # delete contract
             if request.POST.get("type") == "delete":
                 report.delete()
@@ -1370,36 +1406,46 @@ def manageAttacks(request):
         return returnError()
 
 
-def attacksReport(request, reportId):
+def attacksReport(request, reportId, share=False):
     try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
+        if request.session.get('player') or share == "share":
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
-            # get faction
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-                return render(request, page, context)
+            if share == "share":
+                # if shared report
+                player=False
+                report = AttacksReport.objects.filter(shareId=reportId).first()
+                if report is None:
+                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
+                faction = report.faction
 
-            # get breakdown
-            if not reportId.isdigit():
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
-                return render(request, page, context)
+            else:
+                player = getPlayer(request.session["player"].get("tId"))
+                factionId = player.factionId
 
-            report = faction.attacksreport_set.filter(pk=reportId).first()
-            if report is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player,
-                                selectError: "Report {} not found.".format(reportId),
-                                'factioncat': True,
-                                'faction': faction,
-                                'report': False})  # views
-                return render(request, page, context)
+
+                # get faction
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                    return render(request, page, context)
+
+                # get breakdown
+                if not reportId.isdigit():
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                    return render(request, page, context)
+
+                report = faction.attacksreport_set.filter(pk=reportId).first()
+                if report is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player,
+                                    selectError: "Report {} not found.".format(reportId),
+                                    'factioncat': True,
+                                    'faction': faction,
+                                    'report': False})  # views
+                    return render(request, page, context)
 
             o_pl = int(request.GET.get('o_pl', 0))
             orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
@@ -1523,17 +1569,28 @@ def attacksReport(request, reportId):
                 _.status = REPORT_ATTACKS_STATUS[_.state]
 
 
-            context = dict({"player": player,
-                            'factioncat': True,
-                            'faction': faction,
-                            'factionsA': factionsA,
-                            'factionsD': factionsD,
-                            'players': players,
-                            'report': report,
-                            'reports': reports,
-                            'attacks': attacks,
-                             "o_pl": o_pl,
-                            'view': {'attacksReport': True}})  # views
+            if share == "share":
+                context = dict({"skipheader": True,
+                                'share': True,
+                                'faction': faction,
+                                'factionsA': factionsA,
+                                'factionsD': factionsD,
+                                'players': players,
+                                'report': report,
+                                "o_pl": o_pl,
+                                'view': {'attacksReport': True}})  # views
+            else:
+                context = dict({"player": player,
+                                'factioncat': True,
+                                'faction': faction,
+                                'factionsA': factionsA,
+                                'factionsD': factionsD,
+                                'players': players,
+                                'report': report,
+                                'reports': reports,
+                                'attacks': attacks,
+                                 "o_pl": o_pl,
+                                'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
 
@@ -1671,6 +1728,16 @@ def manageRevives(request):
             if report is None:
                 return render(request, 'yata/error.html', {'inlineError': 'Report {} not found in the database.'.format(reportId)})
 
+            # toggle share
+            if request.POST.get("type", False) == "share":
+                if report.shareId == "":
+                    report.shareId = randomSlug()
+                else:
+                    report.shareId = ""
+                report.save()
+                context = {"report": report}
+                return render(request, 'faction/revives/share.html', context)
+
             # delete contract
             if request.POST.get("type") == "delete":
                 report.delete()
@@ -1684,36 +1751,46 @@ def manageRevives(request):
         return returnError()
 
 
-def revivesReport(request, reportId):
+def revivesReport(request, reportId, share=False):
     try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
+        if request.session.get('player') or share == "share":
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
-            # get faction
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-                return render(request, page, context)
+            if share == "share":
+                # if shared report
+                player=False
+                report = RevivesReport.objects.filter(shareId=reportId).first()
+                if report is None:
+                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
+                faction = report.faction
 
-            # get breakdown
-            if not reportId.isdigit():
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
-                return render(request, page, context)
+            else:
+                player = getPlayer(request.session["player"].get("tId"))
+                factionId = player.factionId
 
-            report = faction.revivesreport_set.filter(pk=reportId).first()
-            if report is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = dict({"player": player,
-                                selectError: "Report {} not found.".format(reportId),
-                                'factioncat': True,
-                                'faction': faction,
-                                'report': False})  # views
-                return render(request, page, context)
+
+                # get faction
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                    return render(request, page, context)
+
+                # get breakdown
+                if not reportId.isdigit():
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                    return render(request, page, context)
+
+                report = faction.revivesreport_set.filter(pk=reportId).first()
+                if report is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player,
+                                    selectError: "Report {} not found.".format(reportId),
+                                    'factioncat': True,
+                                    'faction': faction,
+                                    'report': False})  # views
+                    return render(request, page, context)
 
             # if modify end date
             # if 'modifyEnd' in request.POST:
@@ -1844,18 +1921,32 @@ def revivesReport(request, reportId):
 
             # context
             report.status = REPORT_REVIVES_STATUS[report.state]
-            context = dict({"player": player,
-                            'factioncat': True,
-                            'faction': faction,
-                            'factions': factions,
-                            'players': players,
-                            'report': report,
-                            'revives': revives,
-                            'o_pl': o_pl,
-                            'o_fa': o_fa,
-                            'revivers': revivers,
-                            'targets': targets,
-                            'view': {'revivesReport': True}})  # views
+
+            if share == "share":
+                context = dict({"skipheader": True,
+                                'share': True,
+                                'faction': faction,
+                                'factions': factions,
+                                'players': players,
+                                'report': report,
+                                'o_pl': o_pl,
+                                'o_fa': o_fa,
+                                'revivers': revivers,
+                                'targets': targets,
+                                'view': {'revivesReport': True}})  # views
+            else:
+                context = dict({"player": player,
+                                'factioncat': True,
+                                'faction': faction,
+                                'factions': factions,
+                                'players': players,
+                                'report': report,
+                                'revives': revives,
+                                'o_pl': o_pl,
+                                'o_fa': o_fa,
+                                'revivers': revivers,
+                                'targets': targets,
+                                'view': {'revivesReport': True}})  # views
 
             return render(request, page, context)
 

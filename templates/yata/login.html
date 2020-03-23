@@ -23,7 +23,9 @@ This file is part of yata.
 
 {% include "yata/news.html" %}
 
-    {% if player %}
+    {% if skipheader %}
+        <div style="height: 10px"></div>
+    {% elif player %}
 
         {# <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2> #}
         <div class="module">

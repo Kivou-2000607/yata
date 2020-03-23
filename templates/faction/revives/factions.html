@@ -27,8 +27,8 @@ This file is part of yata.
             <tr><th colspan="4">Factions</th></tr>
           <tr>
             <th>Faction</th>
-            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa=1">Made</a></th>
-            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa=2">Received</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=1">Made</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=2">Received</a></th>
             <th>Toggle&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle" title="Click on the eyes to see the players"></i></th>
         </tr>
     </thead>
@@ -45,8 +45,8 @@ This file is part of yata.
         <div class="pagination" style="margin:0;">
             <span class="step-links">
                 {% if factions.has_previous %}
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa=1">&laquo; first</a>
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}">previous</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa=1">&laquo; first</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
@@ -54,8 +54,8 @@ This file is part of yata.
                 </span>
 
                 {% if factions.has_next %}
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}">next</a>
-                    <a class="page-link" href="{% url 'faction:revives' report.pk %}?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}">last &raquo;</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}">next</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>

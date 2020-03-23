@@ -19,6 +19,10 @@ This file is part of yata.
 
 from django.utils import timezone
 
+import random
+import string
+
+
 HISTORY_TIMES = {
     "one_day": 86400,
     "one_week": 604800,
@@ -119,11 +123,15 @@ def returnError(type=500, msg=None, home=True):
     from django.utils import timezone
     from django.http import HttpResponseServerError
     from django.http import HttpResponseForbidden
+    from django.http import HttpResponseNotFound
     from django.template.loader import render_to_string
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
         return HttpResponseForbidden(render_to_string('403.html', {'exception': msg, 'home': home}))
+    if type == 404:
+        msg = "Not Found" if msg is None else msg
+        return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
     else:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip(), 'home': home}))
@@ -137,3 +145,8 @@ def getPlayer(tId):
     player.active = True
     player.save()
     return player
+
+
+def randomSlug(length=32):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))

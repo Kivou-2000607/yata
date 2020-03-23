@@ -1055,6 +1055,9 @@ class Chain(models.Model):
     # for the combined report
     combine = models.BooleanField(default=False)
 
+    # share ID
+    shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
+
     def __str__(self):
         return format_html("{} chain [{}]".format(self.faction, self.tId))
 
@@ -1685,6 +1688,9 @@ class AttacksReport(models.Model):
     # link to wall
     wall = models.ManyToManyField(Wall, blank=True)
 
+    # share ID
+    shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
+
     def __str__(self):
         return format_html("{} report [{}]".format(self.faction, self.pk))
 
@@ -2067,6 +2073,9 @@ class RevivesReport(models.Model):
     filter = models.IntegerField(default=0)  # 0: no filters, 10: online, 01: hosp, 11: both
     revivesMade = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
+
+    # share ID
+    shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
 
     def __str__(self):
         return format_html("{} revives [{}]".format(self.faction, self.pk))

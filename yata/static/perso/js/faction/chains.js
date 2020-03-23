@@ -29,7 +29,7 @@ $(document).on('click', '.faction-chains-cooldown', e=>{
     var td = $(e.currentTarget).parents("td");
     td.load( "/faction/chains/manage/", {
         type: "cooldown", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }, afterLoad).html(spinner);
+    }).html(spinner);
 });
 
 // delete report
@@ -46,40 +46,27 @@ $(document).on('click', '.faction-chains-delete', e=>{
     var td = $(e.currentTarget).parents("td");
     td.load( "/faction/chains/manage/", {
         type: "delete", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }, afterLoad).html(spinner);
+    }).html(spinner);
 });
 
 // toggle combine report
 $(document).on('click', '.faction-chains-combine', e=>{
-    console.log("YATA: Hello, you pushed toggle");
     e.preventDefault();
-    console.log("YATA: you passed prevet default");
     // handle n combined
     var n = parseInt($("#n-combined").text());
-    console.log("YATA: you parsed n:" + n);
     if($(e.currentTarget).children("i").hasClass("fa-toggle-off")) {
-        console.log("YATA: n+1:" + n);
         n += 1;
-        console.log("YATA: n+1:" + n);
     } else {
-        console.log("YATA: n-1:" + n);
         n -= 1;
-        console.log("YATA: n-1:" + n);
     }
-    console.log("YATA: before getting combined");
     $("#n-combined").html(n);
-    console.log("YATA: after getting combined");
 
     // handle toggle
     var chainId = $(e.currentTarget).attr("data-val");
-    console.log("YATA: chain id"+chainId);
     var td = $(e.currentTarget).parents("td");
-    console.log("YATA: chain td");
-    console.log(td);
     td.load( "/faction/chains/manage/", {
         type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }, afterLoad).html(spinner);
-    console.log("YATA: and now we are after sending the request");
+    }).html(spinner);
 });
 
 // see report
@@ -131,4 +118,33 @@ $(document).on('click', 'tr[id^="faction-ireport-"] > td:not(.dont-touch-me)', e
 $(document).on('click', '[id^="individal-report-"]', e=>{
     e.preventDefault();
     $(e.currentTarget).html("");
+});
+
+
+// share reports
+$(document).on('click', '#faction-chain-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("span")
+    var chainId = $(e.currentTarget).attr("data-val");
+    span.load( "/faction/chains/manage/", {
+        type: "share", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+});
+$(document).on('click', '#faction-attacks-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("span")
+    var reportId = $(e.currentTarget).attr("data-val");
+    console.log(reportId);
+    span.load( "/faction/attacks/manage/", {
+        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+});
+$(document).on('click', '#faction-revives-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("span")
+    var reportId = $(e.currentTarget).attr("data-val");
+    console.log(reportId);
+    span.load( "/faction/revives/manage/", {
+        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
 });

@@ -150,11 +150,19 @@ $(document).ready(function() {
 {% if chain.tId or chain.live %}
 <table class="center-medium tdshadow chain-summary">
     <thead>
-        {% if chain.live %}
-            <tr><th tyle="text-align: center;" colspan="4">Summary of live chain</th></tr>
-        {% else %}
-            <tr><th tyle="text-align: center;" colspan="4">Summary of the chain [{{chain.tId}}]</th></tr>
+        <tr><th tyle="text-align: center;" colspan="4" class="buttons">
+            {% if chain.live %}
+                Summary of live chain
+            {% else %}
+                Summary of the chain [{{chain.tId}}]
+            {% endif %}
+
+        {% if not share and player.factionAA %}
+            <form class="flush-right">{% csrf_token %}
+                Share report&nbsp;&nbsp;<span>{% include 'faction/chains/share.html' %}</span>
+            </form>
         {% endif %}
+        </th></tr>
     </thead>
     <tbody>
         <tr>

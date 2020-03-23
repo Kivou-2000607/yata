@@ -21,6 +21,11 @@ from django.http import HttpResponse
 
 from . import views
 
+# for shared reports
+from faction.views import report as chainReport
+from faction.views import attacksReport
+from faction.views import revivesReport
+
 app_name = "yata"
 urlpatterns = [
     # app
@@ -44,5 +49,10 @@ urlpatterns = [
 
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
+
+    # shared reports
+    path('<slug:share>/chains/<slug:chainId>/', chainReport, name='chainReport'),
+    path('<slug:share>/attacks/<slug:reportId>/', attacksReport, name='attacksReport'),
+    path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
 
 ]

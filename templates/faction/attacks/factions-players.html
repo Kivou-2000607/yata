@@ -49,8 +49,8 @@ This file is part of yata.
         <div class="pagination" style="margin:0;">
             <span class="step-links">
                 {% if factionsA.has_previous %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa=1">&laquo; first</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.previous_page_number }}">previous</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa=1">&laquo; first</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.previous_page_number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
@@ -58,8 +58,8 @@ This file is part of yata.
                 </span>
 
                 {% if factionsA.has_next %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.next_page_number }}">next</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.paginator.num_pages }}">last &raquo;</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.next_page_number }}">next</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
@@ -95,8 +95,8 @@ This file is part of yata.
         <div class="pagination" style="margin:0;">
             <span class="step-links">
                 {% if factionsD.has_previous %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd=1&p_fa={{ factionsA.number }}">&laquo; first</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.previous_page_number }}&p_fa={{ factionsA.number }}">previous</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd=1&p_fa={{ factionsA.number }}">&laquo; first</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.previous_page_number }}&p_fa={{ factionsA.number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
@@ -104,8 +104,8 @@ This file is part of yata.
                 </span>
 
                 {% if factionsD.has_next %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.next_page_number }}&p_fa={{ factionsA.number }}">next</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.number }}&p_fd={{ factionsD.paginator.num_pages }}&p_fa={{ factionsA.number }}">last &raquo;</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.next_page_number }}&p_fa={{ factionsA.number }}">next</a>
+                    <a class="page-link" href="?p_pl={{ players.number }}&p_fd={{ factionsD.paginator.num_pages }}&p_fa={{ factionsA.number }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
@@ -141,8 +141,8 @@ This file is part of yata.
         <div class="pagination" style="margin:0;" >
             <span class="step-links">
                 {% if players.has_previous %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl=1&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">&laquo; first</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.previous_page_number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">previous</a>
+                    <a class="page-link" href="?p_pl=1&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">&laquo; first</a>
+                    <a class="page-link" href="?p_pl={{ players.previous_page_number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
@@ -150,8 +150,8 @@ This file is part of yata.
                 </span>
 
                 {% if players.has_next %}
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.next_page_number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">next</a>
-                    <a class="page-link" href="{% url 'faction:attacks' report.pk %}?p_pl={{ players.paginator.num_pages }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">last &raquo;</a>
+                    <a class="page-link" href="?p_pl={{ players.next_page_number }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">next</a>
+                    <a class="page-link" href="?p_pl={{ players.paginator.num_pages }}&p_fd={{ factionsD.number }}&p_fa={{ factionsA.number }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
