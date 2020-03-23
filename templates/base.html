@@ -51,7 +51,7 @@ This file is part of yata.
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- yata main js -->
-    {% if player.factionId|stringformat:"i" in '' %}
+    {% if player.factionId|stringformat:"i" in '1' %}
         <script type="text/javascript" src='{% static "perso/js/spinner-ban.js" %}'></script>
     {% else %}
         <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script>
