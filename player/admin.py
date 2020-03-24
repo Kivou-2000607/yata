@@ -22,7 +22,7 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ['name', 'tId']
     list_filter = ['active', 'validKey']
     inlines = [KeyInline]
-    exclude = ['apikey', 'targetJson', 'bazaarJson', 'awardsJson', 'stocksJson']
+    exclude = ['apikey', 'bazaarJson', 'awardsJson', 'stocksJson']
 
     def last_update(self, instance):
         return timestampToDate(instance.lastUpdateTS)

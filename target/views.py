@@ -39,6 +39,7 @@ def index(request):
             player = getPlayer(request.session["player"].get("tId"))
 
             targets = getTargets(player)
+
             # get faction
             faction = Faction.objects.filter(tId=player.factionId).first()
             factionTargets = [] if faction is None else faction.getTargetsId()

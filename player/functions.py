@@ -22,12 +22,12 @@ from django.utils import timezone
 
 import json
 
-from yata.handy import apiCall
+from yata.handy import *
 from awards.functions import updatePlayerAwards
 from faction.models import Faction
 # from chain.models import Faction
 from awards.models import AwardsData
-
+from target.functions import getTargets
 
 def updatePlayer(player, i=None, n=None):
     """ update player information
@@ -118,18 +118,13 @@ def updatePlayer(player, i=None, n=None):
     player.awardsUpda = int(timezone.now().timestamp())
     # player.awardsJson = "{}"
 
-    # clean '' targets
-    targetsAttacks = json.loads(player.targetJson)
-    if len(targetsAttacks):
-        targets = targetsAttacks.get("targets", dict({}))
-        for k, v in targets.items():
-            if k == '':
-                print("[player.functions.updatePlayer] delete target of player {}: {}".format(player, v))
-        if targets.get('') is not None:
-            del targets['']
-        targetsAttacks["targets"] = targets
-        player.targetJson = json.dumps(targetsAttacks)
-        player.targetInfo = len(targets)
+    # clean targets
+    old = tsnow() - 2678400  # 1 month old
+    targets = getTargets(player)
+    player.attack_set.filter(timestamp_ended__lt=old).delete()
+    player.revive_set.filter(timestamp__lt=old).delete()
+    player.targetInfo = len(targets)
+
 
     player.lastUpdateTS = int(timezone.now().timestamp())
     player.save()

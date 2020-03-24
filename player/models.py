@@ -64,8 +64,6 @@ class Player(models.Model):
 
     # info for target APP
     targetInfo = models.CharField(default="N/A", max_length=255)
-    targetJson = models.TextField(default="{}")
-    targetUpda = models.IntegerField(default=0)
     attacksUpda = models.IntegerField(default=0)
 
     # info for target APP
