@@ -52,6 +52,19 @@ class Command(BaseCommand):
 
         n = len(allRack)
         for i, (k, v) in enumerate(allRack.items()):
+            if v.get("war", False):
+                v["assaulting_faction"] = v["war"]["assaulting_faction"]
+                v["defending_faction"] = v["war"]["defending_faction"]
+                v["started"] = v["war"]["started"]
+                v["ends"] = v["war"]["ends"]
+                v["war"] = True
+            else:
+                v["war"] = False
+                v["assaulting_faction"] = 0
+                v["defending_faction"] = 0
+                v["started"] = 0
+                v["ends"] = 0
+
             r, _ = Racket.objects.update_or_create(tId=k, defaults=v)
             print("{}/{} {}".format(i + 1, n, r))
 

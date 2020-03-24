@@ -2607,6 +2607,15 @@ class Racket(models.Model):
     level = models.IntegerField(default=0)
     faction = models.IntegerField(default=0)
 
+    # war
+    war = models.BooleanField(default=False)
+    assaulting_faction = models.IntegerField(default=0)
+    # assaulting_faction_name = models.CharField(default="Faction", max_length=64)
+    defending_faction = models.IntegerField(default=0)
+    # defending_faction_name = models.CharField(default="Faction", max_length=64)
+    started = models.IntegerField(default=0)
+    ends = models.IntegerField(default=0)
+
     def __str__(self):
         return "Racket {} [{}]".format(self.tId, self.faction)
 

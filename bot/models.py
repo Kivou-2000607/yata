@@ -10,6 +10,8 @@ from faction.models import Faction
 
 def channel_names_reg(value):
     # thanks Pyrit [2111649]
+    # match = re.match(r"\[(\s*(\"([a-z])+(\-?[a-z])*\")+(\s*,|\s*\]$))+|\[\s*\]", value)
+    # match = re.match(r"\[(\s*(\"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|[a-z])+(\-?[a-z])*\")+(\s*,|\s*\]$))+|\[\s*\]", value)
     match = re.match(r"\[\s*((\"[a-z])+(\-?[a-z])*\"\s*,{1}\s*)*((\"[a-z])+(\-?[a-z])*\"\s*)?\]", value)
     if match is None and value != '["*"]':
         raise ValidationError(

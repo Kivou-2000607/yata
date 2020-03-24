@@ -22,7 +22,15 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<script>
 
+$(document).ready(function() {
+    $("#faction-territory-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1], [0,0]]});
+    $("#faction-racket-list").tablesorter({textExtraction: { 7: function(node, table, cellIndex) { return $(node).attr("data-val"); } },
+                                           cssAsc: 'up', cssDesc: 'down', sortList: [[7,1]]});
+});
+
+</script>
 
 <h2 class="title"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Map</h2>
 <div id="faction-map" class="module">
@@ -95,6 +103,7 @@ This file is part of yata.
                 <th>Created</th>
                 <th>Changed</th>
                 <th>Faction</th>
+                <th>War</th>
                 <th>Distance</th>
         </thead>
         {% for racket in rackets %}
@@ -110,6 +119,11 @@ This file is part of yata.
                     <td class="b"><a href="https://www.torn.com/factions.php?step=profile&ID={{racket.faction}}" target="_blank">{{racket.factionName}} [{{racket.faction}}]</a></td>
                 {% else %}
                     <td class="b">"-"</td>
+                {% endif %}
+                {% if racket.war %}
+                    <td class="b" title="Started on {{racket.started|ts2date}}" data-val="{{racket.started}}"><a href="https://www.torn.com/factions.php?step=profile&ID={{racket.assaulting_faction}}" target="_blank">{{racket.assaulting_faction_name}} [{{racket.assaulting_faction}}]</a></td>
+                {% else %}
+                    <td class="b" data-val="{{racket.started}}"></td>
                 {% endif %}
                 <td class="a" title="Position: {{racket.coordinate_x}} x {{racket.coordinate_y}}">{{racket.distance|floatformat:2}}</td>
             </tr>

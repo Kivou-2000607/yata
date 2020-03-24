@@ -23,25 +23,6 @@ This file is part of yata.
 {% load app_filters %}
 
 <script>
-    $(document).ready(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'dataVal',
-            // check if cell value has a numerical value
-            is: function(s, table, cell, $cell) {
-                return !isNaN($cell.attr("data-val"));
-            },
-            // format data for normalization
-            format: function(s, table, cell, cellIndex) {
-                return parseInt($(cell).attr("data-val"));
-            },
-            // set type, either numeric or text
-            type: 'numeric'
-        });
-
-        $("#faction-territory-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1], [0,0]]});
-        $("#faction-racket-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[7,0]]});
-    });
 
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);

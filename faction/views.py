@@ -2488,6 +2488,14 @@ def territories(request):
                 else:
                     racket.factionName = "-"
 
+                if racket.war:
+                    tmp = Faction.objects.filter(tId=racket.assaulting_faction).first()
+                    if tmp is not None:
+                        racket.assaulting_faction_name = tmp.name
+                    else:
+                        racket.assaulting_faction_name = "Faction"
+
+
             territoryUpda = FactionData.objects.first().territoryUpda
             context = {'player': player, 'factioncat': True, 'faction': faction, 'rackets': rackets, 'territoryUpda': territoryUpda, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'

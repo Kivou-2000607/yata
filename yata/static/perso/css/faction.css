@@ -192,9 +192,10 @@ table.faction-territory-list td.a { width: 10%; text-align: center;} /* x7 */
 table.faction-territory-list td.b { width: 30%;}
 table.faction-territory-list tr.racket       { background:#d9ead3; }
 table.faction-territory-list tr.racket:hover { background:#b6d7a8; }
-table.faction-racket-list td.a { width: 8%; text-align: center;} /* x3 */
-table.faction-racket-list td.b { width: 15%;} /* x3 */
-table.faction-racket-list td.c { width: 20%; text-align: center;} /* x2 */
+/* abbaccbba */
+table.faction-racket-list td.a { width: 5%; text-align: center;} /* x3 */
+table.faction-racket-list td.b { width: 13.25%;} /* x4 */
+table.faction-racket-list td.c { width: 16%; text-align: center;} /* x2 */
 
 div.map-background,
 div.map-graph {
