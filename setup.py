@@ -1,12 +1,10 @@
 import os
 from django.contrib.auth.models import User
-from player.models import News
 from player.models import Player
-from chain.models import Faction
-from chain.models import Crontab
+from faction.models import Faction
 from setup.models import APIKey
 from awards.models import AwardsData
-from chain.models import FactionData
+from faction.models import FactionData
 from bazaar.models import BazaarData
 from loot.models import NPC
 
@@ -42,18 +40,12 @@ if not len(User.objects.all()):
     User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
 
 # create required objects
-if not len(News.objects.all()):
-    print('Create News')
-    News.objects.create(text="Hello World!")
 if not len(Player.objects.filter(tId=-1)):
     print('Create Player')
     Player.objects.create(tId=-1, name="Anonymous", validKey=False)
 if not len(Faction.objects.filter(tId=-1)):
     print('Create Faction')
     Faction.objects.create(tId=-1, name="Faction Anonymous")
-if not len(Crontab.objects.all()):
-    print('Create Crontab')
-    Crontab.objects.create()
 if not len(APIKey.objects.all()) and key:
     print('Create API Key')
     APIKey.objects.create(key=key)
@@ -88,5 +80,5 @@ if fill_db:
     r = os.system(cmd)
     cmd = 'python manage.py updateLoot'
     r = os.system(cmd)
-    cmd = 'python manage.py updateUpgradeTree'
+    cmd = 'python manage.py updateFactionTree'
     r = os.system(cmd)
