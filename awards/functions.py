@@ -536,6 +536,15 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = "<br>".join(['<b class={}>{}</b>: {:,d} ({:.0f}%)'.format(v[2], v[0], v[1], 100 * min(1, v[1] / nHits)) for v in bridge])
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [828]:
+                    # "828": {"name": "Finale","description": "Defeat someone on the 25th turn of an attack","type": 8,
+                    type = "Finishing hits"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+
                 elif int(k) in [15, 16, 17]:
                     # 15 {'name': 'Kill Streaker 1', 'description': 'Achieve a best killstreak of 10', 'type': 8, 'circulation': 124231, 'rarity': 'Very Common'}
                     type = "Kill streak"
