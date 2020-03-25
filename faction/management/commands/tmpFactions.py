@@ -24,8 +24,6 @@ from django.conf import settings
 import json
 import os
 
-from chain.models import Faction as oldFactions
-from setup.functions import randomKey
 from faction.models import *
 from yata.handy import apiCall
 
@@ -33,10 +31,5 @@ from yata.handy import apiCall
 class Command(BaseCommand):
     def handle(self, **options):
 
-        for oldFaction in oldFactions.objects.all():
-            v = {"discordName": oldFaction.discordName, "name": oldFaction.name}
-
-            f, b = Faction.objects.update_or_create(tId=oldFaction.tId, defaults=v)
-
-            if b:
-                print("Create: ", oldFaction, b)
+        for news in News.objects.all():
+            print(news.setMember())

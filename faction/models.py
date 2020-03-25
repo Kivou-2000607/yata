@@ -2499,6 +2499,7 @@ class News(models.Model):
     tId = models.IntegerField(default=0)
     timestamp = models.IntegerField(default=0)
     news = models.CharField(default="news", max_length=512)
+    member = models.CharField(default="?", max_length=32)
 
     def __str__(self):
         return format_html("{} {} [{}]".format(self.faction, self.type, self.tId))
@@ -2506,6 +2507,13 @@ class News(models.Model):
     def typeReadable(self):
         return self.type[:-4].capitalize()
 
+    def getMember(self):
+        return self.news.split(" ")[0]
+
+    def setMember(self):
+        self.member = self.getMember()
+        self.save()
+        return self.member
 
 class Log(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

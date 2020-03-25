@@ -22,14 +22,14 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<table class="center faction-armory-news-list">
+<table class="center-medium faction-armory-news-list">
   <thead>
-      <tr><td colspan="3">
+      <tr><td colspan="4">
           <div class="pagination">
               <span class="step-links">
                   {% if news.has_previous %}
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1">&laquo; first</a>
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}">previous</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">&laquo; first</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">previous</a>
                   {% endif %}
 
                   <span class="current">
@@ -37,14 +37,15 @@ This file is part of yata.
                   </span>
 
                   {% if news.has_next %}
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}">next</a>
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}">last &raquo;</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">next</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">last &raquo;</a>
                   {% endif %}
               </span>
           </div>
       </td></tr>
   <tr>
     <th>Type</th>
+    <th>Member</th>
     <th>News</th>
     <th>Date</th>
   </tr>
@@ -53,17 +54,19 @@ This file is part of yata.
   {% for news in news %}
       <tr>
         <td class="a">{{ news.typeReadable }}</td>
-        <td class="b">{{ news.news }}</td>
-        <td class="c">{{ news.timestamp|ts2date }}</td>
+        {# <td class="b">{{ news.member }}{% include "faction/armory/news-inline-filter.html" %}</td> #}
+        <td class="b">{{ news.member }}</td>
+        <td class="c">{{ news.news }}</td>
+        <td class="d">{{ news.timestamp|ts2date }}</td>
       </tr>
   {% endfor %}
 
-  <tr><td colspan="3">
+  <tr><td colspan="4">
       <div class="pagination">
           <span class="step-links">
               {% if news.has_previous %}
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1">&laquo; first</a>
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}">previous</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">&laquo; first</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">previous</a>
               {% endif %}
 
               <span class="current">
@@ -71,8 +74,8 @@ This file is part of yata.
               </span>
 
               {% if news.has_next %}
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}">next</a>
-                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}">last &raquo;</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">next</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">last &raquo;</a>
               {% endif %}
           </span>
       </div>

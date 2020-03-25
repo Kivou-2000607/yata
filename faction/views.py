@@ -2075,6 +2075,7 @@ def armory(request):
                 if 'used' in ns:
                     member = ns[0]
                     if ns[6] in ["points"]:
+                        # refill
                         item = ns[6].title()
                         n = 25
                     else:
@@ -2106,7 +2107,9 @@ def armory(request):
                     n = int(ns[2].replace(",", "").replace("$", ""))
                     timestamps["nObjects"] += n
                     if ns[-1] in ["points"]:
+                        # moved to funds now
                         item = ns[-1].title()
+                        print(ns)
                     else:
                         splt = " ".join(ns[4:]).split(":")
                         if len(splt) > 1:
@@ -2146,7 +2149,7 @@ def armory(request):
             for new in news.filter(type="fundsnews"):
                 k = new.tId
                 ns = new.news.split(" ")
-                if len(ns) == 3:
+                if len(ns) == 3 or len(ns) == 4:
                     item = "Funds" if ns[2][0] == "$" else "Points"
                 elif len(ns) == 7:
                     item = "Funds" if ns[3][0] == "$" else "Points"
@@ -2165,8 +2168,7 @@ def armory(request):
                     armory[item][member][1] += int(ns[2].replace("$", "").replace(",", "").replace(".", ""))
 
             armoryType = {t: dict({}) for t in ITEM_TYPE}
-            armoryType["Points"] = dict({})
-            armoryType["Funds"] = dict({})
+            armoryType["Vault"] = dict({})
 
             for k, v in armory.items():
                 for t, i in ITEM_TYPE.items():
@@ -2175,10 +2177,10 @@ def armory(request):
                         armoryType[t][k] = v
                         break
                 if k in ["Points"]:
-                    armoryType["Points"][k] = v
+                    armoryType["Vault"][k] = v
 
                 if k in ["Funds"]:
-                    armoryType["Funds"][k] = v
+                    armoryType["Vault"][k] = v
 
             if player.factionAA:
                 logs = faction.log_set.order_by("timestamp").all()
@@ -2232,15 +2234,20 @@ def armoryNews(request):
             end = news.first().timestamp
 
             # filter start/end if asked
-            tss = int(request.POST.get("start", 0))
-            if tss:
-                news = news.filter(timestamp__gt=tss - 1)
-            tse = int(request.POST.get("end", 0))
-            if tse:
-                news = news.filter(timestamp__lt=tse + 1)
+            tss = request.POST.get("start", request.GET.get("tss"))
+            if tss.isdigit():
+                news = news.filter(timestamp__gt=int(tss) - 1)
+            tse = request.POST.get("end", request.GET.get("tse"))
+            if tse.isdigit():
+                news = news.filter(timestamp__lt=int(tse) + 1)
+
+            fstart = news.last().timestamp
+            fend = news.first().timestamp
+
+            timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
 
             news = Paginator(news, 50).get_page(request.GET.get('page'))
-            return render(request, 'faction/armory/news.html', {'news': news})
+            return render(request, 'faction/armory/news.html', {'news': news, 'timestamps': timestamps})
 
         else:
             return returnError(type=403, msg="You might want to log in.")
