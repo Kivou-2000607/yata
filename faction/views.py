@@ -2183,21 +2183,22 @@ def armory(request):
                     armoryType["Vault"][k] = v
 
             if player.factionAA:
-                logs = faction.log_set.order_by("timestamp").all()
+                logsAll = faction.log_set.order_by("timestamp").all()
                 logtmp = dict({})
                 r = 0
                 m = 0
-                for log in logs:
+                for log in logsAll:
                     logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
                     m = (log.money - log.donationsmoney)
                     r = log.respect
 
-                logs = faction.log_set.order_by("-timestamp").all()
-                for log in logs:
+                logsAll = faction.log_set.order_by("-timestamp").all()
+                for log in logsAll:
                     log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
                     log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
-                logs = Paginator(logs, 7).get_page(1)
+                logs = Paginator(logsAll, 7).get_page(1)
             else:
+                logsAll = []
                 logs = []
 
             if faction.armoryNewsFilter:
@@ -2205,7 +2206,7 @@ def armory(request):
 
             news = Paginator(news, 50).get_page(1)
 
-            context = {'player': player, 'news': news, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            context = {'player': player, 'news': news, 'logs': logs, 'logsAll': logsAll, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             if message:
                 err = "validMessage" if state else "errorMessage"
                 sub = "Sub" if request.method == 'POST' else ""

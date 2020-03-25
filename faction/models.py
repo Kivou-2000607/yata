@@ -209,17 +209,17 @@ class Faction(models.Model):
     def cleanHistory(self):
         # clean chains
         old = tsnow() - self.getHist("chains")
-        print(self.chain_set.filter(start__lt=old).delete())
+        self.chain_set.filter(start__lt=old).delete()
         # clean attacks reports
         old = tsnow() - self.getHist("attacks")
-        print(self.attacksreport_set.filter(start__lt=old).delete())
+        self.attacksreport_set.filter(start__lt=old).delete()
         # clean revives reports
         old = tsnow() - self.getHist("revives")
-        print(self.revivesreport_set.filter(start__lt=old).delete())
+        self.revivesreport_set.filter(start__lt=old).delete()
         # clean news
         old = tsnow() - self.getHist("armory")
-        print(self.news_set.filter(timestamp__lt=old).delete())
-        print(self.log_set.filter(timestamp__lt=old).delete())
+        self.news_set.filter(timestamp__lt=old).delete()
+        self.log_set.filter(timestamp__lt=old).delete()
 
     def manageKey(self, player):
         key = player.key_set.first()

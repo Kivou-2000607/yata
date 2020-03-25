@@ -188,13 +188,14 @@ $(document).ready(function() {
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Faction Money', 'Respect'],
-            {% for log in logs %}
+            {% for log in logsAll %}
                 [new Date({{log.timestamp|mul:1000}}), {{log.money|sub:log.donationsmoney}}, {{log.respect}}],
             {% endfor %}
         ]);
 
 
         var options = {
+            displayZoomButtons: false,
             displayAnnotations: true,
             displayExactValues: false,
             numberFormats: "###,###",
