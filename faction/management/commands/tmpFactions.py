@@ -31,5 +31,8 @@ from yata.handy import apiCall
 class Command(BaseCommand):
     def handle(self, **options):
 
-        for news in News.objects.all():
-            print(news.setMember())
+        factions = Faction.objects.all()
+        for i, faction in enumerate(factions):
+            newss = faction.news_set.filter(member="?")
+            for j, news in enumerate(newss):
+                print("{} ({:04d}/{:04d}): {:05d}/{:05d} {}".format(faction, i + 1, len(factions), j + 1, len(newss), news.setMember()))
