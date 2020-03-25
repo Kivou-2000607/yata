@@ -1413,7 +1413,7 @@ def attacksReport(request, reportId, share=False):
 
             if share == "share":
                 # if shared report
-                player=False
+                player = False
                 report = AttacksReport.objects.filter(shareId=reportId).first()
                 if report is None:
                     return returnError(type=404, msg="Shared report {} not found.".format(reportId))
@@ -1422,7 +1422,6 @@ def attacksReport(request, reportId, share=False):
             else:
                 player = getPlayer(request.session["player"].get("tId"))
                 factionId = player.factionId
-
 
                 # get faction
                 faction = Faction.objects.filter(tId=factionId).first()
@@ -1568,7 +1567,6 @@ def attacksReport(request, reportId, share=False):
             for _ in reports:
                 _.status = REPORT_ATTACKS_STATUS[_.state]
 
-
             if share == "share":
                 context = dict({"skipheader": True,
                                 'share': True,
@@ -1577,7 +1575,7 @@ def attacksReport(request, reportId, share=False):
                                 'factionsD': factionsD,
                                 'players': players,
                                 'report': report,
-                                "o_pl": o_pl,
+                                'o_pl': o_pl,
                                 'view': {'attacksReport': True}})  # views
             else:
                 context = dict({"player": player,
@@ -1589,7 +1587,7 @@ def attacksReport(request, reportId, share=False):
                                 'report': report,
                                 'reports': reports,
                                 'attacks': attacks,
-                                 "o_pl": o_pl,
+                                'o_pl': o_pl,
                                 'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
@@ -1758,7 +1756,7 @@ def revivesReport(request, reportId, share=False):
 
             if share == "share":
                 # if shared report
-                player=False
+                player = False
                 report = RevivesReport.objects.filter(shareId=reportId).first()
                 if report is None:
                     return returnError(type=404, msg="Shared report {} not found.".format(reportId))
@@ -1767,7 +1765,6 @@ def revivesReport(request, reportId, share=False):
             else:
                 player = getPlayer(request.session["player"].get("tId"))
                 factionId = player.factionId
-
 
                 # get faction
                 faction = Faction.objects.filter(tId=factionId).first()
@@ -2149,7 +2146,12 @@ def armory(request):
             for new in news.filter(type="fundsnews"):
                 k = new.tId
                 ns = new.news.split(" ")
-                item = "Funds"
+                if len(ns) == 3:
+                    item = "Funds" if ns[2][0] == "$" else "Points"
+                elif len(ns) == 7:
+                    item = "Funds" if ns[3][0] == "$" else "Points"
+                else:
+                    continue
                 member = ns[0]
                 if item not in armory:
                     # was given, deposited, dummy, dummy
@@ -2494,7 +2496,6 @@ def territories(request):
                         racket.assaulting_faction_name = tmp.name
                     else:
                         racket.assaulting_faction_name = "Faction"
-
 
             territoryUpda = FactionData.objects.first().territoryUpda
             context = {'player': player, 'factioncat': True, 'faction': faction, 'rackets': rackets, 'territoryUpda': territoryUpda, 'territories': territories, 'summary': summary, 'view': {'territories': True}}
