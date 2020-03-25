@@ -2268,13 +2268,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
                     doubled.append(k1)
 
+            # next crime
             if typeOfAwards == "crimes":
                 if category != "Busts" and int(v1.get("left", 0)):
-                    if int(v1["left"]) < nextNerve:
+                    # multiply by 100 in order to compare int and not floats
+                    # so with a precision of E-2
+                    if int(100 * v1["left"]) < nextNerve:
                         nextCrime = [(category, k1)]
-                        nextNerve = int(v1["left"])
-                    elif int(v1["left"]) == nextNerve:
-                        nextNerve = int(v1["left"])
+                        nextNerve = int(100 * v1["left"])
+                    elif int(100 * v1["left"]) == nextNerve:
+                        nextNerve = int(100 * v1["left"])
                         nextCrime.append((category, k1))
 
     if typeOfAwards == "crimes":
