@@ -21,3 +21,18 @@ $(document).on('click', 'h1.faction-armory-type', function(e){
         }
     });
 });
+
+// filter by member
+$(document).on('click', 'form.news > i.filter-player,form.news > i.filter-player-activated', e=>{
+    e.preventDefault();
+    console.log("news")
+    var member = $(e.currentTarget).attr("data-val");
+    var start = $(e.currentTarget).attr("data-start");
+    var end = $(e.currentTarget).attr("data-end");
+    var reload = $(e.currentTarget).closest("div.pagination-list");
+    reload.load( "/faction/armory/news/", {
+        member: member, type: "filter", start: start, end: end,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+});

@@ -93,7 +93,7 @@ $(document).on('click', 'span[id^="faction-revives-report-"]', e=>{
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
 });
 
-$(document).on('click', 'i.filter-player,i.filter-player-activated', e=>{
+$(document).on('click', 'form.revives > i.filter-player,form.revives > i.filter-player-activated', e=>{
     e.preventDefault();
     var splt = $(e.currentTarget).attr("data-val").split("-")
     var reportId = splt[0];

@@ -154,6 +154,7 @@ class Faction(models.Model):
 
     # armory / networth
     armoryUpda = models.IntegerField(default=0)
+    armoryNewsFilter = models.CharField(default="", max_length=32)
     # armoryOld = models.IntegerField(default=8035200)
 
     # history options
@@ -463,6 +464,7 @@ class Faction(models.Model):
                 newstype = news.filter(type=type)
                 if v["timestamp"] > old:
                     v["news"] = cleanhtml(v["news"])[:512]
+                    v["member"] = v["news"].split(" ")[0]
                     self.news_set.get_or_create(tId=k, type=type, defaults=v)
 
         # delete old logs

@@ -54,8 +54,8 @@ This file is part of yata.
   {% for news in news %}
       <tr>
         <td class="a">{{ news.typeReadable }}</td>
-        {# <td class="b">{{ news.member }}{% include "faction/armory/news-inline-filter.html" %}</td> #}
-        <td class="b">{{ news.member }}</td>
+        <td class="b">{{ news.member }}{% include "faction/armory/news-inline-filter.html" %}</td>
+        {# <td class="b">{{ news.member }}</td> #}
         <td class="c">{{ news.news }}</td>
         <td class="d">{{ news.timestamp|ts2date }}</td>
       </tr>

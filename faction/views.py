@@ -2200,6 +2200,9 @@ def armory(request):
             else:
                 logs = []
 
+            if faction.armoryNewsFilter:
+                news = news.filter(member=faction.armoryNewsFilter)
+
             news = Paginator(news, 50).get_page(1)
 
             context = {'player': player, 'news': news, 'logs': logs, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
@@ -2229,16 +2232,23 @@ def armoryNews(request):
                 return render(request, 'yata/error.html', context)
             news = faction.news_set.order_by("-timestamp").all()
 
+            if request.POST.get("type") == "filter":
+                faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
+                faction.save()
+
+            if faction.armoryNewsFilter:
+                news = news.filter(member=faction.armoryNewsFilter)
+
             # get start/end ts
             start = news.last().timestamp
             end = news.first().timestamp
 
             # filter start/end if asked
             tss = request.POST.get("start", request.GET.get("tss"))
-            if tss.isdigit():
+            if tss is not None and tss.isdigit():
                 news = news.filter(timestamp__gt=int(tss) - 1)
             tse = request.POST.get("end", request.GET.get("tse"))
-            if tse.isdigit():
+            if tse is not None and tse.isdigit():
                 news = news.filter(timestamp__lt=int(tse) + 1)
 
             fstart = news.last().timestamp
@@ -2247,7 +2257,7 @@ def armoryNews(request):
             timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
 
             news = Paginator(news, 50).get_page(request.GET.get('page'))
-            return render(request, 'faction/armory/news.html', {'news': news, 'timestamps': timestamps})
+            return render(request, 'faction/armory/news.html', {'faction': faction, 'news': news, 'timestamps': timestamps})
 
         else:
             return returnError(type=403, msg="You might want to log in.")
