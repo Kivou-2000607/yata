@@ -47,8 +47,14 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;Attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span>{% endif %}</h2>
+<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;Attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Synchronize report</a></span>{% endif %}</h2>
 <div class="module">
+
+    {% if report.fill < report.update and player.factionAA %}
+        <p style="text-align: center; margin-bottom: 10px;"><span class="warning"><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;New attacks has been entered in the database since last synchronization.</span><br>
+            Please synchronize your report with the button on the top right of this frame.
+        </p>
+    {% endif %}
     <table class="tablesorter center trshadow contract-summary">
         <thead>
             <tr><th colspan="3" class="buttons">Report summary
@@ -86,7 +92,7 @@ $(function () {
         </div>
         <hr class="sep" style="opacity: 0">
     {% else %}
-        <p class="warning">No report found. Please click on update report on the top right of this section.</p>
+        <p class="warning">No report found. Please click on synchronize report on the top right of this section.</p>
     {% endif %}
 </div>
 
@@ -97,10 +103,7 @@ $(function () {
             {% if members %}
                 {% include "faction/attacks/members.html"%}
             {% else %}
-                <p>
-                    Compute breakdown based on the faction filters set above in order to see ougoing / incoming attacks made by your members:&nbsp;&nbsp;<a href=""><i id="faction-attacks-report-members" class="fas fa-sync-alt" data-val="{{report.pk}}"></i></a><br/>
-                    If your faction is selected above, you will see members from other factions in the list. For sake of clarity either <b>do not select your faction</b> or <b>select only your faction</b>... Or do wathever you want.
-                </p>
+                <p><a id="faction-attacks-report-members" data-val="{{report.pk}}" href="">Compute members breakdown</a><i style="cursor: help;margin-left: 20px;" class="fas fa-question-circle" title="Compute members outgoing / incoming attacks breakdown based on the faction filters set above.&#013;If your faction is selected above, you will see members from other factions in the list. For sake of clarity either do not select your faction or select only your faction... Or do wathever you want."></i></p>
             {% endif %}
         </div>
     </div>

@@ -71,7 +71,7 @@ $(document).on('click', '.faction-attacks-report-toggle', e=>{
 });
 
 // show hide
-$(document).on('click', 'i#faction-attacks-report-members', e=>{
+$(document).on('click', 'a#faction-attacks-report-members', e=>{
     e.preventDefault();
     var reportId = $(e.currentTarget).attr("data-val");
     var reload = $(e.currentTarget).closest("p");
@@ -88,7 +88,7 @@ $(document).on('click', '#faction-attacks-report-update', e=>{
         reportId: reportId, update: true,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Synchronizing report');
 });
 
 // player filter

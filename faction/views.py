@@ -579,7 +579,7 @@ def chains(request):
                         live.delete()
 
             # get chains
-            chains = faction.chain_set.all().order_by('-end')
+            chains = faction.chain_set.order_by('-end')
             combined = len(chains.filter(combine=True))
             for chain in chains:
                 chain.status = CHAIN_ATTACKS_STATUS[chain.state]
@@ -893,7 +893,7 @@ def combined(request):
 
             print('[VIEW jointReport] {} chains for the joint report'.format(len(chains)))
             if len(chains) < 1:
-                chains = faction.chain_set.all().order_by('start')
+                chains = faction.chain_set.order_by('start')
                 combined = len(chains.filter(combine=True))
                 for chain in chains:
                     chain.status = CHAIN_ATTACKS_STATUS[chain.state]
@@ -1344,7 +1344,7 @@ def attacksReports(request):
                     message = ["errorMessageSub", "Error while creating new report: {}".format(e)]
 
             # get reports
-            reports = faction.attacksreport_set.all().order_by('-end')
+            reports = faction.attacksreport_set.order_by('-end')
             for _ in reports:
                 _.status = REPORT_ATTACKS_STATUS[_.state]
 
@@ -1452,9 +1452,9 @@ def attacksReport(request, reportId, share=False):
 
             if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
                 if order_fa:
-                    paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by(order_fa), 10)
+                    paginator = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
                 else:
-                    paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                    paginator = Paginator(report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
                 p_fa = request.GET.get('p_fa')
                 factions = paginator.get_page(p_fa)
                 page = "faction/attacks/factions.html"
@@ -1539,9 +1539,9 @@ def attacksReport(request, reportId, share=False):
             defenders = sorted(defenders.items(), key=lambda x: x[1])
 
             if order_fa:
-                factions = Paginator(report.attacksfaction_set.all().order_by(order_fa), 10)
+                factions = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
             else:
-                factions = Paginator(report.attacksfaction_set.all().order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                factions = Paginator(report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
             p_fa = request.GET.get('p_fa') if not p_fa else p_fa
             factions = factions.get_page(p_fa)
 
@@ -1555,7 +1555,7 @@ def attacksReport(request, reportId, share=False):
             # context
             report.status = REPORT_ATTACKS_STATUS[report.state]
             # get reports
-            reports = faction.attacksreport_set.all().order_by('-end')
+            reports = faction.attacksreport_set.order_by('-end')
             for _ in reports:
                 _.status = REPORT_ATTACKS_STATUS[_.state]
 
@@ -1747,7 +1747,7 @@ def revivesReports(request):
                     message = ["errorMessageSub", "Error while creating new report: {}".format(e)]
 
             # get reports
-            reports = faction.revivesreport_set.all().order_by('-end')
+            reports = faction.revivesreport_set.order_by('-end')
             for report in reports:
                 report.status = REPORT_REVIVES_STATUS[report.state]
 
@@ -2387,7 +2387,7 @@ def bigBrother(request):
                 state, message = faction.addContribution(request.POST.get('add'))
 
             # get all stats
-            allContributors = faction.contributors_set.all().order_by('timestamp')
+            allContributors = faction.contributors_set.order_by('timestamp')
 
             # add on the fly 4 gyms
             # loop over unique ts
@@ -2408,7 +2408,7 @@ def bigBrother(request):
                                 contributors[k] = v
                     newCont = {"timestamp": gyms[0].timestamp, "contributors": json.dumps(contributors)}
                     faction.contributors_set.update_or_create(stat="allgyms", timestamphour=gyms[0].timestamphour, defaults=newCont)
-                    allContributors = faction.contributors_set.all().order_by('timestamp')
+                    allContributors = faction.contributors_set.order_by('timestamp')
 
             statsList = dict({})
             contributors = False
