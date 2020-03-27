@@ -21,16 +21,16 @@ This file is part of yata.
 
 {% if player.factionAA %}
     <form>{% csrf_token %}
-        {% if show %}
-            <a  id="faction-attacks-report-toggle-{{type}}-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-attacks-report-toggle" href=""><i class="far fa-eye" title="Click to stop seeing players."></i></a>
+        {% if f.show %}
+            <a  id="faction-attacks-report-toggle-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-attacks-report-toggle" href=""><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" title="Click to stop seeing players."></i></a>
         {%else%}
-            <a id="faction-attacks-report-toggle-{{type}}-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-attacks-report-toggle" href=""><i class="far fa-eye-slash" title="Click to see players."></i></a>
+            <a id="faction-attacks-report-toggle-{{report.pk}}-{{page}}" data-val="{{f.faction_id}}" class="faction-attacks-report-toggle" href=""><i class="fas fa-filter filter-player" style="opacity: 0.5" title="Click to see players."></i></a>
         {%endif%}
     </form>
 {% else %}
-    {% if show %}
-    <i class="far fa-eye" title="Players shown."></i>
+    {% if f.show %}
+        <i class="fas fa-filter valid" title="Players shown."></i>
     {%else%}
-    <i class="far fa-eye-slash" title="Players not shown."></i>
+        <i class="fas fa-filter neutral" title="Players shown."></i>
     {%endif%}
 {% endif %}

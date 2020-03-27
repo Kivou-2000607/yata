@@ -47,9 +47,9 @@ This file is part of yata.
 
         <tr>
             <th>Start</th>
-            <th>Attacker</th>
+            <th>{% include "faction/attacks/attacks-header-filter.html" with type="attackers" %}</th>
             <th>Faction</th>
-            <th>Defender</th>
+            <th>{% include "faction/attacks/attacks-header-filter.html" with type="defenders" %}</th>
             <th>Faction</th>
             <th>Result</th>
             <th>Chain</th>
@@ -64,11 +64,11 @@ This file is part of yata.
               <td class="b">Stealth</td>
               <td class="b">Stealth</td>
           {%else%}
-              <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
-              <td class="b">{{v.attacker_factionname|factionURL:v.attacker_faction|safe}}</td>
+              <td class="b">{{v.attacker_name|playerURLShort:v.attacker_id|safe}}{% include "faction/attacks/attacks-inline-filter.html" with tId=v.attacker_id %}</td>
+              <td class="b">{{v.attacker_factionname|factionURLShort:v.attacker_faction|safe}}</td>
           {%endif%}
-          <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
-          <td class="b">{{v.defender_factionname|factionURL:v.defender_faction|safe}}</td>
+          <td class="b">{{v.defender_name|playerURLShort:v.defender_id|safe}}{% include "faction/attacks/attacks-inline-filter.html" with tId=v.defender_id %}</td>
+          <td class="b">{{v.defender_factionname|factionURLShort:v.defender_faction|safe}}</td>
           <td class="c">{{v.result}}</td>
           <td class="d">{%if v.chain %}{{v.chain}}{%endif%}</td>
           {% if v.code == "0" %}

@@ -1682,8 +1682,9 @@ class AttacksReport(models.Model):
     update = models.IntegerField(default=0)
 
     # global information for the report
-    attackerFactions = models.TextField(default="[]")
-    defenderFactions = models.TextField(default="[]")
+    factions = models.TextField(default="[]")
+    player_filter = models.IntegerField(default=0)
+    filter = models.IntegerField(default=0)  # 0: no filters, 10: incoming, 01: outgoing, 11: both
     defends = models.IntegerField(default=0)
     attacks = models.IntegerField(default=0)
 
@@ -1974,17 +1975,81 @@ class AttacksReport(models.Model):
 
         # set show/hide
         print("{} show hide".format(self))
-        self.attacksfaction_set.all().update(showA=False, showD=False)
-        self.attacksplayer_set.all().update(showA=False, showD=False)
-        for f in json.loads(self.attackerFactions):
-            self.attacksfaction_set.filter(faction_id=int(f)).update(showA=True)
-            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showA=True)
-
-        for f in json.loads(self.defenderFactions):
-            self.attacksfaction_set.filter(faction_id=int(f)).update(showD=True)
-            self.attacksplayer_set.filter(player_faction_id=int(f)).update(showD=True)
+        self.attacksfaction_set.all().update(show=False)
+        self.attacksplayer_set.all().update(show=False)
+        for f in json.loads(self.factions):
+            self.attacksfaction_set.filter(faction_id=int(f)).update(show=True)
+            self.attacksplayer_set.filter(player_faction_id=int(f)).update(show=True)
 
         self.save()
+
+
+    def getMembersBreakdown(self, order=6):
+        members = dict({})
+
+        # outgoing
+        attacks = self.attackreport_set.filter(defender_faction__in=json.loads(self.factions))
+        for attack in attacks:
+            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 lost, 6 total]
+            n = members[attack.attacker_id]["out"] if attack.attacker_id in members else [0, 0, 0, 0, 0, 0, 0]
+            addOne = []
+            if attack.result in ["Attacked", "Special"]:
+                addOne.append(0)
+                addOne.append(4)
+            elif attack.result in ["Mugged"]:
+                addOne.append(1)
+                addOne.append(4)
+            elif attack.result in ["Hospitalized"]:
+                addOne.append(2)
+                addOne.append(4)
+            elif attack.result in ["Stalemate", "Assist", "Lost", "Timeout", "Escape"]:
+                addOne.append(5)
+            else:
+                print(attack.result)
+
+            if attack.war > 1:
+                addOne.append(3)
+
+            addOne.append(6)
+            for i in addOne:
+                n[i] = n[i] + 1
+            members[attack.attacker_id] = {"name": attack.attacker_name, "out": n, "in": [0, 0, 0, 0, 0, 0, 0]}
+
+        # incoming
+        attacks = self.attackreport_set.filter(attacker_faction__in=json.loads(self.factions))
+        for attack in attacks:
+            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 lost, 6 total]
+            n = members[attack.defender_id]["in"] if attack.defender_id in members else [0, 0, 0, 0, 0, 0, 0]
+            addOne = []
+            if attack.result in ["Attacked", "Special"]:
+                addOne.append(0)
+                addOne.append(4)
+            elif attack.result in ["Mugged"]:
+                addOne.append(1)
+                addOne.append(4)
+            elif attack.result in ["Hospitalized"]:
+                addOne.append(2)
+                addOne.append(4)
+            elif attack.result in ["Stalemate", "Assist", "Lost", "Timeout", "Escape"]:
+                addOne.append(5)
+            else:
+                print(attack.result)
+
+            if attack.war > 1:
+                addOne.append(3)
+
+            addOne.append(6)
+            for i in addOne:
+                n[i] = n[i] + 1
+            if attack.defender_id in members:
+                members[attack.defender_id]["in"] = n
+            else:
+                members[attack.defender_id] = {"name": attack.defender_name, "in": n, "out": [0, 0, 0, 0, 0, 0, 0]}
+
+        type = "in" if order > 6 else "out"
+        o1 = order % 7
+        o2 = 0 if o1 == 6 else 6
+        return sorted(members.items(), key=lambda x: (-x[1][type][o1], -x[1][type][o2]))
 
 
 class AttacksFaction(models.Model):
@@ -1998,8 +2063,7 @@ class AttacksFaction(models.Model):
     defends = models.IntegerField(default=0)
     attacked = models.IntegerField(default=0)
 
-    showA = models.BooleanField(default=False)
-    showD = models.BooleanField(default=False)
+    show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {} {} {}".format(self.faction_name, self.faction_id, self.hits, self.attacks, self.defends, self.attacked)
@@ -2018,8 +2082,7 @@ class AttacksPlayer(models.Model):
     defends = models.IntegerField(default=0)
     attacked = models.IntegerField(default=0)
 
-    showA = models.BooleanField(default=False)
-    showD = models.BooleanField(default=False)
+    show = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} [{}]: {} {} {} {}".format(self.player_name, self.player_id, self.hits, self.attacks, self.defends, self.attacked)
@@ -2053,6 +2116,9 @@ class AttackReport(models.Model):
     groupAttack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chainBonus = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{} -> {}".format(self.attacker_factionname, self.defender_factionname)
 
 
 # Revive report

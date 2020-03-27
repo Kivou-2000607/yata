@@ -30,7 +30,7 @@ $(document).on('click', '#create-report', e=>{
     $( "#content-update" ).load( "/faction/attacks/", {
         start: start, end: end, live: live, type: "new",
         csrfmiddlewaretoken: getCookie("csrftoken")
-    },afterLoad);
+    });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating report ');
 });
 
@@ -62,14 +62,22 @@ $(document).on('click', '.faction-attacks-report-toggle', e=>{
     var factionId = $(e.currentTarget).attr("data-val");
     var page = splt.pop();
     var reportId = splt.pop();
-    var type = splt.pop();
     var reload = $(e.currentTarget).closest("td");
-    console.log(factionId, reportId, type);
     $( "#content-update" ).load( "/faction/attacks/" + reportId, {
-        reportId: reportId, factionId: factionId, type: type, page: page,
+        reportId: reportId, factionId: factionId, type: "faction_filter", page: page,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }, afterLoad);
+    });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');
+});
+
+// show hide
+$(document).on('click', 'i#faction-attacks-report-members', e=>{
+    e.preventDefault();
+    var reportId = $(e.currentTarget).attr("data-val");
+    var reload = $(e.currentTarget).closest("p");
+    reload.load( "/faction/attacks/members/" + reportId, {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
 });
 
 // show hide
@@ -79,6 +87,33 @@ $(document).on('click', '#faction-attacks-report-update', e=>{
     $( "#content-update" ).load( "/faction/attacks/" + reportId, {
         reportId: reportId, update: true,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }, afterLoad);
+    });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+});
+
+// player filter
+$(document).on('click', 'form.attacks > i.filter-player,form.attacks > i.filter-player-activated', e=>{
+    e.preventDefault();
+    var splt = $(e.currentTarget).attr("data-val").split("-")
+    var reportId = splt[0];
+    var playerId = splt[1];
+    var reload = $(e.currentTarget).closest("div.pagination-list");
+    reload.load( "/faction/attacks/list/" + reportId, {
+        playerId: playerId, type: "filter",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+});
+
+$(document).on('change', 'select.faction-attack-header-filter', e=>{
+    e.preventDefault();
+    var splt = $(e.currentTarget).val().split("-");
+    var reportId = splt[0];
+    var playerId = splt[1];
+    var reload = $(e.currentTarget).closest("div.pagination-list");
+    reload.load( "/faction/attacks/list/" + reportId, {
+        playerId: playerId, type: "filter",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
 });

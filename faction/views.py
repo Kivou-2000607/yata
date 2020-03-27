@@ -1446,31 +1446,30 @@ def attacksReport(request, reportId, share=False):
                                     'report': False})  # views
                     return render(request, page, context)
 
+            o_fa = int(request.GET.get('o_fa', 0))
+            orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
+            order_fa = orders[o_fa]
+
+            if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
+                if order_fa:
+                    paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by(order_fa), 10)
+                else:
+                    paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                p_fa = request.GET.get('p_fa')
+                factions = paginator.get_page(p_fa)
+                page = "faction/attacks/factions.html"
+                context = {"player": player, "faction": faction, "report": report, "factions": factions, "o_fa": o_fa}
+                return render(request, page, context)
+
             o_pl = int(request.GET.get('o_pl', 0))
             orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
-            order = orders[o_pl]
-
-            if request.GET.get('p_fa') is not None:
-                paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
-                p_fa = request.GET.get('p_fa')
-                factionsA = paginator.get_page(p_fa)
-                page = "faction/attacks/factionsA.html"
-                context = {"player": player, "faction": faction, "report": report, "factionsA": factionsA}
-                return render(request, page, context)
-
-            if request.GET.get('p_fd') is not None:
-                paginator = Paginator(report.attacksfaction_set.exclude(attacked=0).order_by("-defends", "-attacked"), 10)
-                p_fd = request.GET.get('p_fd')
-                factionsD = paginator.get_page(p_fd)
-                page = "faction/attacks/factionsD.html"
-                context = {"player": player, "faction": faction, "report": report, "factionsD": factionsD}
-                return render(request, page, context)
+            order_pl = orders[o_pl]
 
             if request.GET.get('p_pl') is not None or request.GET.get('o_pl') is not None:
-                if order:
-                    paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by(order), 10)
+                if order_pl:
+                    paginator = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl), 10)
                 else:
-                    paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                    paginator = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
                 p_pl = request.GET.get('p_pl')
                 players = paginator.get_page(p_pl)
                 page = "faction/attacks/players.html"
@@ -1501,64 +1500,57 @@ def attacksReport(request, reportId, share=False):
 
                 report.fillReport()
 
-            attackerFactions = json.loads(report.attackerFactions)
-            defenderFactions = json.loads(report.defenderFactions)
+            factions = json.loads(report.factions)
 
             # if click on toggle
             p_fa = False
-            p_fd = False
-            if request.POST.get("type") == "attackers":
+            if request.POST.get("type") == "faction_filter":
                 try:
                     f = int(request.POST["factionId"])
-                    if f in attackerFactions:
-                        attackerFactions.remove(int(request.POST["factionId"]))
-                        report.attacksfaction_set.filter(faction_id=f).update(showA=False)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(showA=False)
+                    if f in factions:
+                        factions.remove(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(show=False)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(show=False)
                     else:
-                        attackerFactions.append(f)
-                        report.attacksfaction_set.filter(faction_id=f).update(showA=True)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(showA=True)
-                    report.attackerFactions = json.dumps(attackerFactions)
+                        factions.append(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(show=True)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(show=True)
+                    report.factions = json.dumps(factions)
                     report.save()
                     p_fa = request.POST["page"]
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
-            elif request.POST.get("type") == "defenders":
-                try:
-                    f = int(request.POST["factionId"])
-                    if f in defenderFactions:
-                        defenderFactions.remove(f)
-                        report.attacksfaction_set.filter(faction_id=f).update(showD=False)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(showD=False)
-                    else:
-                        defenderFactions.append(f)
-                        report.attacksfaction_set.filter(faction_id=f).update(showD=True)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(showD=True)
-                    report.defenderFactions = json.dumps(defenderFactions)
-                    report.save()
-                    p_fd = request.POST["page"]
-                except BaseException as e:
-                    print("Error toggle faction {}".format(e))
 
-            paginator = Paginator(report.attackreport_set.order_by("-timestamp_ended"), 25)
+            report.player_filter = 0
+            report.save()
+            attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
+            attacks_set = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+            paginator = Paginator(attacks_set, 25)
             p_at = request.GET.get('p_at')
             attacks = paginator.get_page(p_at)
 
-            paginator = Paginator(report.attacksfaction_set.exclude(attacks=0).order_by("-hits", "-attacks"), 10)
-            p_fa = request.GET.get('p_fa') if not p_fa else p_fa
-            factionsA = paginator.get_page(p_fa)
+            attackers = dict({})
+            defenders = dict({})
+            for r in attacks_set:
+                attackers[r.attacker_id] = r.attacker_name
+                defenders[r.defender_id] = r.defender_name
+            attackers = sorted(attackers.items(), key=lambda x: x[1])
+            defenders = sorted(defenders.items(), key=lambda x: x[1])
 
-            paginator = Paginator(report.attacksfaction_set.exclude(attacked=0).order_by("-defends", "-attacked"), 10)
-            p_fd = request.GET.get('p_fd') if not p_fd else p_fd
-            factionsD = paginator.get_page(p_fd)
-
-            if order:
-                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by(order), 10)
+            if order_fa:
+                factions = Paginator(report.attacksfaction_set.all().order_by(order_fa), 10)
             else:
-                paginator = Paginator(report.attacksplayer_set.filter(Q(showA=True) | Q(showD=True)).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                factions = Paginator(report.attacksfaction_set.all().order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            p_fa = request.GET.get('p_fa') if not p_fa else p_fa
+            factions = factions.get_page(p_fa)
+
+            if order_pl:
+                players = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl), 10)
+            else:
+                players = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
             p_pl = request.GET.get('p_pl')
-            players = paginator.get_page(p_pl)
+            players = players.get_page(p_pl)
 
             # context
             report.status = REPORT_ATTACKS_STATUS[report.state]
@@ -1571,26 +1563,71 @@ def attacksReport(request, reportId, share=False):
                 context = dict({"skipheader": True,
                                 'share': True,
                                 'faction': faction,
-                                'factionsA': factionsA,
-                                'factionsD': factionsD,
+                                'factions': factions,
                                 'players': players,
                                 'report': report,
                                 'o_pl': o_pl,
+                                'o_fa': o_fa,
                                 'view': {'attacksReport': True}})  # views
             else:
                 context = dict({"player": player,
                                 'factioncat': True,
                                 'faction': faction,
-                                'factionsA': factionsA,
-                                'factionsD': factionsD,
+                                'factions': factions,
                                 'players': players,
+                                'members': members,
                                 'report': report,
                                 'reports': reports,
                                 'attacks': attacks,
+                                'attackers': attackers,
+                                'defenders': defenders,
                                 'o_pl': o_pl,
+                                'o_fa': o_fa,
                                 'view': {'attacksReport': True}})  # views
 
             return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception:
+        return returnError()
+
+
+def attacksMembers(request, reportId):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, 'yata/error.html', context)
+
+            # get breakdown
+            report = faction.attacksreport_set.filter(pk=reportId).first()
+            if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Report {} not found.".format(reportId)}
+                return render(request, 'yata/error.html', context)
+
+            o_me = int(request.GET.get('o_me', 6))
+            if request.GET.get('p_me') is not None or request.GET.get('o_me') is not None:
+                members = Paginator(report.getMembersBreakdown(order=o_me), 10)
+                p_me = request.GET.get('p_me')
+                members = members.get_page(p_me)
+                page = "faction/attacks/members.html"
+                context = {"player": player, "faction": faction, "report": report, "members": members, "o_me": o_me}
+                return render(request, page, context)
+
+            members = Paginator(report.getMembersBreakdown(o_me), 10)
+            p_me = request.GET.get('p_me')
+            members = members.get_page(p_me)
+
+            return render(request, 'faction/attacks/members.html', {'report': report, 'members': members, 'o_me': o_me})
 
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -1619,12 +1656,35 @@ def attacksList(request, reportId):
                 context = {'player': player, selectError: "Report {} not found.".format(reportId)}
                 return render(request, 'yata/error.html', context)
 
-            attacks = report.attackreport_set.order_by("-timestamp_ended")
-            paginator = Paginator(tuple(attacks.values()), 25)
-            page_number = request.GET.get('p_at')
+            if request.POST.get("type", False) and request.POST["type"] == "filter":
+                if report.player_filter == int(request.POST["playerId"]):
+                    report.player_filter = 0
+                else:
+                    report.player_filter = int(request.POST["playerId"])
+                report.save()
 
-            if page_number is not None:
-                return render(request, 'faction/attacks/attacks.html', {'report': report, 'attacks': paginator.get_page(page_number)})
+            factions = json.loads(report.factions)
+
+            if report.player_filter:
+                attacksFilters = Q(attacker_id=report.player_filter) | Q(defender_id=report.player_filter)
+            else:
+                attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
+            attacks_set = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+            paginator = Paginator(attacks_set, 25)
+            p_at = request.GET.get('p_at', 1)
+            attacks = paginator.get_page(p_at)
+
+            attackers = dict({})
+            defenders = dict({})
+            for r in attacks_set:
+                attackers[r.attacker_id] = r.attacker_name
+                defenders[r.defender_id] = r.defender_name
+            attackers = sorted(attackers.items(), key=lambda x: x[1])
+            defenders = sorted(defenders.items(), key=lambda x: x[1])
+
+
+            if p_at is not None:
+                return render(request, 'faction/attacks/attacks.html', {'report': report, 'attacks': attacks, 'defenders': defenders, 'attackers': attackers})
             else:
                 return returnError(type=403, msg="You need to get a page.")
 
@@ -1894,13 +1954,14 @@ def revivesReport(request, reportId, share=False):
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get('p_re')
             revives = paginator.get_page(p_re)
+
             revivers = dict({})
             targets = dict({})
             for r in revives_set:
                 revivers[r.reviver_id] = r.reviver_name
                 targets[r.target_id] = r.target_name
-            revivers = sorted(revivers.items(), key=lambda x: x[0])
-            targets = sorted(targets.items(), key=lambda x: x[0])
+            revivers = sorted(revivers.items(), key=lambda x: x[1])
+            targets = sorted(targets.items(), key=lambda x: x[1])
 
             if order_fa:
                 paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
@@ -2002,8 +2063,8 @@ def revivesList(request, reportId):
             for r in revives_set:
                 revivers[r.reviver_id] = r.reviver_name
                 targets[r.target_id] = r.target_name
-            revivers = sorted(revivers.items(), key=lambda x: x[0])
-            targets = sorted(targets.items(), key=lambda x: x[0])
+            revivers = sorted(revivers.items(), key=lambda x: x[1])
+            targets = sorted(targets.items(), key=lambda x: x[1])
 
             if p_re is not None:
                 return render(request, 'faction/revives/revives.html', {'report': report, 'revives': revives, 'revivers': revivers, 'targets': targets})

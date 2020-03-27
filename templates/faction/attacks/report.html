@@ -77,27 +77,40 @@ $(function () {
         </tbody>
     </table>
     <hr class="sep">
-    {% if factionsA|length or factionsB|length %}
+    {% if factions|length %}
         <div class="pagination-list">
-            {% include "faction/attacks/factionsA.html"%}
-        </div>
-        <div class="pagination-list">
-            {% include "faction/attacks/factionsD.html"%}
+            {% include "faction/attacks/factions.html"%}
         </div>
         <div class="pagination-list">
             {% include "faction/attacks/players.html"%}
         </div>
-        <hr class="sep">
+        <hr class="sep" style="opacity: 0">
     {% else %}
         <p class="warning">No report found. Please click on update report on the top right of this section.</p>
     {% endif %}
 </div>
 
+{% if not share %}
+    <h2 class="title"><i class="fas fa-users"></i>&nbsp;&nbsp;Members breakdown</h2>
+    <div class="module">
+        <div class="pagination-list">
+            {% if members %}
+                {% include "faction/attacks/members.html"%}
+            {% else %}
+                <p>
+                    Compute breakdown based on the faction filters set above in order to see ougoing / incoming attacks made by your members:&nbsp;&nbsp;<a href=""><i id="faction-attacks-report-members" class="fas fa-sync-alt" data-val="{{report.pk}}"></i></a><br/>
+                    If your faction is selected above, you will see members from other factions in the list. For sake of clarity either <b>do not select your faction</b> or <b>select only your faction</b>... Or do wathever you want.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
 {% if attacks %}
-<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
-<div class="module">
-  <div class="pagination-list">
-    {% include "faction/attacks/attacks.html" %}
-  </div>
-</div>
+    <h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
+    <div class="module">
+      <div class="pagination-list">
+        {% include "faction/attacks/attacks.html" %}
+      </div>
+    </div>
 {% endif %}
