@@ -1909,7 +1909,7 @@ class AttacksReport(models.Model):
         f_set = dict({})
         p_set = dict({})
         for attack in allAttacks:
-            won = attack.result not in ["Lost"]
+            won = attack.result not in ["Stalemate", "Assist", "Lost", "Timeout", "Escape"]
 
             # handle attacker faction
             if attack.attacker_faction in f_set:
