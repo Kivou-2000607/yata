@@ -692,6 +692,7 @@ def report(request, chainId, share=False):
                 chain = Chain.objects.filter(shareId=chainId).first()
                 if chain is None:
                     return returnError(type=404, msg="Shared report {} not found.".format(chainId))
+                faction = chain.faction
 
             else:
                 player = getPlayer(request.session["player"].get("tId"))
@@ -777,6 +778,7 @@ def report(request, chainId, share=False):
             if share == "share":
                 context = dict({'skipheader': True,
                                 'share': True,
+                                'faction': faction,
                                 'chain': chain,  # for general info
                                 'counts': counts,  # for report
                                 'bonus': chain.bonus_set.all(),  # for report
@@ -1521,7 +1523,6 @@ def attacksReport(request, reportId, share=False):
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
-
             report.player_filter = 0
             report.save()
             attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
@@ -1681,7 +1682,6 @@ def attacksList(request, reportId):
                 defenders[r.defender_id] = r.defender_name
             attackers = sorted(attackers.items(), key=lambda x: x[1])
             defenders = sorted(defenders.items(), key=lambda x: x[1])
-
 
             if p_at is not None:
                 return render(request, 'faction/attacks/attacks.html', {'report': report, 'attacks': attacks, 'defenders': defenders, 'attackers': attackers})
