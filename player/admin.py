@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import *
+from faction.models import Faction
 from yata.handy import timestampToDate
 
 
@@ -47,6 +48,14 @@ class PlayerDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
+class SpinnerAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'factionId', 'faction', 'spinner']
+
+    def faction(self, instance):
+        return Faction.objects.filter(tId=instance.factionId).first()
+
+
+admin.site.register(Spinner, SpinnerAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Message, MessageAdmin)

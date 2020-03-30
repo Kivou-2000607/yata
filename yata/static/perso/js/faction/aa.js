@@ -17,7 +17,7 @@ $(document).on('change', '#faction-aa-change-threshold', e=>{
         threshold: threshold,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<td colspan="3" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html('<td colspan="3" style="text-align: center;">'+spinner+'</i></td>');
 });
 
 // poster on/off/hold

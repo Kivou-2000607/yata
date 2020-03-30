@@ -31,17 +31,17 @@ This file is part of yata.
     {% if event.description %}
         <p class="event-description">{{event.description|trURL}}</p>
     {% endif %}
-    <span class="event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></span>
+    <span class="event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-clock fa-pulse"></i></span>
     {% if event.stack and event.timestamp %}
         <hr class="sep">
         <span class="event-stack">Stacking</span>
         <span class="event-stack-date">{{event.timestamp|sub:100800|ts2date:"%Y/%m/%d %I:%M %p"}} TCT</span>
-        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-spinner fa-pulse"></i></span>
+        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-clock fa-pulse"></i></span>
     {% endif %}
     {% if event.reset and event.timestamp %}
         <hr class="sep">
         <span class="event-stack">Reset branch</span>
         <span class="event-stack-date">{{event.timestamp|sub:360000|ts2date:"%Y/%m/%d %I:%M %p"}} TCT</span>
-        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-spinner fa-pulse"></i></span>
+        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-clock fa-pulse"></i></span>
     {% endif %}
 </div>

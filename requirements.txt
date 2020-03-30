@@ -1,5 +1,5 @@
 # core modules
-Django==3.0.1
+Django==3.0.4
 django-mathfilters==0.4.0
 requests==2.22.0
 

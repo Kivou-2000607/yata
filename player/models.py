@@ -95,6 +95,10 @@ class Player(models.Model):
     def nameAligned(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
+    def getSpinner(self):
+        spinner = Spinner.objects.filter(factionId=self.factionId).first()
+        return False if spinner is None else "-" + spinner.spinner 
+
     def getKey(self, value=True):
         key = self.key_set.first()
         if key is None:
@@ -217,3 +221,8 @@ class Key(models.Model):
 
     def __str__(self):
         return "Key of {}".format(self.player)
+
+
+class Spinner(models.Model):
+    factionId = models.IntegerField(default=0)
+    spinner = models.CharField(default="", max_length=64, null=True, blank=True)

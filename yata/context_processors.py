@@ -23,6 +23,7 @@ from player.models import Player
 from player.models import Message
 from player.models import SECTION_CHOICES
 from loot.models import NPC
+from faction.models import Faction
 
 
 # def news(request):
