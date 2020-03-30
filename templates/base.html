@@ -60,9 +60,13 @@ This file is part of yata.
         {# <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script> #}
     {# {% endif %} #}
 
-    {% with 'perso/js/spinner'|add:player.getSpinner|add:'.js' as spinner %}
-        <script type="text/javascript" src='{% static spinner %}'></script>
-    {% endwith %}
+    {% if player %}
+        {% with 'perso/js/spinner'|add:player.getSpinner|add:'.js' as spinner %}
+            <script type="text/javascript" src='{% static spinner %}'></script>
+        {% endwith %}
+    {% else %}
+        <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script>
+    {% endif %}
     <script type="text/javascript" src='{% static "perso/js/yata.js" %}'></script>
 
     <!-- local css -->
