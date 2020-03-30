@@ -2453,9 +2453,14 @@ def bigBrother(request):
                                 del contributors[memberName]
 
                         # delete contributors out of faction for ts2
-                        todel = [k for k, v in contributors.items() if not v[2]]
+                        todel = [k for k, v in contributors.items() if (not v[2] or not v[1])]
                         for tId in todel:
                             del contributors[tId]
+
+                        contributors = sorted(contributors.items(), key=lambda x: x[1][1]-x[1][2])
+
+                    else:
+                        contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'view': {'bb': True}}
 

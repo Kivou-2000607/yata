@@ -21,7 +21,7 @@
             type: 'numeric'
         });
 
-        $("#faction-bb-comparison").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[3,1], [1,1]]});
+        $("#faction-bb-comparison").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [2,1]]});
     });
 </script>
 
@@ -30,7 +30,7 @@
 <table id="faction-bb-comparison" class="center faction-bb-comparison">
     <thead>
         <tr>
-          <th colspan="4">
+          <th colspan="5">
             {# title of the challenge #}
             {% if comparison %}
               {{comparison.3}} between
@@ -79,6 +79,7 @@
         </tr>
         {% if comparison %}
         <tr>
+            <th>Rank</th>
             <th>Name</th>
             <th>On {{comparison.1|ts2date}}</th>
             {% if comparison.2 > 0 %}
@@ -92,9 +93,10 @@
     </thead>
     {% if comparison %}
     <tbody>
-        {% for id, v in contributors.items %}
+        {% for id, v in contributors %}
         {% if v.1 and v.2 or not comparison.2 %}
         <tr>
+            <td class="e"><tt>#{{forloop.counter}}</tt></td>
             <td class="a">{{v.0|playerURL:id|safe}}</td>
             <td class="b">{{v.1|intcomma}}</td>
             {% if comparison.2 > 0 %}
