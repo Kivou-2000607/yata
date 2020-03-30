@@ -97,7 +97,7 @@ class Player(models.Model):
 
     def getSpinner(self):
         spinner = Spinner.objects.filter(factionId=self.factionId).first()
-        return False if spinner is None else "-" + spinner.spinner 
+        return "" if spinner is None else "-" + spinner.spinner 
 
     def getKey(self, value=True):
         key = self.key_set.first()
