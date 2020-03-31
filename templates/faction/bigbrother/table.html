@@ -25,6 +25,7 @@
     });
 </script>
 
+<script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
 
 {% if statsList|length %}
 <table id="faction-bb-comparison" class="center faction-bb-comparison">
@@ -81,10 +82,19 @@
         <tr>
             <th>Rank</th>
             <th>Name</th>
-            <th>On {{comparison.1|ts2date}}</th>
+            <th>
+                On {{comparison.1|ts2date}}&nbsp;&nbsp;
+                <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.0%}'></i>
+            </th>
             {% if comparison.2 > 0 %}
-                <th>On {{comparison.2|ts2date}}</th>
-                <th>Difference</th>
+                <th>
+                    On {{comparison.2|ts2date}}&nbsp;&nbsp;
+                    <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.1%}'></i>
+                </th>
+                <th>
+                    Difference&nbsp;&nbsp;
+                    <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.2%}'></i>
+                </th>
             {% else %}
                 <th colspan="2">select a second stat</th>
             {% endif %}
@@ -96,15 +106,15 @@
         {% for id, v in contributors %}
         {% if v.1 and v.2 or not comparison.2 %}
         <tr>
-            <td class="e"><tt>#{{forloop.counter}}</tt></td>
-            <td class="a">{{v.0|playerURL:id|safe}}</td>
-            <td class="b">{{v.1|intcomma}}</td>
+            <td class="a"><tt>#{{forloop.counter}}</tt></td>
+            <td class="b">{{v.0|playerURL:id|safe}}</td>
+            <td class="c">{{v.1|intcomma}}</td>
             {% if comparison.2 > 0 %}
-                <td class="b">{{v.2|intcomma}}</td>
-                <td class="c">{{v.2|sub:v.1|signColor}}</td>
+                <td class="c">{{v.2|intcomma}}</td>
+                <td class="d">{{v.2|sub:v.1|signColor}}</td>
             {% else %}
-                <td class="b"></td>
                 <td class="c"></td>
+                <td class="d"></td>
             {% endif %}
         </tr>
         {% endif %}

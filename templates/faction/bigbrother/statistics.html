@@ -1,0 +1,9 @@
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<b>Statistics over {{contributors|length}} members</b><br>
+Mean: {{s.0|floatformat:1|intcomma}}<br>
+Std: {{s.1|floatformat:1|intcomma}}<br>

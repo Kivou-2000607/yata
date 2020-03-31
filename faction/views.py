@@ -2412,6 +2412,7 @@ def bigBrother(request):
 
             statsList = dict({})
             contributors = False
+            statistics = False
             comparison = False
             for stat in allContributors:
                 # create entry if first iteration on this type
@@ -2462,7 +2463,23 @@ def bigBrother(request):
                     else:
                         contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
 
-            context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'view': {'bb': True}}
+                # [time 1, time 2, diff]
+                mean = [0.0, 0.0, 0.0]
+                mean2 = [0.0, 0.0, 0.0]
+                std = [0.0, 0.0, 0.0]
+                n = len(contributors)
+                for k, v in contributors:
+                    tmp = [v[1], v[2], v[2] - v[1]]
+                    for i in range(3):
+                        mean[i] += tmp[i] / float(n)
+                        mean2[i] += tmp[i]**2 / float(n)
+
+                statistics = []
+                for i in range(3):
+                    std[i] = (mean2[i] - mean[i]**2)**0.5
+                    statistics.append([mean[i], std[i]])
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'statistics': statistics, 'view': {'bb': True}}
 
             if message:
                 err = "validMessage" if state else "errorMessage"
