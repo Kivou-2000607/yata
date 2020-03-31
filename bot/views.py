@@ -209,34 +209,23 @@ def toggleNoti(request):
 def secret(request):
     if request.method == 'POST':
         try:
-            from Crypto.Hash import SHA256
-            from Crypto.Cipher import AES
-            from binascii import unhexlify
 
-            # the secret key is encrypted with AES
-            cipher_secret = request.META.get("HTTP_SECRET")
-            # initialization vector for AES
-            iv = request.META.get("HTTP_IV")
             # the check key is hashed with SHA256
-            hash_check = request.META.get("HTTP_CHECK")
+            secret = request.META.get("HTTP_SECRET")
+            check = request.META.get("HTTP_CHECK")
             uid = int(request.META.get("HTTP_UID"))
+
+            print(secret, check, uid)
 
             rooms = []
             for chat in Chat.objects.all():
 
-                # hash the check key and compare to the hash sent
-                hash = SHA256.new()
-                hash.update(chat.check.encode('utf-8'))
-
-                if hash.hexdigest() != hash_check:
+                if chat.check != check:
                     t = -1
                     m = "Wrong check key."
                     return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
 
                 else:
-                    obj = AES.new(chat.key, AES.MODE_CBC, unhexlify(iv))
-                    secret = obj.decrypt(unhexlify(cipher_secret)).decode('utf-8')
-
                     cred, _ = chat.credential_set.get_or_create(uid=uid)
                     if cred.secret != secret:
                         rooms.append(chat.name)

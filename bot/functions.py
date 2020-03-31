@@ -24,7 +24,6 @@ import json
 
 def deleteOldBots():
     for bot in DiscordApp.objects.all():
-        print(bot)
         var = json.loads(bot.variables)
         todel = []
         for guildId in var:
