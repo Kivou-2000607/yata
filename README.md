@@ -10,3 +10,5 @@
 Helper website for the text-based online RPG Torn City https://www.torn.com/
 
 The website is hosted here: https://yata.alwaysdata.net/
+
+Theia FTW
