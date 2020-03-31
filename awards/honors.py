@@ -316,6 +316,7 @@ d = {
     719: 240076845,  # Invictus
     834: 265487578,  # Lead Salad
     828: 502452396,  # Final
+    827: 501001885,  # Deadly Duo
     476: 0,  # Chainer 5
 
     # 9
