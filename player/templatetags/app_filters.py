@@ -41,7 +41,8 @@ def ts2date(timestamp, fmt=None):
 
     # return "{:04d}/{:02d}/{:02d} {:02d}:{:02d}".format(d.year, d.month, d.day, d.hour, d.minute)
     if fmt is None:
-        return d.strftime("%Y/%m/%d %I:%M %p")
+        # return d.strftime("%Y/%m/%d %I:%M %p")
+        return d.strftime("%Y/%m/%d %H:%M")
     else:
         return d.strftime(fmt)
 

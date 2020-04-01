@@ -42,7 +42,8 @@ def index(request):
         else:
             player = Player.objects.filter(tId=-1).first()
 
-        context = {"player": player, "NPCs": [npc for npc in NPC.objects.filter(show=True).order_by('tId')]}
+        NPCs = [npc for npc in NPC.objects.filter(show=True).order_by('tId')]
+        context = {"player": player, "NPCs": NPCs}
         return render(request, "loot.html", context)
 
     except Exception:
