@@ -2464,6 +2464,7 @@ def bigBrother(request):
                         contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
 
                 # [time 1, time 2, diff]
+                total = [0, 0, 0]
                 mean = [0.0, 0.0, 0.0]
                 mean2 = [0.0, 0.0, 0.0]
                 std = [0.0, 0.0, 0.0]
@@ -2471,13 +2472,16 @@ def bigBrother(request):
                 for k, v in contributors:
                     tmp = [v[1], v[2], v[2] - v[1]]
                     for i in range(3):
+                        total[i] += tmp[i]
                         mean[i] += tmp[i] / float(n)
                         mean2[i] += tmp[i]**2 / float(n)
 
+                # [[total, mean, std, cov], []]
                 statistics = []
                 for i in range(3):
                     std[i] = (mean2[i] - mean[i]**2)**0.5
-                    statistics.append([mean[i], std[i]])
+                    cov = std[i] / mean[i] if mean[i] else 0
+                    statistics.append([total[i], mean[i], std[i], cov])
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'statistics': statistics, 'view': {'bb': True}}
 

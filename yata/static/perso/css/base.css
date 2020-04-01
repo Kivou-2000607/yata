@@ -462,3 +462,10 @@ a.page-link {
 i.online-status-Offline {color: #666}
 i.online-status-Online {color: #0B8E14}
 i.online-status-Idle {color: #FF8C00}
+
+
+table.tooltip th,
+table.tooltip td { border: 1px solid #aaa!important; }
+table.tooltip th { text-transform: uppercase; text-align: center;}
+table.tooltip td.title { text-align: left; font-weight: bold; }
+table.tooltip td.value { text-align: right; }
