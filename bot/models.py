@@ -102,7 +102,7 @@ class Chat(models.Model):
     uid = models.IntegerField(default=0)
     secret = models.CharField(default="secret", max_length=128)
     check = models.CharField(default="check", max_length=128)
-    hookurl = models.CharField(default="url", max_length=512)
+    hookurl = models.TextField(default="{}")
 
     def __str__(self):
         return "Chat {}".format(self.name)
