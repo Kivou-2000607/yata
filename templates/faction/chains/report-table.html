@@ -181,10 +181,10 @@ $(document).ready(function() {
         {% endif %}
         {% if chain.attacks > 0 %}
             <tr>
-                <td><b>Hits:</b> {{chain.chain}}</td>
-                <td><b>Respect:</b> {{chain.respect|floatformat:0|intcomma}}</td>
-                <td><b>Respect / Attacks:</b> {{chain.respect|div:chain.attacks|floatformat:2}}</td>
-                <td><b>Hits / Attacks:</b> {{chain.current}} / {{chain.attacks}} &nbsp;&nbsp; ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
+                <td title='Hits / Attacks: {{chain.chain}} / {{chain.attacks}} ({{chain.chain|div:chain.attacks|mul:"100"|floatformat:0}}%)'><b>Hits:</b> {{chain.chain}} ({{chain.chain|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
+                <td title="Respect / attacks: {{chain.respect|div:chain.attacks|floatformat:2}}"><b>Respect:</b> {{chain.respect|floatformat:0|intcomma}} ({{chain.respect|div:chain.attacks|floatformat:2}})</td>
+                <td title='Hits / Attacks: {{chain.current}} / {{chain.attacks}} ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)'><b>Hits CD:</b> {{chain.current}} ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
+                <td title="Respect / attacks: {{chain.respectComputed|div:chain.attacks|floatformat:2}}"><b>Respect CD:</b> {{chain.respectComputed|floatformat:0|intcomma}} ({{chain.respectComputed|div:chain.attacks|floatformat:2}})</td>
             </tr>
         {% endif %}
         {% for b in bonus %}

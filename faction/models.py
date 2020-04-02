@@ -1050,6 +1050,7 @@ class Chain(models.Model):
     attacks = models.IntegerField(default=0)  # only modified in fillReport
     graphs = models.TextField(default="{}", null=True, blank=True)
     cooldown = models.BooleanField(default=False)
+    respectComputed = models.FloatField(default=0)  # actual respect computed
 
     # blameched variables
     addToEnd = models.IntegerField(default=10)  # add seconds to end timestamp if chain didn't reach last hit
@@ -1467,9 +1468,10 @@ class Chain(models.Model):
 
         # potentially add this to chain to compare with API
         if self.live:
-            # self.chain = nWRA[0]  # update for live chains
+            self.chain = nWRA[0]  # update for live chains
             self.respect = nWRA[1]  # update for live chains
         self.attacks = nWRA[2]
+        self.respectComputed = nWRA[1]
         self.save()
 
         # fill the database with counts

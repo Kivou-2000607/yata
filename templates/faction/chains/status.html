@@ -22,7 +22,7 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if chain.computing %}
-    <span class="warning" style="cursor: help;" title="Report status: computing&#010;Progress: {{chain.current|intcomma}} / {{chain.chain|intcomma}}&#010;Cooldown: {{chain.cdTime}}&#010;Crontab: {{chain.displayCrontab}}&#010;Last update: {{chain.update|ts2date}}&#010;Last status: {{chain.status}}"><i class="fas fa-history" style="margin-right: 5px"></i> {{chain.progress}}%</span>
+    <span class="warning" style="cursor: help;" title="Report status: computing&#010;Progress: {{chain.current|intcomma}} / {{chain.chain|intcomma}}&#010;Cooldown: {{chain.cdTime}}&#010;Crontab: {{chain.displayCrontab}}&#010;Last update: {{chain.update|ts2date}}&#010;Last status: {{chain.status}}&#010;Time left: {{chain.chain|sub:chain.current|mul:60|intdiv:100|ts2time}}"><i class="fas fa-history" style="margin-right: 5px"></i> {{chain.progress}}%</span>    
 {% elif chain.progress < 100 %}
     <span class="error" style="cursor: help;" title="Report status: stopped&#010;Progress: {{chain.current|intcomma}} / {{chain.chain|intcomma}}&#010;Cooldown: {{chain.cdTime}}&#010;Crontab: {{chain.displayCrontab}}&#010;Last update: {{chain.update|ts2date}}&#010;Last status: {{chain.status}}"><i class="fas fa-bug" style="margin-right: 5px"></i> {{chain.progress}}%</span>
 {% else %}
