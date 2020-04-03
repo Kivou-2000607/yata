@@ -1426,7 +1426,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["current"] = numberOfClassesDone
                     vp["achieve"] = 1 if int(k) in honors_awarded else numberOfClassesDone / float(numberOfClasses)
                     vp["left"] = max(educationTimeReduction * timeLeft / (24. * 3600.), 0)
-                    vp["comment"] = "{:.1f} days with {:.0f}% education length reducion".format(vp["left"], (1. - educationTimeReduction) * 100.)
+                    vp["comment"] = "{:.1f} days with {:.0f}% education length reduction".format(vp["left"], (1. - educationTimeReduction) * 100.)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [653, 659, 651, 656]:
@@ -1446,7 +1446,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                             timeLeft += educationTimeReduction * b["duration"]
                             edLeft.append("{} (tier {})".format(b.get('name', '?'), b.get('tier', 0)))
                     vp["left"] = max(educationTimeReduction * timeLeft / (24. * 3600.), 0)
-                    vp["comment"] = "{:.1f} days taking the shortest courses left with {:.0f}% education length reducion: <br>{}".format(vp["left"], (1. - educationTimeReduction) * 100., "<br>- ".join(edLeft))
+                    vp["comment"] = "{:.1f} days taking the shortest courses left with {:.0f}% education length reduction: <br>- {}".format(vp["left"], (1. - educationTimeReduction) * 100., "<br>- ".join(edLeft))
 
                     awards[type]["h_" + k] = vp
 
