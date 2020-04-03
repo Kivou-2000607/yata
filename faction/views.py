@@ -427,20 +427,18 @@ def updateMember(request):
             except BaseException as e:
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Error with member {}: {}'.format(memberId, e)})
 
-            # update energy
+            # update private data
             tmpP = Player.objects.filter(tId=memberId).first()
             if tmpP is None:
                 member.shareE = -1
                 member.shareN = -1
+                member.shareS = -1
                 member.save()
-            elif member.shareE > 0 and member.shareN > 0:
-                req = apiCall("user", "", "perks,bars,crimes", key=tmpP.getKey())
+            elif member.shareE > 0 or member.shareN > 0 or member.shareS > 0:
+                req = apiCall("user", "", "perks,bars,crimes,battlestats", key=tmpP.getKey())
                 member.updateEnergy(key=tmpP.getKey(), req=req)
+                member.updateStats(key=tmpP.getKey(), req=req)
                 member.updateNNB(key=tmpP.getKey(), req=req)
-            elif member.shareE > 0:
-                member.updateEnergy(key=tmpP.getKey())
-            elif member.shareN > 0:
-                member.updateNNB(key=tmpP.getKey())
 
             context = {"player": player, "member": member}
             return render(request, 'faction/members/line.html', context)
@@ -494,9 +492,24 @@ def toggleMemberShare(request):
                     context = {"player": player, "member": member}
                     return render(request, 'faction/members/nnb.html', context)
 
+            elif request.POST.get("type") == "stats":
+                member.shareS = 0 if member.shareS else 1
+                error = member.updateStats(key=player.getKey())
+                # handle api error
+                if error:
+                    member.shareS = 0
+                    member.dexterity = 0
+                    member.defense = 0
+                    member.strength = 0
+                    member.speed = 0
+                    return render(request, 'faction/members/stats.html', {'errorMessage': error.get('apiErrorString', 'error')})
+                else:
+                    context = {"player": player, "member": member}
+                    return render(request, 'faction/members/stats.html', context)
+
                 # member.save()
             else:
-                return render(request, 'faction/members/energy.html', {'errorMessage': '?'})
+                return render(request, 'faction/members/nnb.html', {'errorMessage': '?'})
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

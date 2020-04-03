@@ -29,7 +29,9 @@ This file is part of yata.
             textExtraction: {
               0: function(node, table, cellIndex) {return $(node).attr("data-val");},
               2: function(node, table, cellIndex) {return $(node).attr("data-val");},
+              5: function(node, table, cellIndex) {return $(node).attr("data-val");},
               6: function(node, table, cellIndex) {return $(node).attr("data-val");},
+              7: function(node, table, cellIndex) {return $(node).attr("data-val");},
             },
 
             cssAsc: 'up', cssDesc: 'down', sortList: [[1,0]]
@@ -49,6 +51,7 @@ This file is part of yata.
                 <th title="Days in Faction">DIF</th>
                 <th>Energy</th>
                 <th>NNB</th>
+                <th>Stats</th>
         </thead>
         <tbody>
         {% for member in members %}

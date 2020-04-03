@@ -6,7 +6,7 @@ $(document).on('click', 'tr.faction-member-refresh > td:not(.dont-touch-me)', fu
     reload.load( "/faction/members/update/", {
         memberId: memberId,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');
+    }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
 });
 
 // toggle member shareE
@@ -15,6 +15,16 @@ $(document).on('click', '.faction-member-shareE', e=>{
     var td = $(e.currentTarget.offsetParent);
     td.load( "/faction/members/toggle/", {
         type: "energy",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
+});
+
+// toggle member shareS
+$(document).on('click', '.faction-member-shareS', e=>{
+    e.preventDefault();
+    var td = $(e.currentTarget.offsetParent);
+    td.load( "/faction/members/toggle/", {
+        type: "stats",
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
@@ -44,7 +54,7 @@ $(document).on('click', '#member-refresh', function(e){
                 reload.load( "/faction/members/update/", {
                     memberId: memberId,
                     csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-                }).html('<td colspan="7" style="text-align: center;">'+spinner+'</td>');
+                }).html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
             }, wait);
         })(i);
         i++;

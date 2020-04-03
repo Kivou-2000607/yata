@@ -25,10 +25,10 @@ This file is part of yata.
 {% if errorMessage %}
     <td colspan="14" class="error" style="text-align: center;">{{errorMessage}}</td>
 {% else %}
-    <td class="f" title="{{member.lastActionStatus}}" data-val='{% if member.lastActionStatus == "Offline" %}-1{% elif member.lastActionStatus == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{member.lastActionStatus}}"></i></td>
-    <td class="a dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
-    <td class="b" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
-    <td class="c player-status-{{member.color}}">{{member.description|cleanhtml}}
+    <td class="a" title="{{member.lastActionStatus}}" data-val='{% if member.lastActionStatus == "Offline" %}-1{% elif member.lastActionStatus == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{member.lastActionStatus}}"></i></td>
+    <td class="b dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
+    <td class="c" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
+    <td class="d player-status-{{member.color}}">{{member.description|cleanhtml}}
         {% if member.details and member.until%}
             <span class="thelp flush-right" title="{{member.details|cleanhtml}}&#10;Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
         {% elif member.details %}
@@ -37,11 +37,14 @@ This file is part of yata.
             <span class="thelp flush-right" title="Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
         {% endif %}
     </td>
-    <td class="d" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
-    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}">
+    <td class="e" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
+    <td class="f{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareE > 0%}{{member.energy}}{%endif%}">
         {% include "faction/members/energy.html"%}
     </td>
-    <td class="e{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
+    <td class="f{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
         {% include "faction/members/nnb.html"%}
+    </td>
+    <td class="g{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareS > 0%}{{member.getTotalStats}}{%endif%}">
+        {% include "faction/members/stats.html"%}
     </td>
 {% endif %}

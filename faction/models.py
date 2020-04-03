@@ -329,18 +329,24 @@ class Faction(models.Model):
                 if player is None:
                     memberDB.shareE = -1
                     memberDB.energy = 0
+                    memberDB.shareS = -1
+                    memberDB.dexterity = 0
+                    memberDB.speed = 0
+                    memberDB.strength = 0
+                    memberDB.defense = 0
                     memberDB.shareN = -1
                     memberDB.nnb = 0
                     memberDB.arson = 0
                 else:
-                    if indRefresh and memberDB.shareE and memberDB.shareN:
+                    # pass from -1 to 0 in case
+                    memberDB.shareN = max(memberDB.shareN, 0)
+                    memberDB.shareS = max(memberDB.shareS, 0)
+                    memberDB.shareE = max(memberDB.shareE, 0)
+                    if indRefresh and (memberDB.shareE or memberDB.shareN or memberDB.shareS):
                         req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
                         memberDB.updateEnergy(key=player.getKey(), req=req)
                         memberDB.updateNNB(key=player.getKey(), req=req)
-                    elif indRefresh and memberDB.shareE:
-                        memberDB.updateEnergy(key=player.getKey())
-                    elif indRefresh and memberDB.shareN:
-                        memberDB.updateNNB(key=player.getKey())
+                        memberDB.updateStats(key=player.getKey(), req=req)
 
                 memberDB.save()
 
@@ -357,9 +363,14 @@ class Faction(models.Model):
                 player = Player.objects.filter(tId=memberTmp.tId).first()
                 memberTmp.shareE = -1 if player is None else 0
                 memberTmp.shareN = -1 if player is None else 0
+                memberTmp.shareS = -1 if player is None else 0
                 memberTmp.energy = 0
                 memberTmp.nnb = 0
                 memberTmp.arson = 0
+                memberTmp.dexterity = 0
+                memberTmp.strength = 0
+                memberTmp.speed = 0
+                memberTmp.defense = 0
 
                 memberTmp.save()
 
@@ -373,6 +384,7 @@ class Faction(models.Model):
                     lastActionTS=membersAPI[m]['last_action']['timestamp'],
                     daysInFaction=membersAPI[m]['days_in_faction'],
                     shareE=-1 if player is None else 0,
+                    shareS=-1 if player is None else 0,
                     shareN=-1 if player is None else 0)
                 memberNew.updateStatus(**membersAPI[m]['status'])
                 memberNew.updateLastAction(**membersAPI[m]['last_action'])
@@ -926,6 +938,14 @@ class Member(models.Model):
     nnb = models.IntegerField(default=0)
     arson = models.IntegerField(default=0)
 
+    # share stats
+    # -1: not on YATA 0: doesn't wish to share 1: share
+    shareS = models.IntegerField(default=-1)
+    dexterity = models.BigIntegerField(default=0)
+    defense = models.BigIntegerField(default=0)
+    speed = models.BigIntegerField(default=0)
+    strength = models.BigIntegerField(default=0)
+
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
 
@@ -984,6 +1004,35 @@ class Member(models.Model):
 
         return error
 
+    def updateStats(self, key=None, req=False):
+        error = False
+        if not self.shareS:
+            self.dexterity = 0
+            self.defense = 0
+            self.speed = 0
+            self.strength = 0
+        else:
+            if not req:
+                req = apiCall("user", "", "battlestats", key=key)
+
+            # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
+            # req = requests.get(url).json()
+            if 'apiError' in req:
+                error = req
+                self.dexterity = 0
+                self.defense = 0
+                self.speed = 0
+                self.strength = 0
+            else:
+                self.dexterity = int(float(req.get('dexterity', 0)))
+                self.defense = int(float(req.get('defense', 0)))
+                self.speed = int(float(req.get('speed', 0)))
+                self.strength = int(float(req.get('strength', 0)))
+
+        self.save()
+
+        return error
+
     def updateNNB(self, key=None, req=False):
         error = False
         if not self.shareN:
@@ -1023,6 +1072,9 @@ class Member(models.Model):
 
         self.save()
         return error
+
+    def getTotalStats(self):
+        return self.dexterity + self.speed + self.strength + self.defense
 
 
 # Chains
