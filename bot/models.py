@@ -56,8 +56,10 @@ class Guild(models.Model):
     verifyFactions = models.ManyToManyField(Faction, blank=True, help_text="Enter faction ID or name to find the faction. If it doesn't show up it means that the faction is not on YATA.")
     verifyFacsRole = models.CharField(default="", blank=True, max_length=16, help_text="Name of the faction role.")
     verifyAppendFacId = models.BooleanField(default=True, help_text="Append or not the ID in the faction role.")
-    verifyDailyVerify = models.BooleanField(default=False, help_text="Do automatic '!verifyAll force' every 12 hours")
-    verifyDailyCheck = models.BooleanField(default=False, help_text="Do automatic '!checkFactions force' every 12 hours")
+    verifyDailyVerify = models.BooleanField(default=False, help_text="Do automatic '!verifyAll force' every 24 hours")
+    verifyDailyCheck = models.BooleanField(default=False, help_text="Do automatic '!checkFactions force' every 24 hours")
+    verifyWeeklyVerify = models.BooleanField(default=False, help_text="Do automatic '!verifyAll force' every 7x24 hours")
+    verifyWeeklyCheck = models.BooleanField(default=False, help_text="Do automatic '!checkFactions force' every 7x24 hours")
     verifyChannels = models.CharField(default='["verify-id"]', blank=True, max_length=64, help_text="Name of the verify channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
     # stock module

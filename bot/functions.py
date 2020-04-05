@@ -147,6 +147,10 @@ def saveGuildConfig(guild):
             var[str(guild.guildId)]["verify"]["dailyverify"] = True
         if guild.verifyDailyCheck:
             var[str(guild.guildId)]["verify"]["dailycheck"] = True
+        if guild.verifyWeeklyVerify:
+            var[str(guild.guildId)]["verify"]["weeklyverify"] = True
+        if guild.verifyWeeklyCheck:
+            var[str(guild.guildId)]["verify"]["weeklycheck"] = True
         if guild.verifyFacsRole:
             var[str(guild.guildId)]["verify"]["common"] = guild.verifyFacsRole
         factions = dict({})

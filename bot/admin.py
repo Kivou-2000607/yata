@@ -53,7 +53,7 @@ class GuildAdmin(admin.ModelAdmin):
             'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')
         }),
         ('Verify module', {
-            'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyDailyCheck')
+            'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyWeeklyVerify', 'verifyDailyCheck', 'verifyWeeklyCheck')
         }),
         ('Stock module', {
             'fields': ('stockModule', 'stockChannels', 'stockWSSB', 'stockTCB', 'stockAlerts')
