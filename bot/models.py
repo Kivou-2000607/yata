@@ -129,3 +129,8 @@ class Credential(models.Model):
 
     def __str__(self):
         return "Credential [{}] for {}".format(self.uid, self.chat)
+
+
+class Rackets(models.Model):
+    timestamp = models.IntegerField(default=0)
+    rackets = models.TextField(default="{}")

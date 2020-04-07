@@ -97,6 +97,11 @@ class ChatAdmin(admin.ModelAdmin):
     inlines = [CredentialInline, ]
 
 
+class RacketsAdmin(admin.ModelAdmin):
+    list_display = ['timestamp']
+
+
+admin.site.register(Rackets, RacketsAdmin)
 admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
 admin.site.register(DiscordApp, DiscordAppAdmin)
