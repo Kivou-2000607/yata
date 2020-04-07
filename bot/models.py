@@ -73,6 +73,11 @@ class Guild(models.Model):
     chainModule = models.BooleanField(default=False, help_text="Enable the Chain module")
     chainChannels = models.CharField(default='["chain"]', blank=True, max_length=64, help_text="Name of the chain channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
 
+    # racket module
+    racketModule = models.BooleanField(default=False, help_text="Enable the Racket module")
+    racketChannels = models.CharField(default='["rackets"]', blank=True, max_length=64, help_text="Name of the racket channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
+    racketRoles = models.CharField(default='["rackets"]', blank=True, max_length=64, help_text="Name of the role to mention. Can be multiple channels. It has to be the exact channel name: [\"role-a\", \"my-other-role\"]")
+
     # loot module
     lootModule = models.BooleanField(default=False, help_text="Enable the Loot module")
     lootChannels = models.CharField(default='["loot"]', blank=True, max_length=64, help_text="Name of the loot channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])

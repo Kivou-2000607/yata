@@ -115,6 +115,12 @@ def saveGuildConfig(guild):
         if guild.stockAlerts:
             var[str(guild.guildId)]["stocks"]["alerts"] = True
 
+    # racket
+    if guild.racketModule:
+        channels = [c.lower() for c in json.loads(guild.racketChannels)]
+        roles = [c for c in json.loads(guild.racketRoles)]
+        var[str(guild.guildId)]["rackets"] = {"active": True, "channels": channels, "roles": roles}
+
     # chain
     if guild.chainModule:
         retal = old.get("chain", dict({})).get("retal", dict({}))

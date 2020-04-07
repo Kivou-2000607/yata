@@ -67,6 +67,9 @@ class GuildAdmin(admin.ModelAdmin):
         ('Chain module', {
             'fields': ('chainModule', 'chainChannels')
         }),
+        ('Racket module', {
+            'fields': ('racketModule', 'racketChannels', 'racketRoles')
+        }),
         ('Crimes module', {
             'fields': ('crimesModule', 'crimesChannels')
         }),
