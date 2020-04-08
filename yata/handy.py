@@ -81,7 +81,7 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
         rjson = r.json()
     except ValueError as e:
         print("[yata.function.apiCall] API deserialization  error {}".format(e))
-        err = dict({"error": {"code": "?", "error": "deserialization error... API going crazy #blameched"}})
+        err = dict({"error": {"code": 0, "error": "deserialization error... API going crazy #blameched"}})
 
     try:
         r.raise_for_status()
