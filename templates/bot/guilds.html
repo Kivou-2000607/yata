@@ -17,11 +17,43 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
 {% load app_filters %}
+
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Time', 'Number of servers'],
+        {% for a, y in graphs %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{y}}],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: 'Number of servers over time',
+        // curveType: 'function',
+        legend: { position: 'none' },
+        backgroundColor: 'transparent',
+        chartArea: {'width': '90%', 'height': '60%'},
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chartGuilds'));
+
+      chart.draw(data, options);
+    }
+</script>
 
 <h2 class="title"><i class="fas fa-server"></i>&nbsp;&nbsp;Servers hosting the official YATA bot</h2>
 <div class="module">
     <div class="pagination-list">
         {% include "bot/guilds-list.html" %}
     </div>
+    <table class="center-large">
+        <tr><td><div id="chartGuilds"></div></td></tr>
+    </table>
 </div>

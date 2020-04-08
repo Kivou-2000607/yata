@@ -46,10 +46,13 @@ def index(request):
         error = player.update_discord_id()
 
         # get guilds
+        graphs = []
         guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
         n = len(guilds)
         for i, g in enumerate(guilds):
             g.n = n - i
+            if g.guildJoinedTime:
+                graphs.append([timestampToDate(g.guildJoinedTime), n - i])
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -66,7 +69,7 @@ def index(request):
             for app in apps:
                 app["variables"] = sorted(json.loads(app["variables"]).items(), key=lambda x: x[1]["admin"]["pk"])
 
-        context = {"player": player, "apps": apps, "guilds": guilds, "notifications": notifications, "error": error, "botcat": True, "view": {"index": True}}
+        context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "notifications": notifications, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
 
     except Exception:
@@ -99,10 +102,14 @@ def welcome(request):
 
         player = Player.objects.filter(tId=tId).first()
         # get guilds
+        graphs = []
         guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
         n = len(guilds)
         for i, g in enumerate(guilds):
             g.n = n - i
+            if g.guildJoinedTime:
+                graphs.append([timestampToDate(g.guildJoinedTime), n - i])
+
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -110,7 +117,7 @@ def welcome(request):
         if request.GET.get('page') is not None:
             return render(request, "bot/guilds-list.html", {"guilds": guilds})
 
-        context = {"player": player, "botcat": True, "guilds": guilds, "view": {"index": True}}
+        context = {"player": player, "botcat": True, "guilds": guilds, "graphs": graphs, "view": {"index": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
