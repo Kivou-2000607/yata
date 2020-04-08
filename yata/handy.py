@@ -66,19 +66,30 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     #     else:
     #         return chain.get(sub)
 
+
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
+    url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+    if verbose:
+        print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
+    r = requests.get(url)
+
+    err = False
+
     try:
-        url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-        if verbose:
-            print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
-        # print("[yata.function.apiCall] {}".format(url))
-        r = requests.get(url)
-        r.raise_for_status()
-
         rjson = r.json()
+    except ValueError as e:
+        print("[yata.function.apiCall] API deserialization  error {}".format(e))
+        err = dict({"error": {"code": "?", "error": "deserialization error... API going crazy #blameched"}})
 
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print("[yata.function.apiCall] API HTTPError {}".format(e))
+        err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
+
+    if not err:
         if "error" in rjson:  # standard api error
             err = rjson
         else:
@@ -89,10 +100,6 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
                     err = dict({"error": {"code": "", "error": "key not found... something went wrong..."}})
             else:
                 return rjson
-
-    except requests.exceptions.HTTPError as e:
-        print("[yata.function.apiCall] API HTTPError {}".format(e))
-        err = dict({"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}})
 
     return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"]),
                  "apiErrorString": err["error"]["error"],
