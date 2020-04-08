@@ -53,6 +53,8 @@ def index(request):
             g.n = n - i
             if g.guildJoinedTime:
                 graphs.append([timestampToDate(g.guildJoinedTime), n - i])
+        graphs = sorted(graphs, key=lambda x: x[0])
+
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -109,6 +111,7 @@ def welcome(request):
             g.n = n - i
             if g.guildJoinedTime:
                 graphs.append([timestampToDate(g.guildJoinedTime), n - i])
+        graphs = sorted(graphs, key=lambda x: x[0])
 
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
