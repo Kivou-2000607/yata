@@ -40,21 +40,16 @@ def index(request):
             tId = -1
 
         player = Player.objects.filter(tId=tId).first()
-        notifications = json.loads(player.notifications)
 
         # update discord id
         error = player.update_discord_id()
 
         # get guilds
-        graphs = []
-        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
+        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("-pk")
         n = len(guilds)
+        max_pk = 0
         for i, g in enumerate(guilds):
-            g.n = n - i
-            if g.guildJoinedTime:
-                graphs.append(timestampToDate(g.guildJoinedTime))
-        graphs = sorted(graphs)
-
+            g.n = n - i            
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -62,6 +57,11 @@ def index(request):
         if request.GET.get('page') is not None:
             return render(request, "bot/guilds-list.html", {"guilds": guilds})
 
+        graphs = []
+        for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
+            max_pk = max(g.pk, max_pk)
+            graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
+        
         # this is just for me...
         apps = False
         if player.tId in [2000607]:
@@ -71,7 +71,7 @@ def index(request):
             for app in apps:
                 app["variables"] = sorted(json.loads(app["variables"]).items(), key=lambda x: x[1]["admin"]["pk"])
 
-        context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "notifications": notifications, "error": error, "botcat": True, "view": {"index": True}}
+        context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
 
     except Exception:
@@ -103,16 +103,13 @@ def welcome(request):
             tId = -1
 
         player = Player.objects.filter(tId=tId).first()
-        # get guilds
-        graphs = []
-        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.all().order_by("-pk")
-        n = len(guilds)
-        for i, g in enumerate(guilds):
-            g.n = n - i
-            if g.guildJoinedTime:
-                graphs.append(timestampToDate(g.guildJoinedTime))
-        graphs = sorted(graphs)
 
+        # get guilds
+        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("-pk")
+        n = len(guilds)
+        max_pk = 0
+        for i, g in enumerate(guilds):
+            g.n = n - i            
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -120,6 +117,11 @@ def welcome(request):
         if request.GET.get('page') is not None:
             return render(request, "bot/guilds-list.html", {"guilds": guilds})
 
+        graphs = []
+        for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
+            max_pk = max(g.pk, max_pk)
+            graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
+        
         context = {"player": player, "botcat": True, "guilds": guilds, "graphs": graphs, "view": {"index": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)

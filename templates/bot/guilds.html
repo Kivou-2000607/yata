@@ -28,9 +28,9 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Number of servers'],
-        {% for a in graphs %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{forloop.counter}}],
+        ['Time', 'Total number of servers', 'Number of servers still having the bot'],
+        {% for a, b in graphs %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{forloop.counter}}],
         {% endfor %}
       ]);
 
