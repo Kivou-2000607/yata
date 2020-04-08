@@ -48,6 +48,12 @@ class PlayerDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
+class ErrorAdmin(admin.ModelAdmin):
+    list_display = ['player', 'short_error', 'timestamp', 'date']
+
+    def date(self, instance):
+        return timestampToDate(instance.timestamp)
+
 class SpinnerAdmin(admin.ModelAdmin):
     list_display = ['pk', 'factionId', 'faction', 'spinner']
 
@@ -55,6 +61,7 @@ class SpinnerAdmin(admin.ModelAdmin):
         return Faction.objects.filter(tId=instance.factionId).first()
 
 
+admin.site.register(Error, ErrorAdmin)
 admin.site.register(Spinner, SpinnerAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)

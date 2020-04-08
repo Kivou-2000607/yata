@@ -55,13 +55,20 @@ This file is part of yata.
             <h2 class="title"><i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 500: Server Error</h2>
             <div class="module">
                 <p>This is not normal.
-                Please contact {{"Kivou"|playerURL:"2000607"|safe}} and copy paste this message:</p>
+                Please check if a similar issue has been reported:
+                <ul>
+                    <li>On the discord server in <tt>#bug-and-issues</tt>: <a href="https://discord.gg/tZaYpbG" target="_blank">https://discord.gg/tZaYpbG</a></li>
+                    <li>On the forum thread: <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">https://www.torn.com/forums.php#/p=threads&f=67&t=16100118</a></li>
+                </ul>
+                And if not please report the error by copy pasting the following:
+                </p>
                 <pre>{{exception}}</pre>
+                Please don't PM {{"Kivou"|playerURL:"2000607"|safe}}.
                 {% if home %}
+                    <hr class="sep">
                     <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
                 {% endif %}
             </div>
-
         </div> <!--end of content-->
     </div> <!--end of container-->
 </body>

@@ -20,9 +20,6 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
-from yata.handy import apiCall
-
-
 class APIKey(models.Model):
     tId = models.IntegerField(default=0)
     tName = models.CharField(max_length=16, blank=True)
@@ -35,6 +32,8 @@ class APIKey(models.Model):
         return "API key of {} [{}]".format(self.tName, self.tId)
 
     def checkKey(self):
+        from yata.handy import apiCall
+
         req = apiCall("user", "", "", self.key, verbose=False)
         if 'apiError' in req:
             self.status = False

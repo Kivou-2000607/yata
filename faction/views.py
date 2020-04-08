@@ -88,8 +88,8 @@ def index(request):
             # return redirect('/faction/territories/')
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def target(request):
@@ -204,8 +204,8 @@ def configurations(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def configurationsKey(request):
@@ -227,8 +227,8 @@ def configurationsKey(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def configurationsEvent(request):
@@ -268,8 +268,8 @@ def configurationsEvent(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def configurationsThreshold(request):
@@ -297,8 +297,8 @@ def configurationsThreshold(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def configurationsPoster(request):
@@ -350,8 +350,8 @@ def configurationsPoster(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: members
@@ -389,8 +389,8 @@ def members(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def updateMember(request):
@@ -447,8 +447,8 @@ def updateMember(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def toggleMemberShare(request):
@@ -515,8 +515,8 @@ def toggleMemberShare(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: chains
@@ -609,8 +609,8 @@ def chains(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def manageReport(request):
@@ -689,8 +689,8 @@ def manageReport(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def report(request, chainId, share=False):
@@ -814,8 +814,8 @@ def report(request, chainId, share=False):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def iReport(request):
@@ -875,8 +875,8 @@ def iReport(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def combined(request):
@@ -1032,8 +1032,8 @@ def combined(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: walls
@@ -1104,8 +1104,8 @@ def walls(request):
             message = "You might want to log in."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def manageWall(request):
@@ -1158,8 +1158,8 @@ def manageWall(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 @csrf_exempt
@@ -1371,8 +1371,8 @@ def attacksReports(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def manageAttacks(request):
@@ -1417,8 +1417,8 @@ def manageAttacks(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def attacksReport(request, reportId, share=False):
@@ -1604,8 +1604,8 @@ def attacksReport(request, reportId, share=False):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def attacksMembers(request, reportId):
@@ -1646,8 +1646,8 @@ def attacksMembers(request, reportId):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def attacksList(request, reportId):
@@ -1704,8 +1704,8 @@ def attacksList(request, reportId):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: revives
@@ -1772,8 +1772,8 @@ def revivesReports(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def manageRevives(request):
@@ -1818,8 +1818,8 @@ def manageRevives(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def revivesReport(request, reportId, share=False):
@@ -2024,8 +2024,8 @@ def revivesReport(request, reportId, share=False):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def revivesList(request, reportId):
@@ -2087,8 +2087,8 @@ def revivesList(request, reportId):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: armory
@@ -2290,8 +2290,8 @@ def armory(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def armoryNews(request):
@@ -2337,8 +2337,8 @@ def armoryNews(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def armoryLogs(request):
@@ -2377,8 +2377,8 @@ def armoryLogs(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: big brother
@@ -2513,8 +2513,8 @@ def bigBrother(request):
             message = "You might want to log in."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def removeContributors(request):
@@ -2545,8 +2545,8 @@ def removeContributors(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: territories
@@ -2624,8 +2624,8 @@ def territories(request):
             message = "You might want to log in."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def territoriesFullMap(request):
@@ -2695,8 +2695,8 @@ def territoriesFullMap(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # SECTION: respect simulator
@@ -2776,8 +2776,8 @@ def simulator(request):
             message = "You might want to log in."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def simulatorChallenge(request):
@@ -2806,5 +2806,5 @@ def simulatorChallenge(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

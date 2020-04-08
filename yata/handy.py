@@ -125,7 +125,23 @@ def cleanhtml(raw_html):
     return cleantext
 
 
-def returnError(type=500, msg=None, home=True):
+
+def getPlayer(tId):
+    from player.models import Player
+
+    player, _ = Player.objects.get_or_create(tId=tId)
+    player.lastActionTS = tsnow()
+    player.active = True
+    player.save()
+    return player
+
+
+def randomSlug(length=32):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+def returnError(type=500, exc=None, msg=None, home=True, session=None):
     import traceback
     from django.utils import timezone
     from django.http import HttpResponseServerError
@@ -141,19 +157,11 @@ def returnError(type=500, msg=None, home=True):
         return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
     else:
         print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
-        return HttpResponseServerError(render_to_string('500.html', {'exception': traceback.format_exc().strip(), 'home': home}))
+        message = traceback.format_exc().strip()
+        if session is not None and session.get("player", False):
+            player = getPlayer(session["player"].get("tId"))
+            if player:
+                defaults = {"timestamp": tsnow()}
+                player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
 
-
-def getPlayer(tId):
-    from player.models import Player
-
-    player, _ = Player.objects.get_or_create(tId=tId)
-    player.lastActionTS = tsnow()
-    player.active = True
-    player.save()
-    return player
-
-
-def randomSlug(length=32):
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
+        return HttpResponseServerError(render_to_string('500.html', {'exception': exc, 'home': home}))

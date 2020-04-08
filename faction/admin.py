@@ -3,6 +3,7 @@ from django.contrib import admin
 from faction.models import *
 from yata.handy import timestampToDate
 
+
 class EventAdmin(admin.TabularInline):
     model = Event
     extra = 1
@@ -30,6 +31,7 @@ class AttackChainAdmin(admin.StackedInline):
     max_num = 10
     readonly_fields = ["tId"]
     can_delete = False
+
 
 def reset_chain(modeladmin, request, queryset):
     queryset.update(last=0,
@@ -114,7 +116,9 @@ def reset_report_a(modeladmin, request, queryset):
         q.attackreport_set.all().delete()
         q.assignCrontab()
 
+
 reset_report_a.short_description = "Reset report"
+
 
 class AttacksFactionAdmin(admin.TabularInline):
     model = AttacksFaction
@@ -122,11 +126,13 @@ class AttacksFactionAdmin(admin.TabularInline):
     extra = 0
     can_delete = False
 
+
 class AttacksPlayerAdmin(admin.TabularInline):
     model = AttacksPlayer
     readonly_fields = ["player_id", "player_name", "player_faction_id", "player_faction_name", "hits", "attacks", "defends", "attacked", "showA", "showD"]
     extra = 0
     can_delete = False
+
 
 class AttacksReportAdmin(admin.ModelAdmin):
     class Media:

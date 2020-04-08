@@ -223,6 +223,13 @@ class Key(models.Model):
         return "Key of {}".format(self.player)
 
 
+class Error(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    timestamp = models.IntegerField(default=0)
+    short_error = models.CharField(default="-", max_length=32)
+    long_error = models.TextField(default="-")
+
+
 class Spinner(models.Model):
     factionId = models.IntegerField(default=0)
     spinner = models.CharField(default="", max_length=64, null=True, blank=True)

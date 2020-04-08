@@ -46,8 +46,8 @@ def index(request):
         context = {"player": player, "NPCs": NPCs}
         return render(request, "loot.html", context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 # API

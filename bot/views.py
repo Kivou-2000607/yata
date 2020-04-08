@@ -61,7 +61,7 @@ def index(request):
         for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
             max_pk = max(g.pk, max_pk)
             graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
-        
+
         # this is just for me...
         apps = False
         if player.tId in [2000607]:
@@ -74,8 +74,8 @@ def index(request):
         context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def documentation(request):
@@ -91,8 +91,8 @@ def documentation(request):
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def welcome(request):
@@ -109,7 +109,7 @@ def welcome(request):
         n = len(guilds)
         max_pk = 0
         for i, g in enumerate(guilds):
-            g.n = n - i            
+            g.n = n - i
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -121,13 +121,13 @@ def welcome(request):
         for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
             max_pk = max(g.pk, max_pk)
             graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
-        
+
         context = {"player": player, "botcat": True, "guilds": guilds, "graphs": graphs, "view": {"index": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def host(request):
@@ -143,8 +143,8 @@ def host(request):
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def updateId(request):
@@ -163,8 +163,8 @@ def updateId(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def togglePerm(request):
@@ -184,8 +184,8 @@ def togglePerm(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def toggleNoti(request):
@@ -213,8 +213,8 @@ def toggleNoti(request):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 @csrf_exempt
@@ -275,5 +275,5 @@ def admin(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

@@ -59,8 +59,8 @@ def prune(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def number(request):

@@ -92,8 +92,8 @@ def index(request):
         # else:
         #     return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def custom(request):
@@ -130,8 +130,8 @@ def custom(request):
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def default(request):
@@ -174,8 +174,8 @@ def default(request):
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def sets(request):
@@ -218,8 +218,8 @@ def sets(request):
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def all(request):
@@ -262,8 +262,8 @@ def all(request):
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def top10(request):
@@ -307,8 +307,8 @@ def top10(request):
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def details(request, itemId):
@@ -323,8 +323,8 @@ def details(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def prices(request, itemId):
@@ -360,8 +360,8 @@ def prices(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def update(request, itemId):
@@ -414,8 +414,8 @@ def update(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def delete(request, itemId):
@@ -435,8 +435,8 @@ def delete(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def toggle(request, itemId):
@@ -470,5 +470,5 @@ def toggle(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

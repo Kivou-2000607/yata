@@ -61,8 +61,8 @@ def index(request):
 
         return render(request, 'yata.html', context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def login(request):
@@ -118,8 +118,8 @@ def login(request):
             return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
             # return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def logout(request):
@@ -129,8 +129,8 @@ def logout(request):
             del request.session['player']
         return HttpResponseRedirect(reverse('index'))
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def delete(request):
@@ -152,8 +152,8 @@ def delete(request):
         print('[view.yata.delete] redirect to logout')
         return HttpResponseRedirect(reverse('logout'))
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def analytics(request):

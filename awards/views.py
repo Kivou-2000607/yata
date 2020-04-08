@@ -88,8 +88,8 @@ def index(request):
             context.update(error)
         return render(request, "awards.html", context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def list(request, type):
@@ -192,8 +192,8 @@ def list(request, type):
         # else:
         #     return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def bannersId(request):
