@@ -50,6 +50,7 @@ class PlayerDataAdmin(admin.ModelAdmin):
 
 class ErrorAdmin(admin.ModelAdmin):
     list_display = ['player', 'short_error', 'timestamp', 'date']
+    readonly_fields = ['player', ]
 
     def date(self, instance):
         return timestampToDate(instance.timestamp)
