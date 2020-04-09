@@ -11,7 +11,7 @@ psycopg2==2.8.4
 #psycopg2-binary==2.8.4
 
 # image modules
-Pillow==6.2.1
+Pillow==6.2.2
 
 # math modules
 numpy==1.18.0
