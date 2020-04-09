@@ -102,81 +102,81 @@ $(document).ready(function() {
 </script>
 
 
-{% if armory|length %}
 <h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown</h2>
 <div class="module chain-armory">
-    <table class="center faction-armory-filter">
-        <thead>
-            <tr id="date-value"></tr>
-            <tr>
-                <th colspan="2"><div id="date-range" style="margin: 10px;"></div></th>
-            </tr>
-        </thead>
-    </table>
-
-    {% for type, items in armory.items %}
-    {% if items|length %}
-    <h1 class="faction-armory-type">{{type}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
-    <div class="faction-armory-type">
-        {% for tItem, members in items.items %}
-            <table class="center faction-armory-toggle-view">
+    {% if armory|length %}
+        <table class="center faction-armory-filter">
+            <thead>
+                <tr id="date-value"></tr>
                 <tr>
-                    <td class="a">{{tItem}} (x{{members|length}})</td>
-                    <td class="b"><i class="fas fa-caret-right"></td>
+                    <th colspan="2"><div id="date-range" style="margin: 10px;"></div></th>
                 </tr>
-            </table>
-            <table class="center trshadow faction-armory-breakdown" style="margin-bottom: 10px;">
-                <thead>
+            </thead>
+        </table>
+
+        {% for type, items in armory.items %}
+        {% if items|length %}
+        <h1 class="faction-armory-type">{{type}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="faction-armory-type">
+            {% for tItem, members in items.items %}
+                <table class="center faction-armory-toggle-view">
                     <tr>
-                        {% if tItem == "Blood Bag" %}
-                            <th>Member</th>
-                            <th>Type</th>
-                            <th>Taken</th>
-                            <th>Gave</th>
-                            <th>Diff</th>
-                            <th>Filled</th>
-                            <th>Diff</th>
-                            <th>Total</th>
-                            <th>Diff</th>
-                        {% else %}
-                            <th>Member</th>
-                            <th>Taken</th>
-                            <th>Gave</th>
-                            <th>Diff</th>
-                        {% endif %}
+                        <td class="a">{{tItem}} (x{{members|length}})</td>
+                        <td class="b"><i class="fas fa-caret-right"></td>
                     </tr>
-                </thead>
-                <tbody>
-                        {% for k, v in members.items %}
+                </table>
+                <table class="center trshadow faction-armory-breakdown" style="margin-bottom: 10px;">
+                    <thead>
                         <tr>
                             {% if tItem == "Blood Bag" %}
-                                <td class="c">{{k}}</td>
-                                <td class="d">{{v.3}}</td>
-                                <td class="d">{{v.0|format:"{:,.0f}"}}</td>
-                                <td class="d">{{v.1|format:"{:,.0f}"}}</td>
-                                <td class="d {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
-                                <td class="d">{{v.2|format:"{:+,.0f}"}}</td>
-                                <td class="d {% if v.2 < v.0 %}error{% elif v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.2|sub:v.0|format:"{:+,.0f}"}}</td>
-                                <td class="d">{{v.1|add:v.2|format:"{:+,.0f}"}}</td>
-                                <td class="d {% if v.1|add:v.2 < v.0 %}error{% elif v.1|add:v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|add:v.2|sub:v.0|format:"{:+,.0f}"}}</td>
+                                <th>Member</th>
+                                <th>Type</th>
+                                <th>Taken</th>
+                                <th>Gave</th>
+                                <th>Diff</th>
+                                <th>Filled</th>
+                                <th>Diff</th>
+                                <th>Total</th>
+                                <th>Diff</th>
                             {% else %}
-                                <td class="a">{{k}}</td>
-                                <td class="b">{{v.0|format:"{:,.0f}"}}</td>
-                                <td class="b">{{v.1|format:"{:,.0f}"}}</td>
-                                <td class="b {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
+                                <th>Member</th>
+                                <th>Taken</th>
+                                <th>Gave</th>
+                                <th>Diff</th>
                             {% endif %}
                         </tr>
-                        {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                            {% for k, v in members.items %}
+                            <tr>
+                                {% if tItem == "Blood Bag" %}
+                                    <td class="c">{{k}}</td>
+                                    <td class="d">{{v.3}}</td>
+                                    <td class="d">{{v.0|format:"{:,.0f}"}}</td>
+                                    <td class="d">{{v.1|format:"{:,.0f}"}}</td>
+                                    <td class="d {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
+                                    <td class="d">{{v.2|format:"{:+,.0f}"}}</td>
+                                    <td class="d {% if v.2 < v.0 %}error{% elif v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.2|sub:v.0|format:"{:+,.0f}"}}</td>
+                                    <td class="d">{{v.1|add:v.2|format:"{:+,.0f}"}}</td>
+                                    <td class="d {% if v.1|add:v.2 < v.0 %}error{% elif v.1|add:v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|add:v.2|sub:v.0|format:"{:+,.0f}"}}</td>
+                                {% else %}
+                                    <td class="a">{{k}}</td>
+                                    <td class="b">{{v.0|format:"{:,.0f}"}}</td>
+                                    <td class="b">{{v.1|format:"{:,.0f}"}}</td>
+                                    <td class="b {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% endfor %}
-    </div>
+        <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
+    {% else %}
+        <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
     {% endif %}
-    {% endfor %}
-    <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
-{% else %}
-    <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
-{% endif %}
 </div>
 
 
@@ -223,7 +223,6 @@ $(document).ready(function() {
 
     <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
 </div>
-{% endif %}
 
 
 <h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of news</h2>
@@ -234,3 +233,5 @@ $(document).ready(function() {
   </div>
 
 </div>
+
+{% endif %}

@@ -92,7 +92,6 @@ $(document).ready(function() {
 
 </script>
 
-{% if reports %}
 <h2 class="title"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;{{faction.name|safe}}' attacks reports</h2>
 <div class="module">
     {% if reports|length %}
@@ -131,10 +130,9 @@ $(document).ready(function() {
         </tbody>
     </table>
     {% else%}
-        <p class="error">No reports recorded. Only AA members can add reports.</p>
+        <p class="error">No reports recorded. Ask a AA members of your faction.</p>
     {% endif %}
 </div>
-{% endif %}
 
 
 {% if player.factionAA %}

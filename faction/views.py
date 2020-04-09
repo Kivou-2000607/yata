@@ -2117,6 +2117,14 @@ def armory(request):
                 state = False
             news = faction.news_set.order_by("-timestamp").all()
 
+            # return empty armory
+            if not len(news):
+                context = {'player': player, 'factioncat': True, 'faction': faction, 'view': {'armory': True}}
+                if message:
+                    sub = "Sub" if request.method == 'POST' else ""
+                    context["errorMessage" + sub] = "Empty armory"
+                return render(request, page, context)
+
             # get start/end ts
             start = news.last().timestamp
             end = news.first().timestamp

@@ -32,44 +32,48 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;List of challenges</h2>
 <div class="module">
-    <table class="center trshadow faction-bb-challenges">
-      <tbody>
-        {% for statType, timestamps in statsList.items %}
-          {% for name, ts in timestamps %}
-            {% ifchanged %}
-            <tr id="faction-bb-challenges-toggle-{{statType}}" style="cursor: pointer;">
-                <td class="aa"><b>{{name}}</b>&nbsp;&nbsp;<i class="fas fa-caret-right" style="margin-left:20px"></i></td>
-                <td class="b"></td>
-                <td class="c"></td>
-            </tr>
-            {% endifchanged %}
-            <tr class="faction-bb-challenges-catch-{{statType}}" style="display: none;">
-              <td class="ab"><i>{{name}}</i></td>
-              <td class="b">{{ts|ts2date}}</td>
-              {% if player.factionAA %}
-                <td class="c"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
-            {% else %}
-                <td class="c"><i class="fas fa-trash-alt neutral" title="You need AA perm to delete a challenge"></i></td>
-            {% endif %}
-            </tr>
-          {% endfor %}
-        {% endfor %}
-      </tbody>
-    </table>
+    {% if statsList|length %}
+        <table class="center trshadow faction-bb-challenges">
+          <tbody>
+            {% for statType, timestamps in statsList.items %}
+              {% for name, ts in timestamps %}
+                {% ifchanged %}
+                <tr id="faction-bb-challenges-toggle-{{statType}}" style="cursor: pointer;">
+                    <td class="aa"><b>{{name}}</b>&nbsp;&nbsp;<i class="fas fa-caret-right" style="margin-left:20px"></i></td>
+                    <td class="b"></td>
+                    <td class="c"></td>
+                </tr>
+                {% endifchanged %}
+                <tr class="faction-bb-challenges-catch-{{statType}}" style="display: none;">
+                  <td class="ab"><i>{{name}}</i></td>
+                  <td class="b">{{ts|ts2date}}</td>
+                  {% if player.factionAA %}
+                    <td class="c"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
+                {% else %}
+                    <td class="c"><i class="fas fa-trash-alt neutral" title="You need AA perm to delete a challenge"></i></td>
+                {% endif %}
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+    <p class="error">No challenges recorded. Ask a AA member of your faction.</p>
+    {% endif %}
 </div>
 
 {%if player.factionAA%}
-<div class="module rounded">
-    <form class="inline">
-    Add a new challenge:&nbsp;&nbsp;
-      <select class="faction-bb-enter-challenge">
-        <option selected disabled hidden>Select a challenge</option>
-        {% for k, v in bridge.items %}
-        	{%if k != "allgyms" %}
-                <Option Value="{{k}}">{{v}}</option>
-        	{%endif%}
-        {% endfor %}
-      </select>
-  </form>
-</div>
+    <div class="module rounded">
+        <form class="inline">
+        Add a new challenge:&nbsp;&nbsp;
+          <select class="faction-bb-enter-challenge">
+            <option selected disabled hidden>Select a challenge</option>
+            {% for k, v in bridge.items %}
+            	{%if k != "allgyms" %}
+                    <Option Value="{{k}}">{{v}}</option>
+            	{%endif%}
+            {% endfor %}
+          </select>
+      </form>
+    </div>
 {%endif%}

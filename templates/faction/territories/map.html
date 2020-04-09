@@ -40,7 +40,7 @@ This file is part of yata.
                 [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: star; shape-dent: 0.5; shape-sides: {{t.level}}; fill-color: #CC3434; stroke-color: #000; size: 5;}', '{{t|rTooltip|safe}}'],
             {% endif %}
           {% endfor %}
-          {% if player.tId > 0 %}
+          {% if player.tId > 0 and summary.n > 0 %}
             [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y|mul:1.04}}, 'point {fill-color: #447e9b; stroke-color: #000; size: 5;}', '{{summary|sTooltip|safe}}'],
           {% endif %}
         ]);
