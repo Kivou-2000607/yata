@@ -5,6 +5,7 @@ import json
 
 from .models import *
 from .functions import saveGuildConfig
+from yata.handy import *
 
 # admin.site.disable_action('delete_selected')
 
@@ -98,7 +99,13 @@ class ChatAdmin(admin.ModelAdmin):
 
 
 class RacketsAdmin(admin.ModelAdmin):
-    list_display = ['timestamp']
+    list_display = ['timestamp', 'date', 'ago']
+
+    def date(self, instance):
+        return timestampToDate(instance.timestamp, fmt="%Y/%m/%d %H:%M")
+
+    def ago(self, instance):
+        return "{:.1f}".format((tsnow() - instance.timestamp) / float(60))
 
 
 admin.site.register(Rackets, RacketsAdmin)
