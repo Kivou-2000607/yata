@@ -179,7 +179,7 @@ d = {
     793: 144692020,  # Bandolier
     611: 433435448,  # War Machine
     791: 891318875,  # Quartermaster
-    778: 0,  # Specialist
+    778: 615034470,  # Specialist
 
     # 3
     39: 198010293,  # Woodland Camo
