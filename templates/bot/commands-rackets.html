@@ -17,19 +17,20 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load app_filters %}
+<h1 class="module-doc"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Module Rackets&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<h2 class="command-doc privacy-none">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Notifies in <tt>#rackets</tt> when an event happens on a territory with a racket. Events are:</p>
+<ul>
+    <li>A racket spawns</li>
+    <li>A racket vanishes</li>
+    <li>A racket moves up one level</li>
+    <li>A racket moves down one level</li>
+    <li>A war starts for a racket</li>
+</ul>
 
-<h2 class="title"><i class="fas fa-terminal"></i>&nbsp;&nbsp;List of commands</h2>
-<div class="module">
-<p>The bot's commands are classified in modules. Click on the module for the list of commands and on the command for the documentation.<span class="flush-right">{% include "svg/yata.icon.bot.svg" %}</span></p>
-{% include "bot/commands-verify.html" %}
-{% include "bot/commands-loot.html" %}
-{% include "bot/commands-chain.html" %}
-{% include "bot/commands-rackets.html" %}
-{% include "bot/commands-stocks.html" %}
-{% include "bot/commands-revive.html" %}
-{% include "bot/commands-crimes.html" %}
-{% include "bot/commands-api.html" %}
-{% include "bot/commands-legend.html" %}
+{# <p class="privacy-none valid">No key needed.</p> #}
+</div>
 
 </div>
