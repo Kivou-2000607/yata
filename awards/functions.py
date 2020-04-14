@@ -1968,7 +1968,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [5, 167, 217, 218, 219, 223, 246]:
+                if int(k) in [5, 167, 217, 218, 219, 223, 246, 839]:
                     # 5 {'name': 'Journalist', 'description': 'Have an article accepted in the newspaper', 'type': 0, 'circulation': 138, 'rarity': 'Extremely Rare', 'awardType': 'Honor', 'img': None, 'title': 'Journalist [5]: Extremely Rare (138)'}
                     # 167 {'name': 'Velutinous', 'description': 'Have a comic accepted in the newspaper', 'type': 0, 'circulation': 114, 'rarity': 'Extremely Rare', 'awardType': 'Honor', 'img': 363324386, 'title': 'Velutinous [167]: Extremely Rare (114)'}
                     # 217 {'name': "Two's Company", 'description': 'Refer one friend to Torn', 'type': 11, 'circulation': 13121, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 438803717, 'title': "Two's Company [217]: Uncommon (13121)"}
@@ -1976,6 +1976,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     # 219 {'name': 'Social Butterfly', 'description': 'Refer three friends to Torn', 'type': 11, 'circulation': 3037, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 534607883, 'title': 'Social Butterfly [219]: Rare (3037)'}
                     # 223 {'name': 'The Socialist', 'description': 'Achieve level 5 on facebook Torn', 'type': 11, 'circulation': 16222, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 350797134, 'title': 'The Socialist [223]: Uncommon (16222)'}
                     # 246 {'name': 'Pyramid Scheme', 'description': 'Have one of your referrals refer 5 Other players', 'type': 11, 'circulation': 1041, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': 536984897, 'title': 'Pyramid Scheme [246]: Extraordinary (1041)'}
+            		# "839": {"name": "RNG","description": "Who knows?","type": 0,
                     type = "Social"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0

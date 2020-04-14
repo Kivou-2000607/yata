@@ -49,6 +49,7 @@ d = {
     571: 559214781,  # Chequered Past
     334: 204652023,  # Compulsive
     581: 832763049,  # On Track
+    839: 0,  # RNG
 
     # 1
     171: 228001376,  # Afghanistan
