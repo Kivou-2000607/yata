@@ -511,13 +511,13 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     nHits = int(v["description"].split(" ")[1].replace(",", ""))
                     bridge = {"heahits": ["Heavy artillery", 0, ""],
                               "chahits": ["Mechanical guns", 0, ""],
-                              "axehits": ["Clubbin weapons", 0, ""],
+                              "axehits": ["Clubbing weapons", 0, ""],
                               "grehits": ["Temporary weapons", 0, ""],
                               "machits": ["Machine guns", 0, ""],
                               "pishits": ["Pistols", 0, ""],
                               "rifhits": ["Rifles", 0, ""],
                               "shohits": ["Shotguns", 0, ""],
-                              "smghits": ["Sub machin guns", 0, ""],
+                              "smghits": ["Sub machine guns", 0, ""],
                               "piehits": ["Piercing weapons", 0, ""],
                               "slahits": ["Slashing weapons", 0, ""],
                               "h2hhits": ["Hand to hand", 0, ""]}
