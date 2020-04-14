@@ -1714,11 +1714,8 @@ class Wall(models.Model):
     def getReport(self, faction):
         # WARNING a wall does not belong to a single faction
         # get potential report
-        report = self.attacksreport_set.first()
-        if report is None:
-            return False
-        else:
-            return report if faction in [f for f in self.factions.all()] else False
+        report = self.attacksreport_set.filter(faction=faction).first()
+        return False if report is None else report
 
 
 # Attacks report
@@ -2038,7 +2035,6 @@ class AttacksReport(models.Model):
 
         self.fill = tsnow()
         self.save()
-
 
     def getMembersBreakdown(self, order=6):
         members = dict({})
@@ -2638,6 +2634,7 @@ class News(models.Model):
         self.member = self.getMember()
         self.save()
         return self.member
+
 
 class Log(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
