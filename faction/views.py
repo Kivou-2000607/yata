@@ -2504,6 +2504,13 @@ def bigBrother(request):
                     cov = std[i] / mean[i] if mean[i] else 0
                     statistics.append([total[i], mean[i], std[i], cov])
 
+
+            if contributors:
+                faction_members = [str(m.tId) for m in faction.member_set.only("tId").all()]
+                for k in contributors:
+                    in_fac = True if k[0] in faction_members else False
+                    k[1].append(in_fac)
+
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'statistics': statistics, 'view': {'bb': True}}
 
             if message:

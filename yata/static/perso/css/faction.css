@@ -53,7 +53,7 @@ table.faction-report td.b { width: 15%; text-align: left; }
 table.faction-report td.c { width: 9%; text-align: center; }  /* x9 */
 table.faction-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.faction-report tr.zero-hits:hover { background:#ea9999; }
-table.faction-report tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
+tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 table.faction-report tr.my-row       { background: #cee8d0; font-weight: bold;}
 table.faction-report tr.my-row:hover { background: #e6f3e7; font-weight: bold;}
 
