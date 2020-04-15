@@ -65,6 +65,8 @@ class Attack(models.Model):
     flatRespect = models.FloatField(default=0.0)
     level = models.FloatField(default=0.0)
 
+    paid = models.BooleanField(default=False)
+
     def __str__(self):
         return "Attack [{}]: {} [{}] -> {} [{}]".format(self.timestamp_started, self.attacker_name, self.attacker_id, self.defender_name, self.defender_id)
 

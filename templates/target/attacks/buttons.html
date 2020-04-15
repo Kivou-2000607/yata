@@ -21,16 +21,18 @@ This file is part of yata.
 
 <!-- toggle -->
 <form style="display: inline;">{% csrf_token %}
-    <a class="attack-list-toggle" href="{% url 'target:target' %}">
+    <a class="attack-list-target" href="{% url 'target:target' %}">
        {% if v.targetId in targets %}
-           <i class="fas fa-toggle-on" title="Remove target"></i>
+           <i class="fas fa-crosshairs valid" title="Remove target"></i>
        {% else %}
-           <i class="fas fa-toggle-off" title="Add target"></i>
+           <i class="fas fa-crosshairs error" title="Add target"></i>
+       {% endif %}
+    </a>
+    <a class="attack-list-paid" href="{% url 'target:attack' %}">
+       {% if v.paid %}
+           <i class="fas fa-toggle-on" title="Click if attack not paid for"></i>
+       {% else %}
+           <i class="fas fa-toggle-off" title="Click if attack paid for"></i>
        {% endif %}
     </a>
 </form>
-{% if v.code == "0" %}
-    <i class="fas fa-eye-slash" title="no log"></i>
-{% else %}
-    <a href="{{v.code|attackLog}}" target="_blank"><i class="fas fa-eye" title="see log"></i></a>
-{% endif %}

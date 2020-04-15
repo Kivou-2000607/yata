@@ -5,6 +5,6 @@ $(document).on('click', 'a[id^="revives-list-toggle-"]', function(e){
     var reviveId = $(this).attr("id").split("-").pop();
     reload.load( "/target/revive/", {
         reviveId: reviveId,
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<i class="fas fa-spinner fa-pulse"></i>');
 });

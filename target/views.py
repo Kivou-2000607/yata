@@ -78,6 +78,48 @@ def attacks(request):
     except Exception:
         return returnError()
 
+def attack(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+
+            if request.POST["type"] == "paid":
+                # paid attack
+                attack = player.attack_set.filter(tId=request.POST.get("attackId", 0)).first()
+                if attack is not None:
+                    attack.paid = not attack.paid
+                    attack.save()
+
+                context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
+                return render(request, 'target/attacks/buttons.html', context)
+
+            elif request.POST["type"] == "toggle":
+                # toggle target
+                target_id = int(request.POST["targetId"])
+                attack_id = int(request.POST["attackId"])
+                targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
+                if state:
+                    # create/update target
+                    _, targetId, target = targetInfo.getTarget(update=True)
+
+                else:
+                    # delete target
+                    targetInfo.delete()
+
+                attack = player.attack_set.filter(tId=attack_id).first
+
+            else:
+                returnError(type=403, msg="Unkown request")
+
+            context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
+            return render(request, 'target/attacks/buttons.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
 
 def targets(request):
     try:
@@ -203,21 +245,6 @@ def target(request):
 
                     return render(request, 'target/targets/line.html')
 
-                # toggle target
-                if request.POST["type"] == "toggle":
-                    target_id = int(request.POST["targetId"])
-                    targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
-                    if state:
-                        # create/update target
-                        _, targetId, target = targetInfo.getTarget(update=True)
-
-                    else:
-                        # delete target
-                        targetInfo.delete()
-
-                    context = {"v": {"targetId": target_id}, "targets": getTargets(player), "ts": tsnow()}
-                    return render(request, 'target/attacks/buttons.html', context)
-
             else:
                 # should not happen
                 context = {"target": None, "targetId": None, "ts": tsnow()}
@@ -262,9 +289,7 @@ def revives(request):
 def revive(request):
     try:
         if request.session.get('player') and request.method == "POST":
-            print('[view.target.toggleRevive] get player id from session and check POST')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
+            player = getPlayer(request.session["player"].get("tId"))
 
             r = player.revive_set.filter(tId=request.POST.get("reviveId", 0)).first()
             if r is not None:

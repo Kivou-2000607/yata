@@ -8,7 +8,7 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
     reload.load( "/target/target/", {
         targetId: targetId,
         type: "update",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     });
     reload.html('<td colspan="14" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
 });
@@ -21,7 +21,7 @@ $(document).on('click', 'a.target-list-faction', function(e){
     reload.load( "/faction/target/", {
         targetId: targetId,
         type: "toggle",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     });
     reload.html('<i class="fas fa-spinner fa-pulse"></i>');
 });
@@ -34,7 +34,7 @@ $(document).on('click', 'a.target-list-delete', function(e){
     reload.load( "/target/target/", {
         targetId: targetId,
         type: "delete",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     });
     reload.remove();
 });
@@ -50,7 +50,7 @@ $(document).on('focusout', 'input.target-list-note', function(e){
         targetId: targetId,
         note: note,
         type: "note",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     });
     reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
 });
@@ -69,7 +69,7 @@ $(document).on('click', '#target-refresh', function(e){
                 reload.load( "/target/target/", {
                     targetId: targetId,
                     type: "update",
-                    csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    csrfmiddlewaretoken: getCookie("csrftoken")
                 });
                 reload.removeClass('old-refresh');
                 reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
@@ -86,7 +86,7 @@ $(document).on('click', '#target-add-submit', function(e){
     $( "#content-update" ).load( "/target/target/", {
         targetId: id,
         type: "addById",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: getCookie("csrftoken")
     });
     $("#content-update h2").addClass("grey");
     $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Adding target id '+id+' (1 API call)')

@@ -37,19 +37,25 @@ This file is part of yata.
     <table id="target-attacks" class="center-medium trshadow target-attacks">
         <thead>
             <tr>
-                <th>Time</th>
+                <th>Time & Log</th>
                 <th>Attacker</th>
                 <th>Defender</th>
                 <th>Result</th>
                 <th>&asymp;Level</th>
                 <th style="text-align: center;">Flat respect</th>
                 <th style="text-align: center;">Fair fight</th>
-                <th style="text-align: center;">Save / Log</th>
+                <th style="text-align: center;">Save / Paid</th>
         </thead>
         <tbody>
         {% for v in attacks %}
-        <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.fairFight == 3 %}max-fair-fight{% elif v.fairFight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-val="{{v.targetId}}">
-            <td class="a">{{v.timestamp_ended|ts2date}}</td>
+        <tr class="{% if v.flatRespect == 0 %}zero-respect{% endif %} {% if v.fairFight == 3 %}max-fair-fight{% elif v.fairFight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-tId="{{v.targetId}}" data-aId="{{v.tId}}">
+            <td class="a">
+                {% if v.code == "0" %}
+                    {{v.timestamp_ended|ts2date}}
+                {% else %}
+                    <a href="{{v.code|attackLog}}" target="_blank">{{v.timestamp_ended|ts2date}}</a>
+                {% endif %}
+            </td>
             <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
             <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
             <td class="c">{{v.result}}</td>
