@@ -1668,7 +1668,7 @@ class AttackChain(models.Model):
     retaliation = models.FloatField(default=0.0)
     groupAttack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
-    chainBonus = models.IntegerField(default=0)
+    chainBonus = models.FloatField(default=0.0)
 
     def __str__(self):
         return format_html("Attack for chain [{}]".format(self.tId))
@@ -2167,7 +2167,7 @@ class AttackReport(models.Model):
     retaliation = models.FloatField(default=0.0)
     groupAttack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
-    chainBonus = models.IntegerField(default=0)
+    chainBonus = models.FloatField(default=0.0)
 
     def __str__(self):
         return "{} -> {}".format(self.attacker_factionname, self.defender_factionname)
