@@ -36,3 +36,12 @@ $(document).on('click', 'form.news > i.filter-player,form.news > i.filter-player
     });
     $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
 });
+
+$(document).on('change', 'select.faction-armory-header-filter', e=>{
+    e.preventDefault();
+    $("#content-update").load( "/faction/armory/", {
+        member: $(e.currentTarget).val(), type: "filter",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Filtering armory');
+});

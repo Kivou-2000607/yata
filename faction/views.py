@@ -2117,6 +2117,16 @@ def armory(request):
                 state = False
             news = faction.news_set.order_by("-timestamp").all()
 
+            # get all members for news
+            members = sorted(set(news.values_list('member', flat=True)))
+
+            if request.POST.get("type") == "filter":
+                faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
+                faction.save()
+
+            if faction.armoryNewsFilter:
+                news = news.filter(member=faction.armoryNewsFilter)
+
             # return empty armory
             if not len(news):
                 context = {'player': player, 'factioncat': True, 'faction': faction, 'view': {'armory': True}}
@@ -2283,12 +2293,9 @@ def armory(request):
                 logsAll = []
                 logs = []
 
-            if faction.armoryNewsFilter:
-                news = news.filter(member=faction.armoryNewsFilter)
-
             news = Paginator(news, 50).get_page(1)
 
-            context = {'player': player, 'news': news, 'logs': logs, 'logsAll': logsAll, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
+            context = {'player': player, 'news': news, 'logs': logs, 'logsAll': logsAll, 'members': members, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             if message:
                 err = "validMessage" if state else "errorMessage"
                 sub = "Sub" if request.method == 'POST' else ""
@@ -2315,6 +2322,9 @@ def armoryNews(request):
                 return render(request, 'yata/error.html', context)
             news = faction.news_set.order_by("-timestamp").all()
 
+            # get all members for news
+            members = sorted(set(news.values_list('member', flat=True)))
+
             if request.POST.get("type") == "filter":
                 faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
                 faction.save()
@@ -2340,7 +2350,7 @@ def armoryNews(request):
             timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
 
             news = Paginator(news, 50).get_page(request.GET.get('page'))
-            return render(request, 'faction/armory/news.html', {'faction': faction, 'news': news, 'timestamps': timestamps})
+            return render(request, 'faction/armory/news.html', {'faction': faction, 'members': members, 'news': news, 'timestamps': timestamps})
 
         else:
             return returnError(type=403, msg="You might want to log in.")

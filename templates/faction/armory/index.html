@@ -179,6 +179,14 @@ $(document).ready(function() {
     {% endif %}
 </div>
 
+<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of news</h2>
+<div class="module">
+
+  <div class="pagination-list">
+    {% include "faction/armory/news.html"%}
+  </div>
+
+</div>
 
 {% if logs|length %}
 <script>
@@ -222,16 +230,6 @@ $(document).ready(function() {
 
 
     <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
-</div>
-
-
-<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of news</h2>
-<div class="module">
-
-  <div class="pagination-list">
-    {% include "faction/armory/news.html"%}
-  </div>
-
 </div>
 
 {% endif %}
