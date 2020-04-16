@@ -2293,7 +2293,7 @@ def armory(request):
                 logsAll = []
                 logs = []
 
-            news = Paginator(news, 50).get_page(1)
+            news = Paginator(news, 25).get_page(1)
 
             context = {'player': player, 'news': news, 'logs': logs, 'logsAll': logsAll, 'members': members, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
             if message:
@@ -2349,7 +2349,7 @@ def armoryNews(request):
 
             timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
 
-            news = Paginator(news, 50).get_page(request.GET.get('page'))
+            news = Paginator(news, 25).get_page(request.GET.get('page'))
             return render(request, 'faction/armory/news.html', {'faction': faction, 'members': members, 'news': news, 'timestamps': timestamps})
 
         else:
