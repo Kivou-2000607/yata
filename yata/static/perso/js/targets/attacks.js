@@ -23,3 +23,24 @@ $(document).on('click', '.attack-list-paid', function(e){
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<i class="fas fa-spinner fa-pulse"></i>');
 });
+
+// show losses
+$(document).on('click', '#targets-attacks-losses', function(e){
+    e.preventDefault();
+    $( "#attack-losses" ).load( "/target/losses/", {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    })
+});
+// show losses
+$(document).on('click', '.targets-attacks-losses-payall', function(e){
+    e.preventDefault();
+    console.log("coucou", $(this).attr("data-val"));
+    $( "#attack-losses" ).load( "/target/losses/", {
+        payall: $(this).attr("data-val"),
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    })
+});
+$(document).on('click', '.close', function(e){
+    e.preventDefault();
+    $(this).parent("div.container").css("display", "none");
+});

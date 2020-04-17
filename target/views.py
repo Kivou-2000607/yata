@@ -78,6 +78,34 @@ def attacks(request):
     except Exception:
         return returnError()
 
+def losses(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+
+            losses = player.attack_set.filter(result="Lost").exclude(attacker_id=player.tId)
+
+            if request.POST.get("payall") is not None:
+                losses.filter(attacker_id=request.POST.get("payall")).update(paid=True)
+
+            sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
+            for i in sluts:
+                a = losses.filter(attacker_id=i)
+                if len(a):
+                    # name, paid, total
+                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all())]
+
+            context = {"player": player, "sluts": sluts}
+            return render(request, 'target/attacks/losses.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception:
+        return returnError()
+
+
 def attack(request):
     try:
         if request.session.get('player') and request.method == "POST":
