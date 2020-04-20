@@ -240,7 +240,7 @@ th.border-left { border-left: 0.5px dashed; } */
 .sticky {
     position: -webkit-sticky; /* Safari */
     position: sticky;
-    top: 0;
+    top: -50px;
     background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
 }
 
