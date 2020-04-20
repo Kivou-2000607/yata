@@ -662,8 +662,8 @@ class Faction(models.Model):
             32: [[33, 9]],  # oversea banking
 
             # Supression
-            45: [[46, 3]],  # maximum life
-            48: [[47, 7]],  # escape
+            45: [[46, 7]],  # maximum life
+            48: [[47, 3]],  # escape
 
             # Agression
             44: [[43, 10]],  # accuracy
@@ -709,8 +709,8 @@ class Faction(models.Model):
             33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
 
             # Supression
-            46: [[45, 3]],  # defense
-            47: [[48, 7]],  # dexterity
+            46: [[45, 7]],  # defense
+            47: [[48, 3]],  # dexterity
 
             # Agression
             43: [[44, 10]],  # speed

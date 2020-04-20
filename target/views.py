@@ -22,6 +22,7 @@ from django.shortcuts import render
 # from django.utils import timezone
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 import json
 import math
@@ -64,12 +65,16 @@ def attacks(request):
             error, attacks = updateAttacks(player)
             targets = getTargets(player)
 
+            paginator = Paginator(attacks, 25)
+            attacks = paginator.get_page(request.GET.get('p_at'))
+
             context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
+            context["apiErrorSub"] = error["apiError"] if error else False
 
-            if error:
-                context["apiErrorSub"] = error["apiError"]
+            page = 'target/content-reload.html'if request.method == "POST" else 'target.html'
+            if request.GET.get('p_at', False):
+                page = 'target/attacks/attacks.html'
 
-            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
             return render(request, page, context)
 
         else:

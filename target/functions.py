@@ -82,7 +82,7 @@ def updateAttacks(player):
     player.attacksUpda = int(timestamp)
     player.save()
 
-    return False, player.attack_set.all()
+    return False, player.attack_set.order_by("-timestamp_ended").all()
 
 
 def getTargets(player):
