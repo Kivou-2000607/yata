@@ -278,11 +278,11 @@ table.faction-simulator-sum td.a { width: 10%; text-align: left; }  /* x1 */
 table.faction-simulator-sum td.b { width: 10%; text-align: right; } /* x6 */
 table.faction-simulator-sum td.c { width: 6%; text-align: center; }  /* x5 */
 table.faction-simulator-sum tr.max-order { text-decoration: line-through; opacity: 0.5; font-style: oblique; }  /* x5 */
-table.faction-simulator-sum.sticky tr{
+/* table.faction-simulator-sum.sticky tr{
     -moz-box-shadow: inset 0 0 5px #888;
     -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
-}
+} */
 
 table.faction-simulator tr { border-radius: 4px;}
 table.faction-simulator tr.order-1 { background-color: #447e9b11}

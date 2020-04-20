@@ -469,3 +469,11 @@ table.tooltip td { border: 1px solid #aaa!important; }
 table.tooltip th { text-transform: uppercase; text-align: center;}
 table.tooltip td.title { text-align: left; font-weight: bold; }
 table.tooltip td.value { text-align: right; }
+
+/* td.border, th.border { border-left : 2px solid #eee; } */
+table.border {
+    /* border : 1.5px solid #aaa!important; */
+    box-shadow: 0px  0px  2px  2px #aaa!important;
+}
+td.border, th.border {
+    border-left : 2px solid #aaa; }
