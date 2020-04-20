@@ -680,12 +680,22 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     type = "Other attacks"
                     vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
                     wexp = userInfo.get("weaponexp", [])
-                    maxExp = [k for k in wexp if k.get("exp") == 100]
-                    sup5 = ['<b>{}</b> {} ({}%)'.format(i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if k.get("exp") > 5]
-                    vp["current"] = len(maxExp)
+                    maxExp = 0
+                    for we in wexp:
+                        if we.get("exp") == 100:
+                            we["class"] = "valid"
+                            maxExp += 1
+                        elif we.get("exp") > 90:
+                            we["class"] = "warning"
+                        else:
+                            we["class"] = "error"
+                    # sup5 = ['<span class={}>{:02d} {}</span>: {}%'.format(k.get("class"), i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if k.get("exp") > 5]
+                    sup5 = ['<span class={}>{:02d} {}</span>: {}%'.format(k.get("class"), i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if i < 25]
+                    vp["current"] = maxExp
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     if len(sup5):
-                        vp["comment"] = "{}".format(", ".join(sup5))
+                        sup5.insert(0, "<b>List of the first 25 weapons with experience</b>")
+                        vp["comment"] = "<br>".join(sup5)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [232]:
@@ -2009,15 +2019,15 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     hof = userInfo.get("halloffame")
                     if hof is not None:
                         todel = []
-                        for k, v in hof.items():
-                            if not v["rank"] or k in ["respect"]:
-                                todel.append(k)
-                        for k in todel:
-                            del hof[k]
+                        for key, v in hof.items():
+                            if not v["rank"] or key in ["respect"]:
+                                todel.append(key)
+                        for key in todel:
+                            del hof[key]
                         hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
                         vp["goal"] = top
-                        vp["current"] =  hof[0][1]["rank"]
-                        vp["achieve"] = min(1, float(vp["goal"]) / float(vp["current"]))
+                        vp["current"] = 1 if int(k) in honors_awarded else hof[0][1]["rank"]
+                        vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["goal"]) / float(vp["current"]))
 
                         vp["comment"] = "<br>".join(['<b class={}>{}</b>: #{:,d} ({:,d})'.format("error" if i else "valid", k.title(), v["rank"], v["value"]) for i, (k, v) in enumerate(hof)])
                     else:

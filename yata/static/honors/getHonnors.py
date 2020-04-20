@@ -14,7 +14,6 @@ for id, key in honors.items():
 
         cmd = f'wget -U "{agent}" --header="Accept: text/html" --header="Cookie: {token}" -O {image} https://awardimages.torn.com/{key}.png'
         a = os.system(cmd)
-        print(a)
         
         # could make it clean chacking
         if not os.path.getsize(image):
