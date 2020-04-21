@@ -19,6 +19,8 @@ This file is part of yata.
 
 from django.utils import timezone
 
+import random
+
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
 HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
@@ -2003,12 +2005,18 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 elif int(k) in [839]:
                     # "839": {"name": "RNG","description": "Who knows?","type": 0,
                     type = "Other"
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
-                    vp["current"] = 1 if int(k) in honors_awarded else 0
-                    vp["comment"] = "Send $2,000,607 to Kivou"
+                    if int(k) in honors_awarded:
+                        vp["goal"] = 1
+                        vp["current"] = 1
+                        vp["achieve"] = 1
+                    else:
+                        rng = random.randint(1, 41)
+                        vp["goal"] = 42
+                        vp["current"] = rng
+                        vp["achieve"] = rng / 42.0
+                        npcs = ["Amanda [7]", "Jimmy [19]", "Leslie [15]", "Duke [4]"]
+                        vp["comment"] = "Send ${:,d} to {}.<br>Your progress will change.".format(random.randint(1, 10000), random.choice(npcs))
                     awards[type]["h_" + k] = vp
-
 
                 elif int(k) in [700]:
             		# "700": {"name": "Leaderboard","description": "Achieve top 250 in one of the personal Hall of Fame leaderboards","type": 0,"circulation": 0,
