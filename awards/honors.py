@@ -319,6 +319,7 @@ d = {
     828: 502452396,  # Final
     827: 501001885,  # Deadly Duo
     836: 886071515,  # Peppered
+    838: 948029275,  # Lovestruck
     476: 0,  # Chainer 5
 
     # 9
