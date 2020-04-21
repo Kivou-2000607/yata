@@ -42,9 +42,9 @@ table.target-attacks td.d { width: 7.5%; text-align: center; } /* x2 */
 table.target-attacks td.e { width: 7.5%; text-align: center; }
 table.target-attacks td.f { width: 7.5%; text-align: center; }
 
-/* a bbb */
-table.target-losses td.a { width: 40%; text-align: left; }
-table.target-losses td.b { width: 20%; text-align: center; }
+/* a bb bbb */
+table.target-losses td.a { width: 25%; text-align: left; }
+table.target-losses td.b { width: 15%; text-align: center; }
 table.target-losses tr.needpay { background:#FF8C003e; }
 
 table.target-targets td.a { width: 7%; text-align: left; } /* x2 */

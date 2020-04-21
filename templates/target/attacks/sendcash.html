@@ -22,11 +22,5 @@ This file is part of yata.
 
 <!-- toggle -->
 {% if v.1 < v.2 %}
-    <form style="display: inline;">{% csrf_token %}
-        <a class="targets-attacks-losses-payall error" href="" data-val="{{k}}" title="Mark as paid">
-            <i class="far fa-check-circle" title="Mark as paid"></i>
-        </a>
-    </form>
-{% else %}
-    <i class="fas fa-check-circle valid" title="Paid"></i>
+    <a href="https://www.torn.com/sendcash.php#/XID={{k}}&losses={{v.2|sub:v.1}}" target="_blank"><i class="fas fa-dollar-sign" title="Send cash"></i></a>
 {% endif %}
