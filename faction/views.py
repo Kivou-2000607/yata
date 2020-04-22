@@ -1840,7 +1840,10 @@ def attacksExport(request, reportId, type):
                     data = []
 
                     for k in keys:
-                        data.append(a.get(k))
+                        if k in ["attacker_factionname", "defender_factionname"]:
+                            data.append(html.unescape(a.get(k)))
+                        else:
+                            data.append(a.get(k))
                     csv_data.append(data)
 
                 t = loader.get_template('faction/attacks/csv-attacks.txt')
