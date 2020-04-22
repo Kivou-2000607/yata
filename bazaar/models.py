@@ -211,14 +211,18 @@ class Item(models.Model):
         bData = self.marketdata_set.all().order_by('cost')
         try:
             cData = []
-            tmp = 0
+            tmpP = 0
+            tmpQ = 0
             for i in range(len(bData)):
                 cData.append({'cost': bData[i].cost,
                               'quantity': bData[i].quantity,
                               'itemmarket': bData[i].itemmarket,
-                              'cumulative': int(float(bData[i].quantity) * float(bData[i].cost)) + tmp}
+                              'cumulativeQ': bData[i].quantity + tmpQ,
+                              'cumulativeP': int(float(bData[i].quantity) * float(bData[i].cost)) + tmpP,
+                              }
                              )
-                tmp = cData[i]["cumulative"]
+                tmpP = cData[i]["cumulativeP"]
+                tmpQ = cData[i]["cumulativeQ"]
         except BaseException:
             cData = []
         return cData
