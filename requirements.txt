@@ -16,3 +16,5 @@ Pillow==6.2.2
 # math modules
 numpy==1.18.0
 scipy==1.4.1
+
+cloudscraper==1.2.34

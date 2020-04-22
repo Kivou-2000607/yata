@@ -35,10 +35,11 @@ This file is part of yata.
 {# </form> #}
 
 <div class="dropdown">
-  <i class="fas fa-file-export" style="cursor: pointer;" title="Export report"></i>
+  <i class="fas fa-file-export" style="cursor: pointer;"></i>
   <div class="dropdown-content">
-    <a href="{% url 'faction:attacksExport' report.pk 0 %}" target="_blank">Factions (csv)</a>
-    <a href="{% url 'faction:attacksExport' report.pk 1 %}" target="_blank">Players (csv)</a>
-    <a href="{% url 'faction:attacksExport' report.pk 2 %}" target="_blank">Breakdown (csv)</a>
+    <a href="{% url 'faction:attacksExport' report.pk 0 %}" target="_blank">Factions</a>
+    <a href="{% url 'faction:attacksExport' report.pk 1 %}" target="_blank">Players</a>
+    <a href="{% url 'faction:attacksExport' report.pk 2 %}" target="_blank">Breakdown</a>
+    <a href="{% url 'faction:attacksExport' report.pk 3 %}" target="_blank">Attacks</a>
   </div>
 </div>

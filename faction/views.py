@@ -1807,6 +1807,48 @@ def attacksExport(request, reportId, type):
 
                 return response
 
+            elif type == "3":
+                # return error if no filters
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="Attacks_report_{}_attacks.csv"'.format(report.pk)
+
+                if report.player_filter:
+                    attacksFilters = Q(attacker_id=report.player_filter) | Q(defender_id=report.player_filter)
+                else:
+                    factions = json.loads(report.factions)
+                    attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
+
+                attacks = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+
+                keys = ["tId", "timestamp_started",
+                        "attacker_faction", "attacker_factionname", "attacker_id", "attacker_name",
+                        "defender_faction", "defender_factionname", "defender_id", "defender_name",
+                        "result", "respect_gain", "chain", "fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus", "code"
+                        ]
+
+                csv_data = [keys]
+
+                for a in list(attacks.values()):
+                    if a.get("defender_faction") == 0:
+                        a["defender_factionname"] = "-"
+                    elif a.get("defender_faction") == -1:
+                        a["defender_factionname"] = "Stealth"
+                    if a.get("attacker_faction") == 0:
+                        a["attacker_factionname"] = "-"
+                    elif a.get("attacker_faction") == -1:
+                        a["attacker_factionname"] = "Stealth"
+                    data = []
+
+                    for k in keys:
+                        data.append(a.get(k))
+                    csv_data.append(data)
+
+                t = loader.get_template('faction/attacks/csv-attacks.txt')
+                c = {'data': csv_data}
+                response.write(t.render(c))
+
+                return response
+
             return returnError(type=403, msg="YOLOOO")
 
         else:
