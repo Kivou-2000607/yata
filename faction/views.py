@@ -24,9 +24,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.utils.html import format_html
+from django.template import loader
 
+import html
 import os
 import json
+import csv
 
 from yata.handy import *
 from faction.models import *
@@ -1708,6 +1712,112 @@ def attacksList(request, reportId):
         return returnError(exc=e, session=request.session)
 
 
+def attacksExport(request, reportId, type):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # in case of error
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get breakdown
+            if not reportId.isdigit():
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                return render(request, page, context)
+
+            report = faction.attacksreport_set.filter(pk=reportId).first()
+            if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player,
+                                selectError: "Report {} not found.".format(reportId),
+                                'factioncat': True,
+                                'faction': faction,
+                                'report': False})  # views
+                return render(request, page, context)
+
+            if type == "0":
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="Attacks_report_{}_factions.csv"'.format(report.pk)
+
+                csv_data = [['Faction Id', 'Faction Name', 'Hits', 'Attacks', 'Defends', 'Attacked', 'Filter']]
+
+                factions = report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked")
+                for faction in factions:
+                    if faction.faction_id == 0:
+                        faction.faction_name = "-"
+                    elif faction.faction_id == -1:
+                        faction.faction_name = "Stealth"
+                    csv_data.append([faction.faction_id, html.unescape(faction.faction_name), faction.hits, faction.attacks, faction.defends, faction.attacked, faction.show])
+
+                t = loader.get_template('faction/attacks/csv-factions.txt')
+                c = {'data': csv_data}
+                response.write(t.render(c))
+
+                return response
+
+            elif type == "1":
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="Attacks_report_{}_players.csv"'.format(report.pk)
+
+                csv_data = [['Faction Id', 'Faction Name', 'Player Id', 'Player Name', 'Hits', 'Attacks', 'Defends', 'Attacked', 'Filter']]
+
+                players = report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked")
+                for player in players:
+                    if player.player_faction_id == 0:
+                        player.player_faction_name = "-"
+                    csv_data.append([player.player_faction_id, html.unescape(player.player_faction_name), player.player_id, player.player_name, player.hits, player.attacks, player.defends, player.attacked, player.show])
+
+                t = loader.get_template('faction/attacks/csv-players.txt')
+                c = {'data': csv_data}
+                response.write(t.render(c))
+
+                return response
+
+            elif type == "2":
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="Attacks_report_{}_breakdown.csv"'.format(report.pk)
+
+                csv_data = [['Player Id', 'Player Name',
+                             'Outgoing Win', 'Outgoing Mug','Outgoing Hosp','Outgoing War','Outgoing Win','Outgoing Lost', 'Outgoing Total',
+                             'Incoming Win', 'Incoming Mug','Incoming Hosp','Incoming War','Incoming Win','Incoming Lost', 'Incoming Total',
+                             ]]
+
+                players = report.getMembersBreakdown()
+                for k, v in players:
+                    # (id, {'name': 'Name', 'out': [40, 2, 1, 0, 43, 1, 44], 'in': [0, 0, 0, 0, 0, 1, 1]})
+                    data = [k, v["name"]]
+                    for _ in v["out"]:
+                        data.append(_)
+                    for _ in v["in"]:
+                        data.append(_)
+                    csv_data.append(data)
+
+                t = loader.get_template('faction/attacks/csv-breakdown.txt')
+                c = {'data': csv_data}
+                response.write(t.render(c))
+
+                return response
+
+            return returnError(type=403, msg="YOLOOO")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+
 # SECTION: revives
 def revivesReports(request):
     try:
@@ -2489,7 +2599,7 @@ def bigBrother(request):
                         for tId in todel:
                             del contributors[tId]
 
-                        contributors = sorted(contributors.items(), key=lambda x: x[1][1]-x[1][2])
+                        contributors = sorted(contributors.items(), key=lambda x: x[1][1] - x[1][2])
 
                     else:
                         contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
@@ -2513,7 +2623,6 @@ def bigBrother(request):
                     std[i] = (mean2[i] - mean[i]**2)**0.5
                     cov = std[i] / mean[i] if mean[i] else 0
                     statistics.append([total[i], mean[i], std[i], cov])
-
 
             if contributors:
                 faction_members = [str(m.tId) for m in faction.member_set.only("tId").all()]
