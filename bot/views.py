@@ -49,7 +49,7 @@ def index(request):
         n = len(guilds)
         max_pk = 0
         for i, g in enumerate(guilds):
-            g.n = n - i            
+            g.n = n - i
         paginator = Paginator(guilds, 25)
         page = request.GET.get('page')
         guilds = paginator.get_page(page)
@@ -86,8 +86,9 @@ def documentation(request):
             tId = -1
 
         player = Player.objects.filter(tId=tId).first()
+        notifications = json.loads(player.notifications)
 
-        context = {"player": player, "botcat": True, "view": {"doc": True}}
+        context = {"player": player, "notifications":notifications, "botcat": True, "view": {"doc": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
