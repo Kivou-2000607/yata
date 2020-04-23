@@ -2015,7 +2015,13 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         vp["current"] = rng
                         vp["achieve"] = rng / 42.0
                         npcs = ["Amanda [7]", "Jimmy [19]", "Leslie [15]", "Duke [4]"]
-                        vp["comment"] = "Send ${:,d} to {}.<br>Your progress will change.".format(random.randint(1, 10000), random.choice(npcs))
+                        lst = ["<b>Kivou's 4 steps to RNG:</b>",
+                               "1. Read the description and learn what RNG means",
+                               "2. Send ${:,d} to {}".format(random.randint(1, 10000), random.choice(npcs)),
+                               "3. Look at your progress change on YATA",
+                               "4. Pause and ponder",
+                               "<i>You might need to do these steps a couple of times.</i>"]
+                        vp["comment"] = "<br>".join(lst)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [700]:

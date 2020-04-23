@@ -22,6 +22,24 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+{% if player.tId == 2419808 %}
+<script>
+    // Just to see where it goes...
+    // https://www.torn.com/forums.php#/p=threads&f=61&t=16156664
+    $(document).ready(function() {
+        var table = $("#awards-list");
+        var tbody = table.children("tbody");
+        tbody.children("tr.award-todo").each(function( id, tr ) {
+            var goal = parseInt($(tr.children[5]).children("span").text().replace(",", "").replace("$", ""));
+            var state = Math.floor(Math.random() * (goal - 1))
+            var acheive = Math.floor( 100 * state /  (1.0 * goal) );
+            $(tr.children[4]).html('<span rel="tooltip" title="Current: '+state+'">'+state+'</span>');
+            $(tr.children[6]).html('<span rel="tooltip" title="Achieved: '+acheive+'%">'+acheive+'%</span>');
+        });
+    });
+</script>
+{% endif %}
+
 <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
 
 <script>
