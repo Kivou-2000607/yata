@@ -66,7 +66,6 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     #     else:
     #         return chain.get(sub)
 
-
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
@@ -125,7 +124,6 @@ def cleanhtml(raw_html):
     return cleantext
 
 
-
 def getPlayer(tId):
     from player.models import Player
 
@@ -156,12 +154,15 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
         msg = "Not Found" if msg is None else msg
         return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
     else:
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), traceback.format_exc()))
         message = traceback.format_exc().strip()
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 PROUT \n{}".format(timezone.now(), message))
         if session is not None and session.get("player", False):
             player = getPlayer(session["player"].get("tId"))
-            if player:
-                defaults = {"timestamp": tsnow()}
-                player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
-
+        else:
+            player = player.objects.filter(tId=-1).first()
+        defaults = {"timestamp": tsnow()}
+        try:
+            player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
+        except BaseException as e:
+            print("Meta error", e)
         return HttpResponseServerError(render_to_string('500.html', {'exception': exc, 'home': home}))

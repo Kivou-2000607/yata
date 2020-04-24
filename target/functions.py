@@ -74,7 +74,11 @@ def updateAttacks(player):
             v["level"] = level
 
         v = modifiers2lvl1(v)
-        player.attack_set.get_or_create(tId=int(k), defaults=v)
+        try:
+            player.attack_set.get_or_create(tId=int(k), defaults=v)
+        except BaseException:
+            player.attack_set.filter(tId=int(k)).all().delete()
+            player.attack_set.get_or_create(tId=int(k), defaults=v)
 
     old = tsnow() - 2678400  # 1 month old
     player.attack_set.filter(timestamp_ended__lt=old).delete()

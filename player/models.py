@@ -226,7 +226,7 @@ class Key(models.Model):
 class Error(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
     timestamp = models.IntegerField(default=0)
-    short_error = models.CharField(default="-", max_length=32)
+    short_error = models.CharField(default="-", max_length=128)
     long_error = models.TextField(default="-")
 
 
