@@ -47,7 +47,7 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Synchronize report</a></span></h2>
+<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Synchronize report</a></span>{% endif %}</h2>
 <div class="module">
 
     {% if report.fill < report.update and player.factionAA %}
@@ -62,7 +62,7 @@ $(function () {
                     <form class="flush-right">{% csrf_token %}
                         Share&nbsp;&nbsp;<span>{% include 'faction/attacks/share.html' %}</span>
 
-                        Export&nbsp;&nbsp;<span>{% include "faction/attacks/export.html" %}{% endif %}</span>
+                        Export&nbsp;&nbsp;<span>{% include "faction/attacks/export.html" %}</span>
                     </form>
 
                 {% endif %}

@@ -80,7 +80,9 @@ This file is part of yata.
             $('input').prop('checked', false);
         });
     </script>
-    {% include "faction/attacks/index.html" %}
+    {% if not share %}
+        {% include "faction/attacks/index.html" %}
+    {% endif %}
 {% endif %}
 
 {% if view.revivesReports %}
