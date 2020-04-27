@@ -14,6 +14,8 @@
 \def\gym{\mathcal{G}}
 \def\bonus{\mathcal{B}}
 \def\Sc{S_\text{cap}}
+\def\Si{S_\text{i}}
+\def\Sf{S_\text{f}}
 \def\Ec{E_\text{cap}}
 
 \begin{document}
@@ -82,6 +84,7 @@ With $S<\Sc$ eq.\eqref{eq:valdar-diff} can be written:
 Which leads to the solution:
 \begin{equation}
     \forall k \in \mathbb{R},\quad S(E) = ke^{\alpha E} - \frac{\beta}{\alpha}
+    \label{eq:bs-bc-diff-k}
 \end{equation}
 With the initial condition $S(0)=0$ we have
 \begin{equation}
@@ -148,6 +151,34 @@ With the condition $S(\Ec)=\Sc$ we have:
     \caption{Battle stats as a function of energy for $\happy = 5000$, $\gym = 7.3$ and $\bonus= 15\%$}
 \end{figure}
 
+\section{Prediction}
+In this section we are now interested at making a prediction of the energy need $\Delta E$ to reach $\Sf$ from $\Si$. For this we need to anaylse the 3 cases:
+\begin{itemize}
+    \item $\Si < \Sc$ and $\Sf < \Sc$
+    \item $\Si < \Sc$ and $\Sf > \Sc$
+    \item $\Si > \Sc$ and $\Sf > \Sc$
+\end{itemize}
+\subsection{Before cap: $\Si < \Sc$ and $\Sf < \Sc$}
+From eq.\eqref{eq:bs-bc-diff} we can determine $k$ with the condition $S(0) = \Si$ which gives:
+\begin{equation}
+    k = \Si + \frac{\beta}{\alpha}
+\end{equation}
+leading to
+\begin{equation}
+    S(E) = \left(\Si + \frac{\beta}{\alpha}\right)e^{\alpha E} - \frac{\beta}{\alpha}
+\end{equation}
+In our context we can rewrite this equation with $\Sf$ and $\Delta$ as:
+\begin{equation}
+    \Sf = \left(\Si + \frac{\beta}{\alpha}\right)e^{\alpha \Delta E} - \frac{\beta}{\alpha}
+\end{equation}
+which can be inverted giving:
+\begin{equation}
+    \Delta E = \frac{1}{\alpha} \ln\left( \frac{\Sf + \frac{\beta}{\alpha}}{\Si + \frac{\beta}{\alpha}} \right)
+\end{equation}
+$\Delta E$ being the energy need to reach $\Sf$ stats from $\Si$.
 
-
+\subsection{Passing cap: $\Si < \Sc$ and $\Sf > \Sc$}
+Boring...
+\subsection{After cap: $\Si > \Sc$ and $\Sf > \Sc$}
+Trivial...
 \end{document}
