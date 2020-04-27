@@ -15,10 +15,10 @@
 \def\happy{\mathcal{H}}
 \def\gym{\mathcal{G}}
 \def\bonus{\mathcal{B}}
-\def\Sc{S_\text{cap}}
+\def\Sc{S_\text{c}}
 \def\Si{S_\text{i}}
 \def\Sf{S_\text{f}}
-\def\Ec{E_\text{cap}}
+\def\Ec{E_\text{c}}
 
 \title{Battle stats formula}
 \author{Kivou [2000607]}
@@ -180,8 +180,28 @@ which can be inverted giving:
 \end{equation}
 $\Delta E$ being the energy needed to reach $\Sf$ stats from $\Si$.
 
-\subsection{Passing cap: $\Si < \Sc$ and $\Sf > \Sc$}
-Boring...
 \subsection{After cap: $\Si > \Sc$ and $\Sf > \Sc$}
-Trivial...
+Wit the linear relationship between $S$ and $E$ after cap we directly have
+\begin{equation}
+    \Sf - \Si = (\alpha \Sc + \beta) \Delta E
+\end{equation}
+which gives:
+\begin{equation}
+    \Delta E = \frac{\Sf - \Si}{\alpha \Sc + \beta}
+\end{equation}
+
+\subsection{Passing cap: $\Si < \Sc$ and $\Sf > \Sc$}
+In this last case both exponential and linear regime have to be taken into account.
+We can decompose $\Delta E$ in two, the part need to reach cap $\Delta E_\text{bc}$ (before cap) an the part in the linear regime $\Delta E_\text{ac}$ (after cap).
+\begin{equation}
+    \begin{aligned}
+        \Delta E = \Delta E_\text{bc} + \Delta E_\text{ac} = \frac{1}{\alpha} \ln\left( \frac{\Sc + \frac{\beta}{\alpha}}{\Si + \frac{\beta}{\alpha}} \right) + \frac{\Sc - \Si}{\alpha \Sc + \beta}
+    \end{aligned}
+\end{equation}
+\subsection{Generalized formula}
+We can account for the three cases above in a single generalized equation:
+\begin{equation}
+    \boxed{\Delta E = \underbrace{\frac{1}{\alpha} \ln\left( \frac{\min(\Sc, \Sf) + \frac{\beta}{\alpha}}{\min(\Sc, \Si) + \frac{\beta}{\alpha}} \right)}_\text{Before cap} + \underbrace{\frac{\max(\Sc, \Sf) - \max(\Sc, \Si)}{\alpha \Sc + \beta}}_\text{After cap}}
+\end{equation}
+where $\Delta E$ is the energy needed to reach $\Sf$ battle stats from $\Si$.
 \end{document}
