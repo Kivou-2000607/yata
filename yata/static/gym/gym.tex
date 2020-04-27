@@ -31,12 +31,13 @@
 \maketitle
 \par {\it Starting from a formula that gives the battle stats gains for a certain amount of energy, we derive here  a formula that gives the battle stats as a function of energy and, in turns, the energy needed to reach a certain battle stats level from a given one.}
 
-\section{Gym gain formula}
+\section{Theory}
+\subsection{Gym gain formula}
 \href{https://www.torn.com/forums.php?p=threads&f=61&t=16003284&b=0&a=0&start=0&to=17684755}{Vladar [1996140]} gives a formula defining the battle stats gains as a function of the current stat, the energy spent on train and other parameters.
 
 \par In this formula and for the rest we will need:
 \begin{itemize}
-    \item 2 variables and their increments
+    \item 2 variables and their differentials
     \begin{itemize}
         \item Energy $E$ and $dE$
         \item Battle stats $S$ and $dS$
@@ -48,7 +49,7 @@
             \item $c = 0.000003091619094$
             \item $d = 0.0000682775184551527$
             \item $e = -0.0301431777$
-            \item $\Sc = 50000000$ (known as the battle stats cap)
+            \item $\Sc = 50\,000\,000$ (known as the battle stats cap)
         \end{itemize}
     \item 3 states variables
     \begin{itemize}
@@ -58,7 +59,7 @@
     \end{itemize}
 \end{itemize}
 
-The Valdar formula eq.\eqref{eq:valdar} gives the stats gains $dS$ as a function of the current stats $S$ and the energy spent $dE$. It is usually written:
+The Vladar formula eq.\eqref{eq:valdar} gives the stats gains $dS$ as a function of the current stats $S$ and the energy spent $dE$. It is usually written:
 \begin{equation}
     dS = \left[ (a\ln(\happy+b)+c) \bar{S} + d(\happy+b) + e \right](1+\bonus)\gym dE
     \label{eq:valdar}
@@ -79,12 +80,12 @@ with
 \end{equation}
 From now on we assume that $\alpha > 0$ and $\beta > 0$.
 
-\section{Battle stats formula: $S(E)$}
+\subsection{Battle stats formula}
 \par {\color{myred}\bf Assumption: $\happy$, $\gym$ and $\bonus$ remain constant (which is not realistic for a long term prediction at early stages).}
 
 \par From eq.\eqref{eq:valdar-diff} it can clearly be seen that $S(E)$ is driven by a simple ODE. Because of the piece wise definition of the equation the two cases $S<\Sc$ (before cap) and $S>\Sc$ (after cap) have to be treated separatly.
 
-\subsection{Before cap}
+\subsubsection{Before cap}
 With $S<\Sc$ eq.\eqref{eq:valdar-diff} can be written:
 \begin{equation}
     \frac{dS}{dE} -\alpha S = \beta
@@ -94,18 +95,31 @@ Which leads to the solution:
     \forall k \in \mathbb{R},\quad S(E) = ke^{\alpha E} - \frac{\beta}{\alpha}
     \label{eq:bs-bc-diff-k}
 \end{equation}
-With the initial condition $S(0)=0$ we have
+From eq.\eqref{eq:bs-bc-diff-k} we can derive the inverse function:
 \begin{equation}
-    S(E) = \frac{\beta}{\alpha}\left(e^{\alpha E} - 1\right)
+    \forall k' \in \mathbb{R},\quad S^{-1}: E(S) = \frac{1}{\alpha} \ln\left(1+ \frac{\alpha S}{\beta}\right) + k'
+    \label{eq:bs-bc-diff-k-inv}
+\end{equation}
+giving the energy as a function of the battle stats.
+
+\par If we assume a boundary coundition, we can determine $k$ (and $k'$).
+For example with $S(0)=0$ we have:
+\begin{equation}
+    \left\{\begin{aligned}
+        S(E) &= \frac{\beta}{\alpha}\left(e^{\alpha E} - 1\right) \\
+        E(S) &= \frac{1}{\alpha} \ln\left(1+ \frac{\alpha S}{\beta}\right) \\
+    \end{aligned}\right.
     \label{eq:bs-bc-diff}
 \end{equation}
+At this point it is important to put into perspective the domain of validity of this equation.
+Indeed, because the assumption of {\it constant states variables} the boundary condition $S(0)=0$ will most of the time not be justified.
+As soon as a prediction is made with states variables different than the inital ones (for $E=0$), another boundary counditions have to be stated.
+However even if most of the time these conditions are not known, it is not important to determine $k$ (and $k'$) since the value of interest here relies on differences of $S$ (and $E$), thus cancelling out $k$ (and $k'$).
 
-It can be interesting to compute $E=\Ec$ such that $S(\Ec)=\Sc$ which can be done by inverting eq.\eqref{eq:bs-bc-diff}. It gives:
-\begin{equation}
-    \Ec = \frac{1}{\alpha}\ln\left(\frac{\alpha \Sc}{\beta} +1 \right)
-\end{equation}
+\par For sake of clarity and in order to ease the reading we have decided to keep eq.\eqref{eq:bs-bc-diff} as the predictive formulae.
+The reader can easily use eq.\eqref{eq:bs-bc-diff-k} in the follow to convince themself that the results are identical.
 
-\subsection{After cap}
+\subsubsection{After cap}
 With $S<\Sc$ eq.\eqref{eq:valdar-diff} can be written:
 \begin{equation}
     \frac{dS}{dE}  = \alpha \Sc + \beta
@@ -114,13 +128,27 @@ which directly yields
 \begin{equation}
     \forall k \in \mathbb{R},\quad S(E)  = (\alpha \Sc + \beta) E + k
 \end{equation}
-With the condition $S(\Ec)=\Sc$ we have:
+Inverting this function directly gives:
+\begin{equation}
+    \forall k' \in \mathbb{R},\quad E(S)  = \frac{S}{\alpha \Sc + \beta} + k'
+    \label{eq:bs-bc-diff-k}
+\end{equation}
+
+
+In this case it is not even clearer to assum of boundary condition $S(\Ec)=\Sc$ we have:
 \begin{equation}
     \begin{aligned}
-        S & = (\alpha \Sc + \beta)E + \Sc - (\alpha \Sc + \beta) \Ec \\
+        S(E) & = (\alpha \Sc + \beta)E + \Sc - (\alpha \Sc + \beta) \Ec \\
           & = (\alpha \Sc + \beta) (E - \Ec) + \Sc
     \end{aligned}
 \end{equation}
+with $\Ec$ the energy to stats cap $\Sc$, eq.\eqref{eq:bs-bc-diff-k} gives us:
+\begin{equation}
+    \Ec = \frac{1}{\alpha} \ln\left(1+ \frac{\alpha \Sc}{\beta}\right)
+\end{equation}
+
+Figure \ref{fig:example} shows $S(E)$ from $0$ to $200\,000$ energy with $S(0)=0$, $\happy = 5000$, $\gym = 7.3$ and $\bonus= 15\%$, giving $\alpha=0.0000509798$ and $\beta=2.7561943022$
+
 \begin{figure}[!h]
     \centering
     \begin{tikzpicture}
@@ -137,95 +165,88 @@ With the condition $S(\Ec)=\Sc$ we have:
             xlabel=Energy
         ]
 
-           % \def\alpha{0.0000052543};
-           % \def\beta{0.0039955815};
-           % \def\ec{2111332.2434403603};
-           % \def\sc{50000000)};
-           % \addplot[myblue, domain=0:\ec, thick]{ \beta * (exp(\alpha * x) - 1) / \alpha };
-           % \addplot[myred, domain=\ec:2500000, thick]{ (\alpha * \sc + \beta) * (x - \ec) + \sc };
            \def\alpha{0.0000509798};
            \def\beta{2.7561943022};
-           \def\ec{133988.1087149439};
-           \def\sc{50000000)};
-           \addplot[myblue, domain=0:\ec, thick]{ \beta * (exp(\alpha * x) - 1) / \alpha };
-           \addplot[myred, domain=\ec:200000, thick]{ (\alpha * \sc + \beta) * (x - \ec) + \sc };
-           % \addplot[myred,  domain=0:40, thick]{ 100 };
-           % \draw   [mygreen, thick] (axis cs:0,95) -- (axis cs:21.65,95) -- (axis cs:21.65,0);
-
+           \def\Ec{133988.1087149439};
+           \def\Sc{50000000};
+           \addplot[myblue, domain=0:\Ec, thick]{ \beta * (exp(\alpha * x) - 1) / \alpha };
+           \addplot[myred, domain=\Ec:200000, thick]{ (\alpha * \Sc + \beta) * (x - \Ec) + \Sc };
+           \draw[mygreen, thick] (axis cs:0,\Sc) -- (axis cs:\Ec,\Sc) -- (axis cs:\Ec,0);
            \end{axis}
     \end{tikzpicture}
 
     \caption{Battle stats as a function of energy for $\happy = 5000$, $\gym = 7.3$ and $\bonus= 15\%$}
+    \label{fig:example}
 \end{figure}
 
-\section{Prediction}
-In this section we are now interested at making a prediction of the energy needed $\Delta E$ to reach $\Sf$ from $\Si$. For this we need to anaylse the 3 cases:
-\begin{itemize}
-    \item $\Si < \Sc$ and $\Sf < \Sc$
-    \item $\Si < \Sc$ and $\Sf > \Sc$
-    \item $\Si > \Sc$ and $\Sf > \Sc$
-\end{itemize}
-\subsection{Before cap: $\Si < \Sc$ and $\Sf < \Sc$}
-From eq.\eqref{eq:bs-bc-diff} we can determine $k$ with the condition $S(0) = \Si$ which gives:
-\begin{equation}
-    k = \Si + \frac{\beta}{\alpha}
-\end{equation}
-leading to
-\begin{equation}
-    S(E) = \left(\Si + \frac{\beta}{\alpha}\right)e^{\alpha E} - \frac{\beta}{\alpha}
-\end{equation}
-In our context we can rewrite this equation with $\Sf$ and $\Delta E$ as:
-\begin{equation}
-    \Sf = \left(\Si + \frac{\beta}{\alpha}\right)e^{\alpha \Delta E} - \frac{\beta}{\alpha}
-\end{equation}
-which can be inverted giving:
-\begin{equation}
-    \Delta E = \frac{1}{\alpha} \ln\left( \frac{\Sf + \frac{\beta}{\alpha}}{\Si + \frac{\beta}{\alpha}} \right)
-\end{equation}
-$\Delta E$ being the energy needed to reach $\Sf$ stats from $\Si$.
+\subsection{Prediction formula}
+In this section we are now interested at making a prediction of the energy needed $\Delta E$ to reach $\Sf$ from $\Si$:
 
-\subsection{After cap: $\Si > \Sc$ and $\Sf > \Sc$}
-With the linear relationship between $S$ and $E$ after cap we directly have
 \begin{equation}
-    \Sf - \Si = (\alpha \Sc + \beta) \Delta E
+    \Delta E = E(\Sf) - E(\Si)
+    \label{eq:dE-definition}
 \end{equation}
-which gives:
+For this we need to anaylse the 3 cases:
+\begin{enumerate}
+    \item Before cap: $\Si < \Sc$ and $\Sf < \Sc$
+    \item After cap: $\Si > \Sc$ and $\Sf > \Sc$
+    \item Passing cap: $\Si < \Sc$ and $\Sf > \Sc$
+\end{enumerate}
+\subsubsection{Before cap: $\Si < \Sc$ and $\Sf < \Sc$}
+Injecting eq.\eqref{eq:bs-bc-diff} in eq.\eqref{eq:dE-definition} gives
+\begin{equation}
+    \Delta E = \frac{1}{\alpha} \ln\left( \frac{1 + \alpha\Sf/\beta}{1 + \alpha\Si/\beta} \right)\\
+\end{equation}
+
+\subsubsection{After cap: $\Si > \Sc$ and $\Sf > \Sc$}
+Injecting the linear relationship eq.\eqref{eq:bs-bc-diff-k} in eq.\eqref{eq:dE-definition} gives
 \begin{equation}
     \Delta E = \frac{\Sf - \Si}{\alpha \Sc + \beta}
 \end{equation}
 
-\subsection{Passing cap: $\Si < \Sc$ and $\Sf > \Sc$}
+\subsubsection{Passing cap: $\Si < \Sc$ and $\Sf > \Sc$}
 In this last case both exponential and linear regime have to be taken into account.
-We can decompose $\Delta E$ in two, the part needed to reach cap $\Delta E_\text{bc}$ (before cap) an the part in the linear regime $\Delta E_\text{ac}$ (after cap). $\Sc$ behing the frontiere between both, it plays the role of $\Sf$ for the exponential par and $\Si$ in the linear one. It reads:
+We can decompose $\Delta E$ in two, the part needed to reach cap $\Delta E_\text{bc}$ (before cap) an the part in the linear regime $\Delta E_\text{ac}$ (after cap). $\Sc$ behing the frontiere between both, it plays the role of $\Sf$ for the exponential part and $\Si$ for the linear one. It reads:
 \begin{equation}
     \begin{aligned}
-        \Delta E = \Delta E_\text{bc} + \Delta E_\text{ac} = \frac{1}{\alpha} \ln\left( \frac{\Sc + \frac{\beta}{\alpha}}{\Si + \frac{\beta}{\alpha}} \right) + \frac{\Sf - \Sc}{\alpha \Sc + \beta}
+        \Delta E = \Delta E_\text{bc} + \Delta E_\text{ac} = \frac{1}{\alpha} \ln\left( \frac{1 + \alpha\Sc/\beta}{1 + \alpha\Si/\beta} \right) + \frac{\Sf - \Sc}{\alpha \Sc + \beta}
     \end{aligned}
 \end{equation}
-\subsection{Generalized formula}
-We can account for the three cases above in a single generalized equation:
+\subsubsection{Generalized formula}
+We can account for the three cases above in a single generalized equation\footnote{Mathematicians will not see the point, programmers will love it.}:
 \begin{equation}
-    \boxed{\Delta E = \underbrace{\frac{1}{\alpha} \ln\left( \frac{\min(\Sc, \Sf) + \frac{\beta}{\alpha}}{\min(\Sc, \Si) + \frac{\beta}{\alpha}} \right)}_\text{Before cap} + \underbrace{\frac{\max(\Sc, \Sf) - \max(\Sc, \Si)}{\alpha \Sc + \beta}}_\text{After cap}}
+    \boxed{\Delta E = \underbrace{\frac{1}{\alpha} \ln\left( \frac{1 + \alpha\min(\Sc, \Sf)/\beta}{1 + \alpha\min(\Sc, \Si)/\beta} \right)}_\text{Before cap} + \underbrace{\frac{\max(\Sc, \Sf) - \max(\Sc, \Si)}{\alpha \Sc + \beta}}_\text{After cap}}
     \label{eq:de-s-general}
 \end{equation}
 where $\Delta E$ is the energy needed to reach $\Sf$ battle stats from $\Si$.
 
-\section{Impact of the parameters}
-With eq.\label{eq:de-s-general} is now possible to quantify the impact of each state variables: $\happy$, $\gym$, $\bonus$ and the energy needed to acheive a battle stats goal.
+\section{Parametrical analysis}
+\begin{center}
+\color{myred}\bf DRAFT...
+\end{center}
 
-\subsection{Effectiveness function}
-We define a effectiveness function $\Ef(\happy, \gym, \bonus)$ that will return a number between 0 and 1 quantifying the efficiency of the state variables to reach a battle stats goal. It as computed with respect to the energy needed to reach this goal ($\Delta E$) compared to the minimum possible $\Delta E^*$ ({\it i.e.} corresponding to $\happy_\text{max}, \gym_\text{max}, \bonus_\text{max}$).
+\subsection{The parameters}
+With eq.\label{eq:de-s-general} it is now possible to quantify the impact of each state variables: $\happy$, $\gym$, $\bonus$ and the energy needed to acheive a battle stats goal.
+
+\subsubsection{Effectiveness function}
+We define an effectiveness function $\Ef(\happy, \gym, \bonus)$ that will return a number between 0 and 1 quantifying the effectiveness of the state variables to reach a battle stats goal. It is computed with respect to the energy needed to reach this goal ($\Delta E$) compared to the minimum possible $\Delta E^*$ ({\it i.e.} corresponding to $\happy_\text{max}, \gym_\text{max}, \bonus_\text{max}$).
 \begin{equation}
-    \Ef(\happy, \gym, \bonus) = \frac{\Delta E}{\Delta E^*}
+    \Ef(\happy, \gym, \bonus) = \frac{\Delta E^*}{\Delta E}
 \end{equation}
 
-\subsection{Reaching stats cap}
+\subsubsection{Reaching stats cap}
 In this case we set the goal to be reaching stats cap from 0 ($\Sf =\Sc$ and $\Si = 0$). Thus we have:
 \begin{equation}
-    \Ef(\happy, \gym, \bonus) = \frac{ \ln\left( \frac{\alpha}{\beta}\Sc + 1 \right) }{ \ln\left( \frac{\alpha_\text{max}}{\beta_\text{max}}\Sc + 1 \right) }
+    \Ef(\happy, \gym, \bonus) = \frac{ \ln\left( 1 + \alpha_\text{max}\Sc/\beta_\text{max} \right) }{ \ln\left( 1 + \alpha\Sc/\beta \right) }
 \end{equation}
 where $\alpha$ and $\beta$ depend on $\happy, \gym, \bonus$.
 
-\par TODO: parametrical analysis... Pretty straitforward at this stage...
+\section{TODO}
+\begin{itemize}
+    \item find out why to quantify which from $\happy, \gym$ and $\bonus$ in pacts the most and when
+    \item add a time / energy conversion
+    \item Happy jumps and books...
+    \item find out what torn's community wants to know
+\end{itemize}
 
 \end{document}
