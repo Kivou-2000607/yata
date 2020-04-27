@@ -21,12 +21,20 @@ This file is part of yata.
 {% load mathfilters %}
 
 <!-- toggle -->
-{% if v.1 < v.2 %}
+{% if not all %}
+    {% if v.1 < v.2 %}
+        <form style="display: inline;">{% csrf_token %}
+            <a class="targets-attacks-losses-payall error" href="" data-val="{{k}}" data-los="{{v.2|sub:v.1}}" title="Mark as paid">
+                <i class="far fa-check-circle" title="Mark as paid"></i>
+            </a>
+        </form>
+    {% else %}
+        <i class="fas fa-check-circle valid" title="Paid"></i>
+    {% endif %}
+{% else %}
     <form style="display: inline;">{% csrf_token %}
-        <a class="targets-attacks-losses-payall error" href="" data-val="{{k}}" title="Mark as paid">
-            <i class="far fa-check-circle" title="Mark as paid"></i>
+        <a class="targets-attacks-losses-payall error" href="" data-val="all" title="Mark all as paid">
+            <i class="far fa-check-circle" title="Mark all as paid"></i>
         </a>
     </form>
-{% else %}
-    <i class="fas fa-check-circle valid" title="Paid"></i>
 {% endif %}

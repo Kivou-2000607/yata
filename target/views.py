@@ -91,7 +91,13 @@ def losses(request):
             losses = player.attack_set.filter(result="Lost").exclude(attacker_id=player.tId)
 
             if request.POST.get("payall") is not None:
-                losses.filter(attacker_id=request.POST.get("payall")).update(paid=True)
+                attacker_id = request.POST.get("payall", "None")
+                if attacker_id.isdigit():
+                    print("update ", attacker_id)
+                    losses.filter(attacker_id=attacker_id).update(paid=True)
+                elif attacker_id == "all":
+                    print("update all")
+                    losses.update(paid=True)
 
             sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
             for i in sluts:
@@ -99,6 +105,9 @@ def losses(request):
                 if len(a):
                     # name, paid, total
                     sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all())]
+
+            # sort sluts
+            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][2]))
 
             context = {"player": player, "sluts": sluts}
             return render(request, 'target/attacks/losses.html', context)

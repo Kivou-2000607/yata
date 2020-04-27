@@ -20,12 +20,12 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<script>
-        $(document).ready(function() {
-            $("#target-losses").tablesorter({
-                cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [5,1]]});
-        });
-</script>
+{# <script> #}
+        {# $(document).ready(function() { #}
+            {# $("#target-losses").tablesorter({ #}
+                {# cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [5,1]]}); #}
+        {# }); #}
+{# </script> #}
 
 <div class="container">
     <div class="overlay close"></div>
@@ -37,15 +37,15 @@ This file is part of yata.
                 <thead>
                     <tr>
                         <th>Player</th>
-                        <th>Send cash</th>
-                        <th>Mark as paid</th>
+                        <th>Send cash&nbsp;&nbsp;<a id="target-losses-send-all-cash" href='https://www.torn.com/sendcash.php'><i class="fas fa-dollar-sign" title="Send cash to all"></i></a></th>
+                        <th>Mark as paid&nbsp;&nbsp;{% include "target/attacks/markpaid.html" with all="1" %}</th>
                         <th>Paid</th>
                         <th>Not paid</th>
                         <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for k, v in sluts.items%}
+                    {% for k, v in sluts%}
                     <tr class="{% if v.1 < v.2 %}needpay{% endif %}">
                         <td class="a">{{v.0|playerURL:k|safe}}</td>
                         <td class="b">{% include "target/attacks/sendcash.html" %}</td>

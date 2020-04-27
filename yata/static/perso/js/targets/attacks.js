@@ -44,3 +44,15 @@ $(document).on('click', '.close', function(e){
     e.preventDefault();
     $(this).parent("div.container").css("display", "none");
 });
+
+// show losses
+$(document).on('click', '#target-losses-send-all-cash', function(e){
+    e.preventDefault();
+    $("a.targets-attacks-losses-payall").each(function(index, element) {
+        var tid = $(element).attr("data-val");
+        var los = $(element).attr("data-los");
+        if(!isNaN(parseInt(tid)) ) {
+            window.open("https://www.torn.com/sendcash.php#/XID="+tid+"&losses="+los, "_blank");
+        }
+    });
+});
