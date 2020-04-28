@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.shortcuts import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
@@ -164,3 +165,26 @@ def analytics(request):
         return render(request, 'yata.html', context)
     except BaseException:
         return returnError()
+
+
+@csrf_exempt
+def gym(request):
+    if request.method == 'POST':
+        try:
+            req = json.loads(request.body)
+            message = req.get("message")
+
+            if message is None:
+                return HttpResponse(json.dumps({"message": "No message", "type": 0}), content_type="application/json")
+            elif message in ["break"]:
+                hey = ho
+            else:
+                return HttpResponse(json.dumps({"message": "You sent {}".format(message), "type": 1}), content_type="application/json")
+
+        except BaseException as e:
+            t = -1
+            m = "Server error... YATA's been poorly coded: {}".format(e)
+            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+
+    else:
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
