@@ -233,3 +233,30 @@ class Error(models.Model):
 class Spinner(models.Model):
     factionId = models.IntegerField(default=0)
     spinner = models.CharField(default="", max_length=64, null=True, blank=True)
+
+
+# class Gym(models.Model):
+#     timestamp = models.IntegerField(default=0)
+#
+#     # stat
+#     stat_type = models.CharField(default="?", max_length=16)
+#     stat_before = models.BigIntegerField(default=0)
+#     stat_after = models.BigIntegerField(default=0)
+#
+#     # energy
+#     energy_used = models.IntegerField(default=0)
+#
+#     # happy
+#     happy_before = models.IntegerField(default=0)
+#     happy_after = models.IntegerField(default=0)
+#
+#     # gym
+#     gym_id = models.IntegerField(default=1)
+#     gym_dot = models.IntegerField(default=0)
+#
+#     # perks
+#     perks_faction = models.IntegerField(default=0)
+#     perks_property = models.IntegerField(default=0)
+#     perks_education = models.IntegerField(default=0)
+#     perks_book = models.IntegerField(default=0)
+#     perks_company = models.IntegerField(default=0)

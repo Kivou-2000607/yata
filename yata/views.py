@@ -21,6 +21,7 @@ from django.shortcuts import render
 from django.shortcuts import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.conf import settings
@@ -28,6 +29,7 @@ from django.conf import settings
 import json
 import os
 import traceback
+import re
 
 from player.models import *
 from player.functions import updatePlayer
@@ -169,10 +171,89 @@ def analytics(request):
 
 @csrf_exempt
 def gym(request):
+    from yata.gyms import gyms
+
+    train = {}
+
+    #  from script
+    key = "Ugzfww4e40SwYqMv"
+    stat_type = "dexterity"
+
+    api = apiCall("user", "", "perks", key=key)
+
+    train["stat"] = stat_type
+
+    # check API error
+    if "apiError" in api:
+        type = -1
+        message = "{}".format(api.get("apiErrorString", "API error"))
+        return JsonResponse({"type": type, "message": message})
+
+    # faction perk
+    for p in api.get("faction_perks", []):
+        reg = '\+ increases {stat} gym gains by \d{{1,3}}\%'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[-1]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["faction_perks"] = bonus
+
+    # education perks
+    for p in api.get("education_perks", []):
+         # specific gym
+        reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["education_perks_stat"] = bonus
+
+        # all gyms
+        reg = '\+ \d{{1,3}}\% gym gains'
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["education_perks_all"] = bonus
+
+    # property perks
+    for p in api.get("property_perks", []):
+        # specific gym
+        reg = '\+ \d{{1,3}}\% gym gains'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["property_perks"] = bonus
+
+    # company perks
+    for p in api.get("company_perks", []):
+        # all gym
+        reg = '\+ \d{{1,3}}\% gym gains'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["company_perks_all"] = bonus
+
+        # specific gym
+        reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["company_perks_stat"] = bonus
+
+        # happyness
+        reg = '\+ \d{{1,3}}\% reduction of happiness loss in gym'.format(stat=stat_type)
+        if re.match(reg, p.lower()) is not None:
+            bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+            bonus = int(bonus) if bonus.isdigit() else -1
+            train["company_perks_happy_reduction"] = bonus
+
+
+    return JsonResponse(train)
+
     if request.method == 'POST':
         try:
             req = json.loads(request.body)
             message = req.get("message")
+
+
 
             if message is None:
                 return HttpResponse(json.dumps({"message": "No message", "type": 0}), content_type="application/json")
