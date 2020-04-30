@@ -1,0 +1,55 @@
+<html>
+<a href="https://github.com/Kivou-2000607/gym-formula/raw/master/js/gym.user.js">install script</a> - <a href="?export=json">export json</a>
+<table>
+
+  <head>
+      <tr>
+        <th>player_id</th>
+        <th>timestamp</th>
+        <th>time_diff</th>
+        <th>happy_before</th>
+        <th>happy_after</th>
+        <th>happy_delta</th>
+        <th>energy_used</th>
+        <th>stat_type</th>
+        <th>stat_before</th>
+        <th>stat_after</th>
+        <th>stat_delta</th>
+        <th>gym_id</th>
+        <th>gym_dot</th>
+        <th>perks_faction</th>
+        <th>perks_property</th>
+        <th>perks_education_stat</th>
+        <th>perks_education_all</th>
+        <th>perks_company</th>
+        <th>perks_company_happy_red</th>
+      </tr>
+  </head>
+
+  <body>
+    {% for train in trains %}
+    <tr>
+      <td>{{train.player_id}}</td>
+      <td>{{train.timestamp}}</td>
+      <td>{{train.time_diff}}</td>
+      <td>{{train.happy_before}}</td>
+      <td>{{train.happy_after}}</td>
+      <td>{{train.happy_delta}}</td>
+      <td>{{train.energy_used}}</td>
+      <td>{{train.stat_type}}</td>
+      <td>{{train.stat_before}}</td>
+      <td>{{train.stat_after}}</td>
+      <td>{{train.stat_delta}}</td>
+      <td>{{train.gym_id}}</td>
+      <td>{{train.gym_dot}}</td>
+      <td>{{train.perks_faction}}</td>
+      <td>{{train.perks_property}}</td>
+      <td>{{train.perks_education_stat}}</td>
+      <td>{{train.perks_education_all}}</td>
+      <td>{{train.perks_company}}</td>
+      <td>{{train.perks_company_happy_red}}</td>
+    </tr>
+    {% endfor %}
+  </body>
+</table>
+</html>

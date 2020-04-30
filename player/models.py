@@ -260,3 +260,36 @@ class Spinner(models.Model):
 #     perks_education = models.IntegerField(default=0)
 #     perks_book = models.IntegerField(default=0)
 #     perks_company = models.IntegerField(default=0)
+
+
+class TrainFull(models.Model):
+    # for debug
+    player_id = models.IntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+    time_diff = models.IntegerField(default=0)
+
+    # happy
+    happy_before = models.IntegerField(default=0)
+    happy_after = models.IntegerField(default=0)
+    happy_delta = models.IntegerField(default=0)
+
+    # energy
+    energy_used = models.IntegerField(default=0)
+
+    # stat
+    stat_type = models.CharField(default="None", max_length=16)
+    stat_before = models.FloatField(default=0.0)
+    stat_after = models.FloatField(default=0.0)
+    stat_delta = models.FloatField(default=0.0)
+
+    # gym
+    gym_id = models.IntegerField(default=1)
+    gym_dot = models.IntegerField(default=0)
+
+    # gains perks
+    perks_faction = models.IntegerField(default=0)
+    perks_property = models.IntegerField(default=0)
+    perks_education_stat = models.IntegerField(default=0)
+    perks_education_all = models.IntegerField(default=0)
+    perks_company = models.IntegerField(default=0)
+    perks_company_happy_red = models.IntegerField(default=0)
