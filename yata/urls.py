@@ -16,6 +16,7 @@ Including another URLconf
 from django.urls import include, path, re_path
 from django.contrib import admin
 from django.http import HttpResponse
+from django.views.generic.base import RedirectView
 # from django.conf import settings
 # from django.conf.urls.static import static
 
@@ -39,6 +40,7 @@ urlpatterns = [
     re_path(r'^bot/', include('bot.urls')),
     re_path(r'^faction/', include('faction.urls')),
     path('admin/', admin.site.urls),
+    path("discord/", RedirectView.as_view(url="https://discord.gg/tZaYpbG")),
 
     # site
     path('', views.index, name="index"),
