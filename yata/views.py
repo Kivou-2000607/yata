@@ -208,7 +208,7 @@ def gym(request):
                 train["stat_before"] = train["stat_after"] - train["stat_delta"]
 
                 train["gym_id"] = payload.get("gym_id", 0)
-                train["gym_dot"] = int(gyms.get(train["gym_id"], dict({})).get(train["stat_type"], 0))
+                train["gym_dot"] = round(gyms.get(train["gym_id"], dict({})).get(train["stat_type"], 0))
 
                 # faction perk
                 for p in api.get("faction_perks", []):
@@ -225,20 +225,15 @@ def gym(request):
                     # specific gym
                     reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
                     if re.match(reg, p.lower()) is not None:
-                        print("STAT")
                         bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
                         bonus = int(bonus) if bonus.isdigit() else -1
                         train["perks_education_stat"] = bonus
                         continue
 
                     # all gyms
-                    # reg = '\+ \d{{1,3}}\% gym gains'
-                    # print(p.lower(), re.match(reg, p.lower()))
+                    # reg = '\+ \d{1,3}\% gym gains'
                     # if re.match(reg, p.lower()) is not None:
-                    # reg = '\+ \d{{1,3}}\% gym gains'
-                    # print(p.lower(), re.match(reg, p.lower()))
                     if p == "+ 1% Gym gains":
-                        print("ALL")
                         bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
                         bonus = int(bonus) if bonus.isdigit() else -1
                         train["perks_education_all"] = bonus
