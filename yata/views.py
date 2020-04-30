@@ -179,27 +179,6 @@ def gym(request):
             from yata.gyms import gyms
 
             body = json.loads(request.body)
-            # body = {"api": dict({}), "payload": dict({})}
-            #
-            # body["api"] = {
-            #     "faction_perks": ["+ Increases strength gym gains by 11%", "+ Increases speed gym gains by 6%"],
-            #     # "company_perks": ["+ 3% gym gains"],
-            #     "company_perks": ["+ 10% dexterity gym gains"],
-            #     "education_perks": ["+ 1% Gym gains", "+ 1% Speed gym gains", "+ 1% Strength gym gains", "+ 1% Defense gym gains"],
-            #     "property_perks": ["+ 2% Gym gains"],
-            #     "time_diff": 5,
-            #     "player_id": 2000607
-            # }
-            #
-            # body["payload"] = {
-            #     "happy_before": 5025,
-            #     "happy_after": 5006,
-            #     "energy_used": 50,
-            #     "stat_after": "20048.2548",
-            #     "stat_gain": "20.3645",
-            #     "stat_type": "strength",
-            #     "gym_id": 2,
-            # }
 
             if "api" not in body:
                 return JsonResponse({"message": "api not in payload", "type": -1})
@@ -207,102 +186,100 @@ def gym(request):
                 return JsonResponse({"message": "api not in payload", "type": -1})
 
             api = body.get("api")
-            payload = body.get("payload")[0]
 
-            for k,v in api.items():
-                print(k, v)
+            for payload in body.get("payload"):
 
-            # get direct values
-            train = dict({})
-            train["timestamp"] = tsnow()
-            train["player_id"] = api.get("player_id", 0)
-            train["time_diff"] = api.get("time_diff", 0)
+                # get direct values
+                train = dict({})
+                train["timestamp"] = tsnow()
+                train["player_id"] = api.get("player_id", 0)
+                train["time_diff"] = api.get("time_diff", 0)
 
-            train["happy_before"] = payload.get("happy_before", 0)
-            train["happy_after"] = payload.get("happy_after", 0)
-            train["happy_delta"] = train["happy_after"] - train["happy_before"]
+                train["happy_before"] = payload.get("happy_before", 0)
+                train["happy_after"] = payload.get("happy_after", 0)
+                train["happy_delta"] = train["happy_after"] - train["happy_before"]
 
-            train["energy_used"] = payload.get("energy_used", 0)
+                train["energy_used"] = payload.get("energy_used", 0)
 
-            train["stat_type"] = payload.get("stat_type", "None")
+                train["stat_type"] = payload.get("stat_type", "None")
 
-            train["stat_after"] = float(payload.get("stat_after", 0))
-            train["stat_delta"] = float(payload.get("stat_gain", 0))
-            train["stat_before"] = train["stat_after"] - train["stat_delta"]
+                train["stat_after"] = float(payload.get("stat_after", 0))
+                train["stat_delta"] = float(payload.get("stat_gain", 0))
+                train["stat_before"] = train["stat_after"] - train["stat_delta"]
 
-            train["gym_id"] = payload.get("gym_id", 0)
-            train["gym_dot"] = int(gyms.get(train["gym_id"], dict({})).get(train["stat_type"], 0))
+                train["gym_id"] = payload.get("gym_id", 0)
+                train["gym_dot"] = int(gyms.get(train["gym_id"], dict({})).get(train["stat_type"], 0))
 
-            # faction perk
-            for p in api.get("faction_perks", []):
-                reg = '\+ increases {stat} gym gains by \d{{1,3}}\%'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[-1]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_faction"] = bonus
-                    continue
+                # faction perk
+                for p in api.get("faction_perks", []):
+                    reg = '\+ increases {stat} gym gains by \d{{1,3}}\%'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[-1]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_faction"] = bonus
+                        continue
 
-            # education perks
-            for p in api.get("education_perks", []):
-                print(p)
-                # specific gym
-                reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    print("STAT")
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_education_stat"] = bonus
-                    continue
+                # education perks
+                for p in api.get("education_perks", []):
+                    print(p)
+                    # specific gym
+                    reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        print("STAT")
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_education_stat"] = bonus
+                        continue
 
-                # all gyms
-                # reg = '\+ \d{{1,3}}\% gym gains'
-                # print(p.lower(), re.match(reg, p.lower()))
-                # if re.match(reg, p.lower()) is not None:
-                # reg = '\+ \d{{1,3}}\% gym gains'
-                # print(p.lower(), re.match(reg, p.lower()))
-                if p == "+ 1% Gym gains":
-                    print("ALL")
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_education_all"] = bonus
-                    continue
+                    # all gyms
+                    # reg = '\+ \d{{1,3}}\% gym gains'
+                    # print(p.lower(), re.match(reg, p.lower()))
+                    # if re.match(reg, p.lower()) is not None:
+                    # reg = '\+ \d{{1,3}}\% gym gains'
+                    # print(p.lower(), re.match(reg, p.lower()))
+                    if p == "+ 1% Gym gains":
+                        print("ALL")
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_education_all"] = bonus
+                        continue
 
-            # property perks
-            for p in api.get("property_perks", []):
-                # specific gym
-                reg = '\+ \d{{1,3}}\% gym gains'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_property"] = bonus
-                    continue
+                # property perks
+                for p in api.get("property_perks", []):
+                    # specific gym
+                    reg = '\+ \d{{1,3}}\% gym gains'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_property"] = bonus
+                        continue
 
-            # company perks
-            for p in api.get("company_perks", []):
-                # all gym
-                reg = '\+ \d{{1,3}}\% gym gains'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_company"] = bonus
-                    continue
+                # company perks
+                for p in api.get("company_perks", []):
+                    # all gym
+                    reg = '\+ \d{{1,3}}\% gym gains'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_company"] = bonus
+                        continue
 
-                # specific gym
-                reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["perks_company"] = bonus
-                    continue
+                    # specific gym
+                    reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_company"] = bonus
+                        continue
 
-                # happiness
-                reg = '\+ \d{{1,3}}\% reduction of happiness loss in gym'.format(stat=train["stat_type"])
-                if re.match(reg, p.lower()) is not None:
-                    bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
-                    bonus = int(bonus) if bonus.isdigit() else -1
-                    train["company_perks_happy_red"] = bonus
+                    # happiness
+                    reg = '\+ \d{{1,3}}\% reduction of happiness loss in gym'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["company_perks_happy_red"] = bonus
 
-            _ = TrainFull.objects.create(**train)
+                _ = TrainFull.objects.create(**train)
 
             return JsonResponse({"message": "All good dude", "type": 1})
 
