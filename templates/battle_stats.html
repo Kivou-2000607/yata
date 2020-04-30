@@ -1,8 +1,10 @@
+{% load mathfilters %}
+
 <html>
 <a href="https://github.com/Kivou-2000607/gym-formula/raw/master/js/gym.user.js">install script</a> - <a href="?export=json">export json</a>
 <table>
 
-  <head>
+  <thead>
       <tr>
         <th>player_id</th>
         <th>timestamp</th>
@@ -15,6 +17,7 @@
         <th>stat_before</th>
         <th>stat_after</th>
         <th>stat_delta</th>
+        <th>error</th>
         <th>gym_id</th>
         <th>gym_dot</th>
         <th>perks_faction</th>
@@ -24,9 +27,9 @@
         <th>perks_company</th>
         <th>perks_company_happy_red</th>
       </tr>
-  </head>
+  </thead>
 
-  <body>
+  <tbody>
     {% for train in trains %}
     <tr>
       <td>{{train.player_id}}</td>
@@ -40,6 +43,7 @@
       <td>{{train.stat_before}}</td>
       <td>{{train.stat_after}}</td>
       <td>{{train.stat_delta}}</td>
+      <td>{{train.vladar_error|mul:100|floatformat:2}}%</td>
       <td>{{train.gym_id}}</td>
       <td>{{train.gym_dot}}</td>
       <td>{{train.perks_faction}}</td>
@@ -50,6 +54,6 @@
       <td>{{train.perks_company_happy_red}}</td>
     </tr>
     {% endfor %}
-  </body>
+  </tbody>
 </table>
 </html>

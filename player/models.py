@@ -21,6 +21,7 @@ from django.db import models
 from django.utils import timezone
 
 import json
+import numpy
 
 from yata.handy import apiCall
 # from awards.functions import updatePlayerAwards
@@ -261,7 +262,6 @@ class Spinner(models.Model):
 #     perks_book = models.IntegerField(default=0)
 #     perks_company = models.IntegerField(default=0)
 
-
 class TrainFull(models.Model):
     # for debug
     player_id = models.IntegerField(default=0)
@@ -293,3 +293,41 @@ class TrainFull(models.Model):
     perks_education_all = models.IntegerField(default=0)
     perks_company = models.IntegerField(default=0)
     perks_company_happy_red = models.IntegerField(default=0)
+
+    def happy(self):
+        return self.happy_before
+
+    def bonus(self, type="x"):
+        if type == "+":
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
+            b_perks = [p / 100. for p in perks_list]
+            return numpy.sum(b_perks)
+        elif type == "x":
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
+            b_perks = [1 + p / 100. for p in perks_list]
+            return numpy.prod(b_perks) - 1.
+        else:
+            return 0.0
+
+    def gym(self):
+        return self.gym_dot / 10.
+
+    def vladar(self):
+        # coefficients
+        a = 0.0000003480061091
+        b = 250.
+        c = 0.000003091619094
+        d = 0.0000682775184551527
+        e = -0.0301431777
+
+        # states coefficients
+        alpha = (a * numpy.log(self.happy() + b) + c) * (1. + self.bonus()) * self.gym()
+        beta = (d * (self.happy() + b) + e) * (1. + self.bonus()) * self.gym()
+
+        # stat cap
+        stat_cap = min(self.stat_before, 50000000.0)
+
+        return (alpha * stat_cap + beta) * self.energy_used
+
+    def vladar_error(self):
+        return abs(self.stat_delta - self.vladar()) / max(self.stat_delta, 1)

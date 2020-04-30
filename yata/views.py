@@ -284,7 +284,14 @@ def gym(request):
 
     else:
         if request.GET.get("export") == "json":
-            trains = [model_to_dict(instance) for instance in TrainFull.objects.order_by("-timestamp", "stat_before")]
+            trains = []
+            for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
+                trainDict = model_to_dict(train)
+                vladar = train.vladar()
+                trainDict["vladar"] = vladar
+                trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
+                trains.append(trainDict)
+
             response = JsonResponse({"trains": trains})
             response['Content-Disposition'] = 'attachment; filename="trains.json"'
             return response
