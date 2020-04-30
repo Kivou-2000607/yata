@@ -209,6 +209,9 @@ def gym(request):
             api = body.get("api")
             payload = body.get("payload")[0]
 
+            for k,v in api.items():
+                print(k, v)
+
             # get direct values
             train = dict({})
             train["timestamp"] = tsnow()
@@ -241,17 +244,24 @@ def gym(request):
 
             # education perks
             for p in api.get("education_perks", []):
+                print(p)
                 # specific gym
                 reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
                 if re.match(reg, p.lower()) is not None:
+                    print("STAT")
                     bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
                     bonus = int(bonus) if bonus.isdigit() else -1
                     train["perks_education_stat"] = bonus
                     continue
 
                 # all gyms
-                reg = '\+ \d{{1,3}}\% gym gains'
-                if re.match(reg, p.lower()) is not None:
+                # reg = '\+ \d{{1,3}}\% gym gains'
+                # print(p.lower(), re.match(reg, p.lower()))
+                # if re.match(reg, p.lower()) is not None:
+                # reg = '\+ \d{{1,3}}\% gym gains'
+                # print(p.lower(), re.match(reg, p.lower()))
+                if p == "+ 1% Gym gains":
+                    print("ALL")
                     bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
                     bonus = int(bonus) if bonus.isdigit() else -1
                     train["perks_education_all"] = bonus
