@@ -289,7 +289,7 @@ def gym(request):
 
     else:
         if request.GET.get("export") == "json":
-            trains = [model_to_dict(instance) for instance in TrainFull.objects.order_by("-timestamp")]
+            trains = [model_to_dict(instance) for instance in TrainFull.objects.order_by("-timestamp", "stat_before")]
             response = JsonResponse({"trains": trains})
             response['Content-Disposition'] = 'attachment; filename="trains.json"'
             return response
