@@ -337,3 +337,6 @@ class TrainFull(models.Model):
 
     def vladar_error(self):
         return abs(self.stat_delta - self.vladar()) / max(self.stat_delta, 1)
+
+    def normalized_gain(self, type="x"):
+        return self.stat_delta / (self.gym() * (1. + self.bonus(type=type)) * float(self.energy_used))

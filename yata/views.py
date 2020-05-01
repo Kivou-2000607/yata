@@ -292,6 +292,8 @@ def gym(request):
                 trainDict["pk"] = train.pk
                 trainDict["stat_before"] = train.stat_before_cap()
                 trainDict["stat_after"] = train.stat_after_cap()
+                trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
+                trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
                 trainDict["vladar"] = vladar
                 trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
                 trains.append(trainDict)
