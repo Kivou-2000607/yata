@@ -48,6 +48,7 @@ urlpatterns = [
     path('delete', views.delete, name="delete"),
     path('analytics', views.analytics, name="analytics"),
     path('tmp/gym', views.gym, name="gym"),
+    path('api/gym', views.gymImport, name="gymImport"),
     path('discord', lambda x: redirect('https://discord.gg/tZaYpbG')),
 
     # robot.txt

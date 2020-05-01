@@ -174,6 +174,33 @@ def analytics(request):
 
 @csrf_exempt
 def gym(request):
+    if request.GET.get("export") == "json":
+        trains = []
+        for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
+            trainDict = model_to_dict(train)
+            vladar = train.vladar()
+            trainDict["pk"] = train.pk
+            trainDict["stat_before"] = train.stat_before_cap()
+            trainDict["stat_after"] = train.stat_after_cap()
+            trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
+            trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
+            trainDict["vladar"] = vladar
+            trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
+            trains.append(trainDict)
+
+        response = JsonResponse({"trains": trains})
+        response['Content-Disposition'] = 'attachment; filename="trains.json"'
+        return response
+
+    else:
+        trains = Paginator(TrainFull.objects.order_by("-timestamp", "happy_before"), 50)
+        context = {"trains": trains.get_page(request.GET.get("page"))}
+        return render(request, 'battle_stats.html', context)
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+
+
+@csrf_exempt
+def gymImport(request):
     if request.method == 'POST':
         print("hey")
         try:
@@ -284,26 +311,4 @@ def gym(request):
             return JsonResponse({"message": "Server error... YATA's been poorly coded: {}".format(e), "type": -1})
 
     else:
-        if request.GET.get("export") == "json":
-            trains = []
-            for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
-                trainDict = model_to_dict(train)
-                vladar = train.vladar()
-                trainDict["pk"] = train.pk
-                trainDict["stat_before"] = train.stat_before_cap()
-                trainDict["stat_after"] = train.stat_after_cap()
-                trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
-                trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
-                trainDict["vladar"] = vladar
-                trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
-                trains.append(trainDict)
-
-            response = JsonResponse({"trains": trains})
-            response['Content-Disposition'] = 'attachment; filename="trains.json"'
-            return response
-
-        else:
-            trains = Paginator(TrainFull.objects.order_by("-timestamp", "happy_before"), 50)
-            context = {"trains": trains.get_page(request.GET.get("page"))}
-            return render(request, 'battle_stats.html', context)
-            return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
+        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
