@@ -192,7 +192,7 @@ def gym(request):
                 # get direct values
                 train = dict({})
                 train["timestamp"] = tsnow()
-                train["player_id"] = api.get("player_id", 0)
+                train["id_key"] = api.get("id_key", "x")
                 train["time_diff"] = api.get("time_diff", 0)
 
                 train["happy_before"] = payload.get("happy_before", 0)

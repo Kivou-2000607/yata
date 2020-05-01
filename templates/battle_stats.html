@@ -6,7 +6,7 @@
 
   <thead>
       <tr>
-        <th>player_id</th>
+        <th>id_key</th>
         <th>timestamp</th>
         <th>time_diff</th>
         <th>happy_before</th>
@@ -32,7 +32,7 @@
   <tbody>
     {% for train in trains %}
     <tr>
-      <td>{{train.player_id}}</td>
+      <td>{{train.id_key}}</td>
       <td>{{train.timestamp}}</td>
       <td>{{train.time_diff}}</td>
       <td>{{train.happy_before}}</td>
