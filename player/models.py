@@ -294,6 +294,12 @@ class TrainFull(models.Model):
     perks_company = models.IntegerField(default=0)
     perks_company_happy_red = models.IntegerField(default=0)
 
+    def stat_before_cap(self):
+        return min(self.stat_before, 50000000)
+
+    def stat_after_cap(self):
+        return min(self.stat_after, 50000000)
+
     def happy(self):
         return self.happy_before
 

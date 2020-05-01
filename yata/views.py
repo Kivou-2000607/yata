@@ -27,6 +27,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core import serializers
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
 
 import json
 import os
@@ -288,6 +289,9 @@ def gym(request):
             for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
                 trainDict = model_to_dict(train)
                 vladar = train.vladar()
+                trainDict["pk"] = trainDict.pk
+                trainDict["stat_before"] = trainDict.stat_before_cap()
+                trainDict["stat_after"] = trainDict.stat_after_cap()
                 trainDict["vladar"] = vladar
                 trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
                 trains.append(trainDict)
@@ -297,7 +301,7 @@ def gym(request):
             return response
 
         else:
-            trains = TrainFull.objects.order_by("-timestamp")
-            context = {"trains": trains}
+            trains = Paginator(TrainFull.objects.order_by("-timestamp", "happy_before"), 50)
+            context = {"trains": trains.get_page(request.GET.get("page"))}
             return render(request, 'battle_stats.html', context)
             return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
