@@ -289,9 +289,9 @@ def gym(request):
             for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
                 trainDict = model_to_dict(train)
                 vladar = train.vladar()
-                trainDict["pk"] = trainDict.pk
-                trainDict["stat_before"] = trainDict.stat_before_cap()
-                trainDict["stat_after"] = trainDict.stat_after_cap()
+                trainDict["pk"] = train.pk
+                trainDict["stat_before"] = train.stat_before_cap()
+                trainDict["stat_after"] = train.stat_after_cap()
                 trainDict["vladar"] = vladar
                 trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
                 trains.append(trainDict)
