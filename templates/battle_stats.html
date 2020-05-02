@@ -52,7 +52,8 @@ table, th, td {
         <th title="stat_before">stat before</th>
         <th title="stat_after">stat after</th>
         <th title="stat_delta">stat diff</th>
-        <th title="error">error</th>
+        <th title="Vladar diff">vladar diff</th>
+        <th title="Current diff">current diff</th>
         <th title="gym_id">gym id</th>
         <th title="gym_dot">gym dot</th>
         <th title="perks_faction">fac</th>
@@ -79,7 +80,8 @@ table, th, td {
       <td>{{train.stat_before_cap|intcomma}}</td>
       <td>{{train.stat_after_cap|intcomma}}</td>
       <td>{{train.stat_delta|intcomma}}</td>
-      <td>{{train.vladar_error|mul:100|floatformat:2}}%</td>
+      <td>{{train.vladar_diff|floatformat:2}}</td>
+      <td>{{train.current_diff|floatformat:2}}</td>
       <td>{{train.gym_id}}</td>
       <td>{{train.gym_dot}}</td>
       <td>{{train.perks_faction}}</td>

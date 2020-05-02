@@ -331,8 +331,20 @@ class TrainFull(models.Model):
 
         return (alpha * stat_cap + beta) * self.energy_used
 
-    def vladar_error(self):
-        return abs(self.stat_delta - self.vladar()) / max(self.stat_delta, 1)
+    def vladar_diff(self):
+        return self.stat_delta - self.vladar()
 
     def normalized_gain(self, type="x"):
         return self.stat_delta / (self.gym() * (1. + self.bonus(type=type)) * float(self.energy_used))
+
+    def current(self):
+        # stat cap
+        stat_cap = min(self.stat_before, 50000000.0)
+
+        # normalization
+        norm = (1. + self.bonus()) * self.gym() * self.energy_used / 200000.
+        happy_func = stat_cap * (1 + 0.07 * numpy.log(1 + self.happy() / 250.)) + 13 * self.happy()
+        return happy_func * norm
+
+    def current_diff(self):
+        return self.stat_delta - self.current()

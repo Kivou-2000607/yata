@@ -178,14 +178,15 @@ def gym(request):
         trains = []
         for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
             trainDict = model_to_dict(train)
-            vladar = train.vladar()
             trainDict["pk"] = train.pk
             trainDict["stat_before"] = train.stat_before_cap()
             trainDict["stat_after"] = train.stat_after_cap()
             trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
             trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
-            trainDict["vladar"] = vladar
-            trainDict["vladar_error"] = abs(vladar - train.stat_delta) / max(train.stat_delta, 1)
+            trainDict["vladar"] = train.vladar()
+            trainDict["vladar_diff"] = train.vladar_diff()
+            trainDict["vladar"] = train.current()
+            trainDict["vladar_diff"] = train.current_diff()
             trains.append(trainDict)
 
         response = JsonResponse({"trains": trains})
