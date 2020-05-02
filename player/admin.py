@@ -55,6 +55,7 @@ class ErrorAdmin(admin.ModelAdmin):
     def date(self, instance):
         return timestampToDate(instance.timestamp)
 
+
 class SpinnerAdmin(admin.ModelAdmin):
     list_display = ['pk', 'factionId', 'faction', 'spinner']
 
@@ -62,7 +63,12 @@ class SpinnerAdmin(admin.ModelAdmin):
         return Faction.objects.filter(tId=instance.factionId).first()
 
 
+class TrainFullAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'timestamp', 'id_key']
+
+
 admin.site.register(Error, ErrorAdmin)
+admin.site.register(TrainFull, TrainFullAdmin)
 admin.site.register(Spinner, SpinnerAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)

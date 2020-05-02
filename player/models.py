@@ -305,15 +305,11 @@ class TrainFull(models.Model):
 
     def bonus(self, type="x"):
         if type == "+":
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
-            b_perks = [p / 100. for p in perks_list]
-            return numpy.sum(b_perks)
-        elif type == "x":
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
-            b_perks = [1 + p / 100. for p in perks_list]
-            return numpy.prod(b_perks) - 1.
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat + self.perks_education_all, self.perks_company]
         else:
-            return 0.0
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
+        b_perks = [1 + p / 100. for p in perks_list]
+        return numpy.prod(b_perks) - 1.
 
     def gym(self):
         return self.gym_dot / 10.
