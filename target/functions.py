@@ -25,12 +25,14 @@ from faction.functions import BONUS_HITS
 from faction.functions import modifiers2lvl1
 from target.models import *
 
-def updateAttacks(player):
+
+def updateAttacks(player, full=False):
 
     # if tsnow() - player.attacksUpda < 15 * 60:
     #     return False, player.attack_set.all()
 
-    req = apiCall('user', "", 'attacks,timestamp', player.getKey())
+    query = 'attacksfull,timestamp' if full else 'attacks,timestamp'
+    req = apiCall('user', "", query, player.getKey())
     if 'apiError' in req:
         return req, player.attack_set.all()
 
@@ -43,9 +45,17 @@ def updateAttacks(player):
 
     remove = []
     for k, v in attacks.items():
+        if full:
+            v["attacker_name"] = "Player"
+            v["attacker_factionname"] = "Faction"
+            v["defender_name"] = "Player"
+            v["defender_factionname"] = "Faction"
+            v["chain"] = 0
+            v["modifiers"] = {"fairFight": 1, "war": 1, "retaliation": 1, "groupAttack": 1, "overseas": 1, "chainBonus": 1}
 
         # ignore stealth
-        if v.get("attacker_name") is None:
+        # if v.get("attacker_name") is None or v.get("attacker_id") is '':
+        if v.get("stealthed"):
             continue
 
         if int(v["defender_id"]) == player.tId:

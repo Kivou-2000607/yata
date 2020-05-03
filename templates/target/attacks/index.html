@@ -24,13 +24,15 @@ This file is part of yata.
 
 <div id="attack-losses"></div>
 
-<h2 class="title"><i class="fas fa-user-shield"></i>&nbsp;&nbsp;List of recent attacks<span id="targets-attacks-losses" class="flush-right"><a href=""><i class="fas fa-dollar-sign"></i>&nbsp;Buying losses</a></span></h2>
+<h2 class="title"><i class="fas fa-user-shield"></i>&nbsp;&nbsp;List of recent attacks<span id="targets-attacks-losses" class="flush-right"><a href=""><i class="fas fa-dollar-sign"></i>&nbsp;Buying losses</a></span><span class="flush-right"><a href="?full=true"><i class="fas fa-angle-double-down"></i>&nbsp;Get last 1k attacks</a></span></h2>
 <div class="module">
     <div class="pagination-list">
         {% include "target/attacks/attacks.html"%}
     </div>
     <p class="update-info">Last update of the list: {{player.attacksUpda|ts2date}}</p>
 </div>
+
+
 
 {% else %}
 <div class="module rounded">

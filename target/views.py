@@ -62,7 +62,8 @@ def attacks(request):
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
 
-            error, attacks = updateAttacks(player)
+            full = request.GET.get('full', False)
+            error, attacks = updateAttacks(player, full=full)
             targets = getTargets(player)
 
             paginator = Paginator(attacks, 25)
@@ -82,6 +83,7 @@ def attacks(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
 
 def losses(request):
     try:
