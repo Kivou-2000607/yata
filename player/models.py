@@ -299,6 +299,9 @@ class TrainFull(models.Model):
     perks_gym_book = models.IntegerField(default=0)
     perks_happy_book = models.IntegerField(default=0)
 
+    # error
+    error = models.FloatField(default=0.0)
+
     def stat_before_cap(self):
         return min(self.stat_before, 50000000)
 
@@ -357,4 +360,8 @@ class TrainFull(models.Model):
     def set_single_train(self):
         from yata.gyms import gyms
         self.single_train = gyms.get(self.gym_id, {"energy": 0})["energy"] == self.energy_used
+        self.save()
+
+    def set_error(self):
+        self.error = abs(self.current_diff())
         self.save()

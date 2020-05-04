@@ -23,6 +23,7 @@ table, th, td {
   {% else %}
     single: <a href="?single=true">true</a> - false<br>
   {% endif %}
+  sort: <a href="?{{single.1}}">default</a> - <a href="?sort=happy{{single.1}}">happy</a> - <a href="?sort=error{{single.1}}">error</a><br>
   trains: {{info.n_trains|intcomma}} <br>
   users: {{info.n_users|intcomma}}
 </p>

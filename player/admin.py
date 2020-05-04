@@ -72,15 +72,20 @@ def add_gym_book_30(modeladmin, request, queryset):
     queryset.update(perks_gym_book=30)
 
 
+def recompute_error(modeladmin, request, queryset):
+    for q in queryset:
+        q.set_error()
+
+
 def remove_gym_book(modeladmin, request, queryset):
     queryset.update(perks_gym_book=0)
 
 
 class TrainFullAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'id_key', 'stat_type', 'diff', 'single_train', 'timestamp']
+    list_display = ['pk', 'id_key', 'stat_type', 'error', 'single_train', 'timestamp']
     search_fields = ['id_key', 'pk']
     list_filter = ('single_train', )
-    actions = [add_gym_book_20, add_gym_book_30, remove_gym_book]
+    actions = [add_gym_book_20, add_gym_book_30, recompute_error, remove_gym_book]
 
     def diff(self, instance):
         return instance.current_diff()

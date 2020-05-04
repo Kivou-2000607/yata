@@ -181,7 +181,19 @@ def gym(request):
     else:
         allTrains = TrainFull.objects.exclude(single_train=False)
 
-    for train in allTrains.order_by("-timestamp", "happy_before"):
+    if request.GET.get("sort") == "happy":
+        train_sort = ["-happy_before"]
+        train_users = "happy"
+
+    elif request.GET.get("sort") == "error":
+        train_sort = ["-error"]
+        train_users = "mean"
+
+    else:
+        train_sort = ["-timestamp", "-happy_before"]
+        train_users = "n"
+
+    for train in allTrains.order_by(*train_sort):
         # train.set_single_train()
         diff = train.current_diff()
         trainDict = model_to_dict(train)
@@ -211,7 +223,7 @@ def gym(request):
         v["happy"] /= float(v["n"])
         v["std"] = (v["std"] / float(v["n"]) - v["mean"]**2)**0.5
 
-    users = sorted(users.items(), key=lambda x: -x[1]["mean"])
+    users = sorted(users.items(), key=lambda x: -x[1][train_users])
 
     if request.GET.get("export") == "json":
         response = JsonResponse({"trains": trains, "users": users})
@@ -222,7 +234,7 @@ def gym(request):
         info = {"n_users": len(users), "n_trains": len(trains)}
         trains = Paginator(trains, 100)
         users = Paginator(users, 10)
-        single = "" if request.GET.get("single", False) else "&single=true"
+        single = "&single=true" if request.GET.get("single", False) else ""
         context = {"single": [request.GET.get("single", False), single], "trains": trains.get_page(request.GET.get("p_trains")), "users": users.get_page(request.GET.get("p_users")), "info": info}
 
         return render(request, 'battle_stats.html', context)
