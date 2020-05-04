@@ -15,6 +15,7 @@ class KeyAdmin(admin.ModelAdmin):
     search_fields = ['player__name', 'tId']
     readonly_fields = ['player', ]
 
+
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
@@ -76,8 +77,9 @@ def remove_gym_book(modeladmin, request, queryset):
 
 
 class TrainFullAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'id_key', 'stat_type', 'diff', 'timestamp']
+    list_display = ['pk', 'id_key', 'stat_type', 'diff', 'single_train', 'timestamp']
     search_fields = ['id_key', 'pk']
+    list_filter = ('single_train', )
     actions = [add_gym_book_20, add_gym_book_30, remove_gym_book]
 
     def diff(self, instance):

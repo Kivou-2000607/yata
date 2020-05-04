@@ -16,7 +16,7 @@ table, th, td {
 </style>
 
 <html>
-<p><a href="https://github.com/Kivou-2000607/gym-formula/raw/master/js/gym.user.js">install script</a> - <a href="?export=json">export json</a></p>
+<p><a href="https://github.com/Kivou-2000607/gym-formula/raw/master/js/gym.user.js">install script</a> - <a href="?export=json">export full json</a> - <a href="?export=json&single=true">export single only trains json</a></p>
 <p>
   trains: {{info.n_trains|intcomma}} <br>
   users: {{info.n_users|intcomma}}
@@ -130,7 +130,7 @@ table, th, td {
       <td>{{train.happy_before}}</td>
       <td>{{train.happy_after}}</td>
       <td>{{train.happy_delta}}</td>
-      <td>{{train.energy_used}}</td>
+      <td {% if train.single_train %}style="color: #0a0;"{% endif %}>{{train.energy_used}}{% if train.single_train %}*{%endif%}</td>
       <td>{{train.stat_type}}</td>
       <td>{{train.stat_before|intcomma}}</td>
       <td>{{train.stat_after|intcomma}}</td>

@@ -275,6 +275,7 @@ class TrainFull(models.Model):
 
     # energy
     energy_used = models.IntegerField(default=0)
+    single_train = models.IntegerField(default=False)
 
     # stat
     stat_type = models.CharField(default="None", max_length=16)
@@ -352,3 +353,8 @@ class TrainFull(models.Model):
 
     def current_diff(self):
         return self.stat_delta - self.current()
+
+    def set_single_train(self):
+        from yata.gyms import gyms
+        self.single_train = gyms.get(self.gym_id, {"energy": 0})["energy"] == self.energy_used
+        self.save()

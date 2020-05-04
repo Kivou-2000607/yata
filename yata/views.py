@@ -176,7 +176,13 @@ def analytics(request):
 def gym(request):
     trains = []
     users = dict({})
-    for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
+    if request.GET.get("single") is None:
+        allTrains = TrainFull.objects
+    else:
+        allTrains = TrainFull.objects.exclude(single_train=False)
+
+    for train in allTrains.order_by("-timestamp", "happy_before"):
+        # train.set_single_train()
         diff = train.current_diff()
         trainDict = model_to_dict(train)
         trainDict["pk"] = train.pk
@@ -225,7 +231,6 @@ def gym(request):
 @csrf_exempt
 def gymImport(request):
     if request.method == 'POST':
-        print("hey")
         try:
             from yata.gyms import gyms
 
@@ -324,6 +329,8 @@ def gymImport(request):
                         bonus = int(bonus) if bonus.isdigit() else -1
                         train["company_perks_happy_red"] = bonus
 
+                # get single train
+                train["single_train"] = train["energy_used"] == gyms.get(train["gym_id"], {"energy": 0})["energy"]
                 _ = TrainFull.objects.create(**train)
 
             return JsonResponse({"message": "All good dude", "type": 1})
