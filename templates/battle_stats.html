@@ -24,7 +24,7 @@ table, th, td {
 
 <table>
     <thead>
-      <tr><td colspan="4" style="text-align: center;">
+      <tr><td colspan="5" style="text-align: center;">
             <span class="step-links">
                 {% if users.has_previous %}
                     <a class="page-link" href="?p_users=1">&laquo; first</a>
@@ -45,8 +45,9 @@ table, th, td {
       <tr>
         <td>ID key</td>
         <td>#train</td>
-        <td>abs mean diff</td>
-        <td>std</td>
+        <td>abs diff (std)</td>
+        <td>energy</td>
+        <td>happy</td>
       </tr>
     </thead>
 
@@ -55,8 +56,9 @@ table, th, td {
         <tr>
           <td>{{k}}</td>
           <td>{{user.n|intcomma}}</td>
-          <td>{{user.mean|floatformat:2}}</td>
-          <td>{{user.std|floatformat:2}}</td>
+          <td>{{user.mean|floatformat:2}} ({{user.std|floatformat:2}})</td>
+          <td>{{user.energy|floatformat:2}}</td>
+          <td>{{user.happy|floatformat:2}}</td>
         </tr>
       {% endfor %}
     </tbody>

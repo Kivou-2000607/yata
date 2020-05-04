@@ -76,9 +76,12 @@ def remove_gym_book(modeladmin, request, queryset):
 
 
 class TrainFullAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'timestamp', 'id_key']
+    list_display = ['pk', 'id_key', 'stat_type', 'diff', 'timestamp']
     search_fields = ['id_key', 'pk']
     actions = [add_gym_book_20, add_gym_book_30, remove_gym_book]
+
+    def diff(self, instance):
+        return instance.current_diff()
 
 
 admin.site.register(Error, ErrorAdmin)

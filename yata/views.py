@@ -191,14 +191,18 @@ def gym(request):
         trains.append(trainDict)
 
         if train.id_key not in users:
-            users[train.id_key] = {"n": 0, "mean": 0, "std": 0}
+            users[train.id_key] = {"n": 0, "mean": 0, "std": 0, "energy": 0, "happy": 0}
 
         users[train.id_key]["n"] += 1
         users[train.id_key]["mean"] += abs(diff)
         users[train.id_key]["std"] += diff * diff
+        users[train.id_key]["energy"] += train.energy_used
+        users[train.id_key]["happy"] += train.happy_before
 
     for k, v in users.items():
         v["mean"] /= float(v["n"])
+        v["energy"] /= float(v["n"])
+        v["happy"] /= float(v["n"])
         v["std"] = (v["std"] / float(v["n"]) - v["mean"]**2)**0.5
 
     users = sorted(users.items(), key=lambda x: -x[1]["mean"])
