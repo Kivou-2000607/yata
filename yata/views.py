@@ -174,28 +174,46 @@ def analytics(request):
 
 @csrf_exempt
 def gym(request):
-    if request.GET.get("export") == "json":
-        trains = []
-        for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
-            trainDict = model_to_dict(train)
-            trainDict["pk"] = train.pk
-            trainDict["stat_before"] = train.stat_before_cap()
-            trainDict["stat_after"] = train.stat_after_cap()
-            trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
-            trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
-            trainDict["vladar"] = train.vladar()
-            trainDict["vladar_diff"] = train.vladar_diff()
-            trainDict["vladar"] = train.current()
-            trainDict["vladar_diff"] = train.current_diff()
-            trains.append(trainDict)
+    trains = []
+    users = dict({})
+    for train in TrainFull.objects.order_by("-timestamp", "happy_before"):
+        diff = train.current_diff()
+        trainDict = model_to_dict(train)
+        trainDict["pk"] = train.pk
+        trainDict["stat_before"] = train.stat_before_cap()
+        trainDict["stat_after"] = train.stat_after_cap()
+        trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
+        trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
+        trainDict["vladar"] = train.vladar()
+        trainDict["vladar_diff"] = train.vladar_diff()
+        trainDict["current"] = train.current()
+        trainDict["current_diff"] = diff
+        trains.append(trainDict)
 
-        response = JsonResponse({"trains": trains})
+        if train.id_key not in users:
+            users[train.id_key] = {"n": 0, "mean": 0, "std": 0}
+
+        users[train.id_key]["n"] += 1
+        users[train.id_key]["mean"] += diff
+        users[train.id_key]["std"] += diff * diff
+
+    for k, v in users.items():
+        v["mean"] /= float(v["n"])
+        v["std"] = (v["std"] / float(v["n"]) - v["mean"]**2)**0.5
+
+    users = sorted(users.items(), key=lambda x: -x[1]["mean"])
+
+    if request.GET.get("export") == "json":
+        response = JsonResponse({"trains": trains, "users": users})
         response['Content-Disposition'] = 'attachment; filename="trains.json"'
         return response
 
     else:
-        trains = Paginator(TrainFull.objects.order_by("-timestamp", "happy_before"), 50)
-        context = {"trains": trains.get_page(request.GET.get("page"))}
+        info = {"n_users": len(users), "n_trains": len(trains)}
+        trains = Paginator(trains, 100)
+        users = Paginator(users, 10)
+        context = {"trains": trains.get_page(request.GET.get("p_trains")), "users": users.get_page(request.GET.get("p_users")), "info": info}
+
         return render(request, 'battle_stats.html', context)
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
 
@@ -250,7 +268,6 @@ def gymImport(request):
 
                 # education perks
                 for p in api.get("education_perks", []):
-                    print(p)
                     # specific gym
                     reg = '\+ \d{{1,3}}\% {stat} gym gains'.format(stat=train["stat_type"])
                     if re.match(reg, p.lower()) is not None:
