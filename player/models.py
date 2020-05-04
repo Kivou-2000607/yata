@@ -264,7 +264,7 @@ class Spinner(models.Model):
 
 class TrainFull(models.Model):
     # for debug
-    id_key = models.SlugField(default="x")
+    id_key = models.CharField(default="x", max_length=32)
     timestamp = models.IntegerField(default=0)
     time_diff = models.IntegerField(default=0)
 
