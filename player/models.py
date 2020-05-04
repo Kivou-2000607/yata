@@ -302,6 +302,9 @@ class TrainFull(models.Model):
     # error
     error = models.FloatField(default=0.0)
 
+    # tmp for debug
+    req = models.TextField(default="{}")
+
     def stat_before_cap(self):
         return min(self.stat_before, 50000000)
 

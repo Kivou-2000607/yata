@@ -260,6 +260,7 @@ def gymImport(request):
 
                 # get direct values
                 train = dict({})
+                train["req"] = json.dumps(api)
                 train["timestamp"] = tsnow()
                 train["id_key"] = api.get("id_key", "x")
                 train["time_diff"] = api.get("time_diff", 0)
