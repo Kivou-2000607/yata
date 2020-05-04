@@ -320,6 +320,7 @@ d = {
     827: 501001885,  # Deadly Duo
     836: 886071515,  # Peppered
     838: 948029275,  # Lovestruck
+    843: 751068112,  # Hands Solo
     476: 0,  # Chainer 5
 
     # 9
