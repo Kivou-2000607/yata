@@ -344,7 +344,8 @@ def gymImport(request):
 
                 # get single train
                 train["single_train"] = train["energy_used"] == gyms.get(train["gym_id"], {"energy": 0})["energy"]
-                _ = TrainFull.objects.create(**train)
+                traindb = TrainFull.objects.create(**train)
+                traindb.set_error()
 
             return JsonResponse({"message": "All good dude", "type": 1})
 
