@@ -63,8 +63,22 @@ class SpinnerAdmin(admin.ModelAdmin):
         return Faction.objects.filter(tId=instance.factionId).first()
 
 
+def add_gym_book_20(modeladmin, request, queryset):
+    queryset.update(perks_gym_book=20)
+
+
+def add_gym_book_30(modeladmin, request, queryset):
+    queryset.update(perks_gym_book=30)
+
+
+def remove_gym_book(modeladmin, request, queryset):
+    queryset.update(perks_gym_book=0)
+
+
 class TrainFullAdmin(admin.ModelAdmin):
     list_display = ['pk', 'timestamp', 'id_key']
+    search_fields = ['id_key', 'pk']
+    actions = [add_gym_book_20, add_gym_book_30, remove_gym_book]
 
 
 admin.site.register(Error, ErrorAdmin)

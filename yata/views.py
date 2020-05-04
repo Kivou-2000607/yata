@@ -194,7 +194,7 @@ def gym(request):
             users[train.id_key] = {"n": 0, "mean": 0, "std": 0}
 
         users[train.id_key]["n"] += 1
-        users[train.id_key]["mean"] += diff
+        users[train.id_key]["mean"] += abs(diff)
         users[train.id_key]["std"] += diff * diff
 
     for k, v in users.items():

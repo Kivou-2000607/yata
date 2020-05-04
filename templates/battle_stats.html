@@ -45,7 +45,7 @@ table, th, td {
       <tr>
         <td>ID key</td>
         <td>#train</td>
-        <td>Mean diff</td>
+        <td>abs mean diff</td>
         <td>std</td>
       </tr>
     </thead>
@@ -67,7 +67,7 @@ table, th, td {
 <table>
 
   <thead>
-      <tr><td colspan="21" style="text-align: center;">
+      <tr><td colspan="22" style="text-align: center;">
             <span class="step-links">
                 {% if trains.has_previous %}
                     <a class="page-link" href="?p_trains=1">&laquo; first</a>
@@ -108,7 +108,7 @@ table, th, td {
         <th title="perks_education_stat">edu1</th>
         <th title="perks_education_all">edu2</th>
         <th title="perks_company">comp</th>
-        <th title="perks_company_happy_red">comp happy</th>
+        <th title="perks_gym_book">gym book</th>
       </tr>
   </thead>
 
@@ -142,7 +142,7 @@ table, th, td {
       <td>{{train.perks_education_stat}}</td>
       <td>{{train.perks_education_all}}</td>
       <td>{{train.perks_company}}</td>
-      <td>{{train.perks_company_happy_red}}</td>
+      <td>{{train.perks_gym_book}}</td>
     </tr>
     {% endfor %}
   </tbody>

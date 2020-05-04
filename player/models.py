@@ -294,6 +294,10 @@ class TrainFull(models.Model):
     perks_company = models.IntegerField(default=0)
     perks_company_happy_red = models.IntegerField(default=0)
 
+    # books
+    perks_gym_book = models.IntegerField(default=0)
+    perks_happy_book = models.IntegerField(default=0)
+
     def stat_before_cap(self):
         return min(self.stat_before, 50000000)
 
@@ -305,9 +309,9 @@ class TrainFull(models.Model):
 
     def bonus(self, type="x"):
         if type == "+":
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat + self.perks_education_all, self.perks_company]
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat + self.perks_education_all, self.perks_company, self.perks_gym_book]
         else:
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company]
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company, self.perks_gym_book]
         b_perks = [1 + p / 100. for p in perks_list]
         return numpy.prod(b_perks) - 1.
 
