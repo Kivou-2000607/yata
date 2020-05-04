@@ -222,7 +222,8 @@ def gym(request):
         info = {"n_users": len(users), "n_trains": len(trains)}
         trains = Paginator(trains, 100)
         users = Paginator(users, 10)
-        context = {"trains": trains.get_page(request.GET.get("p_trains")), "users": users.get_page(request.GET.get("p_users")), "info": info}
+        single = "" if request.GET.get("single", False) else "&single=true"
+        context = {"single": [request.GET.get("single", False), single], "trains": trains.get_page(request.GET.get("p_trains")), "users": users.get_page(request.GET.get("p_users")), "info": info}
 
         return render(request, 'battle_stats.html', context)
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
