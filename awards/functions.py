@@ -546,7 +546,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-
                 elif int(k) in [15, 16, 17]:
                     # 15 {'name': 'Kill Streaker 1', 'description': 'Achieve a best killstreak of 10', 'type': 8, 'circulation': 124231, 'rarity': 'Very Common'}
                     type = "Kill streak"
@@ -2036,7 +2035,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [700]:
-            		# "700": {"name": "Leaderboard","description": "Achieve top 250 in one of the personal Hall of Fame leaderboards","type": 0,"circulation": 0,
+                    # "700": {"name": "Leaderboard","description": "Achieve top 250 in one of the personal Hall of Fame leaderboards","type": 0,"circulation": 0,
                     type = "Other"
 
                     top = int(vp["description"].split(" ")[2].replace(",", ""))
@@ -2050,11 +2049,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         for key in todel:
                             del hof[key]
                         hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
+
+                    elif hof is not None and len(hof):
                         vp["goal"] = top
                         vp["current"] = 1 if int(k) in honors_awarded else hof[0][1]["rank"]
                         vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["goal"]) / float(vp["current"]))
 
                         vp["comment"] = "<br>".join(['<b class={}>{}</b>: #{:,d} ({:,d})'.format("error" if i else "valid", k.title(), v["rank"], v["value"]) for i, (k, v) in enumerate(hof)])
+
                     else:
                         vp["achieve"] = 1 if int(k) in honors_awarded else 0
                         vp["current"] = 1 if int(k) in honors_awarded else 0
