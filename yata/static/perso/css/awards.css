@@ -60,7 +60,7 @@ table.awards-list tr.award-honor  { background:#cccccc22;  }
 table.awards-list tr.next  { background-color: #ff00000E; }
 
 table.awards-hof td.a { width: 10%; text-align: center;}
-table.awards-hof td.b { width: 25%; }  /* x2 */
+table.awards-hof td.b { width: 25%; text-align: left;}  /* x2 */
 table.awards-hof td.c { width: 20%; text-align: center;} /* x2 */
 table.awards-hof tr.its-you {  background:#b6d7a8; }
 

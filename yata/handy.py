@@ -126,10 +126,15 @@ def cleanhtml(raw_html):
 
 def getPlayer(tId):
     from player.models import Player
+    from player.functions import updatePlayer
 
     player, _ = Player.objects.get_or_create(tId=tId)
     player.lastActionTS = tsnow()
     player.active = True
+
+    if tsnow() - player.lastUpdateTS > 3600:
+        updatePlayer(player)
+
     player.save()
     return player
 

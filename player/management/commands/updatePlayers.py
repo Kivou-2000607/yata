@@ -27,6 +27,7 @@ import json
 from player.models import Player
 from player.functions import updatePlayer
 from awards.models import AwardsData
+from yata.handy import tsnow
 
 
 class Command(BaseCommand):
@@ -34,7 +35,8 @@ class Command(BaseCommand):
 
         # update players info
         print("[command.player.updateplayers] UPDATE PLAYERS")
-        players = Player.objects.filter(validKey=True)
+        ts_threshold = tsnow() - 3600
+        players = Player.objects.filter(validKey=True, lastUpdateTS__lt=ts_threshold).order_by("lastUpdateTS")
         n = len(players)
         for i, player in enumerate(players):
             try:

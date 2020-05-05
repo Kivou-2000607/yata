@@ -127,7 +127,6 @@ def updatePlayer(player, i=None, n=None):
     player.revive_set.filter(timestamp__lt=old).delete()
     player.targetInfo = len(targets)
 
-
     player.lastUpdateTS = int(timezone.now().timestamp())
     player.save()
 
