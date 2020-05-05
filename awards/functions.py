@@ -2050,7 +2050,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                             del hof[key]
                         hof = sorted(hof.items(), key=lambda x: -x[1]['rank'], reverse=True)
 
-                    elif hof is not None and len(hof):
+                    if hof is not None and len(hof):
                         vp["goal"] = top
                         vp["current"] = 1 if int(k) in honors_awarded else hof[0][1]["rank"]
                         vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["goal"]) / float(vp["current"]))
