@@ -19,6 +19,8 @@ This file is part of yata.
 
 from django.utils import timezone
 
+from yata.gyms import *
+
 import random
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
@@ -88,7 +90,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
     eDay[2] = eDay[0] + 3 * 250
     eDay[3] = eDay[0] + eBar + 3 * 250
 
-    def dLeftE(energy, r=None, c=None):
+    def dLeftE(energy, r=None, c=None, perks=None):
         # try:
         # days
         try:
@@ -100,6 +102,11 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 tt = "With a current ratio of <i>{:,.2g} {}</i><br>".format(r, c)
             elif c is not None:
                 tt = "<i>{}</i><br>".format(c)
+            elif perks is not None:
+                tt = 'Prediction of energy needed (<i>Courtesy of JTS <3</i>)<br>\
+                       - Happy: {:.0f}<br>\
+                       - Perks: {:.2f}%<br>\
+                       - Gym: x{:.2f}<br><br>'.format(*perks)
             else:
                 tt = ""
 
@@ -1532,6 +1539,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
 
     elif typeOfAwards == "gym":
 
+        gym_happy = get_happy(userInfo)
+        gym_dot = get_gym(userInfo)
+        gym_bonus = get_bonus(userInfo)
+
         awards = dict({
             "Memberships": dict(),
             "Defense": dict(),
@@ -1562,20 +1573,28 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                 if int(k) in [240, 241, 242, 243, 297, 497, 505, 506, 635, 640, 643, 646, 686, 687, 694, 720, 723, 708, 629, 679, 721, 647, 550, 638, 498, 690, 704]:
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    key = v["description"].split(" ")[2].lower()
-                    vp["current"] = int(userInfo.get(key, "0.0").split(".")[0])
+                    stat = v["description"].split(" ")[2].lower()
+                    si = int(userInfo.get(stat, "0.0").split(".")[0])
+                    sf = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = si
+                    vp["goal"] = sf
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    gains = int(vp["current"]) - 100000000
-                    if gains > 0 and bridge[type] in honors_awarded:
-                        elapsedTime = (int(timezone.now().timestamp()) - int(honors_time[honors_awarded.index(bridge[type])])) / (3600 * 24.)
-                        ratio = gains / max(elapsedTime, 1)
-                        statsLeft = max((vp["goal"] - vp["current"]), 0)
-                        vp["left"] = max(statsLeft / ratio, 0) if ratio > 0 else -1
-                        vp["comment"] = '<b>{}</b><br> - <b>{:,.0f}</b> days left.<br> - <b>{:+,.0f}</b> gains since 100m, {:,.0f} days ago.<br> - Ratio of <b>{:,.0f}</b> {} / day on this period.'.format(type, statsLeft, gains, elapsedTime, ratio, key)
-                    else:
-                        # vp["comment"] = "You need at least 100,000,000 {} for a prediction of the time left".format(key)
-                        vp["comment"] = "Sorry, I can not make a prediction at this moment. You need at least 100m {}.".format(key)
+
+                    if si < sf:
+                        if stat == "total":
+                            tmpBonus = 0.0
+                            for tmpKey in ["speed", "strength", "dexterity", "defense"]:
+                                if (1.0 + gym_bonus[tmpKey]) * gym_dot[tmpKey] > tmpBonus:
+                                    key = tmpKey
+                                    tmpBonus = (1.0 + gym_bonus[tmpKey]) * gym_dot[tmpKey]
+                        else:
+                            key = stat
+
+                        energy_to_spend = bs_e(si, sf, H=gym_happy, B=gym_bonus[key], G=gym_dot[key], verbose=2)
+                        perks = [gym_happy, 100 * gym_bonus[key], gym_dot[key]]
+                        days = dLeftE(energy_to_spend, perks=perks)
+                        vp["left"] = days[0]
+                        vp["comment"] = days[1]
 
                     awards[type]["h_" + k] = vp
 

@@ -1,4 +1,5 @@
-
+import numpy
+import re
 
 gyms = {
     1: {
@@ -398,3 +399,147 @@ gyms = {
         "note": ""
     }
 }
+
+
+stat_types = ["strength", "speed", "dexterity", "defense"]
+
+
+def get_happy(req):
+    return req.get("happy", {"maximum": 250})["maximum"]
+
+
+def get_gym(req):
+    return {k: gyms.get(req.get("active_gym", 1)).get(k, 20) / 10.0 for k in stat_types}
+
+
+def get_bonus(req):
+    perks = {k: 0.0 for k in stat_types}
+
+    for stat in stat_types:
+        perks_list = []
+        # faction perk
+        for p in req.get("faction_perks", []):
+            reg = '\+ increases {} gym gains by \d{{1,3}}\%'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[-1]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+        # education perks
+        for p in req.get("education_perks", []):
+            # specific gym
+            reg = '\+ \d{{1,3}}\% {} gym gains'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+            # all gyms
+            # reg = '\+ \d{1,3}\% gym gains'
+            # if re.match(reg, p.lower()) is not None:
+            if p == "+ 1% Gym gains":
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+        # property perks
+        for p in req.get("property_perks", []):
+            # specific gym
+            reg = '\+ \d{{1,3}}\% gym gains'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+        # book perks
+        for p in req.get("book_perks", []):
+            # "book_perks": ["+ Increases Speed gym gains by 30% for 31 days"]
+            # specific gym
+            reg = '\+ increases {} gym gains by \d{{1,3}}\% for 31 days'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[5]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+        # company perks
+        for p in req.get("company_perks", []):
+            # all gym
+            reg = '\+ \d{{1,3}}\% gym gains'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+            # specific gym
+            reg = '\+ \d{{1,3}}\% {} gym gains'.format(stat)
+            if re.match(reg, p.lower()) is not None:
+                bonus = p.replace("%", "").replace("+", "").strip().split(" ")[0]
+                bonus = int(bonus) if bonus.isdigit() else -1
+                perks_list.append(bonus)
+                continue
+
+        b_perks = [1 + p / 100. for p in perks_list]
+        perks[stat] = numpy.prod(b_perks) - 1.
+    return perks
+
+
+def bs_e(si, sf, H=250, B=0.0, G=1.0, verbose=False):
+    """Returns the energy needed given:
+        si: the initial stat
+        so: the final stat
+        H: the happy
+        B: the gym perks bonus
+        G: the gym dot bonus
+
+        note: it account automatically account for pre/post cap
+    """
+
+    sc = 50000000.
+
+    # states coefficients
+    a = 1. / 200000.
+    alpha = a * (1. + 0.07 * numpy.log(1 + H / 250.)) * (1 + B) * G
+    beta = a * 12.75 * H * (1 + B) * G
+
+    # shortcuts
+    minf = min(sc, sf)
+    mini = min(sc, si)
+    maxf = max(sc, sf)
+    maxi = max(sc, si)
+    ratio = numpy.divide(beta, alpha)
+    slope = alpha * sc + beta
+
+    # energy before cap
+    dE_bc = numpy.divide(numpy.log(numpy.divide(minf + ratio, mini + ratio)), alpha)
+    # print(dE_bc[0], numpy.log((minf + ratio) / (mini + ratio))[0], alpha[0])
+    # energy after cap
+    dE_ac = numpy.divide(maxf - minf, slope)
+    # energy total
+    dE = dE_bc + dE_ac
+
+    if verbose == 1:
+        print(f"h = {H:.4g}, b = {B:.4g}, g = {G:.4g}")
+    elif verbose == 2:
+        print("=== Battle stats formula ===")
+        print("")
+        print("= States variables =")
+        print(f"Happy: {H:.4g}")
+        print(f"Bonus: {B:.4g}")
+        print(f"Gym dot: {G:.4g}")
+        print("")
+        print("= States coefficients =")
+        print(f"alpha: {alpha:.4g}")
+        print(f"beta: {beta:.4g}")
+        print("")
+        print("= Energy =")
+        print(f"Before CAP: {dE_bc:,.1f}")
+        print(f"After CAP: {dE_ac:,.1f}")
+        print(f"Total: {dE:,.1f}")
+
+    return dE

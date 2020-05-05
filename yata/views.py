@@ -318,6 +318,17 @@ def gymImport(request):
                         train["perks_property"] = bonus
                         continue
 
+                # book perks
+                for p in api.get("book_perks", []):
+                    # "book_perks": ["+ Increases Speed gym gains by 30% for 31 days"]
+                    # specific gym
+                    reg = '\+ increases {stat} gym gains by \d{{1,3}}\% for 31 days'.format(stat=train["stat_type"])
+                    if re.match(reg, p.lower()) is not None:
+                        bonus = p.replace("%", "").replace("+", "").strip().split(" ")[5]
+                        bonus = int(bonus) if bonus.isdigit() else -1
+                        train["perks_gym_book"] = bonus
+                        continue
+
                 # company perks
                 for p in api.get("company_perks", []):
                     # all gym

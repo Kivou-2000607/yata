@@ -143,7 +143,7 @@ class Player(models.Model):
 
         if not userInfo:
             if self.tId > 0:
-                userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
+                userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
             else:
                 userInfo = dict({})
 
