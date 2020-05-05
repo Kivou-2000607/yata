@@ -1787,8 +1787,8 @@ def attacksExport(request, reportId, type):
                 response['Content-Disposition'] = 'attachment; filename="Attacks_report_{}_breakdown.csv"'.format(report.pk)
 
                 csv_data = [['Player Id', 'Player Name',
-                             'Outgoing Win', 'Outgoing Mug','Outgoing Hosp','Outgoing War','Outgoing Win','Outgoing Lost', 'Outgoing Total',
-                             'Incoming Win', 'Incoming Mug','Incoming Hosp','Incoming War','Incoming Win','Incoming Lost', 'Incoming Total',
+                             'Outgoing Win', 'Outgoing Mug', 'Outgoing Hosp', 'Outgoing War', 'Outgoing Win', 'Outgoing Lost', 'Outgoing Total',
+                             'Incoming Win', 'Incoming Mug', 'Incoming Hosp', 'Incoming War', 'Incoming Win', 'Incoming Lost', 'Incoming Total',
                              ]]
 
                 players = report.getMembersBreakdown()
@@ -1860,7 +1860,6 @@ def attacksExport(request, reportId, type):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
 
 
 # SECTION: revives
