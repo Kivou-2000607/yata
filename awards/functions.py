@@ -1520,6 +1520,17 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                     vp["comment"] = "{:.1f} days if single daily train as primary stat".format(vp["left"])
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [844]:
+                    # "844": {"name": "Worker Bee","description": "Achieve 10,000 in any working stat","type": 4,                    type = "Working stats"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = 0
+                    for key in ["endurance", "intelligence", "manual_labor"]:
+                        vp["current"] = max(vp["current"], userInfo.get(key, 0))
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["left"] = max((vp["goal"] - vp["current"]) / 50., 0)
+                    vp["comment"] = "{:.1f} days if single daily train as primary stat".format(vp["left"])
+                    awards[type]["h_" + k] = vp
+
     elif typeOfAwards == "gym":
 
         awards = dict({

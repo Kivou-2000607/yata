@@ -555,7 +555,7 @@ def chains(request):
                     message = "Chain list updated"
 
                 chains = faction.chain_set.all()
-                for k, v in req["chains"].items():
+                for k, v in req.get("chains", dict({})).items():
                     old = tsnow() - int(v['end']) > faction.getHist("chains")
                     if v['chain'] < faction.hitsThreshold or old:
                         chains.filter(tId=k).delete()
