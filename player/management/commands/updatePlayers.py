@@ -45,11 +45,11 @@ class Command(BaseCommand):
         del players
 
         # compute rank
-        print("[command.player.updateplayers] COMPUTE RANKS")
-        for i, player in enumerate(Player.objects.exclude(tId=-1).only("awardsScor", "awardsRank").order_by('-awardsScor')):
-            print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player.nameAligned(), player.awardsScor / 10000.))
-            player.awardsRank = i + 1
-            player.save()
+        # print("[command.player.updateplayers] COMPUTE RANKS")
+        # for i, player in enumerate(Player.objects.exclude(tId=-1).only("awardsScor", "awardsRank").order_by('-awardsScor')):
+        #     print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player.nameAligned(), player.awardsScor / 10000.))
+        #     player.awardsRank = i + 1
+        #     player.save()
 
         # compute hof graph
         print("[command.player.updateplayers] COMPUTE HOF GRAPH")

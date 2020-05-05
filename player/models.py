@@ -24,6 +24,7 @@ import json
 import numpy
 
 from yata.handy import apiCall
+from yata.handy import tsnow
 # from awards.functions import updatePlayerAwards
 # from faction.models import Faction
 # from awards.models import AwardsData
@@ -35,8 +36,7 @@ SECTION_CHOICES = (
     ('T', 'target'),
     ('A', 'awards'),
     ('S', 'stock'),
-    ('L', 'loot'),
-    )
+    ('L', 'loot'))
 
 
 class Player(models.Model):
@@ -73,11 +73,12 @@ class Player(models.Model):
     bazaarUpda = models.IntegerField(default=0)
 
     # info for awards APP
-    awardsInfo = models.CharField(default="N/A", max_length=255)
-    awardsJson = models.TextField(default="{}")
+    # awardsInfo = models.CharField(default="N/A", max_length=255)
+    # awardsJson = models.TextField(default="{}")
     awardsUpda = models.IntegerField(default=0)
     awardsRank = models.IntegerField(default=99999)
     awardsScor = models.IntegerField(default=0)  # int(10000 x score in %)
+    awardsNumb = models.IntegerField(default=0)  # number of awards
 
     # info for stocks APP
     stocksInfo = models.CharField(default="N/A", max_length=255)
@@ -131,6 +132,65 @@ class Player(models.Model):
 
         return error
 
+    def getAwards(self, userInfo=False):
+        from awards.models import AwardsData
+        from awards.functions import AWARDS_CAT
+        from awards.functions import HOF_SIZE
+        from awards.functions import createAwards
+
+        # get torn awards
+        awardsTorn = AwardsData.objects.first().loadAPICall()
+
+        if not userInfo:
+            if self.tId > 0:
+                userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
+            else:
+                userInfo = dict({})
+
+        error = userInfo if 'apiError' in userInfo else False
+
+        medals = awardsTorn["medals"]
+        honors = awardsTorn["honors"]
+        remove = [k for k, v in honors.items() if v["type"] == 1]
+        for k in remove:
+            del honors[k]
+        myMedals = userInfo.get("medals_awarded", [])
+        myHonors = userInfo.get("honors_awarded", [])
+
+        awards = dict()
+        summaryByType = dict({})
+        for type in AWARDS_CAT:
+            awardsTmp, awardsSummary = createAwards(awardsTorn, userInfo, type)
+            summaryByType[type.title()] = awardsSummary["All awards"]
+            awards.update(awardsTmp)
+
+        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
+        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
+
+        awardsPlayer = {"userInfo": userInfo,
+                        "awards": awards,
+                        "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
+
+        rScorePerso = 0.0
+        for k, v in awardsTorn["honors"].items():
+            if v.get("achieve", 0) == 1:
+                rScorePerso += v.get("rScore", 0)
+        for k, v in awardsTorn["medals"].items():
+            if v.get("achieve", 0) == 1:
+                rScorePerso += v.get("rScore", 0)
+
+        if self.tId > 0 and not error:
+            # self.awardsInfo = "{:.4f}".format(rScorePerso)
+            self.awardsScor = int(rScorePerso * 10000)
+            self.awardsUpda = tsnow()
+            self.awardsNumb = len(myMedals) + len(myHonors)
+            self.save()
+
+        return awardsPlayer, awardsTorn, error
+
+    def awardsInfo(self):
+        return "{:.4f}".format(self.awardsScor / 10000.)
 
 # class News(models.Model):
 #     player = models.ManyToManyField(Player, blank=True)

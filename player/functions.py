@@ -29,6 +29,7 @@ from faction.models import Faction
 from awards.models import AwardsData
 from target.functions import getTargets
 
+
 def updatePlayer(player, i=None, n=None):
     """ update player information
 
@@ -109,14 +110,15 @@ def updatePlayer(player, i=None, n=None):
 
     # update awards info
     # tornAwards = apiCall('torn', '', 'honors,medals', player.getKey())
-    tornAwards = AwardsData.objects.first().loadAPICall()
-    if 'apiError' in tornAwards:
-        player.awardsJson = json.dumps(tornAwards)
-        player.awardsInfo = "0"
-    else:
-        updatePlayerAwards(player, tornAwards, user)
-    player.awardsUpda = int(timezone.now().timestamp())
-    # player.awardsJson = "{}"
+    player.getAwards(userInfo=user)
+    # tornAwards = AwardsData.objects.first().loadAPICall()
+    # if 'apiError' in tornAwards:
+    #     player.awardsJson = json.dumps(tornAwards)
+    #     player.awardsInfo = "0"
+    # else:
+    #     updatePlayerAwards(player, tornAwards, user)
+    # player.awardsUpda = int(timezone.now().timestamp())
+    # # player.awardsJson = "{}"
 
     # clean targets
     old = tsnow() - 2678400  # 1 month old

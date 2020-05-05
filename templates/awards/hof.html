@@ -26,7 +26,7 @@ This file is part of yata.
 
 <script>
         $(document).ready(function() {
-            $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [3,1]]});
+            // $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [3,1]]});
 
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -122,35 +122,13 @@ This file is part of yata.
         });
 </script>
 
-<h2 class="title"><i class="fas fa-crown"></i>&nbsp;&nbsp;Hall of fame (top 50)</h2>
+<h2 class="title"><i class="fas fa-crown"></i>&nbsp;&nbsp;Hall of fame</h2>
 <div class="module">
 
     <!-- hof -->
-    <table id="awards-hof" class="center trshadow awards-hof">
-        <thead>
-            <tr>
-                <th>rank</th>
-                <th>Name</th>
-                <th>Faction</th>
-                <th>Awarded</th>
-                <th>Rarity score</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for k in hof %}
-                <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
-                    <td class="a">#{{k.player.awardsRank}}</td>
-                    <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
-                    <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
-                    <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}" rel="tooltip">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
-                    <td class="c">{{k.rscore|floatformat:4}}%</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <table class="center-large">
-        <tr><td><div id="chartHOF"></div></td></tr>
-    </table>
+    <div class="pagination-list">
+      {% include "awards/hof-list.html"%}
+    </div>
     <table class="center-large">
         <tr><td><div id="chart"></div></td></tr>
         <tr><td><div id="chart2"></div></td></tr>

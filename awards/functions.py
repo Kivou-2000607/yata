@@ -2329,7 +2329,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
         if v.get("achieve", 0) == 1:
             rScorePerso += v.get("rScore", 0)
 
-    player.awardsJson = json.dumps(awardsJson)
+    # player.awardsJson = json.dumps(awardsJson)
     player.awardsInfo = "{:.4f}".format(rScorePerso)
     player.awardsScor = int(rScorePerso * 10000)
     player.awardsUpda = int(timezone.now().timestamp())
