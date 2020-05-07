@@ -53,17 +53,16 @@ def updateAttacks(player, full=False):
             v["chain"] = 0
             v["modifiers"] = {"fairFight": 1, "war": 1, "retaliation": 1, "groupAttack": 1, "overseas": 1, "chainBonus": 1}
 
-        # ignore stealth
-        # if v.get("attacker_name") is None or v.get("attacker_id") is '':
-        if v.get("stealthed"):
+        # ignore stealth incoming
+        if v.get("stealthed") and v["defender_id"] == player.tId:
             continue
 
-        if int(v["defender_id"]) == player.tId:
-            v["attacker"] = False
-            v["targetId"] = v["attacker_id"]
-        else:
+        if v["attacker_id"] == player.tId:
             v["attacker"] = True
             v["targetId"] = v["defender_id"]
+        else:
+            v["attacker"] = False
+            v["targetId"] = v["attacker_id"]
 
         if v["chain"] in BONUS_HITS:
             # case attacker and bonus hit
@@ -77,7 +76,11 @@ def updateAttacks(player, full=False):
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
             baseRespect = float(v["respect_gain"]) / allModifiers
-            level = int(math.exp(4. * baseRespect - 1))
+            try:
+                level = int(math.exp(4. * baseRespect - 1))
+            except BaseException:
+                # can overflow if for 1k pull allModifers are not set
+                level = 1
             v["baseRespect"] = baseRespect
             v["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
             v["bonus"] = 0

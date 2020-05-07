@@ -141,7 +141,7 @@ def modifiers2lvl1(v):
     for tmpKey in ["fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus"]:
         v[tmpKey] = float(v["modifiers"][tmpKey])
     del v["modifiers"]
-    if v["stealthed"]:
+    if v["stealthed"] and v["attacker_id"] == "":
         v["attacker_id"] = 0
         v["attacker_faction"] = 0
     return v
