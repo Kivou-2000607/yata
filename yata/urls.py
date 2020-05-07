@@ -49,7 +49,7 @@ urlpatterns = [
     path('analytics', views.analytics, name="analytics"),
     path('tmp/gym', views.gym, name="gym"),
     path('api/gym', views.gymImport, name="gymImport"),
-    path('discord', lambda x: redirect('https://discord.gg/tZaYpbG')),
+    path('discord', lambda x: redirect('https://discord.gg/tZaYpbG'), name="discord"),
 
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
