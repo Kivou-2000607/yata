@@ -1590,7 +1590,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards):
                         else:
                             key = stat
 
-                        energy_to_spend = bs_e(si, sf, H=gym_happy, B=gym_bonus[key], G=gym_dot[key], verbose=2)
+                        energy_to_spend = bs_e(si, sf, H=gym_happy, B=gym_bonus[key], G=gym_dot[key])
                         perks = [gym_happy, 100 * gym_bonus[key], gym_dot[key]]
                         days = dLeftE(energy_to_spend, perks=perks)
                         vp["left"] = days[0]

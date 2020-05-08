@@ -189,6 +189,7 @@ def configurations(request):
             faction.chainsTime = faction.getHistName("chains")
             faction.attacksTime = faction.getHistName("attacks")
             faction.revivesTime = faction.getHistName("revives")
+            faction.crimesTime = faction.getHistName("crimes")
             faction.liveTime = faction.getHistName("live")
 
             events = faction.event_set.order_by('timestamp')
