@@ -1,0 +1,22 @@
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<table class="tooltip">
+    <head>
+        <tr>
+            <th>Participants</th>
+            <th>NNB</th>
+        </tr>
+    </head>
+    <body>
+        {% for uid, name,nnb in crime.get_participants %}
+            <tr>
+                <td class="title">{{name}} [{{uid}}]</td>
+                <td class="value">{% if nnb %}{{nnb}}{% else %}?{% endif %}</td>
+            </tr>
+        {% endfor %}
+    </body>
+</table>

@@ -214,7 +214,7 @@ class Faction(models.Model):
     def getTargetsId(self):
         return [t.target_id for t in self.target_set.all()]
 
-    def updateCrimes(self, force=False):
+    def updateCrimes(self, force=True):
 
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
@@ -233,26 +233,39 @@ class Faction(models.Model):
         key.reason = "Update crimes list"
         key.save()
 
-        # remove participants
-        for k, v in crimesAPI.items():
-            del v["participants"]
-
         # get db crimes
         crimesDB = self.crimes_set.all()
 
         # second loop over API to create new crimes
-        n = {"created": 0, "updated": 0, "deleted": 0}
+        n = {"created": 0, "updated": 0, "deleted": 0, "ready": 0}
         for k, v in crimesAPI.items():
             # ignore old crimes
             if v["initiated"] and v["time_completed"] < old:
                 continue
 
+            # define if ready
+            v["ready"] = not bool(v["time_left"])
+            if v["ready"]:
+                for status in [list(p.values())[0] for p in v["participants"]]:
+                    if status is None:
+                        v["ready"] = False
+                        continue
+                    if status.get("description") != "Okay":
+                        v["ready"] = False
+                        continue
+
+            if v["ready"]:
+                n["ready"] +=1
+
+            # create new or update non initiated
             if not len(crimesDB.filter(tId=int(k))):
                 n["created"] += 1
+                v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
                 self.crimes_set.create(tId=k, **v)
 
             elif not v["initiated"] or v["time_completed"] > now - 3600:
                 n["updated"] += 1
+                del v["participants"]
                 self.crimes_set.filter(tId=k).update(**v)
 
         nDeleted, _ = crimesDB.filter(initiated=True, time_completed__lt=old).delete()
@@ -3056,11 +3069,12 @@ class Crimes(models.Model):
     initiated = models.BooleanField(default=0)
     success = models.BooleanField(default=0)
 
+    # custom
+    participants = models.CharField(default=[], max_length=256)
+    ready = models.BooleanField(default=0)
+
     def __str__(self):
         return format_html("{} {} [{}]: {} {}".format(self.faction, self.crime_name, self.tId, self.initiated, self.success))
-
-    def ready(self):
-        return not bool(self.time_left)
 
     def get_initiated_by(self):
         member = self.faction.member_set.filter(tId=self.initiated_by).first()
@@ -3075,3 +3089,16 @@ class Crimes(models.Model):
             return "Player", self.planned_by
         else:
             return member.name, self.planned_by
+
+    def get_participants(self):
+        participants = []
+        for id in json.loads(self.participants):
+            member = self.faction.member_set.filter(tId=int(id)).first()
+            if member is None:
+                name = "Player"
+                nnb = 0
+            else:
+                 name = member.name
+                 nnb = member.nnb
+            participants.append([id, name, nnb])
+        return participants

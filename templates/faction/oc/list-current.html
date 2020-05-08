@@ -21,7 +21,6 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-
 <table class="center-large trshadow faction-crimes-list-current">
     <thead>
         <tr>
@@ -35,7 +34,7 @@ This file is part of yata.
     {% for crime in currentCrimes %}
       <tr>
           <td>{{crime.tId}}</td>
-          <td>{{crime.crime_name}}</td>
+          <td>{{crime.crime_name}}<i rel="tooltip" class="fas fa-users flush-right" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i></td>
           {% with p=crime.get_planned_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
           <td>{{crime.time_started|ts2date}}</td>
           {% if crime.time_left %}

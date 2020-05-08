@@ -61,7 +61,7 @@ This file is part of yata.
     {% for crime in crimes %}
       <tr>
           <td>{{crime.tId}}</td>
-          <td>{{crime.crime_name}}</td>
+          <td>{{crime.crime_name}} </td>
           <td>{{crime.time_started|ts2date}}</td>
           <td>{{crime.get_planned_by}}</td>
 
@@ -72,6 +72,11 @@ This file is part of yata.
           {% endif %}
             {# <td>{{crime.time_ready|ts2date}}</td> #}
             {# <td>{{crime.time_ready|ts2date}}</td> #}
+      </tr>
+      <tr>
+          <td colspan="6">
+
+          </td>
       </tr>
     {% endfor %}
     </tbody>

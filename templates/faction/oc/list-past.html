@@ -36,7 +36,7 @@ This file is part of yata.
     {% for crime in pastCrimes %}
       <tr>
           <td>{{crime.tId}}</td>
-          <td>{{crime.crime_name}}</td>
+          <td>{{crime.crime_name}}<i rel="tooltip" class="fas fa-users flush-right" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i></td>
           {% with p=crime.get_planned_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
           {% with p=crime.get_initiated_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
 
