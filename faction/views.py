@@ -2308,7 +2308,7 @@ def armory(request):
 
             # get filtered start/end
             fstart = news.last().timestamp if news.last() is not None else tsnow()
-            fend = news.first().timestamp if news.fisrt() is not None else tsnow()
+            fend = news.first().timestamp if news.first() is not None else tsnow()
 
             # record all timestamps
             timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
