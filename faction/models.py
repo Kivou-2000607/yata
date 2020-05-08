@@ -157,7 +157,11 @@ class Faction(models.Model):
     armoryNewsFilter = models.CharField(default="", max_length=32)
     # armoryOld = models.IntegerField(default=8035200)
 
+    # crimes
+    crimesUpda = models.IntegerField(default=0)
+
     # history options
+    crimesHist = models.CharField(default="one_month", max_length=16)
     armoryHist = models.CharField(default="three_months", max_length=16)
     chainsHist = models.CharField(default="one_year", max_length=16)
     attacksHist = models.CharField(default="three_months", max_length=16)
@@ -184,6 +188,8 @@ class Faction(models.Model):
             return HISTORY_TIMES.get(self.revivesHist, 3600)
         elif key == "live":
             return HISTORY_TIMES.get(self.liveLength, 3600)
+        elif key == "crimes":
+            return HISTORY_TIMES.get(self.crimesHist, 3600)
         else:
             return 3600
 
@@ -198,6 +204,8 @@ class Faction(models.Model):
             timeKey = self.revivesHist
         elif key == "live":
             timeKey = self.liveLength
+        elif key == "crimes":
+            timeKey = self.crimesHist
         else:
             timeKey = "one_hour"
 
@@ -205,6 +213,55 @@ class Faction(models.Model):
 
     def getTargetsId(self):
         return [t.target_id for t in self.target_set.all()]
+
+    def updateCrimes(self, force=False):
+
+        now = int(timezone.now().timestamp())
+        old = now - self.getHist("crimes")
+        # don't update if less than 1 hour ago and force is False
+        if not force and (now - self.crimesUpda) < 3600:
+            return self.crimes_set.all(), False, False
+
+        # api call and update key
+        key = self.getKey()
+        crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes")
+
+        if 'apiError' in crimesAPI:
+            return self.crimes_set.all(), True, crimesAPI
+
+        key.lastPulled = tsnow()
+        key.reason = "Update crimes list"
+        key.save()
+
+        # remove participants
+        for k, v in crimesAPI.items():
+            del v["participants"]
+
+        # get db crimes
+        crimesDB = self.crimes_set.all()
+
+        # second loop over API to create new crimes
+        n = {"created": 0, "updated": 0, "deleted": 0}
+        for k, v in crimesAPI.items():
+            # ignore old crimes
+            if v["initiated"] and v["time_completed"] < old:
+                continue
+
+            if not len(crimesDB.filter(tId=int(k))):
+                n["created"] += 1
+                self.crimes_set.create(tId=k, **v)
+
+            elif not v["initiated"] or v["time_completed"] > now - 3600:
+                n["updated"] += 1
+                self.crimes_set.filter(tId=k).update(**v)
+
+        nDeleted, _ = crimesDB.filter(initiated=True, time_completed__lt=old).delete()
+        n["deleted"] = nDeleted
+
+        self.nKeys = len(self.masterKeys.filter(useFact=True))
+        self.crimesUpda = now
+        self.save()
+        return self.crimes_set.all(), False, n
 
     def cleanHistory(self):
         # clean chains
@@ -216,6 +273,9 @@ class Faction(models.Model):
         # clean revives reports
         old = tsnow() - self.getHist("revives")
         self.revivesreport_set.filter(start__lt=old).delete()
+        # clean crimes reports
+        old = tsnow() - self.getHist("crimes")
+        self.crimes_set.filter(initiated=True, time_completed__lt=old).delete()
         # clean news
         old = tsnow() - self.getHist("armory")
         self.news_set.filter(timestamp__lt=old).delete()
@@ -2977,3 +3037,41 @@ class Event(models.Model):
 
     def __str__(self):
         return format_html("{} event {}".format(self.faction, self.title))
+
+
+class Crimes(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    tId = models.IntegerField(default=0)
+    crime_id = models.IntegerField(default=0)
+    crime_name = models.CharField(default="Crime Name", max_length=64)
+    time_started = models.IntegerField(default=0)
+    time_ready = models.IntegerField(default=0)
+    time_left = models.IntegerField(default=0)
+    time_completed = models.IntegerField(default=0)
+    initiated_by = models.IntegerField(default=0)
+    planned_by = models.IntegerField(default=0)
+    money_gain = models.IntegerField(default=0)
+    respect_gain = models.IntegerField(default=0)
+    initiated = models.BooleanField(default=0)
+    success = models.BooleanField(default=0)
+
+    def __str__(self):
+        return format_html("{} {} [{}]: {} {}".format(self.faction, self.crime_name, self.tId, self.initiated, self.success))
+
+    def ready(self):
+        return not bool(self.time_left)
+
+    def get_initiated_by(self):
+        member = self.faction.member_set.filter(tId=self.initiated_by).first()
+        if member is None:
+            return "Player", self.initiated_by
+        else:
+            return member.name, self.initiated_by
+
+    def get_planned_by(self):
+        member = self.faction.member_set.filter(tId=self.planned_by).first()
+        if member is None:
+            return "Player", self.planned_by
+        else:
+            return member.name, self.planned_by

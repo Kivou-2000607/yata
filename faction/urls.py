@@ -63,4 +63,7 @@ urlpatterns = [
     re_path(r'^simulator/$', views.simulator, name='simulator'),
     re_path(r'^simulator/challenge/$', views.simulatorChallenge, name='simulatorChallenge'),
 
+    # SECTION: oc
+    re_path(r'^oc/$', views.oc, name='oc'),
+
 ]

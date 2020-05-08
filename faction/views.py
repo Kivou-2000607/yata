@@ -2306,8 +2306,8 @@ def armory(request):
                 news = news.filter(timestamp__lt=tse + 1)
 
             # get filtered start/end
-            fstart = news.last().timestamp
-            fend = news.first().timestamp
+            fstart = news.last().timestamp if news.last() is not None else tsnow()
+            fend = news.first().timestamp if news.fisrt() is not None else tsnow()
 
             # record all timestamps
             timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
@@ -2973,7 +2973,6 @@ def simulatorChallenge(request):
 
             challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId")).order_by("level")
             for ch in challenges:
-                print(ch)
                 ch.progress = ch.progress(faction)
 
             context = {"challenges": challenges}
@@ -2982,6 +2981,43 @@ def simulatorChallenge(request):
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def oc(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            crimes, error, message = faction.updateCrimes()
+
+            currentCrimes = crimes.filter(initiated=False).order_by("time_ready")
+            pastCrimes = crimes.filter(initiated=True).order_by("time_completed")
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), 'view': {'oc': True}}
+            if message:
+                sub = "Sub" if request.method == 'POST' else ""
+                if error:
+                    context["errorMessage" + sub] = "Crimes: API error {apiErrorString}, crimes list not updated".format(**message)
+                else:
+                    context["validMessage" + sub] = "Crimes: {created} created, {updated}: updated, {deleted}: deleted.".format(**message)
+
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
             return returnError(type=403, msg=message)
 
     except Exception as e:

@@ -1,0 +1,52 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+
+<table class="center-large trshadow faction-crimes-list-current">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Planned</th>
+            <th>Initiated</th>
+            <th>Money</th>
+            <th>Respect</th>
+    </thead>
+    <tbody>
+    {% for crime in pastCrimes %}
+      <tr>
+          <td>{{crime.tId}}</td>
+          <td>{{crime.crime_name}}</td>
+          {% with p=crime.get_planned_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
+          {% with p=crime.get_initiated_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
+
+          {% if crime.success %}
+            <td>${{crime.money_gain|intcomma}}</td>
+            <td>{{crime.respect_gain}}</td>
+          {% else %}
+            <td colspan="2">Failure</td>
+          {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>

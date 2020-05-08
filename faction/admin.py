@@ -206,6 +206,10 @@ class UpgradeAdmin(admin.ModelAdmin):
     list_filter = ('active', 'simu', 'branch', 'shortname')
 
 
+class CrimesAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'tId', 'initiated', 'success', 'ready']
+
+admin.site.register(Crimes, CrimesAdmin)
 # admin.site.register(Upgrade, UpgradeAdmin)
 # admin.site.register(FactionTree, FactionTreeAdmin)
 admin.site.register(FactionData, FactionDataAdmin)
