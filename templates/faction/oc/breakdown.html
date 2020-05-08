@@ -21,13 +21,31 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<table class="center-large trshadow faction-crimes-breakdown">
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-breakdown").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0]]
+        });
+    });
+</script>
+
+<table id="faction-crimes-breakdown" class="center-large trshadow faction-crimes-breakdown">
     <thead>
         <tr>
             <th colspan="3">Crimes</th>
-            <th class="border" colspan="2">Time</th>
-            <th class="border" colspan="3">Money</th>
-            <th class="border" colspan="3">Respect</th>
+            <th colspan="2">Time</th>
+            <th colspan="3">Money</th>
+            <th colspan="3">Respect</th>
         </tr>
         <tr>
 
@@ -35,35 +53,35 @@ This file is part of yata.
             <th>Success</th>
             <th>Made</th>
 
-            <th class="border">Total</th>
+            <th>Total</th>
             <th>Per crime</th>
 
-            <th class="border">Total</th>
+            <th>Total</th>
             <th>Per crime</th>
             <th>Per day</th>
 
-            <th class="border">Total</th>
+            <th>Total</th>
             <th>Per crime</th>
             <th>Per day</th>
 
     </thead>
     <tbody>
-    {% for k, v in breakdown.items %}
+    {% for k, v in breakdown %}
         <tr>
-            <td>{{k}}</td>
-            <td>{{v.crimes.1}}</td>
-            <td>{{v.crimes.0}}</td>
+            <td class="a" data-val="{{k}}">{{v.name}}</td>
+            <td class="b">{{v.crimes.1}}</td>
+            <td class="b">{{v.crimes.0}}</td>
 
-            <td class="border">{{v.time.0|ts2time}}</td>
-            <td>{{v.time.1|ts2time}}</td>
+            <td class="c">{{v.time.0|ts2time:"DHM"}}</td>
+            <td class="c">{{v.time.1|ts2time:"DHM"}}</td>
 
-            <td class="border">${{v.money.0|intcomma}}</td>
-            <td>${{v.money.1|intcomma}}</td>
-            <td>${{v.money.2|intcomma}}</td>
+            <td class="d" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
+            <td class="d" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
+            <td class="d" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td>
 
-            <td class="border">{{v.respect.0|intcomma}}</td>
-            <td>{{v.respect.1|intcomma}}</td>
-            <td>{{v.respect.2|intcomma}}</td>
+            <td class="e">{{v.respect.0|intcomma|floatformat:0}}</td>
+            <td class="e">{{v.respect.1|intcomma|floatformat:2}}</td>
+            <td class="e">{{v.respect.2|intcomma|floatformat:2}}</td>
         </tr>
 
     {% endfor %}

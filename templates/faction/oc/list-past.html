@@ -21,30 +21,54 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-list-past").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[4,1]]
+        });
+    });
+</script>
 
-<table class="center-large trshadow faction-crimes-list-current">
+<table id="faction-crimes-list-past" class="center-large trshadow faction-crimes-list-past">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
+            <th>Team</th>
+            <th>Crime</th>
             <th>Planned</th>
             <th>Initiated</th>
+            <th>Completed</th>
+            <th>Waiting</th>
             <th>Money</th>
             <th>Respect</th>
     </thead>
     <tbody>
     {% for crime in pastCrimes %}
       <tr>
-          <td>{{crime.tId}}</td>
-          <td>{{crime.crime_name}}<i rel="tooltip" class="fas fa-users flush-right" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i></td>
-          {% with p=crime.get_planned_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
-          {% with p=crime.get_initiated_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
+          <td class="a" data-val="{{crime.participants|length}}">
+              <i rel="tooltip" class="fas fa-users" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i>
+          </td>
+          <td class="b" data-val="{{crime.participants|length}}">
+              <a href="https://www.torn.com/factions.php?step=your#/tab=crimes&crimeID={{crime.tId}}" target="_blank">{{crime.crime_name}} [{{crime.tId}}]</a>
+          </td>
+         <td class="c"> {% with p=crime.get_planned_by %}{{p.0|playerURL:p.1|safe}}{% endwith %}</td>
+         <td class="c"> {% with p=crime.get_initiated_by %}{{p.0|playerURL:p.1|safe}}{% endwith %}</td>
+         <td class="d" data-val="{{crime.time_completed}}">{{crime.time_completed|ts2date}}</td>
+         <td class="d" data-val="{{crime.time_completed|sub:crime.time_ready}}">{{crime.time_completed|sub:crime.time_ready|ts2time:"DHM"}}</td>
 
           {% if crime.success %}
-            <td>${{crime.money_gain|intcomma}}</td>
-            <td>{{crime.respect_gain}}</td>
+            <td class="e valid" data-val="{{crime.money_gain}}">${{crime.money_gain|intcomma}}</td>
+            <td class="f valid">{{crime.respect_gain}}</td>
           {% else %}
-            <td colspan="2">Failure</td>
+            <td class="error g" colspan="2">Failure</td>
           {% endif %}
       </tr>
     {% endfor %}

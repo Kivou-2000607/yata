@@ -3007,26 +3007,30 @@ def oc(request):
             currentCrimes = crimes.filter(initiated=False).order_by("time_ready")
             pastCrimes = crimes.filter(initiated=True).order_by("-time_completed")
 
+            # compute breakdown totals
             breakdown = dict({})
             for crime in pastCrimes:
-                if crime.crime_name not in breakdown:
+                if crime.crime_id not in breakdown:
                     # n,       money, respect, time,
                     # success, avg, avg, avg
-                    breakdown[crime.crime_name] = {"crimes": [0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
+                    breakdown[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
 
-                breakdown[crime.crime_name]["crimes"][0] += 1
-                breakdown[crime.crime_name]["crimes"][1] += 1 if crime.success else 0
-                breakdown[crime.crime_name]["money"][0] += crime.money_gain
-                breakdown[crime.crime_name]["respect"][0] += crime.respect_gain
-                breakdown[crime.crime_name]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                breakdown[crime.crime_id]["crimes"][0] += 1
+                breakdown[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
+                breakdown[crime.crime_id]["money"][0] += crime.money_gain
+                breakdown[crime.crime_id]["respect"][0] += crime.respect_gain
+                breakdown[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
 
+            # compute breakdown averages
             for k, v in breakdown.items():
                 v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
                 v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
                 v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
-                v["respect"][1] = round(v["respect"][0] / float(v["crimes"][0]))
-                v["respect"][2] = round(v["respect"][0] / float(v["time"][1]) * 24 * 3600)
+                v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
+                v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
 
+            # order breakdown
+            breakdown = sorted(breakdown.items(), key=lambda x: x[0])
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'breakdown': breakdown, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), 'view': {'oc': True}}
             if message:

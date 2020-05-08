@@ -21,26 +21,49 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<table class="center-large trshadow faction-crimes-list-current">
+
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-list-current").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[5,0]]
+        });
+    });
+</script>
+
+<table id="faction-crimes-list-current" class="center-large trshadow faction-crimes-list-current">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
+            <th>Team</th>
+            <th>Crime</th>
             <th>Planned</th>
             <th>Started</th>
             <th>Ready</th>
+            <th>In / Since</th>
     </thead>
     <tbody>
     {% for crime in currentCrimes %}
       <tr>
-          <td>{{crime.tId}}</td>
-          <td>{{crime.crime_name}}<i rel="tooltip" class="fas fa-users flush-right" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i></td>
-          {% with p=crime.get_planned_by %}<td>{{p.0|playerURL:p.1|safe}}</td>{% endwith %}
-          <td>{{crime.time_started|ts2date}}</td>
+          <td class="a" data-val="{{crime.participants|length}}">
+              <i rel="tooltip" class="fas fa-users" style="cursor: help;" title='{% include "faction/oc/participants.html"%}'></i>
+          </td>
+          <td class="b" data-val="{{crime.tId}}">{{crime.crime_name}} [{{crime.tId}}]</td>
+          <td class="c">{% with p=crime.get_planned_by %}{{p.0|playerURL:p.1|safe}}{% endwith %}</td>
+          <td class="d">{{crime.time_started|ts2date}}</td>
           {% if crime.time_left %}
-            <td>{{crime.time_ready|ts2date}} in {{crime.time_left|ts2time}}</td>
+            <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+            <td class="e" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
           {% else %}
-            <td>{{crime.time_ready|ts2date}} since {{tsnow|sub:crime.time_ready|ts2time}}</td>
+            <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+            <td class="e" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
           {% endif %}
       </tr>
     {% endfor %}

@@ -48,12 +48,17 @@ def ts2date(timestamp, fmt=None):
 
 
 @register.filter(name='ts2time')
-def ts2time(timestamp):
+def ts2time(timestamp, fmt=None):
     try:
         d = timestamp // 86400
         h = (timestamp - 86400 * d) // 3600 % 24
         m = (timestamp - 3600 * h) // 60 % 60
         s = (timestamp - 60 * m) % 60
+
+        if fmt == "DHM":
+            return "{} days {:02d} hrs {:02d} mins".format(d, h, m)
+        elif fmt == "DH":
+            return "{} days {:02d} hrs".format(d, h)
         if d:
             return "{} days {:02d} hrs {:02d} mins {:02d} s".format(d, h, m, s)
         elif h:

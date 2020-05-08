@@ -24,19 +24,17 @@ This file is part of yata.
 
 <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
 
-<h2 class="title"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Recent Organized Crimes</h2>
+<h2 class="title"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Organized Crimes Breakdown</h2>
 <div class="module">
-
-    <h3>Breakdown</h3>
     {% include "faction/oc/breakdown.html" %}
-    <hr class="sep">
+</div>
 
-    <h3>Current crimes</h3>
+<h2 class="title"><i class="fas fa-hourglass-half"></i>&nbsp;&nbsp;Current Crimes</h2>
+<div class="module">
     {% include "faction/oc/list-current.html" %}
-    <hr class="sep">
+</div>
 
-    <h3>Past crimes</h3>
+<h2 class="title"><i class="fas fa-hourglass-end"></i>&nbsp;&nbsp;Past Crimes</h2>
+<div class="module">
     {% include "faction/oc/list-past.html" %}
-    <hr class="sep">
-
 </div>
