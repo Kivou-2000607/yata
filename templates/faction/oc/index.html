@@ -26,6 +26,11 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Recent Organized Crimes</h2>
 <div class="module">
+
+    <h3>Breakdown</h3>
+    {% include "faction/oc/breakdown.html" %}
+    <hr class="sep">
+
     <h3>Current crimes</h3>
     {% include "faction/oc/list-current.html" %}
     <hr class="sep">
@@ -33,4 +38,5 @@ This file is part of yata.
     <h3>Past crimes</h3>
     {% include "faction/oc/list-past.html" %}
     <hr class="sep">
+
 </div>

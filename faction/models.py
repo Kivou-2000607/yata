@@ -214,7 +214,7 @@ class Faction(models.Model):
     def getTargetsId(self):
         return [t.target_id for t in self.target_set.all()]
 
-    def updateCrimes(self, force=True):
+    def updateCrimes(self, force=False):
 
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")

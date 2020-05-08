@@ -1,0 +1,71 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<table class="center-large trshadow faction-crimes-breakdown">
+    <thead>
+        <tr>
+            <th colspan="3">Crimes</th>
+            <th class="border" colspan="2">Time</th>
+            <th class="border" colspan="3">Money</th>
+            <th class="border" colspan="3">Respect</th>
+        </tr>
+        <tr>
+
+            <th>Name</th>
+            <th>Success</th>
+            <th>Made</th>
+
+            <th class="border">Total</th>
+            <th>Per crime</th>
+
+            <th class="border">Total</th>
+            <th>Per crime</th>
+            <th>Per day</th>
+
+            <th class="border">Total</th>
+            <th>Per crime</th>
+            <th>Per day</th>
+
+    </thead>
+    <tbody>
+    {% for k, v in breakdown.items %}
+        <tr>
+            <td>{{k}}</td>
+            <td>{{v.crimes.1}}</td>
+            <td>{{v.crimes.0}}</td>
+
+            <td class="border">{{v.time.0|ts2time}}</td>
+            <td>{{v.time.1|ts2time}}</td>
+
+            <td class="border">${{v.money.0|intcomma}}</td>
+            <td>${{v.money.1|intcomma}}</td>
+            <td>${{v.money.2|intcomma}}</td>
+
+            <td class="border">{{v.respect.0|intcomma}}</td>
+            <td>{{v.respect.1|intcomma}}</td>
+            <td>{{v.respect.2|intcomma}}</td>
+        </tr>
+
+    {% endfor %}
+    </tbody>
+</table>
