@@ -39,7 +39,9 @@ This file is part of yata.
     // });
 </script>
 
-<script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
+{% if reloadTooltips %}
+    <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
+{% endif %}
 
 {% if pastCrimes|length %}
 <table id="faction-crimes-list-past" class="center-large trshadow faction-crimes-list-past">

@@ -40,7 +40,9 @@ This file is part of yata.
     // });
 </script>
 
-<script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
+{% if reloadTooltips %}
+    <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
+{% endif %}
 
 {% if currentCrimes|length %}
 <table id="faction-crimes-list-current" class="center-large trshadow faction-crimes-list-current">

@@ -3107,12 +3107,12 @@ def ocList(request):
                 # current crimes
                 crimes = crimes.filter(initiated=False).order_by("time_ready")
                 crimes = Paginator(crimes, 25).get_page(request.GET.get("p_ccrimes"))
-                context = {'currentCrimes': crimes, "filters": filters, 'getfilters': getfilters}
+                context = {'currentCrimes': crimes, "filters": filters, 'getfilters': getfilters, 'reloadTooltips': True}
                 page = "faction/oc/list-current.html"
             else:
                 crimes = crimes.filter(initiated=True).order_by("-time_completed")
                 crimes = Paginator(crimes, 25).get_page(request.GET.get("p_pcrimes"))
-                context = {'pastCrimes': crimes, "filters": filters, 'getfilters': getfilters}
+                context = {'pastCrimes': crimes, "filters": filters, 'getfilters': getfilters, 'reloadTooltips': True}
                 page = "faction/oc/list-past.html"
             return render(request, page, context)
 
