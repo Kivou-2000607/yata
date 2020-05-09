@@ -68,6 +68,11 @@ table.target-revives td.c { width: 15%; text-align: left; }
 table.target-revives td.d { width: 5%; text-align: center; }
 table.target-revives td.e { width: 5%; text-align: center; }
 
+/* abb */
+table.target-attacks-breakdown td.a { width: 50%; text-align: left; }
+table.target-attacks-breakdown td.b { width: 25%; text-align: center; }
+table.target-attacks-breakdown td.c { width: 25%; text-align: center; }
+
 input.target-list-note {
     height: 16px;
     width: 90%;

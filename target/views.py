@@ -122,6 +122,40 @@ def losses(request):
         return returnError(exc=e, session=request.session)
 
 
+def breakdown(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+
+            breakdownType = dict({})
+            breakdownPlayer = dict({})
+            for attack in player.attack_set.all():
+                i = 0 if attack.attacker else 1
+                if attack.result not in breakdownType:
+                    breakdownType[attack.result] = [0, 0]
+
+                traget_id = attack.defender_id if attack.attacker else attack.attacker_id
+                traget_name = attack.defender_name if attack.attacker else attack.attacker_name
+                if attack.attacker_id not in breakdownPlayer:
+                    breakdownPlayer[traget_id] = [0, 0, traget_name]
+
+                breakdownType[attack.result][i] += 1
+                breakdownPlayer[traget_id][i] += 1
+
+            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
+            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
+
+            context = {"player": player, "breakdownType": breakdownType, "breakdownPlayer": breakdownPlayer}
+            return render(request, 'target/attacks/breakdown.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
 def attack(request):
     try:
         if request.session.get('player') and request.method == "POST":

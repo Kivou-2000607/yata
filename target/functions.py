@@ -76,11 +76,7 @@ def updateAttacks(player, full=False):
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
             baseRespect = float(v["respect_gain"]) / allModifiers
-            try:
-                level = int(math.exp(4. * baseRespect - 1))
-            except BaseException:
-                # can overflow if for 1k pull allModifers are not set
-                level = 1
+            level = 1 if full else int(math.exp(4. * baseRespect - 1))
             v["baseRespect"] = baseRespect
             v["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
             v["bonus"] = 0

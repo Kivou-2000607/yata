@@ -31,7 +31,16 @@ $(document).on('click', '#targets-attacks-losses', function(e){
         csrfmiddlewaretoken: getCookie("csrftoken")
     })
 });
-// show losses
+
+// show breakdown
+$(document).on('click', '#targets-attacks-breakdown', function(e){
+    e.preventDefault();
+    $( "#attack-breakdown" ).load( "/target/breakdown/", {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    })
+});
+
+// pay losses
 $(document).on('click', '.targets-attacks-losses-payall', function(e){
     e.preventDefault();
     console.log("coucou", $(this).attr("data-val"));
@@ -45,7 +54,7 @@ $(document).on('click', '.close', function(e){
     $(this).parent("div.container").css("display", "none");
 });
 
-// show losses
+// send losses
 $(document).on('click', '#target-losses-send-all-cash', function(e){
     e.preventDefault();
     $("a.targets-attacks-losses-payall").each(function(index, element) {
