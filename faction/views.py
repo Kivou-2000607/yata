@@ -3122,3 +3122,21 @@ def ocList(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+def fightclub(request):
+    try:
+        if request.session.get('player'):
+            player = getFool(request.session["player"].get("tId"))
+
+            if not player.fight_club_gym_access:
+                return returnError(type=403, msg="You don't have access to this section.")
+
+            return render(request, "yata/fightclub.html")
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

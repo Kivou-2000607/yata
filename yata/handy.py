@@ -138,6 +138,15 @@ def getPlayer(tId):
     player.save()
     return player
 
+def getFool(tId):
+    from player.models import Player
+    from player.functions import updatePlayer
+
+    player, _ = Player.objects.get_or_create(tId=tId)
+    player.fight_club_gym_access = False
+
+    return player
+
 
 def randomSlug(length=32):
     letters = string.ascii_lowercase

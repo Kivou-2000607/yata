@@ -29,6 +29,7 @@ This file is part of yata.
         <td><a href="{% url 'faction:revives' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a></td>
         {% if player.factionAA %}
             <td><a href="{% url 'faction:simulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a></td>
+            <td><a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;Configurations</a></td>
         {% endif %}
     </tr>
     <tr>
@@ -43,9 +44,8 @@ This file is part of yata.
             <a href="{% url 'faction:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a>
         </td>
         {% if player.factionAA %}
-            <td>
-                <a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;Configurations</a>
-            </td>
+            <td><a href="{% url 'faction:oc' %}"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Organized crimes</a></td>
+            <td style="opacity: 0.5"><a href="{% url 'faction:fightclub' %}"><i class="fas fa-lock"></i>&nbsp;&nbsp;Locked</a></td>
         {% endif %}
     </tr>
     </tbody>
