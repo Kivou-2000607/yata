@@ -1,0 +1,30 @@
+<span class="flush-right">
+
+
+{% if type == "team_id" %}
+    {% if id|slugify  == filters.team_id|slugify %}
+        <a href="?"><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;"></i></a>
+    {% else %}
+        <a href="?{{type}}={{id}}{{getfilters}}"><i class="fas fa-filter filter-player"></i></a>
+    {% endif %}
+{% elif type == "planned_by" %}
+    {% if id|slugify  == filters.planned_by|slugify %}
+        <a href="?"><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;"></i></a>
+    {% else %}
+        <a href="?{{type}}={{id}}{{getfilters}}"><i class="fas fa-filter filter-player"></i></a>
+    {% endif %}
+{% elif type == "initiated_by" %}
+    {% if id|slugify  == filters.initiated_by|slugify %}
+        <a href="?"><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;"></i></a>
+    {% else %}
+        <a href="?{{type}}={{id}}{{getfilters}}"><i class="fas fa-filter filter-player"></i></a>
+    {% endif %}
+{% elif type == "crime_id" %}
+    {% if id|slugify  == filters.crime_id|slugify %}
+        <a href="?"><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;"></i></a>
+    {% else %}
+        <a href="?{{type}}={{id}}{{getfilters}}"><i class="fas fa-filter filter-player"></i></a>
+    {% endif %}
+{% endif %}
+
+</span>

@@ -65,5 +65,6 @@ urlpatterns = [
 
     # SECTION: oc
     re_path(r'^oc/$', views.oc, name='oc'),
+    re_path(r'^ocList/$', views.ocList, name='ocList'),
 
 ]

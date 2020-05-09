@@ -7,12 +7,15 @@
 <table class="tooltip">
     <head>
         <tr>
+            <th colspan=2>Team {{id}}</th>
+        </tr>
+        <tr>
             <th>Participants</th>
             <th>NNB</th>
         </tr>
     </head>
     <body>
-        {% for uid, name,nnb in crime.get_participants %}
+        {% for uid, name,nnb in participants %}
             <tr>
                 <td class="title">{{name}} [{{uid}}]</td>
                 <td class="value">{% if nnb %}{{nnb}}{% else %}?{% endif %}</td>

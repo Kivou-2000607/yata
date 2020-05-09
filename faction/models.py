@@ -261,7 +261,9 @@ class Faction(models.Model):
             if not len(crimesDB.filter(tId=int(k))):
                 n["created"] += 1
                 v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
-                self.crimes_set.create(tId=k, **v)
+                c = self.crimes_set.create(tId=k, **v)
+                c.team_id = c.get_team_id()
+                c.save()
 
             elif not v["initiated"] or v["time_completed"] > now - 3600:
                 n["updated"] += 1
@@ -3070,11 +3072,12 @@ class Crimes(models.Model):
     success = models.BooleanField(default=0)
 
     # custom
-    participants = models.CharField(default=[], max_length=256)
+    participants = models.CharField(default="[]", max_length=256)
+    team_id = models.IntegerField(default=0)
     ready = models.BooleanField(default=0)
 
     def __str__(self):
-        return format_html("{} {} [{}]: {} {}".format(self.faction, self.crime_name, self.tId, self.initiated, self.success))
+        return format_html("{} {} [{}]".format(self.faction, self.crime_name, self.tId))
 
     def get_initiated_by(self):
         member = self.faction.member_set.filter(tId=self.initiated_by).first()
@@ -3102,3 +3105,9 @@ class Crimes(models.Model):
                  nnb = member.nnb
             participants.append([id, name, nnb])
         return participants
+
+
+    def get_team_id(self):
+        import hashlib
+        h = hash(tuple(sorted([p[0] for p in self.get_participants()])))
+        return int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8

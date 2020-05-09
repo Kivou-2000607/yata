@@ -23,35 +23,37 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-        $("#faction-crimes-breakdown").tablesorter({
+        $("#faction-crimes-breakdown-team").tablesorter({
             textExtraction: {
               0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
             },
             cssAsc: 'up',
             cssDesc: 'down',
-            sortList: [[0,0]]
+            sortList: [[3,1], [2,1]]
         });
     });
 </script>
 
-<table id="faction-crimes-breakdown" class="center-large trshadow faction-crimes-breakdown">
+{% if teamsBD|length %}
+<table id="faction-crimes-breakdown-team" class="center-large trshadow faction-crimes-breakdown">
     <thead>
         <tr>
-            <th colspan="3">Crimes</th>
+            <th colspan="4">Team</th>
             <th colspan="2">Time</th>
             <th colspan="3">Money</th>
             <th colspan="3">Respect</th>
         </tr>
         <tr>
 
-            <th>Name</th>
+            <th>ID</th>
             <th>Success</th>
             <th>Made</th>
+            <th>%</th>
 
             <th>Total</th>
             <th>Per crime</th>
@@ -66,14 +68,20 @@ This file is part of yata.
 
     </thead>
     <tbody>
-    {% for k, v in breakdown %}
-        <tr>
-            <td class="a" data-val="{{k}}">{{v.name}}</td>
+    {% for k, v in teamsBD %}
+        <tr class="hover">
+            <td class="a">
+                <span rel="tooltip" style="cursor: help;" data-val="{{v.participants|length}}" title='{% include "faction/oc/participants.html" with participants=v.participants id=k %}'>
+                    <i class="fas fa-users" ></i>&nbsp;&nbsp;<tt>{{k}}</tt> #{{v.participants|length}}
+                </span>
+                {% include "faction/oc/filter.html" with type="team_id" id=k %}
+            </td>
             <td class="b">{{v.crimes.1}}</td>
             <td class="b">{{v.crimes.0}}</td>
+            <td class="b">{{v.crimes.2}}%</td>
 
-            <td class="c">{{v.time.0|ts2time:"DHM"}}</td>
-            <td class="c">{{v.time.1|ts2time:"DHM"}}</td>
+            <td class="c" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DHM"}}</td>
+            <td class="c" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DHM"}}</td>
 
             <td class="d" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
             <td class="d" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
@@ -87,3 +95,6 @@ This file is part of yata.
     {% endfor %}
     </tbody>
 </table>
+{% else %}
+<p class="error">No teams found.</p>
+{% endif %}

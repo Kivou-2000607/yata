@@ -3004,35 +3004,70 @@ def oc(request):
 
             crimes, error, message = faction.updateCrimes()
 
+            filters = {k: request.GET.get(k) for k in ["team_id", "crime_id", "planned_by", "initiated_by"] if request.GET.get(k, False)}
+            crimes = crimes.filter(**filters)
+            getfilters = "".join(["&{}={}".format(k, v) for k, v in filters.items()])
+
             currentCrimes = crimes.filter(initiated=False).order_by("time_ready")
             pastCrimes = crimes.filter(initiated=True).order_by("-time_completed")
 
             # compute breakdown totals
-            breakdown = dict({})
+            crimesBD = dict({})
+            teamsBD = dict({})
             for crime in pastCrimes:
-                if crime.crime_id not in breakdown:
+                if crime.crime_id not in crimesBD:
                     # n,       money, respect, time,
                     # success, avg, avg, avg
-                    breakdown[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
+                    crimesBD[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
 
-                breakdown[crime.crime_id]["crimes"][0] += 1
-                breakdown[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
-                breakdown[crime.crime_id]["money"][0] += crime.money_gain
-                breakdown[crime.crime_id]["respect"][0] += crime.respect_gain
-                breakdown[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                if crime.team_id not in teamsBD:
+                    teamsBD[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
 
-            # compute breakdown averages
-            for k, v in breakdown.items():
+                crimesBD[crime.crime_id]["crimes"][0] += 1
+                crimesBD[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
+                crimesBD[crime.crime_id]["money"][0] += crime.money_gain
+                crimesBD[crime.crime_id]["respect"][0] += crime.respect_gain
+                crimesBD[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+
+                teamsBD[crime.team_id]["crimes"][0] += 1
+                teamsBD[crime.team_id]["crimes"][1] += 1 if crime.success else 0
+                teamsBD[crime.team_id]["money"][0] += crime.money_gain
+                teamsBD[crime.team_id]["respect"][0] += crime.respect_gain
+                teamsBD[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+
+            # compute crimesBD averages
+            for k, v in crimesBD.items():
+                v["crimes"][2] = round(100 * (v["crimes"][1] / v["crimes"][0]))
                 v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
                 v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
                 v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
                 v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
                 v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
 
-            # order breakdown
-            breakdown = sorted(breakdown.items(), key=lambda x: x[0])
+            # compute teamsBD averages
+            todel = []
+            for k, v in teamsBD.items():
+                v["crimes"][2] = round(100 * (v["crimes"][1] / v["crimes"][0]))
+                v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
+                v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
+                v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
+                v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
+                v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
+                if v["crimes"][0] == 1:
+                    todel.append(k)
 
-            context = {'player': player, 'factioncat': True, 'faction': faction, 'breakdown': breakdown, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), 'view': {'oc': True}}
+            for k in todel:
+                del teamsBD[k]
+
+            # order crimesBD
+            crimesBD = sorted(crimesBD.items(), key=lambda x: x[0])
+            teamsBD = sorted(teamsBD.items(), key=lambda x: -x[1]["time"][0])
+
+            # pagination
+            currentCrimes = Paginator(currentCrimes, 25).get_page(request.GET.get("p_ccrimes"))
+            pastCrimes = Paginator(pastCrimes, 25).get_page(request.GET.get("p_pcrimes"))
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'crimesBD': crimesBD, 'teamsBD': teamsBD, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), "filters": filters, 'getfilters': getfilters, 'view': {'oc': True}}
             if message:
                 sub = "Sub" if request.method == 'POST' else ""
                 if error:
@@ -3041,6 +3076,44 @@ def oc(request):
                     context["validMessage" + sub] = "Crimes: {created} created, {updated}: updated, {deleted}: deleted, ready: {ready}.".format(**message)
 
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def ocList(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+
+            filters = {k: request.GET.get(k) for k in ["team_id", "crime_id", "planned_by", "initiated_by"] if request.GET.get(k, False)}
+            getfilters = "".join(["&{}={}".format(k, v) for k, v in filters.items()])
+            crimes = faction.crimes_set.filter(**filters)
+
+            if request.GET.get("p_ccrimes", False):
+                # current crimes
+                crimes = crimes.filter(initiated=False).order_by("time_ready")
+                crimes = Paginator(crimes, 25).get_page(request.GET.get("p_ccrimes"))
+                context = {'currentCrimes': crimes, "filters": filters, 'getfilters': getfilters}
+                page = "faction/oc/list-current.html"
+            else:
+                crimes = crimes.filter(initiated=True).order_by("-time_completed")
+                crimes = Paginator(crimes, 25).get_page(request.GET.get("p_pcrimes"))
+                context = {'pastCrimes': crimes, "filters": filters, 'getfilters': getfilters}
+                page = "faction/oc/list-past.html"
             return render(request, page, context)
 
         else:
