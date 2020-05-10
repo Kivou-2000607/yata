@@ -45,7 +45,7 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-master">Command <tt>!verifyAll</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Loops over all members of the server and apply <tt>!verify</tt> only to non verified members.</p>
+<p>Loops over all members of the server and apply <tt>!verify</tt> only to non verified members. If <tt>force</tt> is asked is applies <tt>!verify</tt> to all members.</p>
 <p><b>Syntax:</b> <tt>!verifyAll</tt></p>
 <p><b>Scope:</b> Server admin can use it in <tt>#yata-admin</tt>.</p>
 {# <p class="privacy-master warning">Use the master key to verify discord ID.</p> #}
@@ -53,7 +53,7 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-master">Command <tt>!checkFactions</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Loops over all factions and check if members are still part it. Write a report and remove faction and group of faction roles if <tt>force</tt> is asked.</p>
+<p>Loops over all factions and mention if a member is not part part of it. If <tt>force</tt> is asked it also removes the faction role and apply <tt>!verify</tt>.</p>
 <p><b>Syntax:</b> <tt>!checkFactions</tt> or <tt>!checkFactions force</tt></p>
 <p><b>Scope:</b> Server admin can use it in <tt>#yata-admin</tt>.</p>
 {# <p class="privacy-master warning">Use the master key to get the list of members.</p> #}
