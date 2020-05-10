@@ -257,15 +257,18 @@ class Faction(models.Model):
             if v["ready"]:
                 n["ready"] +=1
 
+            # get crimeBD
+            crimeDB = crimesDB.filter(tId=int(k)).first()
+
             # create new or update non initiated
-            if not len(crimesDB.filter(tId=int(k))):
+            if crimeDB is None:
                 n["created"] += 1
                 v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
                 c = self.crimes_set.create(tId=k, **v)
                 c.team_id = c.get_team_id()
                 c.save()
 
-            elif not v["initiated"] or v["time_completed"] > now - 3600:
+            elif not crimeDB.initiated:
                 n["updated"] += 1
                 del v["participants"]
                 self.crimes_set.filter(tId=k).update(**v)

@@ -3073,7 +3073,7 @@ def oc(request):
                 if error:
                     context["errorMessage" + sub] = "Crimes: API error {apiErrorString}, crimes list not updated".format(**message)
                 else:
-                    context["validMessage" + sub] = "Crimes: {created} created, {updated}: updated, {deleted}: deleted, ready: {ready}.".format(**message)
+                    context["validMessage" + sub] = "Crimes list has been updated. {created} created, {updated} updated, {deleted} deleted, {ready} ready.".format(**message)
 
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             return render(request, page, context)
