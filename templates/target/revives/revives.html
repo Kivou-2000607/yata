@@ -1,0 +1,73 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+
+<table id="target-revives" class="center-medium trshadow target-revives">
+    <thead>
+
+        <tr><td colspan="8">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if revives.has_previous %}
+                        <a class="page-link" href="{% url 'target:revives' %}?p_re=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'target:revives' %}?p_re={{ revives.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ revives.number }}/{{ revives.paginator.num_pages }}
+                    </span>
+
+                    {% if revives.has_next %}
+                        <a class="page-link" href="{% url 'target:revives' %}?p_re={{ revives.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'target:revives' %}?p_re={{ revives.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+        <tr>
+            <th>Time</th>
+            <th>Reviver</th>
+            <th>Faction</th>
+            <th>Target</th>
+            <th>Faction</th>
+            <th title="Hospital reason">Hospital</th>
+            <th title="Online status"><i class="fas fa-circle"></i></th>
+            <th>Paid</th>
+    </thead>
+    <tbody>
+    {% for v in revives %}
+    <tr>
+        <td class="a">{{v.timestamp|ts2date}}</td>
+        <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}</td>
+        <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
+        <td class="b">{{v.target_name|playerURL:v.target_id|safe}}</td>
+        <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+        <td class="c">{{v.target_hospital_reason|cleanhtml}}</td>
+        <td class="d" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
+        <td class="e">
+            {% include "target/revives/buttons.html" with revive=v %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

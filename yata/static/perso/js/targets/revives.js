@@ -8,3 +8,11 @@ $(document).on('click', 'a[id^="revives-list-toggle-"]', function(e){
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<i class="fas fa-spinner fa-pulse"></i>');
 });
+
+// show breakdown
+$(document).on('click', '#targets-revives-breakdown', function(e){
+    e.preventDefault();
+    $( "#revives-breakdown" ).load( "/target/revives/breakdown/", {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    })
+});

@@ -17,24 +17,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load mathfilters %}
 {% load app_filters %}
 
-{% if revives %}
-
-<div id="revives-breakdown"></div>
-
-<h2 class="title"><i class="fas fa-heartbeat"></i>&nbsp;&nbsp;List of recent revives<span id="targets-revives-breakdown" class="flush-right"><a href=""><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a></span></h2>
-<div class="module">
-    <div class="pagination-list">
-        {% include "target/revives/revives.html"%}
-    </div>
-    <p class="update-info">Last update of the list: {{player.revivesUpda|ts2date}}</p>
-
-</div>
-
-{% else %}
-<div class="module rounded">
-    <span class="error">It seems you didn't make any revives this month...</span>
-</div>
-{% endif %}
+<!-- toggle -->
+<form style="display: inline;">{% csrf_token %}
+    <a class="attack-list-target" href="{% url 'target:target' %}">
+       {% if v.targetId in targets %}
+           <i class="fas fa-crosshairs valid" title="Remove target"></i>
+       {% else %}
+            <i class="fas fa-crosshairs error" title="Add target"></i>
+       {% endif %}
+    </a>
+</form>

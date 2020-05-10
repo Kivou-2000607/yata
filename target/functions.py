@@ -119,6 +119,7 @@ def updateRevives(player):
         error = req
     else:
         revives = req.get("revives", dict({}))
+        timestamp = req.get("timestamp", 0)
 
         # needs to convert to dict if empty because if empty returns []
         if not len(revives):
@@ -126,7 +127,7 @@ def updateRevives(player):
 
         # get database revives and delete 1 month old
         player_revives = player.revive_set.all()
-        lastMonth = req.get("timestamp", 0) - 31 * 24 * 3600
+        lastMonth = timestamp - 31 * 24 * 3600
         player_revives.filter(timestamp__lt=lastMonth).delete()
 
         for k, v in revives.items():
@@ -136,8 +137,13 @@ def updateRevives(player):
                 revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unkown")
                 revives[k]["target_last_action_timestamp"] = revives[k]["target_last_action"].get("timestamp", 0)
                 del v["target_last_action"]
-                print(player.revive_set.update_or_create(tId=k, defaults=v))
+                try:
+                    player.revive_set.get_or_create(tId=int(k), defaults=v)
+                except BaseException:
+                    player.revive_set.filter(tId=int(k)).all().delete()
+                    player.revive_set.get_or_create(tId=int(k), defaults=v)
 
+        player.revivesUpda = int(timestamp)
         player.save()
 
     return error

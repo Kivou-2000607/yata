@@ -28,7 +28,6 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-user-shield"></i>&nbsp;&nbsp;List of recent attacks<span id="targets-attacks-breakdown" class="flush-right"><a href=""><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a></span><span id="targets-attacks-losses" class="flush-right"><a href=""><i class="fas fa-dollar-sign"></i>&nbsp;Buying losses</a></span><span class="flush-right"><a href="?full=true"><i class="fas fa-angle-double-down"></i>&nbsp;Get last 1k attacks</a></span></h2>
 <div class="module">
-
     <div class="pagination-list">
         {% include "target/attacks/attacks.html"%}
     </div>
@@ -37,6 +36,6 @@ This file is part of yata.
 
 {% else %}
 <div class="module rounded">
-    <span class="error">It seems you didn't make any attack...</span>
+    <span class="error">It seems you don't have any attacks...</span>
 </div>
 {% endif %}

@@ -122,7 +122,7 @@ def losses(request):
         return returnError(exc=e, session=request.session)
 
 
-def breakdown(request):
+def attacksBreakdown(request):
     try:
         if request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
@@ -169,7 +169,7 @@ def attack(request):
                     attack.save()
 
                 context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
-                return render(request, 'target/attacks/buttons.html', context)
+                return render(request, 'target/attacks/button-paid.html', context)
 
             elif request.POST["type"] == "toggle":
                 # toggle target
@@ -190,7 +190,7 @@ def attack(request):
                 returnError(type=403, msg="Unkown request")
 
             context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
-            return render(request, 'target/attacks/buttons.html', context)
+            return render(request, 'target/attacks/button-target.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -198,6 +198,7 @@ def attack(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
 
 def targets(request):
     try:
@@ -348,13 +349,16 @@ def revives(request):
 
             error = updateRevives(player)
 
-            revives = player.revive_set.all()
+            revives = Paginator(player.revive_set.order_by("timestamp"), 25).get_page(request.GET.get('p_re'))
 
             context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
             if error:
                 context.update(error)
 
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
+            if request.GET.get('p_re', False):
+                page = 'target/revives/revives.html'
+
             return render(request, page, context)
 
         else:
@@ -375,6 +379,48 @@ def revive(request):
                 r.save()
 
             return render(request, 'target/revives/buttons.html', {"revive": r})
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def revivesBreakdown(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+
+            breakdownType = dict({})
+            breakdownStatus = dict({})
+            breakdownPlayer = dict({})
+            for r in player.revive_set.all():
+                outgoing = r.reviver_id == player.tId
+                i = 0 if outgoing else 1
+                traget_id = r.target_id if outgoing else r.reviver_id
+                traget_name = r.target_name if outgoing else r.reviver_name
+
+                if r.target_hospital_reason not in breakdownType:
+                    breakdownType[r.target_hospital_reason] = [0, 0]
+
+                if r.target_last_action_status not in breakdownStatus:
+                    breakdownStatus[r.target_last_action_status] = [0, 0]
+
+                if r.reviver_id not in breakdownPlayer:
+                    breakdownPlayer[traget_id] = [0, 0, traget_name]
+
+                breakdownType[r.target_hospital_reason][i] += 1
+                breakdownStatus[r.target_last_action_status][i] += 1
+                breakdownPlayer[traget_id][i] += 1
+
+            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
+            breakdownStatus = sorted(breakdownStatus.items(), key=lambda x: x[0])
+            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
+
+            context = {"player": player, "breakdownType": breakdownType, "breakdownStatus": breakdownStatus, "breakdownPlayer": breakdownPlayer}
+            return render(request, 'target/revives/breakdown.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

@@ -50,7 +50,8 @@ This file is part of yata.
         <th>&asymp;Level</th>
         <th style="text-align: center;">Flat respect</th>
         <th style="text-align: center;">Fair fight</th>
-        <th style="text-align: center;">Save / Paid</th>
+        <th style="text-align: center;">Save target</th>
+        <th style="text-align: center;">Paid</th>
     </thead>
     <tbody>
     {% for v in attacks %}
@@ -80,10 +81,13 @@ This file is part of yata.
             <td class="d">{{v.flatRespect|floatformat:2}}</td>
             <td class="d">{{v.fairFight|floatformat:2}}</td>
         {% endif %}
-        <td class="f buttons" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
+        <td class="f" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
             <div class="catch-buttons-attack-{{v.targetId}}">
-                {% include "target/attacks/buttons.html" %}
+                {% include "target/attacks/button-target.html" %}
             </div>
+        </td>
+        <td class="f" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
+            {% include "target/attacks/button-paid.html" %}
         </td>
     </tr>
     {% endfor %}
