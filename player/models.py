@@ -80,6 +80,7 @@ class Player(models.Model):
     # awardsRank = models.IntegerField(default=99999)
     awardsScor = models.IntegerField(default=0)  # int(10000 x score in %)
     awardsNumb = models.IntegerField(default=0)  # number of awards
+    awardsPinn = models.CharField(default="[]", max_length=32)
 
     # info for stocks APP
     stocksInfo = models.CharField(default="N/A", max_length=255)
@@ -136,7 +137,6 @@ class Player(models.Model):
     def getAwards(self, userInfo=False):
         from awards.models import AwardsData
         from awards.functions import AWARDS_CAT
-        from awards.functions import HOF_SIZE
         from awards.functions import createAwards
 
         # get torn awards
@@ -165,13 +165,20 @@ class Player(models.Model):
             summaryByType[type.title()] = awardsSummary["All awards"]
             awards.update(awardsTmp)
 
+        # get pinned
+        pinnedAwards = {k: dict({}) for k in json.loads(self.awardsPinn)}
+        i = len(pinnedAwards)
+        for type, awardsTmp in awards.items():
+            for id in pinnedAwards:
+                if id in awardsTmp:
+                    pinnedAwards[id] = awardsTmp[id]
+                    i -= 1
+            if not i:
+                break
+
         summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
         summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
         summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
-
-        awardsPlayer = {"userInfo": userInfo,
-                        "awards": awards,
-                        "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
 
         rScorePerso = 0.0
         for k, v in awardsTorn["honors"].items():
@@ -180,6 +187,12 @@ class Player(models.Model):
         for k, v in awardsTorn["medals"].items():
             if v.get("achieve", 0) == 1:
                 rScorePerso += v.get("rScore", 0)
+
+        awardsPlayer = {"userInfo": userInfo,
+                        "awards": awards,
+                        "pinnedAwards": pinnedAwards,
+                        "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
+
 
         if self.tId > 0 and not error:
             # self.awardsInfo = "{:.4f}".format(rScorePerso)

@@ -43,9 +43,12 @@ def index(request):
 
         # get graph data
         awards = awardsPlayer.get('awards')
+        pinnedAwards = awardsPlayer.get('pinnedAwards')
+
         graph = []
         for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
             # if h.get("rarity") not in ["Unknown Rarity"]:
+
             if h.get("circulation", 0) > 0:
                 graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
@@ -55,7 +58,7 @@ def index(request):
             if h.get("circulation", 0) > 0:
                 graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
-        context = {"player": player, "graph": graph, "graph2": graph2, "awardscat": True, "view": {"awards": True}}
+        context = {"player": player, "pinnedAwards": pinnedAwards, "graph": graph, "graph2": graph2, "awardscat": True, "view": {"awards": True}}
         for k, v in awardsPlayer.items():
             context[k] = v
         if error:
@@ -72,10 +75,9 @@ def list(request, type):
         player = getPlayer(tId)
         awardsPlayer, awardsTorn, error = player.getAwards()
 
-        print('[view.awards.list] award type: {}'.format(type))
-
         userInfo = awardsPlayer.get('userInfo')
         summaryByType = awardsPlayer.get('summaryByType')
+        pinnedAwards = awardsPlayer.get('pinnedAwards')
 
         if type in AWARDS_CAT:
             awards, awardsSummary = createAwards(awardsTorn, userInfo, type)
@@ -92,7 +94,7 @@ def list(request, type):
 
             graph = sorted(graph, key=lambda x: -x[1])
             graph2 = sorted(graph2, key=lambda x: -x[1])
-            context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
+            context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
             if error:
                 context.update(error)
             page = 'awards/list.html' if request.method == 'POST' else "awards.html"
@@ -110,7 +112,7 @@ def list(request, type):
                 if h.get("circulation", 0) > 0:
                     graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
 
-            context = {"player": player, "view": {"awards": True}, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
+            context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
             page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
             return render(request, page, context)
 
@@ -123,6 +125,8 @@ def hof(request):
         tId = request.session["player"].get("tId") if request.session.get('player') else -1
         player = getPlayer(tId)
         awardsPlayer, awardsTorn, error = player.getAwards()
+
+        pinnedAwards = awardsPlayer.get('pinnedAwards')
         userInfo = awardsPlayer.get('userInfo')
         summaryByType = awardsPlayer.get('summaryByType')
 
@@ -148,6 +152,7 @@ def hof(request):
                    "graph": graph,
                    "graph2": graph2,
                    "hof": hof,
+                   "pinnedAwards": pinnedAwards,
                    "hofGraph": json.loads(AwardsData.objects.first().hofHistogram)}
         page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
         return render(request, page, context)
@@ -164,6 +169,51 @@ def hofList(request):
         return render(request, "awards/hof-list.html", {"player": getPlayer(tId),
                                                         "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]),
                                                         "hof": Paginator(hof, 50).get_page(request.GET.get("p_hof"))})
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def showPinned(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            awardsPlayer, awardsTorn, error = player.getAwards()
+            pinnedAwards = awardsPlayer.get('pinnedAwards')
+
+            return render(request, "awards/pin.html", {"player": player, "pinnedAwards": pinnedAwards})
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def togglePin(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            pinnedAwards = json.loads(player.awardsPinn)
+            awardId = request.POST.get("awardId")
+
+            if awardId is not None and not request.POST.get("check", False):
+                if awardId in pinnedAwards:
+                    pinnedAwards.remove(awardId)
+                else:
+                    if len(pinnedAwards) == 3:
+                        pinnedAwards.pop(0)
+                    pinnedAwards.append(awardId)
+
+                player.awardsPinn = json.dumps(pinnedAwards)
+                player.save()
+
+            return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)

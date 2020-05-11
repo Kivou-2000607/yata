@@ -71,3 +71,49 @@ $(document).on('click', 'table.awards-categories td', function(e){
     $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading awards')
     $("div.error").hide();
 });
+
+
+// toggle pin
+$(document).on('click', '.awards-toggle-pin', function(e){
+    e.preventDefault();
+
+    // $.when( $(this).closest("td").load( "/awards/pin/", {
+    //     awardId: $(this).attr("data-val"),
+    //     csrfmiddlewaretoken: getCookie("csrftoken")
+    // }).html(spinner) ).done(
+    //     $(".pinned.awards-toggle-pin").closest("td").each(function() {
+    //         $(this).load( "/awards/pin/", {
+    //             awardId: $(this).find("form > a > i").attr("data-val"),
+    //             check: 1,
+    //             csrfmiddlewaretoken: getCookie("csrftoken")
+    //         }).html("?");
+    //     }));
+
+    $(this).closest("td").load( "/awards/pin/",
+        {
+            awardId: $(this).attr("data-val"),
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        },
+        function() {
+            $(".pinned.awards-toggle-pin").closest("td").each(function() {
+                $(this).load( "/awards/pin/",
+                {
+                    awardId: $(this).find("form > a > i").attr("data-val"),
+                    check: 1,
+                    csrfmiddlewaretoken: getCookie("csrftoken")
+                },
+                function() {
+                    $("#awards-show-pinned").load( "/awards/pinned/", {
+                        csrfmiddlewaretoken: getCookie("csrftoken")
+                    })
+                }
+            ).html(spinner);
+        });
+    }).html(spinner);
+
+    $(".awards-pinned").each(function() {
+        var divspinner = '<div style="height: '+$(this).css("height")+';">'+spinner+'</div>'
+        $(this).html(divspinner);
+    });
+
+});

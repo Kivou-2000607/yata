@@ -65,6 +65,32 @@ table.awards-hof td.c { width: 20%; text-align: center;} /* x2 */
 table.awards-hof tr.its-you {  background:#b6d7a8; }
 
 
+div.awards-pinned img.medals { height: 19px; }
+div.awards-pinned {
+    position: relative;
+    display: table;
+    height: 70px;
+    text-align: center;
+    cursor: pointer;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px #888;
+    box-shadow: inner 0 0 5px #888;
+    border-radius: 4px;
+
+}
+div.awards-pinned:hover {
+    -moz-box-shadow: inset 0 0 7px #444;
+    -webkit-box-shadow: inset 0 0 7px #444;
+    box-shadow: inner 0 0 7px #444;
+}
+
+div.awards-pinned > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .google-visualization-tooltip {
     /* position:absolute !important;
     top:0 !important;

@@ -71,7 +71,7 @@ def createAwardsSummary(awards):
     return awardsSummary
 
 
-def createAwards(tornAwards, userInfo, typeOfAwards):
+def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
     from itertools import chain
 
     # needed in most cases

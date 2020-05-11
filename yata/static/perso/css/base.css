@@ -121,6 +121,8 @@ h2.title {
 }
 
 h2.grey { background: #ccc url("/static/images/section_title_gray_bg.png") left top repeat; }
+h2.red { background: #ccc url("/static/images/section_title_red_bg.png") left top repeat; }
+h2.green { background: #ccc url("/static/images/section_title_green_bg.png") left top repeat; }
 
 .error { color: #CC3434!important; font-weight: bold; }
 .warning { color: #FF8C00!important; font-weight: bold; }
@@ -210,6 +212,13 @@ table.center-full-half {
   margin-left:0%;
   margin-right:0%;
   border: 1px solid #eee;
+}
+
+div.center-full-third {
+  width:25%;
+  float:left;
+  margin-left:4%;
+  margin-right:4%;
 }
 
 table.center-full-third {

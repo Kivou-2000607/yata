@@ -52,7 +52,7 @@ This file is part of yata.
             <h1>{% include "svg/yata.full.svg" %}</h1>
 
             <h2 class="title"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 403: Permission Denied</h2>
-            <div class="module">
+            <div class="module red">
                 <p>{{exception}}</p>
                 {% if home %}
                     <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
