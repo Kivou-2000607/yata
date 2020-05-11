@@ -39,7 +39,7 @@ def index(request):
     try:
         tId = request.session["player"].get("tId") if request.session.get('player') else -1
         player = getPlayer(tId)
-        awardsPlayer, awardsTorn, error = player.getAwards()
+        awardsPlayer, awardsTorn, error = player.getAwards(force=True)
 
         # get graph data
         awards = awardsPlayer.get('awards')
@@ -96,8 +96,9 @@ def list(request, type):
             graph2 = sorted(graph2, key=lambda x: -x[1])
             context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
             if error:
-                context.update(error)
-            page = 'awards/list.html' if request.method == 'POST' else "awards.html"
+                selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+                context.update({selectError: error['apiError']})
+            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
             return render(request, page, context)
 
         else:

@@ -409,7 +409,8 @@ def get_happy(req):
 
 
 def get_gym(req):
-    return {k: gyms.get(req.get("active_gym", 1)).get(k, 20) / 10.0 for k in stat_types}
+    active_gym = req.get("active_gym", 1)
+    return {k: gyms.get(active_gym).get(k, 20) / 10.0 for k in stat_types}, gyms.get(active_gym).get("name")
 
 
 def get_bonus(req):

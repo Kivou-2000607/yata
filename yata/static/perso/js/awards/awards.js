@@ -101,19 +101,11 @@ $(document).on('click', '.awards-toggle-pin', function(e){
                     awardId: $(this).find("form > a > i").attr("data-val"),
                     check: 1,
                     csrfmiddlewaretoken: getCookie("csrftoken")
-                },
+                }).html(spinner);
+            }).promise().done(
                 function() {
-                    $("#awards-show-pinned").load( "/awards/pinned/", {
-                        csrfmiddlewaretoken: getCookie("csrftoken")
+                    $(".awards-pinned").each(function() { $(this).html('<div style="height: '+$(this).css("height")+';">'+spinner+'</div>') }).promise().done(
+                        function() { $("#awards-show-pinned").load( "/awards/pinned/", {csrfmiddlewaretoken: getCookie("csrftoken")}); })
                     })
-                }
-            ).html(spinner);
-        });
-    }).html(spinner);
-
-    $(".awards-pinned").each(function() {
-        var divspinner = '<div style="height: '+$(this).css("height")+';">'+spinner+'</div>'
-        $(this).html(divspinner);
-    });
-
+            });
 });

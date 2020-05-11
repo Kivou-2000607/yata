@@ -25,6 +25,7 @@ import numpy
 import json
 
 from player.models import Player
+from player.models import TmpReq
 from player.functions import updatePlayer
 from awards.models import AwardsData
 from yata.handy import tsnow
@@ -71,3 +72,6 @@ class Command(BaseCommand):
         hof = AwardsData.objects.first()
         hof.hofHistogram = json.dumps(hofGraph)
         hof.save()
+
+        print("[command.player.updateplayers] CLEAN AWARDS CACHE")
+        print(TmpReq.objects.filter(timestamp__lt=(tsnow() - 3600)).delete())

@@ -134,21 +134,37 @@ class Player(models.Model):
 
         return error
 
-    def getAwards(self, userInfo=False):
+    def getAwards(self, userInfo=dict({}), force=False):
         from awards.models import AwardsData
         from awards.functions import AWARDS_CAT
         from awards.functions import createAwards
 
         # get torn awards
         awardsTorn = AwardsData.objects.first().loadAPICall()
+        error = False
 
-        if not userInfo:
-            if self.tId > 0:
-                userInfo = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
-            else:
-                userInfo = dict({})
+        if self.tId > 0:
 
-        error = userInfo if 'apiError' in userInfo else False
+            if not len(userInfo):
+                dbInfo = self.tmpreq_set.filter(type="awards").first()
+                if dbInfo is not None:
+                    userInfo = json.loads(dbInfo.req)
+
+                else:
+                    userInfo = dict({})
+                    error = {'apiError': "Your data can't be found in the database."}
+
+            if not len(userInfo) or force:
+                req = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
+                if not 'apiError' in req:
+                    self.awardsUpda = tsnow()
+                    defaults = {"req": json.dumps(req), "timestamp": tsnow()}
+                    self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+                    userInfo = req
+                    error = False
+
+                else:
+                    error = req
 
         medals = awardsTorn["medals"]
         honors = awardsTorn["honors"]
@@ -188,6 +204,7 @@ class Player(models.Model):
             if v.get("achieve", 0) == 1:
                 rScorePerso += v.get("rScore", 0)
 
+
         awardsPlayer = {"userInfo": userInfo,
                         "awards": awards,
                         "pinnedAwards": pinnedAwards,
@@ -195,9 +212,7 @@ class Player(models.Model):
 
 
         if self.tId > 0 and not error:
-            # self.awardsInfo = "{:.4f}".format(rScorePerso)
             self.awardsScor = int(rScorePerso * 10000)
-            self.awardsUpda = tsnow()
             self.awardsNumb = len(myMedals) + len(myHonors)
             self.save()
 
@@ -303,6 +318,13 @@ class Error(models.Model):
     timestamp = models.IntegerField(default=0)
     short_error = models.CharField(default="-", max_length=128)
     long_error = models.TextField(default="-")
+
+
+class TmpReq(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    timestamp = models.IntegerField(default=0)
+    type = models.CharField(default="None", max_length=16)
+    req = models.TextField(default="{}")
 
 
 class Spinner(models.Model):

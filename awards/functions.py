@@ -103,10 +103,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             elif c is not None:
                 tt = "<i>{}</i><br>".format(c)
             elif perks is not None:
-                tt = 'Prediction of energy needed (<i>Courtesy of JTS <3</i>)<br>\
+                tt = 'Prediction of energy needed (<i>courtesy of JTS <3</i>)<br>\
                        - Happy: {:.0f}<br>\
                        - Perks: {:.2f}%<br>\
-                       - Gym: x{:.2f}<br><br>'.format(*perks)
+                       - Gym: x{:.2f} ({})<br><br>'.format(*perks)
             else:
                 tt = ""
 
@@ -1540,7 +1540,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
     elif typeOfAwards == "gym":
 
         gym_happy = get_happy(userInfo)
-        gym_dot = get_gym(userInfo)
+        gym_dot, gym_name = get_gym(userInfo)
         gym_bonus = get_bonus(userInfo)
 
         awards = dict({
@@ -1590,11 +1590,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         else:
                             key = stat
 
-                        energy_to_spend = bs_e(si, sf, H=gym_happy, B=gym_bonus[key], G=gym_dot[key])
-                        perks = [gym_happy, 100 * gym_bonus[key], gym_dot[key]]
-                        days = dLeftE(energy_to_spend, perks=perks)
-                        vp["left"] = days[0]
-                        vp["comment"] = days[1]
+                        if not round(gym_dot[key]):
+                            vp["comment"] = "Impossible to train {} in this {}.".format(key, gym_name)
+                        else:
+                            energy_to_spend = bs_e(si, sf, H=gym_happy, B=gym_bonus[key], G=gym_dot[key])
+                            perks = [gym_happy, 100 * gym_bonus[key], gym_dot[key], gym_name]
+                            days = dLeftE(energy_to_spend, perks=perks)
+                            vp["left"] = days[0]
+                            vp["comment"] = days[1]
 
                     awards[type]["h_" + k] = vp
 
@@ -2362,7 +2365,7 @@ def updatePlayerAwards(player, tornAwards, userInfo):
             rScorePerso += v.get("rScore", 0)
 
     # player.awardsJson = json.dumps(awardsJson)
-    player.awardsInfo = "{:.4f}".format(rScorePerso)
+    # player.awardsInfo = "{:.4f}".format(rScorePerso)
     player.awardsScor = int(rScorePerso * 10000)
     player.awardsUpda = int(timezone.now().timestamp())
     player.save()

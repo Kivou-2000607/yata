@@ -109,16 +109,8 @@ def updatePlayer(player, i=None, n=None):
     player.chainUpda = int(timezone.now().timestamp())
 
     # update awards info
-    # tornAwards = apiCall('torn', '', 'honors,medals', player.getKey())
+    # only award score
     player.getAwards(userInfo=user)
-    # tornAwards = AwardsData.objects.first().loadAPICall()
-    # if 'apiError' in tornAwards:
-    #     player.awardsJson = json.dumps(tornAwards)
-    #     player.awardsInfo = "0"
-    # else:
-    #     updatePlayerAwards(player, tornAwards, user)
-    # player.awardsUpda = int(timezone.now().timestamp())
-    # # player.awardsJson = "{}"
 
     # clean targets
     old = tsnow() - 2678400  # 1 month old
