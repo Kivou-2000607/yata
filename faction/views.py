@@ -3016,9 +3016,8 @@ def oc(request):
             teamsBD = dict({})
             for crime in pastCrimes:
                 if crime.crime_id not in crimesBD:
-                    # n,       money, respect, time,
-                    # success, avg, avg, avg
-                    crimesBD[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
+
+                    crimesBD[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0, 0, 0, 0], "respect": [0, 0, 0, 0, 0, 0]}
 
                 if crime.team_id not in teamsBD:
                     teamsBD[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
@@ -3043,6 +3042,12 @@ def oc(request):
                 v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
                 v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
                 v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
+                v["money"][3] = round(v["money"][2] /  float(v["crimes"][0]))
+                v["money"][4] = OC_EFFICIENCY[k]["money"]
+                v["money"][5] = round(100 * v["money"][3] / float(OC_EFFICIENCY[k]["money"]))
+                v["respect"][3] = round(v["respect"][2] /  float(v["crimes"][0]), 2)
+                v["respect"][4] = OC_EFFICIENCY[k]["respect"]
+                v["respect"][5] = round(100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"]))
 
             # compute teamsBD averages
             todel = []

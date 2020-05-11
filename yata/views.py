@@ -200,10 +200,10 @@ def gym(request):
         trainDict["pk"] = train.pk
         trainDict["stat_before"] = train.stat_before_cap()
         trainDict["stat_after"] = train.stat_after_cap()
-        trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
+        # trainDict["normalized_gain_add"] = train.normalized_gain(type="+")
         trainDict["normalized_gain_mul"] = train.normalized_gain(type="x")
-        trainDict["vladar"] = train.vladar()
-        trainDict["vladar_diff"] = train.vladar_diff()
+        # trainDict["vladar"] = train.vladar()
+        # trainDict["vladar_diff"] = train.vladar_diff()
         trainDict["current"] = train.current()
         trainDict["current_diff"] = diff
         trains.append(trainDict)

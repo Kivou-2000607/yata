@@ -55,16 +55,20 @@ This file is part of yata.
             <th>Made</th>
             <th>%</th>
 
-            <th>Total</th>
+            <th title="Cummulative time for all participants">Total</th>
             <th>Per crime</th>
 
             <th>Total</th>
-            <th>Per crime</th>
-            <th>Per day</th>
+            {# <th>Per crime</th> #}
+            {# <th>Per day</th> #}
+            <th title="Money per participants days per crimes">Effectiveness</th>
+            <th title="Ratio between effectiveness and maximal effectiveness">Efficiency</th>
 
             <th>Total</th>
-            <th>Per crime</th>
-            <th>Per day</th>
+            {# <th>Per crime</th> #}
+            {# <th>Per day</th> #}
+            <th title="Respect per participants days per crimes">Effectiveness</th>
+            <th title="Ratio between effectiveness and maximal effectiveness">Efficiency</th>
 
     </thead>
     <tbody>
@@ -81,12 +85,16 @@ This file is part of yata.
             <td class="c" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DHM"}}</td>
 
             <td class="d" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
-            <td class="d" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
-            <td class="d" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td>
+            {# <td class="d" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td> #}
+            {# <td class="d" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td> #}
+            <td class="d" title="Max effectiveness = ${{v.money.4|intcomma}}" data-val="{{v.money.3}}">${{v.money.3|intcomma}}</td>
+            <td class="f" title="${{v.money.3|intcomma}} / ${{v.money.4|intcomma}}" data-val="{{v.money.5}}%">{{v.money.5}}%</td>
 
             <td class="e">{{v.respect.0|intcomma|floatformat:0}}</td>
-            <td class="e">{{v.respect.1|intcomma|floatformat:2}}</td>
-            <td class="e">{{v.respect.2|intcomma|floatformat:2}}</td>
+            {# <td class="e">{{v.respect.1|intcomma|floatformat:2}}</td> #}
+            {# <td class="e">{{v.respect.2|intcomma|floatformat:2}}</td> #}
+            <td class="e" title="Max effectiveness = {{v.respect.4|intcomma}}">{{v.respect.3|intcomma|floatformat:2}}</td>
+            <td class="f" title="{{v.respect.3|intcomma|floatformat:2}} / {{v.respect.4|intcomma|floatformat:2}}" data-val="{{v.respect.5}}">{{v.respect.5}}%</td>
         </tr>
 
     {% endfor %}

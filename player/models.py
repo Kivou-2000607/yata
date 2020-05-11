@@ -450,7 +450,7 @@ class TrainFull(models.Model):
 
         # normalization
         norm = (1. + self.bonus()) * self.gym() * self.energy_used / 200000.
-        happy_func = stat_cap * (1 + 0.07 * numpy.log(1 + self.happy() / 250.)) + 13 * self.happy()
+        happy_func = stat_cap * numpy.round(1 + 0.07 * numpy.round(numpy.log(1. + self.happy() / 250.), decimals=4), decimals=4) + 8 * numpy.power(self.happy(), 1.05)
         return happy_func * norm
 
     def current_diff(self):
