@@ -2026,8 +2026,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [316]:
+                elif int(k) in [316, 845]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
+                    # "845": {"name": "Historian", "description": "Read a chronicle", "type": 0,
                     type = "Other"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0

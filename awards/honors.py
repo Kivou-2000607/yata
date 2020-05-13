@@ -50,6 +50,7 @@ d = {
     334: 204652023,  # Compulsive
     581: 832763049,  # On Track
     839: 172807476,  # RNG
+    845: 410458383,  # Historian
 
     # 1
     171: 228001376,  # Afghanistan
