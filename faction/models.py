@@ -214,6 +214,38 @@ class Faction(models.Model):
     def getTargetsId(self):
         return [t.target_id for t in self.target_set.all()]
 
+    def getWallHistory(self):
+        # api call and update key
+        key = self.getKey()
+        news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
+
+        if 'apiError' in news:
+            return news
+
+        walls = dict({})
+        for k, v in news.items():
+            reg =  'warreport&warID=\d{1,10}'
+            if re.findall(reg, v["news"]):
+                reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">'
+                # reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">(.{1,})</a>'
+                fac1, fac2, war = re.findall(reg, v["news"])
+                wall = dict({})
+                factionId = int(fac1.split("=")[-1].replace('">', ''))
+                assaulting = 1 if factionId == self.tId else 0
+                factionId = int(fac2.split("=")[-1].replace('">', '')) if assaulting else factionId
+                warId = int(war.split("=")[-1].replace('">', ''))
+
+                if factionId not in walls:
+                    dbFaction = Faction.objects.filter(tId=factionId).first()
+                    factionName = "Faction" if dbFaction is None else dbFaction.name
+                    walls[factionId] = {"name": factionName, "n": 0, "walls": []}
+
+                walls[factionId]["walls"].append([assaulting, warId, v["timestamp"]])
+                walls[factionId]["n"] += 1
+
+        return sorted(walls.items(), key=lambda x: -x[1]["n"])
+
+
     def updateCrimes(self, force=False):
 
         now = int(timezone.now().timestamp())

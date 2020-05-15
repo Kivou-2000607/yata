@@ -1052,6 +1052,8 @@ def walls(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
+            wallHistory = faction.getWallHistory();
+
             walls = Wall.objects.filter(factions=faction).all()
 
             summary = dict({})
@@ -1101,7 +1103,14 @@ def walls(request):
 
             for wall in walls:
                 wall.report = wall.getReport(faction)
-            context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
+
+            for k, v in wallHistory:
+                for wall in v["walls"]:
+                    print(wall)
+                    wall.append(walls.filter(tId=wall[1]).first())
+                    print(wall)
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'wallHistory': wallHistory, 'summary': summary, 'view': {'walls': True}}
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             return render(request, page, context)
 

@@ -129,4 +129,22 @@ This file is part of yata.
 {% endfor %}
 <div class="module rounded">
     <p><b>Add a wall report</b>: install <a href="/static/integration/walls.user.js" target="_blank">this script</a> and go to the a wall report page ingame that you want to import the report here.</p>
+    <p>List of your previous walls</p>
+    <ul>
+        {% for factionId, factionDic in wallHistory %}
+            <li>{{factionDic.name|factionURL:factionId|safe}}</li>
+            <ul>
+                {% for wall in factionDic.walls %}
+                    <li>
+                        <a href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Wall [{{wall.1}}]</a> of {{wall.2|ts2date}}:
+                        {% if wall.3 is None %}
+                            <a class="error"href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Not imported</a>
+                        {% else %}
+                            <span class="valid">Imported</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
 </div>
