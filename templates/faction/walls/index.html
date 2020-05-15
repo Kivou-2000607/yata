@@ -24,24 +24,23 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'dataVal',
-            // check if cell value has a numerical value
-            is: function(s, table, cell, $cell) {
-                return !isNaN($cell.attr("data-val"));
+        $("#faction-walls").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              2: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-fac"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-fac"); },
             },
-            // format data for normalization
-            format: function(s, table, cell, cellIndex) {
-                return parseInt($(cell).attr("data-val"));
-            },
-            // set type, either numeric or text
-            type: 'numeric'
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[5,0]]
         });
 
-        $("#faction-walls").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
         $(".faction-walls-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]});
     });
+
 </script>
 
     <h2 class="title">{{faction.name|safe}}'s walls</h2>
@@ -65,15 +64,15 @@ This file is part of yata.
             {% for wall in walls %}
             <tr>
                 {% if wall %}
-                  <td class="a"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+                  <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
                   <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
                   <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
                   <td class="b" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
-                  <td class="b" >{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
-                  <td class="b" >{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
+                  <td class="b" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
+                  <td class="b" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
                   <td class="c" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
                   <td class="c" ><span class="{{wall.result}}">{{wall.result}}</span></td>
-                  <td class="c buttons" data-val="{{wall.tId}}">
+                  <td class="c buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
                     {% include "faction/walls/buttons.html" %}
                   </td>
                 {% endif %}

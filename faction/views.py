@@ -1106,9 +1106,7 @@ def walls(request):
 
             for k, v in wallHistory:
                 for wall in v["walls"]:
-                    print(wall)
                     wall.append(walls.filter(tId=wall[1]).first())
-                    print(wall)
 
             context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'wallHistory': wallHistory, 'summary': summary, 'view': {'walls': True}}
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'

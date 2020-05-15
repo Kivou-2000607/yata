@@ -11,10 +11,20 @@ $(document).on('click', '.wall-delete', function(e){
 $(document).on('click', '.wall-toggle', e=>{
     e.preventDefault();
     var td = $(e.currentTarget).closest("td");
-    var wallId = td.attr("data-val");
-    td.load( "/faction/walls/manage/", {
-        type:"toggle", wallId: wallId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html(spinner);
+    if (e.ctrlKey) {
+        var factionId = td.attr("data-fac");
+        $("td.buttons[data-fac="+factionId+"]").each(function(index, item) {
+            var wallId = $(item).attr("data-val");
+            $(item).load( "/faction/walls/manage/", {
+                type:"toggle", wallId: wallId, csrfmiddlewaretoken: getCookie("csrftoken")
+            }).html(spinner);
+        });
+    } else {
+        var wallId = td.attr("data-val");
+        td.load( "/faction/walls/manage/", {
+            type:"toggle", wallId: wallId, csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+    }
 });
 
 
