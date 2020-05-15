@@ -67,12 +67,12 @@ This file is part of yata.
                   <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
                   <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
                   <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
-                  <td class="b" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
-                  <td class="b" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
-                  <td class="b" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
-                  <td class="c" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
-                  <td class="c" ><span class="{{wall.result}}">{{wall.result}}</span></td>
-                  <td class="c buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
+                  <td class="c" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
+                  <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
+                  <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
+                  <td class="e" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
+                  <td class="e" ><span class="{{wall.result}}">{{wall.result}}</span></td>
+                  <td class="e buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
                     {% include "faction/walls/buttons.html" %}
                   </td>
                 {% endif %}
