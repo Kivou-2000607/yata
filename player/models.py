@@ -159,7 +159,12 @@ class Player(models.Model):
                 if not 'apiError' in req:
                     self.awardsUpda = tsnow()
                     defaults = {"req": json.dumps(req), "timestamp": tsnow()}
-                    self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+                    try:
+                        self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+                    else BaseException as e:
+                        self.tmpreq_set.all(type="awards").delete()
+                        self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+
                     userInfo = req
                     error = False
 
