@@ -162,7 +162,7 @@ class Player(models.Model):
                     try:
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
                     except BaseException as e:
-                        self.tmpreq_set.all(type="awards").delete()
+                        self.tmpreq_set.filter(type="awards").delete()
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
 
                     userInfo = req
