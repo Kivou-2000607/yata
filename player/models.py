@@ -161,7 +161,7 @@ class Player(models.Model):
                     defaults = {"req": json.dumps(req), "timestamp": tsnow()}
                     try:
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
-                    else BaseException as e:
+                    except BaseException as e:
                         self.tmpreq_set.all(type="awards").delete()
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
 
