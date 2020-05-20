@@ -288,14 +288,14 @@ def top10(request):
         inventory = bazaarJson.get("inventory", dict({}))
         bazaar = bazaarJson.get("bazaar", dict({}))
         display = bazaarJson.get("display", dict({}))
-        for item in Item.objects.all().order_by('weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
             item.stockI = inventory.get(str(item.tId), 0)
             item.stockB = bazaar.get(str(item.tId), 0)
             item.stockD = display.get(str(item.tId), 0)
             item.stock = item.stockI + item.stockB + item.stockD
             items["Buy"].append(item)
             # item.save()
-        for item in Item.objects.all().order_by('-weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
             item.stockI = inventory.get(str(item.tId), 0)
             item.stockB = bazaar.get(str(item.tId), 0)
             item.stockD = display.get(str(item.tId), 0)

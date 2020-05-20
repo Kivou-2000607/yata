@@ -156,7 +156,7 @@ class Player(models.Model):
 
             if not len(userInfo) or force:
                 req = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
-                if not 'apiError' in req:
+                if 'apiError' not in req:
                     self.awardsUpda = tsnow()
                     defaults = {"req": json.dumps(req), "timestamp": tsnow()}
                     try:
@@ -209,12 +209,10 @@ class Player(models.Model):
             if v.get("achieve", 0) == 1:
                 rScorePerso += v.get("rScore", 0)
 
-
         awardsPlayer = {"userInfo": userInfo,
                         "awards": awards,
                         "pinnedAwards": pinnedAwards,
                         "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
-
 
         if self.tId > 0 and not error:
             self.awardsScor = int(rScorePerso * 10000)
