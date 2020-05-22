@@ -22,6 +22,7 @@ from django.contrib import admin
 from .models import MarketData
 from .models import Item
 from .models import BazaarData
+from .models import AbroadStocks
 
 
 class BazaarDataAdmin(admin.ModelAdmin):
@@ -43,6 +44,13 @@ class MarketDataAdmin(admin.ModelAdmin):
 
 
 admin.site.register(MarketData, MarketDataAdmin)
+
+
+class AbroadStocksAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'item', 'country', 'country_id', 'timestamp', 'last']
+    list_filter = ['country', 'last', 'item__tType']
+
+admin.site.register(AbroadStocks, AbroadStocksAdmin)
 
 
 def remove_from_market(modeladmin, request, queryset):

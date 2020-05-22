@@ -1,0 +1,138 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<div class="module rounded">
+    <p class="warning" style="text-align: center">This is a work in progress.<br> I'm waiting the dev community feedbacks (on the <a href="/discord" target="_blank">discord</a>) to improve the API.
+    <p>The goal of this section is to build a <b>shared database for abroad items <i>costs</i> and <i>quantities</i></b>.</p>
+    <p>The main issue of the current existing tools providing this kind of information is that they either lake software updates or a massive user base. And both are required for this to work.</p>
+    <p>The idea is for <b>YATA to provide an open API with read and write access</b> and for <b>the community to develop tools</b> to use it both ways. I think that would solve both requirements since:</p>
+    <ul>
+        <li>Only the API will rely on a single person (me). And it doesn't depend on Torn's updates.</li>
+        <li>Anyone would be able to develop a tool to feed the database which would help getting a large amount of users.</li>
+    </ul>
+    <hr class="sep">
+    <p>YATA will also display the stocks here if this project works.</p>
+</div>
+
+<h2 class="title"><i class="fas fa-download"></i>&nbsp;&nbsp;How to import data</h2>
+<div class="module">
+    <h3>API url</h3>
+    <p>In order to import data to the database you need to make a <tt>POST</tt> request to this url: <a href="{%url "bazaar:abroadImport" %}">API write</a>.</p>
+
+    <h3>Body format</h3>
+    <p>It only requires a <tt>body</tt> of the format:</p>
+
+<pre>
+{
+    "country": 2,
+    "client": "my cool app",
+    "uid": "2000607",
+    "items": [
+        {
+            "id": 266,
+            "quantity": 2,
+            "cost": 123456,
+        },
+        {
+            "id": 272,
+            "quantity": 3,
+            "cost": "654321",
+        },
+    ],
+}
+</pre>
+<p>where</p>
+
+<ul>
+    <li><tt>country</tt> represents the country. It can be:
+
+        <ul>
+            <li><tt>0</tt> or start by <tt>mex</tt> for Mexico</li>
+            <li><tt>1</tt> or start by <tt>cay</tt> for Cayman Islands</li>
+            <li><tt>2</tt> or start by <tt>can</tt> for Canada</li>
+            <li><tt>3</tt> or start by <tt>haw</tt> for Hawaii</li>
+            <li><tt>4</tt> or start by <tt>uni</tt> for United Kingdom</li>
+            <li><tt>5</tt> or start by <tt>arg</tt> for Argentina</li>
+            <li><tt>6</tt> or start by <tt>swi</tt> for Switzerland</li>
+            <li><tt>7</tt> or start by <tt>jap</tt> for Japan</li>
+            <li><tt>8</tt> or start by <tt>chi</tt> for China</li>
+            <li><tt>9</tt> or start by <tt>uae</tt> for UAE</li>
+            <li><tt>10</tt> or start by <tt>sou</tt> for South Africa</li>
+        </ul>
+    </li>
+
+    <li><tt>client</tt> is the name of your client (optionnal).</li>
+    <li><tt>uid</tt> is the torn id of the user (optionnal).</li>
+    <li><tt>items</tt> is an array of <tt>item</tt> where:</li>
+    <ul>
+        <li><tt>id</tt> is the torn id of the item</li>
+        <li><tt>quantity</tt> is the quantity (you'll have to put 0 to set the quantity to 0)</li>
+        <li><tt>cost</tt> is the cost</li>
+    </ul>
+</ul>
+
+    <h3>API response</h3>
+    <p>The API will return a response of the format: </p>
+    <pre>
+    {
+        "message": "YATA server message",
+        "code": 200,
+        "stocks": [...],
+    }
+    </pre>
+    <p>where</p>
+    <ul>
+        <li><tt>message</tt> is a custom yata server message (not very important)</li>
+        <li><tt>code</tt> is a code that mimic HTTP codes</li>
+        <ul>
+            <li><tt>200</tt> import success</li>
+            <li><tt>400</tt> user error (it's your fault)</li>
+            <li><tt>500</tt> server error (it's my fault)</li>
+        </ul>
+        <li><tt>stock</tt> in case of <tt>200</tt> it returs the list of items that have been updated.</li>
+    </ul>
+</div>
+<h2 class="title"><i class="fas fa-upload"></i>&nbsp;&nbsp;How to export data</h2>
+<div class="module">
+    <h3>API url</h3>
+    <p>In order to export data from the database you need to make a <tt>GET</tt> request to this url: <a href="{%url "bazaar:abroadExport" %}">API read</a>.</p>
+
+    <h3>Stocks by country</h3>
+    <p>To get the stocks / country you'll have to append the filter <tt>country</tt> with couple key/value: <tt>country=country_id</tt> where <tt>country_id</tt> meets the same format as above:</p>
+    <ul>
+        <li>Mexico: <a href="{%url "bazaar:abroadExport" %}?country=Mexico" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=Mexico</a></li>
+        <li>Canada: <a href="{%url "bazaar:abroadExport" %}?country=can" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=can</a></li>
+        <li>United Kingdom: <a href="{%url "bazaar:abroadExport" %}?country=4" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=4</a></li>
+    </ul>
+    <h3>Stocks by type</h3>
+    <p>Following the same spirit Drugs / Plushies / Flowers can be extracted too:</p>
+    <ul>
+        <li>Drugs: <a href="{%url "bazaar:abroadExport" %}?type=Drug" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=drug</a></li>
+        <li>Plushies: <a href="{%url "bazaar:abroadExport" %}?type=plushie" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=plushie</a></li>
+        <li>Flowers: <a href="{%url "bazaar:abroadExport" %}?type=flower" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=flower</a></li>
+    </ul>
+
+
+    <hr class="sep">
+    <p>The API is not case sensitive.</p>
+</div>

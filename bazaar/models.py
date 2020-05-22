@@ -282,3 +282,37 @@ class BazaarData(models.Model):
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
     itemType = models.TextField(default="{}")
+
+
+
+class AbroadStocks(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+    country_id = models.IntegerField(default=0)
+    country = models.CharField(max_length=32)
+    quantity = models.IntegerField(default=0)
+    cost = models.IntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+
+    uid = models.IntegerField(default=0)
+    client = models.CharField(max_length=32, blank=True)
+
+    last = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "{} in {}".format(self.item, self.country)
+
+    def payload(self):
+        return {"item_id": self.item.tId,
+                "item_name": self.item.tName,
+                "item_type": self.item.tType,
+                "item_maket_value": self.item.tMarketValue,
+                "item_sell_price": self.item.tSellPrice,
+                "item_buy_price": self.item.tBuyPrice,
+                "item_week_tendency": self.item.weekTendency,
+                "country": self.country,
+                "country_id": self.country_id,
+                "abroad_cost": self.cost,
+                "abroad_quantity": self.quantity,
+                "timestamp": self.timestamp,
+                }

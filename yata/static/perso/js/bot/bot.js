@@ -1,11 +1,11 @@
-// nev link
+// nav link
 $(document).on('click', 'table.bot-categories td', function(e){
     e.preventDefault();
     var l = $(this).children("a").attr("href").split("/")[2];
     $( "#content-update" ).load( "/bot/"+l+"/", {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     }, nav("/bot/"+l+"/"));
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading prices')
+    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading')
     $("#content-update h2").addClass("grey");
     $("div.error").hide();
 });

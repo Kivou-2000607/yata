@@ -1,13 +1,16 @@
+// nav link
 $(document).on('click', 'table.bazaar-categories td', function(e){
     e.preventDefault();
     var l = $(this).children("a").attr("href").split("/")[2];
     $( "#content-update" ).load( "/bazaar/"+l+"/", {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    });
-    $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading prices')
+    }, nav("/bazaar/"+l+"/"));
+    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+l)
     $("#content-update h2").addClass("grey");
     $("div.error").hide();
 });
+
+
 
 // show/hide details item
 $(document).on('click', '.details-item', function(e){

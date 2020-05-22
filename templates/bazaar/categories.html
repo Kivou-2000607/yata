@@ -20,14 +20,14 @@ This file is part of yata.
 <!-- categories -->
 <form>
     {% csrf_token %}
-<table class="center tdshadow bazaar-categories">
+<table class="center-large tdshadow bazaar-categories">
     <tbody>
     <tr>
         <td>
             <a href="{% url 'bazaar:default' %}"><i class="fas fa-star"></i>&nbsp;&nbsp;Default</a>
         </td>
         <td>
-            <a href="{% url 'bazaar:sets' %}"><i class="fas fa-plane-departure"></i>&nbsp;&nbsp;Sets</a>
+            <a href="{% url 'bazaar:sets' %}"><i class="fas fa-gopuram"></i>&nbsp;&nbsp;Sets</a>
         </td>
         {% if player.tId > 0%}
             <td>
@@ -39,6 +39,9 @@ This file is part of yata.
         </td>
         <td>
             <a href="{% url 'bazaar:all' %}"><i class="fas fa-list"></i>&nbsp;&nbsp;All</a>
+        </td>
+        <td>
+            <a href="{% url 'bazaar:abroad' %}" class="error"><i class="fas fa-plane-departure"></i>&nbsp;&nbsp;Abroad API (WIP)</a>
         </td>
     </tr>
     </tbody>

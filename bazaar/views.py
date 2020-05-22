@@ -19,15 +19,19 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 import json
 
 from bazaar.models import Item
 from bazaar.models import BazaarData
+from bazaar.models import AbroadStocks
 from player.models import Player
 from yata.handy import apiCall
 from yata.handy import returnError
 from yata.handy import timestampToDate
+from yata.handy import tsnow
 
 
 def index(request):
@@ -84,7 +88,7 @@ def index(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -124,7 +128,7 @@ def custom(request):
                 items["Custom"].append(item)
                 # item.save()
 
-            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
@@ -170,7 +174,7 @@ def default(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -214,7 +218,7 @@ def sets(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -258,7 +262,7 @@ def all(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -303,7 +307,7 @@ def top10(request):
             items["Sell"].append(item)
             # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -469,6 +473,127 @@ def toggle(request, itemId):
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+@csrf_exempt
+def abroadImport(request):
+    from bazaar.countries import countries
+    from bazaar.countries import brigde_countries as bc
+
+    if request.method == 'POST':
+        try:
+            payload = json.loads(request.body)
+
+            # check mandatory keys
+            for key in ["country", "items"]:
+                if key not in payload:
+                    return JsonResponse({"message": "Missing \'{}\' key in payload".format(key), "type": 400})
+
+            # check items length
+            if not len(payload["items"]):
+                return JsonResponse({"message": "Empty items list", "type": 400})
+
+            # check country:
+            country_key = str(payload["country"]).lower().strip()[:3]
+            if country_key not in bc:
+                return JsonResponse({"message": "Unknown country key '{}'".format(country_key), "type": 400})
+
+            country_id = bc[country_key]
+            country = countries[country_id]["name"]
+            items = payload["items"]
+            uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
+            client = payload.get("client", "unknown").strip()
+            timestamp = tsnow()
+
+            stocks = dict({})
+            for item in items:
+                for key in ["id", "quantity", "cost"]:
+                    if not str(item.get(key, 0)).isdigit():
+                        return JsonResponse({"message": "Wrong item {}".format(key), "type": 400})
+
+                stocks[item["id"]] = {"country": country,
+                                      "country_id": country_id,
+                                      "client": client,
+                                      "uid": uid,
+                                      "timestamp": timestamp,
+                                      "cost": item["cost"],
+                                      "quantity": item["quantity"]}
+
+            for k, v in stocks.items():
+                item = Item.objects.filter(tId=k).first()
+                if item is None:
+                    return JsonResponse({"message": "Item '{}' not found in database".format(k), "type": 400})
+
+                AbroadStocks.objects.filter(item=item, country_id=v["country_id"], last=True).update(last=False)
+                v["last"] = True
+                item.abroadstocks_set.create(**v)
+                v["item_name"] = item.tName
+                v["item_type"] = item.tType
+
+            return JsonResponse({"message": "All good", "stocks": stocks,  "type": 200})
+
+        except BaseException as e:
+            return JsonResponse({"message": "Server error: {}".format(e), "type": 500})
+
+    else:
+        return returnError(type=403, msg="Expecting a POST request.")
+
+def abroadExport(request):
+    from bazaar.countries import countries
+    from bazaar.countries import brigde_countries as bc
+    try:
+        if request.GET.get("country", False):
+            country_key = str(request.GET.get("country")).lower().strip()[:3]
+            if country_key not in bc:
+                return JsonResponse({"message": "Unknown country key '{}'".format(country_key), "type": 400})
+            country_id = bc[country_key]
+
+            print(country_id)
+            # get all unique items of the country
+            # unique_items = [k["item__tId"] for k in AbroadStocks.objects.filter(country_id=country_id).values('item__tId').distinct()]
+            # print(unique_items)
+            # for item_id in unique_items:
+            stocksDB = AbroadStocks.objects.filter(country_id=country_id, last=True)
+            stocksJS = dict({"country": countries[country_id], "stocks": []})
+            for stock in stocksDB:
+                stocksJS["stocks"].append(stock.payload())
+
+            return JsonResponse({"message": "All good", "stocks": stocksJS, "type": 200})
+
+        elif request.GET.get("type", False):
+            type = str(request.GET.get("type")).strip().title()
+            if type not in ["Drug", "Plushie", "Flower"]:
+                return JsonResponse({"message": "Unknown type '{}'".format(type), "type": 400})
+
+            stocksDB = AbroadStocks.objects.filter(item__tType=type, last=True)
+
+            stocksJS = dict({"type": type, "stocks": []})
+            for stock in stocksDB:
+                stocksJS["stocks"].append(stock.payload())
+
+            return JsonResponse({"message": "All good", "stocks": stocksJS, "type": 200})
+
+        else:
+            return JsonResponse({"message": "No filters found", "type": 400})
+
+    except BaseException as e:
+        return JsonResponse({"message": "Server error: {}".format(e), "type": 500})
+
+def abroad(request):
+    try:
+        if request.session.get('player'):
+            tId = request.session["player"].get("tId")
+        else:
+            tId = -1
+
+        player = Player.objects.filter(tId=tId).first()
+
+        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        context = {"player": player, "bazaarcat": True, "view": {"abroad": True}}
+        return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
