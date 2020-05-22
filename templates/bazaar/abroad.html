@@ -48,13 +48,11 @@ This file is part of yata.
     "client": "my cool app",
     "uid": "2000607",
     "items": [
-        {
-            "id": 266,
+        "266": {
             "quantity": 2,
             "cost": 123456,
         },
-        {
-            "id": 272,
+        "272": {
             "quantity": 3,
             "cost": "654321",
         },
@@ -96,20 +94,13 @@ This file is part of yata.
     <pre>
     {
         "message": "YATA server message",
-        "code": 200,
         "stocks": [...],
     }
     </pre>
     <p>where</p>
     <ul>
         <li><tt>message</tt> is a custom yata server message (not very important)</li>
-        <li><tt>code</tt> is a code that mimic HTTP codes</li>
-        <ul>
-            <li><tt>200</tt> import success</li>
-            <li><tt>400</tt> user error (it's your fault)</li>
-            <li><tt>500</tt> server error (it's my fault)</li>
-        </ul>
-        <li><tt>stock</tt> in case of <tt>200</tt> it returs the list of items that have been updated.</li>
+        <li><tt>stock</tt> in case of a <tt>200</tt> it returns the list of items that have been updated.</li>
     </ul>
 </div>
 <h2 class="title"><i class="fas fa-upload"></i>&nbsp;&nbsp;How to export data</h2>
