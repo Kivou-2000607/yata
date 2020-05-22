@@ -520,7 +520,7 @@ def bs_e(si, sf, H=250, B=0.0, G=1.0, verbose=False):
     dE_bc = numpy.divide(numpy.log(numpy.divide(minf + ratio, mini + ratio)), alpha)
     # print(dE_bc[0], numpy.log((minf + ratio) / (mini + ratio))[0], alpha[0])
     # energy after cap
-    dE_ac = numpy.divide(maxf - minf, slope)
+    dE_ac = numpy.divide(maxf - maxi, slope)
     # energy total
     dE = dE_bc + dE_ac
 

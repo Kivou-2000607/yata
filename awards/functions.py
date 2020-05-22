@@ -20,6 +20,7 @@ This file is part of yata.
 from django.utils import timezone
 
 from yata.gyms import *
+from yata.handy import tsnow
 
 import random
 
@@ -1262,38 +1263,55 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 if int(k) in [11, 165]:
                     # 11 {'name': 'Mile High Club', 'description': 'Travel 100 times', 'type': 7, 'circulation': 31338, 'rarity': 'Common', 'awardType': 'Honor', 'img': 241952085, 'title': 'Mile High Club [11]: Common (31338)'}
                     type = "Time"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("traveltimes", 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / daysOld
-                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    vp["comment"] = "Current ratio of {:.2g} travels / day.".format(ratio)
+                    if 36 in medals_awarded:
+                        daysSince15 = (tsnow() - int(medals_time[medals_awarded.index(36)])) / (3600. * 24)
+                        vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                        vp["current"] = userInfo.get("personalstats", dict({})).get("traveltimes", 0)
+                        vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                        ratio = vp["current"] / daysSince15
+                        vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
+                        vp["comment"] = "Current ratio of {:.2g} travels / day.".format(ratio)
+                    else:
+                        vp["current"] = 0
+                        vp["achieve"] = 0
+                        vp["comment"] = "You need to reach level 15 first"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [549, 567, 557]:
                     # 549 {'name': 'Tourist', 'description': 'Spend 7 days in the air', 'type': 7, 'circulation': 16881, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 724568067, 'title': 'Tourist [549]: Uncommon (16881)'}
                     type = "Time"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    secondsOfFlight = int(userInfo.get("personalstats", dict({})).get("traveltime", 0))
-                    hoursOfFlight = float(secondsOfFlight / 3600.)
-                    daysOfFlight = float(hoursOfFlight / 24.0)
-                    vp["current"] = "{:.1f}".format(daysOfFlight)
-                    vp["achieve"] = min(1, daysOfFlight / float(vp["goal"]))
-                    ratio = daysOfFlight / daysOld
-                    vp["left"] = "{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else -1
-                    vp["comment"] = "Current ratio of {:.2g} hours / day<br>Current state {:.1f} / {} hours".format(ratio * 24, hoursOfFlight, vp["goal"] * 24)
+                    if 36 in medals_awarded:
+                        daysSince15 = (tsnow() - int(medals_time[medals_awarded.index(36)])) / (3600. * 24)
+                        secondsOfFlight = int(userInfo.get("personalstats", dict({})).get("traveltime", 0))
+                        hoursOfFlight = float(secondsOfFlight / 3600.)
+                        daysOfFlight = float(hoursOfFlight / 24.0)
+                        vp["current"] = "{:.1f}".format(daysOfFlight)
+                        vp["achieve"] = min(1, daysOfFlight / float(vp["goal"]))
+                        ratio = daysOfFlight / daysSince15
+                        vp["left"] = "{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else -1
+                        vp["comment"] = "Current ratio of {:.2g} hours / day<br>Current state {:.1f} / {} hours".format(ratio * 24, hoursOfFlight, vp["goal"] * 24)
+                    else:
+                        vp["current"] = 0
+                        vp["achieve"] = 0
+                        vp["comment"] = "You need to reach level 15 first"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 272]:
                     # 130 {'name': 'Maradona', 'description': 'Travel to Argentina 50 times', 'type': 7, 'circulation': 10543, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 697523940, 'title': 'Maradona [130]: Limited (10543)'}
                     type = "Destinations"
-                    key = v["description"].split(" ")[2].lower()[:3] + "travel"
-                    key = "lontravel" if key == "thetravel" else key
-                    vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
-                    vp["current"] = int(userInfo.get("personalstats", dict({})).get(key, 0))
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(2 * flightTimes[key] * pilot * (vp["goal"] - vp["current"]) / 1440., 0)
-                    vp["comment"] = "With a one way travel of {:.0f} minutes".format(flightTimes[key] * pilot)
+                    if 36 in medals_awarded:
+                        key = v["description"].split(" ")[2].lower()[:3] + "travel"
+                        key = "lontravel" if key == "thetravel" else key
+                        vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
+                        vp["current"] = int(userInfo.get("personalstats", dict({})).get(key, 0))
+                        vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                        vp["left"] = max(2 * flightTimes[key] * pilot * (vp["goal"] - vp["current"]) / 1440., 0)
+                        vp["comment"] = "With a one way travel of {:.0f} minutes".format(flightTimes[key] * pilot)
+                    else:
+                        vp["current"] = 0
+                        vp["achieve"] = 0
+                        vp["comment"] = "You need to reach level 15 first"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [50, 51, 52]:
@@ -1335,12 +1353,19 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 elif int(k) in [541, 542, 543]:
                     # "541": { "name": "Mule", "description": "Import 100 items from abroad", "type": 7},
                     type = "Import items"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = int(userInfo.get("personalstats", dict({})).get("itemsboughtabroad", 0))
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / daysOld
-                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    vp["comment"] = "current ratio of {:.2g} items / day.".format(ratio)
+                    if 36 in medals_awarded:
+                        daysSince15 = (tsnow() - int(medals_time[medals_awarded.index(36)])) / (3600. * 24)
+                        vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                        vp["current"] = int(userInfo.get("personalstats", dict({})).get("itemsboughtabroad", 0))
+                        vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                        ratio = vp["current"] / daysOld
+                        vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
+                        vp["comment"] = "current ratio of {:.2g} items / day.".format(ratio)
+                    else:
+                        vp["current"] = 0
+                        vp["achieve"] = 0
+                        vp["comment"] = "You need to reach level 15 first"
+
                     awards[type]["h_" + k] = vp
 
         for k, v in tornAwards["medals"].items():
@@ -1358,12 +1383,18 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 if int(k) in [207, 208, 209]:
                     # 207 {'name': 'Frequent Flyer', 'description': 'Travel abroad 25 times', 'type': 'OTR', 'awardType': 'Medal', 'achieve': 0}
                     type = "Time"
-                    vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("traveltimes", 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / daysOld
-                    vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    vp["comment"] = "current ratio of {:.2g} travels / day.".format(ratio)
+                    if 36 in medals_awarded:
+                        daysSince15 = (tsnow() - int(medals_time[medals_awarded.index(36)])) / (3600. * 24)
+                        vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
+                        vp["current"] = userInfo.get("personalstats", dict({})).get("traveltimes", 0)
+                        vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                        ratio = vp["current"] / daysSince15
+                        vp["left"] = max((vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
+                        vp["comment"] = "current ratio of {:.2g} travels / day.".format(ratio)
+                    else:
+                        vp["current"] = 0
+                        vp["achieve"] = 0
+                        vp["comment"] = "You need to reach level 15 first"
                     awards[type]["m_" + k] = vp
 
     elif typeOfAwards == "work":
@@ -2232,9 +2263,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [371, 491]:
+                elif int(k) in [371, 491, 851]:
                     # 371 {'name': 'Protege', 'description': 'Complete the mission Introduction: Duke', 'type': 17, 'circulation': 44516, 'rarity': 'Common', 'awardType': 'Honor', 'img': 668653618, 'title': 'Protege [371]: Common (44516)'}
                     # "491": { "name": "Modded","description": "Equip two high-tier mods to a weapon",
+                    # "851": { "name": "Mod Boss", "description": "Own at least 20 weapon mods", "type": 2,
                     type = "Missions"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
