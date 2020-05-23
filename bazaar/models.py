@@ -303,15 +303,19 @@ class AbroadStocks(models.Model):
         return "{} in {}".format(self.item, self.country)
 
     def payload(self):
-        return {"item_id": self.item.tId,
+        from bazaar.countries import countries
+
+        return {
+                "item_id": self.item.tId,
                 "item_name": self.item.tName,
                 "item_type": self.item.tType,
-                "item_maket_value": self.item.tMarketValue,
-                "item_sell_price": self.item.tSellPrice,
-                "item_buy_price": self.item.tBuyPrice,
-                "item_week_tendency": self.item.weekTendency,
+                # "item_maket_value": self.item.tMarketValue,
+                # "item_sell_price": self.item.tSellPrice,
+                # "item_buy_price": self.item.tBuyPrice,
+                # "item_week_tendency": self.item.weekTendency,
                 "country": self.country,
                 "country_id": self.country_id,
+                "country_fly_time": countries[self.country_id]["fly_time"],
                 "abroad_cost": self.cost,
                 "abroad_quantity": self.quantity,
                 "timestamp": self.timestamp,

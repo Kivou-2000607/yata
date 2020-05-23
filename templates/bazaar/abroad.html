@@ -22,7 +22,7 @@ This file is part of yata.
 {% load app_filters %}
 
 <div class="module rounded">
-    <p class="warning" style="text-align: center">This is a work in progress.<br> I'm waiting the dev community feedbacks (on the <a href="/discord" target="_blank">discord</a>) to improve the API.
+    <p class="warning" style="text-align: center">This is a work in progress.<br> I'm waiting the dev community feedback to improve the API.
     <p>The goal of this section is to build a <b>shared database for abroad items <i>costs</i> and <i>quantities</i></b>.</p>
     <p>The main issue of the current existing tools providing this kind of information is that they either lake software updates or a massive user base. And both are required for this to work.</p>
     <p>The idea is for <b>YATA to provide an open API with read and write access</b> and for <b>the community to develop tools</b> to use it both ways. I think that would solve both requirements since:</p>
@@ -47,7 +47,7 @@ This file is part of yata.
     "country": 2,
     "client": "my cool app",
     "uid": "2000607",
-    "items": [
+    "items": {
         "266": {
             "quantity": 2,
             "cost": 123456,
@@ -56,7 +56,7 @@ This file is part of yata.
             "quantity": 3,
             "cost": "654321",
         },
-    ],
+    },
 }
 </pre>
 <p>where</p>
@@ -81,22 +81,16 @@ This file is part of yata.
 
     <li><tt>client</tt> is the name of your client (optionnal).</li>
     <li><tt>uid</tt> is the torn id of the user (optionnal).</li>
-    <li><tt>items</tt> is an array of <tt>item</tt> where:</li>
+    <li><tt>items</tt> is an objects of <tt>item</tt> where:</li>
     <ul>
-        <li><tt>id</tt> is the torn id of the item</li>
+        <li>the key is the torn id of the item</li>
         <li><tt>quantity</tt> is the quantity (you'll have to put 0 to set the quantity to 0)</li>
         <li><tt>cost</tt> is the cost</li>
     </ul>
 </ul>
 
     <h3>API response</h3>
-    <p>The API will return a response of the format: </p>
-    <pre>
-    {
-        "message": "YATA server message",
-        "stocks": [...],
-    }
-    </pre>
+    <p>The API will return a response with different format available that can be selected by the format  </p>
     <p>where</p>
     <ul>
         <li><tt>message</tt> is a custom yata server message (not very important)</li>
@@ -108,22 +102,137 @@ This file is part of yata.
     <h3>API url</h3>
     <p>In order to export data from the database you need to make a <tt>GET</tt> request to this url: <a href="{%url "bazaar:abroadExport" %}">API read</a>.</p>
 
-    <h3>Stocks by country</h3>
+    <h3>The payload formats</h3>
+    <p>Several format are available for the payload</p>
+
+    <h4>Default format: {%url "bazaar:abroadExport" %}</h4>
+<pre>"stocks": [
+    {
+        "item_id": 206,
+        "item_name": "Xanax",
+        "item_type": "Drug",
+        "country": "Canada",
+        "country_id": 2,
+        "country_fly_time": 41,
+        "abroad_cost": 888,
+        "abroad_quantity": 1,
+        "timestamp": 1590191528
+     },
+     {
+         "item_id": 266,
+         "item_name": "Nessie Plushie",
+         "item_type": "Plushie",
+         "country": "Canada",
+         "country_id": 2,
+         "country_fly_time": 41,
+         "abroad_cost": 123456,
+         "abroad_quantity": 0,
+         "timestamp": 1590191528
+     }
+]</pre>
+
+    <h4>Format by country: {%url "bazaar:abroadExport" %}?format=country</h4>
+<pre>"stocks": {
+    "Canada": {
+        "206": {
+            "item_id": 206,
+            "item_name": "Xanax",
+            "item_type": "Drug",
+            "country": "Canada",
+            "country_id": 2,
+            "country_fly_time": 41,
+            "abroad_cost": 888,
+            "abroad_quantity": 1,
+            "timestamp": 1590191528
+        },
+        "266": {
+            "item_id": 266,
+            "item_name": "Nessie Plushie",
+            "item_type": "Plushie",
+            "country": "Canada",
+            "country_id": 2,
+            "country_fly_time": 41,
+            "abroad_cost": 123456,
+            "abroad_quantity": 0,
+            "timestamp": 1590191528
+        }
+    }
+}</pre>
+    <h4>Format by item: {%url "bazaar:abroadExport" %}?format=item</h4>
+<pre>"stocks": {
+    "206": {
+        "Canada": {
+            "item_id": 206,
+            "item_name": "Xanax",
+            "item_type": "Drug",
+            "country": "Canada",
+            "country_id": 2,
+            "country_fly_time": 41,
+            "abroad_cost": 888,
+            "abroad_quantity": 1,
+            "timestamp": 1590191528
+        }
+    },
+    "266": {
+        "Canada": {
+            "item_id": 266,
+            "item_name": "Nessie Plushie",
+            "item_type": "Plushie",
+            "country": "Canada",
+            "country_id": 2,
+            "country_fly_time": 41,
+            "abroad_cost": 123456,
+            "abroad_quantity": 0,
+            "timestamp": 1590191528
+        }
+    }
+}</pre>
+
+    <h4>Flat format: {%url "bazaar:abroadExport" %}?format=flat</h4>
+<pre>"stocks": {
+    "206-2": {
+        "item_id": 206,
+        "item_name": "Xanax",
+        "item_type": "Drug",
+        "country": "Canada",
+        "country_id": 2,
+        "country_fly_time": 41,
+        "abroad_cost": 888,
+        "abroad_quantity": 1,
+        "timestamp": 1590191528
+    },
+    "266-2": {
+        "item_id": 266,
+        "item_name": "Nessie Plushie",
+        "item_type": "Plushie",
+        "country": "Canada",
+        "country_id": 2,
+        "country_fly_time": 41,
+        "abroad_cost": 123456,
+        "abroad_quantity": 0,
+        "timestamp": 1590191528
+    }
+}</pre>
+
+    <h3>Filter stocks by country</h3>
     <p>To get the stocks / country you'll have to append the filter <tt>country</tt> with couple key/value: <tt>country=country_id</tt> where <tt>country_id</tt> meets the same format as above:</p>
     <ul>
-        <li>Mexico: <a href="{%url "bazaar:abroadExport" %}?country=Mexico" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=Mexico</a></li>
-        <li>Canada: <a href="{%url "bazaar:abroadExport" %}?country=can" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=can</a></li>
-        <li>United Kingdom: <a href="{%url "bazaar:abroadExport" %}?country=4" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?country=4</a></li>
+        <li>Mexico: <a href="{%url "bazaar:abroadExport" %}?country=Mexico" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?country=Mexico</a></li>
+        <li>Canada: <a href="{%url "bazaar:abroadExport" %}?country=can" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?country=can</a></li>
+        <li>United Kingdom: <a href="{%url "bazaar:abroadExport" %}?country=4" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?country=4</a></li>
     </ul>
-    <h3>Stocks by type</h3>
+    <h3>Filter stocks by type</h3>
     <p>Following the same spirit Drugs / Plushies / Flowers can be extracted too:</p>
     <ul>
-        <li>Drugs: <a href="{%url "bazaar:abroadExport" %}?type=Drug" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=drug</a></li>
-        <li>Plushies: <a href="{%url "bazaar:abroadExport" %}?type=plushie" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=plushie</a></li>
-        <li>Flowers: <a href="{%url "bazaar:abroadExport" %}?type=flower" target="_blank">https://yata.alwaysdata.net/{%url "bazaar:abroadExport" %}?type=flower</a></li>
+        <li>Drugs: <a href="{%url "bazaar:abroadExport" %}?type=Drug" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?type=drug</a></li>
+        <li>Plushies: <a href="{%url "bazaar:abroadExport" %}?type=plushie" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?type=plushie</a></li>
+        <li>Flowers: <a href="{%url "bazaar:abroadExport" %}?type=flower" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?type=flower</a></li>
     </ul>
 
 
     <hr class="sep">
-    <p>The API is not case sensitive.</p>
+    <ul>
+        <li>The API is not case sensitive</li>
+        <li>What's inside item objects is subject to changes</li>
+    </ul>
 </div>

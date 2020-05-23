@@ -552,7 +552,7 @@ def abroadImport(request):
                 v["item_name"] = item.tName
                 v["item_type"] = item.tType
 
-            return JsonResponse({"message": "All good", "stocks": stocks}, status=200)
+            return JsonResponse({"message": "success", "stocks": stocks}, status=200)
 
         except BaseException as e:
             return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
@@ -564,39 +564,60 @@ def abroadExport(request):
     from bazaar.countries import countries
     from bazaar.countries import brigde_countries as bc
     try:
-        if request.GET.get("country", False):
-            country_key = str(request.GET.get("country")).lower().strip()[:3]
-            if country_key not in bc:
-                return JsonResponse({"message": "Unknown country key '{}'".format(country_key)}, status=403)
-            country_id = bc[country_key]
 
-            print(country_id)
-            # get all unique items of the country
-            # unique_items = [k["item__tId"] for k in AbroadStocks.objects.filter(country_id=country_id).values('item__tId').distinct()]
-            # print(unique_items)
-            # for item_id in unique_items:
-            stocksDB = AbroadStocks.objects.filter(country_id=country_id, last=True)
-            stocksJS = dict({"country": countries[country_id], "stocks": []})
-            for stock in stocksDB:
-                stocksJS["stocks"].append(stock.payload())
+        # get all last stocks
+        stocksDB = AbroadStocks.objects.filter(last=True)
 
-            return JsonResponse({"message": "All good", "stocks": stocksJS}, status=200)
-
-        elif request.GET.get("type", False):
+        # filter by type
+        if request.GET.get("type", False):
+            print("Filter", request.GET.get("type", False))
             type = str(request.GET.get("type")).strip().title()
             if type not in ["Drug", "Plushie", "Flower"]:
                 return JsonResponse({"message": "Unknown type '{}'".format(type)}, status=403)
+            stocksDB = stocksDB.filter(item__tType=type)
 
-            stocksDB = AbroadStocks.objects.filter(item__tType=type, last=True)
+        # filter by country
+        if request.GET.get("country", False):
+            print("Filter", request.GET.get("country", False))
+            country_key = str(request.GET.get("country")).lower().strip()[:3]
+            if country_key not in bc:
+                return JsonResponse({"message": "Unknown country key '{}'".format(country_key)}, status=403)
+            stocksDB = stocksDB.filter(country_id=bc[country_key])
 
-            stocksJS = dict({"type": type, "stocks": []})
-            for stock in stocksDB:
-                stocksJS["stocks"].append(stock.payload())
+        if request.GET.get("format", False):
 
-            return JsonResponse({"message": "All good", "stocks": stocksJS}, status=200)
+            # select the format
+            format = request.GET.get("format")
+            if format == "country":
+                stocksJS = dict({})
+                for stock in stocksDB:
+                    if stock.country not in stocksJS:
+                        stocksJS[stock.country] = dict({})
+                    stocksJS[stock.country][stock.item.tId] = stock.payload()
+
+            elif format == "item":
+                stocksJS = dict({})
+                for stock in stocksDB:
+                    if stock.item.tId not in stocksJS:
+                        stocksJS[stock.item.tId] = dict({})
+                    stocksJS[stock.item.tId][stock.country] = stock.payload()
+
+            elif format == "flat":
+                stocksJS = dict({})
+                for stock in stocksDB:
+                    id_b = "{}_{}".format(stock.item.tId,  stock.country_id)
+                    stocksJS[id_b] = stock.payload()
+            else:
+                return JsonResponse({"message": "Unknown format '{}'".format(format)}, status=403)
 
         else:
-            return JsonResponse({"message": "No filters found"}, status=403)
+
+            # default the format
+            stocksJS = []
+            for stock in stocksDB:
+                stocksJS.append(stock.payload())
+
+        return JsonResponse({"stocks": stocksJS}, status=200)
 
     except BaseException as e:
         return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
