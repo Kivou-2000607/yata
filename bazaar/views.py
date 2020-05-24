@@ -671,7 +671,8 @@ def abroad(request):
         for stock in stocks:
             country_list[stock.country_key]["n"] += 1
             country_list["all"]["n"] += 1
-            type_list[stock.item.tType]["n"] += 1
+            if stock.item.tType in ["Drug", "Plushie", "Flower"]:
+                type_list[stock.item.tType]["n"] += 1
             type_list["all"]["n"] += 1
 
         if filters["countries"] != "all":
