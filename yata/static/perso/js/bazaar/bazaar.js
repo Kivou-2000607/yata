@@ -27,10 +27,10 @@ $(document).on('click', '.prices-item', function(e){
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
 });
-$(document).on('click', '.abroad-item-stocks', function(e){
+$(document).on('click', 'tr.abroad-item-stocks > td:not(.dont-touch-me)', function(e){
     e.preventDefault();
-    var item_id = $(this).attr("data-ite");
-    var country_key = $(this).attr("data-cou");
+    var item_id = $(this).parent("tr").attr("data-ite");
+    var country_key = $(this).parent("tr").attr("data-cou");
     $( "#prices-item" ).load( "/bazaar/abroad/stocks/", {
         item_id: item_id, country_key: country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
