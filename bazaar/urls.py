@@ -22,6 +22,7 @@ urlpatterns = [
     re_path(r'^abroad/import/$', views.abroadImport, name='abroadImport'),
     re_path(r'^abroad/export/$', views.abroadExport, name='abroadExport'),
     re_path(r'^abroad/$', views.abroad, name='abroad'),
+    re_path(r'^abroad/stocks/$', views.abroadStocks, name='abroadStocks'),
 
     # re_path(r'^logout/$', views.logout, name='logout'),
     # re_path(r'^updateKey/$', views.updateKey, name='updateKey'),

@@ -1,0 +1,132 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#bazaar-abroad-stocks").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0], [3, 1]]
+        });
+    });
+</script>
+
+<table class="center-medium">
+        {% for id, country in country_list.items %}
+        {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
+
+            {% if id == filters.countries %}
+                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid">
+                    {% if country.flag %}
+                        <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{country.flag}}.png" alt="{{id}}">
+                    {% else %}
+                        <i class="fas fa-toggle-on"></i>
+                    {% endif %}
+                    {{country.name}} ({{country.n}})
+                </td>
+            {% else %}
+                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
+                    {% if country.flag %}
+                        <img class="flag-gs" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{country.flag}}.png" alt="{{id}}">
+                    {% else %}
+                        <i class="fas fa-toggle-off"></i>
+                    {% endif %}
+                    {{country.name}} ({{country.n}})
+                </td>
+            {% endif %}
+
+        {% if forloop.counter|divisibleby:6 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+
+        {% endfor %}
+
+        <tr>
+            <td></td>
+        {% for id, type in type_list.items %}
+
+            {% if id == filters.types %}
+                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid">
+                    <i class="fas fa-toggle-on"></i>{{type.name}} ({{type.n}})
+                </td>
+            {% else %}
+                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
+                    <i class="fas fa-toggle-off"></i>
+                    {{type.name}} ({{type.n}})
+                </td>
+            {% endif %}
+
+        {% endfor %}
+        <td></td>
+        <tr>
+</table>
+
+
+<table id="bazaar-abroad-stocks" class="center-large trshadow bazaar-abroad-stocks">
+    <thead>
+        <tr>
+            <th>Country</th>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Profit</th>
+            <th>Profit / hour</th>
+            <th>Weekly tendency</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if stocks|length %}
+            {% for stock in stocks %}
+            <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow abroad-item-stocks">
+                <td class="a" data-val="{{stock.get_country.id}}">
+                    <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{stock.get_country.flag}}.png" alt="{{id}}">
+                    {{stock.country}}
+                </td>
+                <td class="b"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}">{{stock.item.tName}}</td>
+                <td class="c">{{stock.item.tType}}</td>
+                <td class="d" data-val="{{stock.quantity}}" data-ite="{{stock.item.tId}}" data-cou="{{stock.country_key}}">
+                    {{stock.quantity|intcomma}}&nbsp;&nbsp;<i class="fas fa-chart-line"></i></td>
+                <td class="e" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
+                <td class="f" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
+                <td class="g" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
+                <td class="h" data-val="{{stock.item.weekTendency}}">
+                    <a href="{% url 'bazaar:prices' stock.item.tId %}" class="no-style prices-item" title="Prices tendency over a week / a month">
+                        {{stock.item.weekTendency|priceTendency|safe}}
+                    </a>
+                </td>
+                <td class="i" title="Last update on {{stock.timestamp|ts2date}} TCT" data-val="{{stock.timestamp|ts2date}}">{{stock.update|ts2ago}}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <td colspan="9" class="error" style="text-align: center;">No stocks found</td>
+        {% endif %}
+    </tbody>
+</table>

@@ -17,14 +17,10 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.loopType %}
-    {% include "bazaar/loop-types.html" %}
-{% endif %}
 
-{% if view.abroad %}
-    {% include "bazaar/abroad/index.html" %}
-{% endif %}
+{{countrie}}

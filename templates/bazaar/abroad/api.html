@@ -26,24 +26,6 @@ This file is part of yata.
 <script src='{% static "thirdparty/js/highlight.pack.js" %}'></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
-<div class="module rounded">
-    <p class="warning" style="text-align: center">This is a work in progress, check out the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16163704" target="_blank">forum thread</a>.<br>
-        I'm waiting the dev community feedback to improve the API.<br>
-    </p>
-    <p>The goal of this section is to build a <b>shared database for abroad items <i>costs</i> and <i>quantities</i></b>.</p>
-
-    <p>The main issue of the current existing tools providing this kind of information is that they either lake software updates or a massive user base. And both are required for this to work.</p>
-    <p>The idea is for <b>YATA to provide an open API with read and write access</b> and for <b>the community to develop tools</b> to use it both ways. I think that would solve both requirements since:</p>
-    <ul>
-        <li>Only the API will rely on a single person (me). And it doesn't depend on Torn's updates.</li>
-        <li>Anyone would be able to develop a tool to feed the database which would help getting a large amount of users.</li>
-    </ul>
-    <hr class="sep">
-    <p>YATA will also display the stocks here if this project works.</p>
-</div>
-
-<h2 class="title"><i class="fas fa-code"></i>&nbsp;&nbsp;API documentation</h2>
-<div class="module">
     <h1><i class="fas fa-download"></i>&nbsp;&nbsp;Import</h1>
     <p>To import data to the database you need to make a <tt>POST</tt> request to this url: <a href="{%url "bazaar:abroadImport" %}">https://yata.alwaysdata.net{%url "bazaar:abroadImport" %}</a></p>
     <h2>Body format</h2>
@@ -198,10 +180,9 @@ sou: South Africa</code></pre>
 
 
 <h2>Filters</h2>
-<p>Payload can be filtered by country with the <code>country_key=&lt;key&gt;</code> and/or by type with <code>type=plushie</code>, <code>flowers</code> or <code>drug</code> as follow:</p>
+<p>Payload can be filtered by country with the <code>country_key=&lt;key&gt;</code> and/or by type with <code>type=plushie</code>, <code>flower</code> or <code>drug</code> as follow:</p>
 <ul>
     <li><a href="{%url "bazaar:abroadExport" %}?country=uni" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?country=uni</a></li>
     <li><a href="{%url "bazaar:abroadExport" %}?type=plushie" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?type=plushie</a></li>
     <li><a href="{%url "bazaar:abroadExport" %}?country=uni&type=plushie" target="_blank">https://yata.alwaysdata.net{%url "bazaar:abroadExport" %}?country=uni&type=plushie</a></li>
 </ul>
-</div>

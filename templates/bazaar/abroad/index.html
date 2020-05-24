@@ -17,14 +17,20 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.loopType %}
-    {% include "bazaar/loop-types.html" %}
-{% endif %}
+<div class="module rounded">
+    <p class="warning" style="text-align: center">This is a work in progress, check out the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16163704" target="_blank">forum thread</a>.</p>
+</div>
 
-{% if view.abroad %}
-    {% include "bazaar/abroad/index.html" %}
-{% endif %}
+{% include "bazaar/abroad/stocks.html" %}
+
+<div class="catch-me">
+    <h2 class="title toggle-display rounded"><i class="fas fa-code"></i>&nbsp;&nbsp;API documentation&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="module"  style="display: none;">
+        {% include "bazaar/abroad/api.html" %}
+    </div>
+</div>

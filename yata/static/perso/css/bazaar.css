@@ -107,3 +107,19 @@ span.italic { font-style: italic; }
 span.bold { font-weight: bold; }
 span.t-gray-9 { color: #999; }
 span.t-green { color: #0B8E14; }
+
+
+td.bazaar-toggle-filters{ cursor: pointer; }
+img.flag{ margin-right: 10px; }
+img.flag-gs{ margin-right: 10px; filter: grayscale(0.8); }
+
+
+table.bazaar-abroad-stocks td.a { width:13%; text-align: left;}
+table.bazaar-abroad-stocks td.b { width:12%; text-align: left;}
+table.bazaar-abroad-stocks td.c { width:10%; text-align: left;}
+table.bazaar-abroad-stocks td.d { width:8%; text-align: center; cursor: pointer;}
+table.bazaar-abroad-stocks td.e { width:12%; text-align: right;}
+table.bazaar-abroad-stocks td.f { width:10%; text-align: right;}
+table.bazaar-abroad-stocks td.g { width:10%; text-align: right;}
+table.bazaar-abroad-stocks td.h { width:15%; text-align: center;}
+table.bazaar-abroad-stocks td.i { width:10%; text-align: center;}

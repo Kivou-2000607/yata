@@ -1,0 +1,97 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#bazaar-abroad-stocks").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              // 4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              // 5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              // 8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              // 9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              // 11: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
+              // 12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0], [3, 1]]
+        });
+    });
+</script>
+
+<table class="center-medium">
+        {% for id, country in country_list.items %}
+        {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
+
+            {% if id == filters.countries %}
+                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid"><i class="fas fa-toggle-on"></i>{{country.name}} ({{country.n}})</td>
+            {% else %}
+                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons"><i class="fas fa-toggle-off"></i>{{country.name}} ({{country.n}})</td>
+            {% endif %}
+
+        {% if forloop.counter|divisibleby:6 %}</tr>{% elif forloop.last %}</tr>{% endif %}
+
+        {% endfor %}
+
+        <tr>
+            <td></td>
+        {% for id, type in type_list.items %}
+
+            {% if id == filters.types %}
+                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid"><i class="fas fa-toggle-on"></i>{{type.name}} ({{type.n}})</td>
+            {% else %}
+                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons"><i class="fas fa-toggle-off"></i>{{type.name}} ({{type.n}})</td>
+            {% endif %}
+
+        {% endfor %}
+        <td></td>
+        <tr>
+</table>
+
+
+<table id="bazaar-abroad-stocks" class="center-large">
+    <thead>
+        <tr>
+            <th>Country</th>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock in stocks %}
+        <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow">
+            <td data-val="{{stock.get_country.id}}">{{stock.country}}</td>
+            <td>{{stock.item.tName}}</td>
+            <td>{{stock.item.tType}}</td>
+            <td>{{stock.quantity|intcomma}}</td>
+            <td>${{stock.cost|intcomma}}</td>
+            <td>{{stock.timestamp|ts2date}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

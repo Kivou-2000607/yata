@@ -1,0 +1,73 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if graph|length > 0 %}
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Time', 'Stock', 'Price'],
+        {% for a, b, c in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}],
+         {% endfor %}
+      ]);
+
+      var options = {
+        // legend: {position: 'top', textStyle: {fontSize: 14}},
+        legend: {position: 'none', textStyle: {fontSize: 14}},
+        series: {
+                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
+                },
+        hAxis: { format: 'M/d/yy' },
+        vAxis: { format: 'short', title: 'Stocks' },
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1]);
+
+      var chart = new google.visualization.ComboChart(document.getElementById('stocks-history'));
+      chart.draw(view, options);
+    }
+</script>
+{% endif %}
+
+<div class="container">
+    <div class="overlay close"></div>
+    <div class="modal-center-large">
+        <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
+        <div class="module">
+            <span style="position: absolute; top:40px; right: 10px;"><button>{{item.display_large}}</button></span>
+            <p>Tendency per week over last week: {{item.weekTendency|priceTendency|safe}}</p>
+            <p>Tendency per week over last month: {{item.monthTendency|priceTendency|safe}}</p>
+            {% if graph|length == 0 %}
+              <p class="warning">No data to plot</p>
+            {% else %}
+              <div id="stocks-history"></div>
+            {% endif %}
+        </div>
+    </div>
+</div>

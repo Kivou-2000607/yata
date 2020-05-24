@@ -27,6 +27,14 @@ $(document).on('click', '.prices-item', function(e){
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
 });
+$(document).on('click', '.abroad-item-stocks', function(e){
+    e.preventDefault();
+    var item_id = $(this).attr("data-ite");
+    var country_key = $(this).attr("data-cou");
+    $( "#prices-item" ).load( "/bazaar/abroad/stocks/", {
+        item_id: item_id, country_key: country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
+    });
+});
 $(document).on('click', '.close', function(e){
     e.preventDefault();
     $(this).parent("div.container").css("display", "none");
@@ -138,4 +146,21 @@ $(document).on('click', 'h3.toggle-display', function(e){
     var i = h.find("i");
     if (c.is(":hidden")) i.addClass("fa-rotate-90"); else i.removeClass("fa-rotate-90");
     c.slideToggle("fast");
+});
+
+
+
+// toggle abroad filters
+$(document).on('click', "td.bazaar-toggle-filters", function(e){
+    e.preventDefault();
+    var td = $(this);
+    var filter = td.attr("data-fil");
+    var key = td.attr("data-key");
+    var reload = $(e.currentTarget).parents("div#bazaar-abroad-stocks-reload");
+    // var divspinner = '<div style="text-align: center; height: '+reload.css("height")+';">'+spinner+'</div>'
+    reload.load( "/bazaar/abroad/", {
+        key: key, filter: filter, csrfmiddlewaretoken: getCookie("csrftoken"),
+    });
+    td.html(spinner);
+    $("table#bazaar-abroad-stocks").find("tbody").find("td").html(spinner);
 });

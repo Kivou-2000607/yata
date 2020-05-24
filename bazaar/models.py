@@ -319,3 +319,7 @@ class AbroadStocks(models.Model):
                 # "item_week_tendency": self.item.weekTendency,
                 # "country_fly_time": countries[self.country_id]["fly_time"],
                 }
+
+    def get_country(self):
+        from bazaar.countries import countries
+        return countries.get(self.country_key)

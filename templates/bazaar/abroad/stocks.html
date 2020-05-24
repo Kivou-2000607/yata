@@ -17,14 +17,16 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.loopType %}
-    {% include "bazaar/loop-types.html" %}
-{% endif %}
 
-{% if view.abroad %}
-    {% include "bazaar/abroad/index.html" %}
-{% endif %}
+
+<h2 class="title"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stocks</h2>
+<div class="module">
+    <div id="bazaar-abroad-stocks-reload">
+        {% include "bazaar/abroad/list.html" %}
+    </div>
+</div>

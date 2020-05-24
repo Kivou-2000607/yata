@@ -570,6 +570,7 @@ def abroadImport(request):
     else:
         return returnError(type=403, msg="Expecting a POST request.")
 
+
 def abroadExport(request):
     from bazaar.countries import countries
 
@@ -632,18 +633,97 @@ def abroadExport(request):
     except BaseException as e:
         return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
 
+
 def abroad(request):
     try:
+        # build up filters list
+        from bazaar.countries import countries as country_list
+        from bazaar.countries import types as type_list
+        country_list["all"] = {"name": "All", "n": 0}
+        type_list["all"] = {"name": "All", "n": 0}
+        for k, v in country_list.items():
+            v["n"] = 0
+        for k, v in type_list.items():
+            v["n"] = 0
+
+        # get player and page
         if request.session.get('player'):
             tId = request.session["player"].get("tId")
         else:
             tId = -1
-
         player = Player.objects.filter(tId=tId).first()
-
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
-        context = {"player": player, "bazaarcat": True, "view": {"abroad": True}}
+
+        # get filters
+        filters = request.session.get('stocks-filters', {"countries": "all", "types": "all"})
+        if request.POST.get("filter", False) and request.POST.get("key"):
+            page = "bazaar/abroad/list.html"
+            post_filter = request.POST.get("filter")
+            post_key = request.POST.get("key")
+            if post_filter in "types" and post_key in type_list:
+                filters[post_filter] = post_key if post_key != filters[post_filter] else "all"
+            elif post_filter in "countries" and post_key in country_list:
+                filters[post_filter] = post_key if post_key != filters[post_filter] else "all"
+        request.session["stocks-filters"] = filters
+
+        # get all stocks
+        stocks = AbroadStocks.objects.filter(last=True)
+        for stock in stocks:
+            country_list[stock.country_key]["n"] += 1
+            country_list["all"]["n"] += 1
+            type_list[stock.item.tType]["n"] += 1
+            type_list["all"]["n"] += 1
+
+        if filters["countries"] != "all":
+            stocks = stocks.filter(country_key=filters["countries"])
+        if filters["types"] != "all":
+            stocks = stocks.filter(item__tType=filters["types"])
+
+        # add fields
+        for stock in stocks:
+            stock.profit = stock.item.tMarketValue - stock.cost
+            stock.profitperhour = round(30 * stock.profit / stock.get_country()["fly_time"])
+            stock.update = tsnow() - stock.timestamp
+
+        import time
+        time.sleep(0.2)
+        context = {"player": player,
+                   "filters": filters,
+                   "country_list":country_list,
+                   "type_list": type_list,
+                   "stocks": stocks,
+                   "bazaarcat": True,
+                   "view": {"abroad": True}}
+
         return render(request, page, context)
+
+    except Exception as e:
+        del request.session["stocks-filters"]
+        return returnError(exc=e, session=request.session)
+
+
+def abroadStocks(request):
+    try:
+        if request.method == "POST":
+            item_id = request.POST.get('item_id', False)
+            country_key = request.POST.get('country_key', False)
+            stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id).order_by("-timestamp")
+
+            if stocks is None:
+                context = {'item': None, "graph": [], "graphLength": 0}
+                return render(request, 'bazaar/abroad/graph.html', context)
+                return returnError(type=403)
+
+            # create price histogram
+            # plot only last 8 points of the Tendency
+            graph = [[timestampToDate(s.timestamp), s.quantity, s.cost] for s in stocks]
+
+            context = {'item': stocks.first().item, "graph": graph}
+            return render(request, 'bazaar/abroad/graph.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)

@@ -160,6 +160,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
     from django.http import HttpResponseForbidden
     from django.http import HttpResponseNotFound
     from django.template.loader import render_to_string
+    from player.models import Player
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
@@ -173,7 +174,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
         if session is not None and session.get("player", False):
             player = getPlayer(session["player"].get("tId"))
         else:
-            player = player.objects.filter(tId=-1).first()
+            player = Player.objects.filter(tId=-1).first()
         defaults = {"timestamp": tsnow()}
         try:
             player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
