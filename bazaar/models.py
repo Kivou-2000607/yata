@@ -288,13 +288,12 @@ class BazaarData(models.Model):
 class AbroadStocks(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
-    country_id = models.IntegerField(default=0)
+    country_key = models.CharField(default="???", max_length=3)
     country = models.CharField(max_length=32)
     quantity = models.IntegerField(default=0)
     cost = models.IntegerField(default=0)
     timestamp = models.IntegerField(default=0)
 
-    uid = models.IntegerField(default=0)
     client = models.CharField(max_length=32, blank=True)
 
     last = models.BooleanField(default=True)
@@ -306,17 +305,17 @@ class AbroadStocks(models.Model):
         from bazaar.countries import countries
 
         return {
+                "country_key": self.country_key,
+                "country_name": self.country,
                 "item_id": self.item.tId,
                 "item_name": self.item.tName,
                 "item_type": self.item.tType,
+                "abroad_cost": self.cost,
+                "abroad_quantity": self.quantity,
+                "timestamp": self.timestamp,
                 # "item_maket_value": self.item.tMarketValue,
                 # "item_sell_price": self.item.tSellPrice,
                 # "item_buy_price": self.item.tBuyPrice,
                 # "item_week_tendency": self.item.weekTendency,
-                "country": self.country,
-                "country_id": self.country_id,
-                "country_fly_time": countries[self.country_id]["fly_time"],
-                "abroad_cost": self.cost,
-                "abroad_quantity": self.quantity,
-                "timestamp": self.timestamp,
+                # "country_fly_time": countries[self.country_id]["fly_time"],
                 }

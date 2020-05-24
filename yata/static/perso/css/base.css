@@ -313,6 +313,7 @@ thead th.none:after {
 
 h2.rounded, div.rounded { border-radius: 6px; margin-bottom: 20px; }
 h2.toggle-display { cursor: pointer; }
+h3.toggle-display { cursor: pointer; }
 
 pre {
     background: #f4f4f4;

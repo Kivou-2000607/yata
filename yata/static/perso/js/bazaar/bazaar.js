@@ -128,3 +128,14 @@ window.setInterval(function(){
         // }
     });
 }, 1000);
+
+
+// show/hide module
+$(document).on('click', 'h3.toggle-display', function(e){
+    e.preventDefault();
+    var h = $(this);
+    var c = h.next("pre");
+    var i = h.find("i");
+    if (c.is(":hidden")) i.addClass("fa-rotate-90"); else i.removeClass("fa-rotate-90");
+    c.slideToggle("fast");
+});

@@ -481,7 +481,6 @@ def toggle(request, itemId):
 @csrf_exempt
 def abroadImport(request):
     from bazaar.countries import countries
-    from bazaar.countries import brigde_countries as bc
 
     if request.method == 'POST':
         try:
@@ -490,26 +489,44 @@ def abroadImport(request):
             # check mandatory keys
             for key in ["country", "items"]:
                 if key not in payload:
-                    return JsonResponse({"message": "Missing \'{}\' key in payload".format(key)}, status=403)
+                    return JsonResponse({"message": "Missing \'{}\' key in payload".format(key)}, status=400)
 
             # check items length
             if not len(payload["items"]):
-                return JsonResponse({"message": "Empty items list"}, status=403)
+                return JsonResponse({"message": "Empty items list"}, status=400)
 
             # check country:
             country_key = str(payload["country"]).lower().strip()[:3]
-            if country_key not in bc:
-                return JsonResponse({"message": "Unknown country key '{}'".format(country_key)}, status=403)
+            if country_key not in countries:
+                return JsonResponse({"message": "Unknown country key {}".format(country_key)}, status=400)
 
-            country_id = bc[country_key]
-            country = countries[country_id]["name"]
+            country = countries[country_key]["name"]
             items = payload["items"]
-            uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
+            # uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
             client = payload.get("client", "unknown").strip()
             timestamp = tsnow()
 
+            # convert list to dict and check keys
+            if isinstance(items, list):
+                items_list = items
+                items = dict({})
+                for item in items_list:
+                    for key in ["id", "quantity", "cost"]:
+                        if not str(item.get(key)).isdigit():
+                            return JsonResponse({"message": "Wrong {} for item object: {}".format(key, item.get(key))}, status=400)
+                    items[item["id"]] = {"cost": item["cost"], "quantity": item["quantity"]}
+
+            elif isinstance(items, dict):
+                for item_id, item in items.items():
+                    for key in ["quantity", "cost"]:
+                        if not str(item.get(key)).isdigit():
+                            return JsonResponse({"message": "Wrong item {} for item {}".format(key, item_id)}, status=400)
+
+            else:
+                return JsonResponse({"message": "Wrong item list format {}".format(type(items))}, status=400)
+
             # get all unique items from this country
-            distinct_items = [k['item_id'] for k in AbroadStocks.objects.filter(country_id=country_id).values('item_id').distinct()]
+            distinct_items = [k['item_id'] for k in AbroadStocks.objects.filter(country_key=country_key).values('item_id').distinct()]
 
             # add items not in db
             for k in items:
@@ -522,35 +539,28 @@ def abroadImport(request):
                 cost = 0
                 quantity = 0
                 if item:
-                    for key in ["quantity", "cost"]:
-                        if not str(item.get(key)).isdigit():
-                            return JsonResponse({"message": "Wrong item {} for item {}".format(key, item_id)}, status=403)
                     cost = int(item["cost"])
                     quantity = int(item["quantity"])
                 else:
-                    lastItem = AbroadStocks.objects.filter(item_id=item_id, country_id=country_id).order_by("-timestamp").first()
+                    lastItem = AbroadStocks.objects.filter(item_id=item_id, country_key=country_key).order_by("-timestamp").first()
                     cost = 0 if lastItem is None else lastItem.cost
                     quantity = 0
 
                 stocks[item_id] = {"country": country,
-                                   "country_id": country_id,
+                                   "country_key": country_key,
                                    "client": client,
-                                   "uid": uid,
                                    "timestamp": timestamp,
                                    "cost": cost,
                                    "quantity": quantity}
 
             for k, v in stocks.items():
-                # print(k, v["cost"], v["quantity"])
                 item = Item.objects.filter(tId=k).first()
                 if item is None:
-                    return JsonResponse({"message": "Item '{}' not found in database".format(k)}, status=403)
+                    return JsonResponse({"message": "Item {} not found in database".format(k)}, status=400)
 
-                AbroadStocks.objects.filter(item=item, country_id=v["country_id"], last=True).update(last=False)
+                AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
                 v["last"] = True
                 item.abroadstocks_set.create(**v)
-                v["item_name"] = item.tName
-                v["item_type"] = item.tType
 
             return JsonResponse({"message": "success", "stocks": stocks}, status=200)
 
@@ -562,7 +572,7 @@ def abroadImport(request):
 
 def abroadExport(request):
     from bazaar.countries import countries
-    from bazaar.countries import brigde_countries as bc
+
     try:
 
         # get all last stocks
@@ -573,16 +583,16 @@ def abroadExport(request):
             print("Filter", request.GET.get("type", False))
             type = str(request.GET.get("type")).strip().title()
             if type not in ["Drug", "Plushie", "Flower"]:
-                return JsonResponse({"message": "Unknown type '{}'".format(type)}, status=403)
+                return JsonResponse({"message": "Unknown type {}".format(type)}, status=400)
             stocksDB = stocksDB.filter(item__tType=type)
 
         # filter by country
         if request.GET.get("country", False):
             print("Filter", request.GET.get("country", False))
             country_key = str(request.GET.get("country")).lower().strip()[:3]
-            if country_key not in bc:
-                return JsonResponse({"message": "Unknown country key '{}'".format(country_key)}, status=403)
-            stocksDB = stocksDB.filter(country_id=bc[country_key])
+            if country_key not in countries:
+                return JsonResponse({"message": "Unknown country key {}".format(country_key)}, status=400)
+            stocksDB = stocksDB.filter(country_key=country_key)
 
         if request.GET.get("format", False):
 
@@ -591,24 +601,24 @@ def abroadExport(request):
             if format == "country":
                 stocksJS = dict({})
                 for stock in stocksDB:
-                    if stock.country not in stocksJS:
-                        stocksJS[stock.country] = dict({})
-                    stocksJS[stock.country][stock.item.tId] = stock.payload()
+                    if stock.country_key not in stocksJS:
+                        stocksJS[stock.country_key] = dict({})
+                    stocksJS[stock.country_key][stock.item.tId] = stock.payload()
 
             elif format == "item":
                 stocksJS = dict({})
                 for stock in stocksDB:
                     if stock.item.tId not in stocksJS:
                         stocksJS[stock.item.tId] = dict({})
-                    stocksJS[stock.item.tId][stock.country] = stock.payload()
+                    stocksJS[stock.item.tId][stock.country_key] = stock.payload()
 
             elif format == "flat":
                 stocksJS = dict({})
                 for stock in stocksDB:
-                    id_b = "{}_{}".format(stock.item.tId,  stock.country_id)
+                    id_b = "{}_{}".format(stock.item.tId,  stock.country_key)
                     stocksJS[id_b] = stock.payload()
             else:
-                return JsonResponse({"message": "Unknown format '{}'".format(format)}, status=403)
+                return JsonResponse({"message": "Unknown format {}".format(format)}, status=400)
 
         else:
 
