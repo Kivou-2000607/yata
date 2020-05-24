@@ -21,6 +21,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 import json
 
@@ -655,15 +656,30 @@ def abroad(request):
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
 
         # get filters
-        filters = request.session.get('stocks-filters', {"countries": "all", "types": "all"})
+        filters = request.session.get('stocks-filters', {"countries": "all", "types": ["all"]})
+        if not isinstance(filters["types"], list):
+            filters["types"] = ["all"]
+
+        # set filters           
         if request.POST.get("filter", False) and request.POST.get("key"):
             page = "bazaar/abroad/list.html"
             post_filter = request.POST.get("filter")
             post_key = request.POST.get("key")
+
             if post_filter in "types" and post_key in type_list:
-                filters[post_filter] = post_key if post_key != filters[post_filter] else "all"
+                if post_key != "all":
+                    if "all" in filters[post_filter]:
+                        filters[post_filter].remove("all")
+                    if post_key in filters[post_filter]:
+                        filters[post_filter].remove(post_key)
+                    else:
+                        filters[post_filter].append(post_key)
+                if not len(filters[post_filter]) or post_key == "all":
+                    filters[post_filter] = ["all"]
+
             elif post_filter in "countries" and post_key in country_list:
                 filters[post_filter] = post_key if post_key != filters[post_filter] else "all"
+
         request.session["stocks-filters"] = filters
 
         # get all stocks
@@ -677,8 +693,8 @@ def abroad(request):
 
         if filters["countries"] != "all":
             stocks = stocks.filter(country_key=filters["countries"])
-        if filters["types"] != "all":
-            stocks = stocks.filter(item__tType=filters["types"])
+        if "all" not in filters["types"]:
+            stocks = stocks.filter(item__tType__in=filters["types"])
 
         # add fields
         for stock in stocks:

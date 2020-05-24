@@ -71,7 +71,7 @@ This file is part of yata.
             <td></td>
         {% for id, type in type_list.items %}
 
-            {% if id == filters.types %}
+            {% if id in filters.types %}
                 <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid">
                     <i class="fas fa-toggle-on"></i>{{type.name}} ({{type.n}})
                 </td>
