@@ -555,20 +555,20 @@ def abroadImport(request):
                                    "cost": cost,
                                    "quantity": quantity}
 
-            for k, v in stocks.items():
-                item = Item.objects.filter(tId=k).first()
-                if item is None:
-                    return JsonResponse({"message": "Item {} not found in database".format(k)}, status=400)
-
-
             version = payload.get("version", "v0.1")
             client, _ = VerifiedClient.objects.get_or_create(name=v["client"], version=version)
             client.update_author(payload)
             if client.verified:
+                for k, v in stocks.items():
+                    item = Item.objects.filter(tId=k).first()
+                    if item is None:
+                        return JsonResponse({"message": "Item {} not found in database".format(k)}, status=400)
+
+                    AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
+                    v["last"] = True
+                    item.abroadstocks_set.create(**v)
+
                 successMessage = "The stocks have been updated with {}.".format(client)
-                AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
-                v["last"] = True
-                item.abroadstocks_set.create(**v)
             else:
                 # client = VerifiedClient.objects.filter(verified=True, name=v["client"]).first()
                 successMessage = "Your client '{} - {}' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(v["client"], version)
