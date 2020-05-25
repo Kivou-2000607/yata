@@ -31,14 +31,20 @@ This file is part of yata.
     <h2>Body format</h2>
     <p>It requires a <tt>body</tt> with the following format</p>
 <pre><code class="js">Object {
-    "country": String,
     "client": String,
+    "version": String,     // (optional: default="v0.1")
+    "author_name": String, // (optional: default="Player")
+    "author_id": Number,   // (optional: default=0)
+    "country": String,
     "items": Array [ Object { "id"; Number, "quantity": Number, "cost": Number }, ... ]
 }</code></pre>
 <h3 class="toggle-display">Example of a body&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
 <pre style="display: none;"><code class="json">{
-    "country": "uni",           // String: key of the country
     "client": "My cool script", // String: name of the client
+    "version": "v0.1",          // String: version client (optional)
+    "author_name": "Kivou",     // String: author torn name (optional)
+    "author_id": 2000607,       // String: author torn id (optional)
+    "country": "uni",           // String: key of the country
     "items": [                  // Array: list of items
         {                       // Object: item
             "id": 268,          // Number: item torn ID
@@ -70,6 +76,12 @@ sou: South Africa</code></pre>
     <li>If an item of a country is not in the list, its <code>quantity</code> is automatically set to <tt>0</tt>.</li>
     <li>It returns a <tt>200</tt> for success, <tt>400</tt> for malformed requests and <tt>500</tt> for server errors.</li>
     <li>In case of <tt>200</tt> the body of the response corresponds to the items updated (including 0 quantities).</li>
+    <li>Verified clients:
+        <ul>
+            <li>Your client needs to be added to the databse as a "verified client" to be able to write in the database.</li>
+            <li>The API response is similar for verified and not verified clients to simplify testing.</li>
+        </ul>
+    </li>
 </ul>
 
 <h1><i class="fas fa-upload"></i>&nbsp;&nbsp;Export</h1>
@@ -79,17 +91,15 @@ sou: South Africa</code></pre>
 <h3 class="toggle-display">Default: <tt>{%url "bazaar:abroadExport" %}</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
 <pre style="display: none;"><code class="json">"stocks": [
     {
-        "country_key": "uni",
-        "country_name": "United Kingdom", // might be removed
+        "country_name": "United Kingdom",
         "item_id": 266,
-        "item_name": "Nessie Plushie",    // might be removed
-        "item_type": "Plushie",           // might be removed
+        "item_name": "Nessie Plushie",
+        "item_type": "Plushie",
         "abroad_cost": 200,
         "abroad_quantity": 1,
         "timestamp": 1590233946
     },
     {
-        "country_key": "uni",
         "country_name": "United Kingdom",
         "item_id": 268,
         "item_name": "Red Fox Plushie",

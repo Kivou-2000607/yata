@@ -4,6 +4,7 @@ url = "http://127.0.0.1:8000/bazaar/abroad/import/"
 payload = {
     "country": "uni",
     "client": "my cool app",
+    "version": "v0.2",
     "uid": "2000607",
     # "items": {
     #     "206": {

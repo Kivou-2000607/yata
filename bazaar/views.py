@@ -28,6 +28,7 @@ import json
 from bazaar.models import Item
 from bazaar.models import BazaarData
 from bazaar.models import AbroadStocks
+from bazaar.models import VerifiedClient
 from player.models import Player
 from yata.handy import apiCall
 from yata.handy import returnError
@@ -559,11 +560,20 @@ def abroadImport(request):
                 if item is None:
                     return JsonResponse({"message": "Item {} not found in database".format(k)}, status=400)
 
+
+            version = payload.get("version", "v0.1")
+            client, _ = VerifiedClient.objects.get_or_create(name=v["client"], version=version)
+            client.update_author(payload)
+            if client.verified:
+                successMessage = "The stocks have been updated with {}.".format(client)
                 AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
                 v["last"] = True
                 item.abroadstocks_set.create(**v)
+            else:
+                # client = VerifiedClient.objects.filter(verified=True, name=v["client"]).first()
+                successMessage = "Your client '{} - {}' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(v["client"], version)
 
-            return JsonResponse({"message": "success", "stocks": stocks}, status=200)
+            return JsonResponse({"message": successMessage, "stocks": stocks}, status=200)
 
         except BaseException as e:
             return JsonResponse({"message": "Server error: {}".format(e)}, status=500)

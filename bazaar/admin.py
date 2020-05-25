@@ -23,6 +23,7 @@ from .models import MarketData
 from .models import Item
 from .models import BazaarData
 from .models import AbroadStocks
+from .models import VerifiedClient
 
 
 class BazaarDataAdmin(admin.ModelAdmin):
@@ -50,6 +51,7 @@ class AbroadStocksAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'item', 'country', 'cost', 'quantity', 'timestamp', 'last']
     list_filter = ['country', 'last', 'item__tType']
 
+
 admin.site.register(AbroadStocks, AbroadStocksAdmin)
 
 
@@ -71,4 +73,21 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter = ['onMarket', 'tType']
     search_fields = ['tName', 'tId', 'tType']
 
+
 admin.site.register(Item, ItemAdmin)
+
+
+def verify(modeladmin, request, queryset):
+    queryset.update(verified=True)
+
+
+def unverify(modeladmin, request, queryset):
+    queryset.update(verified=False)
+
+
+class VerifiedClientAdmin(admin.ModelAdmin):
+    list_display = ['name', 'author_name', 'author_id', 'version', 'verified']
+    actions = [verify, unverify]
+
+
+admin.site.register(VerifiedClient, VerifiedClientAdmin)

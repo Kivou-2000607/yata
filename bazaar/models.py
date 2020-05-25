@@ -283,8 +283,30 @@ class BazaarData(models.Model):
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
     itemType = models.TextField(default="{}")
+    # verifiedScripts = models.TextField(default="[]")
 
 
+class VerifiedClient(models.Model):
+    author_id = models.IntegerField(default=0)
+    author_name = models.CharField(default="Player", max_length=16)
+    name = models.CharField(default="?", max_length=32)
+    version = models.CharField(default="v0.1", max_length=16)
+    verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} - {} from {} [{}]".format(self.name, self.version, self.author_name, self.author_id)
+
+    def update_author(self, payload, auto_verified=True):
+        if payload.get("author_id", False):
+            self.author_id = payload.get("author_id")
+        if payload.get("author_name", False):
+            self.author_name = payload.get("author_name")
+        if payload.get("version", False):
+            self.version = payload.get("version")
+        if auto_verified and not self.verified and len(VerifiedClient.objects.filter(verified=True, name=self.name)):
+            self.verified = True
+
+        self.save()
 
 class AbroadStocks(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -306,7 +328,7 @@ class AbroadStocks(models.Model):
         from bazaar.countries import countries
 
         return {
-                "country_key": self.country_key,
+                # "country_key": self.country_key,
                 "country_name": self.country,
                 "item_id": self.item.tId,
                 "item_name": self.item.tName,
