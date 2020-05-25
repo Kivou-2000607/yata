@@ -2,7 +2,7 @@ import requests
 
 url = "http://127.0.0.1:8000/bazaar/abroad/import/"
 payload = {
-    "country": "uae",
+    "country": "uni",
     "client": "my cool app",
     "uid": "2000607",
     # "items": {

@@ -25,6 +25,7 @@ import math
 from scipy import stats
 
 from yata.handy import apiCall
+from yata.handy import tsnow
 
 
 class Item(models.Model):
@@ -323,3 +324,14 @@ class AbroadStocks(models.Model):
     def get_country(self):
         from bazaar.countries import countries
         return countries.get(self.country_key)
+
+    def get_efficiency(self):
+        # compute efficiency
+        old = tsnow() - 48 * 3600
+        size_ts = 48 * 3600 // (5 * 60)
+        tss = [0] * size_ts
+        stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key)
+        for stock in stocks:
+            i = min(size_ts * (stock.timestamp - old) // (48 * 3600), size_ts - 1)
+            tss[i] = 1
+        return [len(stocks), 100 * sum(tss) / float(size_ts)]

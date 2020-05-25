@@ -617,7 +617,7 @@ def abroadExport(request):
             elif format == "flat":
                 stocksJS = dict({})
                 for stock in stocksDB:
-                    id_b = "{}_{}".format(stock.item.tId,  stock.country_key)
+                    id_b = "{}_{}".format(stock.item.tId, stock.country_key)
                     stocksJS[id_b] = stock.payload()
             else:
                 return JsonResponse({"message": "Unknown format {}".format(format)}, status=400)
@@ -660,7 +660,7 @@ def abroad(request):
         if not isinstance(filters["types"], list):
             filters["types"] = ["all"]
 
-        # set filters           
+        # set filters
         if request.POST.get("filter", False) and request.POST.get("key"):
             page = "bazaar/abroad/list.html"
             post_filter = request.POST.get("filter")
@@ -682,14 +682,30 @@ def abroad(request):
 
         request.session["stocks-filters"] = filters
 
+        # delete old stocks
+        old = tsnow() - 48 * 3600
+        AbroadStocks.objects.filter(timestamp__lt=old).delete()
+
         # get all stocks
         stocks = AbroadStocks.objects.filter(last=True)
+        efficiencies = dict({"all": [0, 0, 0]})
         for stock in stocks:
-            country_list[stock.country_key]["n"] += 1
-            country_list["all"]["n"] += 1
-            if stock.item.tType in ["Drug", "Plushie", "Flower"]:
-                type_list[stock.item.tType]["n"] += 1
-            type_list["all"]["n"] += 1
+            eff = stock.get_efficiency()
+            ts = stock.timestamp
+            if stock.country_key not in efficiencies:
+                efficiencies[stock.country_key] = [0, 0, 0]
+
+            efficiencies[stock.country_key][0] += eff[0]
+            efficiencies[stock.country_key][1] += eff[1]
+            efficiencies[stock.country_key][2] += 1
+            efficiencies["all"][0] += eff[0]
+            efficiencies["all"][1] += eff[1]
+            efficiencies["all"][2] += 1
+
+        # compute efficiency
+        for k, v in efficiencies.items():
+            country_list[k]["eff"] = v[1] / float(v[2])
+            country_list[k]["n"] = v[0] // v[2]
 
         if filters["countries"] != "all":
             stocks = stocks.filter(country_key=filters["countries"])
@@ -702,11 +718,9 @@ def abroad(request):
             stock.profitperhour = round(30 * stock.profit / stock.get_country()["fly_time"])
             stock.update = tsnow() - stock.timestamp
 
-        import time
-        time.sleep(0.2)
         context = {"player": player,
                    "filters": filters,
-                   "country_list":country_list,
+                   "country_list": country_list,
                    "type_list": type_list,
                    "stocks": stocks,
                    "bazaarcat": True,
@@ -727,15 +741,18 @@ def abroadStocks(request):
             stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id).order_by("-timestamp")
 
             if stocks is None:
-                context = {'item': None, "graph": [], "graphLength": 0}
+                context = {'item': None, "graph": []}
                 return render(request, 'bazaar/abroad/graph.html', context)
-                return returnError(type=403)
 
             # create price histogram
             # plot only last 8 points of the Tendency
             graph = [[timestampToDate(s.timestamp), s.quantity, s.cost] for s in stocks]
 
-            context = {'item': stocks.first().item, "graph": graph}
+            stock = stocks.first()
+            eff = stock.get_efficiency()
+            stock.n = eff[0]
+            stock.eff = eff[1]
+            context = {'stock': stocks.first(), "graph": graph}
             return render(request, 'bazaar/abroad/graph.html', context)
 
         else:
