@@ -509,6 +509,7 @@ def abroadImport(request):
             timestamp = tsnow()
 
             # convert list to dict and check keys
+            # for all keys to be int
             if isinstance(items, list):
                 items_list = items
                 items = dict({})
@@ -516,13 +517,21 @@ def abroadImport(request):
                     for key in ["id", "quantity", "cost"]:
                         if not str(item.get(key)).isdigit():
                             return JsonResponse({"message": "Wrong {} for item object: {}".format(key, item.get(key))}, status=400)
-                    items[item["id"]] = {"cost": item["cost"], "quantity": item["quantity"]}
+                    items[int(item["id"])] = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
 
             elif isinstance(items, dict):
                 for item_id, item in items.items():
+                    if not str(item_id).isdigit():
+                        return JsonResponse({"message": "Wrong item id {}".format(item_id)}, status=400)
                     for key in ["quantity", "cost"]:
                         if not str(item.get(key)).isdigit():
                             return JsonResponse({"message": "Wrong item {} for item {}".format(key, item_id)}, status=400)
+
+                    if isinstance(item_id, int):
+                        item = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
+                    else:
+                        items[int(item_id)] = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
+                        del items[item_id]
 
             else:
                 return JsonResponse({"message": "Wrong item list format {}".format(type(items))}, status=400)
@@ -531,18 +540,19 @@ def abroadImport(request):
             distinct_items = [k['item_id'] for k in AbroadStocks.objects.filter(country_key=country_key).values('item_id').distinct()]
 
             # add items not in db
+            # for all keys and values to be int
             for k in items:
-                if int(k) not in distinct_items:
-                    distinct_items.append(int(k))
+                if k not in distinct_items:
+                    distinct_items.append(k)
 
             stocks = dict({})
             for item_id in distinct_items:
-                item = items.get(str(item_id), False)
+                item = items.get(item_id, False)
                 cost = 0
                 quantity = 0
                 if item:
-                    cost = int(item["cost"])
-                    quantity = int(item["quantity"])
+                    cost = item["cost"]
+                    quantity = item["quantity"]
                 else:
                     lastItem = AbroadStocks.objects.filter(item_id=item_id, country_key=country_key).order_by("-timestamp").first()
                     cost = 0 if lastItem is None else lastItem.cost
@@ -553,7 +563,8 @@ def abroadImport(request):
                                    "client": client_name,
                                    "timestamp": timestamp,
                                    "cost": cost,
-                                   "quantity": quantity}
+                                   "quantity": quantity
+                                   }
 
             version = payload.get("version", "v0.1")
             client, _ = VerifiedClient.objects.get_or_create(name=client_name, version=version)
