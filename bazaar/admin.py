@@ -48,8 +48,8 @@ admin.site.register(MarketData, MarketDataAdmin)
 
 
 class AbroadStocksAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'item', 'country', 'cost', 'quantity', 'timestamp', 'last']
-    list_filter = ['country', 'last', 'item__tType']
+    list_display = ['__str__', 'client', 'item', 'country', 'cost', 'quantity', 'timestamp', 'last']
+    list_filter = ['country', 'client', 'last', 'item__tType']
 
 
 admin.site.register(AbroadStocks, AbroadStocksAdmin)
