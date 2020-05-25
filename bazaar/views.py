@@ -704,7 +704,7 @@ def abroad(request):
         request.session["stocks-filters"] = filters
 
         # delete old stocks
-        old = tsnow() - 48 * 3600
+        old = tsnow() - 24 * 3600
         AbroadStocks.objects.filter(timestamp__lt=old).delete()
 
         # get all stocks

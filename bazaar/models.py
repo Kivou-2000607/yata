@@ -349,11 +349,11 @@ class AbroadStocks(models.Model):
 
     def get_efficiency(self):
         # compute efficiency
-        old = tsnow() - 48 * 3600
-        size_ts = 48 * 3600 // (5 * 60)
+        old = tsnow() - 24 * 3600
+        size_ts = 24 * 3600 // (5 * 60)
         tss = [0] * size_ts
         stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key)
         for stock in stocks:
-            i = min(size_ts * (stock.timestamp - old) // (48 * 3600), size_ts - 1)
+            i = min(size_ts * (stock.timestamp - old) // (24 * 3600), size_ts - 1)
             tss[i] = 1
         return [len(stocks), 100 * sum(tss) / float(size_ts)]
