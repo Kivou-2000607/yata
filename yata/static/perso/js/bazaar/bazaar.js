@@ -162,5 +162,6 @@ $(document).on('click', "td.bazaar-toggle-filters", function(e){
         key: key, filter: filter, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
     td.html(spinner);
-    $("table#bazaar-abroad-stocks").find("tbody").find("td").html(spinner);
+    $("table#bazaar-abroad-stocks").find("tr").html('<td colspan="9" style="text-align: center;">'+spinner+'</td>');
+    // $("table#bazaar-abroad-stocks").find("tbody").find("td").html('<i class="fas fa-spinner"></i>');
 });

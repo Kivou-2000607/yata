@@ -571,7 +571,7 @@ def abroadImport(request):
                 successMessage = "The stocks have been updated with {}.".format(client)
             else:
                 # client = VerifiedClient.objects.filter(verified=True, name=v["client"]).first()
-                successMessage = "Your client '{} - {}' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(v["client"], version)
+                successMessage = "Your client '{} - {}' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(client_name, version)
 
             return JsonResponse({"message": successMessage, "stocks": stocks}, status=200)
 
