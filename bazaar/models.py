@@ -290,11 +290,11 @@ class VerifiedClient(models.Model):
     author_id = models.IntegerField(default=0)
     author_name = models.CharField(default="Player", max_length=16)
     name = models.CharField(default="?", max_length=32)
-    version = models.CharField(default="v0.1", max_length=16)
+    version = models.CharField(default="0.0", max_length=16)
     verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{} - {} from {} [{}]".format(self.name, self.version, self.author_name, self.author_id)
+        return "{} [{}] by {} [{}]".format(self.name, self.version, self.author_name, self.author_id)
 
     def update_author(self, payload, auto_verified=True):
         if payload.get("author_id", False):
@@ -317,7 +317,7 @@ class AbroadStocks(models.Model):
     cost = models.IntegerField(default=0)
     timestamp = models.IntegerField(default=0)
 
-    client = models.CharField(max_length=32, blank=True)
+    client = models.CharField(default="unknown [0.0]", max_length=32, blank=True)
 
     last = models.BooleanField(default=True)
 

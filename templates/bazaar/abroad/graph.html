@@ -28,17 +28,19 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Stock', 'Price'],
-        {% for a, b, c in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}],
+        ['Time', 'Stock',  {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+        {% for a, b, c, d, e, f in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, "point {shape-type: {% if e == 0%}polygon{% elif e == 1%}diamond{% elif e == 2%}square{% else %}triangle{% endif %}","<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}<br><b>Client</b>: {{d}} ({{f}} updates)</div>"],
          {% endfor %}
       ]);
 
       var options = {
         // legend: {position: 'top', textStyle: {fontSize: 14}},
         legend: {position: 'none', textStyle: {fontSize: 14}},
+        tooltip: {isHtml: true, position: 'top'},
+        seriesType: 'bars',
         series: {
-                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
+                0: {type: 'line', color: '#787878', pointSize: 7,   lineWidth: 0},
                 },
         hAxis: { format: 'M/d/yy' },
         vAxis: { format: 'short', title: 'Stocks' },
@@ -47,7 +49,7 @@ This file is part of yata.
       };
 
       var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1]);
+      view.setColumns([0, 1, 2, 3]);
 
       var chart = new google.visualization.ComboChart(document.getElementById('stocks-history'));
       chart.draw(view, options);

@@ -506,6 +506,7 @@ def abroadImport(request):
             items = payload["items"]
             # uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
             client_name = payload.get("client", "unknown").strip()
+            client_version = payload.get("version", "0.0")
             timestamp = tsnow()
 
             # convert list to dict and check keys
@@ -560,14 +561,13 @@ def abroadImport(request):
 
                 stocks[item_id] = {"country": country,
                                    "country_key": country_key,
-                                   "client": client_name,
+                                   "client": "{} [{}]".format(client_name, client_version),
                                    "timestamp": timestamp,
                                    "cost": cost,
                                    "quantity": quantity
                                    }
 
-            version = payload.get("version", "v0.1")
-            client, _ = VerifiedClient.objects.get_or_create(name=client_name, version=version)
+            client, _ = VerifiedClient.objects.get_or_create(name=client_name, version=client_version)
             client.update_author(payload)
             if client.verified:
                 for k, v in stocks.items():
@@ -582,7 +582,7 @@ def abroadImport(request):
                 successMessage = "The stocks have been updated with {}.".format(client)
             else:
                 # client = VerifiedClient.objects.filter(verified=True, name=v["client"]).first()
-                successMessage = "Your client '{} - {}' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(client_name, version)
+                successMessage = "Your client '{} [{}]' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(client_name, client_version)
 
             return JsonResponse({"message": successMessage, "stocks": stocks}, status=200)
 
@@ -663,10 +663,6 @@ def abroad(request):
         from bazaar.countries import types as type_list
         country_list["all"] = {"name": "All", "n": 0}
         type_list["all"] = {"name": "All", "n": 0}
-        for k, v in country_list.items():
-            v["n"] = 0
-        for k, v in type_list.items():
-            v["n"] = 0
 
         # get player and page
         if request.session.get('player'):
@@ -712,7 +708,6 @@ def abroad(request):
         efficiencies = dict({"all": [0, 0, 0]})
         for stock in stocks:
             eff = stock.get_efficiency()
-            ts = stock.timestamp
             if stock.country_key not in efficiencies:
                 efficiencies[stock.country_key] = [0, 0, 0]
 
@@ -765,9 +760,18 @@ def abroadStocks(request):
                 context = {'item': None, "graph": []}
                 return render(request, 'bazaar/abroad/graph.html', context)
 
-            # create price histogram
-            # plot only last 8 points of the Tendency
-            graph = [[timestampToDate(s.timestamp), s.quantity, s.cost] for s in stocks]
+            # get clients statistics
+            clients = dict({})
+            for stock in stocks:
+                if stock.client == "":
+                    continue
+                if stock.client not in clients:
+                    clients[stock.client] = 0
+                clients[stock.client] += 1
+
+            clients = { c: [i, n] for i, (c, n) in enumerate(sorted(clients.items(), key=lambda x: -x[1])) }
+
+            graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
 
             stock = stocks.first()
             eff = stock.get_efficiency()
