@@ -505,7 +505,7 @@ def abroadImport(request):
             country = countries[country_key]["name"]
             items = payload["items"]
             # uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
-            client = payload.get("client", "unknown").strip()
+            client_name = payload.get("client", "unknown").strip()
             timestamp = tsnow()
 
             # convert list to dict and check keys
@@ -550,13 +550,13 @@ def abroadImport(request):
 
                 stocks[item_id] = {"country": country,
                                    "country_key": country_key,
-                                   "client": client,
+                                   "client": client_name,
                                    "timestamp": timestamp,
                                    "cost": cost,
                                    "quantity": quantity}
 
             version = payload.get("version", "v0.1")
-            client, _ = VerifiedClient.objects.get_or_create(name=v["client"], version=version)
+            client, _ = VerifiedClient.objects.get_or_create(name=client_name, version=version)
             client.update_author(payload)
             if client.verified:
                 for k, v in stocks.items():
