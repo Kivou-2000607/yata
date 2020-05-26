@@ -76,6 +76,7 @@ sou: South Africa</code></pre>
     <li>If an item of a country is not in the list, its <code>quantity</code> is automatically set to <tt>0</tt>.</li>
     <li>It returns a <tt>200</tt> for success, <tt>400</tt> for malformed requests and <tt>500</tt> for server errors.</li>
     <li>In case of <tt>200</tt> the body of the response corresponds to the items updated (including 0 quantities).</li>
+    <li>You can download json examples of the <a href="{% static "/abroad/post.json" %}">post</a> request and the server <a href="{% static "/abroad/response.json" %}">response.</a></li>
     <li>Verified clients:
         <ul>
             <li>Your client needs to be added to the databse as a "verified client" to be able to write in the database.</li>

@@ -705,14 +705,14 @@ def abroad(request):
         request.session["stocks-filters"] = filters
 
         # delete old stocks
-        old = tsnow() - 24 * 3600
-        AbroadStocks.objects.filter(timestamp__lt=old).delete()
+        old = tsnow() - 48 * 3600
+        # AbroadStocks.objects.filter(timestamp__lt=old).delete()
 
         # get all stocks
-        stocks = AbroadStocks.objects.filter(last=True)
+        stocks = AbroadStocks.objects.filter(last=True, timestamp__gt=old)
         efficiencies = dict({"all": [0, 0, 0]})
         for stock in stocks:
-            eff = stock.get_efficiency()
+            eff = stock.get_efficiency(h=48)
             if stock.country_key not in efficiencies:
                 efficiencies[stock.country_key] = [0, 0, 0]
 
@@ -759,7 +759,8 @@ def abroadStocks(request):
         if request.method == "POST":
             item_id = request.POST.get('item_id', False)
             country_key = request.POST.get('country_key', False)
-            stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id).order_by("-timestamp")
+            old = tsnow() - 48 * 3600
+            stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id, timestamp__gt=old).order_by("-timestamp")
 
             if stocks is None:
                 context = {'item': None, "graph": []}
@@ -779,10 +780,16 @@ def abroadStocks(request):
             graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
 
             stock = stocks.first()
-            eff = stock.get_efficiency()
+            eff = stock.get_efficiency(h=48)
             stock.n = eff[0]
             stock.eff = eff[1]
-            context = {'stock': stocks.first(), "graph": graph}
+            context = {'stock': stocks.first(),
+                       'graph': graph,
+                       'x': [
+                            timestampToDate(tsnow() - 48 * 3600),
+                            timestampToDate(tsnow() - 24 * 3600),
+                            timestampToDate(tsnow())
+                       ]}
             return render(request, 'bazaar/abroad/graph.html', context)
 
         else:

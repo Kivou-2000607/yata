@@ -170,7 +170,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
         return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
     else:
         message = traceback.format_exc().strip()
-        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 PROUT \n{}".format(timezone.now(), message))
+        print("[{:%d/%b/%Y %H:%M:%S}] ERROR 500 \n{}".format(timezone.now(), message))
         if session is not None and session.get("player", False):
             player = getPlayer(session["player"].get("tId"))
         else:

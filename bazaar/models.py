@@ -347,13 +347,13 @@ class AbroadStocks(models.Model):
         from bazaar.countries import countries
         return countries.get(self.country_key)
 
-    def get_efficiency(self):
+    def get_efficiency(self, h=48):
         # compute efficiency
-        old = tsnow() - 24 * 3600
-        size_ts = 24 * 3600 // (5 * 60)
+        old = tsnow() - h * 3600
+        size_ts = h * 3600 // (5 * 60)
         tss = [0] * size_ts
         stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key)
         for stock in stocks:
-            i = min(size_ts * (stock.timestamp - old) // (24 * 3600), size_ts - 1)
+            i = min(size_ts * (stock.timestamp - old) // (h * 3600), size_ts - 1)
             tss[i] = 1
         return [len(stocks), 100 * sum(tss) / float(size_ts)]
