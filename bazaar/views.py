@@ -537,7 +537,7 @@ def abroadImport(request):
                 # cast to int the keys
                 for k in cast_to_int:
                     items[int(k)] = items[k]
-                    del item[k]
+                    del items[k]
 
             else:
                 return JsonResponse({"message": "Wrong item list format {}".format(type(items))}, status=400)
