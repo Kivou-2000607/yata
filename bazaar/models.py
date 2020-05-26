@@ -289,7 +289,7 @@ class BazaarData(models.Model):
 class VerifiedClient(models.Model):
     author_id = models.IntegerField(default=0)
     author_name = models.CharField(default="Player", max_length=16)
-    name = models.CharField(default="?", max_length=32)
+    name = models.CharField(default="?", max_length=64)
     version = models.CharField(default="0.0", max_length=16)
     verified = models.BooleanField(default=False)
 
@@ -317,7 +317,7 @@ class AbroadStocks(models.Model):
     cost = models.BigIntegerField(default=0)
     timestamp = models.IntegerField(default=0)
 
-    client = models.CharField(default="unknown [0.0]", max_length=32, blank=True)
+    client = models.CharField(default="unknown [0.0]", max_length=64, blank=True)
 
     last = models.BooleanField(default=True)
 
