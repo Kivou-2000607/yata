@@ -521,6 +521,8 @@ def abroadImport(request):
                     items[int(item["id"])] = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
 
             elif isinstance(items, dict):
+                # cast to int the keys
+                cast_to_int = []
                 for item_id, item in items.items():
                     if not str(item_id).isdigit():
                         return JsonResponse({"message": "Wrong item id {}".format(item_id)}, status=400)
@@ -528,11 +530,14 @@ def abroadImport(request):
                         if not str(item.get(key)).isdigit():
                             return JsonResponse({"message": "Wrong item {} for item {}".format(key, item_id)}, status=400)
 
-                    if isinstance(item_id, int):
-                        item = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
-                    else:
-                        items[int(item_id)] = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
-                        del items[item_id]
+                    item = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
+                    if not isinstance(item_id, int):
+                        cast_to_int.append(item_id)
+
+                # cast to int the keys
+                for k in cast_to_int:
+                    items[int(k)] = items[k]
+                    del item[k]
 
             else:
                 return JsonResponse({"message": "Wrong item list format {}".format(type(items))}, status=400)
