@@ -314,7 +314,7 @@ class AbroadStocks(models.Model):
     country_key = models.CharField(default="???", max_length=3)
     country = models.CharField(max_length=32)
     quantity = models.IntegerField(default=0)
-    cost = models.IntegerField(default=0)
+    cost = models.BigIntegerField(default=0)
     timestamp = models.IntegerField(default=0)
 
     client = models.CharField(default="unknown [0.0]", max_length=32, blank=True)
