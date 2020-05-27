@@ -1365,7 +1365,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         vp["current"] = 0
                         vp["achieve"] = 0
                         vp["comment"] = "You need to reach level 15 first"
+                    awards[type]["h_" + k] = vp
 
+                elif int(k) in [853]:
+                    # "853": { "name": "Souvenir", "description": "Purchase the perfect souvenir abroad", "type": 7,
+                    type = "Import items"
+                    vp["goal"] = 1
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
         for k, v in tornAwards["medals"].items():

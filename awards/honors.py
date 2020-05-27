@@ -272,7 +272,8 @@ d = {
     541: 456129092,  # Mule
     542: 500114722,  # Smuggler
     543: 267993904,  # Trafficker
-
+    853: 661177633,  # Souvenir
+    
     # 8
     20: 778719620,  # Precision
     15: 303172651,  # Kill Streaker 1
