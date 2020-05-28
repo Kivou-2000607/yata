@@ -37,7 +37,7 @@ table.merits-bar td.c { width: 50%; text-align: left; }
 span.merits-button {
     padding: 0px 10px;
     margin: 0px 0px;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 span.le { background-color: rgba(68, 126, 155, 0.7); box-shadow: 0 0 1px 1px rgba(68, 126, 155, 0.7); }

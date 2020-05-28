@@ -27,20 +27,22 @@ This file is part of yata.
 
 $( document ).ready(function() {
 
-    function span_cout(n, i){
+    function span_cout(a, n, i){
         let cl = "neutral"
-        if (i > 0) { cl = "error" }
-        else if (i < 0) { cl = "valid" }
-        return `<th class="${cl}">${n}</th><th class="${cl}">${i}</th>`
+        if (i < 0) { cl = "error" }
+        else if (i > 0) { cl = "valid" }
+        i = i > 0 ? `+${i}`: i
+        return `<th class="neutral">${a}</th><th class="${cl}">${n}</th><th class="${cl}">${i}</th>`
 
     }
 
 
     const count = $("tr#merit-count");
+    const a = parseInt($(count).attr("data-ini"));
     let n = 0;
     $('.le:not(.rem)').each((it, el) => { n += parseInt($(el).attr("data-lvl")); });
-    const di = n - parseInt($(count).attr("data-ini"));
-    count.html(span_cout(n, di));
+    const di = n - a;
+    count.html(span_cout(a, n, -di));
 
     // add merit
     $( ".merits-button.gt" ).hover(
@@ -52,28 +54,32 @@ $( document ).ready(function() {
           // change merit counter
           let i = 0;
           $('.add').each((it, el) => { i += parseInt($(el).attr("data-lvl")); });
-          count.html(span_cout(n+i, di+i));
+          count.html(span_cout(a, n+i, -di-i));
 
           // change description
           const lvl = parseInt($( this ).attr("data-lvl"))
-          let mul = parseFloat($( this ).attr("data-mul"));
+          const mul = parseFloat($( this ).attr("data-mul"));
+          const fix = parseInt($( this ).parent("td").attr("data-fix"))
           const res = mul < 1? (lvl * mul).toFixed(1) : (lvl * mul).toFixed(0)
+          let dif = mul < 1? ((lvl-fix) * mul).toFixed(1) : ((lvl-fix) * mul).toFixed(0)
+          dif = lvl-fix > 0 ? `+${dif}` : dif
           const uni = $( this ).attr("data-uni");
           const description = $( this ).parent("td").next();
+          const cl = lvl < fix ? "error": (lvl > fix ? "valid": "neutral")
           $(description).find("span.merit-description-initial").hide();
-          $(description).find("span.merit-description-update").html(res + uni);
+          $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
 
       }, function() {
           // remove classes
           $(".gt").removeClass("add")
 
           // initial count
-          count.html(span_cout(n, di));
+          count.html(span_cout(a, n, -di));
 
           // initial description
           const description = $( this ).parent("td").next();
           $(description).find("span.merit-description-initial").show();
-          $(description).find("span.merit-description-update").html("");
+          $(description).find("span.merit-description-update").removeClass("neutral error valid").html("")
       }
     );
 
@@ -87,27 +93,32 @@ $( document ).ready(function() {
           // change merit counter
           let i = 0;
           $('.rem').each((it, el) => { i -= parseInt($(el).attr("data-lvl")); });
-          count.html(span_cout(n+i, di+i));
+          count.html(span_cout(a, n+i, -di-i));
 
           // change description
+          const fix = parseInt($( this ).parent("td").attr("data-fix"))
           const lvl = parseInt($( this ).attr("data-lvl")) - 1;
-          const mul = parseInt($( this ).attr("data-mul"));
+          const mul = parseFloat($( this ).attr("data-mul"));
+          const res = mul < 1? (lvl * mul).toFixed(1) : (lvl * mul).toFixed(0)
+          let dif = mul < 1? ((lvl-fix) * mul).toFixed(1) : ((lvl-fix) * mul).toFixed(0)
+          dif = lvl-fix > 0 ? `+${dif}` : dif
           const uni = $( this ).attr("data-uni");
           const description = $( this ).parent("td").next();
+          const cl = lvl < fix ? "error": (lvl > fix ? "valid": "neutral")
           $(description).find("span.merit-description-initial").hide();
-          $(description).find("span.merit-description-update").html(lvl * mul + uni);
+          $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
 
       }, function() {
           // remove classes
           $(".le").removeClass("rem");
 
           // initial count
-          count.html(span_cout(n, di));
+          count.html(span_cout(a, n, -di));
 
            // initial description
            const description = $( this ).parent("td").next();
            $(description).find("span.merit-description-initial").show();
-           $(description).find("span.merit-description-update").html("");
+           $(description).find("span.merit-description-update").removeClass("neutral error valid").html("");
       }
     );
 });
@@ -122,13 +133,14 @@ $( document ).ready(function() {
 <table class="center">
     <thead>
         <tr>
-            <th>Merits</th>
-            <th>diff</th>
+            <th>Total merits available</th>
+            <th>Total merits used</th>
+            <th>Merits available</th>
         </tr>
     </thead>
     <tbody>
         <tr id="merit-count" data-ini="{{nMerits}}">
-            <td>{{nMerits}}</td><td></td>
+            <td></td><td></td><td></td>
         </tr>
     </tbody>
 </table>
@@ -142,15 +154,15 @@ $( document ).ready(function() {
             <td class="c description">
                 {{v.description.0}}
                 {% if v.description.1 %}
-                    <span class="merit-description-initial">
+                    <span class="merit-description-initial {% if v.fix > v.level %}error{% elif v.fix < v.level %} valid{% else %}neutral{% endif %}">
                         {% if v.description.1 < 1 %}
-                            {{v.description.1|mul:v.level|floatformat:1}}{{v.description.2}}
-                        {% else %}
-                            {{v.description.1|mul:v.level}}{{v.description.2}}
-                        {% endif %}
-                    </span>
-                    <span style="font-weight: bold;" class="merit-description-update"></span>
-                    {{v.description.3}}
+                            {{v.description.1|mul:v.level|floatformat:1}}{{v.description.2}}<!--
+                        -->{% else %}<!--
+                        -->{{v.description.1|mul:v.level}}{{v.description.2}}<!--
+                        -->{% endif %}<!--
+                    --></span><!--
+                    --><span style="font-weight: bold;" class="merit-description-update"></span><!--
+                    -->{{v.description.3}}
                 {% endif %}
             </td>
         </tr>
