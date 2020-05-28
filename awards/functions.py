@@ -1369,6 +1369,37 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [853]:
                     # "853": { "name": "Souvenir", "description": "Purchase the perfect souvenir abroad", "type": 7,
+                    souvenir = {
+                         0: "Mayan Statue (Mexico)",
+                         1: "Hockey Stick (Canada)",
+                         2: "Pele Charm (Hawaii)",
+                         3: "Soccer Ball (Argentina)",
+                         4: "Jade Buddha (China)",
+                         5: "Maneki Neko (Japan)",
+                         6: "Elephant Statue (South Africa)",
+                         7: "Afro Comb (South Africa)",
+                         8: "Compass (Argentina)",
+                         9: "Sextant (UK)",
+                        10: "Yucca Plant (Mexico)",
+                        11: "Fire Hydrant (Canada)",
+                        12: "Model Space Ship (UK)",
+                        13: "Ship in a Bottle (UK)",
+                        14: "Paper Weight (UK)",
+                        15: "Tailors Dummy (UK)",
+                        16: "Sumo Doll (Japan)",
+                        17: "Chopsticks (Japan)",
+                        18: "Dart Board (UK)",
+                        19: "Crazy Straw (Mexico)",
+                        20: "Sensu (Japan)",
+                        21: "Yakitori Lantern (Japan)",
+                        22: "Snowboard (Switzerland)",
+                        23: "Steel Drum (Caymans)",
+                        24: "Nodding Turtle (Caymans)",
+                    }
+                    id = int(userInfo.get("player_id", -1))
+                    if id > 0:
+                        vp["comment"] = "The perfect souvenir for you is: {}".format(souvenir[id % 25])
+
                     type = "Import items"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
