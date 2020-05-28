@@ -1,4 +1,4 @@
-{% comment %}
+/*
 Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,11 +15,7 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
+*/
 
-{# no need we handle div/div #}
-{# {% if apiErrorSub %} #}
-    {# {% include "yata/error.html" with apiError=apiErrorSub %} #}
-{# {% endif %} #}
-
-{% include "player/index.html" %}
+table.players-users-summary td.a { width: 40%; }
+table.players-users-summary td.b { width: 30%; text-align: center;}

@@ -24,38 +24,27 @@ from django.utils import timezone
 import json
 
 from player.models import Player
-from player.models import PlayerData
-# from player.models import News
-from yata.handy import returnError
+from yata.handy import *
 
 
-# def readNews(request):
-#     try:
-#         if request.session.get('player') and request.method == 'POST':
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#             news = News.objects.last()
-#             news.player.add(player)
-#
-#             return HttpResponse("{} marked as read".format(news.type))
-#         else:
-#             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-#             return returnError(type=403, msg=message)
-#
-#     except Exception:
-#         return returnError()
-
-
-def prune(request):
+def index(request):
     try:
         if request.session.get('player'):
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
+            player = getPlayer(request.session["player"].get("tId"))
+            context = {"player": player}
+            page = "context-reload" if request.POST else "player.html"
 
-            nPlayers = PlayerData.objects.first()
+            req = apiCall("user", "", "merits,honors,medals", key=player.getKey())
 
-            context = {"player": player, "nTotal": nPlayers.nTotal, "nInact": nPlayers.nInact, "nValid": nPlayers.nValid, "nInval": nPlayers.nInval, "nPrune": nPlayers.nPrune}
-            return render(request, "player.html", context)
+            if "merits" not in req:
+                context["apiErrorSub"] = {"merit": req["apiError"] if "apiError" in req else "#blameched"}
+            else:
+                merits = player.getMerits(req=req["merits"])
+                context["nMerits"] = len(req.get("honors_awarded", [])) + len(req.get("medals_awarded", []))
+                context["merits"] = merits
+
+            return render(request, page, context)
+
         else:
             return returnError(type=403, msg="You might want to log in.")
 
@@ -63,15 +52,29 @@ def prune(request):
         return returnError(exc=e, session=request.session)
 
 
-def number(request):
+def merits(request):
     try:
-        lastActions = dict({})
-        nPlayers = PlayerData.objects.first()
-        lastActions["hour"] = nPlayers.nHour
-        lastActions["day"] = nPlayers.nDay
-        lastActions["month"] = nPlayers.nMonth
-        lastActions["total"] = nPlayers.nTotal
-        lastActions["string"] = "{} / {} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"], lastActions["hour"])
-        return HttpResponse(json.dumps(lastActions), content_type="application/json")
-    except BaseException:
-        return returnError()
+        if request.session.get('player') and request.POST:
+            player = getPlayer(request.session["player"].get("tId"))
+            context = {"player": player}
+            page = "context-reload" if request.POST else "player.html"
+
+            merits = dict({})
+            for it in json.loads(request.POST.get("merits")):
+                merits[it[0]] = [int(it[1]), int(it[2])]
+
+            k, v = json.loads(request.POST.get("simu"))
+            merits[k][0] = int(v)
+
+            merits = player.getMerits(req=merits)
+
+            context["merits"] = merits
+            context["nMerits"] = request.POST.get("n_merits", 0)
+            return render(request, "player/merits.html", context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

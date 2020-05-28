@@ -58,7 +58,7 @@ This file is part of yata.
     {% if player %}
         <hr class="sep">
         <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>
-        <p><a class="yata-link-prune error" href="{% url 'player:prune' %}"><i class="fas fa-eraser"></i>&nbsp;&nbsp;Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
+        <p><a class="yata-link-prune error" href="{% url 'setup:prune' %}"><i class="fas fa-eraser"></i>&nbsp;&nbsp;Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
     {% endif %}
 </div>
 <div class="module rounded">

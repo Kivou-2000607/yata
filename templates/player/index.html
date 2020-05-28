@@ -17,9 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{# no need we handle div/div #}
-{# {% if apiErrorSub %} #}
-    {# {% include "yata/error.html" with apiError=apiErrorSub %} #}
-{# {% endif %} #}
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
 
-{% include "player/index.html" %}
+
+<h2 class="title">Merits</h2>
+<div id="player-merits" class="module">
+    {% include "player/merits.html" %}
+</div>

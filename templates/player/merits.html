@@ -1,0 +1,163 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+
+
+$( document ).ready(function() {
+
+    function span_cout(n, i){
+        let cl = "neutral"
+        if (i > 0) { cl = "error" }
+        else if (i < 0) { cl = "valid" }
+        return `<th class="${cl}">${n}</th><th class="${cl}">${i}</th>`
+
+    }
+
+
+    const count = $("tr#merit-count");
+    let n = 0;
+    $('.le:not(.rem)').each((it, el) => { n += parseInt($(el).attr("data-lvl")); });
+    const di = n - parseInt($(count).attr("data-ini"));
+    count.html(span_cout(n, di));
+
+    // add merit
+    $( ".merits-button.gt" ).hover(
+      function() {
+          // add classes
+          $( this ).addClass("add");
+          $( this ).prevAll(".gt").addClass("add");
+
+          // change merit counter
+          let i = 0;
+          $('.add').each((it, el) => { i += parseInt($(el).attr("data-lvl")); });
+          count.html(span_cout(n+i, di+i));
+
+          // change description
+          const lvl = parseInt($( this ).attr("data-lvl"))
+          let mul = parseFloat($( this ).attr("data-mul"));
+          const res = mul < 1? (lvl * mul).toFixed(1) : (lvl * mul).toFixed(0)
+          const uni = $( this ).attr("data-uni");
+          const description = $( this ).parent("td").next();
+          $(description).find("span.merit-description-initial").hide();
+          $(description).find("span.merit-description-update").html(res + uni);
+
+      }, function() {
+          // remove classes
+          $(".gt").removeClass("add")
+
+          // initial count
+          count.html(span_cout(n, di));
+
+          // initial description
+          const description = $( this ).parent("td").next();
+          $(description).find("span.merit-description-initial").show();
+          $(description).find("span.merit-description-update").html("");
+      }
+    );
+
+    // remove merit
+    $( ".merits-button.le, .fix" ).hover(
+      function() {
+          // add classes
+          $( this ).addClass("rem");
+          $( this ).nextAll(".le").addClass("rem")
+
+          // change merit counter
+          let i = 0;
+          $('.rem').each((it, el) => { i -= parseInt($(el).attr("data-lvl")); });
+          count.html(span_cout(n+i, di+i));
+
+          // change description
+          const lvl = parseInt($( this ).attr("data-lvl")) - 1;
+          const mul = parseInt($( this ).attr("data-mul"));
+          const uni = $( this ).attr("data-uni");
+          const description = $( this ).parent("td").next();
+          $(description).find("span.merit-description-initial").hide();
+          $(description).find("span.merit-description-update").html(lvl * mul + uni);
+
+      }, function() {
+          // remove classes
+          $(".le").removeClass("rem");
+
+          // initial count
+          count.html(span_cout(n, di));
+
+           // initial description
+           const description = $( this ).parent("td").next();
+           $(description).find("span.merit-description-initial").show();
+           $(description).find("span.merit-description-update").html("");
+      }
+    );
+});
+
+
+</script>
+
+{% if apiErrorSub.merit %}
+    <span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorSub.merit}}</span>
+{% else %}
+
+<table class="center">
+    <thead>
+        <tr>
+            <th>Merits</th>
+            <th>diff</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="merit-count" data-ini="{{nMerits}}">
+            <td>{{nMerits}}</td><td></td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="center-large merits-bar trshadow">
+    <tbody>
+        {% for k, v in merits.items %}
+        <tr>
+            <td class="a">{{k}}</td>
+            <td class="b merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits-bar.html" %}</td>
+            <td class="c description">
+                {{v.description.0}}
+                {% if v.description.1 %}
+                    <span class="merit-description-initial">
+                        {% if v.description.1 < 1 %}
+                            {{v.description.1|mul:v.level|floatformat:1}}{{v.description.2}}
+                        {% else %}
+                            {{v.description.1|mul:v.level}}{{v.description.2}}
+                        {% endif %}
+                    </span>
+                    <span style="font-weight: bold;" class="merit-description-update"></span>
+                    {{v.description.3}}
+                {% endif %}
+            </td>
+        </tr>
+        {% if forloop.counter == 10 or forloop.counter == 14 %}
+            <tr><td colspan="3"><hr class="sep" style="margin: 5px"></td></tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}

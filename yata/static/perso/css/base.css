@@ -538,3 +538,8 @@ td.border, th.border {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+
+a.yata-logo:hover {
+    filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+}

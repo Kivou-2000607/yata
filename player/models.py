@@ -224,6 +224,45 @@ class Player(models.Model):
     def awardsInfo(self):
         return "{:.4f}".format(self.awardsScor / 10000.)
 
+    def getMerits(self, req=None, init=False):
+        if req is None:
+            return dict({})
+
+        merits = dict({})
+
+        for k, v in req.items():
+            if isinstance(v, list):
+                merits[k] = {"level": v[0], "fix": v[1]}
+            else:
+                merits[k] = {"level": v, "fix": v}
+            if k == "Nerve Bar":
+                merits[k]["description"] = ["Increases maximum nerve bar by", 1, "", "point"]
+            elif k == "Critical Hit Rate":
+                merits[k]["description"] = ["Increases critical hit rate by", 1, "%", ""]
+            elif k == "Life Points":
+                merits[k]["description"] = ["Constantly modifies life by", 5, "%", ""]
+            elif k == "Crime Experience":
+                merits[k]["description"] = ["Increases crime success ability by", 3, "%", ""]
+            elif k == "Education Length":
+                merits[k]["description"] = ["Decreases education course length by", 2, "%", ""]
+            elif k == "Awareness":
+                merits[k]["description"] = ["Increases ability to find items", 0, "", ""]
+            elif k == "Bank Interest":
+                merits[k]["description"] = ["Increases bank interest by", 5, "%", ""]
+            elif k == "Masterful Looting":
+                merits[k]["description"] = ["Increases money gained from mugging by", 5, "%", ""]
+            elif k == "Stealth":
+                merits[k]["description"] = ["Increases ability to do stealth attacks", 0, "", ""]
+            elif k == "Hospitalizing":
+                merits[k]["description"] = ["Increases time when hospitalizing people by", 10, "", "minutes"]
+            elif k in ["Brawn", "Protection", "Sharpness", "Evasion"]:
+                b = {"Brawn": "strength", "Protection": "defense", "Evasion": "dexterity", "Sharpness": "speend"}
+                merits[k]["description"] = ["Passive bonus of", 3, "%", "in {}".format(b.get(k))]
+            elif k.split(" ")[-1] == "Mastery":
+                merits[k]["description"] = ["Increases damage and accuracy of {}".format(k.replace(" Mastery", "").lower()), 0.2, "", "in accuracy and damage"]
+
+        return merits
+
 # class News(models.Model):
 #     player = models.ManyToManyField(Player, blank=True)
 #     type = models.CharField(default="Info", max_length=16)

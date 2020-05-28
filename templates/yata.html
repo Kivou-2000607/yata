@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/setup.css" %} />
+{% endblock%}
+
 {% block title%}
     - Home
 {% endblock %}

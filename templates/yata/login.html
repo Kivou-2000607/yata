@@ -21,183 +21,181 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-{% include "yata/news.html" %}
+{% if skipheader %}
+    <div style="height: 10px"></div>
+{% elif player %}
 
-    {% if skipheader %}
-        <div style="height: 10px"></div>
-    {% elif player %}
-
-        {# <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2> #}
-        <div class="module">
-            <table class="yata-login">
-                <tr>
-                    {# logo #}
-                    <td class="a">
-                        {% include "svg/yata.full.svg" %}
-                    </td>
-                    {# home #}
-                    <td class="b">
-                        <a href="{% url 'index' %}" class="yata-link-home" title="Home">
-                            <b class="valid"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</b></a><br>
-                        <span>{{player.name}}</span>
-                    </td>
-                    {# bazaar #}
-                    <td class="b">
-                        <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Bazaar">
-                            <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar</b></a><br>
-                            <span>
-                            {% if player.tId > 0 %}
-                                {% if player.bazaarInfo == "N/A" %}
-                                &empty;
-                                {% else %}
-                                {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
-                                {% endif %}
-                            {% else %}
-                                Can't update price yourself
-                            {% endif %}
-                            </span>
-                    </td>
-                    {# stocks #}
-                    <td class="b">
-                        <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Stocks">
-                            <b><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stocks</b></a><br>
-                            <span>
-                            {% if player.tId > 0 %}
-                                {% if player.stocksInfo == "N/A" %}
-                                &empty;
-                                {% else %}
-                                {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
-                                {% endif %}
-                            {% else %}
-                                Don't show your blocks
-                            {% endif %}
-                            </span>
-                    </td>
-                    {# faction #}
-                    <td class="b">
+    {# <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2> #}
+    <div class="module">
+        <table class="yata-login">
+            <tr>
+                {# logo #}
+                <td class="a">
+                    <a class="yata-logo" href="{% url 'index' %}" title="Home">{% include "svg/yata.full.svg" %}</a>
+                </td>
+                {# home #}
+                <td class="b">
+                    <a href="{% url 'player:index' %}" class="yata-link-player" title="Home">
+                        <b class="valid"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</b></a><br>
+                    <span>{{player.name}}</span>
+                </td>
+                {# bazaar #}
+                <td class="b">
+                    <a href="{% url 'bazaar:index' %}" class="yata-link-bazaar" title="Bazaar">
+                        <b><i class="fas fa-store"></i>&nbsp;&nbsp;Bazaar</b></a><br>
+                        <span>
                         {% if player.tId > 0 %}
-                        <a href="{% url 'faction:index' %}" class="yata-link-chain" title="Faction">
-                            <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a>
-                            <br>
-                            <span>
-                                {% if player.chainInfo == "N/A" %}
-                                &empty;
-                                {% else %}
-                                {{player.chainInfo|safe}}
-                                {% endif %}
-                            </span>
-                        {% else %}
-                        <a class="neutral" title="Faction">
-                            <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a>
-                            <br>
-                                <span>Not available</span>
-                        {% endif %}
-                    </td>
-                    {# targets #}
-                    <td class="b">
-                        {% if player.tId > 0 %}
-                        <a href="{% url 'target:index' %}" class="yata-link-target" title="Targets">
-                            <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
-                            <span>
-                            {% if player.targetInfo == "N/A" %}
+                            {% if player.bazaarInfo == "N/A" %}
                             &empty;
                             {% else %}
-                            {{player.targetInfo}} target{{player.targetInfo|pluralize}}
+                            {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
                             {% endif %}
-                            </span>
                         {% else %}
-                            <a class="neutral" title="Targets">
-                                <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
-                                <span>Not available</span>
+                            Can't update price yourself
                         {% endif %}
-                    </td>
-
-                    {# awards #}
-                    <td class="b">
-                        <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Awards">
-                            <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
-                            <span>
-                            {% if player.tId > 0 %}
-                                {% if player.awardsInfo == "N/A" %}
-                                &empty;
-                                {% else %}
-                                {{player.awardsInfo|floatformat:2}}% rarity score
-                                {% endif %}
+                        </span>
+                </td>
+                {# stocks #}
+                <td class="b">
+                    <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Stocks">
+                        <b><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Stocks</b></a><br>
+                        <span>
+                        {% if player.tId > 0 %}
+                            {% if player.stocksInfo == "N/A" %}
+                            &empty;
                             {% else %}
-                                Don't show progress
+                            {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
                             {% endif %}
-                            </span>
-                    </td>
-                    {# loot #}
-                    <td class="b">
-                        <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Loot">
-                            <b><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Loot</b></a><br>
-                            <span>
-                            {% if nextLoot %}
-                                in <span id="loot-countdown">{{nextLoot|ts2time}}</span>
-                            {% else %}
-                                <b class="error">NOW</b>
-                            {% endif %}
-                            </span>
-                    </td>
+                        {% else %}
+                            Don't show your blocks
+                        {% endif %}
+                        </span>
+                </td>
+                {# faction #}
+                <td class="b">
                     {% if player.tId > 0 %}
-                    {# logout #}
-                    <td class="c">
-                        <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
-                    </td>
+                    <a href="{% url 'faction:index' %}" class="yata-link-chain" title="Faction">
+                        <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a>
+                        <br>
+                        <span>
+                            {% if player.chainInfo == "N/A" %}
+                            &empty;
+                            {% else %}
+                            {{player.chainInfo|safe}}
+                            {% endif %}
+                        </span>
+                    {% else %}
+                    <a class="neutral" title="Faction">
+                        <b><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;Faction</b></a>
+                        <br>
+                            <span>Not available</span>
                     {% endif %}
-                </tr>
-            </table>
+                </td>
+                {# targets #}
+                <td class="b">
+                    {% if player.tId > 0 %}
+                    <a href="{% url 'target:index' %}" class="yata-link-target" title="Targets">
+                        <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
+                        <span>
+                        {% if player.targetInfo == "N/A" %}
+                        &empty;
+                        {% else %}
+                        {{player.targetInfo}} target{{player.targetInfo|pluralize}}
+                        {% endif %}
+                        </span>
+                    {% else %}
+                        <a class="neutral" title="Targets">
+                            <b><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Targets</b></a><br>
+                            <span>Not available</span>
+                    {% endif %}
+                </td>
 
-            {% if awardscat %}
-                <hr class="sep">
-                {% include "awards/categories.html" %}
-            {% elif targetcat %}
-                <hr class="sep">
-                {% include "target/categories.html" %}
-            {% elif factioncat and player.tId > 0 %}
-                <hr class="sep">
-                {% include "faction/categories.html" %}
-            {% elif bazaarcat %}
-                <hr class="sep">
-                {% include "bazaar/categories.html" %}
-            {% elif chaincat and player.tId > 0 %}
-                <hr class="sep">
-                {% include "chain/categories.html" %}
-            {% elif bazaarcat %}
-                <hr class="sep">
-                {% include "bazaar/categories.html" %}
-            {% elif stockcat %}
-                <hr class="sep">
-                {% include "stock/categories.html" %}
-            {% elif botcat %}
-                <hr class="sep">
-                {% include "bot/categories.html" %}
-            {% endif %}
+                {# awards #}
+                <td class="b">
+                    <a href="{% url 'awards:index' %}" class="yata-link-awards" title="Awards">
+                        <b><i class="fas fa-medal"></i>&nbsp;&nbsp;Awards</b></a><br>
+                        <span>
+                        {% if player.tId > 0 %}
+                            {% if player.awardsInfo == "N/A" %}
+                            &empty;
+                            {% else %}
+                            {{player.awardsInfo|floatformat:2}}% rarity score
+                            {% endif %}
+                        {% else %}
+                            Don't show progress
+                        {% endif %}
+                        </span>
+                </td>
+                {# loot #}
+                <td class="b">
+                    <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Loot">
+                        <b><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Loot</b></a><br>
+                        <span>
+                        {% if nextLoot %}
+                            in <span id="loot-countdown">{{nextLoot|ts2time}}</span>
+                        {% else %}
+                            <b class="error">NOW</b>
+                        {% endif %}
+                        </span>
+                </td>
+                {% if player.tId > 0 %}
+                {# logout #}
+                <td class="c">
+                    <a class="error flush-right" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
+                </td>
+                {% endif %}
+            </tr>
+        </table>
 
-        </div>
+        {% if awardscat %}
+            <hr class="sep">
+            {% include "awards/categories.html" %}
+        {% elif targetcat %}
+            <hr class="sep">
+            {% include "target/categories.html" %}
+        {% elif factioncat and player.tId > 0 %}
+            <hr class="sep">
+            {% include "faction/categories.html" %}
+        {% elif bazaarcat %}
+            <hr class="sep">
+            {% include "bazaar/categories.html" %}
+        {% elif chaincat and player.tId > 0 %}
+            <hr class="sep">
+            {% include "chain/categories.html" %}
+        {% elif bazaarcat %}
+            <hr class="sep">
+            {% include "bazaar/categories.html" %}
+        {% elif stockcat %}
+            <hr class="sep">
+            {% include "stock/categories.html" %}
+        {% elif botcat %}
+            <hr class="sep">
+            {% include "bot/categories.html" %}
+        {% endif %}
 
-    {% else %}
+    </div>
 
-        <div class="module">
-            <table class="yata-login">
-                <tr>
-                    <td class="a">
-                        {% include "svg/yata.full.svg" %}
-                    </td>
-                    <td class="d">
-                        <form method="post" class="form-inline">
-                            Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start using <b>YATA</b>&nbsp;
-                            {% csrf_token %}
-                            <input id="yata-login-key" placeholder="API key" type=text>
-                            <input id="yata-login-submit" type="submit" value="Login">
-                            &nbsp;
-                            <input id="yata-login-remember" type="checkbox" value="Remember me">
-                            <label for="yata-login-remember">Remember me</label>
-                            {% if apiError %}<p class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</p>{% endif %}
-                        </form>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
+{% else %}
+
+    <div class="module">
+        <table class="yata-login">
+            <tr>
+                <td class="a">
+                    {% include "svg/yata.full.svg" %}
+                </td>
+                <td class="d">
+                    <form method="post" class="form-inline">
+                        Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to start using <b>YATA</b>&nbsp;
+                        {% csrf_token %}
+                        <input id="yata-login-key" placeholder="API key" type=text>
+                        <input id="yata-login-submit" type="submit" value="Login">
+                        &nbsp;
+                        <input id="yata-login-remember" type="checkbox" value="Remember me">
+                        <label for="yata-login-remember">Remember me</label>
+                        {% if apiError %}<p class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{ apiError }}</p>{% endif %}
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endif %}

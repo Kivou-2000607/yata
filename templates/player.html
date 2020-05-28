@@ -10,6 +10,8 @@
 {% endblock %}
 
 {% block jquery %}
+<script type="text/javascript" src='{% static "perso/js/player/player.js" %}'></script>
+
 {% endblock %}
 
 {% block content %}
@@ -17,5 +19,4 @@
         {% include "player/content-reload.html" %}
     </div>
 
-    {# tutorial #}
 {% endblock %}
