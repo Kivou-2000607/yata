@@ -27,6 +27,23 @@ This file is part of yata.
 
 $( document ).ready(function() {
 
+
+    function change_cursor(selector, icon, size) {
+        var canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        //document.body.appendChild(canvas);
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#000000";
+        ctx.font = `${size}px FontAwesome`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        console.log(icon)
+        ctx.fillText(icon, size/2, size/2);
+        var dataURL = canvas.toDataURL('image/png')
+        $(selector).css('cursor', 'url('+dataURL+'), auto');
+    }
+
     function span_cout(a, n, i){
         let cl = "neutral"
         if (i < 0) { cl = "error" }
@@ -50,6 +67,7 @@ $( document ).ready(function() {
           // add classes
           $( this ).addClass("add");
           $( this ).prevAll(".gt").addClass("add");
+          change_cursor('.add', '\uf055', 16)
 
           // change merit counter
           let i = 0;
@@ -89,6 +107,7 @@ $( document ).ready(function() {
           // add classes
           $( this ).addClass("rem");
           $( this ).nextAll(".le").addClass("rem")
+          change_cursor('.rem', "\uf146", 16)
 
           // change merit counter
           let i = 0;
