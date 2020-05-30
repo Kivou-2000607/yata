@@ -453,7 +453,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Critical hits": dict(),
             "Bounties": dict(),
             "Fire rounds": dict(),
-            "Other attacks": dict(),
+            "Other (Attacks)": dict(),
             "Assists": dict(),
             "Damage": dict(),
             "Finishing hits": dict()})
@@ -602,7 +602,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [27]:
                     # 27 {'name': 'Night Walker', 'description': 'Make 100 stealthed attacks', 'type': 8, 'circulation': 50474, 'rarity': 'Common', 'awardType': 'Honor'}
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("attacksstealthed", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -625,7 +625,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [763]:
                     # 763: "name": "Bare", "description": "Win 250 unarmored attacks or defends", "type": 8,
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("unarmoredwon", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -678,7 +678,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 781 { "name": "Riddled", "description": "Defeat an opponent after hitting at least 10 different body parts in a single attack", "type": 8,
                     # "827": {"name": "Deadly Duo","description": "Attack and defeat an opponent with your spouse","type": 8,
                     # "838": { "name": "Lovestruck", "description": "Defeat a married couple", "type": 8,
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
@@ -686,7 +686,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [778]:
                     # 778 { "name": "Specialist", "description": "Achieve 100% EXP on 25 different weapons",
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
                     wexp = userInfo.get("weaponexp", [])
                     maxExp = 0
@@ -734,7 +734,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [247]:
                     # 247 {'name': 'Blood Money', 'description': 'Make $1,000,000 from a single mugging', 'type': 8, 'circulation': 32879, 'rarity': 'Common', 'awardType': 'Honor'}
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", "").replace("$", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("largestmug", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -743,7 +743,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [270]:
                     # 270 {'name': 'Deadlock', 'description': 'Stalemate 100 times', 'type': 8, 'circulation': 5194, 'rarity': 'Rare', 'awardType': 'Honor'}
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("attacksdraw", 0) + userInfo.get("personalstats", dict({})).get("defendsstalemated", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -775,7 +775,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [517]:
                     # 517 {'name': 'Pressure Point', 'description': 'Achieve 100 one hit kills', 'type': 8, 'circulation': 13351, 'rarity': 'Uncommon', 'awardType': 'Honor'}
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("onehitkills", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -788,7 +788,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [601]:
                     # 601 {'name': 'Fury', 'description': 'Achieve 10,000 hits', 'type': 8, 'circulation': 8172, 'rarity': 'Limited', 'awardType': 'Honor'}
-                    type = "Other attacks"
+                    type = "Other (Attacks)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("attackhits", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -899,7 +899,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
         awards = dict({
             "Respect": dict(),
             "Chains": dict(),
-            "Other": dict(),
+            "Other (Faction)": dict(),
             "Commitment": dict(),
             "Dirty bomb": dict()})
 
@@ -934,7 +934,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 elif int(k) in [605, 488]:
                     # "605": {"name": "Friendly Fire", "description": "Defeat a fellow faction member", "type": 8,
                     # "488": {"name": "Vengeance", "description": "Successfully perform a faction retaliation hit","type": 8,
-                    type = "Other"
+                    type = "Other (Faction)"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
@@ -992,7 +992,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
         awards = dict({
             "City": dict(),
             "Medical items": dict(),
-            "Other items": dict(),
+            "Other (Items)": dict(),
             "Pranks": dict(),
             "Consume": dict()})
 
@@ -1080,7 +1080,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [699]:
                     # "699": {"name": "Collector","description": "Maintain an impressive display case of collectible items", "type": 16,
-                    type = "Other items"
+                    type = "Other (Items)"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
@@ -1088,7 +1088,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [273]:
                     # 273 {'name': 'Bargain Hunter', 'description': 'Win 10 auctions', 'type': 16, 'circulation': 8415, 'rarity': 'Limited', 'awardType': 'Honor', 'achieve': 0}
-                    type = "Other items"
+                    type = "Other (Items)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("auctionswon", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -1096,7 +1096,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [216]:
                     # 216 {'name': 'Silicon Valley', 'description': 'Code 100 viruses', 'type': 0, 'circulation': 3627, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 539384064, 'title': 'Silicon Valley [216]: Rare (3627)'}
-                    type = "Other items"
+                    type = "Other (Items)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("virusescoded", 0)
                     c = 1.
@@ -1687,7 +1687,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Networth": dict(),
             "Casino": dict(),
             "Donations": dict(),
-            "Other money": dict()})
+            "Other (Money)": dict()})
 
         for k, v in tornAwards["honors"].items():
             if int(v["type"]) in [0, 9, 14, 16]:
@@ -1737,7 +1737,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [8]:
                     # 8 {'name': 'Loan Shark', 'description': 'Achieve a high credit score with Duke', 'type': 14, 'circulation': 10499, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 602403620, 'title': 'Loan Shark [8]: Limited (10499)'}
-                    type = "Other money"
+                    type = "Other (Money)"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -1754,7 +1754,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [239]:
                     # 239 {'name': 'Middleman', 'description': 'Have 100 customers buy from your bazaar', 'type': 16, 'circulation': 27683, 'rarity': 'Common', 'awardType': 'Honor', 'achieve': 0}
-                    type = "Other money"
+                    type = "Other (Money)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("bazaarcustomers", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -1762,7 +1762,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [268]:
                     # 268 {'name': 'Wholesaler', 'description': 'Sell 1,000 points on the market', 'type': 0, 'circulation': 29688, 'rarity': 'Common', 'awardType': 'Honor', 'img': 517070365, 'title': 'Wholesaler [268]: Common (29688)'}
-                    type = "Other money"
+                    type = "Other (Money)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("pointssold", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -1811,7 +1811,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
         awards = dict({
             "Elimination": dict(),
-            "Other competitions": dict(),
+            "Other (Comp)": dict(),
             "Token shop": dict(),
             "TC endurance": dict(),
             "Torn of the dead": dict(),
@@ -1833,7 +1833,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 213 {'name': 'Allure', 'description': 'Participate in the Mr & Ms Torn competition', 'type': 13, 'circulation': 3928, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 576433461, 'title': 'Allure [213]: Rare (3928)'}
                     # 222 {'name': 'Good Friday', 'description': 'Exchange all eggs for a gold one in the Easter egg hunt competition', 'type': 13, 'circulation': 14880, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 566217580, 'title': 'Good Friday [222]: Uncommon (14880)'}
                     # 330 {'name': 'Champion', 'description': '', 'type': 13, 'circulation': 106, 'rarity': 'Extremely Rare', 'awardType': 'Honor', 'img': None, 'title': 'Champion [330]: Extremely Rare (106)'}
-                    type = "Other competitions"
+                    type = "Other (Comp)"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -1916,7 +1916,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Level": dict(),
             "Rank": dict(),
             # "Faction": dict(),
-            "Other commitment": dict()})
+            "Other (Commitment)": dict()})
 
         for k, v in tornAwards["honors"].items():
             if int(v["type"]) in [0, 11, 12]:
@@ -1944,7 +1944,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [245]:
                     # 245 {'name': 'Couch Potato', 'description': 'Achieve 1,000 hours of activity on Torn', 'type': 11, 'circulation': 8396, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 965199742, 'title': 'Couch Potato [245]: Limited (8396)'}
-                    type = "Other commitment"
+                    type = "Other (Commitment)"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = int(userInfo.get("personalstats", dict({})).get("useractivity", 0) / 3600)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
@@ -1955,7 +1955,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [312]:
                     # 312 {'name': 'Time Traveller', 'description': 'Survive a Torn City restore', 'type': 0, 'circulation': 24165, 'rarity': 'Common', 'awardType': 'Honor', 'img': 834531746, 'title': 'Time Traveller [312]: Common (24165)'}
-                    type = "Other commitment"
+                    type = "Other (Commitment)"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -2067,7 +2067,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Missions": dict(),
             "Maximum": dict(),
             "Events": dict(),
-            "Other": dict()})
+            "Other (Misc)": dict()})
 
         for k, v in tornAwards["honors"].items():
             if int(v["type"]) in [0, 2, 11, 14, 17]:
@@ -2098,7 +2098,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 elif int(k) in [316, 845]:
                     # 316 {'name': 'Forgiven', 'description': 'Be truly forgiven for all of your sins', 'type': 11, 'circulation': 5434, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 240827340, 'title': 'Forgiven [316]: Rare (5434)'}
                     # "845": {"name": "Historian", "description": "Read a chronicle", "type": 0,
-                    type = "Other"
+                    type = "Other (Misc)"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -2106,7 +2106,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [839]:
                     # "839": {"name": "RNG","description": "Who knows?","type": 0,
-                    type = "Other"
+                    type = "Other (Misc)"
                     if int(k) in honors_awarded:
                         vp["goal"] = 1
                         vp["current"] = 1
@@ -2128,7 +2128,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                 elif int(k) in [700]:
                     # "700": {"name": "Leaderboard","description": "Achieve top 250 in one of the personal Hall of Fame leaderboards","type": 0,"circulation": 0,
-                    type = "Other"
+                    type = "Other (Misc)"
 
                     top = int(vp["description"].split(" ")[2].replace(",", ""))
 
