@@ -303,7 +303,7 @@ class VerifiedClient(models.Model):
             self.author_name = payload.get("author_name")
         if payload.get("version", False):
             self.version = payload.get("version")
-        if auto_verified and not self.verified and len(VerifiedClient.objects.filter(verified=True, name=self.name)):
+        if auto_verified and not self.verified and len(VerifiedClient.objects.filter(pk__lt=self.pk, verified=True, name=self.name)):
             self.verified = True
 
         self.save()

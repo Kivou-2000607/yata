@@ -1,8 +1,8 @@
 import requests
 import json
 
-# url = "http://127.0.0.1:8000/bazaar/abroad/import/"
-url = "https://yata.alwaysdata.net/bazaar/abroad/import/"
+url = "http://127.0.0.1:8000/bazaar/abroad/import/"
+# url = "https://yata.alwaysdata.net/bazaar/abroad/import/"
 payload = {
     "country": "uae",
     "client": "my cool app",
