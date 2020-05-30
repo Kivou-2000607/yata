@@ -25,7 +25,7 @@ import json
 from player.models import PlayerData
 
 
-class FilterIPMiddleware(object):
+class BanPlayersMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -34,17 +34,20 @@ class FilterIPMiddleware(object):
         playerdata = PlayerData.objects.first()
         if playerdata is None:
             ipsBan = []
+            uidBan = []
         else:
             ipsBan = json.loads(playerdata.ipsBan)
-
-        # get client ip
-        ip = request.META.get('REMOTE_ADDR')
+            uidBan = json.loads(playerdata.uidBan)
 
         # return 403
-        if ip in ipsBan:
+        if request.session.get('player', False) and request.session['player'].get('tId', -1) in uidBan:
+            return returnError(type=403, msg=mark_safe('<p><i class="fas fa-gavel"></i>&nbsp&nbspYour user ID is banned from YATA.</p>'), home=False)
+
+        # return 403
+        elif request.META.get('REMOTE_ADDR') in ipsBan:
             message = '<p><i class="fas fa-gavel"></i>&nbsp&nbspYou are banned from YATA by IP address.</p>\
-                       <p>Reason: <span class="error">{}</span></p>\
-                       <p>If you want to know why contact ingame <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>.</p>'.format(ipsBan[str(ip)])
+                       <p>If you want to know why contact ingame <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>.</p>'
             return returnError(type=403, msg=mark_safe(message), home=False)
 
-        return self.get_response(request)
+        else:
+            return self.get_response(request)

@@ -308,6 +308,7 @@ class VerifiedClient(models.Model):
 
         self.save()
 
+
 class AbroadStocks(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
@@ -328,20 +329,20 @@ class AbroadStocks(models.Model):
         from bazaar.countries import countries
 
         return {
-                # "country_key": self.country_key,
-                "country_name": self.country,
-                "item_id": self.item.tId,
-                "item_name": self.item.tName,
-                "item_type": self.item.tType,
-                "abroad_cost": self.cost,
-                "abroad_quantity": self.quantity,
-                "timestamp": self.timestamp,
-                # "item_maket_value": self.item.tMarketValue,
-                # "item_sell_price": self.item.tSellPrice,
-                # "item_buy_price": self.item.tBuyPrice,
-                # "item_week_tendency": self.item.weekTendency,
-                # "country_fly_time": countries[self.country_id]["fly_time"],
-                }
+            # "country_key": self.country_key,
+            "country_name": self.country,
+            "item_id": self.item.tId,
+            "item_name": self.item.tName,
+            "item_type": self.item.tType,
+            "abroad_cost": self.cost,
+            "abroad_quantity": self.quantity,
+            "timestamp": self.timestamp,
+            # "item_maket_value": self.item.tMarketValue,
+            # "item_sell_price": self.item.tSellPrice,
+            # "item_buy_price": self.item.tBuyPrice,
+            # "item_week_tendency": self.item.weekTendency,
+            # "country_fly_time": countries[self.country_id]["fly_time"],
+            }
 
     def get_country(self):
         from bazaar.countries import countries
@@ -352,7 +353,7 @@ class AbroadStocks(models.Model):
         old = tsnow() - h * 3600
         size_ts = h * 3600 // (5 * 60)
         tss = [0] * size_ts
-        stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key)
+        stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key, timestamp__gt=old)
         for stock in stocks:
             i = min(size_ts * (stock.timestamp - old) // (h * 3600), size_ts - 1)
             tss[i] = 1

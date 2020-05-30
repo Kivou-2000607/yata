@@ -127,6 +127,8 @@ def cleanhtml(raw_html):
 def getPlayer(tId):
     from player.models import Player
     from player.functions import updatePlayer
+    from django.http import HttpResponseForbidden
+    from django.template.loader import render_to_string
 
     player, _ = Player.objects.get_or_create(tId=tId)
     player.lastActionTS = tsnow()

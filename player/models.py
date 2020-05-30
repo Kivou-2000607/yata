@@ -322,6 +322,7 @@ class PlayerData(models.Model):
     nMonth = models.IntegerField(default=0)
 
     ipsBan = models.TextField(default="[]")
+    uidBan = models.TextField(default="[]")
 
     def updateNumberOfPlayers(self):
         players = Player.objects.only("tId", "active", "validKey", "lastActionTS").exclude(tId=-1)
