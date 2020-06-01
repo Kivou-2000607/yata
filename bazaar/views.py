@@ -711,7 +711,9 @@ def abroad(request):
         # get all stocks
         stocks = AbroadStocks.objects.filter(last=True, timestamp__gt=old)
         efficiencies = dict({"all": [0, 0, 0]})
+        clients = dict({})
         for stock in stocks:
+            # compute efficiency
             eff = stock.get_efficiency(h=48)
             if stock.country_key not in efficiencies:
                 efficiencies[stock.country_key] = [0, 0, 0]
@@ -722,6 +724,16 @@ def abroad(request):
             efficiencies["all"][0] += eff[0]
             efficiencies["all"][1] += eff[1]
             efficiencies["all"][2] += 1
+
+            if stock.client == "":
+                continue
+            if stock.client not in clients:
+                client = VerifiedClient.objects.filter(name=stock.client.split("[")[0].strip()).first()
+                if client is not None:
+                    clients[stock.client] = [0.0, client.author_id, client.author_name]
+                else:
+                    clients[stock.client] = [0.0, 0, "Player"]
+            clients[stock.client][0] += 1.0 / float(len(stocks))
 
         # compute efficiency
         for k, v in efficiencies.items():
@@ -744,6 +756,7 @@ def abroad(request):
                    "country_list": country_list,
                    "type_list": type_list,
                    "stocks": stocks,
+                   "clients": sorted(clients.items(), key=lambda x: -x[1][0]),
                    "bazaarcat": True,
                    "view": {"abroad": True}}
 
