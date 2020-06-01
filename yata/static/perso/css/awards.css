@@ -139,3 +139,20 @@ span.awarded-time {
     color: #999;
     font-style: italic;
 }
+
+
+div.image-block {
+   position: relative;
+}
+
+div.image-description {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+div.image-block img {
+  position: relative;
+}

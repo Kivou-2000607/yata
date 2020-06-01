@@ -77,8 +77,8 @@ This file is part of yata.
         {# <i class="fas fa-spinner fa-pulse"></i> #}
     {# </div> #}
 {# </div> #}
-<hr style="width: 0;">
-<h3>List of clients used the last 48 hours</h3>
+<hr class="sep" style="width: 0;">
+<p>List of clients used the last 48 hours:</p>
 <ul>
     {% for client, v in clients %}
         <li>{{client}} by {{v.2|playerURL:v.1|safe}}: {{v.0|mul:100|floatformat:0}}%</li>

@@ -174,7 +174,12 @@ This file is part of yata.
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
                 <td class="a"><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
-                  <td class="b award-todo"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">{{award.img|honorBanner:award.name|safe}}</span></td>
+                  <td class="b award-todo">
+                      <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">
+                          <div class="image-description">{{award.name}}</div>
+                          {{award.img|honorBanner:award.name|safe}}
+                      </div>
+                  </td>
                 {% else %}
                     {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
                         <td class="b"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% static image_static %}" class="medals"> &nbsp; {{award.name}}</span></td>
