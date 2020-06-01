@@ -59,9 +59,8 @@ def index(request):
 
         graphs = []
         for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
-            max_pk = max(g.pk, max_pk)
-            graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
-
+            graphs.append([timestampToDate(g.guildJoinedTime), g.pk])
+            
         # this is just for me...
         apps = False
         if player.tId in [2000607]:

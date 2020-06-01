@@ -28,13 +28,15 @@ This file is part of yata.
 
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
-        ['Time', 'Total number of servers', 'Number of servers still having the bot'],
+        ['Time', 'Number of servers', {role: 'tooltip', 'p': {'html': true}}],
         {% for a, b in graphs %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{forloop.counter}}],
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{forloop.counter}}, "<div style=\"padding: 5px;\"><b>Configuration number:</b> {{b}}<br><b>Bot number:</b> {{forloop.counter}}<br><b>Joined server on</b>: {{a}}</div>"],
         {% endfor %}
       ]);
 
       var options = {
+
+        tooltip: {isHtml: true, position: 'top'},
         title: 'Number of servers over time',
         // curveType: 'function',
         legend: { position: 'none' },
