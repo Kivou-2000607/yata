@@ -51,7 +51,8 @@ d = {
     581: 832763049,  # On Track
     839: 172807476,  # RNG
     845: 410458383,  # Historian
-
+    860: 360034401,  # Landlord
+    
     # 1
     171: 228001376,  # Afghanistan
     172: 200538715,  # Albania
@@ -273,7 +274,7 @@ d = {
     542: 500114722,  # Smuggler
     543: 267993904,  # Trafficker
     853: 661177633,  # Souvenir
-    
+
     # 8
     20: 778719620,  # Precision
     15: 303172651,  # Kill Streaker 1
