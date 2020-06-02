@@ -1301,8 +1301,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 130 {'name': 'Maradona', 'description': 'Travel to Argentina 50 times', 'type': 7, 'circulation': 10543, 'rarity': 'Limited', 'awardType': 'Honor', 'img': 697523940, 'title': 'Maradona [130]: Limited (10543)'}
                     type = "Destinations"
                     if 36 in medals_awarded:
+                        weirdkeys = {"135": "lontravel", "132": "dubtravel"}
                         key = v["description"].split(" ")[2].lower()[:3] + "travel"
-                        key = "lontravel" if key == "thetravel" else key
+                        key = weirdkeys.get(k, key)
                         vp["goal"] = int(v["description"].split(" ")[-2].replace(",", ""))
                         vp["current"] = int(userInfo.get("personalstats", dict({})).get(key, 0))
                         vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
