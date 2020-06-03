@@ -222,6 +222,13 @@ div.center-full-third {
   margin-right:4%;
 }
 
+div.center-full-fourth {
+  width:20%;
+  float:left;
+  margin-left:2%;
+  margin-right:2%;
+}
+
 table.center-full-third {
   width:33%;
   float:left;

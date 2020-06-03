@@ -719,7 +719,7 @@ def abroad(request):
                     clients[client_name] = [0.0, client.author_id, client.author_name]
                 else:
                     clients[client_name] = [0.0, 0, "Player"]
-            clients[client_name][0] += 1.0 / float(len(stocks))
+            clients[client_name][0] += 1.0 / float(max(1, len(stocks)))
 
         # get last stocks
         stocks = AbroadStocks.objects.filter(last=True, timestamp__gt=old)
@@ -739,8 +739,8 @@ def abroad(request):
 
         # compute efficiency
         for k, v in efficiencies.items():
-            country_list[k]["eff"] = v[1] / float(v[2])
-            country_list[k]["n"] = v[0] // v[2]
+            country_list[k]["eff"] = v[1] / float(max(1, v[2]))
+            country_list[k]["n"] = v[0] // max(1, v[2])
 
         if filters["countries"] != "all":
             stocks = stocks.filter(country_key=filters["countries"])
