@@ -1549,21 +1549,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = "{:.1f} days as brain surgeon stealing SFAK".format(vp["left"])
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [23, 267]:
-                    # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 15, 'circulation': 1053, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Florence Nightingale [23]: Extraordinary (1053)'}
-                    type = "City jobs"
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("revives", 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    er = 75
-                    for perk in userInfo.get("faction_perks", []):
-                        start, end = " ".join(perk.split(" ")[:-1]), perk.split(" ")[-1]
-                        er = float(end) if start == "+ Reduces the energy used while reviving to" else er
-                    days = dLeftE(max(er * (vp["goal"] - vp["current"]), 0), c="With {} energy / revive".format(er))
-                    vp["left"] = days[0]
-                    vp["comment"] = days[1]
-                    awards[type]["h_" + k] = vp
-
                 elif int(k) in [164]:
                     # 164 {'name': 'Keen', 'description': 'Spy on people while in the army 100 times', 'type': 0, 'circulation': 2066, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Keen [164]: Extraordinary (2066)'}
                     type = "City jobs"
@@ -1574,9 +1559,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = "{:.1f} days as General in the army".format(vp["left"])
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [220, 322]:
+                elif int(k) in [220]:
                     # 220 {'name': 'The Affronted', 'description': 'Infuriate all interviewers in starter jobs', 'type': 0, 'circulation': 4630, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 384148528, 'title': 'The Affronted [220]: Rare (4630)'}
-                    # 322: {"name": "Miracle Worker","description": "Revive 10 people within 10 minutes","type": 15,
                     type = "City jobs"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
@@ -2068,11 +2052,12 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Awards": dict(),
             "Missions": dict(),
             "Maximum": dict(),
+            "Revives": dict(),
             "Events": dict(),
             "Other Misc": dict()})
 
         for k, v in tornAwards["honors"].items():
-            if int(v["type"]) in [0, 2, 11, 14, 17]:
+            if int(v["type"]) in [0, 2, 11, 14, 15, 17]:
                 vp = v
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
@@ -2092,6 +2077,30 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 223 {'name': 'The Socialist', 'description': 'Achieve level 5 on facebook Torn', 'type': 11, 'circulation': 16222, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 350797134, 'title': 'The Socialist [223]: Uncommon (16222)'}
                     # 246 {'name': 'Pyramid Scheme', 'description': 'Have one of your referrals refer 5 Other players', 'type': 11, 'circulation': 1041, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': 536984897, 'title': 'Pyramid Scheme [246]: Extraordinary (1041)'}
                     type = "Social"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [23, 267]:
+                    # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 15, 'circulation': 1053, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Florence Nightingale [23]: Extraordinary (1053)'}
+                    type = "Revives"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("revives", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    er = 75
+                    for perk in userInfo.get("faction_perks", []):
+                        start, end = " ".join(perk.split(" ")[:-1]), perk.split(" ")[-1]
+                        er = float(end) if start == "+ Reduces the energy used while reviving to" else er
+                    days = dLeftE(max(er * (vp["goal"] - vp["current"]), 0), c="With {} energy / revive".format(er))
+                    vp["left"] = days[0]
+                    vp["comment"] = days[1]
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [322, 870]:
+                    # 322: {"name": "Miracle Worker","description": "Revive 10 people within 10 minutes","type": 15,
+                    # "870": { "name": "Resurrection", "description": "Revive someone you've just defeated", "type": 15,
+                    type = "Revives"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0

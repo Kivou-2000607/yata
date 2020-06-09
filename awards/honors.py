@@ -52,7 +52,7 @@ d = {
     839: 172807476,  # RNG
     845: 410458383,  # Historian
     860: 360034401,  # Landlord
-    
+
     # 1
     171: 228001376,  # Afghanistan
     172: 200538715,  # Albania
@@ -456,6 +456,7 @@ d = {
     267: 856740501,  # Second Chance
     250: 689889266,  # Don't Drop It
     322: 389182165,  # Miracle Worker
+    870: 840565871,  # Resurrection
 
     # 16
     239: 275270401,  # Middleman
