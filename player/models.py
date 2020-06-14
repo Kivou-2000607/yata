@@ -89,7 +89,7 @@ class Player(models.Model):
 
     # discord id and permission to give the bot the right to pull information
     dId = models.BigIntegerField(default=0)
-    botPerm = models.BooleanField(default=False)
+    # botPerm = models.BooleanField(default=False)
     activateNotifications = models.BooleanField(default=False)
     notifications = models.TextField(default="{}")
 

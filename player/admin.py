@@ -20,7 +20,7 @@ class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('perso/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'botPerm', 'active', 'validKey', 'dId']
+    list_display = ['tId', 'name', 'active', 'validKey', 'dId']
     search_fields = ['name', 'tId']
     list_filter = ['active', 'validKey']
     inlines = [KeyInline]
