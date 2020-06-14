@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'^chains/individual/$', views.iReport, name='iReport'),
     re_path(r'^chains/combined/$', views.combined, name='combined'),
     re_path(r'^chains/(?P<chainId>\w+)$', views.report, name='report'),
+    re_path(r'^chains/export/(?P<chainId>\w+)/(?P<type>\w+)$', views.reportExport, name='reportExport'),
 
     # SECTION: wall
     re_path(r'^walls/$', views.walls, name='walls'),

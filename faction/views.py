@@ -1041,6 +1041,54 @@ def combined(request):
         return returnError(exc=e, session=request.session)
 
 
+def reportExport(request, chainId, type):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # in case of error
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get chain
+            chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
+            if chain is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            if type == "0":
+                response = HttpResponse(content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename="Chain_report_{}_counts.csv"'.format(chain.tId)
+
+                csv_data = [['Attacker ID', 'Name', 'Hits', 'Bonus', 'Wins', 'Respect', 'Fair Fight', 'War', 'Retaliation', 'Group Attack', 'Overseas', 'Days In Faction', 'Watcher', 'War Hits']]
+
+                for c in chain.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect')):
+                    csv_data.append([c.attackerId, c.name, c.hits, c.bonus, c.wins, c.respect, c.fairFight, c.war, c.retaliation, c.groupAttack, c.overseas, c.daysInFaction, c.watcher, c.warhits])
+
+                t = loader.get_template('faction/chains/csv-counts.txt')
+                c = {'data': csv_data}
+                response.write(t.render(c))
+
+                return response
+
+            return returnError(type=403, msg="YOLOOO")
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
 # SECTION: walls
 def walls(request):
     try:

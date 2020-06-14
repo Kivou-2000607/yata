@@ -160,6 +160,8 @@ $(document).ready(function() {
         {% if not share and player.factionAA %}
             <form class="flush-right">{% csrf_token %}
                 Share report&nbsp;&nbsp;<span>{% include 'faction/chains/share.html' %}</span>
+
+                Export&nbsp;&nbsp;<span>{% include "faction/chains/export.html" %}</span>
             </form>
         {% endif %}
         </th></tr>
