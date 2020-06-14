@@ -173,7 +173,7 @@ def saveGuildConfig(guild):
 
     # loop over yata users to get their keys
     if len(guild.masterKeys.all()):
-        var[str(guild.guildId)]["keys"] = dict({p.tId: p.getKey() for p in guild.masterKeys.all() if p.botPerm})
+        var[str(guild.guildId)]["keys"] = [p.tId for p in guild.masterKeys.all()]
 
     bot.variables = json.dumps(var)
     bot.save()

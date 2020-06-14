@@ -76,7 +76,7 @@ class Guild(models.Model):
     # racket module
     racketModule = models.BooleanField(default=False, help_text="Enable the Racket module")
     racketChannels = models.CharField(default='["territory"]', blank=True, max_length=64, help_text="Name of the racket channels. Can be multiple channels. It has to be the exact channel name: [\"channel-a\", \"my-other-channel\"]", validators=[channel_names_reg])
-    racketRoles = models.CharField(default='["Territory"]', blank=True, max_length=64, help_text="Name of the role to mention. It has to be the exact role name: [\"Role a\"] or empty array [] for no mentions.")
+    racketRoles = models.CharField(default='[]', blank=True, max_length=64, help_text="Name of the role to mention. It has to be the exact role name: [\"Role a\"] or empty array [] for no mentions.")
 
     # loot module
     lootModule = models.BooleanField(default=False, help_text="Enable the Loot module")

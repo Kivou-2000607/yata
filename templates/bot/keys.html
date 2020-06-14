@@ -29,31 +29,8 @@ This file is part of yata.
     </ul>
     <p>to use all the commands of the bot. If you don't, when possible master keys are used as a fallback method. Check the documentation for more details.</p>
 
-    <p>For some commands, the YATA bot pulls private informations. And some of these commands can be triggered by a tier, displaying private data on potentially public channels (see below for details). Don't worry, it will only do so only if you give it the permission.
-    However, even though discord admins don't have access to your key directly and are only able to use the bot commands, they can play with the roles and the permissions as they wish.
-    If they have malicious intents they can use the bot functions without your knowledge.
-    So, before giving permission to the bot, make sure that <span class="warning">you <span style="text-decoration: underline;">trust the owners</span> of every servers you're in and that are running the YATA bot</span>.
-    Check below the list features requiring your permission.</p>
+    <p>For some commands, the YATA bot pulls private informations. And some of these commands can be triggered by a tier, displaying private data on potentially public channels (see below for details). To avoid malicious use of these command a direct message will be sent to you when the data is pulled and displayed.</p>
 
-    <h2 class="command-doc privacy-master">Master key for server admins&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="command-doc">
-        <p>The bot requires at least one master key to be able to check discord users identity. Usually the person asking for the bot is putting their but adding others lower the load. No private data is ever pulled from master keys but still the bot requires your permission.</p>
-    </div>
-    <h2 class="command-doc privacy-personal-private">Stock sharing&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="command-doc">
-        <p>If you happen to have the <tt>@wssb</tt> or <tt>@tcb</tt> role you're concerned. With your permission, the bot will be able to pull education time left and bank investement time left, respectively, and will make it visible to members of the server (supposed to be shared with <tt>@wssb</tt> and <tt>@tcb</tt> members).</p>
-    </div>
-    <h2 class="command-doc">Rule of thumb&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="command-doc">
-        <p>Check the documentation above and look at the icons. Commands with:</p>
-        <h3 class="privacy-master">Requires permission for master key holders.</h3>
-        <h3 class="privacy-personal-private">Requires permission if the response is not given as a DM.</h3>
-    </div>
-    <hr class="sep">
-    {% if player.tId > 0 %}
-        <div id="discord-perm">{% include "bot/give-permission.html" %}</div>
-    {% else %}
-        <p class="error">You have to log into YATA to check your verification status</p>
-    {% endif %}
+    <p>If your key is set as a master key and you reset it, you just have to <a href="{%url 'logout'%}" target="_blank">logout</a> and log back into YATA with your new key.</p>
 
 </div>
