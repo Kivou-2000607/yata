@@ -91,7 +91,7 @@ def saveGuildConfig(guild):
     # loot module
     if guild.lootModule:
         channels = [c.lower() for c in json.loads(guild.lootChannels)]
-        var[str(guild.guildId)]["loot"] = {"active": True, "channels": channels, "roles": "Looter"}
+        var[str(guild.guildId)]["loot"] = {"active": True, "channels": channels, "roles": ["Looter"]}
 
     # revive module
     if guild.reviveModule:
@@ -102,12 +102,12 @@ def saveGuildConfig(guild):
         var[str(guild.guildId)]["revive"] = {"active": True,
                                              "channels": channels,
                                              "servers": servers,
-                                             "blacklist": blacklist, "roles": "Reviver"}
+                                             "blacklist": blacklist, "roles": ["Reviver"]}
 
     # stocks
     if guild.stockModule:
         channels = [c.lower() for c in json.loads(guild.stockChannels)]
-        var[str(guild.guildId)]["stocks"] = {"active": True, "channels": channels, "roles": "Trader"}
+        var[str(guild.guildId)]["stocks"] = {"active": True, "channels": channels, "roles": ["Trader"]}
         if guild.stockWSSB:
             var[str(guild.guildId)]["stocks"]["wssb"] = True
         if guild.stockTCB:
@@ -144,7 +144,7 @@ def saveGuildConfig(guild):
     # verify
     if guild.verifyModule:
         channels = [c.lower() for c in json.loads(guild.verifyChannels)]
-        var[str(guild.guildId)]["verify"] = {"active": True, "channels": channels, "roles": "Verified"}
+        var[str(guild.guildId)]["verify"] = {"active": True, "channels": channels, "roles": ["Verified"]}
         if guild.verifyAppendFacId:
             var[str(guild.guildId)]["verify"]["id"] = True
         if guild.verifyForce:
