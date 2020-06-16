@@ -1,5 +1,5 @@
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -28,16 +28,15 @@ This file is part of yata.
 <head>
 
     <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
 
     <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
 
     <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+    <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
 
     <!-- meta  -->
     <meta name="robots" content="NONE,NOARCHIVE" />
@@ -46,19 +45,19 @@ This file is part of yata.
     <title>YATA - Error 404</title>
 </head>
 
+
 <body>
-    <div id="container" style="margin-top: 20px;">
+    <div id="container">
         <div id="content">
-            <h1>{% include "svg/yata.full.svg" %}</h1>
-
-            <h2 class="title"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 404: Not Found</h2>
-            <div class="module red">
-                <p>{{exception}}</p>
-                {% if home %}
-                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
-                {% endif %}
+            <div id="yata-login">
+                <div class="module">
+                    <a class="yata-logo" href="{% url 'index' %}" title="Home">{% include "svg/yata.full.svg" %}</a>
+                    <div class="http-status">
+                        <h2 class="warning"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 404: Not Found</h2>
+                        <p>{{exception}}</p>
+                    </div>
+                </div>
             </div>
-
         </div> <!--end of content-->
     </div> <!--end of container-->
 </body>

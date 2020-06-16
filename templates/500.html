@@ -1,5 +1,5 @@
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -29,16 +29,15 @@ This file is part of yata.
 <head>
 
     <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
 
     <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
 
     <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
+    <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
 
     <!-- meta  -->
     <meta name="robots" content="NONE,NOARCHIVE" />
@@ -48,26 +47,25 @@ This file is part of yata.
 </head>
 
 <body>
-    <div id="container" style="margin-top: 20px;">
+    <div id="container">
         <div id="content">
-            <h1>{% include "svg/yata.full.svg" %}</h1>
-
-            <h2 class="title"><i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 500: Server Error</h2>
-            <div class="module red">
-                <p>This is not normal.
-                Please check if a similar issue has been reported:
-                <ul>
-                    <li>On the discord server in <tt>#bug-and-issues</tt>: <a href="https://discord.gg/tZaYpbG" target="_blank">https://discord.gg/tZaYpbG</a></li>
-                    <li>On the forum thread: <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">https://www.torn.com/forums.php#/p=threads&f=67&t=16100118</a></li>
-                </ul>
-                And if not please report the error by copy pasting the following:
-                </p>
-                <pre>{{exception}}</pre>
-                Please don't PM {{"Kivou"|playerURL:"2000607"|safe}}.
-                {% if home %}
-                    <hr class="sep">
-                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
-                {% endif %}
+            <div id="yata-login">
+                <div class="module">
+                    <a class="yata-logo" href="{% url 'index' %}" title="Home">{% include "svg/yata.full.svg" %}</a>
+                    <div class="http-status">
+                        <h2 class="error"><i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 500: Server Error</h2>
+                        <p>This is not normal.
+                        Please check if a similar issue has been reported:
+                        <ul>
+                            <li>On the <a href='{% url "discord" %}' target="_blank">discord server</a> in <tt>#bug-and-issues</tt>.</li>
+                            <li>On the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">forum thread</a>.
+                        </ul>
+                        And if not please report the error by copy pasting the following:
+                        </p>
+                        <pre>{{exception}}</pre>
+                        Please don't PM {{"Kivou"|playerURL:"2000607"|safe}}.
+                    </div>
+                </div>
             </div>
         </div> <!--end of content-->
     </div> <!--end of container-->

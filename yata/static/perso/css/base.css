@@ -98,6 +98,14 @@ div.module input[type="submit"]:active {
     background-position: 0 -48px;
 }
 
+div.http-status {
+    padding: 10px;
+    margin: 10px;
+    background: #fff;
+    -moz-box-shadow: inset 0 0 5px #888;
+    -webkit-box-shadow: inset 0 0 5px #888;
+    box-shadow: inner 0 0 5px #888;
+}
 
 h2.title {
     background: #ccc url("/static/images/section_title_black_bg.png") left top repeat;
