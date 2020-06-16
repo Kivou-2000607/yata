@@ -274,6 +274,7 @@ d = {
     542: 500114722,  # Smuggler
     543: 267993904,  # Trafficker
     853: 661177633,  # Souvenir
+    846: 832087778,  # International
 
     # 8
     20: 778719620,  # Precision

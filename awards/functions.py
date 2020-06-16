@@ -1231,6 +1231,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Destinations": dict(),
             "Time": dict(),
             "Import items": dict(),
+            "Attacks abroad": dict(),
             "Hunting": dict()})
 
         pilot = 0.7 if "+ Access to airstrip" in userInfo.get("property_perks", []) else 1.0
@@ -1407,6 +1408,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [846]:
+                    # "846": { "name": "International", "description": "Defeat 100 people while abroad", "type": 7,
+                    type = "Attacks abroad"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("attackswonabroad", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+
         for k, v in tornAwards["medals"].items():
             if v["type"] == "OTR":
                 vp = v
@@ -1581,7 +1590,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [844]:
-                    # "844": {"name": "Worker Bee","description": "Achieve 10,000 in any working stat","type": 4,                    type = "Working stats"
+                    # "844": {"name": "Worker Bee","description": "Achieve 10,000 in any working stat","type": 4,
+                    type = "Working stats"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = 0
                     for key in ["endurance", "intelligence", "manual_labor"]:
