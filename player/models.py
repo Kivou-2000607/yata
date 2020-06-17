@@ -263,6 +263,30 @@ class Player(models.Model):
 
         return merits
 
+
+    def getPersonalstats(self, req=None):
+        from player.personalstats_dic import d as personalstats_dic
+        if req is None:
+            return dict({})
+
+        personnalstats = dict({})
+
+        for k, v in req.items():
+            s = personalstats_dic.get(k, {"category": "Unkown", "sub": "default", "type": "integer", "name": k})
+            if s["category"] not in personnalstats:
+                personnalstats[s["category"]] = [[], dict({})]
+            if s["sub"] == "default":
+                personnalstats[s["category"]][0].append([s["name"], v, s["type"]])
+            else:
+                if s["sub"] not in personnalstats[s["category"]][1]:
+                    personnalstats[s["category"]][1][s["sub"]] = []
+                personnalstats[s["category"]][1][s["sub"]].append([s["name"], v, s["type"]])
+
+            if s["category"] == "Unkown":
+                print(k, v)
+
+        return personnalstats
+
 # class News(models.Model):
 #     player = models.ManyToManyField(Player, blank=True)
 #     type = models.CharField(default="Info", max_length=16)

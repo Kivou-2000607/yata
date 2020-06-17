@@ -67,7 +67,6 @@ $( document ).ready(function() {
           // add classes
           $( this ).addClass("add");
           $( this ).prevAll(".gt").addClass("add");
-          change_cursor('.add', '\uf055', 16)
 
           // change merit counter
           let i = 0;
@@ -107,7 +106,6 @@ $( document ).ready(function() {
           // add classes
           $( this ).addClass("rem");
           $( this ).nextAll(".le").addClass("rem")
-          change_cursor('.rem', "\uf146", 16)
 
           // change merit counter
           let i = 0;
@@ -145,8 +143,8 @@ $( document ).ready(function() {
 
 </script>
 
-{% if apiErrorSub.merit %}
-    <span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorSub.merit}}</span>
+{% if apiErrorSub %}
+    <p class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorSub}}</p>
 {% else %}
 
 <table class="center">

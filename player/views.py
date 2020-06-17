@@ -37,13 +37,17 @@ def index(request):
             req = apiCall("user", "", "personalstats,merits,honors,medals", key=player.getKey())
 
             for key in ["merits", "honors_awarded", "medals_awarded", "personalstats"]:
-                if "merits" not in req or "":
-                    context["apiErrorSub"] = {"merit": req["apiError"] if "apiError" in req else "#blameched"}
+                if key not in req:
+                    context["apiErrorSub"] = req["apiError"] if "apiError" in req else "#blameched"
+                    break
 
             if "apiErrorSub" not in context:
                 merits = player.getMerits(req=req["merits"])
                 context["nMerits"] = len(req.get("honors_awarded")) + len(req.get("medals_awarded")) + int(req["personalstats"].get("meritsbought", 0))
                 context["merits"] = merits
+
+                # req = apiCall("user", "1", "personalstats", key=player.getKey())
+                context["personalstats"] = player.getPersonalstats(req=req["personalstats"])
 
             return render(request, page, context)
 

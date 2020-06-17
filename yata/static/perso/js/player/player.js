@@ -40,3 +40,20 @@ $( document ).on('click', '.merits-button', e => {
     }
 
 });
+
+
+// show/hide command
+$(document).on('click', '.player-personalstats-header', function(e){
+    e.preventDefault();
+    // get h2 and div
+    var h = $(this);
+    var d = $(this).next("div");
+    var i = h.find("i[class^='fas fa-caret']");
+    d.slideToggle("fast", function(){
+        if (d.css("display") == "none") {
+            i.removeClass("fa-rotate-90");
+        } else {
+            i.addClass("fa-rotate-90");
+        }
+    });
+});
