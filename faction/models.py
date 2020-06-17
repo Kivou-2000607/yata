@@ -268,6 +268,11 @@ class Faction(models.Model):
         # get db crimes
         crimesDB = self.crimes_set.all()
 
+        # loop over db crimes to check for cancelled crimes (ie not in api)
+        for crime in crimesDB.selecte(initiated=False):
+            if str(crime.tID) not in crimesAPI:
+                crime.delete()
+
         # second loop over API to create new crimes
         n = {"created": 0, "updated": 0, "deleted": 0, "ready": 0}
         for k, v in crimesAPI.items():
