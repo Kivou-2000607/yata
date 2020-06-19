@@ -27,8 +27,8 @@ class GuildAdmin(admin.ModelAdmin):
         css = {'all': ('perso/css/admin.css',)}
 
     list_display = ['guildName', 'guildId', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
-    search_fields = ['guildContactName', 'guildName', 'botContactName']
-    list_filter = ['configuration__name', 'botContactName', 'guildContactName']
+    search_fields = ['guildContactTornName', 'guildName', 'botContactName']
+    list_filter = ['configuration__name', 'botContactName', 'guildContactTornName']
     autocomplete_fields = ("masterKeys", "verifyFactions")
     actions = [update_guild]
 
@@ -41,14 +41,14 @@ class GuildAdmin(admin.ModelAdmin):
         return '{name} [{id}]'.format(name=instance.guildOwnerName, id=instance.guildOwnerId)
 
     def contact(self, instance):
-        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.guildContactName, id=instance.guildContactId))
+        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.guildContactTornName, id=instance.guildContactTornId))
 
     def admin(self, instance):
         return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.botContactName, id=instance.botContactId))
 
     fieldsets = (
                 ('Server and contact', {
-                    'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactId', 'guildContactName')
+                    'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactTornId', 'guildContactTornName', 'guildContactDiscordId')
                 }),
         ('General Settings', {
             'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')

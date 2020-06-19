@@ -66,9 +66,11 @@ def saveGuildConfig(guild):
                                         "name": guild.guildName,
                                         "owner": guild.guildOwnerName,
                                         "owner_id": guild.guildOwnerId,
-                                        "contact": guild.guildContactName,
-                                        "joined_at": guild.guildJoinedTime,
-                                        "contact_id": guild.guildContactId}
+                                        "contact_torn": guild.guildContactTornName,
+                                        "contact_torn_id": guild.guildContactTornId,
+                                        "contact_discord": guild.guildContactDiscordName,
+                                        "contact_discord_id": guild.guildContactDiscordId,
+                                        "joined_at": guild.guildJoinedTime}
 
     # # allowed channels
     # if guild.allowedChannels:

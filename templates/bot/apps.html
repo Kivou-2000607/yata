@@ -26,10 +26,10 @@ This file is part of yata.
   <h1 class="module-doc">{{app.name}} [{{app.id}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
   <div class="module-doc">
     {% for guildId, guild in app.variables %}
-        <h2 class="command-doc">#{{forloop.counter}} {{guild.admin.name}} ({{guild.admin.contact}} [{{guild.admin.contact_id}}])&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <h2 class="command-doc">#{{forloop.counter}} {{guild.admin.name}} ({{guild.admin.contact_torn}} [{{guild.admin.contact_torn_id}}])&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="command-doc">
           <p><b>Owner:</b> {{guild.admin.owner}} [{{guild.admin.owner_id}}]</p>
-          <p><b>Contact:</b> {{guild.admin.contact|playerURL:guild.admin.contact_id|safe}}</p>
+          <p><b>Contact:</b> {{guild.admin.contact_torn|playerURL:guild.admin.contact_torn_id|safe}}</p>
           {% for module, options in guild.items %}
               {% if module != "admin" and module != "keys" %}
                   <p><b>{{module}}:</b>
