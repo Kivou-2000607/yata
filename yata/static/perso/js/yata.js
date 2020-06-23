@@ -97,37 +97,27 @@ $(document).on('click', 'h2.toggle-display', function(e){
 
 // refresh loot timer
 window.setInterval(function(){
-    $("span#loot-countdown").each(function() {
-        var timeRefresh = $.trim($(this).text());
-        var splitRefresh = timeRefresh.split(" ");
-        var sRefresh = 0;
-        if (splitRefresh.length == 2) {
-            sRefresh = parseInt(splitRefresh[0]);
-        } else if (splitRefresh.length == 4) {
-            sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
-        } else if (splitRefresh.length == 6) {
-            sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
+    $("span#loot-countdown-header").each(function() {
+        const loot = parseInt($.trim($(this).attr("data-lts")));
+        const name = $.trim($(this).attr("data-nam"));
+        const tid = $.trim($(this).attr("data-tid"));
+        const now = parseInt(Date.now() / 1000);
+        const diff = loot-now;
+
+        let cd = fancyTimeFormat(diff);
+        let cl = ""
+
+        if(diff < 60) {
+            cd = "now"
         }
 
-        sRefresh --;
-        sRefresh = Math.max(sRefresh, 0)
-        if (sRefresh == 0) {
-            $(this).parent("span").addClass("error");
-            $(this).parent("span").html("NOW");
+        if (diff < 60*5) {
+            cl = "error"
+        } else if(diff < 60*15) {
+            cl = "warning"
         }
-        hRefresh = Math.floor(sRefresh / 3600);
-        sRefresh = sRefresh % 3600;
-        mRefresh = Math.floor(sRefresh / 60);
-        sRefresh = sRefresh % 60;
-        if (hRefresh) {
-            spad = ("0"+sRefresh.toString()).slice(-2);
-            $(this).html(hRefresh.toString()+" hrs "+mRefresh.toString()+" mins "+spad+" s");
-        }
-        else if (mRefresh) {
-            spad = ("0"+sRefresh.toString()).slice(-2);
-            $(this).html(mRefresh.toString()+" mins "+spad+" s");
-        } else {
-            $(this).html(sRefresh.toString()+" s");
-        }
+
+        $(this).html('<a class="'+cl+'" href="https://www.torn.com/profiles.php?XID='+tid+'" target="_blank">'+name+': '+cd+'</a>');
+
     });
 }, 1000);

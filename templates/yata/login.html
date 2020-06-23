@@ -130,13 +130,7 @@ This file is part of yata.
                 <td class="b">
                     <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Loot">
                         <b><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Loot</b></a><br>
-                        <span>
-                        {% if nextLoot %}
-                            in <span id="loot-countdown">{{nextLoot|ts2time}}</span>
-                        {% else %}
-                            <b class="error">NOW</b>
-                        {% endif %}
-                        </span>
+                        <span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}" data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
                 </td>
                 {% if player.tId > 0 %}
                 {# logout #}
