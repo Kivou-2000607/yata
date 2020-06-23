@@ -1400,7 +1400,7 @@ class Chain(models.Model):
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
         print("{} new entries {}".format(self, newEntry))
-        print("{} progress {} / {} ({})%".format(self, self.current, self.chain, self.progress()))
+        print("{} progress {} / {}: {}%".format(self, self.current, self.chain, self.progress()))
 
         if self.live:
 
@@ -1549,7 +1549,8 @@ class Chain(models.Model):
                     lastTS = att.timestamp_ended if lastTS == 0 else lastTS
 
                     # compute chain watcher version 2
-                    timeSince = att.timestamp_ended - lastTS
+                    # condition added in order **not** to count watcher in CD
+                    timeSince = att.timestamp_ended - lastTS if att.timestamp_ended <= self.end else 0
                     attackers[attackerID][11] += timeSince
                     lastTS = att.timestamp_ended
 
