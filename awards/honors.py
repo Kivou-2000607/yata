@@ -442,6 +442,7 @@ d = {
     521: 120811903,  # Saintly
     523: 899062871,  # Devout
     522: 768442023,  # Sacrificial
+    869: 0,  # Monopoly
 
     # 15
     367: 474813486,  # Clotted
