@@ -131,16 +131,17 @@ def attacksBreakdown(request):
             breakdownPlayer = dict({})
             for attack in player.attack_set.all():
                 i = 0 if attack.attacker else 1
+
+                target_id = attack.defender_id if attack.attacker else attack.attacker_id
+                target_name = attack.defender_name if attack.attacker else attack.attacker_name
+
                 if attack.result not in breakdownType:
                     breakdownType[attack.result] = [0, 0]
-
-                traget_id = attack.defender_id if attack.attacker else attack.attacker_id
-                traget_name = attack.defender_name if attack.attacker else attack.attacker_name
-                if attack.attacker_id not in breakdownPlayer:
-                    breakdownPlayer[traget_id] = [0, 0, traget_name]
+                if target_id not in breakdownPlayer:
+                    breakdownPlayer[target_id] = [0, 0, target_name]
 
                 breakdownType[attack.result][i] += 1
-                breakdownPlayer[traget_id][i] += 1
+                breakdownPlayer[target_id][i] += 1
 
             breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
             breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
@@ -399,8 +400,8 @@ def revivesBreakdown(request):
             for r in player.revive_set.all():
                 outgoing = r.reviver_id == player.tId
                 i = 0 if outgoing else 1
-                traget_id = r.target_id if outgoing else r.reviver_id
-                traget_name = r.target_name if outgoing else r.reviver_name
+                target_id = r.target_id if outgoing else r.reviver_id
+                target_name = r.target_name if outgoing else r.reviver_name
 
                 if r.target_hospital_reason not in breakdownType:
                     breakdownType[r.target_hospital_reason] = [0, 0]
@@ -408,12 +409,12 @@ def revivesBreakdown(request):
                 if r.target_last_action_status not in breakdownStatus:
                     breakdownStatus[r.target_last_action_status] = [0, 0]
 
-                if r.reviver_id not in breakdownPlayer:
-                    breakdownPlayer[traget_id] = [0, 0, traget_name]
+                if target_id not in breakdownPlayer:
+                    breakdownPlayer[target_id] = [0, 0, target_name]
 
                 breakdownType[r.target_hospital_reason][i] += 1
                 breakdownStatus[r.target_last_action_status][i] += 1
-                breakdownPlayer[traget_id][i] += 1
+                breakdownPlayer[target_id][i] += 1
 
             breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
             breakdownStatus = sorted(breakdownStatus.items(), key=lambda x: x[0])
