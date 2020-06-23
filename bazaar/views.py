@@ -706,7 +706,7 @@ def abroad(request):
 
         # old stocks
         old = tsnow() - 48 * 3600
-        # AbroadStocks.objects.filter(timestamp__lt=old).delete()
+        AbroadStocks.objects.filter(timestamp__lt=old).delete()
 
         # get all stocks to get clients
         stocks = AbroadStocks.objects.filter(timestamp__gt=old)
