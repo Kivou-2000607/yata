@@ -49,13 +49,10 @@ This file is part of yata.
             <div class="loot-npc-content">
                 {% for k, v in npc.lootTimings.items %}
                     {% if forloop.counter0 %}
-                        {% if v.due < 0 %}
-                            <p class="loot-level overdue"><b>Loot level {{v.lvl|lootLevel}}</b><br>
-                            Since {{v.due|mul:-1|ts2ago}} at {{v.ts|ts2date:"%H:%M:%S"}} TCT</p>
-                        {% else %}
-                            <p class="loot-level"><b>Loot level {{v.lvl|lootLevel}} {% if v.pro > 0 %}<span class="flush-right">{{v.pro}}%{% endif %}</b><br>
-                            In <span class="update-timer{% if npc.nextLevel.lvl == forloop.counter0 %} valid{% endif %}">{{v.due|ts2time}}</span> at <span {% if npc.nextLevel.lvl == forloop.counter0 %}class="valid"{% endif %}>{{v.ts|ts2date:"%H:%M:%S"}}</span> TCT</p>
-                        {% endif %}
+                        <p class="loot-level{% if v.due < 0 %} overdue{% endif %}">
+                            <b>Loot level {{v.lvl|lootLevel}}</b><br>
+                            At {{v.ts|ts2date:"%H:%M:%S"}} TCT <span class="update-timer" data-lts="{{v.ts}}" data-lvl="{{v.lvl}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                        </p>
                     {% endif %}
                 {% endfor %}
                 <p class='loot-level-update'>Last update: {{npc.updateTS|ts2date}} TCT</p>

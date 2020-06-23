@@ -67,6 +67,7 @@ div.miniloot > img {
 
 p.loot-level {
     margin-bottom: 0.4em;
+    width: 220px;
 }
 
 p.loot-level-update {

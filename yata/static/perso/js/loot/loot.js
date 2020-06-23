@@ -1,38 +1,20 @@
 // refresh timer target update
 window.setInterval(function(){
     $(".update-timer").each(function() {
-        var timeRefresh = $.trim($(this).text());
-        if ( timeRefresh.search(" s")!=-1 ) {
-            var splitRefresh = timeRefresh.split(" ");
-            var sRefresh = 0;
-            if (splitRefresh.length == 2) {
-                sRefresh = parseInt(splitRefresh[0]);
-            } else if (splitRefresh.length == 4) {
-                sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
-            } else if (splitRefresh.length == 6) {
-                sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
-            }
+        const lvl = parseInt($.trim($(this).attr("data-lvl")));
+        const loot = parseInt($.trim($(this).attr("data-lts")));
+        const now = parseInt(Date.now() / 1000);
+        const diff = Math.max(loot-now, 0);
+        const lvlt = lvl > 1 ? 30 * (Math.pow(2, lvl - 2)) * 60 : 0;
+        let cd = fancyTimeFormat(diff);
+        let cl = "";
 
-            sRefresh --;
-            sRefresh = Math.max(sRefresh, 0)
-            hRefresh = Math.floor(sRefresh / 3600);
-            sRefresh = sRefresh % 3600;
-            mRefresh = Math.floor(sRefresh / 60);
-            sRefresh = sRefresh % 60;
-            if (hRefresh) {
-                spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html(hRefresh.toString()+" hrs "+mRefresh.toString()+" mins "+spad+" s");
-            }
-            else if (mRefresh) {
-                spad = ("0"+sRefresh.toString()).slice(-2);
-                $(this).html(mRefresh.toString()+" mins "+spad+" s");
-            } else {
-                $(this).html(sRefresh.toString()+" s");
-            }
-        } else {
-            if (!tr.hasClass('old-refresh')) {
-                tr.addClass('old-refresh');
-            }
-        }
+        // cl = diff < 60*30 ? "valid" : cl;
+        cl = diff < 60*15 ? "warning" : cl;
+        cl = diff < 15 ? "error" : cl;
+        const prog = diff < lvlt ? ' <span class="flush-right">'+parseInt(100 * (lvlt - diff) / lvlt)+'%</span>' : ''
+        const html = diff > 0 ? 'in <span class="'+cl+'">' +cd+'</span>'+prog : ''
+
+        $(this).html(html);
     });
 }, 1000);
