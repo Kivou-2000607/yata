@@ -1735,7 +1735,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
                     vp["goal"] = int(totalMoney)
                     vp["current"] = int(totalMoney) - int(requiredMoney)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["head"] = "$"
                     awards[type]["h_" + k] = vp
 
