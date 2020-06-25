@@ -1723,14 +1723,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     lst = []
                     totalMoney = 0
                     requiredMoney = 0
-                    for k, v in allStocks.items():
-                        cl = "valid" if k in holdStock else "error"
+                    for stock_id, v in allStocks.items():
+                        cl = "valid" if stock_id in holdStock else "error"
                         bbPrice = v[1] * v[2]
                         totalMoney += v[1] * v[2]
-                        if k not in holdStock:
+                        if stock_id not in holdStock:
                             requiredMoney += v[1] * v[2]
 
-                        lst.append('<span class={}>{}</span>: ${:,.0f}'.format(cl, k, bbPrice))
+                        lst.append('<span class={}>{}</span>: ${:,.0f}'.format(cl, stock_id, bbPrice))
                     vp["comment"] = "<br>".join(lst)
 
                     vp["goal"] = int(totalMoney)
