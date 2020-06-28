@@ -37,6 +37,10 @@ def updatePlayer(player, i=None, n=None):
 
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
+    if player.tId == -1:
+        print("[player.functions.updatePlayer] {}{} action: ignore".format(progress, player.nameAligned()))
+        return 0
+
     # API Calls
     user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp,hof', player.getKey(), verbose=False)
 
