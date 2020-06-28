@@ -51,8 +51,8 @@ class PlayerDataAdmin(admin.ModelAdmin):
 
 class ErrorAdmin(admin.ModelAdmin):
     list_display = ['player', 'short_error', 'timestamp', 'date']
-    search_fields = ['player__name', 'player__tId', 'short_error']
-    list_filter = ['player__name', 'player__tId', 'short_error']
+    search_fields = ['player__name', 'player__tId']
+    list_filter = ['short_error']
     readonly_fields = ['player', ]
 
     def date(self, instance):
