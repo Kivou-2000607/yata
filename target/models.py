@@ -193,7 +193,12 @@ class TargetInfo(models.Model):
         return "Target [{}] of {}".format(self.target_id, self.player)
 
     def getTarget(self, update=False):
-        target, _ = Target.objects.get_or_create(target_id=self.target_id)
+        try:
+            target, _ = Target.objects.get_or_create(target_id=self.target_id)
+        except BaseException:
+            Target.objects.get_or_create(target_id=self.target_id).all().delete()
+            target, _ = Target.objects.get_or_create(target_id=self.target_id)
+
         if update:
             req = apiCall("user", target.target_id, "profile,timestamp", self.player.getKey())
 
