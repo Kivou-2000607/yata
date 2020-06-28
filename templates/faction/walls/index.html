@@ -128,6 +128,7 @@ This file is part of yata.
 {% endfor %}
 <div class="module rounded">
     <p><b>Add a wall report</b>: install <a href="/static/integration/walls.user.js" target="_blank">this script</a> and go to the a wall report page ingame that you want to import the report here.</p>
+    {% if wallHistory|length %}
     <p>List of your previous walls</p>
     <ul>
         {% for factionId, factionDic in wallHistory %}
@@ -146,4 +147,5 @@ This file is part of yata.
             </ul>
         {% endfor %}
     </ul>
+    {% endif %}
 </div>

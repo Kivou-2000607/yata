@@ -217,10 +217,11 @@ class Faction(models.Model):
     def getWallHistory(self):
         # api call and update key
         key = self.getKey()
-        news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
+
+        news = apiCall("faction", "", "mainnewsfull", key=key.value+"3", sub="mainnews")
 
         if 'apiError' in news:
-            return news
+            return news, False
 
         walls = dict({})
         for k, v in news.items():
@@ -243,7 +244,7 @@ class Faction(models.Model):
                 walls[factionId]["walls"].append([assaulting, warId, v["timestamp"]])
                 walls[factionId]["n"] += 1
 
-        return sorted(walls.items(), key=lambda x: -x[1]["n"])
+        return sorted(walls.items(), key=lambda x: -x[1]["n"]), True
 
 
     def updateCrimes(self, force=False):

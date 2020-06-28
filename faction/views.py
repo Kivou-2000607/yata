@@ -1100,8 +1100,6 @@ def walls(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
-            wallHistory = faction.getWallHistory();
-
             walls = Wall.objects.filter(factions=faction).all()
 
             summary = dict({})
@@ -1151,12 +1149,25 @@ def walls(request):
 
             for wall in walls:
                 wall.report = wall.getReport(faction)
+            context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
 
-            for k, v in wallHistory:
-                for wall in v["walls"]:
-                    wall.append(walls.filter(tId=wall[1]).first())
+            # get wall history
+            wallHistory, state = faction.getWallHistory();
+            if state:
+                for k, v in wallHistory:
+                    for wall in v["walls"]:
+                        wall.append(walls.filter(tId=wall[1]).first())
+                context['wallHistory'] = wallHistory
 
-            context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'wallHistory': wallHistory, 'summary': summary, 'view': {'walls': True}}
+            else:
+                if 'apiError' in wallHistory:
+                    selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+                    context[selectError] = wallHistory["apiError"] + " Wall history not displayed."
+                else:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context[selectError] = "No AA key found for the faction. Wall history not displayed."
+
+
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             return render(request, page, context)
 
