@@ -218,7 +218,7 @@ class Faction(models.Model):
         # api call and update key
         key = self.getKey()
 
-        news = apiCall("faction", "", "mainnewsfull", key=key.value+"3", sub="mainnews")
+        news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
 
         if 'apiError' in news:
             return news, False

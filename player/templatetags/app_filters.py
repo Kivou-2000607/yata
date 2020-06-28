@@ -73,6 +73,10 @@ def ts2time(timestamp, fmt=None):
 
 @register.filter(name='ts2ago')
 def ts2ago(timestamp):
+    if not str(timestamp).isdigit():
+        return "-"
+
+    timestamp = int(timestamp)
     t = timestamp // 86400
     if t:
         s = "" if t == 1 else "s"
