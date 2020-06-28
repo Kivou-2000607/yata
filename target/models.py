@@ -196,7 +196,7 @@ class TargetInfo(models.Model):
         try:
             target, _ = Target.objects.get_or_create(target_id=self.target_id)
         except BaseException:
-            Target.objects.get_or_create(target_id=self.target_id).all().delete()
+            Target.objects.filter(target_id=self.target_id).all().delete()
             target, _ = Target.objects.get_or_create(target_id=self.target_id)
 
         if update:
