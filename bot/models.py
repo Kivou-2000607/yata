@@ -128,7 +128,7 @@ class Bot(models.Model):
 
 class Server(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE, help_text="Select the bot")
-    serverId = models.BigIntegerField(default=0, help_text="Discrod server id")
+    server_id = models.BigIntegerField(default=0, help_text="Discrod server id")
     name = models.CharField(default="Default name", max_length=64, help_text="Discord server name")
     configuration = models.TextField(default='{}', help_text="Server name configuration (json)", validators=[check_json])
 

@@ -19,7 +19,7 @@ class BotAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ['bot', 'serverId', 'name']
+    list_display = ['bot', 'server_id', 'name']
 
 
 def update_guild(modeladmin, request, queryset):
