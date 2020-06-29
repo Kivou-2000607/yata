@@ -1,0 +1,44 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if servers|length %}
+    {% for server in servers %}
+
+    <h2 class="title">{{server.name}} [{{server.discord_id}}]</h2>
+    <div class="module">
+        {# ADMINISTRATION #}
+        <h1 class="module-doc">Administration&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="module-doc">
+            {% include "bot/dashboard-module.html" with module="admin"%}
+        </div>
+        
+        {# RACKET #}
+        <h1 class="module-doc">Module Racket&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="module-doc">
+            {% include "bot/dashboard-module.html" with module="rackets" %}
+        </div>
+    </div>
+
+    {% endfor %}
+
+{% else %}
+ <div class="module round error">
+     You are not a bot admin.
+ </div>
+{% endif %}

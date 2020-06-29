@@ -1,0 +1,54 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+{% if module == "admin"%}
+<p>
+    {% for k, v in server.get_admin %}
+        <b>{{k}}:</b>  {{v}}<br>
+    {% endfor %}
+</p>
+{% elif module == "rackets" %}
+    {% with rackets=server.get_racket %}
+    {% if rackets %}
+        {% for k, all, selected, h in rackets %}
+            <h2>{{k|capfirst}}</h2>
+            <p><form>
+                {% for discord_id, discord_name in all.items %}
+                    <span class="dashboard-option {% if discord_id not in selected %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="{{k}}" data-did="{{discord_id}}" data-nam="{{discord_name}}" title="{{discord_id}}"><tt style="margin-right: 5px;">{{h}}{{discord_name|safe}}</tt></span>
+                {% endfor %}
+            </form>
+            </p>
+        {% endfor %}
+        <p>
+            <from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="disable">Disable module</span></from>
+        </p>
+    {% else %}
+        <p>
+            <from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="enable">Enable module</span></from>
+        </p>
+    {% endif %}
+    {% endwith %}
+{% else %}
+<p class="error">{{error}}</p>
+{% endif %}

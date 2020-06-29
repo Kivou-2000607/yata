@@ -136,6 +136,38 @@ class Server(models.Model):
     def __str__(self):
         return 'Server {}'.format(self.id)
 
+    def get_channels(self):
+        return {k: v for k, v in json.loads(self.configuration)["admin"].get("channels", {}).items()}
+
+    def get_roles(self):
+        return {k: v for k, v in json.loads(self.configuration)["admin"].get("roles", {}).items() if v not in ["@everyone"]}
+
+    def get_admin(self):
+        from_db = json.loads(self.configuration).get("admin", {})
+        admins = [f'{v["name"]} [{v["torn_id"]}] ({k})' for k, v in from_db.get("server_admins").items()]
+        for_template = [
+            ["Server name", from_db.get("guild_name")],
+            ["Server discord ID", from_db.get("guild_id")],
+            ["Server YATA ID", from_db.get("server_yid")],
+            ["Server owner name", from_db.get("owner_dname")],
+            ["Server owner discord ID", from_db.get("owner_did")],
+            ["Server admins", ", ".join(admins)],
+        ]
+        return for_template
+
+    def get_racket(self):
+        from_db = json.loads(self.configuration).get("rackets", False)
+        if from_db:
+            for_template = [
+                ["channels", self.get_channels(), from_db.get("channels", {}), "#"],
+                ["roles", self.get_roles(), from_db.get("roles", {}), "@"],
+            ]
+            return for_template
+        else:
+            return False
+
+
+
 
 class Chat(models.Model):
     name = models.CharField(default="secret", max_length=128)

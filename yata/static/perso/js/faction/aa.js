@@ -10,7 +10,6 @@ $(document).on('click', '.faction-aa-toggle-key', e=>{
 // threshold
 $(document).on('change', '#faction-aa-change-threshold', e=>{
     e.preventDefault();
-    console.log("coucou");
     var reload = $(e.currentTarget);
     var threshold = reload.children("p").children("select").val();
     reload.load( "/faction/configurations/threshold/", {

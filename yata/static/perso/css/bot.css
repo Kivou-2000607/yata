@@ -94,3 +94,16 @@ table.bot-guilds td.e { width: 15%; text-align: center; }  /* x1 */
 
 
 img.bot-tuto {width: 500px; margin: 5px 20px; padding: 5px; border-radius: 5px; border: solid 1px #447e9b;}
+
+
+span.dashboard-option {
+    cursor: pointer;
+}
+span.selected {
+    font-weight: bold;
+    color: #0B8E14;
+}
+span.unselected {
+    /* text-decoration: line-through; */
+    opacity: 0.5;
+}

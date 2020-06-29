@@ -35,6 +35,9 @@ This file is part of yata.
 {% if view.host %}
     {% include "bot/host.html" %}
 {% endif %}
+{% if view.dashboard %}
+    {% include "bot/dashboard.html" %}
+{% endif %}
 {% if view.admin %}
     {% include "bot/admin.html" %}
 {% endif %}

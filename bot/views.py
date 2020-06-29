@@ -60,7 +60,7 @@ def index(request):
         graphs = []
         for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
             graphs.append([timestampToDate(g.guildJoinedTime), g.pk])
-            
+
         # this is just for me...
         apps = False
         if player.tId in [2000607]:
@@ -72,6 +72,76 @@ def index(request):
 
         context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
         return render(request, "bot.html", context)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def dashboard(request):
+    try:
+        player = getPlayer(request.session["player"].get("tId"))
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+
+        servers = player.server_set.all()
+        print(servers)
+
+        context = {"player": player, "servers": servers, "botcat": True, "view": {"dashboard": True}}
+        return render(request, page, context)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+def dashboardOption(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            context = {"player": player, "botcat": True, "view": {"dashboard": True}}
+
+            post = request.POST
+            print(post)
+            server = player.server_set.filter(discord_id=post.get("sid", 0)).first()
+
+            if server is None:
+                context["error"] = "No server found..."
+
+            elif post.get("mod") == "rackets":
+                context["module"] = "rackets"
+                context["server"] = server
+
+                configuration = json.loads(server.configuration)
+                rackets = configuration.get("rackets", {})
+                if post.get("typ") == "enable":
+                    rackets["channels"] = {}
+                    rackets["roles"] = {}
+                    configuration["rackets"] = rackets
+
+                elif post.get("typ") == "disable":
+                    configuration.pop("rackets")
+
+                elif post.get("typ") in ["channels", "roles"]:
+                    type = post.get("typ")  # channels or roles
+                    channel_id = post.get("did", 0)
+                    channel_name = post.get("nam", "???")
+                    if channel_id in rackets[type]:
+                        rackets[type].pop(channel_id)
+                    else:
+                        # rackets[type][channel_id] = channel_name  # (multiple)
+                        rackets[type] = {channel_id: channel_name}  # (single)
+
+                    configuration["rackets"] = rackets
+
+                server.configuration = json.dumps(configuration)
+                server.save()
+
+                # print(configuration)
+            else:
+                context["error"] = "Unexpected request"
+
+            return render(request, 'bot/dashboard-module.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
@@ -150,7 +220,6 @@ def host(request):
 def updateId(request):
     try:
         if request.session.get('player') and request.method == "POST":
-            print('[view.bot.updateId] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
 
@@ -167,25 +236,25 @@ def updateId(request):
         return returnError(exc=e, session=request.session)
 
 
-def togglePerm(request):
-    try:
-        if request.session.get('player') and request.method == "POST":
-            print('[view.bot.togglePerm] get player id from session')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-
-            player.botPerm = not player.botPerm
-            player.save()
-
-            context = {'player': player}
-            return render(request, "bot/give-permission.html", context)
-
-        else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
+# def togglePerm(request):
+#     try:
+#         if request.session.get('player') and request.method == "POST":
+#             print('[view.bot.togglePerm] get player id from session')
+#             tId = request.session["player"].get("tId")
+#             player = Player.objects.filter(tId=tId).first()
+#
+#             player.botPerm = not player.botPerm
+#             player.save()
+#
+#             context = {'player': player}
+#             return render(request, "bot/give-permission.html", context)
+#
+#         else:
+#             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+#             return returnError(type=403, msg=message)
+#
+#     except Exception as e:
+#         return returnError(exc=e, session=request.session)
 
 
 def toggleNoti(request):
