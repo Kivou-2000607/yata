@@ -14,6 +14,14 @@ class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
 
 
+class BotAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'name', 'token']
+
+
+class ServerAdmin(admin.ModelAdmin):
+    list_display = ['bot', 'serverId', 'name']
+
+
 def update_guild(modeladmin, request, queryset):
     for q in queryset:
         saveGuildConfig(q)
@@ -113,3 +121,5 @@ admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
 admin.site.register(DiscordApp, DiscordAppAdmin)
 admin.site.register(Guild, GuildAdmin)
+admin.site.register(Server, ServerAdmin)
+admin.site.register(Bot, BotAdmin)

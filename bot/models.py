@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import re
+import json
 
 from player.models import Player
 from faction.models import Faction
@@ -17,6 +18,16 @@ def channel_names_reg(value):
         raise ValidationError(
             _('%(value)s is not valid'),
             params={'value': value},
+        )
+
+
+def check_json(value):
+    try:
+        json.loads(value)
+    except BaseException as e:
+        raise ValidationError(
+            _('Configuration is not valid json: %(error)s'),
+            params={'error': e},
         )
 
 # bot
@@ -104,6 +115,25 @@ class Guild(models.Model):
 
     def __str__(self):
         return "{} on {} [{}]".format(self.configuration, self.guildName, self.guildId)
+
+
+class Bot(models.Model):
+    name = models.CharField(default="Default Name", max_length=32)
+    token = models.CharField(default="Default Token", max_length=512, unique=True)
+    administrators = models.TextField(default="{}")
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class Server(models.Model):
+    bot = models.ForeignKey(Bot, on_delete=models.CASCADE, help_text="Select the bot")
+    serverId = models.BigIntegerField(default=0, help_text="Discrod server id")
+    name = models.CharField(default="Default name", max_length=64, help_text="Discord server name")
+    configuration = models.TextField(default='{}', help_text="Server name configuration (json)", validators=[check_json])
+
+    def __str__(self):
+        return 'Server {}'.format(self.id)
 
 
 class Chat(models.Model):
