@@ -19,7 +19,8 @@ class BotAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ['bot', 'server_id', 'name']
+    list_display = ['bot', 'discord_id', 'name']
+    autocomplete_fields = ("server_admin",)
 
 
 def update_guild(modeladmin, request, queryset):

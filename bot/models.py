@@ -128,7 +128,7 @@ class Bot(models.Model):
 
 class Server(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE, help_text="Select the bot")
-    server_id = models.BigIntegerField(default=0, help_text="Discrod server id")
+    discord_id = models.BigIntegerField(default=0, help_text="Discrod server id")
     name = models.CharField(default="Default name", max_length=64, help_text="Discord server name")
     configuration = models.TextField(default='{}', help_text="Server name configuration (json)", validators=[check_json])
     server_admin = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
