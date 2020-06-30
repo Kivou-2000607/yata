@@ -79,14 +79,18 @@ def index(request):
 
 def dashboard(request):
     try:
-        player = getPlayer(request.session["player"].get("tId"))
-        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
 
-        servers = player.server_set.all()
-        print(servers)
+            servers = player.server_set.all()
 
-        context = {"player": player, "servers": servers, "botcat": True, "view": {"dashboard": True}}
-        return render(request, page, context)
+            context = {"player": player, "servers": servers, "botcat": True, "view": {"dashboard": True}}
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
@@ -98,7 +102,6 @@ def dashboardOption(request):
             context = {"player": player, "botcat": True, "view": {"dashboard": True}}
 
             post = request.POST
-            print(post)
             server = player.server_set.filter(discord_id=post.get("sid", 0)).first()
 
             if server is None:

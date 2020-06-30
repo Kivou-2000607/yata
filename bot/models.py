@@ -148,7 +148,7 @@ class Server(models.Model):
         for_template = [
             ["Server name", from_db.get("guild_name")],
             ["Server discord ID", from_db.get("guild_id")],
-            ["Server YATA ID", from_db.get("server_yid")],
+            ["Server YATA ID", self.pk],
             ["Server owner name", from_db.get("owner_dname")],
             ["Server owner discord ID", from_db.get("owner_did")],
             ["Server admins", ", ".join(admins)],
