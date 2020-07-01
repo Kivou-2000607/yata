@@ -25,20 +25,32 @@ This file is part of yata.
 {% if module == "admin"%}
 <p>
     {% for k, v in server.get_admin %}
-        <b>{{k}}:</b>  {{v}}<br>
+        {% if k == "prefix" %}
+            <h2 class="command-doc">{{k|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+            <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
+                <ul><form>
+                    {% for pref in server.get_prefixes %}
+                        <li><span class="dashboard-option {% if pref != v %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="admin" data-typ="prefix" data-val="{{pref}}">{{pref}}</span></li>
+                    {%endfor%}
+                </form></ul>
+            </div>
+        {% else %}
+            <b>{{k|capfirst}}:</b>  {{v}}<br>
+        {% endif %}
     {% endfor %}
 </p>
 {% elif module == "rackets" %}
     {% with rackets=server.get_racket %}
     {% if rackets %}
         {% for k, all, selected, h in rackets %}
-            <h2>{{k|capfirst}}</h2>
-            <p><form>
-                {% for discord_id, discord_name in all.items %}
-                    <span class="dashboard-option {% if discord_id not in selected %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="{{k}}" data-did="{{discord_id}}" data-nam="{{discord_name}}" title="{{discord_id}}"><tt style="margin-right: 5px;">{{h}}{{discord_name|safe}}</tt></span>
-                {% endfor %}
-            </form>
-            </p>
+            <h2 class="command-doc">{{k|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+            <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
+                <ul><form>
+                    {% for discord_id, discord_name in all.items %}
+                        <li><span class="dashboard-option {% if discord_id not in selected %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}"><tt style="margin-right: 5px;">{{h}}{{discord_name|safe}}</tt></span></li>
+                    {% endfor %}
+                </form></ul>
+            </div>
         {% endfor %}
         <p>
             <from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="rackets" data-typ="disable">Disable module</span></from>

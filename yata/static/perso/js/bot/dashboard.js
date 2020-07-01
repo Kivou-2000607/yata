@@ -2,13 +2,18 @@ $(document).on('click', '.dashboard-option', e=>{
     e.preventDefault();
     const target = $(e.currentTarget)
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+
+        // server / module / type (select the section in the configuration)
+        sid: target.attr("data-sid"),
         mod: target.attr("data-mod"),
         typ: target.attr("data-typ"),
-        did: target.attr("data-did"),
-        nam: target.attr("data-nam"),
-        sid: target.attr("data-sid"),
+
+        // couple key / value
+        key: target.attr("data-key"),
+        val: target.attr("data-val"),
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html(spinner);
+    });
+    target.html(spinner);
 });
 
 

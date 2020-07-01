@@ -136,6 +136,9 @@ class Server(models.Model):
     def __str__(self):
         return 'Server {}'.format(self.id)
 
+    def get_prefixes(self):
+        return ['!', '.', '>', '<', '$', '-', '_', '?', '#']
+
     def get_channels(self):
         return {k: v for k, v in json.loads(self.configuration)["admin"].get("channels", {}).items()}
 
@@ -152,6 +155,7 @@ class Server(models.Model):
             ["Server owner name", from_db.get("owner_dname")],
             ["Server owner discord ID", from_db.get("owner_did")],
             ["Server admins", ", ".join(admins)],
+            ["prefix", from_db.get("prefix")],
         ]
         return for_template
 

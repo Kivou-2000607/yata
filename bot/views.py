@@ -99,13 +99,24 @@ def dashboardOption(request):
     try:
         if request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
-            context = {"player": player, "botcat": True, "view": {"dashboard": True}}
-
             post = request.POST
+
+            context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True}}
             server = player.server_set.filter(discord_id=post.get("sid", 0)).first()
 
+            print(post)
             if server is None:
                 context["error"] = "No server found..."
+
+            elif post.get("mod") == "admin":
+                context["module"] = "admin"
+                context["server"] = server
+
+                # update prefix
+                configuration = json.loads(server.configuration)
+                configuration["admin"]["prefix"] = post.get("val", "!")
+                server.configuration = json.dumps(configuration)
+                server.save()
 
             elif post.get("mod") == "rackets":
                 context["module"] = "rackets"
@@ -123,8 +134,8 @@ def dashboardOption(request):
 
                 elif post.get("typ") in ["channels", "roles"]:
                     type = post.get("typ")  # channels or roles
-                    channel_id = post.get("did", 0)
-                    channel_name = post.get("nam", "???")
+                    channel_id = post.get("key", 0)
+                    channel_name = post.get("val", "???")
                     if channel_id in rackets[type]:
                         rackets[type].pop(channel_id)
                     else:
