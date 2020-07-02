@@ -138,8 +138,10 @@ def dashboardOption(request):
                     if id in c[type]:
                         c[type].pop(id)
                     else:
-                        # c[type][id] = name  # (multiple)
-                        c[type] = {id: name}  # (single)
+                        if type in ["channels_allowed"]:
+                            c[type][id] = name  # (multiple)
+                        else:
+                            c[type] = {id: name}  # (single)
 
                     configuration[module] = c
 

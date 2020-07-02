@@ -163,8 +163,8 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("rackets", False)
         if from_db:
             for_template = [
-                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channels for the alerts"],
-                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Roles for the alerts"],
+                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channel for the alerts"],
+                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
             ]
             return for_template
         else:
@@ -175,8 +175,8 @@ class Server(models.Model):
         if from_db:
             for_template = [
                 ["channels_allowed", self.get_channels(), from_db.get("channels_allowed", {}), "#", "Channels allowed"],
-                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channels for the alerts"],
-                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Roles for the alerts"],
+                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channel for the alerts"],
+                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
             ]
             return for_template
         else:
