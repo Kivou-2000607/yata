@@ -25,13 +25,19 @@ This file is part of yata.
         {# ADMINISTRATION #}
         <h1 class="module-doc">Administration&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="module-doc">
-            {% include "bot/dashboard-module.html" with module="admin"%}
+            {% include "bot/dashboard/modules.html" with module="admin"%}
         </div>
-        
+
         {# RACKET #}
         <h1 class="module-doc">Module Racket&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="module-doc">
-            {% include "bot/dashboard-module.html" with module="rackets" %}
+            {% include "bot/dashboard/modules.html" with module="rackets" %}
+        </div>
+
+        {# LOOT #}
+        <h1 class="module-doc">Module Loot&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="module-doc">
+            {% include "bot/dashboard/modules.html" with module="loot" %}
         </div>
     </div>
 

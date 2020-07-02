@@ -104,7 +104,6 @@ def dashboardOption(request):
             context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True}}
             server = player.server_set.filter(discord_id=post.get("sid", 0)).first()
 
-            print(post)
             if server is None:
                 context["error"] = "No server found..."
 
@@ -118,40 +117,44 @@ def dashboardOption(request):
                 server.configuration = json.dumps(configuration)
                 server.save()
 
-            elif post.get("mod") == "rackets":
-                context["module"] = "rackets"
+            elif post.get("mod") in ["rackets", "loot"]:
+                module = post.get("mod")
+                context["module"] = module
                 context["server"] = server
 
                 configuration = json.loads(server.configuration)
-                rackets = configuration.get("rackets", {})
+                c = configuration.get(module, {})
                 if post.get("typ") == "enable":
-                    rackets["channels"] = {}
-                    rackets["roles"] = {}
-                    configuration["rackets"] = rackets
+                    c["channels"] = {}
+                    c["roles"] = {}
+                    configuration[module] = c
 
                 elif post.get("typ") == "disable":
-                    configuration.pop("rackets")
+                    configuration.pop(module)
 
                 elif post.get("typ") in ["channels", "roles"]:
                     type = post.get("typ")  # channels or roles
                     channel_id = post.get("key", 0)
                     channel_name = post.get("val", "???")
-                    if channel_id in rackets[type]:
-                        rackets[type].pop(channel_id)
+                    if channel_id in c[type]:
+                        c[type].pop(channel_id)
                     else:
-                        # rackets[type][channel_id] = channel_name  # (multiple)
-                        rackets[type] = {channel_id: channel_name}  # (single)
+                        # c[type][channel_id] = channel_name  # (multiple)
+                        c[type] = {channel_id: channel_name}  # (single)
 
-                    configuration["rackets"] = rackets
+                    configuration[module] = c
+
+                for k, v in configuration.items():
+                    if k not in ["admin"]:
+                        print(k, v)
 
                 server.configuration = json.dumps(configuration)
                 server.save()
 
-                # print(configuration)
             else:
                 context["error"] = "Unexpected request"
 
-            return render(request, 'bot/dashboard-module.html', context)
+            return render(request, 'bot/dashboard/modules.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

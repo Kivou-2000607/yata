@@ -170,6 +170,17 @@ class Server(models.Model):
         else:
             return False
 
+    def get_loot(self):
+        from_db = json.loads(self.configuration).get("loot", False)
+        if from_db:
+            for_template = [
+                ["channels", self.get_channels(), from_db.get("channels", {}), "#"],
+                ["roles", self.get_roles(), from_db.get("roles", {}), "@"],
+            ]
+            return for_template
+        else:
+            return False
+
 
 
 
