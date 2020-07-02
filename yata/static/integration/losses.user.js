@@ -14,11 +14,11 @@
 const price = 250000;
 
 const changeValue = () => {
-    const input = document.querySelector(".input-money:nth-child(2)");
-    const url = window.location.href;
-    const url_get = url.split("&")[1]
-    const losses = url_get.split("=")[1];
-    input.value = price * losses;
+    const money = document.querySelector(".input-money:nth-child(2)");
+    const message = document.querySelector("input.message:nth-child(2)");
+    const losses = window.location.href.split("&")[1].split("=")[1];
+    money.value = price * losses;
+    message.value = losses == 1 ? `${losses} loss. Thanks.` : `${losses} losses. Thanks.`;
 };
 
 (function() {
