@@ -163,8 +163,8 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("rackets", False)
         if from_db:
             for_template = [
-                ["channels", self.get_channels(), from_db.get("channels", {}), "#"],
-                ["roles", self.get_roles(), from_db.get("roles", {}), "@"],
+                ["channels_alerts", self.get_channels(), from_db.get("channels", {}), "#", "Channels for the alerts"],
+                ["roles_alerts", self.get_roles(), from_db.get("roles", {}), "@", "Roles for the alerts"],
             ]
             return for_template
         else:
@@ -174,8 +174,9 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
             for_template = [
-                ["channels", self.get_channels(), from_db.get("channels", {}), "#"],
-                ["roles", self.get_roles(), from_db.get("roles", {}), "@"],
+                ["channels_allowed", self.get_channels(), from_db.get("channels_allowed", {}), "#", "Channels allowed"],
+                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channels for the alerts"],
+                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Roles for the alerts"],
             ]
             return for_template
         else:

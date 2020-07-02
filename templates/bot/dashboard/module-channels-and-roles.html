@@ -23,8 +23,8 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if mod %}
-    {% for k, all, selected, h in mod %}
-        <h2 class="command-doc">{{k|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+    {% for k, all, selected, h, title in mod %}
+        <h2 class="command-doc">{{title}}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
         <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
             <ul><form>
                 {% for discord_id, discord_name in all.items %}

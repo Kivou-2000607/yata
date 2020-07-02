@@ -121,26 +121,25 @@ def dashboardOption(request):
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
+                configuration_keys = ["channels_alerts", "roles_alerts", "channels_allowed"]
 
                 configuration = json.loads(server.configuration)
                 c = configuration.get(module, {})
                 if post.get("typ") == "enable":
-                    c["channels"] = {}
-                    c["roles"] = {}
-                    configuration[module] = c
+                    configuration[module] = {k: {} for k in configuration_keys}
 
                 elif post.get("typ") == "disable":
                     configuration.pop(module)
 
-                elif post.get("typ") in ["channels", "roles"]:
+                elif post.get("typ") in configuration_keys:
                     type = post.get("typ")  # channels or roles
-                    channel_id = post.get("key", 0)
-                    channel_name = post.get("val", "???")
-                    if channel_id in c[type]:
-                        c[type].pop(channel_id)
+                    id = post.get("key", 0)
+                    name = post.get("val", "???")
+                    if id in c[type]:
+                        c[type].pop(id)
                     else:
-                        # c[type][channel_id] = channel_name  # (multiple)
-                        c[type] = {channel_id: channel_name}  # (single)
+                        # c[type][id] = name  # (multiple)
+                        c[type] = {id: name}  # (single)
 
                     configuration[module] = c
 
