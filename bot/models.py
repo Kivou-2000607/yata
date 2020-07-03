@@ -140,18 +140,19 @@ class Server(models.Model):
         return ['!', '.', '>', '<', '$', '-', '_', '?', '#']
 
     def get_channels(self):
-        return {k: v for k, v in json.loads(self.configuration)["admin"].get("channels", {}).items()}
+        return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("channels", {}).items()}
 
     def get_roles(self):
-        return {k: v for k, v in json.loads(self.configuration)["admin"].get("roles", {}).items() if v not in ["@everyone"]}
+        return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("roles", {}).items() if v not in ["@everyone"]}
 
     def get_admin(self):
         from_db = json.loads(self.configuration).get("admin", {})
-        admins = [f'{v["name"]} [{v["torn_id"]}] ({k})' for k, v in from_db.get("server_admins").items()]
+        admins = [f'{v["name"]} [{v["torn_id"]}] ({k})' for k, v in from_db.get("server_admins", {}).items()]
+        if from_db.get("guild_id") is None:
+            return False
         for_template = [
             ["Server name", from_db.get("guild_name")],
             ["Server discord ID", from_db.get("guild_id")],
-            ["Server YATA ID", self.pk],
             ["Server owner name", from_db.get("owner_dname")],
             ["Server owner discord ID", from_db.get("owner_did")],
             ["Server admins", ", ".join(admins)],

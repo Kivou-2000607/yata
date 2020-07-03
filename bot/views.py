@@ -107,6 +107,9 @@ def dashboardOption(request):
             if server is None:
                 context["error"] = "No server found..."
 
+            elif "admin" not in json.loads(server.configuration):
+                context["error"] = "No admin section found. Try an !update in the discord server..."
+
             elif post.get("mod") == "admin":
                 context["module"] = "admin"
                 context["server"] = server

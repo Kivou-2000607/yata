@@ -24,20 +24,9 @@ This file is part of yata.
 
 {% if module == "admin"%}
 <p>
-    {% for k, v in server.get_admin %}
-        {% if k == "prefix" %}
-            <h2 class="command-doc">{{k|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
-            <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
-                <ul><form>
-                    {% for pref in server.get_prefixes %}
-                        <li><span class="dashboard-option {% if pref != v %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="admin" data-typ="prefix" data-val="{{pref}}">{{pref}}</span></li>
-                    {%endfor%}
-                </form></ul>
-            </div>
-        {% else %}
-            <b>{{k|capfirst}}:</b>  {{v}}<br>
-        {% endif %}
-    {% endfor %}
+    {% with mod=server.get_admin %}
+        {% include "bot/dashboard/module-admin.html" %}
+    {% endwith %}
 </p>
 {% elif module == "rackets" %}
     {% with mod=server.get_racket %}
