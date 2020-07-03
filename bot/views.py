@@ -110,21 +110,11 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try an !update in the discord server..."
 
-            elif post.get("mod") == "admin":
-                context["module"] = "admin"
-                context["server"] = server
-
-                # update prefix
-                configuration = json.loads(server.configuration)
-                configuration["admin"]["prefix"] = post.get("val", "!")
-                server.configuration = json.dumps(configuration)
-                server.save()
-
-            elif post.get("mod") in ["rackets", "loot"]:
+            elif post.get("mod") in ["rackets", "loot", "admin"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
-                configuration_keys = ["channels_alerts", "roles_alerts", "channels_allowed"]
+                configuration_keys = ["channels_alerts", "roles_alerts", "channels_allowed", "prefix", "channel_admin"]
 
                 configuration = json.loads(server.configuration)
                 c = configuration.get(module, {})
@@ -138,6 +128,8 @@ def dashboardOption(request):
                     type = post.get("typ")  # channels or roles
                     id = post.get("key", 0)
                     name = post.get("val", "???")
+                    if type not in c:
+                        c[type] = {}
                     if id in c[type]:
                         c[type].pop(id)
                     else:

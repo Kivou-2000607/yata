@@ -137,7 +137,7 @@ class Server(models.Model):
         return 'Server {}'.format(self.id)
 
     def get_prefixes(self):
-        return ['!', '.', '>', '<', '$', '-', '_', '?', '#']
+        return
 
     def get_channels(self):
         return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("channels", {}).items()}
@@ -148,25 +148,29 @@ class Server(models.Model):
     def get_admin(self):
         from_db = json.loads(self.configuration).get("admin", {})
         admins = [f'{v["name"]} [{v["torn_id"]}] ({k})' for k, v in from_db.get("server_admins", {}).items()]
-        if from_db.get("guild_id") is None:
+        if from_db.get("guild_id") is not None:
+            for_template = {
+                "server_info": [["Server name", from_db.get("guild_name")],
+                                ["Server name", from_db.get("guild_name")],
+                                ["Server discord ID", from_db.get("guild_id")],
+                                ["Server owner name", from_db.get("owner_dname")],
+                                ["Server owner discord ID", from_db.get("owner_did")],
+                                ["Server admins", ", ".join(admins)]],
+                "prefix": {"type": "prefix", "all": {'!': '!', '.': '.', '>': '>', '<': '<', '$': '$', '-': '-', '_': '_', '?': '?', '#': '#'}, "selected": from_db.get("prefix", "!"), "prefix": "", "title": "Bot prefix", "help": "Select the bot prefix", "mandatory": False},
+                "channel_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channel_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "mandatory": True},
+            }
+            return for_template
+        else:
             return False
-        for_template = [
-            ["Server name", from_db.get("guild_name")],
-            ["Server discord ID", from_db.get("guild_id")],
-            ["Server owner name", from_db.get("owner_dname")],
-            ["Server owner discord ID", from_db.get("owner_did")],
-            ["Server admins", ", ".join(admins)],
-            ["prefix", from_db.get("prefix")],
-        ]
-        return for_template
 
     def get_racket(self):
         from_db = json.loads(self.configuration).get("rackets", False)
         if from_db:
-            for_template = [
-                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channel for the alerts"],
-                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
-            ]
+            for_template = {
+                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+                # ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
+            }
             return for_template
         else:
             return False
@@ -174,11 +178,11 @@ class Server(models.Model):
     def get_loot(self):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
-            for_template = [
-                ["channels_allowed", self.get_channels(), from_db.get("channels_allowed", {}), "#", "Channels allowed"],
-                ["channels_alerts", self.get_channels(), from_db.get("channels_alerts", {}), "#", "Channel for the alerts"],
-                ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
-            ]
+            for_template = {
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
+                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+            }
             return for_template
         else:
             return False

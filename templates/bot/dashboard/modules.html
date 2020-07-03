@@ -23,18 +23,40 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if module == "admin"%}
-<p>
     {% with mod=server.get_admin %}
-        {% include "bot/dashboard/module-admin.html" %}
+        {% if mod %}
+            {% for k, v in server.get_admin.items %}
+                {% if k == "server_info" %}
+                    {% include "bot/dashboard/module-list.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="error">You need to do an initial <tt>!update</tt> on your discord server.</p>
+        {% endif %}
     {% endwith %}
-</p>
 {% elif module == "rackets" %}
     {% with mod=server.get_racket %}
-        {% include "bot/dashboard/module-channels-and-roles.html" %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+        {% else %}
+            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+        {% endif %}
     {% endwith %}
 {% elif module == "loot" %}
     {% with mod=server.get_loot %}
-        {% include "bot/dashboard/module-channels-and-roles.html" %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+        {% else %}
+            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+        {% endif %}
     {% endwith %}
 {% else %}
 <p class="error">{{error}}</p>

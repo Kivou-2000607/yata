@@ -99,6 +99,10 @@ img.bot-tuto {width: 500px; margin: 5px 20px; padding: 5px; border-radius: 5px; 
 span.dashboard-option {
     cursor: pointer;
 }
+tt.dashboard-option {
+    cursor: default;
+    margin-right: 8px;
+}
 span.selected {
     font-weight: bold;
     color: #0B8E14;
