@@ -2,6 +2,7 @@
 Django>=3.0.7
 django-mathfilters==1.0.0
 requests==2.22.0
+django-json-widget==1.0.1
 
 # not needed for:
 # - development server (./manage.py runserver)

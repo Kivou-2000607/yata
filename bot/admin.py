@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib.postgres import fields
+from django_json_widget.widgets import JSONEditorWidget
 
 import json
 
@@ -9,18 +11,26 @@ from yata.handy import *
 
 # admin.site.disable_action('delete_selected')
 
-
 class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
 
 
 class BotAdmin(admin.ModelAdmin):
     list_display = ['pk', 'name', 'token']
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
 
 
 class ServerAdmin(admin.ModelAdmin):
     list_display = ['bot', 'discord_id', 'name', 'admins']
     autocomplete_fields = ("server_admin",)
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
 
     def admins(self, instance):
         lst = []
@@ -115,6 +125,9 @@ class ChatAdmin(admin.ModelAdmin):
 
 class RacketsAdmin(admin.ModelAdmin):
     list_display = ['timestamp', 'date', 'ago']
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
 
     def date(self, instance):
         return timestampToDate(instance.timestamp, fmt="%Y/%m/%d %H:%M")
