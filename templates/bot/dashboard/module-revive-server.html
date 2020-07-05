@@ -1,0 +1,45 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<td>{{revive_server.server_name}}</td>
+<td>{{revive_server.server_id}}</td>
+<td>
+    <span class="dashboard-option-tr" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
+        {% if revive_server.server_id in config.sending %}
+             <i class="fas fa-toggle-on valid"></i>
+        {% else %}
+            <i class="fas fa-toggle-off"></i>
+        {% endif %}
+    </span>
+</td>
+<td>
+    <span class="dashboard-option-tr" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
+        {% if revive_server.server_id in config.blacklist %}
+        <i class="fas fa-toggle-on error"></i>
+        {% else %}
+        <i class="fas fa-toggle-off"></i>
+        {% endif %}
+    </span>
+</td>

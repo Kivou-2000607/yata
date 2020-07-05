@@ -11,6 +11,7 @@ from yata.handy import *
 
 # admin.site.disable_action('delete_selected')
 
+
 class DiscordAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'pk', 'token']
     formfield_overrides = {

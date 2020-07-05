@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.core.paginator import Paginator
 
 import re
 import json
@@ -134,7 +135,7 @@ class Server(models.Model):
     server_admin = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
 
     def __str__(self):
-        return 'Server {}'.format(self.id)
+        return '{} on bot {}'.format(self.bot, self.name)
 
     def get_prefixes(self):
         return
@@ -182,6 +183,22 @@ class Server(models.Model):
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
                 "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
                 "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+            }
+            return for_template
+        else:
+            return False
+
+    def get_revive(self, page=None):
+        from_db = json.loads(self.configuration).get("revive", False)
+        all = [{"server_id": str(s.discord_id), "server_name": s.name} for s in Server.objects.filter(bot=self.bot) if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]
+        all = Paginator(all, 25).get_page(page)
+
+        if from_db:
+            for_template = {
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!revive</tt> commands", "mandatory": True},
+                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+                "revive_servers": {"type": "server", "all": all, "sending": from_db.get("sending", {}), "blacklist": from_db.get("blacklist", {}), "title": "Linked servers", "help": "Select the servers the bot will be sending the messages to", "mandatory": False}
             }
             return for_template
         else:

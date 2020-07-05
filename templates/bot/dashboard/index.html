@@ -20,7 +20,7 @@ This file is part of yata.
 {% if servers|length %}
     {% for server in servers %}
 
-    <h2 class="title">{{server.name}} [{{server.discord_id}}]</h2>
+    <h2 class="title">{{server.name}} [{{server.discord_id}}] (bot: {{server.bot}})</h2>
     <div class="module">
         {# ADMINISTRATION #}
         <h1 class="module-doc">Administration&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
@@ -38,6 +38,12 @@ This file is part of yata.
         <h1 class="module-doc">Module Loot&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="module-doc">
             {% include "bot/dashboard/modules.html" with module="loot" %}
+        </div>
+
+        {# REVIVE #}
+        <h1 class="module-doc">Module Revive&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="module-doc">
+            {% include "bot/dashboard/modules.html" with module="revive" %}
         </div>
     </div>
 

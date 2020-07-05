@@ -58,6 +58,21 @@ This file is part of yata.
             <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
     {% endwith %}
+{% elif module == "revive" %}
+    {% with mod=server.get_revive %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "revive_servers" %}
+                    {% include "bot/dashboard/module-revive-servers.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+        {% else %}
+            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+        {% endif %}
+    {% endwith %}
 {% else %}
 <p class="error">{{error}}</p>
 {% endif %}

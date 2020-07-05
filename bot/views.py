@@ -97,7 +97,22 @@ def dashboard(request):
 
 def dashboardOption(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get('player') and request.GET.get("prs", False):  #revive servers paginator
+
+            player = getPlayer(request.session["player"].get("tId"))
+            if str(request.GET.get("sid", 0)).isdigit():
+                server = player.server_set.filter(discord_id=request.GET.get("sid", 0)).first()
+            else:
+                return returnError(type=403, msg="No servers asked")
+
+            if server is None:
+                return returnError(type=403, msg="No servers found")
+
+            context = {"player": player, "server": server, "config": server.get_revive(page=request.GET.get("prs")).get("revive_servers", {})}
+
+            return render(request, 'bot/dashboard/module-revive-servers-table.html', context)
+
+        elif request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
             post = request.POST
 
@@ -110,11 +125,16 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try an !update in the discord server..."
 
-            elif post.get("mod") in ["rackets", "loot", "admin"]:
+            elif post.get("mod") in ["rackets", "loot", "admin", "revive"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
-                configuration_keys = ["channels_alerts", "roles_alerts", "channels_allowed", "prefix", "channel_admin"]
+                configuration_keys = {
+                    "admin": ["prefix", "channel_admin"],
+                    "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
+                    "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
+                    "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
+                }.get(post.get("mod"), [])
 
                 configuration = json.loads(server.configuration)
                 c = configuration.get(module, {})
@@ -133,7 +153,9 @@ def dashboardOption(request):
                     if id in c[type]:
                         c[type].pop(id)
                     else:
-                        if type in ["channels_allowed"]:
+                        if type in ["sending", "blacklist"]:
+                            c[type][id] = name
+                        elif type in ["channels_allowed"]:
                             c[type][id] = name  # (multiple)
                         else:
                             c[type] = {id: name}  # (single)
@@ -150,7 +172,15 @@ def dashboardOption(request):
             else:
                 context["error"] = "Unexpected request"
 
-            return render(request, 'bot/dashboard/modules.html', context)
+            # redirect inlines
+            if post.get("typ") in ["sending", "blacklist"]:
+                context["revive_server"] = {"server_name": post.get("val"), "server_id": post.get("key", 0)}
+                configuration = json.loads(server.configuration)
+
+                context["config"] = {"sending": configuration.get("revive", {}).get("sending", {}), "blacklist": configuration.get("revive", {}).get("blacklist", {})}
+                return render(request, 'bot/dashboard/module-revive-server.html', context)
+            else:
+                return render(request, 'bot/dashboard/modules.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

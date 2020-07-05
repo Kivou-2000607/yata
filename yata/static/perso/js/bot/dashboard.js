@@ -16,6 +16,25 @@ $(document).on('click', '.dashboard-option', e=>{
     target.html(spinner);
 });
 
+$(document).on('click', '.dashboard-option-tr', e=>{
+    e.preventDefault();
+    const target = $(e.currentTarget)
+    target.closest("tr").load( "/bot/dashboard/option/", {
+
+        // server / module / type (select the section in the configuration)
+        sid: target.attr("data-sid"),
+        mod: target.attr("data-mod"),
+        typ: target.attr("data-typ"),
+
+        // couple key / value
+        key: target.attr("data-key"),
+        val: target.attr("data-val"),
+
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    target.html(spinner);
+});
+
 
 // $(document).on('change', 'select.dashboard-list', e=>{
 //     e.preventDefault();
