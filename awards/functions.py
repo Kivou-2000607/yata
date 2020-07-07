@@ -1639,7 +1639,8 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 240 {'name': 'Behemoth', 'description': 'Gain 1,000,000 defense', 'type': 10, 'circulation': 20913, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 362146978, 'title': 'Behemoth [240]: Uncommon (20913)'}
                     type = "zzz".join(v["description"].split(" ")[2:]).title().replace("zzz", " ")
                     stat = v["description"].split(" ")[2].lower()
-                    si = int(userInfo.get(stat, "0.0").split(".")[0])
+                    # si = int(userInfo.get(stat, "0.0").split(".")[0])
+                    si = int(userInfo.get(stat, "0").replace(",", ""))
                     sf = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = si
                     vp["goal"] = sf
