@@ -36,16 +36,29 @@ This file is part of yata.
             <p class="error">You need to do an initial <tt>!update</tt> on your discord server.</p>
         {% endif %}
     {% endwith %}
+{% elif module == "verify" %}
+    {% with mod=server.get_verify %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "factions" %}
+                    {% include "bot/dashboard/module-verify-factions.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-verify-other.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
 {% elif module == "rackets" %}
     {% with mod=server.get_racket %}
         {% if mod %}
             {% for k, v in mod.items %}
                 {% include "bot/dashboard/module-dict.html" %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
-        {% else %}
-            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
 {% elif module == "loot" %}
     {% with mod=server.get_loot %}
@@ -53,10 +66,8 @@ This file is part of yata.
             {% for k, v in mod.items %}
                 {% include "bot/dashboard/module-dict.html" %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
-        {% else %}
-            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
 {% elif module == "revive" %}
     {% with mod=server.get_revive %}
@@ -68,10 +79,8 @@ This file is part of yata.
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
-        {% else %}
-            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
 {% else %}
 <p class="error">{{error}}</p>

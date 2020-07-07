@@ -115,9 +115,12 @@ def dashboardOption(request):
         elif request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
             post = request.POST
+            page = None
 
             context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True}}
             server = player.server_set.filter(bot__pk=post.get("bid", 0), discord_id=post.get("sid", 0)).first()
+
+            print(post)
 
             if server is None:
                 context["error"] = "No server found..."
@@ -125,7 +128,7 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try an !update in the discord server..."
 
-            elif post.get("mod") in ["rackets", "loot", "admin", "revive"]:
+            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
@@ -134,6 +137,7 @@ def dashboardOption(request):
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
+                    "verify": ["roles_verified", "channels_allowed", "factions", "other"],
                 }.get(post.get("mod"), [])
 
                 configuration = json.loads(server.configuration)
@@ -146,17 +150,43 @@ def dashboardOption(request):
 
                 elif post.get("typ") in configuration_keys:
                     type = post.get("typ")  # channels or roles
+                    print("type", type)
                     id = post.get("key", 0)
                     name = post.get("val", "???")
                     if type not in c:
                         c[type] = {}
-                    if id in c[type]:
+                    if id in c[type]:  # force toggle
                         c[type].pop(id)
+                        if not len(c[type]):  # del if empty
+                            del c[type]
                     else:
                         if type in ["sending", "blacklist"]:
                             c[type][id] = name
                         elif type in ["channels_allowed"]:
                             c[type][id] = name  # (multiple)
+                        elif type in ["factions"]:
+                            fid = post.get("fid", False)
+                            if str(fid).isdigit():
+                                if fid not in c[type]:
+                                    c[type][fid] = {}
+                                if id in c[type][fid]:
+                                    del c[type][fid][id] # (toggle)
+                                else:
+                                    c[type][fid][id] = name  # (multiple)
+
+                            if not len(c[type][fid]):  # del if empty
+                                del c[type][fid]
+
+                        elif type in ["other"]:
+                            c[type][id] = True
+                            for a, b in [["weekly_check", "daily_check"], ["weekly_verify", "daily_verify"]]:
+                                if id == a and b in c[type]:
+                                    del c[type][b]
+                                    break
+                                elif id == b and a in c[type]:
+                                    del c[type][a]
+                                    break
+
                         else:
                             c[type] = {id: name}  # (single)
 
@@ -180,7 +210,8 @@ def dashboardOption(request):
                 context["config"] = {"sending": configuration.get("revive", {}).get("sending", {}), "blacklist": configuration.get("revive", {}).get("blacklist", {})}
                 return render(request, 'bot/dashboard/module-revive-server.html', context)
             else:
-                return render(request, 'bot/dashboard/modules.html', context)
+                page = 'bot/dashboard/modules.html' if page is None else page
+                return render(request, page, context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."

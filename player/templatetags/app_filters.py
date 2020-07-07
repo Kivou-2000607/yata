@@ -397,3 +397,7 @@ def trURL(string):
 @register.filter(name="attackLog")
 def attackLog(code):
     return 'https://www.torn.com/loader.php?sid=attackLog&ID={}'.format(code)
+
+@register.filter(name="key_to_title")
+def key_to_title(key):
+    return str(key).replace("_", " ").title()

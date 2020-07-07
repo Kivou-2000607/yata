@@ -204,6 +204,20 @@ class Server(models.Model):
         else:
             return False
 
+    def get_verify(self):
+        from_db = json.loads(self.configuration).get("verify", False)
+        all = ["daily_check", "weekly_check", "daily_verify", "weekly_verify", "force_verify"]
+        if from_db:
+            for_template = {
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
+                "roles_verified": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_verified", {}), "prefix": "@", "title": "Role for the verified members", "help": "Select one role for the verified members", "mandatory": True},
+                "factions": {"type": "role", "selected": from_db.get("factions", {}), "title": "Factions roles", "prefix": "@", "help": "Select factions and roles for each of them", "mandatory": False},
+                "other": {"type": "bool", "all": all, "selected": from_db.get("other", []), "title": "Other options", "prefix": "", "help": "Select the different other options", "mandatory": False},
+                # ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
+            }
+            return for_template
+        else:
+            return False
 
 
 

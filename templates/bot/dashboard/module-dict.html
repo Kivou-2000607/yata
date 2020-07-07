@@ -23,7 +23,7 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+<h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning" style="margin-right: 10px;">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
 <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
     <p>{{v.help|safe}}</p>
     <ul><form>
@@ -32,20 +32,12 @@ This file is part of yata.
         {% endfor %}
     </form></ul>
 </div>
-<p style="margin-left: 5px">
-    Current settings:
+<p>
     {% if v.selected|length %}
         {% for discord_id, discord_name in v.selected.items %}
-            {% if discord_id in v.all %}
-                <tt class="dashboard-option-inline" title="{{discord_id}}">{{v.prefix}}{{discord_name}} </tt>
-            {% else %}
-                <span class="dashboard-option" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}">
-                    <tt class="dashboard-option-inline error" title="{{discord_id}}">{{v.prefix}}{{discord_name}}</tt>
-                </span>
-            {% endif %}
+            <tt class="dashboard-settings dashboard-option-inline {% if discord_id in v.all %}valid"{% else %}warning{% endif %} title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}} </tt>
         {% endfor %}
     {% else %}
-        None.{% if v.mandatory %} <span class="error">You need to select at least one {{v.type}}.</span>
-    {% endif %}
+        <tt class="dashboard-settings {% if v.mandatory %}warning{% endif %}" title="{% if v.mandatory %}You need to select at least one {{v.type}}{% endif %}">None</tt>
     {% endif %}
 </p>
