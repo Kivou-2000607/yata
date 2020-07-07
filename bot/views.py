@@ -173,7 +173,7 @@ def dashboardOption(request):
                 context["error"] = "Unexpected request"
 
             # redirect inlines
-            if post.get("typ") in ["sending", "blacklist"]:
+            if post.get("typ") in ["sending", "blacklist"] and "error" not in context:
                 context["revive_server"] = {"server_name": post.get("val"), "server_id": post.get("key", 0)}
                 configuration = json.loads(server.configuration)
 

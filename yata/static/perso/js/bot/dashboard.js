@@ -24,6 +24,7 @@ $(document).on('click', '.dashboard-option-tr', e=>{
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
+        sid: target.attr("data-sid"),
         mod: target.attr("data-mod"),
         typ: target.attr("data-typ"),
 
