@@ -28,7 +28,7 @@ This file is part of yata.
     <p>{{v.help|safe}}</p>
     <ul><form>
         {% for discord_id, discord_name in v.all.items %}
-            <li><span class="dashboard-option {% if discord_id not in v.selected %}un{%endif%}selected" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="Discord id {{discord_id}}"><tt>{{v.prefix}}{{discord_name|safe}}</tt></span></li>
+            <li><span class="dashboard-option {% if discord_id not in v.selected %}un{%endif%}selected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}"><tt>{{v.prefix}}{{discord_name|safe}}</tt></span></li>
         {% endfor %}
     </form></ul>
 </div>
@@ -37,10 +37,10 @@ This file is part of yata.
     {% if v.selected|length %}
         {% for discord_id, discord_name in v.selected.items %}
             {% if discord_id in v.all %}
-                <tt class="dashboard-option-inline" title="Discord id {{discord_id}}">{{v.prefix}}{{discord_name}} </tt>
+                <tt class="dashboard-option-inline" title="{{discord_id}}">{{v.prefix}}{{discord_name}} </tt>
             {% else %}
-                <span class="dashboard-option" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="Discord id {{discord_id}}">
-                    <tt class="dashboard-option-inline error" title="Discord id {{discord_id}}">{{v.prefix}}{{discord_name}}</tt>
+                <span class="dashboard-option" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}">
+                    <tt class="dashboard-option-inline error" title="{{discord_id}}">{{v.prefix}}{{discord_name}}</tt>
                 </span>
             {% endif %}
         {% endfor %}

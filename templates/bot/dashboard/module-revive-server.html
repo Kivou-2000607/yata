@@ -26,7 +26,7 @@ This file is part of yata.
 <td>{{revive_server.server_name}}</td>
 <td>{{revive_server.server_id}}</td>
 <td>
-    <span class="dashboard-option-tr" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
+    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
         {% if revive_server.server_id in config.sending %}
              <i class="fas fa-toggle-on valid"></i>
         {% else %}
@@ -35,7 +35,7 @@ This file is part of yata.
     </span>
 </td>
 <td>
-    <span class="dashboard-option-tr" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
+    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
         {% if revive_server.server_id in config.blacklist %}
         <i class="fas fa-toggle-on error"></i>
         {% else %}

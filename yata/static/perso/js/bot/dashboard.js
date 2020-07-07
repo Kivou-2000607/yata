@@ -3,7 +3,8 @@ $(document).on('click', '.dashboard-option', e=>{
     const target = $(e.currentTarget)
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
 
-        // server / module / type (select the section in the configuration)
+        // bot /server / module / type (select the section in the configuration)
+        bid: target.attr("data-bid"),
         sid: target.attr("data-sid"),
         mod: target.attr("data-mod"),
         typ: target.attr("data-typ"),
@@ -21,8 +22,8 @@ $(document).on('click', '.dashboard-option-tr', e=>{
     const target = $(e.currentTarget)
     target.closest("tr").load( "/bot/dashboard/option/", {
 
-        // server / module / type (select the section in the configuration)
-        sid: target.attr("data-sid"),
+        // bot /server / module / type (select the section in the configuration)
+        bid: target.attr("data-bid"),
         mod: target.attr("data-mod"),
         typ: target.attr("data-typ"),
 

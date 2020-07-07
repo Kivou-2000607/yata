@@ -42,9 +42,9 @@ This file is part of yata.
             {% for k, v in mod.items %}
                 {% include "bot/dashboard/module-dict.html" %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
         {% else %}
-            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
     {% endwith %}
 {% elif module == "loot" %}
@@ -53,9 +53,9 @@ This file is part of yata.
             {% for k, v in mod.items %}
                 {% include "bot/dashboard/module-dict.html" %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
         {% else %}
-            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
     {% endwith %}
 {% elif module == "revive" %}
@@ -68,9 +68,9 @@ This file is part of yata.
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}
             {% endfor %}
-            <p><from><span class="dashboard-option error" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
+            <p><from><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span></from></p>
         {% else %}
-            <p><from><span class="dashboard-option valid" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
+            <p><from><span class="dashboard-option valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span></from></p>
         {% endif %}
     {% endwith %}
 {% else %}

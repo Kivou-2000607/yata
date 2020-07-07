@@ -101,7 +101,7 @@ def dashboardOption(request):
 
             player = getPlayer(request.session["player"].get("tId"))
             if str(request.GET.get("sid", 0)).isdigit():
-                server = player.server_set.filter(discord_id=request.GET.get("sid", 0)).first()
+                server = player.server_set.filter(bot__pk=request.GET.get("bid", 0), discord_id=request.GET.get("sid", 0)).first()
             else:
                 return returnError(type=403, msg="No servers asked")
 
