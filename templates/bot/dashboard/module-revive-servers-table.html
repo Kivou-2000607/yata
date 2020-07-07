@@ -45,8 +45,8 @@ This file is part of yata.
             <div class="pagination">
                 <span class="step-links">
                     {% if config.all.has_previous %}
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?sid={{server.discord_id}}&prs=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?sid={{server.discord_id}}&prs={{ config.all.previous_page_number }}">previous</a>
+                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.previous_page_number }}">previous</a>
                     {% endif %}
 
                     <span class="current">
@@ -54,8 +54,8 @@ This file is part of yata.
                     </span>
 
                     {% if config.all.has_next %}
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?sid={{server.discord_id}}&prs={{ config.all.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?sid={{server.discord_id}}&prs={{ config.all.paginator.num_pages }}">last &raquo;</a>
+                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.paginator.num_pages }}">last &raquo;</a>
                     {% endif %}
                 </span>
             </div>
