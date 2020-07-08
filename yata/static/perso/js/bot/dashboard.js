@@ -85,7 +85,20 @@ $(document).on('click', '.dashboard-option-af', e=>{
 $(document).on('change', 'input.faction-add-id', e=>{
     e.preventDefault();
     const target = $(e.currentTarget);
-    if($.isNumeric($(target).val())) {
-        $(target).parents("li.step-1").siblings("li.step-2").slideDown("fast");
+    const fid = $(target).val();
+    const step_2 = $(target).parents("li.step-1").siblings("li.step-2");
+    if($.isNumeric(fid)) {
+        $(step_2).slideDown("fast");
+        const all_li = $(step_2).children("ul").children("li");
+        $(all_li).children("span").removeClass("selected").addClass("unselected");
+        $(all_li).children("tt").removeClass("valid");
+        $(all_li).each((i, li) => {
+            $(li).children("tt.dashboard-settings").each((j, tt) => {
+                if(fid == $(tt).attr("data-fid")) {
+                    $(li).children("span.unselected").removeClass("unselected").addClass("selected");
+                    $(tt).addClass("valid");
+                }
+            });
+        });
     }
 });

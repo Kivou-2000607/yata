@@ -133,11 +133,11 @@ def dashboardOption(request):
                 context["module"] = module
                 context["server"] = server
                 configuration_keys = {
-                    "admin": ["prefix", "channel_admin"],
+                    "admin": ["prefix", "channels_admin", "channels_welcome"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
-                    "verify": ["roles_verified", "channels_allowed", "factions", "other"],
+                    "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "other"],
                 }.get(post.get("mod"), [])
 
                 configuration = json.loads(server.configuration)
@@ -178,7 +178,7 @@ def dashboardOption(request):
                                 del c[type][fid]
 
                         elif type in ["other"]:
-                            c[type][id] = True
+                            c[type][id] = 1
                             for a, b in [["weekly_check", "daily_check"], ["weekly_verify", "daily_verify"]]:
                                 if id == a and b in c[type]:
                                     del c[type][b]

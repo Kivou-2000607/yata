@@ -158,7 +158,8 @@ class Server(models.Model):
                                 ["Server owner discord ID", from_db.get("owner_did")],
                                 ["Server admins", ", ".join(admins)]],
                 "prefix": {"type": "prefix", "all": {'!': '!', '.': '.', '>': '>', '<': '<', '$': '$', '-': '-', '_': '_', '?': '?', '#': '#'}, "selected": from_db.get("prefix", "!"), "prefix": "", "title": "Bot prefix", "help": "Select the bot prefix", "mandatory": False},
-                "channel_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channel_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "mandatory": True},
+                "channels_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "mandatory": True},
+                "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the welcome messages", "mandatory": False},
             }
             return for_template
         else:
@@ -210,6 +211,7 @@ class Server(models.Model):
         if from_db:
             for_template = {
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
+                "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the verified welcome message", "mandatory": False},
                 "roles_verified": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_verified", {}), "prefix": "@", "title": "Role for the verified members", "help": "Select one role for the verified members", "mandatory": True},
                 "factions": {"type": "role", "selected": from_db.get("factions", {}), "title": "Factions roles", "prefix": "@", "help": "Select factions and roles for each of them", "mandatory": False},
                 "other": {"type": "bool", "all": all, "selected": from_db.get("other", []), "title": "Other options", "prefix": "", "help": "Select the different other options", "mandatory": False},

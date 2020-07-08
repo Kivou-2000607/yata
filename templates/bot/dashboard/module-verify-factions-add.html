@@ -32,7 +32,16 @@ This file is part of yata.
             Step 2: select a corresponding role
             <ul>
                 {% for discord_id, discord_name in server.get_roles.items %}
-                    <li><span class="dashboard-option-af unselected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="verify" data-typ="factions" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}"><tt>{{v.prefix}}{{discord_name|safe}}</tt></span></li>
+                    <li>
+                        <span class="dashboard-option-af unselected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="verify" data-typ="factions" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}">
+                            <tt>{{v.prefix}}{{discord_name|safe}}</tt>
+                        </span>
+                        {% for faction_id, roles in v.selected.items %}
+                            {% if discord_id in roles %}
+                                <tt class="dashboard-settings" data-fid="{{faction_id}}">Faction [{{faction_id}}]</tt>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
                 {% endfor %}
             </ul>
         </li>

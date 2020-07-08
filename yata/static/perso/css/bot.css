@@ -141,6 +141,10 @@ span.selected {
     font-weight: bold;
     color: #0B8E14;
 }
+span.selected:hover {
+    font-weight: bold;
+    color: #CC3434;
+}
 span.unselected {
     /* text-decoration: line-through; */
     opacity: 0.5;

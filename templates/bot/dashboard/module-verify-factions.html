@@ -40,7 +40,7 @@ This file is part of yata.
             <ul>
                 {% for discord_id, discord_name in role.items %}
                 <li>
-                    <tt class="dashboard-settings {% if discord_id in  server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}}</tt>
+                    <tt class="dashboard-settings {% if discord_id in server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}}</tt>
                 </li>
                 {% endfor %}
             </ul>
