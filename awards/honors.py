@@ -327,6 +327,7 @@ d = {
     836: 886071515,  # Peppered
     838: 948029275,  # Lovestruck
     843: 751068112,  # Hands Solo
+    670: 177445753,  # Giant Slayer
     476: 0,  # Chainer 5
 
     # 9
@@ -476,6 +477,7 @@ d = {
     717: 254193787,  # Foul Play
     743: 273202925,  # Lavish
     699: 725072235,  # Collector
+    882: 312835313,  # Radaway
 
     # 17
     371: 668653618,  # Protege
