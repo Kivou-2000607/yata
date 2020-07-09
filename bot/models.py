@@ -189,6 +189,21 @@ class Server(models.Model):
         else:
             return False
 
+    def get_stocks(self):
+        from_db = json.loads(self.configuration).get("stocks", False)
+        if from_db:
+            for_template = {
+                "channels_wssb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_wssb", {}), "prefix": "#", "title": "WSSB channel", "help": "Select one or several channels for the <tt>!wssb</tt> commands", "mandatory": False},
+                "channels_tcb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_tcb", {}), "prefix": "#", "title": "TCB channel", "help": "Select one or several channels for the <tt>!wssb</tt> commands", "mandatory": False},
+                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": False},
+                "roles_wssb": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_wssb", {}), "prefix": "@", "title": "WSSB role", "help": "Select one role for the alerts", "mandatory": False},
+                "roles_tcb": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_tcb", {}), "prefix": "@", "title": "TCB role", "help": "Select one role for the alerts", "mandatory": False},
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+            }
+            return for_template
+        else:
+            return False
+
     def get_revive(self, page=None):
         from_db = json.loads(self.configuration).get("revive", False)
         all = [{"server_id": str(s.discord_id), "server_name": s.name} for s in Server.objects.filter(bot=self.bot) if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]

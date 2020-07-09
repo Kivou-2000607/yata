@@ -95,6 +95,15 @@ This file is part of yata.
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
+{% elif module == "stocks" %}
+    {% with mod=server.get_stocks %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
 {% else %}
     <p class="error">{{error}}</p>
 {% endif %}
