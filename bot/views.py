@@ -128,7 +128,7 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try an !update in the discord server..."
 
-            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify"]:
+            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify", "oc"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
@@ -138,6 +138,7 @@ def dashboardOption(request):
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "other"],
+                    "oc": ["channels_allowed", "currents"],
                 }.get(post.get("mod"), [])
 
                 configuration = json.loads(server.configuration)
@@ -150,9 +151,9 @@ def dashboardOption(request):
 
                 elif post.get("typ") in configuration_keys:
                     type = post.get("typ")  # channels or roles
-                    print("type", type)
                     id = post.get("key", 0)
                     name = post.get("val", "???")
+                    print(type, id, name)
                     if type not in c:
                         c[type] = {}
                     if id in c[type]:  # force toggle
@@ -162,8 +163,11 @@ def dashboardOption(request):
                     else:
                         if type in ["sending", "blacklist"]:
                             c[type][id] = name
+
                         elif type in ["channels_allowed"]:
+                            # if type == "currents" and name == "disable" and id in c[type]:
                             c[type][id] = name  # (multiple)
+
                         elif type in ["factions"]:
                             fid = post.get("fid", False)
                             if str(fid).isdigit():

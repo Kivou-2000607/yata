@@ -1,0 +1,44 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning" style="margin-right: 10px;">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+<div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
+    <p>{{v.help|safe}}</p>
+    <ul><form>
+        {% for discord_user_id, current in v.all.items %}
+            <li>
+                <span title="{{discord_user_id}}">Tracking <tt>#{{forloop.counter}}</tt></span>
+                <ul>
+                    {% for type, data in current.items %}
+                        <li>{{type|key_to_title}}: <span class="dashboard-settings" title="{{data.0}}">{{data.2}}{{data.1}}</span></li>
+                    {% endfor %}
+                    <li><span class="dashboard-option error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_user_id}}" data-val="disable" title="{{discord_id}}">Remove this tracking</span></li>
+                </ul>
+            </li>
+
+            {# <li><span class="dashboard-option {% if discord_id not in v.selected %}un{%endif%}selected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}"><tt>{{v.prefix}}{{discord_name|safe}}</tt></span></li> #}
+        {% endfor %}
+    </form></ul>
+</div>

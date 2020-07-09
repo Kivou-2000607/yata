@@ -24,10 +24,10 @@ This file is part of yata.
 
 <p>
 {% if mod %}
-    <span class="dashboard-button neutral">Enable module</span>
-    <span class="dashboard-option dashboard-button error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable module</span>
+    <span class="dashboard-button neutral">Enable {{module}}</span>
+    <span class="dashboard-option dashboard-button error" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="disable">Disable {{module}}</span>
 {% else %}
-    <span class="dashboard-option dashboard-button valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable module</span>
-    <span class="dashboard-button neutral">Disable module</span>
+    <span class="dashboard-option dashboard-button valid" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="enable">Enable {{module}}</span>
+    <span class="dashboard-button neutral">Disable {{module}}</span>
 {% endif %}
 </p>

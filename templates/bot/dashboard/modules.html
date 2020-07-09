@@ -82,6 +82,19 @@ This file is part of yata.
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
+{% elif module == "oc" %}
+    {% with mod=server.get_oc %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "currents" %}
+                    {% include "bot/dashboard/module-currents.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
 {% else %}
-<p class="error">{{error}}</p>
+    <p class="error">{{error}}</p>
 {% endif %}
