@@ -133,7 +133,7 @@ def dashboardOption(request):
                 context["module"] = module
                 context["server"] = server
                 configuration_keys = {
-                    "admin": ["prefix", "channels_admin", "channels_welcome"],
+                    "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
@@ -154,10 +154,11 @@ def dashboardOption(request):
                     type = post.get("typ")  # channels or roles
                     id = post.get("key", 0)
                     name = post.get("val", "???")
-                    print(type, id, name)
+
                     if type not in c:
                         c[type] = {}
-                    if id in c[type]:  # force toggle
+
+                    if id in c[type] and isinstance(c[type], dict):  # force toggle
                         c[type].pop(id)
                         if not len(c[type]):  # del if empty
                             del c[type]
@@ -191,6 +192,13 @@ def dashboardOption(request):
                                 elif id == b and a in c[type]:
                                     del c[type][a]
                                     break
+
+                        elif type in ["message_welcome"]:
+                            if id == "add":
+                                c[type] = [line.strip() for line in name.split("\\n")]
+                            elif id == "remove":
+                                c[type] = []
+                                del c[type]
 
                         else:
                             c[type] = {id: name}  # (single)

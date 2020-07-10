@@ -160,6 +160,7 @@ class Server(models.Model):
                 "prefix": {"type": "prefix", "all": {'!': '!', '.': '.', '>': '>', '<': '<', '$': '$', '-': '-', '_': '_', '?': '?', '#': '#'}, "selected": from_db.get("prefix", "!"), "prefix": "", "title": "Bot prefix", "help": "Select the bot prefix", "mandatory": False},
                 "channels_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "mandatory": True},
                 "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the welcome messages", "mandatory": False},
+                "message_welcome": {"type": "message", "selected": from_db.get("message_welcome", {}), "prefix": "", "title": "Welcome message", "help": "Type your welcome message (\\n for newline, # before a channel and @ before a role)", "mandatory": False},
             }
             return for_template
         else:
