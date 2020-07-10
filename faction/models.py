@@ -1144,10 +1144,10 @@ class Member(models.Model):
                 self.speed = 0
                 self.strength = 0
             else:
-                self.dexterity = int(float(req.get('dexterity', 0)))
-                self.defense = int(float(req.get('defense', 0)))
-                self.speed = int(float(req.get('speed', 0)))
-                self.strength = int(float(req.get('strength', 0)))
+                self.dexterity = int(str(req.get('dexterity', 0)).replace(",", ""))
+                self.defense = int(str(req.get('defense', 0)).replace(",", ""))
+                self.speed = int(str(req.get('speed', 0)).replace(",", ""))
+                self.strength = int(str(req.get('strength', 0)).replace(",", ""))
 
         self.save()
 
