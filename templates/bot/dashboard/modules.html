@@ -97,6 +97,19 @@ This file is part of yata.
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
+{% elif module == "chain" %}
+    {% with mod=server.get_chain %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "currents" %}
+                    {% include "bot/dashboard/module-currents.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
 {% elif module == "stocks" %}
     {% with mod=server.get_stocks %}
         {% if mod %}

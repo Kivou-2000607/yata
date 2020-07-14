@@ -159,8 +159,8 @@ class Server(models.Model):
                                 ["Server admins", ", ".join(admins)]],
                 "prefix": {"type": "prefix", "all": {'!': '!', '.': '.', '>': '>', '<': '<', '$': '$', '-': '-', '_': '_', '?': '?', '#': '#'}, "selected": from_db.get("prefix", "!"), "prefix": "", "title": "Bot prefix", "help": "Select the bot prefix", "mandatory": False},
                 "channels_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "mandatory": True},
-                "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the welcome messages", "mandatory": False},
-                "message_welcome": {"type": "message", "selected": from_db.get("message_welcome", {}), "prefix": "", "title": "Welcome message", "help": "Type your welcome message (\\n for newline, # before a channel and @ before a role)", "mandatory": False},
+                "message_welcome": {"type": "message", "selected": from_db.get("message_welcome", {}), "prefix": "", "title": "Welcome message", "help": "Type your welcome message (\\n for a newline, # before a channel, @ before a role and @new_member to ping new member)", "mandatory": False},
+                "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the welcome messages (if none selected, the default server channel will be used)", "mandatory": False},
             }
             return for_template
         else:
@@ -243,6 +243,17 @@ class Server(models.Model):
             for_template = {
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
                 "currents": {"type": "oc", "all": from_db.get("currents", {}), "title": "Current OC tracking", "prefix": "", "help": "List of the current trackings", "mandatory": False},
+            }
+            return for_template
+        else:
+            return False
+
+    def get_chain(self):
+        from_db = json.loads(self.configuration).get("chain", False)
+        if from_db:
+            for_template = {
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
+                "currents": {"type": "retal", "all": from_db.get("currents", {}), "title": "Current retails tracking", "prefix": "", "help": "List of the current trackings", "mandatory": False},
             }
             return for_template
         else:

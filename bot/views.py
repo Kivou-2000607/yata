@@ -128,7 +128,7 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try an !update in the discord server..."
 
-            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify", "oc", "stocks"]:
+            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify", "oc", "stocks", "chain"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
@@ -139,6 +139,7 @@ def dashboardOption(request):
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "other"],
                     "oc": ["channels_allowed", "currents"],
+                    "chain": ["channels_allowed", "currents"],
                     "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
                 }.get(post.get("mod"), [])
 
