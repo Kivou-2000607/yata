@@ -1612,6 +1612,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
         awards = dict({
             "Memberships": dict(),
+            "Other Gym": dict(),
             "Defense": dict(),
             "Dexterity": dict(),
             "Speed": dict(),
@@ -1626,7 +1627,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                   "Strength": 646}
 
         for k, v in tornAwards["honors"].items():
-            if int(v["type"]) in [10]:
+            if int(v["type"]) in [0, 10]:
                 vp = v
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
@@ -1675,6 +1676,15 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [888]:
+                    # "888": { "name": "Nice", "description": "Nice", "type": 0,
+                    type = "Other Gym"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    vp["comment"] = "Be nice"
                     awards[type]["h_" + k] = vp
 
     elif typeOfAwards == "money":

@@ -24,8 +24,8 @@ This file is part of yata.
 
 
 <ul>
-    {% for title, db in v %}
-    <li><b>{{title}}:</b>  <tt>{{db}}</tt></li>
+    {% for title, db, tooltip in v %}
+    <li><b>{{title}}:</b> <tt>{{db}}</tt>{% if tooltip%} <i style="cursor: help;" class="fas fa-question-circle" title="{{tooltip|safe}}"></i>{%endif%}</li>
     {% endfor%}
 
 </ul>

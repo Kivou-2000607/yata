@@ -120,8 +120,6 @@ def dashboardOption(request):
             context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True}}
             server = player.server_set.filter(bot__pk=post.get("bid", 0), discord_id=post.get("sid", 0)).first()
 
-            print(post)
-
             if server is None:
                 context["error"] = "No server found..."
 

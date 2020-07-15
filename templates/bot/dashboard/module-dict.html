@@ -25,7 +25,7 @@ This file is part of yata.
 
 <h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning" style="margin-right: 10px;">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
 <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
-    <p>{{v.help|safe}}</p>
+    <p>{{v.help|safe}}{% if v.tooltip%} <i style="cursor: help;" class="fas fa-question-circle" title="{{v.tooltip|safe}}"></i>{%endif%}</p>
     <ul><form>
         {% for discord_id, discord_name in v.all.items %}
             <li><span class="dashboard-option {% if discord_id not in v.selected %}un{%endif%}selected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="{{k}}" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}"><tt>{{v.prefix}}{{discord_name|safe}}</tt></span></li>
