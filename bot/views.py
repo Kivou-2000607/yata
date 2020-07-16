@@ -45,7 +45,7 @@ def index(request):
         error = player.update_discord_id()
 
         # get servers
-        servers_db = Bot.objects.filter(pk=1).first().server_set.all()
+        servers_db = Bot.objects.filter(pk=3).first().server_set.all()
         servers = dict({})
         for s in servers_db:
             configuration = json.loads(s.configuration)
