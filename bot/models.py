@@ -260,6 +260,15 @@ class Server(models.Model):
         else:
             return False
 
+    def light_configuration(self):
+        configuration = json.loads(self.configuration)
+        for k, v in configuration.get("chain", {}).get("current", {}).items():
+            del v["torn_user"]
+
+        for k, v in configuration.get("oc", {}).get("current", {}).items():
+            del v["torn_user"]
+
+        return json.dumps(configuration)
 
 
 class Chat(models.Model):

@@ -27,11 +27,17 @@ class BotAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ['bot', 'discord_id', 'name', 'admins']
+    list_display = ['bot', 'discord_id', 'name', 'admins', 'secret']
+    readonly_fields = ('bot', 'discord_id', 'name', 'secret', 'light_configuration', )
     autocomplete_fields = ("server_admin",)
     formfield_overrides = {
         models.TextField: {'widget': JSONEditorWidget},
     }
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ("configuration", )
+        form = super(ServerAdmin, self).get_form(request, obj, **kwargs)
+        return form
 
     def admins(self, instance):
         lst = []
