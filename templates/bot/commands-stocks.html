@@ -23,9 +23,8 @@ This file is part of yata.
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!wssb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Give education's time left and BB ownership for all <tt>@wssb</tt>.</p>
+<p>Give education's time left and BB ownership for all that have the wssb role.</p>
 <p><b>Syntax:</b> <tt>!wssb</tt></p>
-<p><b>Scope:</b> <tt>@wssb</tt> can use it in <tt>#wssb</tt>.</p>
 <pre>
 NAME            | EDU TIME LEFT | WSSB
  --------------------------------------
@@ -35,14 +34,12 @@ userC           |  8d  8h 15min |
 userD           |  8d 11h 55min |  x
 </pre>
 </p>
-{# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
 <h2 class="command-doc privacy-personal-private">Command <tt>!tcb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Give bank investment's time left and BB ownership for all <tt>@tcb</tt>.</p>
+<p>Give bank investment's time left and BB ownership for all that have the tcb role.</p>
 <p><b>Syntax:</b> <tt>!tcb</tt></p>
-<p><b>Scope:</b> <tt>@tcb</tt> can use it in <tt>#tcb</tt>.</p>
 <pre>
 NAME            | INV TIME LEFT | TCB
 --------------------------------------
@@ -50,20 +47,17 @@ userA           | 10d 13h 13min |
 userB           | 14d 15h 54min |  x
 userC           | 20d 16h 56min |
 </pre>
-{# <p class="privacy-private error">Use personal API keys to pull private information in a potentially public channel.</p> #}
 </div>
 
-<h2 class="command-doc privacy-none">Command <tt>!trader</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h2 class="command-doc privacy-none">Command <tt>!assign stocks</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Gives or removes the <tt>@Trader</tt> role of the command author.</p>
-<p><b>Syntax:</b> <tt>!trader</tt></p>
-<p><b>Scope:</b> Anyone can use it anywhere.</p>
-{# <p class="privacy-none valid">No key needed.</p> #}
+<p>Gives or removes the stocks role of the command author.</p>
+<p><b>Syntax:</b> <tt>!assign stocks</tt></p>
 </div>
 
 <h2 class="command-doc privacy-none">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
 <div class="command-doc">
-<p>Notifies <tt>@Trader</tt> role in <tt>#stocks</tt> for good investments on the stock market. Triggers are when:
+<p>Notifies the stocks role for good investments on the stock market. Triggers are when:
 <ul>
     <li>forecast from bad to avg / good & shares available & price lower than trimestrial average</li>
     <li>new shares are injected by the system</li>

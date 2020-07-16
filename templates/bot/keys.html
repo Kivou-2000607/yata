@@ -21,16 +21,15 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-key"></i>&nbsp;&nbsp;API keys management</h2>
 <div class="module">
-    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, a set of master keys are given to the bot on setup. These keys are only used for this verification procedure.
-    Thus, with this system, you have:</p>
+    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, <span class="warning">a set of master keys are given by the bot admins</span> on setup. These keys are only used for this verification procedure.
+    Thus, with this system, to be a bot admin you have:</p>
     <ul>
         <li>to be verified on the official discord server</li>
         <li>to be registered on the YATA website</li>
     </ul>
-    <p>to use all the commands of the bot. If you don't, when possible master keys are used as a fallback method. Check the documentation for more details.</p>
 
-    <p>For some commands, the YATA bot pulls private informations. And some of these commands can be triggered by a tier, displaying private data on potentially public channels (see below for details). To avoid malicious use of these commands a direct message is sent to you when the data is pulled and displayed.</p>
+    <p>For some commands, the YATA bot pulls private informations using your key. And some of these commands can be triggered by a tier, displaying private data on potentially public channels. To avoid malicious use of these commands a direct message is sent to you when the data is pulled and displayed.</p>
 
-    <p>If your key is set as a master key and you reset it, you just have to <a href="{%url 'logout'%}" target="_blank">logout</a> and log back into YATA with your new key.</p>
+    <p>If your are a bot admin and you reset your key, you just have to <a href="{%url 'logout'%}" target="_blank">logout</a> and log back into YATA with your new key.</p>
 
 </div>
