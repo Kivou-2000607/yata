@@ -63,6 +63,7 @@ def index(request):
 
         graphs = []
         for i, (k, v) in enumerate(servers):
+            v["i"] = total_servers - i
             graphs.append([timestampToDate(v.get("joined_at", 1)), total_servers - i])
 
         paginator = Paginator(servers, 25)

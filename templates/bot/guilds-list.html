@@ -33,7 +33,7 @@ This file is part of yata.
     <tbody>
         {% for k, s in servers %}
         <tr>
-            <td class="a"><tt>{{total_servers|sub:forloop.counter0|stringformat:"02d"}} / {{total_servers|stringformat:"02d"}}</tt></td>
+            <td class="a"><tt>{{s.i|stringformat:"02d"}} / {{total_servers|stringformat:"02d"}}</tt></td>
             <td class="b">{{s.server_name}}</td>
             <td class="c"><tt>{{s.server_id}}</tt></td>
             <td class="d">
