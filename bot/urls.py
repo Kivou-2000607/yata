@@ -7,19 +7,16 @@ from . import views
 app_name = "bot"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
-    re_path(r'^welcome/$', views.welcome, name='welcome'),
+    re_path(r'^welcome/$', views.index, name='welcome'),
     re_path(r'^documentation/$', views.documentation, name='documentation'),
     re_path(r'^host/$', views.host, name='host'),
-    re_path(r'^admin/$', views.admin, name='admin'),
     re_path(r'^dashboard/$', views.dashboard, name='dashboard'),
     re_path(r'^dashboard/option/$', views.dashboardOption, name='dashboardOption'),
 
     re_path(r'^invite/$', RedirectView.as_view(url='https://discordapp.com/oauth2/authorize?client_id=623862007434706986&scope=bot&permissions=8'), name="invite"),
 
     re_path(r'^updateId/$', views.updateId, name='updateId'),
-    # re_path(r'^togglePerm/$', views.togglePerm, name='togglePerm'),
     re_path(r'^toggleNoti/$', views.toggleNoti, name='toggleNoti'),
-    # re_path(r'^togglePref/(?P<type>\w+)/$', views.togglePref, name='togglePref'),
 
     re_path(r'^secret/$', views.secret, name='secret'),
     ]

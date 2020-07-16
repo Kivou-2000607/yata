@@ -17,48 +17,49 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load mathfilters %}
 {% load app_filters %}
 
-<table class="center-large trshadow bot-guilds">
+<table class="center-large trshadow bot-servers">
     <thead>
         <tr>
             <th>#</th>
-            <th>ID</th>
             <th>Server name</th>
-            <th>Server admin</th>
-            <th>Bot admin</th>
             <th>Server id</th>
+            <th>Server admins</th>
             <th>Joined</th>
         </tr>
     </thead>
     <tbody>
-        {% for g in guilds %}
+        {% for k, s in servers %}
         <tr>
-            <td class="a" title="# {{g.n}}"><tt>{{g.n|stringformat:"02d"}}</tt></td>
-            <td class="a" title="ID {{g.pk}}"><tt>{{g.pk|stringformat:"02d"}}</tt></td>
-            <td class="b">{{g.guildName}}</td>
-            <td class="c">{{g.guildContactTornName|playerURL:g.guildContactTornId|safe}}</td>
-            <td class="c">{{g.botContactName|playerURL:g.botContactId|safe}}</td>
-            <td class="d"><tt>{{g.guildId}}</tt></td>
-            <td class="e">{{g.guildJoinedTime|ts2date:"%Y/%m/%d"}}</td>
+            <td class="a"><tt>{{total_servers|sub:forloop.counter0|stringformat:"02d"}} / {{total_servers|stringformat:"02d"}}</tt></td>
+            <td class="b">{{s.server_name}}</td>
+            <td class="c"><tt>{{s.server_id}}</tt></td>
+            <td class="d">
+                {% for name, id in s.admins %}
+                    {{name|playerURL:id|safe}}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td class="e">{{s.joined_at|ts2date:"%Y/%m/%d"}}</td>
         </tr>
         {% endfor %}
 
         <tr><td colspan="7">
             <div class="pagination">
                 <span class="step-links">
-                    {% if guilds.has_previous %}
+                    {% if servers.has_previous %}
                         <a class="page-link" href="{% url 'bot:index' %}?page=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'bot:index' %}?page={{ guilds.previous_page_number }}">previous</a>
+                        <a class="page-link" href="{% url 'bot:index' %}?page={{ servers.previous_page_number }}">previous</a>
                     {% endif %}
 
                     <span class="current">
-                        {{ guilds.number }}/{{ guilds.paginator.num_pages }}
+                        {{ servers.number }}/{{ servers.paginator.num_pages }}
                     </span>
 
-                    {% if guilds.has_next %}
-                        <a class="page-link" href="{% url 'bot:index' %}?page={{ guilds.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'bot:index' %}?page={{ guilds.paginator.num_pages }}">last &raquo;</a>
+                    {% if servers.has_next %}
+                        <a class="page-link" href="{% url 'bot:index' %}?page={{ servers.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'bot:index' %}?page={{ servers.paginator.num_pages }}">last &raquo;</a>
                     {% endif %}
                 </span>
             </div>

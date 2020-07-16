@@ -44,34 +44,37 @@ def index(request):
         # update discord id
         error = player.update_discord_id()
 
-        # get guilds
-        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("-pk")
-        n = len(guilds)
-        max_pk = 0
-        for i, g in enumerate(guilds):
-            g.n = n - i
-        paginator = Paginator(guilds, 25)
-        page = request.GET.get('page')
-        guilds = paginator.get_page(page)
+        # get servers
+        servers_db = Bot.objects.filter(pk=1).first().server_set.all()
+        servers = dict({})
+        for s in servers_db:
+            configuration = json.loads(s.configuration)
+            server_admins = configuration.get("admin", {}).get("server_admins")
+            joined_at = configuration.get("admin", {}).get("joined_at", 0)
+            if server_admins is None or not joined_at:
+                print(f'skip {s}')
+                continue
 
-        if request.GET.get('page') is not None:
-            return render(request, "bot/guilds-list.html", {"guilds": guilds})
+            servers[str(s.discord_id)] = {"server_name": s.name, "server_id": str(s.discord_id), "joined_at": joined_at, "admins": [[v["name"], v["torn_id"]] for k, v in server_admins.items()]}
+
+        # sort
+        servers = sorted(servers.items(), key=lambda x: x[1]["joined_at"], reverse=True)
+        total_servers = len(servers)
 
         graphs = []
-        for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
-            graphs.append([timestampToDate(g.guildJoinedTime), g.pk])
+        for i, (k, v) in enumerate(servers):
+            graphs.append([timestampToDate(v.get("joined_at", 1)), total_servers - i])
 
-        # this is just for me...
-        apps = False
-        if player.tId in [2000607]:
-            saveBotsConfigs()
-            deleteOldBots()
-            apps = DiscordApp.objects.order_by("pk").values()
-            for app in apps:
-                app["variables"] = sorted(json.loads(app["variables"]).items(), key=lambda x: x[1]["admin"]["pk"])
+        paginator = Paginator(servers, 25)
+        page = request.GET.get('page')
+        servers = paginator.get_page(page)
 
-        context = {"player": player, "apps": apps, "guilds": guilds, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
-        return render(request, "bot.html", context)
+        if request.GET.get('page') is not None:
+            return render(request, "bot/guilds-list.html", {"servers": servers, "total_servers": total_servers})
+
+        context = {"player": player, "servers": servers, "total_servers": total_servers, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
@@ -251,41 +254,6 @@ def documentation(request):
         return returnError(exc=e, session=request.session)
 
 
-def welcome(request):
-    try:
-        if request.session.get('player'):
-            tId = request.session["player"].get("tId")
-        else:
-            tId = -1
-
-        player = Player.objects.filter(tId=tId).first()
-
-        # get guilds
-        guilds = DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("-pk")
-        n = len(guilds)
-        max_pk = 0
-        for i, g in enumerate(guilds):
-            g.n = n - i
-        paginator = Paginator(guilds, 25)
-        page = request.GET.get('page')
-        guilds = paginator.get_page(page)
-
-        if request.GET.get('page') is not None:
-            return render(request, "bot/guilds-list.html", {"guilds": guilds})
-
-        graphs = []
-        for i, g in enumerate(DiscordApp.objects.filter(pk=2).first().guild_set.filter(guildJoinedTime__gt=0).order_by("guildJoinedTime")):
-            max_pk = max(g.pk, max_pk)
-            graphs.append([timestampToDate(g.guildJoinedTime), max_pk])
-
-        context = {"player": player, "botcat": True, "guilds": guilds, "graphs": graphs, "view": {"index": True}}
-        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
-        return render(request, page, context)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
 def host(request):
     try:
         if request.session.get('player'):
@@ -320,27 +288,6 @@ def updateId(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
-
-# def togglePerm(request):
-#     try:
-#         if request.session.get('player') and request.method == "POST":
-#             print('[view.bot.togglePerm] get player id from session')
-#             tId = request.session["player"].get("tId")
-#             player = Player.objects.filter(tId=tId).first()
-#
-#             player.botPerm = not player.botPerm
-#             player.save()
-#
-#             context = {'player': player}
-#             return render(request, "bot/give-permission.html", context)
-#
-#         else:
-#             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-#             return returnError(type=403, msg=message)
-#
-#     except Exception as e:
-#         return returnError(exc=e, session=request.session)
 
 
 def toggleNoti(request):
@@ -417,18 +364,3 @@ def secret(request):
 
     else:
         return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
-
-
-def admin(request):
-    try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-
-            context = {"player": player, "botcat": True, "view": {"admin": True}}
-            return render(request, 'bot.html', context)
-
-        else:
-            return returnError(type=403, msg="You might want to log in.")
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)

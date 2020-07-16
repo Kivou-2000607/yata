@@ -30,7 +30,7 @@ This file is part of yata.
       var data = google.visualization.arrayToDataTable([
         ['Time', 'Number of servers', {role: 'tooltip', 'p': {'html': true}}],
         {% for a, b in graphs %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{forloop.counter}}, "<div style=\"padding: 5px;\"><b>Configuration number:</b> {{b}}<br><b>Bot number:</b> {{forloop.counter}}<br><b>Joined server on</b>: {{a}}</div>"],
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, "<div style=\"padding: 5px;\"><b>Bot number:</b> {{b}}<br><b>Joined server on</b>: {{a}}</div>"],
         {% endfor %}
       ]);
 

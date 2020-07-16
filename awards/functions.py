@@ -1684,7 +1684,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
-                    vp["comment"] = "Be nice"
+                    vp["comment"] = "<b>Current guess</b><br/>You need to have 5 instances of <tt>69</tt> or <tt>420</tt> in the digits of your battle stats with at least one of each.<br>Credit goes to them for figuring that out: https://www.torn.com/forums.php#/p=threads&f=2&t=16174336"
                     awards[type]["h_" + k] = vp
 
     elif typeOfAwards == "money":
