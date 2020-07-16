@@ -37,8 +37,7 @@ This file is part of yata.
     <tbody>
         {% for revive_server in config.all %}
         <tr>
-            {# {% include "bot/dashboard/module-revive-server.html" %} #}
-            {{revive_server}}
+            {% include "bot/dashboard/module-revive-server.html" %}
         </tr>
         {% endfor %}
 
