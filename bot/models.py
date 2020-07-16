@@ -197,9 +197,9 @@ class Server(models.Model):
             for_template = {
                 "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": False},
                 "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
-                "channels_wssb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_wssb", {}), "prefix": "#", "title": "WSSB channel", "help": "Select one or several channels for the <tt>!wssb</tt> commands", "mandatory": True},
+                "channels_wssb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_wssb", {}), "prefix": "#", "title": "WSSB channel", "help": "Select one channel for the <tt>!wssb</tt> commands", "mandatory": True},
                 "roles_wssb": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_wssb", {}), "prefix": "@", "title": "WSSB role", "help": "Select one role for the alerts", "mandatory": True},
-                "channels_tcb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_tcb", {}), "prefix": "#", "title": "TCB channel", "help": "Select one or several channels for the <tt>!wssb</tt> commands", "mandatory": True},
+                "channels_tcb": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_tcb", {}), "prefix": "#", "title": "TCB channel", "help": "Select one channel for the <tt>!wssb</tt> commands", "mandatory": True},
                 "roles_tcb": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_tcb", {}), "prefix": "@", "title": "TCB role", "help": "Select one role for the alerts", "mandatory": True},
             }
             return for_template
