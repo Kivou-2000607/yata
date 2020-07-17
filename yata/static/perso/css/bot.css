@@ -86,7 +86,7 @@ table.notification-preferences td {
 }
 
 
-table.bot-servers td.a { width: 10%; text-align: center; }  /* x1 */
+table.bot-servers td.a { width: 10%; text-align: left; }  /* x1 */
 table.bot-servers td.b { width: 20%; text-align: left; }  /* x1 */
 table.bot-servers td.c { width: 20%; text-align: center; }  /* x1 */
 table.bot-servers td.d { width: 40%; text-align: left; }  /* x1 */
