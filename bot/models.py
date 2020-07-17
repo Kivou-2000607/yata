@@ -207,8 +207,12 @@ class Server(models.Model):
             return False
 
     def get_revive(self, page=None):
+
+        def get_revive_public(s):
+            return json.loads(s.configuration).get("revive", {}).get("other", {}).get("public")
+
         from_db = json.loads(self.configuration).get("revive", False)
-        all = [{"server_id": str(s.discord_id), "server_name": s.name} for s in Server.objects.filter(bot=self.bot).order_by("name") if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]
+        all = [{"server_id": str(s.discord_id), "server_name": s.name, "public": get_revive_public(s)} for s in Server.objects.filter(bot=self.bot).order_by("name") if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]
         all = Paginator(all, 25).get_page(page)
 
         if from_db:
@@ -216,7 +220,8 @@ class Server(models.Model):
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!revive</tt> commands", "mandatory": True},
                 "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "tooltip": "You will receive the calls from your server and from the other servers in this channel (it can be the same as one of the allowed channels).", "mandatory": True},
                 "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
-                "revive_servers": {"type": "server", "all": all, "sending": from_db.get("sending", {}), "blacklist": from_db.get("blacklist", {}), "title": "Linked servers", "tooltip": "send: the bot will send your calls to the servers you select.&#10blacklist: the bot will block incoming calls from the servers you select.", "help": "Select the servers the bot will be sending the messages to", "mandatory": False}
+                "revive_servers": {"type": "server", "all": all, "sending": from_db.get("sending", {}), "blacklist": from_db.get("blacklist", {}), "title": "Linked servers", "tooltip": "send: the bot will send your calls to the servers you select&#10blacklist: the bot will block incoming calls from the servers you select&#10&#10If the server is not public please contact the admins before sending them your calls", "help": "Select the servers the bot will be sending the messages to", "mandatory": False},
+                "other": {"type": "bool", "all": ["public"], "selected": from_db.get("other", []), "title": "Public server", "prefix": "", "help": "State to others that you accept their calls", "tooltip": "It will display a green tick in the public column of the revive servers table.", "mandatory": False},
             }
             return for_template
         else:

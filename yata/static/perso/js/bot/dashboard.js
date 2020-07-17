@@ -1,7 +1,6 @@
 $(document).on('click', '.dashboard-option', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
-
+    if ($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget)
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
@@ -22,7 +21,7 @@ $(document).on('click', '.dashboard-option', e=>{
 
 $(document).on('click', '.dashboard-option-tr', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
+    if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget)
     target.closest("tr").load( "/bot/dashboard/option/", {
@@ -44,10 +43,9 @@ $(document).on('click', '.dashboard-option-tr', e=>{
 
 $(document).on('click', '.dashboard-option-li', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
+    if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget).closest("li");
-    console.log(target);
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
@@ -67,7 +65,7 @@ $(document).on('click', '.dashboard-option-li', e=>{
 
 $(document).on('click', '.dashboard-option-af', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
+    if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget);
     const id = $(target).parents("li.step-2").siblings("li.step-1").children("input.faction-add-id").val()
@@ -93,7 +91,7 @@ $(document).on('click', '.dashboard-option-af', e=>{
 
 $(document).on('change', 'input.faction-add-id', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
+    if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget);
     const fid = $(target).val();
@@ -116,7 +114,7 @@ $(document).on('change', 'input.faction-add-id', e=>{
 
 $(document).on('change', 'input.new-message', e=>{
     e.preventDefault();
-    if $('#dashboard-readonly') return;
+    if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget);
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {

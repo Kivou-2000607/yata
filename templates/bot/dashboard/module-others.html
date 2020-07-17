@@ -30,7 +30,7 @@ This file is part of yata.
     <div>
         <ul>
             {% for key in v.all %}
-                <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="verify" data-typ="other" data-key="{{key}}">{{key|key_to_title}}&nbsp;&nbsp;
+                <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="other" data-key="{{key}}">{{key|key_to_title}}&nbsp;&nbsp;
                     {% if key in v.selected %}
                         <i class="fas fa-toggle-on valid"></i>
                     {% else %}

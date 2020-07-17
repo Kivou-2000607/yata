@@ -45,7 +45,7 @@ This file is part of yata.
                 {% if k == "factions" %}
                     {% include "bot/dashboard/module-verify-factions.html" %}
                 {% elif k == "other" %}
-                    {% include "bot/dashboard/module-verify-other.html" %}
+                    {% include "bot/dashboard/module-others.html" %}
                 {% else %}
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}
@@ -77,6 +77,8 @@ This file is part of yata.
             {% for k, v in mod.items %}
                 {% if k == "revive_servers" %}
                     {% include "bot/dashboard/module-revive-servers.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-others.html" %}
                 {% else %}
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}

@@ -86,11 +86,15 @@ table.notification-preferences td {
 }
 
 
-table.bot-servers td.a { width: 10%; text-align: left; }  /* x1 */
+table.bot-servers td.a { width: 10%; text-align: center; }  /* x1 */
 table.bot-servers td.b { width: 20%; text-align: left; }  /* x1 */
 table.bot-servers td.c { width: 20%; text-align: center; }  /* x1 */
 table.bot-servers td.d { width: 40%; text-align: left; }  /* x1 */
 table.bot-servers td.e { width: 10%; text-align: center; }  /* x1 */
+
+table.dashboard-revive-servers td.a { width: 25%; text-align: left; }  /* x1 */
+table.dashboard-revive-servers td.b { width: 25%; text-align: center; }  /* x1 */
+table.dashboard-revive-servers td.c { width: 16%; text-align: center; }  /* x3 */
 
 
 img.bot-tuto {width: 500px; margin: 5px 20px; padding: 5px; border-radius: 5px; border: solid 1px #447e9b;}

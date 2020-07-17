@@ -139,7 +139,7 @@ def dashboardOption(request):
                     "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
-                    "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist"],
+                    "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "other"],
                     "oc": ["channels_allowed", "currents"],
                     "chain": ["channels_allowed", "currents"],
