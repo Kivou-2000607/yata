@@ -30,8 +30,8 @@ class BotAdmin(admin.ModelAdmin):
 class ServerAdmin(admin.ModelAdmin):
     list_display = ['bot', 'discord_id', 'name', 'admins', 'readonly_dashboard', ]
     readonly_fields = ('bot', 'discord_id', 'name', 'secret',)
-    autocomplete_fields = ("server_admin",)
-    search_fields = ['name', 'discord_id']
+    autocomplete_fields = ("server_admin", )
+    search_fields = ['name', 'discord_id', "server_admin__name", "server_admin__tId"]
     formfield_overrides = {
         models.TextField: {'widget': JSONEditorWidget},
     }
