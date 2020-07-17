@@ -91,7 +91,7 @@ def dashboard(request, secret=False):
             servers = player.server_set.all()
             for server in servers:
                 if server.secret == 'x':
-                    server.secret = json.loads(server).get("admin", {}).get("secret", 'x')
+                    server.secret = json.loads(server.configuration).get("admin", {}).get("secret", 'x')
                     server.save()
 
         context = {"player": player, "servers": servers, "botcat": True, "secret": secret, "view": {"dashboard": True}}
