@@ -1,5 +1,8 @@
 $(document).on('click', '.dashboard-option', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
+
     const target = $(e.currentTarget)
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
 
@@ -19,6 +22,8 @@ $(document).on('click', '.dashboard-option', e=>{
 
 $(document).on('click', '.dashboard-option-tr', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
     const target = $(e.currentTarget)
     target.closest("tr").load( "/bot/dashboard/option/", {
 
@@ -39,6 +44,8 @@ $(document).on('click', '.dashboard-option-tr', e=>{
 
 $(document).on('click', '.dashboard-option-li', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
     const target = $(e.currentTarget).closest("li");
     console.log(target);
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
@@ -60,6 +67,8 @@ $(document).on('click', '.dashboard-option-li', e=>{
 
 $(document).on('click', '.dashboard-option-af', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
     const target = $(e.currentTarget);
     const id = $(target).parents("li.step-2").siblings("li.step-1").children("input.faction-add-id").val()
     if(!$.isNumeric(id)) { console.log("faction id is not numeric:", id); return }
@@ -84,6 +93,8 @@ $(document).on('click', '.dashboard-option-af', e=>{
 
 $(document).on('change', 'input.faction-add-id', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
     const target = $(e.currentTarget);
     const fid = $(target).val();
     const step_2 = $(target).parents("li.step-1").siblings("li.step-2");
@@ -105,6 +116,8 @@ $(document).on('change', 'input.faction-add-id', e=>{
 
 $(document).on('change', 'input.new-message', e=>{
     e.preventDefault();
+    if $('#dashboard-readonly') return;
+
     const target = $(e.currentTarget);
     target.closest("div.module-doc").load( "/bot/dashboard/option/", {
 

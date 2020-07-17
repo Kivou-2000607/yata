@@ -17,6 +17,9 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% if secret %}
+    <div id="dashboard-readonly" class="module valid">This is a read only view of the dashboard <tt>#{{secret}}</tt></div>
+{% endif %}
 {% if servers|length %}
     {% for server in servers %}
 
@@ -25,6 +28,9 @@ This file is part of yata.
         {# ADMINISTRATION #}
         <h1 class="module-doc">Administration&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="module-doc">
+            <p>Non admin can access a read only view of this dashboard at this address:
+                <a href="{% url 'bot:dashboardReadOnly' server.secret %}">https://yata.alwaysdata.net{% url 'bot:dashboardReadOnly' server.secret %}</a>
+            </p>
             {% include "bot/dashboard/modules.html" with module="admin"%}
         </div>
 
@@ -75,6 +81,7 @@ This file is part of yata.
 
 {% else %}
  <div class="module round error">
-     You are not a bot admin. Reach out to a @Helper in the YATA discord server: <a href='{% url "discord" %}' target="_blank"><i class="fab fa-discord"></i> YATA discord server</a>.
+     You are not a bot admin. Reach out to an @Helper on the <a href='{% url "discord" %}' target="_blank"><i class="fab fa-discord"></i> YATA discord server</a>.<br/>
+     Check before that you're logged in.
  </div>
 {% endif %}

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.contrib.postgres import fields
 from django_json_widget.widgets import JSONEditorWidget
+from django.utils.safestring import mark_safe
 
 import json
 
@@ -12,11 +13,11 @@ from yata.handy import *
 # admin.site.disable_action('delete_selected')
 
 
-class DiscordAppAdmin(admin.ModelAdmin):
-    list_display = ['name', 'pk', 'token']
-    formfield_overrides = {
-        models.TextField: {'widget': JSONEditorWidget},
-    }
+# class DiscordAppAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'pk', 'token']
+#     formfield_overrides = {
+#         models.TextField: {'widget': JSONEditorWidget},
+#     }
 
 
 class BotAdmin(admin.ModelAdmin):
@@ -27,7 +28,7 @@ class BotAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ['bot', 'discord_id', 'name', 'admins', ]
+    list_display = ['bot', 'discord_id', 'name', 'admins', 'readonly_dashboard', ]
     readonly_fields = ('bot', 'discord_id', 'name', 'secret',)
     autocomplete_fields = ("server_admin",)
     search_fields = ['name', 'discord_id']
@@ -43,9 +44,13 @@ class ServerAdmin(admin.ModelAdmin):
     def admins(self, instance):
         lst = []
         for player in instance.server_admin.all():
-            lst.append("{} [{}] ({})".format(player.name, player.tId, player.dId))
-        return ", ".join(lst)
+            lst.append('<a href="https://www.torn.com/profiles.php?XID={idt}" target="_blank">{name} [{idt}]</a> ({idd})'.format(name=player.name, idt=player.tId, idd=player.dId))
+        return mark_safe(", ".join(lst))
 
+    def readonly_dashboard(self, instance):
+        if instance.secret != 'x':
+            return mark_safe('<a href="/bot/dashboard/{}/" target="_blank">{}</a>'.format(instance.secret, instance.secret))
+    readonly_dashboard.allow_tags = True
 
 def update_guild(modeladmin, request, queryset):
     for q in queryset:
@@ -160,7 +165,7 @@ admin.site.register(Stocks, StocksAdmin)
 admin.site.register(Rackets, RacketsAdmin)
 admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
-admin.site.register(DiscordApp, DiscordAppAdmin)
+# admin.site.register(DiscordApp, DiscordAppAdmin)
 admin.site.register(Guild, GuildAdmin)
 admin.site.register(Server, ServerAdmin)
 admin.site.register(Bot, BotAdmin)

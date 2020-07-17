@@ -34,12 +34,7 @@ import json
 
 def index(request):
     try:
-        if request.session.get('player'):
-            tId = request.session["player"].get("tId")
-        else:
-            tId = -1
-
-        player = Player.objects.filter(tId=tId).first()
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # update discord id
         error = player.update_discord_id()
@@ -81,20 +76,23 @@ def index(request):
         return returnError(exc=e, session=request.session)
 
 
-def dashboard(request):
+def dashboard(request, secret=False):
     try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        # read only dashboard
+        # if secret and secret != 'x'
 
-            servers = player.server_set.all()
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
 
-            context = {"player": player, "servers": servers, "botcat": True, "view": {"dashboard": True}}
-            return render(request, page, context)
+        if secret and secret != 'x':
+            servers = Server.objects.filter(secret=secret)
+            print(secret, servers)
 
         else:
-            message = "You might want to log in."
-            return returnError(type=403, msg=message)
+            servers = player.server_set.all()
+
+        context = {"player": player, "servers": servers, "botcat": True, "secret": secret, "view": {"dashboard": True}}
+        return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)

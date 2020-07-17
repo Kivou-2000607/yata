@@ -12,6 +12,7 @@ urlpatterns = [
     re_path(r'^host/$', views.host, name='host'),
     re_path(r'^dashboard/$', views.dashboard, name='dashboard'),
     re_path(r'^dashboard/option/$', views.dashboardOption, name='dashboardOption'),
+    re_path(r'^dashboard/(?P<secret>\w+)/$', views.dashboard, name='dashboardReadOnly'),
 
     re_path(r'^invite/$', RedirectView.as_view(url='https://discordapp.com/oauth2/authorize?client_id=623862007434706986&scope=bot&permissions=8'), name="invite"),
 
