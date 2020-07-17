@@ -222,7 +222,14 @@ def dashboardOption(request):
             # redirect inlines
             if post.get("typ") in ["sending", "blacklist"] and "error" not in context:
                 revive_server = Server.objects.filter(bot=server.bot, discord_id=post.get("key", 0)).first()
-                context["revive_server"] = {"server_name": post.get("val"), "server_id": post.get("key", 0), "admins": revive_server.get_admins()}
+                revive_config = json.loads(revive_server.configuration).get("revive", {})
+                context["revive_server"] = {"server_name": post.get("val"),
+                                            "server_id": post.get("key", 0),
+                                            "admins": revive_server.get_admins(),
+                                            "public": revive_config.get("other", {}).get("public"),
+                                            "sending": revive_config.get("sending"),
+                                            }
+
                 configuration = json.loads(server.configuration)
 
                 context["config"] = {"sending": configuration.get("revive", {}).get("sending", {}), "blacklist": configuration.get("revive", {}).get("blacklist", {})}

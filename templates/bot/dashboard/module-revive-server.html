@@ -31,6 +31,13 @@ This file is part of yata.
         &nbsp;&nbsp;<i class="fas fa-info-circle" title="{% for v in revive_server.admins %}{{v.name}} [{{v.torn_id|safe}}]{% if not forloop.last %}&#10;{% endif %}{% endfor %}"></i>
     {% endif %}
 </td>
+<td class="e">
+    {% if revive_server.public %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
 <td class="d">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
         {% if revive_server.server_id in config.sending %}
@@ -40,6 +47,13 @@ This file is part of yata.
         {% endif %}
     </span>
 </td>
+<td class="e">
+    {% if server.discord_id|slugify in revive_server.sending %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
 <td class="d">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
         {% if revive_server.server_id in config.blacklist %}
@@ -48,11 +62,4 @@ This file is part of yata.
             <i class="fas fa-toggle-off"></i>
         {% endif %}
     </span>
-</td>
-<td class="e">
-    {% if revive_server.public %}
-        <i class="fas fa-check valid"></i>
-    {% else %}
-        <i class="fas fa-times error"></i>
-    {% endif %}
 </td>
