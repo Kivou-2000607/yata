@@ -24,8 +24,14 @@ This file is part of yata.
 
 
 <td class="a">{{revive_server.server_name}}</td>
-<td class="b">{{revive_server.server_id}}</td>
+<td class="b"><tt>{{revive_server.server_id}}</tt></td>
 <td class="c">
+    {{revive_server.admins.0.name|playerURL:revive_server.admins.0.torn_id|safe}}
+    {% if revive_server.admins|length > 1 %}
+        &nbsp;&nbsp;<i class="fas fa-info-circle" title="{% for v in revive_server.admins %}{{v.name}} [{{v.torn_id|safe}}]{% if not forloop.last %}&#10;{% endif %}{% endfor %}"></i>
+    {% endif %}
+</td>
+<td class="d">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
         {% if revive_server.server_id in config.sending %}
              <i class="fas fa-toggle-on valid"></i>
@@ -34,7 +40,7 @@ This file is part of yata.
         {% endif %}
     </span>
 </td>
-<td class="c">
+<td class="d">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
         {% if revive_server.server_id in config.blacklist %}
             <i class="fas fa-toggle-on error"></i>
@@ -43,7 +49,7 @@ This file is part of yata.
         {% endif %}
     </span>
 </td>
-<td class="c">
+<td class="e">
     {% if revive_server.public %}
         <i class="fas fa-check valid"></i>
     {% else %}

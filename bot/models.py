@@ -141,6 +141,9 @@ class Server(models.Model):
     def get_prefixes(self):
         return
 
+    def get_admins(self):
+        return [v for k, v in json.loads(self.configuration).get("admin", {}).get("server_admins", {}).items()]
+
     def get_channels(self):
         return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("channels", {}).items()}
 
@@ -212,7 +215,7 @@ class Server(models.Model):
             return json.loads(s.configuration).get("revive", {}).get("other", {}).get("public")
 
         from_db = json.loads(self.configuration).get("revive", False)
-        all = [{"server_id": str(s.discord_id), "server_name": s.name, "public": get_revive_public(s)} for s in Server.objects.filter(bot=self.bot).order_by("name") if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]
+        all = [{"server_id": str(s.discord_id), "server_name": s.name, "public": get_revive_public(s), "admins": s.get_admins()} for s in Server.objects.filter(bot=self.bot).order_by("name") if len(json.loads(s.configuration).get('revive', {}).get('channels_alerts', {})) and s != self]
         all = Paginator(all, 25).get_page(page)
 
         if from_db:
