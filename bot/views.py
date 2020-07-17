@@ -86,10 +86,13 @@ def dashboard(request, secret=False):
 
         if secret and secret != 'x':
             servers = Server.objects.filter(secret=secret)
-            print(secret, servers)
 
         else:
             servers = player.server_set.all()
+            for server in servers:
+                if server.secret == 'x':
+                    server.secret = json.loads(server).get("admin", {}).get("secret", 'x')
+                    server.save()
 
         context = {"player": player, "servers": servers, "botcat": True, "secret": secret, "view": {"dashboard": True}}
         return render(request, page, context)
