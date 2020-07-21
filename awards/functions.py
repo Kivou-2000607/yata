@@ -547,8 +547,9 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = "<br>".join(['<b class={}>{}</b>: {:,d} ({:.0f}%)'.format(v[2], v[0], v[1], 100 * min(1, v[1] / nHits)) for v in bridge])
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [828]:
+                elif int(k) in [828, 871]:
                     # "828": {"name": "Finale","description": "Defeat someone on the 25th turn of an attack","type": 8,
+            		# "871": { "name": "Leonidas", "description": "Achieve a finishing hit with Kick", "type": 2,
                     type = "Finishing hits"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0

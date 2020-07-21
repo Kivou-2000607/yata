@@ -185,6 +185,7 @@ d = {
     791: 891318875,  # Quartermaster
     778: 615034470,  # Specialist
     851: 631155576,  # Mod Boss
+    871: 890122926,  # Leonidas
 
     # 3
     39: 198010293,  # Woodland Camo
