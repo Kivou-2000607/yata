@@ -103,13 +103,15 @@ def losses(request):
 
             sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
             for i in sluts:
-                a = losses.filter(attacker_id=i)
+                a = losses.order_by("timestamp_ended").filter(attacker_id=i)
                 if len(a):
                     # name, paid, total
-                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all())]
+                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all()), a.first().timestamp_ended, a.first().code]
 
             # sort sluts
-            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][2]))
+            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][3]))
+            for k,v in sluts:
+                print(k, v)
 
             context = {"player": player, "sluts": sluts}
             return render(request, 'target/attacks/losses.html', context)
@@ -350,7 +352,7 @@ def revives(request):
 
             error = updateRevives(player)
 
-            revives = Paginator(player.revive_set.order_by("timestamp"), 25).get_page(request.GET.get('p_re'))
+            revives = Paginator(player.revive_set.order_by("-timestamp"), 25).get_page(request.GET.get('p_re'))
 
             context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
             if error:

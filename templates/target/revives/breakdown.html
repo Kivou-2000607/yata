@@ -47,7 +47,7 @@ This file is part of yata.
                     {% for k, v in breakdownType %}
                         <tr>
                             <td class="c">Reason</td>
-                            <td class="d">{{k}}</td>
+                            <td class="d">{{k|safe}}</td>
                             <td class="e">{{v.0}}</td>
                             <td class="e">{{v.1}}</td>
                         </tr>
