@@ -55,8 +55,8 @@ def sectionMessage(request):
 def nextLoot(request):
     try:
         # get smaller due time
-        next = NPC.objects.filter(show=True).order_by('hospitalTS').first()
+        next = NPC.objects.filter(show=True).exclude(status="Loot level V").order_by('hospitalTS').first()
         ts = max(next.lootTimings(lvl=4)["ts"], 0)
         return {"nextLoot": [next.name, next.tId, ts]}
     except BaseException:
-        return {"nextLoot": ["?", 0, 0]}
+        return {"nextLoot": ["None", 0, 0]}

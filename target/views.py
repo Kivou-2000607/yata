@@ -110,8 +110,6 @@ def losses(request):
 
             # sort sluts
             sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][3]))
-            for k,v in sluts:
-                print(k, v)
 
             context = {"player": player, "sluts": sluts}
             return render(request, 'target/attacks/losses.html', context)
