@@ -36,8 +36,16 @@ This file is part of yata.
         <div class="dashboard-settings">
         <ul>
             {% for faction_id, role in v.selected.items %}
-            <li>Faction [{{faction_id}}]</li>
+            <li>Faction [{{faction_id}}]
+            </li>
             <ul>
+                <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-val="{{faction_id}}"> Give positions roles
+                    {% if faction_id in v.positions %}
+                        <i class="fas fa-toggle-on valid"></i>
+                    {% else %}
+                        <i class="fas fa-toggle-off"></i>
+                    {% endif %}
+                </li>
                 {% for discord_id, discord_name in role.items %}
                 <li>
                     <tt class="dashboard-settings {% if discord_id in server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}}</tt>

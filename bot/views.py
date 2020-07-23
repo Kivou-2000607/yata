@@ -27,7 +27,6 @@ from django.core.paginator import Paginator
 from yata.handy import *
 from player.models import Player
 from bot.models import *
-from bot.functions import *
 
 import json
 
@@ -140,7 +139,7 @@ def dashboardOption(request):
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
-                    "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "other"],
+                    "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
                     "oc": ["channels_allowed", "currents"],
                     "chain": ["channels_allowed", "currents"],
                     "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
@@ -170,7 +169,7 @@ def dashboardOption(request):
                         if type in ["sending", "blacklist"]:
                             c[type][id] = name
 
-                        elif type in ["channels_allowed"]:
+                        elif type in ["channels_allowed", "positions"]:
                             # if type == "currents" and name == "disable" and id in c[type]:
                             c[type][id] = name  # (multiple)
 

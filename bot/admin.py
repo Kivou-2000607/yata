@@ -7,17 +7,7 @@ from django.utils.safestring import mark_safe
 import json
 
 from .models import *
-from .functions import saveGuildConfig
 from yata.handy import *
-
-# admin.site.disable_action('delete_selected')
-
-
-# class DiscordAppAdmin(admin.ModelAdmin):
-#     list_display = ['name', 'pk', 'token']
-#     formfield_overrides = {
-#         models.TextField: {'widget': JSONEditorWidget},
-#     }
 
 
 class BotAdmin(admin.ModelAdmin):
@@ -37,7 +27,8 @@ class ServerAdmin(admin.ModelAdmin):
     }
 
     def get_form(self, request, obj=None, **kwargs):
-        self.exclude = ("configuration", )
+        if not request.user.is_superuser:
+            self.exclude = ("configuration", )
         form = super(ServerAdmin, self).get_form(request, obj, **kwargs)
         return form
 
@@ -51,71 +42,6 @@ class ServerAdmin(admin.ModelAdmin):
         if instance.secret != 'x':
             return mark_safe('<a href="/bot/dashboard/{}/" target="_blank">{}</a>'.format(instance.secret, instance.secret))
     readonly_dashboard.allow_tags = True
-
-def update_guild(modeladmin, request, queryset):
-    for q in queryset:
-        saveGuildConfig(q)
-
-
-update_guild.short_description = "Push guild setup to bot configuration"
-
-
-class GuildAdmin(admin.ModelAdmin):
-    class Media:
-        css = {'all': ('perso/css/admin.css',)}
-
-    list_display = ['guildName', 'guildId', 'configuration', 'admin', 'contact', 'owner', 'key', 'verifyModule', 'stockModule', 'lootModule', 'chainModule', 'reviveModule', 'apiModule']
-    search_fields = ['guildContactTornName', 'guildName', 'botContactName']
-    list_filter = ['configuration__name', 'botContactName', 'guildContactTornName']
-    autocomplete_fields = ("masterKeys", "verifyFactions")
-    actions = [update_guild]
-
-    def key(self, instance):
-        v = json.loads(instance.configuration.variables)
-        keys = v.get(str(instance.guildId), dict({})).get("keys", [])
-        return len(keys)
-
-    def owner(self, instance):
-        return '{name} [{id}]'.format(name=instance.guildOwnerName, id=instance.guildOwnerId)
-
-    def contact(self, instance):
-        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.guildContactTornName, id=instance.guildContactTornId))
-
-    def admin(self, instance):
-        return format_html('<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=instance.botContactName, id=instance.botContactId))
-
-    fieldsets = (
-                ('Server and contact', {
-                    'fields': ('botContactName', 'botContactId', 'configuration', 'guildId', 'guildName', 'guildContactTornId', 'guildContactTornName', 'guildContactDiscordId')
-                }),
-        ('General Settings', {
-            'fields': ('masterKeys', 'manageChannels', 'welcomeMessage', 'welcomeMessageText')
-        }),
-        ('Verify module', {
-            'fields': ('verifyModule', 'verifyChannels', 'verifyForce', 'verifyFactions', 'verifyFacsRole', 'verifyAppendFacId', 'verifyDailyVerify', 'verifyWeeklyVerify', 'verifyDailyCheck', 'verifyWeeklyCheck')
-        }),
-        ('Stock module', {
-            'fields': ('stockModule', 'stockChannels', 'stockWSSB', 'stockTCB', 'stockAlerts')
-        }),
-        ('Revive module', {
-            'fields': ('reviveModule', 'reviveChannels')
-        }),
-        ('Loot module', {
-            'fields': ('lootModule', 'lootChannels')
-        }),
-        ('Chain module', {
-            'fields': ('chainModule', 'chainChannels')
-        }),
-        ('Racket module', {
-            'fields': ('racketModule', 'racketChannels', 'racketRoles')
-        }),
-        ('Crimes module', {
-            'fields': ('crimesModule', 'crimesChannels')
-        }),
-        ('API module', {
-            'fields': ('apiModule', 'apiChannels', 'apiRoles')
-        }),
-    )
 
 
 class CredentialInline(admin.TabularInline):
@@ -165,7 +91,5 @@ admin.site.register(Stocks, StocksAdmin)
 admin.site.register(Rackets, RacketsAdmin)
 admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
-# admin.site.register(DiscordApp, DiscordAppAdmin)
-admin.site.register(Guild, GuildAdmin)
 admin.site.register(Server, ServerAdmin)
 admin.site.register(Bot, BotAdmin)
