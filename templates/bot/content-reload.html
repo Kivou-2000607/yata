@@ -24,7 +24,6 @@ This file is part of yata.
 {% if view.index %}
     {% include "bot/index.html" %}
     {% include "bot/guilds.html" %}
-    {% include "bot/apps.html" %}
 {% endif %}
 {% if view.doc %}
     {% include "bot/commands.html" %}
@@ -34,10 +33,8 @@ This file is part of yata.
 
 {% if view.host %}
     {% include "bot/host.html" %}
+    {% include "bot/verified.html" %}
 {% endif %}
 {% if view.dashboard %}
     {% include "bot/dashboard/index.html" %}
-{% endif %}
-{% if view.admin %}
-    {% include "bot/admin.html" %}
 {% endif %}
