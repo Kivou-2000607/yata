@@ -24,7 +24,7 @@ def check_json(value):
 class Bot(models.Model):
     name = models.CharField(default="Default Name", max_length=32)
     token = models.CharField(default="Default Token", max_length=512, unique=True)
-    administrators = models.TextField(default="{}")
+    number_of_servers = models.IntegerField(default=0, help_text="Number of servers")
 
     def __str__(self):
         return "{}".format(self.name)
