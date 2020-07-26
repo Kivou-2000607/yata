@@ -15,7 +15,6 @@ $(document).on('click', 'table.faction-categories td', e=>{
     $("div.error").hide();
 });
 
-
 // countdown
 window.setInterval(function(){
     $(".event-countdown").each(function() {

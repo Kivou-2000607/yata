@@ -1152,7 +1152,7 @@ def walls(request):
             context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
 
             # get wall history
-            wallHistory, state = faction.getWallHistory();
+            wallHistory, state = faction.getWallHistory()
             if state:
                 for k, v in wallHistory:
                     for wall in v["walls"]:
@@ -1166,7 +1166,6 @@ def walls(request):
                 else:
                     selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                     context[selectError] = "No AA key found for the faction. Wall history not displayed."
-
 
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
             return render(request, page, context)
@@ -3108,10 +3107,10 @@ def oc(request):
                 v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
                 v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
                 v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
-                v["money"][3] = round(v["money"][2] /  float(v["crimes"][0]))
+                v["money"][3] = round(v["money"][2] / float(v["crimes"][0]))
                 v["money"][4] = OC_EFFICIENCY[k]["money"]
                 v["money"][5] = round(100 * v["money"][3] / float(OC_EFFICIENCY[k]["money"]))
-                v["respect"][3] = round(v["respect"][2] /  float(v["crimes"][0]), 2)
+                v["respect"][3] = round(v["respect"][2] / float(v["crimes"][0]), 2)
                 v["respect"][4] = OC_EFFICIENCY[k]["respect"]
                 v["respect"][5] = round(100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"]))
 
