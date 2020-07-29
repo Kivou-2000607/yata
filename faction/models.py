@@ -454,10 +454,10 @@ class Faction(models.Model):
                     memberDB.nnb = 0
                     memberDB.arson = 0
                 else:
-                    # pass from -1 to 0 in case
-                    memberDB.shareN = max(memberDB.shareN, 1)
-                    memberDB.shareS = max(memberDB.shareS, 1)
-                    memberDB.shareE = max(memberDB.shareE, 1)
+                    # pass from -1 to 1 in case
+                    memberDB.shareN = 1 if memberDB.shareN == -1 else memberDB.shareN
+                    memberDB.shareS = 1 if memberDB.shareS == -1 else memberDB.shareS
+                    memberDB.shareE = 1 if memberDB.shareE == -1 else memberDB.shareE
                     if indRefresh and (memberDB.shareE or memberDB.shareN or memberDB.shareS):
                         req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
                         memberDB.updateEnergy(key=player.getKey(), req=req)
@@ -475,11 +475,11 @@ class Faction(models.Model):
                 memberTmp.updateStatus(**membersAPI[m]['status'])
                 memberTmp.updateLastAction(**membersAPI[m]['last_action'])
 
-                # set shares to 0
+                # keep same sharing options
                 player = Player.objects.filter(tId=memberTmp.tId).first()
-                memberTmp.shareE = -1 if player is None else 1
-                memberTmp.shareN = -1 if player is None else 1
-                memberTmp.shareS = -1 if player is None else 1
+                memberTmp.shareE = -1 if player is None else memberTmp.shareE
+                memberTmp.shareN = -1 if player is None else memberTmp.shareN
+                memberTmp.shareS = -1 if player is None else memberTmp.shareS
                 memberTmp.energy = 0
                 memberTmp.nnb = 0
                 memberTmp.arson = 0

@@ -19,10 +19,10 @@ class FactionAdmin(admin.ModelAdmin):
     inlines = [EventAdmin, ]
 
 
-# class MemberAdmin(admin.ModelAdmin):
-#     list_display = ['__str__', 'faction', 'shareE', 'shareN']
-#     list_filter = ('faction__name', 'shareE', 'shareN')
-#     search_fields = ('faction__name', 'name', 'tId')
+class MemberAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'faction', 'shareE', 'shareN']
+    list_filter = ('faction__name', 'shareE', 'shareN')
+    search_fields = ('faction__name', 'name', 'tId')
 
 class AttackChainAdmin(admin.StackedInline):
     model = AttackChain
@@ -220,5 +220,5 @@ admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Wall, WallAdmin)
 admin.site.register(Chain, ChainAdmin)
-# admin.site.register(Member, MemberAdmin)
+admin.site.register(Member, MemberAdmin)
 admin.site.register(Faction, FactionAdmin)

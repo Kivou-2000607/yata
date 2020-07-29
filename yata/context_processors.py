@@ -47,10 +47,11 @@ def sectionMessage(request):
 
         # temprorary
         # del request.session['player']['seen_message']
+        # print(request.session['player'])
         if request.session['player'].get('seen_message', False):
-            new_player = False
+            seen_message = False
         else:
-            new_player = True
+            seen_message = True
             tmp = dict(request.session['player'])
             tmp['seen_message'] = True
             request.session['player'] = dict(tmp)
@@ -67,9 +68,9 @@ def sectionMessage(request):
 
 
         if sectionMessage is not None:
-            return {"sectionMessage": sectionMessage, "new_player": new_player}
+            return {"sectionMessage": sectionMessage, "seen_message": seen_message}
         else:
-            return {"sectionMessage": False, "new_player": new_player}
+            return {"sectionMessage": False, "seen_message": seen_message}
     else:
         return {}
 
