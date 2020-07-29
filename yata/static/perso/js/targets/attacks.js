@@ -29,7 +29,7 @@ $(document).on('click', '#targets-attacks-losses', function(e){
     e.preventDefault();
     $( "#attack-losses" ).load( "/target/attacks/losses/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    // })
+    })
 });
 
 // show breakdown
