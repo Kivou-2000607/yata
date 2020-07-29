@@ -558,3 +558,38 @@ td.border, th.border {
 a.yata-logo:hover {
     filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
 }
+
+span.close-button {
+  cursor: pointer;
+  border: solid 1px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 10px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+span.close-button:hover {
+  color: #eee!important;
+  border-color: #0B8E14;
+  -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+  -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+  box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+  /* border-radius: 10px; */
+  transition: all 0.4s ease 0s;
+  cursor: pointer;
+}
+
+span.close-button.valid:hover {
+    background-color: #0B8E14!important;
+}
+
+span.nice-button {
+  cursor: default;
+  border: solid 1px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 10px;
+  display: inline-block;
+  text-transform: uppercase;
+}

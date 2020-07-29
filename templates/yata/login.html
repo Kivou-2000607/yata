@@ -25,32 +25,35 @@ This file is part of yata.
   <div class="container">
     <div class="overlay"></div>
       <div class="modal-center">
-        {# <h2 class="title">Welcome to YATA {{player.name}}</h2> #}
-          <div class="module rounded">
-            <p class="valid">Welcome to YATA {{player.name}}</p>
-          </div>
-          <div class="module rounded" style="margin-top: 5px;">
+          <h2 class="title">Welcome to YATA {{player.name}}</h2>
+          <div class="module">
             <p>
               I'm glad you're here and I hope you'll enjoy the features YATA provides.
-              If you enconter a bug or weird behavior please <a href="{% url 'discord' %}" target="_blank">join the discord server</a>.
+              If you find a bug or enconter a weird behavior, if you have a question or a suggestion,
+              please <a href="{% url 'discord' %}" target="_blank">join the discord server</a>.
+              <br>
+              <br>
+
+              Kivou
             </p>
-            <p><span class="warning">Warning</span>: If you're part of a faction, all members will be able to see</p>
+            <div style="display: block; width: 100%; text-align: center;"><span class="nice-button warning">Information</span></div>
+              <p>All members of your faction will see:</p>
               <ul>
                 <li>your energy</li>
                 <li>your NNB</li>
               </ul>
-              <p>and members with <b>AA perm</b> will be able to see</p>
+              <p>All members with <b>AA perm</b><sup>*</sup> will also see</p>
               <ul>
                 <li>your battle stats</li>
               </ul>
-              <p>If you don't like that you can always go to the <a href="{% url 'faction:members' %}" target="_blank">members page</a> and toggle it.</p>
+              <p>If you wan't to hide them you can go to the <a href="{% url 'faction:members' %}" target="_blank">members page</a> to toggle it off.</p>
+              <span class="close-button valid">Sounds good to me <i class="far fa-thumbs-up"></i></span>
+              <hr class="sep">
+              <p><sup>*</sup> <i>AA perm means API Access permission. It's a TORN permission that leaders can give to their members.</i></p>
           </div>
-          <div class="module rounded neutral" style="margin-top: 5px;">
-            <p><input type="checkbox" class="close-button" style="margin-right: 5px; cursor: pointer;"> I've read it thanks for the info!</p>
-          </div>
-          <div class="module rounded error" style="margin-top: 5px;">
-            <p><a href="{% url 'delete' %}"><input type="checkbox" style="margin-right: 5px; cursor: pointer;"></a> I don't like that. Delete all my data an get me out of here!</p>
-          </div>
+          {# <div class="module rounded error" style="margin-top: 5px;"> #}
+            {# <p><a href="{% url 'delete' %}"><input type="checkbox" style="margin-right: 5px; cursor: pointer;"></a> I don't like that. Delete all my data an get me out of here!</p> #}
+          {# </div> #}
       </div>
   </div>
 {% endif %}
