@@ -92,9 +92,12 @@ def login(request):
             player = Player.objects.filter(tId=user.get('player_id')).first()
             print('[view.yata.login] get player from database: {}'.format(player))
 
+            new_player = False
             if player is None:
                 print('[view.yata.login] create new player')
                 player = Player.objects.create(tId=int(user.get('player_id')))
+                new_player = True
+
             print('[view.yata.login] update player')
             player.addKey(p.get('key'))
             # player.key = p.get('key')
@@ -116,7 +119,7 @@ def login(request):
                 print('[view.yata.login] set session to expirate when browser closes')
                 request.session.set_expiry(0)  # logout when close browser
 
-            context = {"player": player}
+            context = {"player": player, "new_player": new_player}
             return render(request, 'yata/login.html', context)
 
         # if not post

@@ -8,11 +8,11 @@ django-json-widget==1.0.1
 # - development server (./manage.py runserver)
 # - sqlite3 database
 gunicorn==20.0.4
-psycopg2==2.8.4
-#psycopg2-binary==2.8.4
+#psycopg2==2.8.4
+psycopg2-binary==2.8.4
 
 # image modules
-Pillow==6.2.2
+Pillow==7.2.0
 
 # math modules
 numpy==1.18.0

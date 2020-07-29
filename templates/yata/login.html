@@ -21,6 +21,40 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
+{% if new_player %}
+  <div class="container">
+    <div class="overlay"></div>
+      <div class="modal-center">
+        {# <h2 class="title">Welcome to YATA {{player.name}}</h2> #}
+          <div class="module rounded">
+            <p class="valid">Welcome to YATA {{player.name}}</p>
+          </div>
+          <div class="module rounded" style="margin-top: 5px;">
+            <p>
+              I'm glad you're here and I hope you'll enjoy the features YATA provides.
+              If you enconter a bug or weird behavior please <a href="{% url 'discord' %}" target="_blank">join the discord server</a>.
+            </p>
+            <p><span class="warning">Warning</span>: If you're part of a faction, all members will be able to see</p>
+              <ul>
+                <li>your energy</li>
+                <li>your NNB</li>
+              </ul>
+              <p>and members with <b>AA perm</b> will be able to see</p>
+              <ul>
+                <li>your battle stats</li>
+              </ul>
+              <p>If you don't like that you can always go to the <a href="{% url 'faction:members' %}" target="_blank">members page</a> and toggle it.</p>
+          </div>
+          <div class="module rounded neutral" style="margin-top: 5px;">
+            <p><input type="checkbox" class="close-button" style="margin-right: 5px; cursor: pointer;"> I've read it thanks for the info!</p>
+          </div>
+          <div class="module rounded error" style="margin-top: 5px;">
+            <p><a href="{% url 'delete' %}"><input type="checkbox" style="margin-right: 5px; cursor: pointer;"></a> I don't like that. Delete all my data an get me out of here!</p>
+          </div>
+      </div>
+  </div>
+{% endif %}
+
 {% if skipheader %}
     <div style="height: 10px"></div>
 {% elif player %}

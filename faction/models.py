@@ -455,9 +455,9 @@ class Faction(models.Model):
                     memberDB.arson = 0
                 else:
                     # pass from -1 to 0 in case
-                    memberDB.shareN = max(memberDB.shareN, 0)
-                    memberDB.shareS = max(memberDB.shareS, 0)
-                    memberDB.shareE = max(memberDB.shareE, 0)
+                    memberDB.shareN = max(memberDB.shareN, 1)
+                    memberDB.shareS = max(memberDB.shareS, 1)
+                    memberDB.shareE = max(memberDB.shareE, 1)
                     if indRefresh and (memberDB.shareE or memberDB.shareN or memberDB.shareS):
                         req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
                         memberDB.updateEnergy(key=player.getKey(), req=req)
@@ -477,9 +477,9 @@ class Faction(models.Model):
 
                 # set shares to 0
                 player = Player.objects.filter(tId=memberTmp.tId).first()
-                memberTmp.shareE = -1 if player is None else 0
-                memberTmp.shareN = -1 if player is None else 0
-                memberTmp.shareS = -1 if player is None else 0
+                memberTmp.shareE = -1 if player is None else 1
+                memberTmp.shareN = -1 if player is None else 1
+                memberTmp.shareS = -1 if player is None else 1
                 memberTmp.energy = 0
                 memberTmp.nnb = 0
                 memberTmp.arson = 0
@@ -499,9 +499,9 @@ class Faction(models.Model):
                     lastAction=membersAPI[m]['last_action']['relative'],
                     lastActionTS=membersAPI[m]['last_action']['timestamp'],
                     daysInFaction=membersAPI[m]['days_in_faction'],
-                    shareE=-1 if player is None else 0,
-                    shareS=-1 if player is None else 0,
-                    shareN=-1 if player is None else 0)
+                    shareE=-1 if player is None else 1,
+                    shareS=-1 if player is None else 1,
+                    shareN=-1 if player is None else 1)
                 memberNew.updateStatus(**membersAPI[m]['status'])
                 memberNew.updateLastAction(**membersAPI[m]['last_action'])
 
@@ -1049,12 +1049,12 @@ class Member(models.Model):
 
     # share energy and NNB with faction
     # -1: not on YATA 0: doesn't wish to share 1: share
-    shareE = models.IntegerField(default=-1)
+    shareE = models.IntegerField(default=1)
     energy = models.IntegerField(default=0)
 
     # share natural nerve bar
     # -1: not on YATA 0: doesn't wish to share 1: share
-    shareN = models.IntegerField(default=-1)
+    shareN = models.IntegerField(default=1)
     nnb = models.IntegerField(default=0)
     arson = models.IntegerField(default=0)
 
@@ -1078,7 +1078,6 @@ class Member(models.Model):
                     ts = int(splt[1].split(">")[0])
                     description = "{} {:.1f} minutes".format(cleanhtml(description), ts / 60)
                 except BaseException as e:
-                    print(e)
                     description = "{} ?? minutes".format(cleanhtml(description))
             self.description = description
         if details is not None:

@@ -38,7 +38,8 @@ $(document).on('click', '.graph-period-selector', function(e){
     });
     $(this).addClass('fas fa-spinner fa-pulse');
 });
-$(document).on('click', '.close', function(e){
-    e.preventDefault();
-    $(this).parent("div.container").css("display", "none");
-});
+
+// $(document).on('click', '.close', function(e){
+//     e.preventDefault();
+//     $(this).parent("div.container").css("display", "none");
+// });

@@ -29,7 +29,7 @@ $(document).on('click', '#targets-attacks-losses', function(e){
     e.preventDefault();
     $( "#attack-losses" ).load( "/target/attacks/losses/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    })
+    // })
 });
 
 // show breakdown
@@ -49,10 +49,11 @@ $(document).on('click', '.targets-attacks-losses-payall', function(e){
         csrfmiddlewaretoken: getCookie("csrftoken")
     })
 });
-$(document).on('click', '.close', function(e){
-    e.preventDefault();
-    $(this).parent("div.container").css("display", "none");
-});
+
+// $(document).on('click', '.close', function(e){
+//     e.preventDefault();
+//     $(this).parent("div.container").css("display", "none");
+// });
 
 // send losses
 $(document).on('click', '#target-losses-send-all-cash', function(e){

@@ -20,6 +20,7 @@ from django.utils import timezone
 
 # from player.models import News
 from player.models import Player
+from faction.models import Member
 from player.models import Message
 from player.models import SECTION_CHOICES
 from loot.models import NPC
@@ -35,7 +36,6 @@ from loot.models import NPC
 #     else:
 #         return {}
 
-
 def sectionMessage(request):
     if request.session.get('player'):
         section = request.get_full_path().split("/")[1]
@@ -44,10 +44,32 @@ def sectionMessage(request):
             if v == section:
                 section_short = k
         sectionMessage = Message.objects.filter(section=section_short).order_by("date").last()
-        if sectionMessage is not None:
-            return {"sectionMessage": sectionMessage}
+
+        # temprorary
+        # del request.session['player']['seen_message']
+        if request.session['player'].get('seen_message', False):
+            new_player = False
         else:
-            return {"sectionMessage": False}
+            new_player = True
+            tmp = dict(request.session['player'])
+            tmp['seen_message'] = True
+            request.session['player'] = dict(tmp)
+            try:
+                for member in Member.objects.filter(tId=int(request.session['player']['tId'])):
+                    member.shareE = 1
+                    member.shareN = 1
+                    member.shareS = 1
+                    member.save()
+
+            except BaseException as e:
+                print(e)
+                pass
+
+
+        if sectionMessage is not None:
+            return {"sectionMessage": sectionMessage, "new_player": new_player}
+        else:
+            return {"sectionMessage": False, "new_player": new_player}
     else:
         return {}
 

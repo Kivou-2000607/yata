@@ -118,3 +118,14 @@ window.setInterval(function(){
 
     });
 }, 1000);
+
+
+$(document).on('click', '.overlay.close', function(e){
+    e.preventDefault();
+    $(this).parent("div.container").css("display", "none");
+});
+
+$(document).on('click', '.close-button', function(e){
+    e.preventDefault();
+    $(this).closest("div.container").css("display", "none");
+});

@@ -35,10 +35,11 @@ $(document).on('click', 'tr.abroad-item-stocks > td:not(.dont-touch-me)', functi
         item_id: item_id, country_key: country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
 });
-$(document).on('click', '.close', function(e){
-    e.preventDefault();
-    $(this).parent("div.container").css("display", "none");
-});
+
+// $(document).on('click', '.close', function(e){
+//     e.preventDefault();
+//     $(this).parent("div.container").css("display", "none");
+// });
 
 // update item
 $(document).on('click', '.update-item', function(e){
