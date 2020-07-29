@@ -2147,9 +2147,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [322, 870]:
+                elif int(k) in [322, 870, 863]:
                     # 322: {"name": "Miracle Worker","description": "Revive 10 people within 10 minutes","type": 15,
                     # "870": { "name": "Resurrection", "description": "Revive someone you've just defeated", "type": 15,
+                    # "863": { "name": "Crucifixion", "description": "Defeat someone you've just revived", "type": 15,
                     type = "Revives"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
