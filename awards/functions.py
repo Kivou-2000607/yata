@@ -671,7 +671,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670, 896]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
@@ -681,6 +681,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # "827": {"name": "Deadly Duo","description": "Attack and defeat an opponent with your spouse","type": 8,
                     # "838": { "name": "Lovestruck", "description": "Defeat a married couple", "type": 8,
                     # "670": { "name": "Giant Slayer", "description": "Receive loot from a defeated NPC", "type": 8,
+            		# "896": { "name": "Going Postal", "description": "Defeat a company co-worker", "type": 8,
                     type = "Other Attacks"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
