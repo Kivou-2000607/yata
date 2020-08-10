@@ -51,8 +51,8 @@ class Server(models.Model):
         return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("channels", {}).items()}
 
     def get_roles(self):
-        # return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("roles", {}).items() if v not in ["@everyone"]}
-        return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("roles", {}).items()}
+        return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("roles", {}).items() if v not in ["@everyone"]}
+        #return {k: v for k, v in json.loads(self.configuration).get("admin", {}).get("roles", {}).items()}
 
     def get_admin(self):
         from_db = json.loads(self.configuration).get("admin", {})
