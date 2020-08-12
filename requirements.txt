@@ -8,14 +8,19 @@ django-json-widget==1.0.1
 # - development server (./manage.py runserver)
 # - sqlite3 database
 gunicorn==20.0.4
-#psycopg2==2.8.4
+# psycopg2==2.8.4
 psycopg2-binary==2.8.4
 
 # image modules
 Pillow==7.2.0
 
 # math modules
-numpy==1.18.0
+numpy==1.18.5
 scipy==1.4.1
 
 cloudscraper==1.2.34
+
+
+# memcache and ratemimit
+# python-memcached==1.59
+django-ratelimit==3.0.1

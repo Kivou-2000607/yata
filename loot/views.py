@@ -21,6 +21,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db import connection
+from django.views.decorators.cache import cache_page
+from ratelimit.decorators import ratelimit
 
 import json
 
@@ -51,6 +53,8 @@ def index(request):
 
 
 # API
+# @cache_page(60)
+@ratelimit(key='ip', rate='10/m', block=True)
 def timings(request):
     try:
         npcs = dict({})

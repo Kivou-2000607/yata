@@ -22,6 +22,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from django.views.decorators.cache import cache_page
+from ratelimit.decorators import ratelimit
 
 import json
 
@@ -598,11 +600,12 @@ def abroadImport(request):
         return returnError(type=403, msg="Expecting a POST request.")
 
 
+@ratelimit(key='ip', rate='10/m', block=True)
+@cache_page(60)
 def abroadExport(request):
     from bazaar.countries import countries
 
     try:
-
         # get all last stocks
         stocksDB = AbroadStocks.objects.filter(last=True)
 
