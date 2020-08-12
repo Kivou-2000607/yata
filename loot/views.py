@@ -16,16 +16,21 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
-
+# django
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db import connection
+
+# cache and rate limit
 from django.views.decorators.cache import cache_page
 from ratelimit.decorators import ratelimit
+from ratelimit.core import get_usage, is_ratelimited
 
+# standards
 import json
 
+# yaya
 from yata.handy import returnError
 from player.models import Player
 from loot.models import NPC
@@ -54,8 +59,11 @@ def index(request):
 
 # API
 # @cache_page(60)
-@ratelimit(key='ip', rate='10/m', block=True)
+@ratelimit(key='ip', rate='1/30s')
 def timings(request):
+    if getattr(request, 'limited', False):
+        return JsonResponse({"error": {"code": 429, "error": "Rate limit of 1 call / 30s"}}, status=429)
+
     try:
         npcs = dict({})
         for npc in NPC.objects.filter(show=True).order_by('tId'):

@@ -600,11 +600,15 @@ def abroadImport(request):
         return returnError(type=403, msg="Expecting a POST request.")
 
 
-@ratelimit(key='ip', rate='10/m', block=True)
-@cache_page(60)
+# @cache_page(30)
+@ratelimit(key='ip', rate='2/m')
 def abroadExport(request):
     from bazaar.countries import countries
 
+    if getattr(request, 'limited', False):
+        return JsonResponse({"message": "IP rate limit of 2 calls / m"}, status=429)
+
+    # print("run")
     try:
         # get all last stocks
         stocksDB = AbroadStocks.objects.filter(last=True)
