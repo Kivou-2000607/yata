@@ -159,6 +159,7 @@ class Faction(models.Model):
 
     # crimes
     crimesUpda = models.IntegerField(default=0)
+    crimesDump = models.TextField(default="{}")
 
     # history options
     crimesHist = models.CharField(default="one_month", max_length=16)
@@ -170,6 +171,7 @@ class Faction(models.Model):
 
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
+
 
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
@@ -315,6 +317,8 @@ class Faction(models.Model):
 
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
+        # save only participants ids of successful PH and PA
+        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["crime_id"] in [7, 8] and v["success"] == 1])
         self.save()
         return self.crimes_set.all(), False, n
 
@@ -1192,7 +1196,19 @@ class Member(models.Model):
                         nnb -= int(sp[1])
 
                 self.nnb = nnb
-                self.arson = req["criminalrecord"].get("fraud_crimes", 0)
+
+                # compute equivalent arons
+                arson = req["criminalrecord"].get("fraud_crimes", 0)# assumed arson
+                arson += 0.11 * req["criminalrecord"].get("theft", 0) # assumed steal jackets
+                arson += 0.66 * req["criminalrecord"].get("auto_theft", 0)  # assumed Steal Parked Car
+                arson -= 0.5 * req["criminalrecord"].get("drug_deals", 0)  # assumed -5k for 10k
+                arson += 0.5 * req["criminalrecord"].get("computer_crimes", 0)  # assumed Stealth Virus
+                arson += 0.66 * req["criminalrecord"].get("murder", 0)  # assumed Assassinate Mob Boss
+                for oc in json.loads(self.faction.crimesDump):
+                    if self.tId in oc:
+                        add = 650 if len(oc) == 4 else 150  # PA or PH
+                        arson += add
+                self.arson = int(arson)
 
         self.save()
         return error
@@ -3151,7 +3167,6 @@ class Crimes(models.Model):
                  nnb = member.nnb
             participants.append([id, name, nnb])
         return participants
-
 
     def get_team_id(self):
         import hashlib

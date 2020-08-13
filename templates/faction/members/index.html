@@ -41,7 +41,7 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-users"></i>&nbsp;&nbsp;{{faction.name|safe}}'s members<span class="flush-right"><b>Status update:</b> {{faction.memberStatusUpda|ts2date}}&nbsp;&nbsp;<b>List update:</b> {{faction.membersUpda|ts2date}}</span><form class="form-inline"><a id="member-refresh" class="flush-right" href=""><i class="fas fa-sync-alt"></i>&nbsp;Refresh status</a></form></h2>
 <div class="module">
-    <table id="faction-members" class="tablesorter center-medium trshadow faction-members">
+    <table id="faction-members" class="tablesorter center-large trshadow faction-members">
         <thead>
             <tr>
                 <th title="Online status"><i class="fas fa-circle"></i></th>
@@ -50,8 +50,8 @@ This file is part of yata.
                 <th>Status</th>
                 <th title="Days in Faction">DIF</th>
                 <th>Energy</th>
-                <th>NNB</th>
-                <th>Stats&nbsp;<i style="cursor: help;" class="fas fa-question-circle" title="Only AA members can see these stats"></i></th>
+                <th>NNB | EA &nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle" title="Natural nerve bar and conservative estimation of Equivalent Arsons&#10;&#10;Frauds are assumed arson warehouse&#10;Thefts are assumed steal jackets&#10;Auto theft are assumed steal parked car&#10;1 drug deals are removing 1 arson&#10;Computer crimes are assumed steal virus&#10;Murders are assumed Assassinate mob boss&#10;Recent PH and PA are accounted for&#10;&#10;See TornStats CE predictor for more information"></i> </th>
+                <th>Stats&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle" title="Only AA members can see these stats"></i></th>
         </thead>
         <tbody>
         {% for member in members %}
