@@ -186,6 +186,7 @@ d = {
     778: 615034470,  # Specialist
     851: 631155576,  # Mod Boss
     871: 890122926,  # Leonidas
+    902: 397903095,  # Gone Finishing
 
     # 3
     39: 198010293,  # Woodland Camo

@@ -671,7 +671,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670, 896]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670, 896, 902]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
@@ -682,6 +682,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # "838": { "name": "Lovestruck", "description": "Defeat a married couple", "type": 8,
                     # "670": { "name": "Giant Slayer", "description": "Receive loot from a defeated NPC", "type": 8,
             		# "896": { "name": "Going Postal", "description": "Defeat a company co-worker", "type": 8,
+                    # "902": { "name": "Gone Fishing", "description": "Be defeated by a trout", "type": 2,
                     type = "Other Attacks"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -694,6 +695,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
                     wexp = userInfo.get("weaponexp", [])
                     maxExp = 0
+                    def exp_to_hits(exp):
+                        if exp < 25:
+                            return (25 - exp) * 8 + 1800
+                        elif exp < 50:
+                            return (50 - exp) * 12 + 1500
+                        elif exp < 75:
+                            return (75 - exp) * 20 + 1000
+                        else:
+                            return (100 - exp) * 40
+
                     for we in wexp:
                         if we.get("exp") == 100:
                             we["class"] = "valid"
@@ -703,11 +714,11 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         else:
                             we["class"] = "error"
                     # sup5 = ['<span class={}>{:02d} {}</span>: {}%'.format(k.get("class"), i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if k.get("exp") > 5]
-                    sup5 = ['<span class={}>{:02d} {}</span>: {}%'.format(k.get("class"), i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if i < 25]
+                    sup5 = ['<span class={}>{:02d} {}</span>: {}% {}'.format(k.get("class"), i + 1, k.get("name"), k.get("exp"), "({})".format(exp_to_hits(k.get("exp"))) if int(k.get("exp")) < 100 else "") for i, k in enumerate(wexp) if i < 25]
                     vp["current"] = maxExp
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     if len(sup5):
-                        sup5.insert(0, "<b>List of the first 25 weapons with experience</b>")
+                        sup5.insert(0, "<b>List of the first 25 weapons with experience</b><br>With remaining hits")
                         vp["comment"] = "<br>".join(sup5)
                     awards[type]["h_" + k] = vp
 
