@@ -246,7 +246,6 @@ class Faction(models.Model):
 
         return sorted(walls.items(), key=lambda x: -x[1]["n"]), True
 
-
     def updateCrimes(self, force=False):
 
         now = int(timezone.now().timestamp())
@@ -659,10 +658,16 @@ class Faction(models.Model):
             con = contributors["contributors"][stat]
             now = tsnow()
             hour = now - now % (3600 // 4)
-            c = dict({})
+
+            # set all current members to 0
+            # it prevents non contributors being treated as non members
+            c = dict({str(m.tId): [m.name, 0] for m in self.member_set.all()})
+            # c = dict({})
             # for k, v in {k: v for k, v in con.items() if v["in_faction"]}.items():
             for k, v in {k: v for k, v in con.items()}.items():
                 c[k] = [mem.get(k, dict({"name": "Player"})).get("name"), v["contributed"]]
+
+            # need to add contributors if in faction but hasn't contributed
 
             contrdict = {"timestamp": now, "contributors": json.dumps(c, separators=(',', ':'))}
 
