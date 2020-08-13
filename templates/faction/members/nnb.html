@@ -41,7 +41,7 @@ This file is part of yata.
     {% elif member.shareN == 0 %}
         <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
     {% elif member.shareN == 1 %}
-        <span title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes">{{member.nnb}}</span>
+        <span title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes">{{member.nnb}} | {{member.arson|intcomma}}</span>
     {% endif %}
 {% endif %}
 
