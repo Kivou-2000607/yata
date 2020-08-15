@@ -159,7 +159,9 @@ class Faction(models.Model):
 
     # crimes
     crimesUpda = models.IntegerField(default=0)
-    crimesDump = models.TextField(default="{}")
+    crimesDump = models.TextField(default="[]")
+    ph_pa_Dump = models.TextField(default="[]")
+    crimesRank = models.TextField(default="[]")
 
     # history options
     crimesHist = models.CharField(default="one_month", max_length=16)
@@ -253,8 +255,8 @@ class Faction(models.Model):
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
         # don't update if less than 1 hour ago and force is False
-        if not force and (now - self.crimesUpda) < 3600:
-            return self.crimes_set.all(), False, False
+        # if not force and (now - self.crimesUpda) < 3600:
+        #     return self.crimes_set.all(), False, False
 
         # api call and update key
         key = self.getKey()
@@ -317,8 +319,54 @@ class Faction(models.Model):
 
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
+        # save only participants ids of successful crimes
+        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["success"] == 1])
         # save only participants ids of successful PH and PA
-        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["crime_id"] in [7, 8] and v["success"] == 1])
+        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["crime_id"] in [7, 8] and v["success"] == 1])
+
+        # get members for ranking
+        members = self.member_set.order_by("-nnb", "-arson")
+        crimesDump = json.loads(self.crimesDump)
+        crimesRank = [member.tId for member in members]
+        # print(crimesRank)
+
+        # loop over the members
+        for member in [m for m in members if m.arson > 0]:
+            # print(member, member.arson)
+
+            # loop over the crimes
+            for c in crimesDump:
+
+                # check if member in crime
+                if member.tId in c:
+
+                    # get member global and crime rank
+                    mem_g_rank = crimesRank.index(member.tId)
+                    mem_c_rank = c.index(member.tId)
+
+                    # loop over participants of the crime
+                    for p in [_ for _ in c if _ != member.tId and _ in crimesRank]:
+
+                        # get participant global and crime rank
+                        par_g_rank = crimesRank.index(p)
+                        par_c_rank = c.index(p)
+
+                        # check if bad ordering
+                        if (mem_g_rank > par_g_rank) != (mem_c_rank > par_c_rank):
+                            # print("Crime ", c)
+                            # print("Member", member.tId, mem_g_rank, mem_c_rank)
+                            # print("Participant", p, par_g_rank, par_c_rank)
+
+                            # change global ordering
+                            if par_c_rank < mem_c_rank:
+                                # participant should be above member
+                                crimesRank.insert(mem_g_rank, crimesRank.pop(par_g_rank))
+                            elif par_c_rank > mem_c_rank:
+                                # member should be above member
+                                crimesRank.insert(par_g_rank, crimesRank.pop(mem_g_rank))
+
+        self.crimesRank = json.dumps(crimesRank)
+
         self.save()
         return self.crimes_set.all(), False, n
 
@@ -430,6 +478,7 @@ class Faction(models.Model):
             return membersAPI
 
         membersDB = self.member_set.all()
+        crimesRank = json.loads(self.crimesRank)
         for m in membersAPI:
             memberDB = membersDB.filter(tId=m).first()
 
@@ -438,6 +487,10 @@ class Faction(models.Model):
                 # update basics
                 memberDB.name = membersAPI[m]['name']
                 memberDB.daysInFaction = membersAPI[m]['days_in_faction']
+                try:
+                    memberDB.crimesRank = crimesRank.index(memberDB.tId) + 1
+                except BaseException:
+                    memberDB.crimesRank = 0
 
                 # update status
                 memberDB.updateStatus(**membersAPI[m]['status'])
@@ -1066,6 +1119,7 @@ class Member(models.Model):
     shareN = models.IntegerField(default=1)
     nnb = models.IntegerField(default=0)
     arson = models.IntegerField(default=0)
+    crimesRank = models.IntegerField(default=0)
 
     # share stats
     # -1: not on YATA 0: doesn't wish to share 1: share
@@ -1204,7 +1258,7 @@ class Member(models.Model):
                 arson -= 0.5 * req["criminalrecord"].get("drug_deals", 0)  # assumed -5k for 10k
                 arson += 0.5 * req["criminalrecord"].get("computer_crimes", 0)  # assumed Stealth Virus
                 arson += 0.66 * req["criminalrecord"].get("murder", 0)  # assumed Assassinate Mob Boss
-                for oc in json.loads(self.faction.crimesDump):
+                for oc in json.loads(self.faction.ph_pa_Dump):
                     if self.tId in oc:
                         add = 650 if len(oc) == 4 else 150  # PA or PH
                         arson += add
