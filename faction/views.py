@@ -457,8 +457,8 @@ def updateMember(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-# API
-@cache_page(60)
+
+# @cache_page(60)
 def getCrimes(request):
     try:
         # check if API key is valid with api call

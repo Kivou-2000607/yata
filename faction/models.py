@@ -3216,10 +3216,14 @@ class Crimes(models.Model):
             if member is None:
                 name = "Player"
                 nnb = 0
+                arson = 0
+                rank = 0
             else:
                  name = member.name
                  nnb = member.nnb
-            participants.append([id, name, nnb])
+                 arson = member.arson
+                 rank = member.crimesRank
+            participants.append([id, name, nnb, arson, rank])
         return participants
 
     def get_team_id(self):

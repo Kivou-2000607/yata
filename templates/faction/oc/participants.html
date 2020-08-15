@@ -7,18 +7,22 @@
 <table class="tooltip">
     <head>
         <tr>
-            <th colspan=2>Team {{id}}</th>
+            <th colspan=4>Team {{id}}</th>
         </tr>
         <tr>
             <th>Participants</th>
+            <th>CE Rank</th>
             <th>NNB</th>
+            <th>EA</th>
         </tr>
     </head>
     <body>
-        {% for uid, name,nnb in participants %}
+        {% for uid, name,nnb,arson,rank in participants %}
             <tr>
                 <td class="title">{{name}} [{{uid}}]</td>
+                <td class="value">{% if rank %}#{{rank}}{% else %}?{% endif %}</td>
                 <td class="value">{% if nnb %}{{nnb}}{% else %}?{% endif %}</td>
+                <td class="value">{% if arson %}{{arson}}{% else %}?{% endif %}</td>
             </tr>
         {% endfor %}
     </body>
