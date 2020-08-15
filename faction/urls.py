@@ -19,6 +19,7 @@ urlpatterns = [
     re_path(r'^members/$', views.members, name='members'),
     re_path(r'^members/update/$', views.updateMember, name='updateMember'),
     re_path(r'^members/toggle/$', views.toggleMemberShare, name='toggleMemberShare'),
+    re_path(r'^members/crimes/$', views.getCrimes, name='getCrimes'),
 
     # SECTION: chain
     re_path(r'^chains/$', views.chains, name='chains'),

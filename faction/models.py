@@ -255,8 +255,8 @@ class Faction(models.Model):
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
         # don't update if less than 1 hour ago and force is False
-        # if not force and (now - self.crimesUpda) < 3600:
-        #     return self.crimes_set.all(), False, False
+        if not force and (now - self.crimesUpda) < 3600:
+            return self.crimes_set.all(), False, False
 
         # api call and update key
         key = self.getKey()
