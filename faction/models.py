@@ -277,9 +277,13 @@ class Faction(models.Model):
             if str(crime.tId) not in crimesAPI:
                 crime.delete()
 
+        # sort crimes API
+        crimesAPI = sorted(crimesAPI.items(), key=lambda x: x[1]["time_started"])
+
         # second loop over API to create new crimes
         n = {"created": 0, "updated": 0, "deleted": 0, "ready": 0}
-        for k, v in crimesAPI.items():
+        for k, v in crimesAPI:
+
             # ignore old crimes
             if v["initiated"] and v["time_completed"] < old:
                 continue
@@ -320,9 +324,9 @@ class Faction(models.Model):
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
         # save only participants ids of successful crimes
-        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["success"] == 1])
+        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)])
         # save only participants ids of successful PH and PA
-        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI.items() if v["crime_id"] in [7, 8] and v["success"] == 1])
+        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1])
 
         # get members for ranking
         members = self.member_set.order_by("-nnb", "-arson")
@@ -353,9 +357,6 @@ class Faction(models.Model):
 
                         # check if bad ordering
                         if (mem_g_rank > par_g_rank) != (mem_c_rank > par_c_rank):
-                            # print("Crime ", c)
-                            # print("Member", member.tId, mem_g_rank, mem_c_rank)
-                            # print("Participant", p, par_g_rank, par_c_rank)
 
                             # change global ordering
                             if par_c_rank < mem_c_rank:
