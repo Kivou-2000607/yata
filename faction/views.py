@@ -590,12 +590,18 @@ def chains(request):
                     message = "Chain list updated"
 
                 chains = faction.chain_set.all()
-                for k, v in req.get("chains", dict({})).items():
-                    old = tsnow() - int(v['end']) > faction.getHist("chains")
-                    if v['chain'] < faction.hitsThreshold or old:
-                        chains.filter(tId=k).delete()
-                    elif v['chain'] >= faction.hitsThreshold and not old:
-                        faction.chain_set.update_or_create(tId=k, defaults=v)
+                apichains = req.get("chains")
+                if apichains is not None:
+                    for k, v in req.get("chains", dict({})).items():
+                        old = tsnow() - int(v['end']) > faction.getHist("chains")
+                        if v['chain'] < faction.hitsThreshold or old:
+                            chains.filter(tId=k).delete()
+                        elif v['chain'] >= faction.hitsThreshold and not old:
+                            try:
+                                faction.chain_set.update_or_create(tId=k, defaults=v)
+                            except BaseException:
+                                faction.chain_set.filter(tId=k).all().delete()
+                                faction.chain_set.update_or_create(tId=k, defaults=v)
 
                 # check if live chain
                 live = chains.filter(live=True).first()
@@ -607,8 +613,8 @@ def chains(request):
                 # req["chain"]["cooldown"] = 0
                 # req["chain"]["start"] = tsnow() - 10
 
-                if 'apiError' in req["chain"]:
-                    error = req["chain"]
+                if 'apiError' in req.get("chain", {"apiError": "chain not found int API request"}):
+                    error = req.get("chain", {"apiError": "chain not found int API request"})
 
                 elif req["chain"]["current"] > 9:
                     if live is None:
@@ -638,7 +644,7 @@ def chains(request):
             context = {'player': player, 'faction': faction, 'combined': combined, 'factioncat': True, 'chains': chains, 'view': {'chains': True}}
             if error:
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-                context.update({selectError: error["apiError"] + " List of chains not updated."})
+                context.update({selectError: error["apiError"]})
             if message:
                 selectMessage = 'validMessageSub' if request.method == 'POST' else 'validMessage'
                 context.update({selectMessage: message})

@@ -324,9 +324,9 @@ class Faction(models.Model):
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
         # save only participants ids of successful crimes
-        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)])
+        self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v.get("participants", False)])
         # save only participants ids of successful PH and PA
-        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1])
+        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1])
 
         # get members for ranking
         members = self.member_set.order_by("-nnb", "-arson")
@@ -466,7 +466,7 @@ class Faction(models.Model):
             return self.member_set.all()
 
         # get key if needed
-        if key is None:
+        if key is None or isinstance(key, bool):
             key = self.getKey()
 
         # call members and return error
@@ -549,18 +549,21 @@ class Faction(models.Model):
 
             # new member
             else:
-                # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-                player = Player.objects.filter(tId=m).first()
-                memberNew = self.member_set.create(
-                    tId=m, name=membersAPI[m]['name'],
-                    lastAction=membersAPI[m]['last_action']['relative'],
-                    lastActionTS=membersAPI[m]['last_action']['timestamp'],
-                    daysInFaction=membersAPI[m]['days_in_faction'],
-                    shareE=-1 if player is None else 1,
-                    shareS=-1 if player is None else 1,
-                    shareN=-1 if player is None else 1)
-                memberNew.updateStatus(**membersAPI[m]['status'])
-                memberNew.updateLastAction(**membersAPI[m]['last_action'])
+                try:  # do a try except to avoid: psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "faction_member_tId_key"
+                    # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
+                    player = Player.objects.filter(tId=m).first()
+                    memberNew = self.member_set.create(
+                        tId=m, name=membersAPI[m]['name'],
+                        lastAction=membersAPI[m]['last_action']['relative'],
+                        lastActionTS=membersAPI[m]['last_action']['timestamp'],
+                        daysInFaction=membersAPI[m]['days_in_faction'],
+                        shareE=-1 if player is None else 1,
+                        shareS=-1 if player is None else 1,
+                        shareN=-1 if player is None else 1)
+                    memberNew.updateStatus(**membersAPI[m]['status'])
+                    memberNew.updateLastAction(**membersAPI[m]['last_action'])
+                except BaseException:
+                    pass
 
         # delete old members
         for m in membersDB:
@@ -712,7 +715,8 @@ class Faction(models.Model):
         key.save()
 
         mem = contributors["members"]
-        if stat in contributors["contributors"]:
+        # contributors["contributors"] is not None and -> fix contributors being None
+        if contributors["contributors"] is not None and stat in contributors["contributors"]:
             con = contributors["contributors"][stat]
             now = tsnow()
             hour = now - now % (3600 // 4)
@@ -814,12 +818,15 @@ class Faction(models.Model):
         allUpgrades = FactionTree.objects.all().order_by("tId", "-level")
         branchCost = dict({})
         for upgrade in self.upgrade_set.filter(simu=simu, active=True):
-            branch = upgrade.getTree().branch
-            if branch not in branchCost:
-                branchCost[branch] = 0
+            try:  # in case getTree retursn None
+                branch = upgrade.getTree().branch
+                if branch not in branchCost:
+                    branchCost[branch] = 0
 
-            for u in allUpgrades.filter(shortname=upgrade.shortname, level__lte=upgrade.level):
-                branchCost[branch] += u.base_cost
+                for u in allUpgrades.filter(shortname=upgrade.shortname, level__lte=upgrade.level):
+                    branchCost[branch] += u.base_cost
+            except BaseException:
+                pass
 
         return branchCost
 

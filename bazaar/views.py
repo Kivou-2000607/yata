@@ -462,9 +462,9 @@ def toggle(request, itemId):
             else:
                 playerList.append(itemId)
 
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), 0)
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), 0)
-            item.stockD = bazaarJson["display"].get(str(item.tId), 0)
+            item.stockI = bazaarJson.get("inventory", {}).get(str(item.tId), 0)
+            item.stockB = bazaarJson.get("bazaar", {}).get(str(item.tId), 0)
+            item.stockD = bazaarJson.get("display", {}).get(str(item.tId), 0)
             item.stock = item.stockI + item.stockB + item.stockD
 
             bazaarJson["list"] = playerList
