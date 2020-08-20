@@ -188,6 +188,17 @@ class Player(models.Model):
 
         # get pinned
         pinnedAwards = {k: dict({}) for k in json.loads(self.awardsPinn)}
+
+        # delete completed pinned awared
+        todel = []
+        for aid in pinnedAwards:
+            if aid[0] == "m" and aid[2:].isdigit() and int(aid[2:]) in myMedals:
+                todel.append(aid)
+            if aid[0] == "h" and aid[2:].isdigit() and int(aid[2:]) in myHonors:
+                todel.append(aid)
+        for aid in todel:
+            del pinnedAwards[aid]
+        self.awardsPinn = json.dumps([k for k in pinnedAwards])
         i = len(pinnedAwards)
         for type, awardsTmp in awards.items():
             for id in pinnedAwards:
