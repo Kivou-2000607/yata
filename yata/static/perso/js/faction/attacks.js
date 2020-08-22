@@ -4,7 +4,7 @@ $(document).on('change', '#date-live', e=>{
     var end = parseInt($("#ts-end").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").addClass("valid").removeClass("error").html("Will be constantly udpated");
+        $("#date-end").addClass("valid").removeClass("error").html("Will be constantly updated");
         if(start) {
             $("#create-report").show();
         } else {

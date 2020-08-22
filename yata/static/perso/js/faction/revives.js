@@ -4,7 +4,7 @@ $(document).on('change', '#date-live-revives', e=>{
     var end = parseInt($("#ts-end-revives").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end-revives").addClass("valid").removeClass("error").html("Will be constantly udpated");
+        $("#date-end-revives").addClass("valid").removeClass("error").html("Will be constantly updated");
         if(start) {
             $("#create-report-revives").show();
         } else {

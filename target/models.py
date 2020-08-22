@@ -4,6 +4,7 @@ import math
 
 from player.models import Player
 from faction.models import Faction
+from target.functions import updateAttacks
 from yata.handy import *
 
 ATTACK_LOST = ["Lost", "Assist", "Timeout", "Escape"]
@@ -206,6 +207,10 @@ class TargetInfo(models.Model):
             error, target = target.updateFromApi(req)
             if error:
                 return req, target.target_id, target
+
+            # update attack list if older than 1 hour
+            if tsnow() - self.player.attacksUpda > 3600:
+                updateAttacks(self.player)
 
             # update player part of the target
             last_attack = self.player.attack_set.filter(targetId=target.target_id, bonus=False).order_by("timestamp_ended").last()
