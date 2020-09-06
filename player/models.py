@@ -52,7 +52,7 @@ class Player(models.Model):
     # user information: faction
     factionId = models.IntegerField(default=0)
     factionAA = models.BooleanField(default=False)
-    factionNa = models.CharField(default="My Faction", max_length=32)
+    factionNa = models.CharField(default="My Faction", max_length=64)
 
     # user last update
     lastUpdateTS = models.IntegerField(default=0)
