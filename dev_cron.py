@@ -2,7 +2,7 @@ import schedule
 import time
 import os
 
-print("Emulating cron jobs. Hourly or dailiy scripts will run on a 30 minute basis for debugging")
+print("Emulating cron jobs. Hourly or daily scripts will run on a 30 minute basis for debugging")
 
 
 def every_minute():
