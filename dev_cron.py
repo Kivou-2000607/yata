@@ -2,8 +2,6 @@ import schedule
 import time
 import os
 
-print("Emulating cron jobs. Hourly or daily scripts will run on a 30 minute basis for debugging")
-
 
 def every_minute():
     os.system('python manage.py chainreport2 1')
@@ -42,17 +40,20 @@ def every_minute():
 
 
 def every_30_minutes():
-    os.sytem('python manage.py updateLoot')
-    os.sytem('python manage.py updateStocks')
-    os.sytem('python manage.py checkKeys')
-    os.sytem('python manage.py updateItems')
-    os.sytem('python manage.py updateFactions')
-    os.sytem('python manage.py updateAwards')
-    os.sytem('python manage.py updateTerritories')
+    os.system('python manage.py updateLoot')
+    os.system('python manage.py updateStocks')
+    os.system('python manage.py checkKeys')
+    os.system('python manage.py updateItems')
+    os.system('python manage.py updateFactions')
+    os.system('python manage.py updateAwards')
+    os.system('python manage.py updateTerritories')
 
+
+print("Emulating cron jobs. Hourly or daily scripts will run on a 30 minute basis for debugging")
 
 schedule.every(1).minutes.do(every_minute)
 schedule.every(30).minutes.do(every_30_minutes)
+
 
 while True:
     schedule.run_pending()
