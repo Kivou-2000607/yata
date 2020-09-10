@@ -1,6 +1,7 @@
 *~
 *.pyc
 venv
+.env
 db.sqlite3*
 secretkey.txt
 staticfiles
