@@ -1,28 +1,39 @@
-import os
-from django.contrib.auth.models import User
-from player.models import Player
-from faction.models import Faction
-from setup.models import APIKey
-from awards.models import AwardsData
-from faction.models import FactionData
-from bazaar.models import BazaarData
 from loot.models import NPC
+from bazaar.models import BazaarData
+from faction.models import FactionData
+from awards.models import AwardsData
+from setup.models import APIKey
+from faction.models import Faction
+from player.models import Player
+from django.contrib.auth.models import User
+import django
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yata.settings")
+django.setup()
 
-key = False
-install_req = False
+
+def yes_or_no(question):
+    reply = str(input(question+' (y/n): ')).lower().strip()
+    if reply[0] == 'y':
+        return True
+    if reply[0] == 'n':
+        return False
+    else:
+        return yes_or_no("Uhhhh... please enter ")
+
+
+key = 'jiqOS12ECly3tLbO'
+#key = 'Your API Key'
 reset_db = False
 fill_db = False
 
-# STEP 0: remove database and install modules
+if (key == False):
+    key = input(
+        "Enter your TORN API Key. Or save time and set this in setup.py: ")
 
-# install requirements
-if install_req:
-    print('Install requirements')
-    cmd = 'pip install -r requirements.txt'
-    r = os.system(cmd)
+reset_db = yes_or_no("Do you want to reset the database?")
+fill_db = yes_or_no("Do you want to fill the database?")
 
-
-# STEP 1: setup database
 
 if reset_db:
     # remove local database
@@ -63,7 +74,6 @@ if not len(NPC.objects.all()):
     NPC.objects.create(tId=4, show=True)
     NPC.objects.create(tId=15, show=True)
 
-# STEP 2: fill database
 
 if fill_db:
     cmd = 'python manage.py checkKeys'
