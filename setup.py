@@ -21,10 +21,11 @@ def yes_or_no(question):
         return yes_or_no("Uhhhh... please enter ")
 
 
-key = 'jiqOS12ECly3tLbO'
+key = False
 #key = 'Your API Key'
 reset_db = False
 fill_db = False
+static_files = False
 
 if (key == False):
     key = input(
@@ -32,7 +33,7 @@ if (key == False):
 
 reset_db = yes_or_no("Do you want to reset the database?")
 fill_db = yes_or_no("Do you want to fill the database?")
-
+static_file = yes_or_no("Do you want to generate static files?")
 
 if reset_db:
     # remove local database
@@ -90,4 +91,8 @@ if fill_db:
     cmd = 'python manage.py updateLoot'
     r = os.system(cmd)
     cmd = 'python manage.py updateFactionTree'
+    r = os.system(cmd)
+
+if static_file:
+    cmd = 'python manage.py collectstatic'
     r = os.system(cmd)
