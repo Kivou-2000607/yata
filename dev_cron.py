@@ -4,6 +4,7 @@ import os
 
 print("Emulating cron jobs. Hourly or dailiy scripts will run on a 30 minute basis for debugging")
 
+
 def every_minute():
     os.system('python manage.py chainreport2 1')
     os.system('python manage.py chainreport2 2')
@@ -16,7 +17,7 @@ def every_minute():
     os.system('python manage.py chainreport2 9')
     os.system('python manage.py chainreport2 10')
     os.system('python manage.py chainreport2 11')
-    
+
     os.system('python manage.py attacksreport2 1')
     os.system('python manage.py attacksreport2 2')
     os.system('python manage.py attacksreport2 3')
@@ -27,7 +28,7 @@ def every_minute():
     os.system('python manage.py attacksreport2 8')
     os.system('python manage.py attacksreport2 9')
     os.system('python manage.py attacksreport2 10')
-    
+
     os.system('python manage.py revivesreport 1')
     os.system('python manage.py revivesreport 2')
     os.system('python manage.py revivesreport 3')
@@ -39,6 +40,7 @@ def every_minute():
     os.system('python manage.py revivesreport 9')
     os.system('python manage.py revivesreport 10')
 
+
 def every_30_minutes():
     os.sytem('python manage.py updateLoot')
     os.sytem('python manage.py updateStocks')
@@ -47,6 +49,7 @@ def every_30_minutes():
     os.sytem('python manage.py updateFactions')
     os.sytem('python manage.py updateAwards')
     os.sytem('python manage.py updateTerritories')
+
 
 schedule.every(1).minutes.do(every_minute)
 schedule.every(30).minutes.do(every_30_minutes)
