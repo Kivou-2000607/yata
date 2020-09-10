@@ -6,3 +6,35 @@
 
 Helper website for the text-based online RPG Torn City https://www.torn.com/
 The website is hosted here: https://yata.alwaysdata.net/
+
+# Local Setup Instructions
+
+
+
+## Setup
+    git clone https://github.com/Kivou-2000607/yata.git
+
+    cd yata
+
+    pip install -r requirements.txt
+
+Create a local .env file
+
+    SECRET_KEY="SUPER_SECRET_KEY"
+    CACHE_RESPONSE=10
+    
+Setup your Torn API key in setup.py. Then run setup.py to initalise everything
+
+    python setup.py
+
+
+
+## Running YATA
+
+To emulate cron activity _dev_cron.py_ can be run as a seperate process. Cron jobs designed to run on a per minute basis will be run as such. Cron's with a longer delay will run on a 30 minute schedule.
+
+    python dev_cron.py
+
+To launch the application simple start the Django Application
+
+    python manage.py runserver
