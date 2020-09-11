@@ -22,8 +22,9 @@ Create a local .env file
 
     SECRET_KEY="SUPER_SECRET_KEY"
     CACHE_RESPONSE=10
+    APIKEY="TORNAPIKEY"
     
-Setup your Torn API key in setup.py. Then run setup.py to initalise everything
+Then run setup.py to initalise everything
 
     python setup.py
 

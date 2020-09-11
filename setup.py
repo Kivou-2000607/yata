@@ -10,6 +10,7 @@ from awards.models import AwardsData
 from faction.models import FactionData
 from bazaar.models import BazaarData
 from loot.models import NPC
+from decouple import config
 
 def yes_or_no(question):
     reply = str(input(question+' (y/n): ')).lower().strip()
@@ -21,15 +22,12 @@ def yes_or_no(question):
         return yes_or_no("Uhhhh... please enter ")
 
 
-key = False
-#key = 'Your API Key'
+key = config('APIKEY')
 reset_db = False
 fill_db = False
 static_files = False
 
-if (key == False):
-    key = input(
-        "Enter your TORN API Key. Or save time and set this in setup.py: ")
+
 
 reset_db = yes_or_no("Do you want to reset the database?")
 fill_db = yes_or_no("Do you want to fill the database?")
