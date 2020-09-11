@@ -2,15 +2,17 @@ import django
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yata.settings")
 django.setup()
-from django.contrib.auth.models import User
-from player.models import Player
-from faction.models import Faction
-from setup.models import APIKey
-from awards.models import AwardsData
-from faction.models import FactionData
-from bazaar.models import BazaarData
-from loot.models import NPC
+
 from decouple import config
+from loot.models import NPC
+from bazaar.models import BazaarData
+from faction.models import FactionData
+from awards.models import AwardsData
+from setup.models import APIKey
+from faction.models import Faction
+from player.models import Player
+from django.contrib.auth.models import User
+
 
 def yes_or_no(question):
     reply = str(input(question+' (y/n): ')).lower().strip()
@@ -26,7 +28,6 @@ key = config('APIKEY')
 reset_db = False
 fill_db = False
 static_files = False
-
 
 
 reset_db = yes_or_no("Do you want to reset the database?")
