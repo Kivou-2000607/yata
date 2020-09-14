@@ -470,3 +470,27 @@ def targetImport(request):
 
     else:
         return JsonResponse({"message": "POST request needed"}, status=400)
+
+
+def targetExport(request):
+    try:
+
+        # get api key
+        key = request.GET.get("key")
+
+        if key is None:
+            return JsonResponse({"message": "You need to enter your API key"}, status=400)
+
+        # get user
+        player_key = Key.objects.filter(value=key).first()
+        if player_key is None:
+            return JsonResponse({"message": "Player not found in YATA's database"}, status=400)
+
+        targets = {}
+        for t in player_key.player.targetinfo_set.all():
+            targets[str(t.target_id)] = t.note
+
+        return JsonResponse({"targets": targets}, status=200)
+
+    except BaseException as e:
+        return JsonResponse({"message": f"YATA error: {e}"}, status=500)
