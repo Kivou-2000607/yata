@@ -6,3 +6,66 @@
 
 Helper website for the text-based online RPG Torn City https://www.torn.com/
 The website is hosted here: https://yata.alwaysdata.net/
+
+# Local Setup Instructions
+
+
+
+## Setup
+    git clone https://github.com/Kivou-2000607/yata.git
+
+    cd yata
+
+    pip install -r requirements.txt
+
+Create a local .env file
+
+    # Your TORN API KEY
+    APIKEY="TORNAPIKEY"
+
+    # You can leave this as it or specify your own
+    SECRET_KEY="SUPER_SECRET_KEY"
+
+    # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
+    CACHE_RESPONSE=10 
+
+    # The amount of chain report crontabs to run 
+    CHAIN_REPORT = 1
+
+    # The amount of attack report crontabs to run 
+    ATTACK_REPORT = 1
+
+    # The amount of revive report crontabs to run 
+    REVIVE_REPORT = 1
+    
+Then run setup.py to initalise everything
+
+    python setup.py
+
+
+
+## Running YATA
+
+To emulate cron activity _dev_cron.py_ can be run as a seperate process. Cron jobs designed to run on a per minute basis will be run as such. Cron's with a longer delay will run on a 30 minute schedule.
+
+    python dev_cron.py
+
+To launch the application simple start the Django Application
+
+    python manage.py runserver
+
+The admin interface can be accessed via
+
+    http://127.0.0.1:8000admin/admin
+    Username: admin
+    Password: adminpass
+
+### Bazaar Default Items
+
+By default the most commonly traded items are set to appear in https://yata.alwaysdata.net/bazaar/default/. This list can be adjusted.
+
+    1. Logon To the Admin Section
+    2. Go to the Items table
+    3. Select the item you wish to add 
+    4. Enable the flag "OnMarket"
+    5. Save

@@ -22,20 +22,28 @@ from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.utils.html import format_html
 from django.core.exceptions import MultipleObjectsReturned
+from django.conf import settings
 
 import json
 import requests
 import re
 import random
+import os
 
 from yata.handy import *
 from player.models import Key
 from player.models import Player
 from faction.functions import *
 
+from decouple import config
+
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 MINIMAL_API_ATTACKS_STOP = 10
-CACHE_RESPONSE = 10
+
+if settings.DEBUG:
+    CACHE_RESPONSE = int(config('CACHE_RESPONSE'))
+else:
+    CACHE_RESPONSE = 10
 
 CHAIN_ATTACKS_STATUS = {
 

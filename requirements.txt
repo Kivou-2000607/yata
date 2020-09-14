@@ -19,7 +19,8 @@ numpy==1.18.5
 scipy==1.4.1
 
 cloudscraper==1.2.34
-
+python-decouple==3.3
+schedule==0.6.0
 
 # memcache and ratemimit
 # python-memcached==1.59

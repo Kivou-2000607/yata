@@ -1,7 +1,9 @@
 *~
 *.pyc
 venv
-db.sqlite3
+.env
+**/.vscode/
+db.sqlite3*
 secretkey.txt
 staticfiles
 analytics
