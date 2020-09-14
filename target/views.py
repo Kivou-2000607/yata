@@ -488,7 +488,8 @@ def targetExport(request):
 
         targets = {}
         for t in player_key.player.targetinfo_set.all():
-            targets[str(t.target_id)] = t.note
+            _, _, target = t.getTarget()
+            targets[str(t.target_id)] = target
 
         return JsonResponse({"targets": targets}, status=200)
 
