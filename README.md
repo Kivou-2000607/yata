@@ -20,9 +20,23 @@ The website is hosted here: https://yata.alwaysdata.net/
 
 Create a local .env file
 
-    SECRET_KEY="SUPER_SECRET_KEY"
-    CACHE_RESPONSE=10
+    # Your TORN API KEY
     APIKEY="TORNAPIKEY"
+
+    # You can leave this as it or specify your own
+    SECRET_KEY="SUPER_SECRET_KEY"
+
+    # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
+    CACHE_RESPONSE=10 
+
+    # The amount of chain report crontabs to run 
+    CHAIN_REPORT = 1
+
+    # The amount of attack report crontabs to run 
+    ATTACK_REPORT = 1
+
+    # The amount of revive report crontabs to run 
+    REVIVE_REPORT = 1
     
 Then run setup.py to initalise everything
 
