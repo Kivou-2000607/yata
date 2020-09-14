@@ -59,3 +59,13 @@ The admin interface can be accessed via
     http://127.0.0.1:8000admin/admin
     Username: admin
     Password: adminpass
+
+### Bazaar Default Items
+
+By default the most commonly traded items are set to appear in https://yata.alwaysdata.net/bazaar/default/. This list can be adjusted.
+
+    1. Logon To the Admin Section
+    2. Go to the Items table
+    3. Select the item you wish to add 
+    4. Enable the flag "OnMarket"
+    5. Save
