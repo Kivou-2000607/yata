@@ -3,19 +3,19 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yata.settings")
 django.setup()
 
-from decouple import config
-from loot.models import NPC
-from bazaar.models import BazaarData
-from faction.models import FactionData
-from awards.models import AwardsData
-from setup.models import APIKey
-from faction.models import Faction
-from player.models import Player
 from django.contrib.auth.models import User
+from player.models import Player
+from faction.models import Faction
+from setup.models import APIKey
+from awards.models import AwardsData
+from faction.models import FactionData
+from bazaar.models import BazaarData
+from loot.models import NPC
+from decouple import config
 
 
 def yes_or_no(question):
-    reply = str(input(question+' (y/n): ')).lower().strip()
+    reply = str(input(question + ' (y/n): ')).lower().strip()
     if reply[0] == 'y':
         return True
     if reply[0] == 'n':
@@ -35,10 +35,15 @@ fill_db = yes_or_no("Do you want to fill the database?")
 static_file = yes_or_no("Do you want to generate static files?")
 
 if reset_db:
-    # remove local database
-    print('Remove local database')
-    cmd = 'rm -vf db.sqlite3'
-    r = os.system(cmd)
+    if (config("DATABASE") == "postgresql"):
+        print('Remove local database')
+        cmd = 'python manage.py reset_db'
+        r = os.system(cmd)
+    else:
+        # remove local database
+        print('Remove local database')
+        cmd = 'rm -vf db.sqlite3'
+        r = os.system(cmd)
 
     # migrate
     cmd = 'python manage.py migrate'

@@ -26,6 +26,16 @@ Create a local .env file
     # You can leave this as it or specify your own
     SECRET_KEY="SUPER_SECRET_KEY"
 
+    # Database selection
+    #DATABASE=sqlite
+    DATABASE=postgresql
+    
+    #PG_NAME=yata
+    #PG_USER=username
+    #PG_PASSWORD=password
+    PG_HOST=localhost
+    PG_PORT=5432
+
     # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
     CACHE_RESPONSE=10 
 
