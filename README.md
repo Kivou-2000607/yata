@@ -53,3 +53,9 @@ To emulate cron activity _dev_cron.py_ can be run as a seperate process. Cron jo
 To launch the application simple start the Django Application
 
     python manage.py runserver
+
+The admin interface can be accessed via
+
+    http://127.0.0.1:8000admin/admin
+    Username: admin
+    Password: adminpass
