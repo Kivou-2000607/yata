@@ -22,7 +22,9 @@ from django.shortcuts import render
 # from django.utils import timezone
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
 
 import json
 import math
@@ -30,6 +32,7 @@ import math
 from yata.handy import *
 
 from player.models import Player
+from player.models import Key
 from faction.functions import BONUS_HITS
 from target.functions import *
 
@@ -429,3 +432,41 @@ def revivesBreakdown(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+@csrf_exempt
+def targetImport(request):
+    if request.method == 'POST':
+        try:
+
+            # get payload
+            body = json.loads(request.body)
+
+
+            if "api" not in body:
+                return JsonResponse({"message": "couldn't find api in the payload"}, status=400)
+            if "targets" not in body:
+                return JsonResponse({"message": "couldn't find targets in the payload"}, status=400)
+
+            # get user
+            player_key = Key.objects.filter(value=body.get("api")).first()
+            if player_key is None:
+                return JsonResponse({"message": "Player not found in YATA's database"}, status=400)
+
+            added = []
+            for target_id, note in body.get("targets", {}).items():
+                if target_id.isdigit():
+                    info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults={"note": note})
+                    if create:
+                        added.append(target_id)
+
+            if len(added):
+                return JsonResponse({"message": f'You added {len(added)} targets: {", ".join(added)}'}, status=200)
+            else:
+                return JsonResponse({"message": f'No targets have been added'}, status=200)
+
+        except BaseException as e:
+            return JsonResponse({"message": f"YATA error: {e}"}, status=500)
+
+    else:
+        return JsonResponse({"message": "POST request needed"}, status=400)

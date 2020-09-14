@@ -13,6 +13,7 @@ urlpatterns = [
 
     re_path(r'^targets/$', views.targets, name='targets'),
     re_path(r'^targets/list/$', views.targetsList, name='targetsList'),
+    re_path(r'^targets/import/$', views.targetImport, name='targetImport'),
     re_path(r'^target/$', views.target, name='target'),
 
     re_path(r'^revives/$', views.revives, name='revives'),
