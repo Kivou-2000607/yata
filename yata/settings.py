@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
     'mathfilters',
     'django_json_widget',
 ]
@@ -92,13 +93,34 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+if (config("DATABASE") == "postgresql"):
+    DATABASES = {
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'default': {
+
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+            'NAME': config("PG_NAME"),
+
+            'USER': config("PG_USER"),
+
+            'PASSWORD': config("PG_PASSWORD"),
+
+            'HOST': config("PG_HOST"),
+
+            'PORT': config("PG_PORT"),
+
+        }
+
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Cache
 # https://docs.djangoproject.com/en/3.1/topics/cache/
