@@ -53,9 +53,9 @@ d = {
     845: 410458383,  # Historian
     860: 360034401,  # Landlord
     888: 525693299,  # Nice
-    4: 0,  # Intern
-    164: 0,  # Stuck in a Rut
-    742: 0,  # Overtime
+    4: 682744772,  # Intern
+    164: 217721445,  # Stuck in a Rut
+    742: 520759907,  # Overtime
 
     # 1
     171: 228001376,  # Afghanistan
