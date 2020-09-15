@@ -1586,13 +1586,13 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [4, 164, 742]:
-		    # "742": { "name": "Overtime", "description": "Use 10,000 job points", "type": 0, "circulation": 0, "rarity": "Unknown Rarity" },
-                    type = "Job points"
-		    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get("jobpointsused", 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-
-		awards[type]["h_" + k] = vp
+					# "742": { "name": "Overtime", "description": "Use 10,000 job points", "type": 0, "circulation": 0, "rarity": "Unknown Rarity" },
+					type = "Job points"
+					vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+					vp["current"] = userInfo.get("personalstats", dict({})).get("jobpointsused", 0)
+					vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+					
+					awards[type]["h_" + k] = vp
 
                 elif int(k) in [220]:
                     # 220 {'name': 'The Affronted', 'description': 'Infuriate all interviewers in starter jobs', 'type': 0, 'circulation': 4630, 'rarity': 'Rare', 'awardType': 'Honor', 'img': 384148528, 'title': 'The Affronted [220]: Rare (4630)'}
