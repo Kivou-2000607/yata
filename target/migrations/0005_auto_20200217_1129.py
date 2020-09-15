@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='target',
             name='status_color',
-            field=models.CharField(blank=True, default='last_action_relative', max_length=16, null=True),
+            field=models.CharField(blank=True, default='last_action_relative', max_length=20, null=True),
         ),
         migrations.AlterField(
             model_name='target',
