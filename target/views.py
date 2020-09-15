@@ -286,7 +286,12 @@ def target(request):
                 # update target
                 if request.POST["type"] == "update":
                     target_id = int(request.POST["targetId"])
-                    targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
+                    try:
+                        targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
+                    except BaseException:
+                        player.targetinfo_set.filter(target_id=target_id).all().delete()
+                        targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
+
                     error, targetId, target = targetInfo.getTarget(update=True)
 
                     if error:
