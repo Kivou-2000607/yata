@@ -448,13 +448,13 @@ def targetImport(request):
             body = json.loads(request.body)
 
 
-            if "api" not in body:
-                return JsonResponse({"message": "couldn't find api in the payload"}, status=400)
+            if "key" not in body:
+                return JsonResponse({"message": "couldn't find key 'key' in the payload"}, status=400)
             if "targets" not in body:
-                return JsonResponse({"message": "couldn't find targets in the payload"}, status=400)
+                return JsonResponse({"message": "couldn't find key 'targets' in the payload"}, status=400)
 
             # get user
-            player_key = Key.objects.filter(value=body.get("api")).first()
+            player_key = Key.objects.filter(value=body.get("key")).first()
             if player_key is None:
                 return JsonResponse({"message": "Player not found in YATA's database"}, status=400)
 
