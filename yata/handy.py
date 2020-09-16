@@ -44,11 +44,18 @@ def tsnow():
     return int(timezone.now().timestamp())
 
 
+def isProxyKey(key):
+    if (len(key) == 16):
+        return False
+    if (len(key) == 32):
+        return True
+
+
 def apiCall(section, id, selections, key, sub=None, verbose=True):
     import requests
 
     key = str(key)
-
+    proxy = isProxyKey(key)
     # DEBUG live chain
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
     #     from django.utils import timezone
@@ -69,7 +76,11 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
-    url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+    if (proxy):
+        url = "http://torn-proxy.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+    else:
+        url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
     r = requests.get(url)
@@ -139,6 +150,7 @@ def getPlayer(tId):
 
     player.save()
     return player
+
 
 def getFool(tId):
     from player.models import Player
