@@ -135,7 +135,7 @@ def dashboardOption(request):
                 context["module"] = module
                 context["server"] = server
                 configuration_keys = {
-                    "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome"],
+                    "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],

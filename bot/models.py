@@ -69,6 +69,7 @@ class Server(models.Model):
                 "channels_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "tooltip": "Errors will be sent to this channel along with potential messages from me.", "mandatory": True},
                 "message_welcome": {"type": "message", "selected": from_db.get("message_welcome", {}), "prefix": "", "title": "Welcome message", "help": "Type your welcome message", "tooltip": "Use \\n for a newline, # before a channel, @ before a role (use `_` instead of spaces) and @new_member to ping new members&#10If left empty no messages will be sent.", "mandatory": False},
                 "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the welcome messages", "tooltip": "If none selected, the default server channel will be used.", "mandatory": False},
+                "other": {"type": "bool", "all": ["beta"], "selected": from_db.get("other", []), "title": "Other settings", "prefix": "", "help": "Beta: Select it if you want to use the latest untested features.", "tooltip": "Don't complain if it doesn't work ^^", "mandatory": False},
             }
             return for_template
         else:
