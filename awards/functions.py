@@ -2471,7 +2471,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
             # next crime
             if typeOfAwards == "crimes":
-                if category != "Busts" and int(v1.get("left", 0)):
+                if category != "Jail" and int(v1.get("left", 0)):
                     # multiply by 100 in order to compare int and not floats
                     # so with a precision of E-2
                     if int(100 * v1["left"]) < nextNerve:

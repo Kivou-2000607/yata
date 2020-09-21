@@ -25,6 +25,10 @@ This file is part of yata.
     {% include "bazaar/loop-types.html" %}
 {% endif %}
 
+{% if view.loopSets %}
+    {% include "bazaar/loop-sets.html" %}
+{% endif %}
+
 {% if view.abroad %}
     {% include "bazaar/abroad/index.html" %}
 {% endif %}

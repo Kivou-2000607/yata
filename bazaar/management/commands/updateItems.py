@@ -34,6 +34,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         print("[command.bazaar.scan] start")
 
+        points = apiCall("market", "", "pointsmarket", randomKey(), sub="pointsmarket", verbose=False)
         items = apiCall("torn", "", "items,timestamp", randomKey(), sub="items", verbose=False)
 
         itemType = dict({})
@@ -43,6 +44,17 @@ class Command(BaseCommand):
         elif 'apiError' in items:
             print("[command.bazaar.scan] api error: {}".format(items["apiError"]))
         else:
+
+            bd = BazaarData.objects.first()
+
+            total_price = 0
+            total_points = 0
+            for k, v in points.items():
+                total_price += v["total_cost"]
+                total_points += v["quantity"]
+            bd.pointsValue = total_price // float(total_points)
+            bd.save()
+
             for k, v in items.items():
                 type = v["type"]
                 name = v["name"].split(":")[0].strip()
@@ -66,7 +78,6 @@ class Command(BaseCommand):
                     print("[command.bazaar.scan]: request found more than one item id", len(req))
                     return 0
 
-            bd = BazaarData.objects.first()
             bd.lastScanTS = int(timezone.now().timestamp())
             bd.save()
 

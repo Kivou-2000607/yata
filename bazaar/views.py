@@ -203,26 +203,104 @@ def sets(request):
         playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
-        itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
+        allItems = Item.objects.all().order_by('tName')
         print('[view.bazaar.default] get all tTypes')
         tTypes = ["Flower", "Plushie"]
         # print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType: [] for tType in tTypes}
+        sets = {
+            "Plushie set": {
+                "ids": [186, 187, 215, 258, 261, 266, 268, 269, 273, 274, 281, 384, 618],
+                "type": "Plushie",
+                "items": [],
+                "quantities": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                "points": 10,
+                "market_value": 0,
+            },
+            "Exotic flower set": {
+                "ids": [260, 263, 264, 267, 271, 272, 276, 277, 282, 385, 617],
+                "type": "Flower",
+                "items": [],
+                "quantities": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                "points": 10,
+                "market_value": 0,
+            },
+            "Medieval coin set": {
+                "ids": [450, 451, 452],
+                "type": "Coins",
+                "items": [],
+                "quantities": [1, 1, 1],
+                "points": 100,
+                "market_value": 0,
+            },
+            "Quran Scripts set": {
+                "ids": [455, 456, 457],
+                "type": "Scripts",
+                "items": [],
+                "quantities": [1, 1, 1],
+                "points": 1000,
+                "market_value": 0,
+                },
+            "Senet game set": {
+                "ids": [460, 461, 462],
+                "type": "Senet",
+                "items": [],
+                "quantities": [5, 5, 1],
+                "points": 2000,
+                "market_value": 0,
+            },
+            "Vairocana Buddha": {
+                "ids": [454],
+                "type": "Vairocana",
+                "items": [],
+                "quantities": [1],
+                "points": 100,
+                "market_value": 0,
+            },
+            "Ganesha Sculpture": {
+                "ids": [453],
+                "type": "Ganesha",
+                "items": [],
+                "quantities": [1],
+                "points": 250,
+                "market_value": 0,
+            },
+            "Shabti Sculpture": {
+                "ids": [458],
+                "type": "Shabti",
+                "items": [],
+                "quantities": [1],
+                "points": 500,
+                "market_value": 0,
+            },
+            "Egyptian Amulet": {
+                "ids": [459],
+                "type": "Egyptian",
+                "items": [],
+                "quantities": [1],
+                "points": 10000,
+                "market_value": 0,
+            },
+            }
 
         inventory = bazaarJson.get("inventory", dict({}))
         bazaar = bazaarJson.get("bazaar", dict({}))
         display = bazaarJson.get("display", dict({}))
-        for tType in items:
-            for item in itemsOnMarket.filter(tType=tType):
+        point_value = BazaarData.objects.first().pointsValue
+        for tType, set in sets.items():
+            for item in allItems.filter(tId__in=set.get('ids', [])):
                 item.stockI = inventory.get(str(item.tId), 0)
                 item.stockB = bazaar.get(str(item.tId), 0)
                 item.stockD = display.get(str(item.tId), 0)
                 item.stock = item.stockI + item.stockB + item.stockD
-                items[tType].append(item)
+                set["items"].append(item)
+                set["market_value"] += set["quantities"][set["ids"].index(item.tId)] * item.tMarketValue
+            set["points_value"] = point_value * set["points"]
+            set["benefits"] = set["points_value"] - set["market_value"]
+            set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 

@@ -1,0 +1,38 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load app_filters %}
+
+{% for k, v in sets.items %}
+  <div class="catch-me">
+      <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}">{{v.items.0.display_small}} {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
+          {% if v.market_value%}<i>market: ${{v.market_value|intcomma}} points: ${{v.points_value|intcomma}} benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i>{%endif%}
+          {% if view.refreshType and player.tId > 0 %}
+              <form class="form-inline"><a href="bazaar/updateType/{{v.type}}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
+          {% endif %}
+      </h2>
+      <div id="loop-over-item-sell-table-{{v.type}}" class="module" {% if view.hideType %}style="display: none;"{% endif %}>
+        {% if v.market_value %}
+        {% endif %}
+          {% include "bazaar/loop-items.html" with itemType=k items=v.items %}
+      </div>
+      {# {% if view.hideType %}<br>{% endif %} #}
+  </div>
+{% endfor %}
