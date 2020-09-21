@@ -91,7 +91,7 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
                 "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
                 "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
             }
@@ -129,7 +129,7 @@ class Server(models.Model):
 
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comand", "help": "Select one or several channels for the <tt>!revive</tt> commands", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command", "help": "Select one or several channels for the <tt>!revive</tt> commands", "mandatory": True},
                 "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "tooltip": "You will receive the calls from your server and from the other servers in this channel (it can be the same as one of the allowed channels).", "mandatory": True},
                 "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
                 "revive_servers": {"type": "server", "all": all, "sending": from_db.get("sending", {}), "blacklist": from_db.get("blacklist", {}), "title": "Linked servers", "tooltip": "send: the bot will send your calls to the servers you select&#10blacklist: the bot will block incoming calls from the servers you select&#10&#10If the server is not public please contact the admins before sending them your calls", "help": "Select the servers the bot will be sending the messages to", "mandatory": False},
@@ -144,7 +144,7 @@ class Server(models.Model):
         all = ["daily_check", "weekly_check", "daily_verify", "weekly_verify", "force_verify"]
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the commands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
                 "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the verified welcome message", "tooltip": "If none selected, no messages will be sent.", "mandatory": False},
                 "roles_verified": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_verified", {}), "prefix": "@", "title": "Role for the verified members", "help": "Select one role for the verified players", "tooltip": "This role will be attributed the the player if the verification is successful (whatever the faction it belongs to).", "mandatory": True},
                 "factions": {"type": "role", "selected": from_db.get("factions", {}), "positions": from_db.get("positions", {}), "title": "Factions roles", "prefix": "@", "help": "Select factions and roles for each of them", "tooltip": "Additional roles can be attributed to members on verification depending on their faction.&#10You can choose as many factions as you want and linked them to as many roles as you want.&#10You can remove a role from the configuration by selecting the same faction and the same role (toggle).", "mandatory": False},
@@ -157,10 +157,12 @@ class Server(models.Model):
 
     def get_oc(self):
         from_db = json.loads(self.configuration).get("oc", False)
+        all = { "1": "Blackmailing", "2": "Kidnapping", "3": "Bomb threat", "4": "Planned robbery", "5": "Robbing of a money train", "6": "Taking over a cruise liner", "7": "Plane hijacking", "8": "Political Assassination"}
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the OC module commands", "tooltip": "The notifications will be in the same channel you typed !oc.", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the commands", "help": "Select one or several channels for the OC module commands", "tooltip": "The notifications will be in the same channel you typed !oc.", "mandatory": True},
                 "currents": {"type": "oc", "all": from_db.get("currents", {}), "title": "Current OC tracking", "prefix": "", "help": "List of the current trackings", "tooltip": "This is an overview of the current !oc. If for some reason you need it, you can stop them here (don't forget to !sync)", "mandatory": False},
+                "notifications": {"type": "oc", "all": all, "selected": from_db.get("notifications", {}), "title": "Notifications", "prefix": "", "help": "Select the OC types you want to be notified", "tooltip": "The other ones will be displayed but you will not get pinged", "mandatory": False},
             }
             return for_template
         else:
@@ -170,7 +172,7 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("chain", False)
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the comands", "help": "Select one or several channels for the chain module commands", "tooltip": "The notifications will be in the same channel you typed !retal.", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the commands", "help": "Select one or several channels for the chain module commands", "tooltip": "The notifications will be in the same channel you typed !retal.", "mandatory": True},
                 "currents": {"type": "retal", "all": from_db.get("currents", {}), "title": "Current retals tracking", "tooltip": "This is an overview of the current !retal. If for some reason you need it, you can stop them here (don't forget to !sync)", "prefix": "", "help": "List of the current trackings", "mandatory": False},
             }
             return for_template
