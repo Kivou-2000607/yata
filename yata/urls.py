@@ -17,6 +17,7 @@ from django.urls import include, path, re_path
 from django.contrib import admin
 from django.http import HttpResponse
 from django.views.generic.base import RedirectView
+from django.conf.urls import url
 # from django.shortcuts import redirect
 # from django.conf import settings
 # from django.conf.urls.static import static
@@ -62,3 +63,4 @@ urlpatterns = [
     path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
 
 ]
+urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]

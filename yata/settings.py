@@ -22,6 +22,9 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+if (DEBUG):
+    SILKY_PYTHON_PROFILER = True
+
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = config('SECRET_KEY')
@@ -51,9 +54,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'mathfilters',
     'django_json_widget',
+    'silk',
 ]
 
 MIDDLEWARE = [
+    'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'player.middleware.ban_players_middleware.BanPlayersMiddleware'
+    'player.middleware.ban_players_middleware.BanPlayersMiddleware',
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
