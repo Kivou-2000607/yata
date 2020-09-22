@@ -25,6 +25,14 @@ DEBUG = True
 if (DEBUG):
     SILKY_PYTHON_PROFILER = True
 
+SILKY_AUTHORISATION = True  # User must have permissions
+
+def silk_enabled(v):
+    return config('SILK_ENABLED', default=False, cast=bool)
+
+SILKY_PERMISSIONS = silk_enabled
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = config('SECRET_KEY')
