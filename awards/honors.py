@@ -336,6 +336,7 @@ d = {
     670: 177445753,  # Giant Slayer
     896: 876587407,  # Going Postal
     641: 150619086,  # Strongest Link
+    414: 0,  # Welcome
     476: 0,  # Chainer 5
 
     # 9

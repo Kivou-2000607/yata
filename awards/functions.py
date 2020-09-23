@@ -690,7 +690,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670, 896, 902]:
+                elif int(k) in [230, 254, 481, 500, 615, 608, 627, 739, 631, 317, 781, 827, 838, 843, 670, 896, 902, 414]:
                     # 230 {'name': 'Domino Effect', 'description': 'Defeat someone displaying this honor', 'type': 8, 'circulation': 112529, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 254 {'name': 'Flatline', 'description': 'Achieve a one hit kill on a target from full life', 'type': 8, 'circulation': 72276, 'rarity': 'Very Common', 'awardType': 'Honor'}
                     # 500 {'name': 'Survivalist', 'description': 'Win an attack with only 1% life remaining', 'type': 8, 'circulation': 5980, 'rarity': 'Limited', 'awardType': 'Honor'}
@@ -702,6 +702,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # "670": { "name": "Giant Slayer", "description": "Receive loot from a defeated NPC", "type": 8,
             		# "896": { "name": "Going Postal", "description": "Defeat a company co-worker", "type": 8,
                     # "902": { "name": "Gone Fishing", "description": "Be defeated by a trout", "type": 2,
+                    # "414": { "name": "Triple Tap", "description": "Achieve three headshots in a row", "type": 8,
                     type = "Other Attacks"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0
@@ -2010,13 +2011,21 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["comment"] = "With a current ratio of {:.2g} hours / day.".format(ratio)
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [312, 873]:
+                elif int(k) in [312]:
                     # 312 {'name': 'Time Traveller', 'description': 'Survive a Torn City restore', 'type': 0, 'circulation': 24165, 'rarity': 'Common', 'awardType': 'Honor', 'img': 834531746, 'title': 'Time Traveller [312]: Common (24165)'}
-                    # "873": { "name": "Welcome", "description": "Be online every day for 100 days", "type": 11,
                     type = "Other Commitment"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [873]:
+                    # "873": { "name": "Welcome", "description": "Be online every day for 100 days", "type": 11,
+                    type = "Other Commitment"
+                    vp["goal"] = 100
+                    vp["current"] = int(userInfo.get("personalstats", dict({})).get("activestreak", 0))
+                    vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["comment"] = "Best streak: {:d}.".format(int(userInfo.get("personalstats", dict({})).get("bestactivestreak", 0)))
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [3, 19, 546]:
