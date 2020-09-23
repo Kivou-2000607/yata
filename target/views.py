@@ -179,7 +179,12 @@ def attack(request):
                 # toggle target
                 target_id = int(request.POST["targetId"])
                 attack_id = int(request.POST["attackId"])
-                targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
+                try:
+                    targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
+                except BaseException as e:
+                    player.targetinfo_set.filter(target_id=target_id).all().delete()
+                    targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
+
                 if state:
                     # create/update target
                     _, targetId, target = targetInfo.getTarget(update=True)

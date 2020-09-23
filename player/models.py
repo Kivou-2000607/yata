@@ -396,6 +396,7 @@ class Error(models.Model):
     timestamp = models.IntegerField(default=0)
     short_error = models.CharField(default="-", max_length=128)
     long_error = models.TextField(default="-")
+    fixed = models.BooleanField(default=False)
 
 
 class TmpReq(models.Model):

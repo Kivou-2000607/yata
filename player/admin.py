@@ -49,11 +49,17 @@ class PlayerDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
+def fix(modeladmin, request, queryset):
+    queryset.update(fixed=True)
+def unfix(modeladmin, request, queryset):
+    queryset.update(fixed=False)
+
 class ErrorAdmin(admin.ModelAdmin):
-    list_display = ['player', 'short_error', 'timestamp', 'date']
+    list_display = ['player', 'short_error', 'timestamp', 'date', 'fixed']
     search_fields = ['player__name', 'player__tId']
-    list_filter = ['short_error']
+    list_filter = ['fixed', 'short_error']
     readonly_fields = ['player', ]
+    actions = [fix, unfix]
 
     def date(self, instance):
         return timestampToDate(instance.timestamp)
