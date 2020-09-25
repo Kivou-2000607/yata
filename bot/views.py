@@ -135,12 +135,12 @@ def dashboardOption(request):
                 context["module"] = module
                 context["server"] = server
                 configuration_keys = {
-                    "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome"],
+                    "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
-                    "oc": ["channels_allowed", "currents"],
+                    "oc": ["channels_allowed", "currents", "notifications"],
                     "chain": ["channels_allowed", "currents"],
                     "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
                 }.get(post.get("mod"), [])
@@ -169,7 +169,7 @@ def dashboardOption(request):
                         if type in ["sending", "blacklist"]:
                             c[type][id] = name
 
-                        elif type in ["channels_allowed", "positions"]:
+                        elif type in ["channels_allowed", "positions", "notifications"]:
                             # if type == "currents" and name == "disable" and id in c[type]:
                             c[type][id] = name  # (multiple)
 

@@ -334,7 +334,7 @@ class Faction(models.Model):
         # save only participants ids of successful crimes
         self.crimesDump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v.get("participants", False)])
         # save only participants ids of successful PH and PA
-        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1])
+        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)])
 
         # get members for ranking
         members = self.member_set.order_by("-nnb", "-arson")
@@ -797,7 +797,11 @@ class Faction(models.Model):
             v["shortname"] = t.shortname
             v["branch"] = t.branch
             v["unsets_completed"] = v.get("unsets_completed", 0)
-            self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
+            try:
+                self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
+            except BaseException as e:
+                self.upgrade_set.filter(tId=k, simu=False).all().delete()
+                self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
 
         self.upgradesUpda = tsnow()
         self.save()

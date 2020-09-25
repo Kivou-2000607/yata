@@ -1,9 +1,12 @@
 d = {
 
     # activity
-    "logins": {"category": "activity", "sub": "default", "type": "integer", "name": "logins"},
+    "daysbeendonator": {"category": "activity", "sub": "default", "type": "integer", "name": "days being a donator"},
     "useractivity": {"category": "activity", "sub": "default", "type": "time", "name": "User activity"},
-    "daysbeendonator": {"category": "activity", "sub": "default", "type": "integer", "name": "Days being a donator"},
+    "logins": {"category": "activity", "sub": "logins", "type": "integer", "name": "logins"},
+    "timesloggedin": {"category": "activity", "sub": "logins", "type": "integer", "name": "Times logged in"},
+    "activestreak": {"category": "activity", "sub": "logins", "type": "integer", "name": "active streak"},
+    "bestactivestreak": {"category": "activity", "sub": "logins", "type": "integer", "name": "best active streak"},
     "mailssent": {"category": "activity", "sub": "mails", "type": "integer", "name": "mails sent"},
     "friendmailssent": {"category": "activity", "sub": "mails", "type": "integer", "name": "mails sent to friend"},
     "factionmailssent": {"category": "activity", "sub": "mails", "type": "integer", "name": "mails sent to faction"},
@@ -175,9 +178,9 @@ d = {
     "energydrinkused": {"category": "item used", "sub": "default", "type": "integer", "name": "energy drink"},
     "boostersused": {"category": "item used", "sub": "default", "type": "integer", "name": "boosters"},
     "booksread": {"category": "item used", "sub": "default", "type": "integer", "name": "books"},
+    "statenhancersused": {"category": "item used", "sub": "default", "type": "integer", "name": "stat enhancer"},
 
     # misc
-    "trainsreceived": {"category": "misc", "sub": "default", "type": "integer", "name": "trains received"},
     "awards": {"category": "misc", "sub": "default", "type": "integer", "name": "awards"},
     "virusescoded": {"category": "misc", "sub": "default", "type": "integer", "name": "viruses coded"},
     "itemsdumped": {"category": "misc", "sub": "city", "type": "integer", "name": "items dumped"},
@@ -189,6 +192,8 @@ d = {
     "classifiedadsplaced": {"category": "misc", "sub": "default", "type": "integer", "name": "classified ads"},
     "spydone": {"category": "misc", "sub": "default", "type": "integer", "name": "spy done"},
     "arrestsmade": {"category": "misc", "sub": "default", "type": "integer", "name": "arrests made"},
+    "trainsreceived": {"category": "misc", "sub": "work", "type": "integer", "name": "trains received"},
+    "jobpointsused": {"category": "misc", "sub": "work", "type": "integer", "name": "job points used"},
 
 
 }

@@ -30,6 +30,8 @@ This file is part of yata.
                     {% include "bot/dashboard/module-list.html" %}
                 {% elif k == "message_welcome" %}
                     {% include "bot/dashboard/module-message.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-others.html" %}
                 {% else %}
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}

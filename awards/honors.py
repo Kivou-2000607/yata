@@ -38,7 +38,7 @@ d = {
     231: 175241290,  # Discovery
     566: 572050307,  # You've Got Some Nerve
     572: 422587009,  # Motorhead
-    164: 789829185,  # Keen
+    # 164: 789829185,  # Keen
     5: 647299034,  # Journalist
     620: 195436798,  # OP
     156: 951557928,  # RDD
@@ -53,6 +53,9 @@ d = {
     845: 410458383,  # Historian
     860: 360034401,  # Landlord
     888: 525693299,  # Nice
+    4: 682744772,  # Intern
+    164: 217721445,  # Stuck in a Rut
+    742: 520759907,  # Overtime
 
     # 1
     171: 228001376,  # Afghanistan
@@ -333,6 +336,7 @@ d = {
     670: 177445753,  # Giant Slayer
     896: 876587407,  # Going Postal
     641: 150619086,  # Strongest Link
+    414: 0,  # Welcome
     476: 0,  # Chainer 5
 
     # 9
@@ -397,6 +401,7 @@ d = {
     166: 507297243,  # Stairway To Heaven
     375: 994774255,  # Resolution
     731: 782638013,  # Tornication
+    873: 0,  # Welcome
 
     # 12
     18: 978797305,  # Another Brick In The Wall
@@ -456,7 +461,7 @@ d = {
     418: 832724939,  # Transfusion
     7: 559177183,  # Magical Veins
     398: 670385087,  # Anaemic
-    4: 408554952,  # I'm a Real Doctor
+    # 4: 408554952,  # I'm a Real Doctor
     248: 922672544,  # Bar Breaker
     252: 937648106,  # Freedom Isn't Free
     23: 493291412,  # Florence Nightingale
@@ -466,6 +471,8 @@ d = {
     322: 389182165,  # Miracle Worker
     870: 299135287,  # Resurrection
     863: 408571758,  # Crucifixion
+    903: 233036142,  # Booboo
+    906: 442561096,  # Repeat Offender
 
     # 16
     239: 275270401,  # Middleman

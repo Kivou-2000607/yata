@@ -427,9 +427,9 @@ def updateMember(request):
 
             # update status and last action
             try:
-                status = membersAPI.get(memberId, dict({})).get("status")
+                status = membersAPI.get(memberId, dict({})).get("status", {})
                 member.updateStatus(**status)
-                lastAction = membersAPI.get(memberId, dict({})).get("status")
+                lastAction = membersAPI.get(memberId, dict({})).get("status", {})
                 member.updateLastAction(**lastAction)
             except BaseException as e:
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Error with member {}: {}'.format(memberId, e)})
