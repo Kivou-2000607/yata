@@ -25,6 +25,7 @@ import numpy
 
 from yata.handy import apiCall
 from yata.handy import tsnow
+from yata.handy import isProxyKey
 # from awards.functions import updatePlayerAwards
 # from faction.models import Faction
 # from awards.models import AwardsData
@@ -133,6 +134,8 @@ class Player(models.Model):
             self.save()
 
         return error
+    def usingProxyKey(self):
+        return isProxyKey(self.getKey())
 
     def getAwards(self, userInfo=dict({}), force=False):
         from awards.models import AwardsData
