@@ -82,10 +82,11 @@ table.target-revives-breakdown td.e { width: 20%; text-align: center; }
 
 input.target-list-note {
     height: 16px;
-    width: 90%;
+    width: 80%;
     margin-top: 2px;
     margin-left: 5px;
     border-width: 0px;
+    border: 0;
     background: #00000000;
 }
 
@@ -151,15 +152,18 @@ span.target-list-color-click {
     cursor: pointer;
 }
 
+a.target-color-1,
 span.target-color-1,
 input.target-color-1 {
-    color: #0B8E14; /* green */
+    color: #0B8E14 !important; /* green */
 }
+a.target-color-2,
 span.target-color-2,
 input.target-color-2 {
-    color: #7d93c4; /* blue */
+    color: #FF8C00 !important; /* orange */
 }
+a.target-color-3,
 span.target-color-3,
 input.target-color-3 {
-    color: #CC3434; /* red */
+    color: #CC3434 !important; /* red */
 }

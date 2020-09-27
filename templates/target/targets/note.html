@@ -38,11 +38,12 @@ This file is part of yata.
 
 <form>
     {% csrf_token %}
-    <span class="target-list-note-color" style="opacity: 0.5; cursor: pointer;" title="Change color" data-val="{{targetId}}"><i class="fas fa-palette"></i></span>
+    <span class="target-list-note-color target-color-{{target.color}}" style="opacity: 0.5; cursor: pointer;" title="Change color" data-val="{{targetId}}"><i class="fas fa-palette"></i></span>
     {% if target.note %}
-        <input class="target-list-note target-color-{{target.color}}" type="text" value="{{target.note}}">
+        <!-- <input class="target-list-note target-color-{{target.color}}" type="text" value="{{target.note}}"> -->
+        <input class="target-list-note" type="text" value="{{target.note}}">
     {% else %}
-        <input class="target-list-note target-color-{{target.color}}" type="text" placeholder="Enter a note here" value="">
+        <input class="target-list-note" type="text" placeholder="Enter a note here" style="opacity: 0.5; cursor: pointer;" value="">
     {% endif %}
     <input type="hidden" value="{{targetId}}">
 </form>

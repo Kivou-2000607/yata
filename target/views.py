@@ -314,7 +314,7 @@ def target(request):
                     targetInfo.note = str(request.POST["note"])[:128]
                     targetInfo.save()
 
-                    context = {"target": {"note": targetInfo.note}, "targetId": target_id}
+                    context = {"target": {"note": targetInfo.note, "color": targetInfo.color}, "targetId": target_id}
 
                     return render(request, 'target/targets/note.html', context)
 
@@ -474,11 +474,27 @@ def targetImport(request):
                 return JsonResponse({"message": "Player not found in YATA's database"}, status=400)
 
             added = []
-            for target_id, note in body.get("targets", {}).items():
-                if target_id.isdigit():
-                    info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults={"note": note})
-                    if create:
-                        added.append(target_id)
+
+            if "user" not in body:
+                print("old version")
+
+                # old version of torn pda
+                for target_id, note in body.get("targets", {}).items():
+                    if target_id.isdigit():
+                        info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults={"note": note})
+                        if create:
+                            added.append(target_id)
+
+            else:
+
+                print("new version")
+                # old version of torn pda
+                for target_id, target_data in body.get("targets", {}).items():
+                    if target_id.isdigit():
+                        info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults=target_data)
+                        if create:
+                            added.append(target_id)
+
 
             if len(added):
                 return JsonResponse({"message": f'You added {len(added)} targets: {", ".join(added)}'}, status=200)
