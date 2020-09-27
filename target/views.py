@@ -318,6 +318,16 @@ def target(request):
 
                     return render(request, 'target/targets/note.html', context)
 
+                if request.POST["type"] == "note-color":
+                    target_id = int(request.POST["targetId"])
+                    targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
+                    targetInfo.color = (targetInfo.color + 1) % 4
+                    targetInfo.save()
+
+                    context = {"target": {"note": targetInfo.note, "color": targetInfo.color}, "targetId": target_id}
+
+                    return render(request, 'target/targets/note.html', context)
+
                 # add by Id target
                 if request.POST["type"] == "addById":
                     target_id = int(request.POST["targetId"])

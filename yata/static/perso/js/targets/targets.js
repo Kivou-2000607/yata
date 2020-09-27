@@ -58,6 +58,19 @@ $(document).on('focusout', 'input.target-list-note', function(e){
     reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
 });
 
+// change color
+$(document).on('click', 'span.target-list-note-color', function(e){
+    e.preventDefault();
+    var targetId = $(this).attr("data-val");
+    var reload = $(this).closest('td');
+    reload.load( "/target/target/", {
+        targetId: targetId,
+        type: "note-color",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
+});
+
 
 // refresh all targets from target list by clicking on title refresh button
 $(document).on('click', '#target-refresh', function(e){

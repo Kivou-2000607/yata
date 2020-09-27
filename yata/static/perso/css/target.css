@@ -145,3 +145,21 @@ div.life-bar > span {
   -o-animation:      need-refresh 2s infinite; /* Opera 12+ */
   animation:         need-refresh 2s infinite; /* IE 10+ */
 }
+
+
+span.target-list-color-click {
+    cursor: pointer;
+}
+
+span.target-color-1,
+input.target-color-1 {
+    color: #0B8E14; /* green */
+}
+span.target-color-2,
+input.target-color-2 {
+    color: #FF8C00; /* yellow */
+}
+span.target-color-3,
+input.target-color-3 {
+    color: #CC3434; /* red */
+}
