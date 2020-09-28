@@ -155,15 +155,18 @@ span.target-list-color-click {
 a.target-color-1,
 span.target-color-1,
 input.target-color-1 {
-    color: #0B8E14 !important; /* green */
+    color: #30C63B  !important; /* green */
+    cursor: pointer;
 }
 a.target-color-2,
 span.target-color-2,
 input.target-color-2 {
-    color: #FF8C00 !important; /* orange */
+    color: #FFB24F !important; /* orange */
+    cursor: pointer;
 }
 a.target-color-3,
 span.target-color-3,
 input.target-color-3 {
-    color: #CC3434 !important; /* red */
+    color: #FF4F4F !important; /* red */
+    cursor: pointer;
 }
