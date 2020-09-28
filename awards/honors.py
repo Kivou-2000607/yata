@@ -51,11 +51,11 @@ d = {
     581: 832763049,  # On Track
     839: 172807476,  # RNG
     845: 410458383,  # Historian
-    860: 360034401,  # Landlord
+    860: 562883592,  # Landlord
     888: 525693299,  # Nice
-    4: 682744772,  # Intern
-    164: 217721445,  # Stuck in a Rut
-    742: 520759907,  # Overtime
+    4: 904962349,  # Intern
+    164: 738476338,  # Stuck in a Rut
+    742: 541423641,  # Overtime
 
     # 1
     171: 228001376,  # Afghanistan
@@ -336,7 +336,7 @@ d = {
     670: 177445753,  # Giant Slayer
     896: 876587407,  # Going Postal
     641: 150619086,  # Strongest Link
-    414: 0,  # Welcome
+    414: 606974195,  # Triple Tap
     476: 0,  # Chainer 5
 
     # 9
@@ -347,7 +347,7 @@ d = {
     269: 739646998,  # Spinner
     327: 796833908,  # One in Six
     326: 156400756,  # Highs and Lows
-    513: 814368109,  # Daddys New Shoes
+    513: 216607095,  # Daddys New Shoes
     276: 494694037,  # Lucky Break
     275: 689389128,  # Jackpot
     237: 446331026,  # Poker King
