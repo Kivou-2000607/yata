@@ -29,6 +29,7 @@ a, th { outline: none; }
 
 h1 { height: 35px; }
 
+tr { background: #0000;}
 li { font-size: 14px; }
 ul li { list-style-type: disclosure-closed; }
 ul ul li { list-style-type: disclosure-closed; }
