@@ -699,7 +699,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     type = "Special ammo"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     ammo_type = v["description"].split(" ")[2].lower()
-                    print()
                     vp["current"] = userInfo.get("personalstats", dict({})).get(f'{ammo_type}ammoused', 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
