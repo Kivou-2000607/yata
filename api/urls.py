@@ -8,9 +8,9 @@ urlpatterns = [
     # re_path(r'^$', views.index, name='index'),
 
     # loot
-    re_path(r'^v1/loot/$', loot.loot, name='loot'),
+    re_path(r'^v0/loot/$', loot.loot, name='loot'),
 
     # items
-    re_path(r'^v1/travel/export/$', travel.exportStocks, name='exportStocks'),
-    re_path(r'^v1/travel/import/$', travel.importStocks, name='importStocks'),
+    re_path(r'^v0/travel/export/$', travel.exportStocks, name='exportStocks'),
+    re_path(r'^v0/travel/import/$', travel.importStocks, name='importStocks'),
     ]
