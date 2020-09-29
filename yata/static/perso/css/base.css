@@ -29,7 +29,8 @@ a, th { outline: none; }
 
 h1 { height: 35px; }
 
-tr { background: #0000! important;}
+tr:nth-child(2n+1),
+tr:nth-child(2n) { background: #0000;}  /* overwrite admin/base.css since django 3.1 */
 li { font-size: 14px; }
 ul li { list-style-type: disclosure-closed; }
 ul ul li { list-style-type: disclosure-closed; }
