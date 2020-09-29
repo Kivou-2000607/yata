@@ -190,6 +190,10 @@ d = {
     851: 631155576,  # Mod Boss
     871: 890122926,  # Leonidas
     902: 397903095,  # Gone Finishing
+    942: 926285168,  # Maimed
+    943: 913517772,  # Penetrated
+    944: 393014668,  # Scorched
+    945: 148152221,  # Marked
 
     # 3
     39: 198010293,  # Woodland Camo

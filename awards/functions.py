@@ -463,6 +463,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Critical hits": dict(),
             "Bounties": dict(),
             "Fire rounds": dict(),
+            "Special ammo": dict(),
             "Other Attacks": dict(),
             "Assists": dict(),
             "Damage": dict(),
@@ -670,7 +671,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
                     e = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    days = dLeftE(e, r=ratio, c="round / attack")
+                    days = dLeftE(e, r=ratio, c="rounds / attack")
                     vp["left"] = days[0]
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
@@ -679,13 +680,31 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # "800": {"name": "Surplus", "description": "Use 100 rounds of special ammunition", "type": 2,
                     # "793": {"name": "Bandolier","description": "Use 1,000 rounds of special ammunition", "type": 2,
                     # "791": { "name": "Quartermaster","description": "Use 10,000 rounds of special ammunition", "type": 2,
-                    type = "Fire rounds"
+                    type = "Special ammo"
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("specialammoused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
                     e = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
-                    days = dLeftE(e, r=ratio, c="round / attack")
+                    days = dLeftE(e, r=ratio, c="rounds / attack")
+                    vp["left"] = days[0]
+                    vp["comment"] = days[1]
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [942, 943, 944, 945]:
+                    # "942": {"name": "Maimed", "description": "Use 2,500 Hollow Point rounds", "type": 2,
+                    # "943": { "name": "Penetrated", "description": "Use 2,500 Piercing rounds", "type": 2,
+                    # "944": { "name": "Scorched", "description": "Use 2,500 Incendiary rounds", "type": 2,
+                    # "945": { "name": "Marked", "description": "Use 2,500 Tracer rounds", "type": 2,
+                    type = "Special ammo"
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                    ammo_type = v["description"].split(" ")[2].lower()
+                    print()
+                    vp["current"] = userInfo.get("personalstats", dict({})).get(f'{ammo_type}ammoused', 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    ratio = vp["current"] / float(max(totalNumberOfAttacks, 1))
+                    e = max(25 * (vp["goal"] - vp["current"]) / ratio, 0) if ratio > 0 else -1
+                    days = dLeftE(e, r=ratio, c="rounds / attack")
                     vp["left"] = days[0]
                     vp["comment"] = days[1]
                     awards[type]["h_" + k] = vp
