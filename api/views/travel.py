@@ -45,8 +45,17 @@ def exportStocks(request):
             status = 429
 
         else:
+            stocks = AbroadStocks.objects.filter(last=True)
+            countries = {"mex": 0, "cay": 0, "can": 0,
+                         "haw": 0, "uni": 0, "arg": 0,
+                         "swi": 0, "jap": 0, "chi": 0,
+                         "uae": 0, "sou": 0,}
+            for s in stocks:
+                countries[s.country_key] = max(countries[s.country_key], s.timestamp)
+
             payload = {
-                "stocks": [stock.payloadLight() for stock in AbroadStocks.objects.filter(last=True)],
+                "stocks": [s.payloadLight() for s in stocks],
+                "updates": countries,
                 "timestamp": tsnow()
             }
             status = 200

@@ -348,10 +348,12 @@ class AbroadStocks(models.Model):
         from bazaar.countries import countries
 
         return {
-            "id": f'{self.country_key}-{self.item.tId}',
+            # "id": f'{self.country_key}-{self.item.tId}',
+            "id": self.item.tId,
+            "country": self.country_key,
             "quantity": self.quantity,
-            "timestamp": self.timestamp,
-            # "name": self.item.tName,
+            # "timestamp": self.timestamp,
+            "name": self.item.tName,
             # "item_type": self.item.tType,
             # "cost": self.cost,
             # "item_maket_value": self.item.tMarketValue,
