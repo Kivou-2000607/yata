@@ -189,6 +189,7 @@ class TargetInfo(models.Model):
     flatRespect = models.FloatField(default=0)
     result = models.CharField(default="", max_length=16, null=True, blank=True)
     note = models.CharField(default="", max_length=128, null=True, blank=True)
+    color = models.IntegerField(default=0)
 
     def __str__(self):
         return "Target [{}] of {}".format(self.target_id, self.player)
@@ -264,6 +265,7 @@ class TargetInfo(models.Model):
             "last_attack_attacker": self.last_attack_attacker,
             "last_attack_timestamp": self.last_attack_timestamp,
             "note": self.note,
+            "color": self.color,
             "result": self.result,
             "fairFight": self.fairFight,
             "flatRespect": self.flatRespect,

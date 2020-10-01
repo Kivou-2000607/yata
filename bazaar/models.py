@@ -344,6 +344,23 @@ class AbroadStocks(models.Model):
             # "country_fly_time": countries[self.country_id]["fly_time"],
             }
 
+    def payloadLight(self):
+        from bazaar.countries import countries
+
+        return {
+            "id": f'{self.country_key}-{self.item.tId}',
+            "quantity": self.quantity,
+            "timestamp": self.timestamp,
+            # "name": self.item.tName,
+            # "item_type": self.item.tType,
+            # "cost": self.cost,
+            # "item_maket_value": self.item.tMarketValue,
+            # "item_sell_price": self.item.tSellPrice,
+            # "item_buy_price": self.item.tBuyPrice,
+            # "item_week_tendency": self.item.weekTendency,
+            # "country_fly_time": countries[self.country_id]["fly_time"],
+            }
+
     def get_country(self):
         from bazaar.countries import countries
         return countries.get(self.country_key)

@@ -11,7 +11,7 @@ The website is hosted here: https://yata.alwaysdata.net/
 
 
 
-## Setup
+## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
 
     cd yata

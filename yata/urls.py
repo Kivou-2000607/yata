@@ -41,6 +41,7 @@ urlpatterns = [
     re_path(r'^bot/', include('bot.urls')),
     re_path(r'^faction/', include('faction.urls')),
     re_path(r'^setup/', include('setup.urls')),
+    re_path(r'^api/', include('api.urls')),
     path('admin/', admin.site.urls),
 
     # site

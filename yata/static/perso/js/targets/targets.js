@@ -58,28 +58,63 @@ $(document).on('focusout', 'input.target-list-note', function(e){
     reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
 });
 
+// change color
+$(document).on('click', 'span.target-list-note-color', function(e){
+    e.preventDefault();
+    var targetId = $(this).attr("data-val");
+    var reload = $(this).closest('td');
+    reload.load( "/target/target/", {
+        targetId: targetId,
+        type: "note-color",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
+});
+
 
 // refresh all targets from target list by clicking on title refresh button
 $(document).on('click', '#target-refresh', function(e){
     e.preventDefault();
     var i = 1;
+    // get refresh color
+    let refresh_color = parseInt($(this).attr("data-val"));
     $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
-        var reload = $(this);
-        var targetId = reload.attr("id").split("-").pop();
-        var wait = i*500 + parseInt(i/10)*3000;
-        (function(index) {
-            setTimeout(function() {
-                reload.load( "/target/target/", {
-                    targetId: targetId,
-                    type: "update",
-                    csrfmiddlewaretoken: getCookie("csrftoken")
-                });
-                reload.removeClass('old-refresh');
-                reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
-             }, wait);
-        })(i);
-        i++;
+        if(!refresh_color || $(this).find("span.target-color-" + refresh_color).length) {
+          var reload = $(this);
+          var targetId = reload.attr("id").split("-").pop();
+          var wait = i*500 + parseInt(i/10)*3000;
+          (function(index) {
+              setTimeout(function() {
+                  reload.load( "/target/target/", {
+                      targetId: targetId,
+                      type: "update",
+                      csrfmiddlewaretoken: getCookie("csrftoken")
+                  });
+                  reload.removeClass('old-refresh');
+                  reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+               }, wait);
+          })(i);
+          i++;
+       }
     });
+});
+
+// change refresh color
+$(document).on('click', '#target-list-refresh-color', function(e){
+    e.preventDefault();
+    // get the current color & remove color class
+    let color = parseInt($(this).attr("data-val"));
+    $(this).removeClass("target-color-" + color);
+
+    // set the new color (class and data-val)
+    color = (color + 1) % 4;
+    $(this).addClass("target-color-" + color);
+    $(this).attr("data-val", color);
+
+    // change refresh link (text and data-val)
+    let colors = ["all", "green", "orange", "red"];
+    $("#target-refresh").html('<i class="fas fa-sync-alt"></i>&nbsp;Refresh ' + colors[color]);
+    $("#target-refresh").attr("data-val", color);
 });
 
 // add target manually

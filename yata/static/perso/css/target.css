@@ -82,10 +82,11 @@ table.target-revives-breakdown td.e { width: 20%; text-align: center; }
 
 input.target-list-note {
     height: 16px;
-    width: 90%;
+    width: 80%;
     margin-top: 2px;
     margin-left: 5px;
     border-width: 0px;
+    border: 0;
     background: #00000000;
 }
 
@@ -118,8 +119,7 @@ div.life-bar > span {
   background-color: #7d93c4;
 }
 
-
-@-webkit-keyframes need-refresh {
+/* @-webkit-keyframes need-refresh {
   0% { background-color: #ff00001e; }
   50% { background-color: inherit; }
   100% { background-color: #ff00001e; }
@@ -135,13 +135,52 @@ div.life-bar > span {
     100% { background-color: #ff00001e; }
 }
 @keyframes need-refresh {
-    0% { background-color: #ff00001e; }
-    50% { background-color: inherit; }
-    100% { background-color: #ff00001e; }
+    0% { text-shadow: 10px 10px 10px #ff00001e; }
+    50% { text-shadow: inherit; }
+    100% { text-shadow: 10px 10px 10px #ff00001e; }
 }
+
 .need-refresh {
-  -webkit-animation: need-refresh 2s infinite; /* Safari 4+ */
-  -moz-animation:    need-refresh 2s infinite; /* Fx 5+ */
-  -o-animation:      need-refresh 2s infinite; /* Opera 12+ */
-  animation:         need-refresh 2s infinite; /* IE 10+ */
+  -webkit-animation: need-refresh 2s infinite;
+  -moz-animation:    need-refresh 2s infinite;
+  -o-animation:      need-refresh 2s infinite;
+  animation:         need-refresh 2s infinite;
+} */
+
+.need-refresh {
+    -webkit-animation: glow .75s infinite alternate;
+    -moz-animation: glow .75s infinite alternate;
+    -o-animation: glow .75s infinite alternate;
+    animation: glow .75s infinite alternate;
+}
+
+@keyframes glow {
+    to {
+        text-shadow: 0 0 10px #CC3434;
+        color: #A02525;
+    }
+}
+
+
+span.target-list-color-click {
+    cursor: pointer;
+}
+
+a.target-color-1,
+span.target-color-1,
+input.target-color-1 {
+    color: #30C63B  !important; /* green */
+    cursor: pointer;
+}
+a.target-color-2,
+span.target-color-2,
+input.target-color-2 {
+    color: #FFB24F !important; /* orange */
+    cursor: pointer;
+}
+a.target-color-3,
+span.target-color-3,
+input.target-color-3 {
+    color: #FF4F4F !important; /* red */
+    cursor: pointer;
 }
