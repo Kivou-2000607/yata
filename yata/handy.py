@@ -45,10 +45,7 @@ def tsnow():
 
 
 def isProxyKey(key):
-    if (len(key) == 16):
-        return False
-    if (len(key) == 32):
-        return True
+    return True if isinstance(key, str) and len(key) == 32 else False
 
 
 def apiCall(section, id, selections, key, sub=None, verbose=True):
@@ -76,7 +73,7 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
-    if (proxy):
+    if proxy:
         url = "http://torn-proxy.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
     else:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
@@ -114,15 +111,15 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
 
 
 def apiCallError(err):
-    if err.get("proxy") == True:
-        if err["proxy_code"] == 1 or err["proxy_code"] == 2:
-            return dict({"apiError": "API error code {}: {}.".format(err["proxy_code"], err["proxy_error"]),
-                         "apiErrorString": err["proxy_error"],
-                         "apiErrorCode": int(err["proxy_code"])})
+    if err.get("proxy", False):
+        # if err["proxy_code"] == 1 or err["proxy_code"] == 2:
+        return {"apiError": f'Proxy error {err["proxy_code"]}: {err["proxy_error"]}',
+                "apiErrorString": err["proxy_error"],
+                "apiErrorCode": int(err["code"])}  # send API code instead of proxy code to have same behavior
     else:
-        return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"]),
-                     "apiErrorString": err["error"]["error"],
-                     "apiErrorCode": int(err["error"]["code"])})
+        return {"apiError": "API error {}: {}.".format(err["error"]["code"], err["error"]["error"]),
+                 "apiErrorString": err["error"]["error"],
+                 "apiErrorCode": int(err["error"]["code"])}
 
 
 def timestampToDate(timestamp, fmt=False):

@@ -23,7 +23,7 @@ from django.utils import timezone
 class APIKey(models.Model):
     tId = models.IntegerField(default=0)
     tName = models.CharField(max_length=16, blank=True)
-    key = models.CharField(max_length=30, blank=True)
+    key = models.CharField(max_length=32, blank=True)
     lastCheckTS = models.IntegerField(default=0)
     status = models.BooleanField(default=True)
     error = models.CharField(max_length=256, blank=True)

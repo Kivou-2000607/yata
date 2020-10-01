@@ -23,9 +23,11 @@ class NPC(models.Model):
         if key is None:
             key = randomKey()
 
-        req = requests.get('https://api.torn.com/user/{}?&selections=profile,timestamp&key={}'.format(self.tId, key)).json()
-        if 'error' in req:
-            return req['error']
+        # req = requests.get('https://api.torn.com/user/{}?&selections=profile,timestamp&key={}'.format(self.tId, key)).json()
+        req = apiCall("user", "", "profile,timestamp", key=key)
+        print(req)
+        if 'apiError' in req:
+            return req['apiError']
         else:
             self.name = req.get("name", "?")
             self.updateTS = int(req.get("timestamp", 0))

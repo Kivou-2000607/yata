@@ -48,7 +48,8 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            isProxy = isProxyKey(player.getKey())
+            # isProxy = isProxyKey(player.getKey())
+
             # shouldn't happen
             if player is None:
                 del request.session['player']
