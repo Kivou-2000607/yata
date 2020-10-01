@@ -49,6 +49,10 @@ if reset_db:
     cmd = 'python manage.py migrate'
     r = os.system(cmd)
 
+    # create cache table
+    cmd = 'python manage.py createcachetable'
+    r = os.system(cmd)
+
 # create db super user
 if not len(User.objects.all()):
     print('create superuser')
