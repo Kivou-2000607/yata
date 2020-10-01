@@ -26,3 +26,4 @@ schedule==0.6.0
 # memcache and ratemimit
 # python-memcached==1.59
 django-ratelimit==3.0.1
+pylibmc==1.5.2
