@@ -110,19 +110,19 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
                     err = dict({"error": {"code": "", "error": "key not found... something went wrong..."}})
             else:
                 return rjson
-#### THIS IS WHAT WE NEED TO UPDATE WITH THE NEW ERROR CODES
     return apiCallError(err)
+
 
 def apiCallError(err):
     if err.get("proxy") == True:
         if err["proxy_code"] == 1 or err["proxy_code"] == 2:
-                return dict({"apiError": "API error code {}: {}.".format(err["proxy_code"], err["proxy_error"]),
-                 "apiErrorString": err["proxy_error"],
-                 "apiErrorCode": int(err["proxy_code"])})
-    else:  
+            return dict({"apiError": "API error code {}: {}.".format(err["proxy_code"], err["proxy_error"]),
+                         "apiErrorString": err["proxy_error"],
+                         "apiErrorCode": int(err["proxy_code"])})
+    else:
         return dict({"apiError": "API error code {}: {}.".format(err["error"]["code"], err["error"]["error"]),
-                 "apiErrorString": err["error"]["error"],
-                 "apiErrorCode": int(err["error"]["code"])})
+                     "apiErrorString": err["error"]["error"],
+                     "apiErrorCode": int(err["error"]["code"])})
 
 
 def timestampToDate(timestamp, fmt=False):
