@@ -24,8 +24,8 @@ class NPC(models.Model):
             key = randomKey()
 
         # req = requests.get('https://api.torn.com/user/{}?&selections=profile,timestamp&key={}'.format(self.tId, key)).json()
-        req = apiCall("user", "", "profile,timestamp", key=key)
-        print(req)
+        req = apiCall("user", self.tId, "profile,timestamp", key=key)
+
         if 'apiError' in req:
             return req['apiError']
         else:
