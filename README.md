@@ -36,6 +36,9 @@ Create a local .env file
     #PG_HOST=localhost
     #PG_PORT=5432
 
+    # MEMCACHE
+    USE_MEMCACHE = False
+    
     # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
     CACHE_RESPONSE=10 
 
