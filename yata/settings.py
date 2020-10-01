@@ -129,8 +129,9 @@ else:
 
 def get_cache():
     import os
-    if config('USE_MEMCACHE') == True:
+    if (config('USE_MEMCACHE') == "1"):
         servers = "127.0.0.1:11211"
+        print("USING MEMCACHE")
         return {
             'default': {
                 'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
@@ -162,6 +163,7 @@ def get_cache():
             }
         }
     else:
+        print("USING DB CACHE")
         return {
             'default': {
                 'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
