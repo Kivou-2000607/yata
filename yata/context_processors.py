@@ -45,27 +45,26 @@ def sectionMessage(request):
                 section_short = k
         sectionMessage = Message.objects.filter(section=section_short).order_by("date").last()
 
-        # temprorary
-        # del request.session['player']['seen_message']
-        # print(request.session['player'])
-        if request.session['player'].get('seen_message', False):
-            seen_message = False
-        else:
-            seen_message = True
-            tmp = dict(request.session['player'])
-            tmp['seen_message'] = True
-            request.session['player'] = dict(tmp)
-            try:
-                for member in Member.objects.filter(tId=int(request.session['player']['tId'])):
-                    member.shareE = 1
-                    member.shareN = 1
-                    member.shareS = 1
-                    member.save()
-
-            except BaseException as e:
-                print(e)
-                pass
-
+        # temprorary (shows the welcome message at each login)
+        # # del request.session['player']['seen_message']
+        # # print(request.session['player'])
+        # if request.session['player'].get('seen_message', False):
+        #     seen_message = False
+        # else:
+        #     seen_message = True
+        #     tmp = dict(request.session['player'])
+        #     tmp['seen_message'] = True
+        #     request.session['player'] = dict(tmp)
+        #     try:
+        #         for member in Member.objects.filter(tId=int(request.session['player']['tId'])):
+        #             member.shareE = 1
+        #             member.shareN = 1
+        #             member.shareS = 1
+        #             member.save()
+        #
+        #     except BaseException as e:
+        #         pass
+        seen_message = False
 
         if sectionMessage is not None:
             return {"sectionMessage": sectionMessage, "seen_message": seen_message}
