@@ -134,8 +134,14 @@ class Player(models.Model):
             self.save()
 
         return error
+
     def usingProxyKey(self):
-        return isProxyKey(self.getKey())
+        key = self.getKey()
+        # test in case getKey return False
+        if isinstance(key, str):
+            return isProxyKey(self.getKey())
+        else:
+            False
 
     def getAwards(self, userInfo=dict({}), force=False):
         from awards.models import AwardsData
