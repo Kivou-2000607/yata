@@ -69,11 +69,6 @@ along with yata. If not, see
 {# <h2 class="title">Hello {{request.session.player.name}}<span class="flush-right">Last update: {{player.lastUpdateTS|ts2date}}</span></h2> #}
 <div class="module">
     <table class="yata-login">
-        {% if player.usingProxyKey %}
-            <tr style="background:#f9f9f9">
-                <td class="b" colspan="9">
-                    <b>WARNING: Using Torn Proxy keys is still in beta. If you experience any issues please report them</b></td></tr>
-        {% endif %}
         <tr>
             {# logo #}
             <td class="a">
@@ -217,6 +212,12 @@ along with yata. If not, see
 
 </div>
 
+{% if player.usingProxyKey %}
+<div class="module rounded warning">
+    Using Torn Proxy keys is still in beta. If you experience any issues on the website or with the bot please report them.
+</div>
+{% endif %}
+
 {% else %}
 
 <div class="module">
@@ -227,7 +228,7 @@ along with yata. If not, see
             </td>
             <td class="d">
                 <form method="post" class="form-inline">
-                    Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to
+                    Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> (or a <a href="https://torn-proxy.com" target="_blank">proxy key</a>) to
                     start using <b>YATA</b>&nbsp;
                     {% csrf_token %}
                     <input id="yata-login-key" placeholder="API key" type=text>
