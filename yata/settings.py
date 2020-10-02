@@ -20,13 +20,19 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if config('DEBUG') == "1":
+    DEBUG = True
+else:
+    DEBUG = False
+print(f"SETTINGS: DEBUG={DEBUG}")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = config('SECRET_KEY')
+print(f"SETTINGS: SECRET_KEY={SECRET_KEY}")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
+print(f"SETTINGS: ALLOWED_HOSTS={ALLOWED_HOSTS}")
 
 # Application definition
 
@@ -94,7 +100,9 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if (config("DATABASE") == "postgresql"):
+if config("DATABASE") == "postgresql":
+    print(f"SETTINGS: DATABASE=postgresql")
+
     DATABASES = {
 
         'default': {
@@ -116,6 +124,8 @@ if (config("DATABASE") == "postgresql"):
     }
 
 else:
+    print(f"SETTINGS: DATABASE=sqlite3")
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -123,17 +133,43 @@ else:
         }
     }
 
+
 # Cache
 # https://docs.djangoproject.com/en/3.1/topics/cache/
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'cache',
-    }
-}
+
+
+def get_cache():
+    import os
+    print(f"SETTINGS: CACHE=redis")
+
+    if (config('USE_REDIS') == "1"):
+        return {
+            'default': {
+                "BACKEND": "django_redis.cache.RedisCache",
+                "LOCATION": config('REDIS_HOST'),
+                "OPTIONS": {
+                    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                    "PASSWORD": config('REDIS_PASSWORD'),
+                }
+            }
+        }
+
+    else:
+        print(f"SETTINGS: CACHE=DB")
+
+        return {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+                'LOCATION': 'cache',
+            }
+        }
+
+CACHES = get_cache()
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -148,6 +184,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+
+
 ]
 
 

@@ -43,7 +43,7 @@ DEFAULT_UPDATE = 60 * 60  # by default next update is in an hour
 UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 
 # @cache_page(60*5)
-# @ratelimit(key='ip', rate='5/m')
+@ratelimit(key='ip', rate='5/m')
 def loot(request):
     try:
 
