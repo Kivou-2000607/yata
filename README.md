@@ -38,6 +38,7 @@ Create a local .env file
 
     # REDIS
     USE_REDIS=0
+    REDIS_HOST="redis://127.0.0.1:6379/1"
     #REDIS_PASSWORD="your password"
 
     # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually

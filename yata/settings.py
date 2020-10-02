@@ -134,7 +134,7 @@ def get_cache():
         return {
             'default': {
                 "BACKEND": "django_redis.cache.RedisCache",
-                "LOCATION": "redis://127.0.0.1:6379/1",
+                "LOCATION": config('REDIS_HOST'),
                 "OPTIONS": {
                     "CLIENT_CLASS": "django_redis.client.DefaultClient",
                     "PASSWORD": config('REDIS_PASSWORD'),
