@@ -141,17 +141,20 @@ def cleanhtml(raw_html):
     return cleantext
 
 
-def getPlayer(tId):
+def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     from player.models import Player
     from player.functions import updatePlayer
     from django.http import HttpResponseForbidden
     from django.template.loader import render_to_string
 
+    if skipUpdate:
+        return Player.objects.filter(tId=tId).first()
+
     player, _ = Player.objects.get_or_create(tId=tId)
     player.lastActionTS = tsnow()
     player.active = True
 
-    if tsnow() - player.lastUpdateTS > 3600:
+    if tsnow() - player.lastUpdateTS > 3600 or forceUpdate:
         updatePlayer(player)
 
     player.save()

@@ -154,6 +154,8 @@ class Faction(models.Model):
 
     # respect simulator
     upgradesUpda = models.IntegerField(default=0)
+    simulationTS = models.IntegerField(default=0)
+    simulationID = models.IntegerField(default=0)
 
     # members
     membersUpda = models.IntegerField(default=0)

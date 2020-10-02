@@ -21,6 +21,12 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+{% if currentSimu %}
+<div class="module rounded warning">
+  {{currentSimu.player}} is modifying the simulation ({{currentSimu.delta|ts2ago}}).
+</div>
+{% endif %}
+
 <h2 class="title"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect Simulator<span id="faction-tree-reset" class="flush-right"><a href=""><i class="fas fa-toilet-paper"></i>&nbsp;&nbsp;Reset simulation</a></span><span id="faction-tree-refresh" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Refresh faction upgrades</a></span></h2>
 <div id="faction-upgrade-tree" class="module">
     {% include "faction/simulator/table.html" %}

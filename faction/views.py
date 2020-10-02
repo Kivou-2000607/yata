@@ -3035,6 +3035,11 @@ def simulator(request):
                     else:
                         faction.upgrade_set.filter(simu=True, branch=branch).update(branchorder=0, level=1, active=False)
 
+                # update simulator TS
+                faction.simulationTS = tsnow()
+                faction.simulationID = player.tId
+                faction.save()
+
             elif request.POST.get("reset"):
                 faction.resetSimuUpgrades(update=False)
 
@@ -3043,7 +3048,13 @@ def simulator(request):
 
             tree, respect = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
 
-            context = {'player': player, 'factioncat': True, 'faction': faction, 'respect': respect, 'tree': tree, 'view': {'simulator': True}}
+            deltaSimu = tsnow() - faction.simulationTS
+            if deltaSimu < 5 * 60 and player.tId != faction.simulationID:
+                currentSimu = {"player": getPlayer(faction.simulationID, skipUpdate=True), "delta": deltaSimu}
+            else:
+                currentSimu = False
+
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'respect': respect, 'tree': tree, 'currentSimu': currentSimu, 'view': {'simulator': True}}
             if message:
                 err = "validMessage" if state else "errorMessage"
                 sub = "Sub" if request.method == 'POST' else ""
