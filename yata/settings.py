@@ -129,39 +129,19 @@ else:
 
 def get_cache():
     import os
-    if (config('USE_MEMCACHE') == "1"):
-        servers = "127.0.0.1:11211"
-        print("USING MEMCACHE")
+    if (config('USE_REDIS') == "1"):
+        print("USING REDIS")
         return {
             'default': {
-                'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-                # TIMEOUT is not the connection timeout! It's the default expiration
-                # timeout that should be applied to keys! Setting it to `None`
-                # disables expiration.
-                'TIMEOUT': None,
-                'LOCATION': servers,
-                'OPTIONS': {
-                    'binary': True,
-                    'behaviors': {
-                        # Enable faster IO
-                        'no_block': True,
-                        'tcp_nodelay': True,
-                        # Keep connection alive
-                        'tcp_keepalive': True,
-                        # Timeout settings
-                        'connect_timeout': 2000,  # ms
-                        'send_timeout': 750 * 1000,  # us
-                        'receive_timeout': 750 * 1000,  # us
-                        '_poll_timeout': 2000,  # ms
-                        # Better failover
-                        'ketama': True,
-                        'remove_failed': 1,
-                        'retry_timeout': 2,
-                        'dead_timeout': 30,
-                    }
+                "BACKEND": "django_redis.cache.RedisCache",
+                "LOCATION": "redis://127.0.0.1:6379/1",
+                "OPTIONS": {
+                    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                    "PASSWORD": config('REDIS_PASSWORD'),
                 }
             }
         }
+
     else:
         print("USING DB CACHE")
         return {
@@ -192,6 +172,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+
+
 ]
 
 
