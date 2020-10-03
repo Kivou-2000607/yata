@@ -84,10 +84,18 @@ def updateAttacks(player, full=False):
 
         v = modifiers2lvl1(v)
         try:
-            player.attack_set.get_or_create(tId=int(k), defaults=v)
+            target, create = player.attack_set.get_or_create(tId=int(k), defaults=v)
         except BaseException:
             player.attack_set.filter(tId=int(k)).all().delete()
-            player.attack_set.get_or_create(tId=int(k), defaults=v)
+            target, create = player.attack_set.get_or_create(tId=int(k), defaults=v)
+
+        # update if based on 1k
+        if not create and target.attacker_name == "Player":
+            try:
+                player.attack_set.update_or_create(tId=int(k), defaults=v)
+            except BaseException:
+                pass
+
 
     old = tsnow() - 2678400  # 1 month old
     player.attack_set.filter(timestamp_ended__lt=old).delete()
