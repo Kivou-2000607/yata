@@ -35,7 +35,7 @@ from bazaar.models import AbroadStocks
 from bazaar.models import VerifiedClient
 from bazaar.models import Item
 
-@cache_page(30)
+# @cache_page(30)
 @ratelimit(key='ip', rate='5/m')
 def exportStocks(request):
     try:
@@ -46,16 +46,20 @@ def exportStocks(request):
 
         else:
             stocks = AbroadStocks.objects.filter(last=True)
-            countries = {"mex": 0, "cay": 0, "can": 0,
-                         "haw": 0, "uni": 0, "arg": 0,
-                         "swi": 0, "jap": 0, "chi": 0,
-                         "uae": 0, "sou": 0,}
-            for s in stocks:
-                countries[s.country_key] = max(countries[s.country_key], s.timestamp)
+            countries = {"mex": {}, "cay": {}, "can": {},
+                         "haw": {}, "uni": {}, "arg": {},
+                         "swi": {}, "jap": {}, "chi": {},
+                         "uae": {}, "sou": {},}
+
+            for k in countries:
+                c_stocks = stocks.filter(country_key=k)
+                if len(c_stocks):
+                    countries[k] = {"update": c_stocks.first().timestamp, "stocks": [s.payloadLight() for s in c_stocks]}
+                else:
+                    countries[k] = {"update": 0, "stocks": []}
 
             payload = {
-                "stocks": [s.payloadLight() for s in stocks],
-                "updates": countries,
+                "stocks": countries,
                 "timestamp": tsnow()
             }
             status = 200

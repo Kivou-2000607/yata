@@ -350,10 +350,10 @@ class AbroadStocks(models.Model):
         return {
             # "id": f'{self.country_key}-{self.item.tId}',
             "id": self.item.tId,
-            "country": self.country_key,
+            "name": self.item.tName,
+            # "country": self.country_key,
             "quantity": self.quantity,
             # "timestamp": self.timestamp,
-            "name": self.item.tName,
             # "item_type": self.item.tType,
             # "cost": self.cost,
             # "item_maket_value": self.item.tMarketValue,
