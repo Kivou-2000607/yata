@@ -62,7 +62,7 @@ This file is part of yata.
     </td>
 
     {% if targetId %}
-        <td class="h no-padding dont-touch-me">
+        <td class="h no-padding dont-touch-me" data-col="{{target.color}}">
             {% include "target/targets/note.html" %}
         </td>
         <td class="g dont-touch-me" data-val='{% if target.status_state == "Okay" %}1{%else%}0{% endif %}'>

@@ -72,7 +72,7 @@ This file is part of yata.
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}
-            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}" data-col="{{target.color}}">
+            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}">
                 {% include "target/targets/line.html" %}
             </tr>
         {% endfor %}
