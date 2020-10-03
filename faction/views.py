@@ -2383,6 +2383,9 @@ def armory(request):
             if request.POST.get("type") == "filter":
                 faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
                 faction.save()
+            elif request.POST.get("resetFilters", False):
+                faction.armoryNewsFilter = ""
+                faction.save()
 
             if faction.armoryNewsFilter:
                 news = news.filter(member=faction.armoryNewsFilter)

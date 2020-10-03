@@ -111,6 +111,13 @@ $(document).ready(function() {
                 <tr>
                     <th colspan="2"><div id="date-range" style="margin: 10px;"></div></th>
                 </tr>
+                {% if faction.armoryNewsFilter %}
+                  <tr>
+                    <th colspan="2" class="warning">
+                      You have one filter on {{faction.armoryNewsFilter}} [<a id="faction-armory-reset-filters" href="{% url 'faction:armory' %}">Remove</a>]
+                    </th>
+                  </tr>
+                {% endif %}
             </thead>
         </table>
 

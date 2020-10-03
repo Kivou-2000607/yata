@@ -45,3 +45,12 @@ $(document).on('change', 'select.faction-armory-header-filter', e=>{
     });
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Filtering armory');
 });
+
+$(document).on('click', '#faction-armory-reset-filters', e=>{
+    e.preventDefault();
+    $("#content-update").load( "/faction/armory/", {
+        resetFilters: 1,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reset armory filters');
+});
