@@ -115,6 +115,17 @@ $(document).on('click', '#target-list-refresh-color', function(e){
     let colors = ["all", "green", "orange", "red"];
     $("#target-refresh").html('<i class="fas fa-sync-alt"></i>&nbsp;Refresh ' + colors[color]);
     $("#target-refresh").attr("data-val", color);
+
+    // hide the other colors
+    $('.target-list-note-color').each(function() {
+      const tr = $(this).parents('tr');
+      if($(this).attr('data-col') != color) {
+        tr.hide()
+      } else {
+        tr.show()
+      }
+    });
+
 });
 
 // add target manually
