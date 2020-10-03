@@ -30,7 +30,8 @@ This file is part of yata.
                   5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-                  11: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
+                  // 11: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
+                  11: function(node, table, cellIndex) { return $(node).attr("data-col"); },
                   12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
                 cssAsc: 'up',
@@ -71,7 +72,7 @@ This file is part of yata.
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}
-            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}">
+            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}" data-col="{{target.color}}">
                 {% include "target/targets/line.html" %}
             </tr>
         {% endfor %}
