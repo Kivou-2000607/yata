@@ -20,10 +20,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if config('DEBUG') == "1":
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 print(f"SETTINGS: DEBUG={DEBUG}")
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -31,7 +28,7 @@ print(f"SETTINGS: DEBUG={DEBUG}")
 SECRET_KEY = config('SECRET_KEY')
 print(f"SETTINGS: SECRET_KEY={SECRET_KEY}")
 
-ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = [config('ALLOWED_HOSTS', default="*")]
 print(f"SETTINGS: ALLOWED_HOSTS={ALLOWED_HOSTS}")
 
 # Application definition
@@ -100,7 +97,7 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if config("DATABASE") == "postgresql":
+if config("DATABASE", default="sqlite", cast=str )== "postgresql":
     print(f"SETTINGS: DATABASE=postgresql")
 
     DATABASES = {
@@ -142,7 +139,7 @@ def get_cache():
     import os
     print(f"SETTINGS: CACHE=redis")
 
-    if (config('USE_REDIS') == "1"):
+    if (config('USE_REDIS', default=False, cast=bool)):
         return {
             'default': {
                 "BACKEND": "django_redis.cache.RedisCache",
