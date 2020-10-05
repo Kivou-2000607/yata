@@ -41,8 +41,10 @@ Create a local .env file
 
 
     ###### OPTIONAL ######
-    APIKEY="API KEY HERE" # Your TORN API KEY
-    CACHE_RESPONSE=10 # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
+    # Your TORN API KEY
+    APIKEY="API KEY HERE" 
+    # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
+    CACHE_RESPONSE=10 
 
     # The amount of chain report crontabs to run when running crons manually via python dev_cron.py
     CHAIN_REPORT = 1
