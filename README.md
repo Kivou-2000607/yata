@@ -20,41 +20,38 @@ The website is hosted here: https://yata.alwaysdata.net/
 
 Create a local .env file
 
-    # Your TORN API KEY
-    APIKEY="TORNAPIKEY"
-
-    # You can leave this as it or specify your own
-    SECRET_KEY="SUPER_SECRET_KEY"
-    DEBUG=1
+    ###### REQUIRED ######
+    DEBUG=True
+    SECRET_KEY="super_secret_key"
     ALLOWED_HOSTS="*"
 
     # Database selection
     DATABASE=sqlite
-    # DATABASE=postgresql
-
-    # PG_NAME=yata
-    # PG_USER=username
-    # PG_PASSWORD=password
-    # PG_HOST=localhost
-    # PG_PORT=5432
+    #DATABASE=postgresql
+    #PG_NAME=yata
+    #PG_USER=username
+    #PG_PASSWORD=password
+    #PG_HOST=localhost
+    #PG_PORT=5432
 
     # REDIS
-    USE_REDIS=0
-    # USE_REDIS=1
-    # REDIS_HOST="redis://127.0.0.1:6379/1"
-    # REDIS_PASSWORD="your password"
+    #USE_REDIS=True
+    #REDIS_HOST="redis://178.62.1.116:6379/1"
+    #REDIS_PASSWORD="x$i#T8sLg&U4u8W3DBc4^G9b3Bv2bFJy08iNt"
 
-    # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
-    CACHE_RESPONSE=10
 
-    # The amount of chain report crontabs to run
-    CHAIN_REPORT=1
+    ###### OPTIONAL ######
+    APIKEY="API KEY HERE" # Your TORN API KEY
+    CACHE_RESPONSE=10 # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
 
-    # The amount of attack report crontabs to run
-    ATTACK_REPORT=1
+    # The amount of chain report crontabs to run when running crons manually via python dev_cron.py
+    CHAIN_REPORT = 1
 
-    # The amount of revive report crontabs to run
-    REVIVE_REPORT=1
+    # The amount of attack report crontabs to run when running crons manually via python dev_cron.py
+    ATTACK_REPORT = 1
+
+    # The amount of revive report crontabs to run when running crons manually via python dev_cron.py
+    REVIVE_REPORT = 1
 
 Then run setup.py to initalise everything
 
