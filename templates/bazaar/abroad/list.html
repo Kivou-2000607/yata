@@ -44,13 +44,13 @@ This file is part of yata.
         {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
 
             {% if id == filters.countries %}
-                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons {% if country.eff > 90 %}valid{% elif country.eff > 50 %}warning{% else %}error{% endif %}">
+                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
                     {% if country.flag %}
                         <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{country.flag}}.png" alt="{{id}}">
                     {% else %}
                         <i class="fas fa-toggle-on"></i>
                     {% endif %}
-                    {{country.name}} (<span title="Over the last 24 hours: {{country.n|intcomma}} updates and {{country.eff|floatformat:1}}% efficiency based on 5 minutes periodes">{{country.eff|floatformat:2}}%</span>)
+                    {{country.name}}
                 </td>
             {% else %}
                 <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
@@ -59,7 +59,7 @@ This file is part of yata.
                     {% else %}
                         <i class="fas fa-toggle-off"></i>
                     {% endif %}
-                    {{country.name}} (<span title="Over the last 24 hours: {{country.n|intcomma}} updates and {{country.eff|floatformat:1}}% efficiency based on 5 minutes periodes">{{country.eff|floatformat:2}}%</span>)
+                    {{country.name}}
                 </td>
             {% endif %}
 
@@ -106,12 +106,10 @@ This file is part of yata.
         {% if stocks|length %}
             {% for stock in stocks %}
             <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow abroad-item-stocks">
-                {% with eff=stock.get_efficiency %}
-                    <td class="a" data-val="{{stock.get_country.id}}" title="Over the last 24 hours: {{eff.0|intcomma}} updates, {{eff.1|floatformat:1}}% efficiency based on 5 minutes periodes">
-                    <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{stock.get_country.flag}}.png" alt="{{id}}">
+                  <td class="a" data-val="{{stock.get_country.id}}">
+                  <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{stock.get_country.flag}}.png" alt="{{id}}">
                     {{stock.country}}
                 </td>
-                {% endwith %}
                 <td class="b dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}">{{stock.item.tName}}</td>
                 <td class="c">{{stock.item.tType}}</td>
                 <td class="d" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>

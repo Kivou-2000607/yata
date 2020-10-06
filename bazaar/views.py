@@ -746,6 +746,7 @@ def abroadExport(request):
         return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
 
 
+@cache_page(60)
 def abroad(request):
     try:
         # build up filters list
@@ -792,40 +793,12 @@ def abroad(request):
         # old stocks
         old = tsnow() - 48 * 3600
         AbroadStocks.objects.filter(timestamp__lt=old).delete()
-
-        # get all stocks to get clients
-        stocks = AbroadStocks.objects.filter(timestamp__gt=old)
-        clients = dict({})
-        for stock in stocks:
-            client_name = stock.client.split("[")[0].strip()
-            if client_name not in clients:
-                client = VerifiedClient.objects.filter(name=client_name).first()
-                if client is not None:
-                    clients[client_name] = [0.0, client.author_id, client.author_name]
-                else:
-                    clients[client_name] = [0.0, 0, "Player"]
-            clients[client_name][0] += 1.0 / float(max(1, len(stocks)))
-
-        # get last stocks
-        stocks = AbroadStocks.objects.filter(last=True, timestamp__gt=old)
-        efficiencies = dict({"all": [0, 0, 0]})
-        for stock in stocks:
-            # compute efficiency
-            eff = stock.get_efficiency(h=48)
-            if stock.country_key not in efficiencies:
-                efficiencies[stock.country_key] = [0, 0, 0]
-
-            efficiencies[stock.country_key][0] += eff[0]
-            efficiencies[stock.country_key][1] += eff[1]
-            efficiencies[stock.country_key][2] += 1
-            efficiencies["all"][0] += eff[0]
-            efficiencies["all"][1] += eff[1]
-            efficiencies["all"][2] += 1
-
-        # compute efficiency
-        for k, v in efficiencies.items():
-            country_list[k]["eff"] = v[1] / float(max(1, v[2]))
-            country_list[k]["n"] = v[0] // max(1, v[2])
+        stocks = AbroadStocks.objects.filter(last=True)
+        bd = BazaarData.objects.first()
+        if bd is None:
+            clients = {}
+        else:
+            clients = json.loads(bd.clientsStats)
 
         if filters["countries"] != "all":
             stocks = stocks.filter(country_key=filters["countries"])
@@ -880,9 +853,9 @@ def abroadStocks(request):
             graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
 
             stock = stocks.first()
-            eff = stock.get_efficiency(h=48)
-            stock.n = eff[0]
-            stock.eff = eff[1]
+            # eff = stock.get_efficiency(h=48)
+            # stock.n = eff[0]
+            # stock.eff = eff[1]
             context = {'stock': stocks.first(),
                        'graph': graph,
                        'x': [timestampToDate(tsnow() - 48 * 3600),

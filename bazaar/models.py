@@ -284,6 +284,7 @@ class BazaarData(models.Model):
     lastScanTS = models.IntegerField(default=0)
     itemType = models.TextField(default="{}")
     pointsValue = models.IntegerField(default=0)
+    clientsStats = models.TextField(default="{}")
 
 
 class VerifiedClient(models.Model):
