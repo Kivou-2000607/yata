@@ -17,12 +17,22 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load mathfilters %}
-{% load humanize %}
-{% load static %}
-{% load app_filters %}
-
-
-<div id="player-merits" class="module rounded">
-  <p>Please select a section</p>
-</div>
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow player-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'player:merits' %}"><i class="fas fa-medal"></i>&nbsp;&nbsp;Merits simulator</a>
+        </td>
+        <td>
+            <a href="{% url 'player:stats' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Personal stats</a>
+        </td>
+        <td style="opacity: 0.3;">
+          <a style="cursor: not-allowed;" href="{% url 'player:gym' %}"><i class="fas fa-dumbbell"></i>&nbsp;&nbsp;Gym simulator</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>

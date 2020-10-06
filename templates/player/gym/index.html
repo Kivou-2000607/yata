@@ -23,6 +23,20 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<div id="player-merits" class="module rounded">
-  <p>Please select a section</p>
-</div>
+{% if apiErrorSub %}
+    <p class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorSub}}</p>
+{% else %}
+
+<p>Will be released after crimes 2.0</p>
+
+<!-- <h3>Settings</h3> -->
+
+<!-- <form action="{% url 'player:gym' %}" method="post"> -->
+    <!-- {% csrf_token %} -->
+    <!-- {{ form }} -->
+    <!-- <input type="submit" value="Train"> -->
+<!-- </form> -->
+
+
+
+{% endif %}

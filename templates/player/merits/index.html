@@ -167,7 +167,7 @@ $( document ).ready(function() {
         {% for k, v in merits.items %}
         <tr>
             <td class="a">{{k}}</td>
-            <td class="b merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits-bar.html" %}</td>
+            <td class="b merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits/bar.html" %}</td>
             <td class="c description">
                 {{v.description.0}}
                 {% if v.description.1 %}

@@ -129,7 +129,8 @@ def login(request):
             # return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:
-        return returnError(exc=e, session=request.session)
+        context = {'apiError': e}
+        return render(request, 'yata/login.html', context)
 
 
 def logout(request):

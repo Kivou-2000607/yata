@@ -1,4 +1,4 @@
-{% comment %}
+"""
 Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,14 +15,9 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
+"""
 
-{% load mathfilters %}
-{% load humanize %}
-{% load static %}
-{% load app_filters %}
+from django import forms
 
-
-<div id="player-merits" class="module rounded">
-  <p>Please select a section</p>
-</div>
+class GymForm(forms.Form):
+    your_name = forms.CharField(label='Your name', max_length=100)

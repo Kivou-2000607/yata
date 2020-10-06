@@ -17,6 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 */
 
+table.player-categories td {
+    text-align: center;
+    /* width: 14.29%; */
+    cursor: pointer;
+    border: 0;
+}
+
 table.players-users-summary td.a { width: 40%; }
 table.players-users-summary td.b { width: 30%; text-align: center;}
 
