@@ -27,3 +27,7 @@ schedule==0.6.0
 # python-memcached==1.59
 django-ratelimit==3.0.1
 django_redis==4.12.1
+
+#min
+django-htmlmin==0.11.0
+django-brotli==0.2.0
