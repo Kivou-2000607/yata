@@ -3131,30 +3131,30 @@ def oc(request):
             pastCrimes = crimes.filter(initiated=True).order_by("-time_completed")
 
             # compute breakdown totals
-            crimesBD = dict({})
-            teamsBD = dict({})
+            crimesDB = dict({})
+            teamsDB = dict({})
             for crime in pastCrimes:
-                if crime.crime_id not in crimesBD:
+                if crime.crime_id not in crimesDB:
 
-                    crimesBD[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0, 0, 0, 0], "respect": [0, 0, 0, 0, 0, 0]}
+                    crimesDB[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0, 0, 0, 0], "respect": [0, 0, 0, 0, 0, 0]}
 
-                if crime.team_id not in teamsBD:
-                    teamsBD[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0]}
+                if crime.team_id not in teamsDB:
+                    teamsDB[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0], "active": False}
 
-                crimesBD[crime.crime_id]["crimes"][0] += 1
-                crimesBD[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
-                crimesBD[crime.crime_id]["money"][0] += crime.money_gain
-                crimesBD[crime.crime_id]["respect"][0] += crime.respect_gain
-                crimesBD[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                crimesDB[crime.crime_id]["crimes"][0] += 1
+                crimesDB[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
+                crimesDB[crime.crime_id]["money"][0] += crime.money_gain
+                crimesDB[crime.crime_id]["respect"][0] += crime.respect_gain
+                crimesDB[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
 
-                teamsBD[crime.team_id]["crimes"][0] += 1
-                teamsBD[crime.team_id]["crimes"][1] += 1 if crime.success else 0
-                teamsBD[crime.team_id]["money"][0] += crime.money_gain
-                teamsBD[crime.team_id]["respect"][0] += crime.respect_gain
-                teamsBD[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                teamsDB[crime.team_id]["crimes"][0] += 1
+                teamsDB[crime.team_id]["crimes"][1] += 1 if crime.success else 0
+                teamsDB[crime.team_id]["money"][0] += crime.money_gain
+                teamsDB[crime.team_id]["respect"][0] += crime.respect_gain
+                teamsDB[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
 
-            # compute crimesBD averages
-            for k, v in crimesBD.items():
+            # compute crimesDB averages
+            for k, v in crimesDB.items():
                 v["crimes"][2] = round(100 * (v["crimes"][1] / v["crimes"][0]))
                 v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
                 v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
@@ -3168,9 +3168,9 @@ def oc(request):
                 v["respect"][4] = OC_EFFICIENCY[k]["respect"]
                 v["respect"][5] = round(100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"]))
 
-            # compute teamsBD averages
+            # compute teamsDB averages
             todel = []
-            for k, v in teamsBD.items():
+            for k, v in teamsDB.items():
                 v["crimes"][2] = round(100 * (v["crimes"][1] / v["crimes"][0]))
                 v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
                 v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
@@ -3179,19 +3179,22 @@ def oc(request):
                 v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
                 if v["crimes"][0] == 1:
                     todel.append(k)
+                elif len(currentCrimes.filter(team_id=k)):
+                    v["active"] = True
+
 
             for k in todel:
-                del teamsBD[k]
+                del teamsDB[k]
 
-            # order crimesBD
-            crimesBD = sorted(crimesBD.items(), key=lambda x: x[0])
-            teamsBD = sorted(teamsBD.items(), key=lambda x: -x[1]["time"][0])
+            # order crimesDB
+            crimesDB = sorted(crimesDB.items(), key=lambda x: x[0])
+            teamsDB = sorted(teamsDB.items(), key=lambda x: -x[1]["time"][0])
 
             # pagination
             currentCrimes = Paginator(currentCrimes, 25).get_page(request.GET.get("p_ccrimes"))
             pastCrimes = Paginator(pastCrimes, 25).get_page(request.GET.get("p_pcrimes"))
 
-            context = {'player': player, 'factioncat': True, 'faction': faction, 'crimesBD': crimesBD, 'teamsBD': teamsBD, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), "filters": filters, 'getfilters': getfilters, 'view': {'oc': True}}
+            context = {'player': player, 'factioncat': True, 'faction': faction, 'crimesDB': crimesDB, 'teamsDB': teamsDB, 'currentCrimes': currentCrimes, 'pastCrimes': pastCrimes, 'tsnow': tsnow(), "filters": filters, 'getfilters': getfilters, 'view': {'oc': True}}
             if message:
                 sub = "Sub" if request.method == 'POST' else ""
                 if error:

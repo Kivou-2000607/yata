@@ -39,7 +39,7 @@ This file is part of yata.
     });
 </script>
 
-{% if crimesBD|length %}
+{% if crimesDB|length %}
 <table id="faction-crimes-breakdown-crimes" class="center-large trshadow faction-crimes-breakdown">
     <thead>
         <tr>
@@ -72,7 +72,7 @@ This file is part of yata.
 
     </thead>
     <tbody>
-    {% for k, v in crimesBD %}
+    {% for k, v in crimesDB %}
         <tr class="hover">
             <td class="a" data-val="{{k}}">{{v.name}}
                 {% include "faction/oc/filter.html" with type="crime_id" id=k %}

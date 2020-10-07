@@ -23,23 +23,6 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<script>
-    // $(document).ready(function() {
-    //     $("#faction-crimes-list-current").tablesorter({
-    //         textExtraction: {
-    //           0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-    //           1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-    //           3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-    //           4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-    //           5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-    //         },
-    //         cssAsc: 'up',
-    //         cssDesc: 'down',
-    //         sortList: [[5,0]]
-    //     });
-    // });
-</script>
-
 {% if reloadTooltips %}
     <script type="text/javascript" src='{% static "thirdparty/js/tooltip.js" %}'></script>
 {% endif %}
@@ -79,9 +62,13 @@ This file is part of yata.
     <tbody>
     {% for crime in currentCrimes %}
       <tr class="hover">
-          <td class="a" data-val="{{crime.participants|length}}">
-              <i rel="tooltip" class="fas fa-users" style="cursor: help;" title='{% include "faction/oc/participants.html" with participants=crime.get_participants id=crime.team_id %}'></i>
+          <td class="a valid" data-val="{{crime.participants|length}}">
+             {% with participants=crime.get_participants %}
+              <span rel="tooltip" style="cursor: help;" data-val="{{participants|length}}" title='{% include "faction/oc/participants.html" with participants=participants id=crime.team_id %}'>
+                <i class="fas fa-users" ></i>&nbsp;&nbsp;<tt>{{crime.team_id}}</tt> #{{participants|length}}
+              </span>
               {% include "faction/oc/filter.html" with type="team_id" id=crime.team_id %}
+              {% endwith %}
           </td>
           <td class="b" data-val="{{crime.tId}}">{{crime.crime_name}} [{{crime.tId}}]
               {% include "faction/oc/filter.html" with type="crime_id" id=crime.crime_id %}

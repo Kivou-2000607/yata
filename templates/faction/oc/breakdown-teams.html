@@ -39,7 +39,7 @@ This file is part of yata.
     });
 </script>
 
-{% if teamsBD|length %}
+{% if teamsDB|length %}
 <table id="faction-crimes-breakdown-team" class="center-large trshadow faction-crimes-breakdown">
     <thead>
         <tr>
@@ -68,9 +68,9 @@ This file is part of yata.
 
     </thead>
     <tbody>
-    {% for k, v in teamsBD %}
+    {% for k, v in teamsDB %}
         <tr class="hover">
-            <td class="a">
+            <td class="a{% if v.active %} valid{%endif%}">
                 <span rel="tooltip" style="cursor: help;" data-val="{{v.participants|length}}" title='{% include "faction/oc/participants.html" with participants=v.participants id=k %}'>
                     <i class="fas fa-users" ></i>&nbsp;&nbsp;<tt>{{k}}</tt> #{{v.participants|length}}
                 </span>
