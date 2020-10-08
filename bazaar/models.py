@@ -356,7 +356,7 @@ class AbroadStocks(models.Model):
             "quantity": self.quantity,
             # "timestamp": self.timestamp,
             # "item_type": self.item.tType,
-            # "cost": self.cost,
+            "cost": self.cost,
             # "item_maket_value": self.item.tMarketValue,
             # "item_sell_price": self.item.tSellPrice,
             # "item_buy_price": self.item.tBuyPrice,
