@@ -36,7 +36,6 @@ UPDATE_LEVEL = 210 * 60  # level 4
 # UPDATE_LEVEL = 450 * 60  # level 5
 
 IGNORE_TIME = 30 * 60  # ignore a NPC if he passes the loot level
-IGNORE_TIME = 30 * 60  # ignore a NPC if he passes the loot level
 
 DEFAULT_UPDATE = 60 * 60  # by default next update is in an hour
 
@@ -64,6 +63,7 @@ def loot(request):
                 # check if not to be ignored ignored (IGNORE_TIME seconds after loot level)
                 if ts + IGNORE_TIME < hosp_out + UPDATE_LEVEL:
                     next_update = hosp_out + UPDATE_LEVEL + UPDATE_TIME
+                    break
 
             payload = {
                 "hosp_out": npcs,
