@@ -21,6 +21,7 @@ This file is part of yata.
 {% load humanize %}
 {% load mathfilters %}
 {% load app_filters %}
+{% load cache %}
 
 <script>
     $(document).ready(function() {
@@ -38,7 +39,7 @@ This file is part of yata.
         });
     });
 </script>
-
+{% cache 60 stocks-abroad %}
 <table class="center-large">
         {% for id, country in country_list.items %}
         {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
@@ -129,3 +130,4 @@ This file is part of yata.
         {% endif %}
     </tbody>
 </table>
+{% endcache %}
