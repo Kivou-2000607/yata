@@ -240,7 +240,7 @@ def sets(request):
                 "quantities": [1, 1, 1],
                 "points": 1000,
                 "market_value": 0,
-                },
+            },
             "Senet game set": {
                 "ids": [460, 461, 462],
                 "type": "Senet",
@@ -281,7 +281,7 @@ def sets(request):
                 "points": 10000,
                 "market_value": 0,
             },
-            }
+        }
 
         inventory = bazaarJson.get("inventory", dict({}))
         bazaar = bazaarJson.get("bazaar", dict({}))
@@ -298,7 +298,7 @@ def sets(request):
             set["points_value"] = point_value * set["points"]
             set["benefits"] = set["points_value"] - set["market_value"]
             set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
-                # item.save()
+            # item.save()
 
         context = {"player": player, 'list': playerList, "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
@@ -746,7 +746,7 @@ def abroadExport(request):
         return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
 
 
-@cache_page(60)
+# @cache_page(60)
 def abroad(request):
     try:
         # build up filters list
