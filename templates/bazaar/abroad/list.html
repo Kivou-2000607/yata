@@ -39,7 +39,7 @@ This file is part of yata.
         });
     });
 </script>
-{% cache 60 stocks-abroad player.name %}
+{% cache 60 stocks-abroad %}
 <table class="center-large">
         {% for id, country in country_list.items %}
         {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
