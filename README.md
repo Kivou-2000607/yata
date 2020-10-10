@@ -37,7 +37,7 @@ Create a local .env file
     # REDIS
     #USE_REDIS=True
     #REDIS_HOST="redis://178.62.1.116:6379/1"
-    #REDIS_PASSWORD="x$i#T8sLg&U4u8W3DBc4^G9b3Bv2bFJy08iNt"
+    #REDIS_PASSWORD="***"
 
 
     ###### OPTIONAL ######
