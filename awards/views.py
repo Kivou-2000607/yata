@@ -203,9 +203,10 @@ def togglePin(request):
                 if awardId in pinnedAwards:
                     pinnedAwards.remove(awardId)
                 else:
-                    if len(pinnedAwards) == 3:
-                        pinnedAwards.pop(0)
-                    pinnedAwards.append(awardId)
+                    if awardId.split("_")[-1].isdigit():
+                        if len(pinnedAwards) == 3:
+                            pinnedAwards.pop(0)
+                        pinnedAwards.append(awardId)
 
                 player.awardsPinn = json.dumps(pinnedAwards)
                 player.save()
