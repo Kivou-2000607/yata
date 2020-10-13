@@ -341,6 +341,7 @@ d = {
     896: 876587407,  # Going Postal
     641: 150619086,  # Strongest Link
     414: 606974195,  # Triple Tap
+    955: 491353134,  # Yoink
     476: 0,  # Chainer 5
 
     # 9
