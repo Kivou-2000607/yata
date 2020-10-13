@@ -147,7 +147,7 @@ GM_addStyle (cssTxt);
       let key = GM_getValue("key","");
       GM_xmlhttpRequest({
           method: "POST",
-          url: "https://yata.alwaysdata.net/faction/walls/import/",
+          url: "https://yata.alwaysdata.net/api/v1/faction/walls/import/",
           data: JSON.stringify(report),
           headers: {
               "key":key
@@ -155,23 +155,17 @@ GM_addStyle (cssTxt);
           onload: resp=> {
               try {
                   let obj = JSON.parse(resp.responseText);
-                  if ("message" in obj) {
-                      if ("type" in obj && obj.type>0)
-                          valid(obj.message);
-                      else if (obj.type == -1) {
-                          switch(obj.message.apiErrorCode) {
-                              case 1:
-                              case 2:
-                              case 10:
-                                  error(obj.message.apiError);
-                                  break;
-                              default:
-                                  error(obj.message.apiError);
-                          }
-                      } else
-                          error(obj.message);
-                  } else if (obj.status == 200)
-                      error("Everything seems to be ok???");
+                  console.log(resp.status);
+                  console.log(obj);
+                  if (resp.status == 400)
+                      if (obj.error.code == 4)
+                          error("API error (" + obj.error.error + ")");
+                      else
+                          error("User error (" + obj.error.error + ")");
+                  else if (resp.status == 500)
+                      error("Server error (" + obj.error.error + ")");
+                  else if (resp.status == 200)
+                      valid(obj.message);
                   else
                       error("No message received from the server");
               } catch (e) {

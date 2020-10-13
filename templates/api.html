@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/target.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Target
+{% endblock %}
+
+{% block jquery %}
+  <script type="text/javascript" src='{% static "perso/js/targets/main.js" %}'></script>
+{% endblock %}
+
+{% block content %}
+<link href='{% static "thirdparty/css/highlight.github.css" %}' rel="stylesheet">
+<script src='{% static "thirdparty/js/highlight.pack.js" %}'></script>
+<script>
+  hljs.initHighlightingOnLoad();
+  $(document).ready(function(){
+      const h = $($(location).attr('hash'));
+      if(h.length) {
+          toggle_h(h);
+      }
+  });
+</script>
+
+  <h2 class="title">API documentation</h2>
+  <div class="module">
+    <h1 id="loot" class="module-doc">Loot&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    <div class="module-doc">
+    <h2 class="command-doc">Loot timings [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+
+    <ul>
+      <li><b>URL</b> <a href="{% url "api:loot" %}" target="_blank">{% url "api:loot" %}</a></li>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+    "hosp_out": Object {
+        "4": Number,  // NPC id and timestamp of hosp out
+        "15": Number,
+        ...
+    },
+    "next_update": Number, // timestamp suggested for next update
+}</code></pre>
+      </li>
+      <li><b>Rate limit</b> There is an IP based rate limit of 10 calls / hours. It is recommended to store locally the result and update it based on the suggested timestamp to reduce the number of calls.</li>
+      <li><b>Loot levels</b> From the hosp out timestamps one can get the different loot level by adding the following number of seconds:
+        <pre><code classe="yaml">level 1: 0
+level 2: 30 * 60
+level 3: 90 * 60
+level 4: 210 * 60
+level 5: 450 * 60</code></pre>
+    </ul>
+  </div>
+  </div>
+
+    <h1 id="travel" class="module-doc">Stocks abroad&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    <div class="module-doc">
+
+    <h2 class="command-doc">Export stocks [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+    <ul>
+      <li><b>URL</b> <a href="{% url "api:exportStocks" %}" target="_blank">{% url "api:exportStocks" %}</a></li>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+    "stocks": Object {
+        "mex": Object {  // country code
+            "update", Number  // timestamp of the last update
+            "stocks": [
+                Object { "id": Number, "name": String, "quantity": Number, "cost": Number}, // item
+                ...
+            ]
+        "cay": Object { ... },
+        ...
+    },
+    "timestamp": Number, // timestamp of the payload update
+}</code></pre>
+      </li>
+      <li><b>Cache</b> The request has a 1 minute cache.</li>
+    </ul>
+  </div>
+    <h2 class="command-doc">Import stocks [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="command-doc">
+    <ul>
+      <li><b>URL</b> <a href="{%url 'api:importStocks' %}">{%url 'api:importStocks' %}</a></li>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+    "client": String,
+    "version": String,
+    "author_name": String,
+    "author_id": Number,
+    "country": String,
+    "items": Array [ Object { "id": Number, "quantity": Number, "cost": Number }, ... ]
+}</code></pre>
+      </li>
+      <li><b>Exemple</b>
+        <pre><code class="js">{
+      "client": "My cool script", // String: name of the client
+      "version": "v0.1",          // String: version client (optional)
+      "author_name": "Kivou",     // String: author torn name (optional)
+      "author_id": 2000607,       // String: author torn id (optional)
+      "country": "uni",           // String: key of the country
+      "items": [                  // Array: list of items
+          {                       // Object: item
+              "id": 268,          // Number: item torn ID
+              "quantity": 339,    // Number: item quantity
+              "cost": 1000        // Number: item cost
+          },
+          {
+              "id": 266,
+              "quantity": 1,
+              "cost": 200
+          },
+      ]
+}</code></pre>
+      </li>
+      <li><b>Country keys</b>
+        <pre><code classe="yaml">mex: Mexico
+cay: Cayman Islands
+can: Canada
+haw: Hawaii
+uni: United Kingdom
+arg: Argentina
+swi: Switzerland
+jap: Japan
+chi: China
+uae: UAE
+sou: South Africa</code></pre>
+      </li>
+      <li><b>Notes</b>
+        <ul>
+          <li>If an item of a country is not in the list, its <code>quantity</code> is automatically set to <tt>0</tt>.</li>
+          <li>You can download json examples of the <a href="{% static "/abroad/post.json" %}">post</a> request and the server <a href="{% static "/abroad/response.json" %}">response.</a></li>
+          <li>Your client needs to be added to the database as a "verified client" to be able to write in the database.</li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+  </div>
+
+  <h1 id="targets" class="module-doc">Targets&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+  <div class="module-doc">
+
+  <h2 class="command-doc">Export targets [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+  <div class="command-doc">
+    <ul>
+      <li><b>URL</b> <a href="{% url "api:exportTargets" %}" target="_blank">{% url "api:exportTargets" %}</a></li>
+      <li><b>GET variables</b> <tt>key=API_KEY</tt>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+    "targets": Object {
+        Key: Object { "name": String, ... } // the keys are target id
+        ...
+    },
+    "timestamp": Number, // timestamp of the payload update
+}</code></pre>
+      </li>
+      <li><b>Rate limit</b> There is an IP based rate limit of 10 calls / hours.</li>
+    </ul>
+  </div>
+
+
+  <h2 class="command-doc">Import targets [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+  <div class="command-doc">
+    <ul>
+      <li><b>URL</b> <a href="{% url "api:importTargets" %}" target="_blank">{% url "api:importTargets" %}</a></li>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+    "key": String, // API key
+    "client": String,
+    "targets": Object {
+        Key: Object { "note": String (512 long), "color": Number }, // the keys are target id
+        ...
+    }
+}</code></pre>
+      </li>
+      <li><b>Exemple</b>
+        <pre><code class="js">{
+      "client": "My cool script",
+      "key": "sOmThingrANdom",
+      "targets": {
+          "5": { "note": "Pretty strong", "color": 3 },
+          "1028023": { "note": "Pretty lame", "color": 1 }
+      }
+}</code></pre>
+      </li>
+    </ul>
+  </div>
+
+  </div>
+
+    <h1 id="errors" class="module-doc">Errors format&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    <div class="module-doc">
+    <p>
+      <ul>
+        <li>Server Errors (status 500): <tt>{'error':{'error': 'Error message', 'code': 1 }}</tt></li>
+        <li>User Errors (status 400): <tt>{'error':{'error': 'Error message', 'code': 2 }}</tt></li>
+        <li>Rate limit (status 429): <tt>{'error':{'error': 'Rate limit message', 'code': 3 }}</tt></li>
+        <li>Torn API error (status 400): <tt>{'error':{'error': 'Torn API error message', 'code': 4 }}</tt></li>
+      </ul>
+  </p>
+  </div>
+  </div>
+
+{% endblock %}

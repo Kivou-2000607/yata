@@ -595,3 +595,8 @@ span.nice-button {
   display: inline-block;
   text-transform: uppercase;
 }
+
+h1.module-doc { cursor: pointer; }
+div.module-doc { margin-left: 10px; display: none;}
+h2.command-doc { cursor: pointer; }
+div.command-doc { margin-left: 20px; display: none;}

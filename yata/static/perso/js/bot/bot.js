@@ -1,26 +1,3 @@
-function toggle_h(h) {
-    var d = h.next("div");
-    var i = h.find("i[class^='fas fa-caret']");
-
-    // close all other sections
-    const lookup = h.is("h1") ? ["div.module", "h1.module-doc"] : ["div.module-doc", "h2.command-doc"]
-    h.closest(lookup[0]).find(lookup[1]).each((i, item) => {
-        if(item != h[0]) {
-            $(item).next("div").slideUp("fast");
-            $(item).find("i[class^='fas fa-caret']").removeClass("fa-rotate-90");
-        }
-    });
-
-    // toggle
-    d.slideToggle("fast", function(){
-        if (d.css("display") == "none") {
-            i.removeClass("fa-rotate-90");
-        } else {
-            i.addClass("fa-rotate-90");
-        }
-    });
-}
-
 $(document).ready(function(){
     const h = $($(location).attr('hash'));
     if(h.length) {
@@ -73,12 +50,4 @@ $(document).on('click', "td[id^='discord-toggle-pref-']", function(e){
         type: type,
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     }).html(''+spinner+'');
-});
-
-// show/hide command
-$(document).on('click', 'h1.module-doc, h2.command-doc', function(e){
-    e.preventDefault();
-    // get h2 and div
-    var h = $(this);
-    toggle_h(h);
 });

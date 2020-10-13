@@ -5,11 +5,6 @@ table.bot-categories td {
     border: 0;
 }
 
-h1.module-doc { cursor: pointer; }
-div.module-doc { margin-left: 10px; display: none;}
-h2.command-doc { cursor: pointer; }
-div.command-doc { margin-left: 20px; display: none;}
-
 /* p.privacy-master {
 
 } */

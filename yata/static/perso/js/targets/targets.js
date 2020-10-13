@@ -30,16 +30,16 @@ $(document).on('click', 'a.target-list-faction', function(e){
 $(document).on('click', 'a.target-list-delete', function(e){
     e.preventDefault();
 
-    if (confirm("Are you sure you want to delete your list?")) {
-        var targetId = $(this).attr("id").split("-").pop();
-        var reload = $("#target-list-refresh-"+targetId);
-        reload.load( "/target/target/", {
-            targetId: targetId,
-            type: "delete",
-            csrfmiddlewaretoken: getCookie("csrftoken")
-        });
-        reload.remove();
-    }
+    // if (confirm("Are you sure you want to delete your list?")) {
+      var targetId = $(this).attr("id").split("-").pop();
+      var reload = $("#target-list-refresh-"+targetId);
+      reload.load( "/target/target/", {
+          targetId: targetId,
+          type: "delete",
+          csrfmiddlewaretoken: getCookie("csrftoken")
+      });
+      reload.remove();
+    // }
 });
 
 // edit note
