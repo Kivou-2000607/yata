@@ -69,7 +69,7 @@ def importTargets(request):
         # get payload
         body = json.loads(request.body)
 
-        for key in ["key", "user", "targets"]:
+        for key in ["key", "targets"]:
             if key not in body:
                 return JsonResponse({"error": {"code": 2, "error": f"Couldn't find key '{key}' in the payload"}}, status=400)
 
