@@ -139,9 +139,9 @@ else:
 
 def get_cache():
     import os
-    print(f"SETTINGS: CACHE=redis")
-
     if (config('USE_REDIS', default=False, cast=bool)):
+        print(f"SETTINGS: CACHE=redis")
+
         return {
             'default': {
                 "BACKEND": "django_redis.cache.RedisCache",
