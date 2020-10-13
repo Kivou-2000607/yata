@@ -55,6 +55,10 @@ This file is part of yata.
         <a class="yata-link-bot" href="{% url 'bot:index' %}"><i class="fas fa-robot"></i>&nbsp;&nbsp;<b>Discord bot</b></a><span class="section-status valid" title="Most of the features requires your API key.">partially public</span><br>
         Discord bot made for Torn.
     </p>
+    <p>
+        <a class="yata-link-api" href="{% url 'api:index' %}"><i class="fas fa-code"></i>&nbsp;&nbsp;<b>API</b></a><span class="section-status valid" title="Some of the features requires your API key.">partially public</span><br>
+        Gives information for loot levels and stocks abroad.
+    </p>
     {% if player %}
         <hr class="sep">
         <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>
@@ -77,7 +81,7 @@ This file is part of yata.
       <h3>Developers</h3>
         <p><i class="fab fa-python"></i>&nbsp;&nbsp;
           {# {{"Kivou"|playerURL:2000607|safe}}<br> #}
-          {{"Decap"|playerURL:47662|safe}} (the backend cleaner)<br>
+          {{"Decap"|playerURL:47662|safe}} (the backend guy)<br>
           <i class="fab fa-js-square"></i>&nbsp;&nbsp;
           {{"Helcostr"|playerURL:1934501|safe}} (introduced the first userscripts for YATA)
           {{"Pyrit"|playerURL:2111649|safe}} (always makes the best js even though he hates it)
