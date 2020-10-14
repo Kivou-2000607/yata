@@ -22,7 +22,7 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<h2 class="title"><i class="fas fa-key"></i>&nbsp;&nbsp;Keys</h2>
+<h2 class="title"><i class="fas fa-key fa-icon-inline"></i>Keys</h2>
 <div class="module">
     <p>This is a summary of your faction's keys used for the creation of the reports (chains/attacks/revives) and for the poster updates.<br />
         This keys corresponds to AA members that have used YATA.
@@ -47,20 +47,20 @@ This file is part of yata.
                 </tr>
             {% endfor %}
             {% if faction.nKeys %}
-                <tr><td colspan="4"><span class="valid"><i class="fas fa-check"></i>&nbsp;&nbsp;You have {{faction.nKeys}} key{{faction.nKeys|pluralize}} enabled.</td></tr>
+                <tr><td colspan="4"><span class="valid"><i class="fas fa-check fa-icon-inline"></i>You have {{faction.nKeys}} key{{faction.nKeys|pluralize}} enabled.</td></tr>
             {% else %}
-                <tr><td colspan="4"><span class="warning"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;You don't have any key enabled. Your reports will never be updated.</td></tr>
+                <tr><td colspan="4"><span class="warning"><i class="fas fa-exclamation-circle fa-icon-inline"></i>You don't have any key enabled. Your reports will never be updated.</td></tr>
             {% endif %}
         </tbody>
     </table>
 </div>
 
-<h2 class="title"><i class="fas fa-calendar"></i>&nbsp;&nbsp;Events</h2>
+<h2 class="title"><i class="fas fa-calendar fa-icon-inline"></i>Events</h2>
 <div class="module">
     {% include "faction/aa/events.html" %}
 </div>
 
-<h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;Reports and logging history</h2>
+<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>Reports and logging history</h2>
 <div class="module">
     <h3>History length</h3>
     <ul>
@@ -75,7 +75,7 @@ This file is part of yata.
     {% include "faction/aa/threshold.html" %}
 </div>
 
-<h2 class="title"><i class="fas fa-scroll"></i>&nbsp;&nbsp;Poster</h2>
+<h2 class="title"><i class="fas fa-scroll fa-icon-inline"></i>Poster</h2>
 <div class="module">
     <div id="faction-aa-event">
         {% include "faction/aa/poster.html" %}

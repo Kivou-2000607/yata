@@ -28,41 +28,41 @@ This file is part of yata.
         Some parts are public and you can browse them anonymously but if you want to unleash the full power of YATA you need to enter your API key.
     </p>
     <p>
-        <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><i class="fas fa-store"></i>&nbsp;&nbsp;<b>Bazaar overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to updated them and set custom lists.">partially public</span><br>
+        <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><b><i class="fas fa-store fa-icon-inline"></i>Bazaar overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to updated them and set custom lists.">partially public</span><br>
         Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.
     </p>
     <p>
-        <a class="yata-link-stock" href="{% url 'stock:index' %}"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;<b>Stock overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to see your blocks">partially public</span><br>
+        <a class="yata-link-stock" href="{% url 'stock:index' %}"><b><i class="fas fa-chart-line fa-icon-inline"></i>Stock overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to see your blocks">partially public</span><br>
         View all the stock shares, prices and tendencies.
     </p>
     <p>
-        <a class="yata-link-chain" href="{% url 'faction:index' %}"><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;<b>Faction</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
+        <a class="yata-link-chain" href="{% url 'faction:index' %}"><b><i class="fas fa-fist-raised fa-icon-inline"></i>Faction</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
         Build your chain reports, combine them and monitor your faction.
     </p>
     <p>
-        <a class="yata-link-target" href="{% url 'target:index' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;<b>Targets</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
+        <a class="yata-link-target" href="{% url 'target:index' %}"><b><i class="fas fa-crosshairs fa-icon-inline"></i>Targets</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
         Remember your good targets and maximize your respect gains during chains.
     </p>
     <p>
-        <a class="yata-link-awards" href="{% url 'awards:index' %}"><i class="fas fa-medal"></i>&nbsp;&nbsp;<b>Awards</b></a><span class="section-status valid" title="You can browse awards but will have no information on your progression.">partially public</span><br>
+        <a class="yata-link-awards" href="{% url 'awards:index' %}"><b><i class="fas fa-medal fa-icon-inline"></i>Awards</b></a><span class="section-status valid" title="You can browse awards but will have no information on your progression.">partially public</span><br>
         Track the next award you can get.
     </p>
     <p>
-        <a class="yata-link-loot" href="{% url 'loot:index' %}"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;<b>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
+        <a class="yata-link-loot" href="{% url 'loot:index' %}"><b><i class="fas fa-user-secret fa-icon-inline"></i>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
         Gives the timing of when NPCs are reaching the loot levels.
     </p>
     <p>
-        <a class="yata-link-bot" href="{% url 'bot:index' %}"><i class="fas fa-robot"></i>&nbsp;&nbsp;<b>Discord bot</b></a><span class="section-status valid" title="Most of the features requires your API key.">partially public</span><br>
+        <a class="yata-link-bot" href="{% url 'bot:index' %}"><b><i class="fas fa-robot fa-icon-inline"></i>Discord bot</b></a><span class="section-status valid" title="Most of the features requires your API key.">partially public</span><br>
         Discord bot made for Torn.
     </p>
     <p>
-        <a class="yata-link-api" href="{% url 'api:index' %}"><i class="fas fa-code"></i>&nbsp;&nbsp;<b>API</b></a><span class="section-status valid" title="Some of the features requires your API key.">partially public</span><br>
+        <a class="yata-link-api" href="{% url 'api:index' %}"><b><i class="fas fa-code fa-icon-inline"></i>API</b></a><span class="section-status valid" title="Some of the features requires your API key.">partially public</span><br>
         Gives information for loot levels and stocks abroad.
     </p>
     {% if player %}
         <hr class="sep">
-        <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash"></i>&nbsp;&nbsp;Delete account</a><br> All your information will be removed from the database.</p>
-        <p><a class="yata-link-prune error" href="{% url 'setup:prune' %}"><i class="fas fa-eraser"></i>&nbsp;&nbsp;Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
+        <p><a id="yata-delete-submit" class="error" href="{% url 'delete' %}"><i class="fas fa-user-slash fa-icon-inline"></i>Delete account</a><br> All your information will be removed from the database.</p>
+        <p><a class="yata-link-prune error" href="{% url 'setup:prune' %}"><i class="fas fa-eraser fa-icon-inline"></i>Pruning</a><br> After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.</p>
     {% endif %}
 </div>
 <div class="module rounded">
@@ -76,19 +76,19 @@ This file is part of yata.
 </div>
 
 <div class="catch-me">
-    <h2 class="title grey toggle-display rounded"><i class="fas fa-code"></i>&nbsp;&nbsp;Contributors&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h2 class="title grey toggle-display rounded"><i class="fas fa-code fa-icon-inline"></i>Contributors<i class="fas fa-caret-right fa-icon-dropdown"></i></h2>
     <div class="module" style="display: none;">
       <h3>Developers</h3>
-        <p><i class="fab fa-python"></i>&nbsp;&nbsp;
+        <p><i class="fab fa-python fa-icon-inline"></i>
           {# {{"Kivou"|playerURL:2000607|safe}}<br> #}
           {{"Decap"|playerURL:47662|safe}} (the backend guy)<br>
-          <i class="fab fa-js-square"></i>&nbsp;&nbsp;
+          <i class="fab fa-js-square fa-icon-inline"></i>
           {{"Helcostr"|playerURL:1934501|safe}} (introduced the first userscripts for YATA)
           {{"Pyrit"|playerURL:2111649|safe}} (always makes the best js even though he hates it)
         </p>
       <h3>Helpers</h3>
         <p>
-          <i class="fab fa-discord"></i>&nbsp;&nbsp;{{"SVD_NL"|playerURL:2363978|safe}} (answers on discord at lighting speed)<br>
+          <i class="fab fa-discord fa-icon-inline"></i>{{"SVD_NL"|playerURL:2363978|safe}} (answers on discord at lighting speed)<br>
           {{"Isca"|playerURL:672082|safe}}
           {{"Redxjak"|playerURL:2255595|safe}}
           {{"vavi"|playerURL:2224491|safe}}
@@ -102,17 +102,17 @@ This file is part of yata.
         </p>
 
       <h3>Tutorials</h3>
-        <p><i class="fas fa-life-ring"></i>&nbsp;&nbsp;
+        <p><i class="fas fa-life-ring fa-icon-inline"></i>
           {{"Daystar"|playerURL:2048164|safe}}
           {{"Palisad3"|playerURL:2536667|safe}}
         </p>
-        <p>I also want to say thank you to the whole developer community with which I have fruitful discussions on a regular basis.</p>
-        <p>If you want to contribute to YATA please join the <a href="https://discord.gg/tZaYpbG" target="_blank"><i class="fab fa-discord"></i> discord</a>.</p>
+        <p>I also want to say thank you to the whole developer community with which I have fruitful discussions on a regular basis.<br>
+        If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a>.</p>
     </div>
 </div>
 {% if allDonations|length %}
     <div class="catch-me">
-        <h2 class="title grey toggle-display rounded"><i class="fas fa-gift"></i>&nbsp;&nbsp;Donations&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+        <h2 class="title grey toggle-display rounded"><i class="fas fa-gift fa-icon-inline"></i>Donations<i class="fas fa-caret-right fa-icon-dropdown"></i></h2>
         <div class="module tutorial" style="display: none;">
                 <table  style="margin: auto;">
                     <thead>
@@ -134,19 +134,6 @@ This file is part of yata.
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-{% endif %}
-
-{% if allNews|length %}
-    <div class="catch-me">
-        <h2 class="title grey toggle-display rounded"><i class="far fa-calendar-check"></i>&nbsp;&nbsp;News feed&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-        <div class="module tutorial" style="display: none;">
-            <ul>
-            {% for news in allNews %}
-                <li><b>{{ news.type }}</b> of {{ news.date }}: {{ news.text|safe }}&nbsp;&nbsp;{{news.authorName|playerURL:news.authorId|safe}}</li>
-            {% endfor %}
-            </ul>
         </div>
     </div>
 {% endif %}

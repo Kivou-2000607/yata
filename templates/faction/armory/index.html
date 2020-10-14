@@ -40,7 +40,7 @@ $( function() {
             csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
         });
         $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
     }
   });
   s = new Date($( "#date-range" ).slider( "values", 0 )*1000).toUTCString().replace("GMT", "");
@@ -60,7 +60,7 @@ $(function () {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
         },
     });
     $("#pick-time-end").datetimepicker({
@@ -74,7 +74,7 @@ $(function () {
                 csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
             });
             $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Update armory content')
+            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
         },
     });
 });
@@ -102,7 +102,7 @@ $(document).ready(function() {
 </script>
 
 
-<h2 class="title"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory breakdown</h2>
+<h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>Armory breakdown</h2>
 <div class="module chain-armory">
     {% if armory|length %}
         <table class="center faction-armory-filter">
@@ -186,7 +186,7 @@ $(document).ready(function() {
     {% endif %}
 </div>
 
-<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of news</h2>
+<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>List of news</h2>
 <div class="module">
 
   <div class="pagination-list">
@@ -225,7 +225,7 @@ $(document).ready(function() {
     }
 </script>
 
-<h2 class="title"><i class="fas fa-chart-line"></i>&nbsp;&nbsp;Networth and respect growth</h2>
+<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Networth and respect growth</h2>
 <div class="module">
     <div id="networth-graph"></div>
 

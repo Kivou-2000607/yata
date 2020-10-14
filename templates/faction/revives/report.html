@@ -43,7 +43,7 @@ This file is part of yata.
 
 {# </script> #}
 
-<h2 class="title"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;{{faction.name}}'s revives report [{{report.pk}}]{% if not share %}{%include "faction/revives/filter-buttons.html"%}<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Compute report</a></span>{% endif %}</h2>
+<h2 class="title"><i class="fas fa-notes-medical fa-icon-inline"></i>{{faction.name}}'s revives report [{{report.pk}}]{% if not share %}{%include "faction/revives/filter-buttons.html"%}<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Compute report</a></span>{% endif %}</h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -85,7 +85,7 @@ This file is part of yata.
 </div>
 
 {% if revives %}
-<h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of revives</h2>
+<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>List of revives</h2>
 <div class="module">
     <div class="pagination-list">
         {% include "faction/revives/revives.html" %}

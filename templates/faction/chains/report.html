@@ -26,9 +26,9 @@ This file is part of yata.
 
 
     {% if chain.live %}
-        <h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;{{faction.name}}'s live chain report (last update: {{chain.end|ts2date}})</h2>
+        <h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name}}'s live chain report (last update: {{chain.end|ts2date}})</h2>
     {% else %}
-        <h2 class="title"><i class="fas fa-link"></i>&nbsp;&nbsp;{{faction.name}}'s chain report [{{chain.tId}}]<span class="flush-right">Last update: {{chain.update|ts2date}}</span></h2>
+        <h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name}}'s chain report [{{chain.tId}}]<span class="flush-right">Last update: {{chain.update|ts2date}}</span></h2>
     {% endif %}
 
     <div class="module">

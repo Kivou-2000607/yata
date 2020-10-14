@@ -23,29 +23,29 @@ This file is part of yata.
 <table class="center-large tdshadow faction-categories">
     <tbody>
     <tr>
-        <td><a href="{% url 'faction:chains' %}"><i class="fa fa-link"></i>&nbsp;&nbsp;Chains</a></td>
-        <td><a href="{% url 'faction:attacks' %}"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;Attacks</a></td>
-        <td><a href="{% url 'faction:walls' %}"><i class="fas fa-shield-alt"></i>&nbsp;&nbsp;Walls</a></td>
-        <td><a href="{% url 'faction:revives' %}"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;Revives</a></td>
+        <td><a href="{% url 'faction:chains' %}"><i class="fa fa-link fa-icon-inline"></i>Chains</a></td>
+        <td><a href="{% url 'faction:attacks' %}"><i class="fas fa-crosshairs fa-icon-inline"></i>Attacks</a></td>
+        <td><a href="{% url 'faction:walls' %}"><i class="fas fa-shield-alt fa-icon-inline"></i>Walls</a></td>
+        <td><a href="{% url 'faction:revives' %}"><i class="fas fa-ambulance fa-icon-inline"></i>Revives</a></td>
         {% if player.factionAA %}
-            <td><a href="{% url 'faction:simulator' %}"><i class="fas fa-project-diagram"></i>&nbsp;&nbsp;Respect simulator</a></td>
-            <td><a href="{% url 'faction:configurations' %}"><i class="fas fa-key"></i>&nbsp;&nbsp;Configurations</a></td>
+            <td><a href="{% url 'faction:simulator' %}"><i class="fas fa-project-diagram fa-icon-inline"></i>Respect simulator</a></td>
+            <td><a href="{% url 'faction:configurations' %}"><i class="fas fa-key fa-icon-inline"></i>Configurations</a></td>
         {% endif %}
     </tr>
     <tr>
-        <td><a href="{% url 'faction:members' %}"><i class="fas fa-users"></i>&nbsp;&nbsp;Members</a></td>
+        <td><a href="{% url 'faction:members' %}"><i class="fas fa-users fa-icon-inline"></i>Members</a></td>
         <td>
-            <a href="{% url 'faction:bigBrother' %}"><i class="fas fa-eye"></i>&nbsp;&nbsp;Big Brother</a>
+            <a href="{% url 'faction:bigBrother' %}"><i class="fas fa-eye fa-icon-inline"></i>Big Brother</a>
         </td>
         <td>
-            <a href="{% url 'faction:armory' %}"><i class="fas fa-pills"></i>&nbsp;&nbsp;Armory</a>
+            <a href="{% url 'faction:armory' %}"><i class="fas fa-pills fa-icon-inline"></i>Armory</a>
         </td>
         <td>
-            <a href="{% url 'faction:territories' %}"><i class="fas fa-map-marked-alt"></i>&nbsp;&nbsp;Territories</a>
+            <a href="{% url 'faction:territories' %}"><i class="fas fa-map-marked-alt fa-icon-inline"></i>Territories</a>
         </td>
         {% if player.factionAA %}
-            <td><a href="{% url 'faction:oc' %}"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Organized crimes</a></td>
-            <td style="opacity: 0.5"><a href="{% url 'faction:fightclub' %}"><i class="fas fa-lock"></i>&nbsp;&nbsp;Locked</a></td>
+            <td><a href="{% url 'faction:oc' %}"><i class="fas fa-fingerprint fa-icon-inline"></i>Organized crimes</a></td>
+            <td style="opacity: 0.5"><a href="{% url 'faction:fightclub' %}"><i class="fas fa-lock fa-icon-inline"></i>Locked</a></td>
         {% endif %}
     </tr>
     </tbody>

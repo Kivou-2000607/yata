@@ -23,7 +23,7 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if pinnedAwards|length %}
-    <h2 class="title green"><i class="fas fa-thumbtack"></i>&nbsp;&nbsp;Pinned awards</h2>
+    <h2 class="title green"><i class="fas fa-thumbtack fa-icon-inline"></i>Pinned awards</h2>
     <div class="module">
         {% for awardId, award in pinnedAwards.items %}
             <div class="awards-pinned center-full-third" title="<p><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i></p><p>{{award.comment|safe}}</p>" rel="tooltip">

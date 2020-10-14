@@ -82,7 +82,7 @@ This file is part of yata.
           reload.load( "/faction/territories/fullmap/", {
               csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
           });
-          $(this).parent("form").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading all territories')
+          $(this).parent("form").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Loading all territories')
       });
 
 
@@ -92,5 +92,5 @@ This file is part of yata.
     <div id="map-graph" class='map-graph'></div>
 </div>
 <form style="text-align: center; margin-top: 10px;">{% csrf_token %}
-    <a id="faction-load-full-map" href=""><i class="fas fa-globe-americas" title="Load full map"></i>&nbsp;&nbsp;Load all territories (can be long).</a>
+    <a id="faction-load-full-map" href=""><i class="fas fa-globe-americas" title="Load full map fa-icon-inline"></i>Load all territories (can be long).</a>
 </form>

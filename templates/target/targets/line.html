@@ -21,7 +21,7 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if apiErrorLine %}
-    <td colspan="15" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiErrorLine}}</span></td>
+    <td colspan="15" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorLine}}</span></td>
 {% elif target %}
     {% if target.last_attack_timestamp %}
         <td class="a" title="{{target.last_attack_timestamp|ts2date}}" data-val="{{ts|sub:target.last_attack_timestamp}}">{{ts|sub:target.last_attack_timestamp|ts2ago}}</td>
@@ -79,7 +79,7 @@ This file is part of yata.
             {% include "target/targets/faction.html" %}
         </td>
     {% else %}
-        <td colspan="3"><span class="error"><i class="far fa-dizzy"></i>&nbsp;&nbsp;No recorded id. Will be deleted soon.</span></td>
+        <td colspan="3"><span class="error"><i class="far fa-dizzy fa-icon-inline"></i>No recorded id. Will be deleted soon.</span></td>
     {% endif %}
 
 

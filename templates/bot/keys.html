@@ -19,7 +19,7 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<h2 class="title"><i class="fas fa-key"></i>&nbsp;&nbsp;API keys management</h2>
+<h2 class="title"><i class="fas fa-key fa-icon-inline"></i>API keys management</h2>
 <div class="module">
     <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, <span class="warning">a set of master keys are given by the bot admins</span> on setup. These keys are only used for this verification procedure.
     Thus, with this system, to be a bot admin you have:</p>

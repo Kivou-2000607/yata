@@ -43,7 +43,7 @@ $(document).ready(function() {
                 var start = parseInt($("#ts-start-revives").val());
                 var end = parseInt($("#ts-end-revives").val());
                 if(!end) {
-                    $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+                    $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date (or leave blank for live)');
                     $("#create-report-revives").hide()
                 } else if(end < start) {
                     $("#date-end-revives").removeClass("valid").addClass("error");
@@ -76,7 +76,7 @@ $(document).ready(function() {
                 var start = parseInt($("#ts-start-revives").val());
                 var end = parseInt($("#ts-end-revives").val());
                 if(!start) {
-                    $("#date-start-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                    $("#date-start-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date');
                     $("#create-report-revives").hide()
                 } else if(end < start) {
                     $("#date-start-revives").removeClass("valid").addClass("error");
@@ -92,7 +92,7 @@ $(document).ready(function() {
 
 </script>
 
-<h2 class="title"><i class="fas fa-ambulance"></i>&nbsp;&nbsp;{{faction.name|safe}}'s revives reports</h2>
+<h2 class="title"><i class="fas fa-ambulance fa-icon-inline"></i>{{faction.name|safe}}'s revives reports</h2>
 <div class="module">
     {% if reports|length %}
     <table id="faction-revives-report" class="tablesorter center-large trshadow faction-revives-report">
@@ -138,19 +138,19 @@ $(document).ready(function() {
 <div class="module rounded">
     <p>To create a new revive report select a starting date and either an ending date or make it live.</p>
     <form>
-        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Starting date</b>:
             <input id="ts-start-revives" type="hidden" value="0">
-            <span id="date-start-revives" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+            <span id="date-start-revives" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date</span>
         </p>
-        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Ending date</b>:
             <input id="ts-end-revives" type="hidden" value="0">
-            <span id="date-end-revives" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+            <span id="date-end-revives" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date</span>
         </p>
-        <p><b><i class="fas fa-microphone-alt"></i>&nbsp;&nbsp;Make it live</b>:
+        <p><b><i class="fas fa-microphone-alt fa-icon-inline"></i>Make it live</b>:
             <input id="ts-live-revives" type="hidden" value="0">
             <input id="date-live-revives" type="checkbox">
         </p>
-        <p id="create-report-revives" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
+        <p id="create-report-revives" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Start</p>
     </form>
 </div>
 {% endif %}

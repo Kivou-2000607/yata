@@ -35,27 +35,27 @@ This file is part of yata.
 </div>
 {% endif %}
 
-<h2 class="title"><i class="fas fa-fingerprint"></i>&nbsp;&nbsp;Organized Crimes Breakdown</h2>
+<h2 class="title"><i class="fas fa-fingerprint fa-icon-inline"></i>Organized Crimes Breakdown</h2>
 <div class="module">
     {% include "faction/oc/breakdown-crimes.html" %}
 </div>
 
 <div class="catch-me">
-    <h2 class="title toggle-display rounded"><i class="fas fa-users"></i>&nbsp;&nbsp;Teams Breakdown&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h2 class="title toggle-display rounded"><i class="fas fa-users fa-icon-inline"></i>Teams Breakdown&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
     <div class="module" style="display: none;">
     {# <div class="module"> #}
         {% include "faction/oc/breakdown-teams.html" %}
     </div>
 </div>
 
-<h2 class="title"><i class="fas fa-hourglass-half"></i>&nbsp;&nbsp;Current Crimes</h2>
+<h2 class="title"><i class="fas fa-hourglass-half fa-icon-inline"></i>Current Crimes</h2>
 <div class="module">
     <div class="pagination-list">
         {% include "faction/oc/list-current.html" %}
     </div>
 </div>
 
-<h2 class="title"><i class="fas fa-hourglass-end"></i>&nbsp;&nbsp;Past Crimes</h2>
+<h2 class="title"><i class="fas fa-hourglass-end fa-icon-inline"></i>Past Crimes</h2>
 <div class="module">
     <div class="pagination-list">
         {% include "faction/oc/list-past.html" %}

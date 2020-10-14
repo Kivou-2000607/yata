@@ -47,11 +47,11 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-skull"></i>&nbsp;&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;Synchronize report</a></span>{% endif %}</h2>
+<h2 class="title"><i class="fas fa-skull fa-icon-inline"></i>{{faction.name}}'s attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Synchronize report</a></span>{% endif %}</h2>
 <div class="module">
 
     {% if report.fill < report.update and player.factionAA %}
-        <p style="text-align: center; margin-bottom: 10px;"><span class="warning"><i class="fas fa-sync-alt"></i>&nbsp;&nbsp;New attacks has been entered in the database since last synchronization.</span><br>
+        <p style="text-align: center; margin-bottom: 10px;"><span class="warning"><i class="fas fa-sync-alt fa-icon-inline"></i>New attacks has been entered in the database since last synchronization.</span><br>
             Please synchronize your report with the button on the top right of this frame.
         </p>
     {% endif %}
@@ -100,7 +100,7 @@ $(function () {
 </div>
 
 {% if not share %}
-    <h2 class="title"><i class="fas fa-users"></i>&nbsp;&nbsp;Members breakdown</h2>
+    <h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Members breakdown</h2>
     <div class="module">
         <div class="pagination-list">
             {% if members %}
@@ -113,7 +113,7 @@ $(function () {
 {% endif %}
 
 {% if attacks %}
-    <h2 class="title"><i class="fas fa-list"></i>&nbsp;&nbsp;List of attacks</h2>
+    <h2 class="title"><i class="fas fa-list fa-icon-inline"></i>List of attacks</h2>
     <div class="module">
       <div class="pagination-list">
         {% include "faction/attacks/attacks.html" %}

@@ -193,7 +193,7 @@ hr.sep {
     display: block;
     clear: both;
     text-align: center;
-    margin: 15px 80px;
+    margin: 10px 80px;
     height: 1px;
     background-color: #CCC;
 }
@@ -431,11 +431,12 @@ table.yata-login td {
 }
 
 table.yata-login td.a { width: 10%; text-align: left; }  /* x1 */
-table.yata-login td.b { width: 10%; text-align: left; }  /* x7 */
-table.yata-login td.c { width: 20%; text-align: right; }  /* x1 */
+table.yata-login td.b { width: 80%; text-align: left; }  /* x7 */
+table.yata-login td.c { width: 10%; text-align: right; }  /* x1 */
 table.yata-login td.d { width: 90%; text-align: left; }  /* x1 */
 
-table.yata-login td.b > span { color: #666; font-style: italic;}  /* x7 */
+table.yata-login td.b > div > span { color: #666; font-style: italic;}  /* x7 */
+table.yata-login td.b > div { float: left; margin: 2px 10px; padding: 2px;  }  /* x7 */
 
 /* table.yata-login td:hover { background: #eee; }  */ /* x6 */
 
@@ -507,6 +508,9 @@ td.border, th.border {
     border-left : 2px solid #aaa;
 }
 
+img.badge { margin: 5px; }
+i.fa-icon-inline { margin-right: 8px; }
+i.fa-icon-dropdown { margin-left: 15px; }
 
 /* Style The Dropdown Button */
 /* .dropbtn {

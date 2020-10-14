@@ -43,7 +43,7 @@ $(document).ready(function() {
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!end) {
-                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date (or leave blank for live)');
                     $("#create-report").hide()
                 } else if(end < start) {
                     $("#date-end").removeClass("valid").addClass("error");
@@ -76,7 +76,7 @@ $(document).ready(function() {
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!start) {
-                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date');
+                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date');
                     $("#create-report").hide()
                 } else if(end < start) {
                     $("#date-start").removeClass("valid").addClass("error");
@@ -92,7 +92,7 @@ $(document).ready(function() {
 
 </script>
 
-<h2 class="title"><i class="fas fa-crosshairs"></i>&nbsp;&nbsp;{{faction.name|safe}}' attacks reports</h2>
+<h2 class="title"><i class="fas fa-crosshairs fa-icon-inline"></i>{{faction.name|safe}}' attacks reports</h2>
 <div class="module">
     {% if reports|length %}
     <table id="faction-attacks-report" class="tablesorter center-large trshadow faction-attacks-report">
@@ -139,19 +139,19 @@ $(document).ready(function() {
 <div class="module rounded">
     <p>To create a new attack report select a starting date and either an ending date or make it live.</p>
     <form>
-        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Starting date</b>:
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Starting date</b>:
             <input id="ts-start" type="hidden" value="0">
-            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a starting date</span>
+            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date</span>
         </p>
-        <p><b><i class="far fa-calendar-alt"></i>&nbsp;&nbsp;Ending date</b>:
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Ending date</b>:
             <input id="ts-end" type="hidden" value="0">
-            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date</span>
+            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date</span>
         </p>
-        <p><b><i class="fas fa-microphone-alt"></i>&nbsp;&nbsp;Make it live</b>:
+        <p><b><i class="fas fa-microphone-alt fa-icon-inline"></i>Make it live</b>:
             <input id="ts-live" type="hidden" value="0">
             <input id="date-live" type="checkbox">
         </p>
-        <p id="create-report" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Start</p>
+        <p id="create-report" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Start</p>
     </form>
 </div>
 {% endif %}
