@@ -218,3 +218,4 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False
