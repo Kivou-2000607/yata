@@ -27,6 +27,9 @@ This file is part of yata.
 <!-- Current language: {{ LANGUAGE_CODE }} -->
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
+    <!-- meta  -->
+    <meta charset="UTF-8">
+    <meta name="robots" content="NONE,NOARCHIVE" />
 
     <!-- perso -->
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
@@ -38,36 +41,36 @@ This file is part of yata.
     {# <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"> #}
 
     <!-- jquery -->
-    <script type="text/javascript" src='{% static "thirdparty/js/jquery-3.4.1.min.js" %}'></script>
-    <script type="text/javascript" src='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.js" %}'></script>
+    <script src='{% static "thirdparty/js/jquery-3.4.1.min.js" %}'></script>
+    <script src='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.js" %}'></script>
     <link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.css" %}'>
 
     <!-- tooltips  -->
     <link rel="stylesheet" type="text/css" href='{% static "thirdparty/css/tooltip.css" %}' />
 
     <!-- tablesorter  -->
-    <script type="text/javascript" src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
+    <script src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
 
     <!-- google charts -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- yata main js -->
     <!-- Faction id: {{player.factionId}} -->
     <!-- faction: {{player.getSpinner}} -->
     {# {% if player.factionId|stringformat:"i" in '1' %} #}
-        {# <script type="text/javascript" src='{% static "perso/js/spinner-ban.js" %}'></script> #}
+        {# <script src='{% static "perso/js/spinner-ban.js" %}'></script> #}
     {# {% else %} #}
-        {# <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script> #}
+        {# <script src='{% static "perso/js/spinner.js" %}'></script> #}
     {# {% endif %} #}
 
     {% if player %}
         {% with 'perso/js/spinner'|add:player.getSpinner|add:'.js' as spinner %}
-            <script type="text/javascript" src='{% static spinner %}'></script>
+            <script src='{% static spinner %}'></script>
         {% endwith %}
     {% else %}
-        <script type="text/javascript" src='{% static "perso/js/spinner.js" %}'></script>
+        <script src='{% static "perso/js/spinner.js" %}'></script>
     {% endif %}
-    <script type="text/javascript" src='{% static "perso/js/yata.js" %}'></script>
+    <script src='{% static "perso/js/yata.js" %}'></script>
 
     <!-- local css -->
     {% block css%}{% endblock %}
@@ -78,10 +81,6 @@ This file is part of yata.
 
     <!-- favicon -->
     <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
 
     <title>YATA{% block title%}{% endblock%}</title>
 </head>
