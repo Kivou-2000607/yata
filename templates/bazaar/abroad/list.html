@@ -39,7 +39,8 @@ This file is part of yata.
         });
     });
 </script>
-{% cache 60 stocks-abroad %}
+
+{# {% cache 60 stocks-abroad %} #}
 <table class="center-large">
         {% for id, country in country_list.items %}
         {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
@@ -118,7 +119,7 @@ This file is part of yata.
                 <td class="f" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
                 <td class="g" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
                 <td class="h dont-touch-me" data-val="{{stock.item.weekTendency}}">
-                    <a href="{% url 'bazaar:prices' stock.item.tId %}" class="no-style prices-item" title="Prices tendency over a week / a month">
+                    <a href="{% url 'bazaar:prices' stock.item.tId %}" class="prices-item" title="Prices tendency over a week / a month">
                         {{stock.item.weekTendency|priceTendency|safe}}
                     </a>
                 </td>
@@ -130,4 +131,4 @@ This file is part of yata.
         {% endif %}
     </tbody>
 </table>
-{% endcache %}
+{# {% endcache %} #}
