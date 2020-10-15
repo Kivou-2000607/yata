@@ -34,6 +34,8 @@ print(f"SETTINGS: ALLOWED_HOSTS={ALLOWED_HOSTS}")
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
+    'django.contrib.staticfiles',
     'player.apps.PlayerConfig',
     'awards.apps.AwardsConfig',
     'target.apps.TargetConfig',
@@ -50,7 +52,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
     'mathfilters',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django_brotli.middleware.BrotliMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -213,3 +215,6 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'), )
 
 # where to look for
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
+# whitenoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

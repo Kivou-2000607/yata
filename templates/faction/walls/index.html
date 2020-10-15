@@ -43,47 +43,47 @@ This file is part of yata.
 
 </script>
 
-    <h2 class="title">{{faction.name|safe}}'s walls</h2>
-    <div class="module">
-        {% if walls|length %}
-        <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">
-            <thead>
-                <tr>
-                    <th>Wall [ID]</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Duration</th>
-                    <th>Attackers</th>
-                    <th>Defenders</th>
-                    <th>Territory</th>
-                    <th>Result</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for wall in walls %}
+<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s walls</h2>
+<div class="module">
+    {% if walls|length %}
+    <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">
+        <thead>
             <tr>
-                {% if wall %}
-                  <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
-                  <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
-                  <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
-                  <td class="c" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
-                  <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
-                  <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
-                  <td class="e" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
-                  <td class="e" ><span class="{{wall.result}}">{{wall.result}}</span></td>
-                  <td class="e buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
-                    {% include "faction/walls/buttons.html" %}
-                  </td>
-                {% endif %}
+                <th>Wall [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Attackers</th>
+                <th>Defenders</th>
+                <th>Territory</th>
+                <th>Result</th>
+                <th></th>
             </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p class="error">No wall recorded. Only AA members can add walls with the script below.</p>
-        {% endif %}
-    </div>
+        </thead>
+        <tbody>
+        {% for wall in walls %}
+        <tr>
+            {% if wall %}
+              <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+              <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
+              <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
+              <td class="c" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
+              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
+              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
+              <td class="e" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
+              <td class="e" ><span class="{{wall.result}}">{{wall.result}}</span></td>
+              <td class="e buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
+                {% include "faction/walls/buttons.html" %}
+              </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="error">No wall recorded. Only AA members can add walls with the script below.</p>
+    {% endif %}
+</div>
 
 {% for fac, TotalPlayers in summary.items %}
 <div class="catch-me">
