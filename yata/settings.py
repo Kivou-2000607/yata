@@ -34,7 +34,7 @@ print(f"SETTINGS: ALLOWED_HOSTS={ALLOWED_HOSTS}")
 # Application definition
 
 INSTALLED_APPS = [
-    # 'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'player.apps.PlayerConfig',
     'awards.apps.AwardsConfig',
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django_brotli.middleware.BrotliMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -216,5 +216,8 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'), )
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # whitenoise
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# WHITENOISE_MANIFEST_STRICT = False
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')

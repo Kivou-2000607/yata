@@ -17,9 +17,10 @@ from django.urls import include, path, re_path
 from django.contrib import admin
 from django.http import HttpResponse
 from django.views.generic.base import RedirectView
-# from django.shortcuts import redirect
-# from django.conf import settings
-# from django.conf.urls.static import static
+
+# for media
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -62,4 +63,4 @@ urlpatterns = [
     path('<slug:share>/attacks/<slug:reportId>/', attacksReport, name='attacksReport'),
     path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
