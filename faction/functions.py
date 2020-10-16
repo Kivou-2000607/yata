@@ -303,22 +303,24 @@ def updatePoster(faction):
 
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    # print("[function.chain.factionTree] background color: {}".format(background))
+    print("[function.chain.factionTree] background color: {}".format(background))
     img = Image.new('RGBA', (5000, 5000), color=background)
 
     # choose font
     fontFamily = posterOpt.get('fontFamily', [0])[0]
-    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.STATIC_ROOT + '/perso/font/')))}
+    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.MEDIA_ROOT + '/font/')))}
     if fontFamily not in fntId:
         fontFamily = 0
+
+    print(fntId)
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
-    fntBig = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
-    fnt = ImageFont.truetype(settings.STATIC_ROOT + '/perso/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
+    fntBig = ImageFont.truetype(settings.MEDIA_ROOT + '/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
+    fnt = ImageFont.truetype(settings.MEDIA_ROOT + '/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
     d = ImageDraw.Draw(img)
 
     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
-    # print("[function.chain.factionTree] fontColor: {}".format(fontColor))
+    print("[function.chain.factionTree] fontColor: {}".format(fontColor))
 
     # add title
     txt = "{}".format(req["name"])
@@ -330,9 +332,9 @@ def updatePoster(faction):
     x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
-    # print("[function.chain.factionTree] iconType: {}".format(iconType))
+    print("[function.chain.factionTree] iconType: {}".format(iconType))
     for branch, upgrades in tree.items():
-        icon = Image.open(settings.STATIC_ROOT + '/posters/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
+        icon = Image.open(settings.MEDIA_ROOT + '/posters/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
         icon = icon.convert("RGBA")
         img.paste(icon, (10, y), mask=icon)
 
@@ -359,6 +361,8 @@ def updatePoster(faction):
 
     f = BytesIO()
     try:
+        faction.posterImg.delete()
+        
         img.save(f, format='png')
         faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
         print(f'posters/{faction.tId}.png')
