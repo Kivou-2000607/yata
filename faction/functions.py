@@ -255,7 +255,10 @@ def updatePoster(faction):
     from PIL import ImageDraw
     from PIL import ImageFont
 
-    url = "{}/posters/{}.png".format(settings.STATIC_ROOT, faction.tId)
+    from io import BytesIO
+    from django.core.files.base import ContentFile
+
+    url = "{}/posters/{}.png".format(settings.MEDIA_ROOT, faction.tId)
     bridge = {"Criminality": 0,
               "Fortitude": 1,
               "Voracity": 2,
@@ -346,9 +349,25 @@ def updatePoster(faction):
 
         # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
+    img = img.crop((0, 0, x + 90 + 10, y))
+    print(faction.posterImg)
+
     # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
-    img.crop((0, 0, x + 90 + 10, y)).save(url)
+    # img.crop((0, 0, x + 90 + 10, y)).save(url)
     # print('[function.chain.factionTree] image saved {}'.format(url))
+    print(img)
+
+    f = BytesIO()
+    try:
+        img.save(f, format='png')
+        faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
+        print(f'posters/{faction.tId}.png')
+        faction.posterImg.name = f'posters/{faction.tId}.png'
+        print(faction.posterImg.path)
+    finally:
+        f.close()
+
+    faction.save()
 
 
 def updatePosterConf(faction, post):

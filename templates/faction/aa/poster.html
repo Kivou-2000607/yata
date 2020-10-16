@@ -44,7 +44,7 @@ This file is part of yata.
                 Hold automatic update: <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
             {% endif %}
             </li>
-            <li>Link to poster: <a href="{{baseUrl}}posters/{{faction.tId}}.png" target="_blank">https://yata.alwaysdata.net{{baseUrl}}posters/{{faction.tId}}.png</a></li>
+            <li>Link to poster: <a href="{{faction.posterImg.url}}" target="_blank">https://yata.alwaysdata.net{{faction.posterImg.url}}</a></li>
 
         {% else %}
             <li><span class="error">Upgrades poster is disabled</span></li>
@@ -110,8 +110,8 @@ This file is part of yata.
 <hr class="sep">
 
 <div style="width: 55%; margin: 0 auto;">
-    <p><a href="{{baseUrl}}posters/{{faction.tId}}.png" target="_blank" atl="faction upgrade tree">
-        <img src="{{baseUrl}}posters/{{faction.tId}}.png?cache={{random}}" style="border: solid 1px;" width="100%">
+    <p><a href="{{faction.posterImg.url}}" target="_blank" atl="faction upgrade tree">
+        <img src="{{faction.posterImg.url}}?cache={{random}}" style="border: solid 1px;" width="100%">
     </a></p>
 </div>
 

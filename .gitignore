@@ -9,3 +9,4 @@ staticfiles
 analytics
 yata/settings.local.py
 yata/static/honors/img/*.png
+yata/media

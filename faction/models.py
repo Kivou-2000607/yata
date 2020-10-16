@@ -151,6 +151,7 @@ class Faction(models.Model):
     poster = models.BooleanField(default=False)
     posterHold = models.BooleanField(default=False)
     posterOpt = models.TextField(default="{}")
+    posterImg = models.ImageField(blank=True)
 
     # respect simulator
     upgradesUpda = models.IntegerField(default=0)
@@ -183,7 +184,6 @@ class Faction(models.Model):
 
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
-
 
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))

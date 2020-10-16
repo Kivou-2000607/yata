@@ -327,6 +327,9 @@ def configurationsPoster(request):
                 faction.poster = not faction.poster
                 faction.posterHold = faction.posterHold if faction.poster else False
 
+                if not faction.poster:
+                    faction.posterImg.delete(save=True)
+
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
 
