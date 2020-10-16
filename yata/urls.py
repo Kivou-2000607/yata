@@ -63,4 +63,7 @@ urlpatterns = [
     path('<slug:share>/attacks/<slug:reportId>/', attacksReport, name='attacksReport'),
     path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += tatic(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
