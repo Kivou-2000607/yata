@@ -200,6 +200,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
             player = Player.objects.filter(tId=-1).first()
         defaults = {"timestamp": tsnow()}
         try:
+            capture_exception(exc)
             player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
         except BaseException as e:
             print("Meta error", e)
