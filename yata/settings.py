@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if config("DATABASE", default="sqlite", cast=str )== "postgresql":
+if config("DATABASE", default="sqlite", cast=str) == "postgresql":
     print(f"SETTINGS: DATABASE=postgresql")
 
     DATABASES = {
@@ -163,6 +163,7 @@ def get_cache():
                 'LOCATION': 'cache',
             }
         }
+
 
 CACHES = get_cache()
 
@@ -231,7 +232,4 @@ if config("ENABLE_SENTRY"):
         integrations=[DjangoIntegration()],
         traces_sample_rate=1.0,
         environment=config("SENTRY_ENVIRONMENT"),
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True
     )
