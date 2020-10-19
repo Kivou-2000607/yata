@@ -58,7 +58,7 @@ Create a local .env file
     #Sentry for error capture
     #ENABLE_SENTRY=True
     #SENTRY_DSN=YOURDSN
-
+    #SENTRY_ENVIRONMENT=dev
 Then run setup.py to initalise everything
 
     python setup.py
