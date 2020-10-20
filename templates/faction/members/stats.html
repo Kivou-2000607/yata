@@ -3,48 +3,52 @@ Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
 
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
 
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with yata. If not, see
+<https: //www.gnu.org/licenses />.
 {% endcomment %}
 {% load humanize %}
 
 {% if errorMessage %}
-    <span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
+<span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
 {% else %}
 
 
 {% if member.tId == player.tId %}
-    <span style="cursor: pointer;">
+<span style="cursor: pointer;">
     {% if member.shareS %}
-        <span class="error faction-member-shareS" title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}&#10;&#10;Click to stop sharing your battle stats.">
-            {{member.getTotalStats|intcomma}}
-        </span>
-    {% else %}
-        <span class="valid faction-member-shareS" title="Start sharing your battle stats with your faction leaders.&#10;You will be able to stop sharing whenever you want by clicking your stats.&#10;Only AA members can see your battle stats.">
-            <i class="fas fa-user-plus"></i>
-        </span>
-    {% endif %}
+    <span class="error faction-member-shareS"
+        title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}&#10;&#10;Click to stop sharing your battle stats.">
+        {{member.getTotalStats|intcomma}}
     </span>
-{% elif player.factionAA %}
-    {% if member.shareS == -1 %}
-        <span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
-    {% elif member.shareS == 0 %}
-        <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
-    {% elif member.shareS == 1 %}
-        <span title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}">{{member.getTotalStats|intcomma}}</span>
+    {% else %}
+    <span class="valid faction-member-shareS"
+        title="Start sharing your battle stats with your faction leaders.&#10;You will be able to stop sharing whenever you want by clicking your stats.&#10;Only AA members can see your battle stats.">
+        <i class="fas fa-user-plus"></i>
+    </span>
     {% endif %}
+</span>
+{% elif player.factionAA %}
+{% if member.shareS == -1 %}
+<span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
+{% elif member.shareS == 0 %}
+<span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
+{% elif member.shareS == 1 %}
+<span
+    title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}">{{member.getTotalStats|intcomma}}</span>
+{% endif %}
 {% else %}
-    <span title="You need AA perm">-</span>
+<span title="You need AA perm">-</span>
 {% endif %}
 
 
