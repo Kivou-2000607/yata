@@ -40,12 +40,13 @@ along with yata. If not, see
         });
     </script>
 
-    <h2 class="title"><i class="fas fa-users fa-icon-inline"></i>{{faction.name|safe}}'s members<span
-            class="flush-right"><a href="#"><i class="fas fa-file-export"
-                    title="Export members to CSV"></i></a><b>Status update:</b>
-            {{faction.memberStatusUpda|ts2date}}&nbsp;&nbsp;<b>List update:</b> {{faction.membersUpda|ts2date}}</span>
-        <form class="form-inline"><a id="member-refresh" class="flush-right" href=""><i
-                    class="fas fa-sync-alt"></i>&nbsp;Refresh status</a></form>
+    <h2 class="title"><i class="fas fa-users fa-icon-inline"></i>{{faction.name|safe}}'s members
+        <span class="flush-right">
+          <a href="{% url 'faction:membersExport' %}" target="_blank"><i class="fas fa-file-export fa-icon-inline" title="Export members to CSV"></i>Export members</a>
+        <form class="form-inline" style="margin-left: 5px;">
+          <a id="member-refresh" href="" title="Refresh status"><i class="fas fa-sync-alt fa-icon-inline"></i>Refresh status</a>
+        </form>
+        </span>
     </h2>
     <div class="module">
         <table id="faction-members" class="tablesorter center-large trshadow faction-members">
