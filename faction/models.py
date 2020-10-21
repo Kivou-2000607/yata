@@ -30,7 +30,9 @@ import re
 import random
 import os
 
+
 from yata.handy import *
+from yata.bulkManager import *
 from player.models import Key
 from player.models import Player
 from faction.functions import *
@@ -165,7 +167,7 @@ class Faction(models.Model):
 
     # armory / networth
     armoryUpda = models.IntegerField(default=0)
-    armoryNewsFilter = models.CharField(default="", max_length=32)
+    armoryNewsFilter = models.CharField(default="", max_length=32, blank=True)
     # armoryOld = models.IntegerField(default=8035200)
 
     # crimes
@@ -239,7 +241,7 @@ class Faction(models.Model):
 
         walls = dict({})
         for k, v in news.items():
-            reg =  'warreport&warID=\d{1,10}'
+            reg = 'warreport&warID=\d{1,10}'
             if re.findall(reg, v["news"]):
                 reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">'
                 # reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">(.{1,})</a>'
@@ -310,7 +312,7 @@ class Faction(models.Model):
                         continue
 
             if v["ready"]:
-                n["ready"] +=1
+                n["ready"] += 1
 
             # get crimeBD
             crimeDB = crimesDB.filter(tId=int(k)).first()
@@ -655,20 +657,28 @@ class Faction(models.Model):
         old = now - self.getHist("armory")
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
+        last_armory = 0
+        last_fund = 0
+        bulk_mgr = BulkCreateManager(chunk_size=20)
+        if news.count():
+            last_armory = news.filter(type="armorynews").order_by("timestamp").last().timestamp
+            last_fund = news.filter(type="fundsnews").order_by("timestamp").last().timestamp
+
         for type in ["armorynews", "fundsnews"]:
             if isinstance(factionInfo.get(type), list):
                 continue
             for k, v in factionInfo.get(type, dict({})).items():
-                newstype = news.filter(type=type)
-                if v["timestamp"] > old:
+                if (v["timestamp"] > old) and ((type == "armorynews" and v["timestamp"] > last_armory) or (type == "fundsnews" and v["timestamp"] > last_fund)):
                     v["news"] = cleanhtml(v["news"])[:512]
                     v["member"] = v["news"].split(" ")[0]
-                    try:
-                        self.news_set.get_or_create(tId=k, type=type, defaults=v)
-                    except BaseException:
-                        self.news_set.filter(tId=k, type=type).delete()
-                        self.news_set.get_or_create(tId=k, type=type, defaults=v)
+                    bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=type))
 
+                    # try:
+                    #self.news_set.get_or_create(tId=k, type=type, defaults=v)
+                    # except BaseException:
+                    #self.news_set.filter(tId=k, type=type).delete()
+                    #self.news_set.get_or_create(tId=k, type=type, defaults=v)
+        bulk_mgr.done()
         # delete old logs
         self.log_set.filter(timestamp__lt=old).delete()
 
@@ -1274,8 +1284,8 @@ class Member(models.Model):
                 self.nnb = nnb
 
                 # compute equivalent arons
-                arson = req["criminalrecord"].get("fraud_crimes", 0)# assumed arson
-                arson += 0.11 * req["criminalrecord"].get("theft", 0) # assumed steal jackets
+                arson = req["criminalrecord"].get("fraud_crimes", 0)  # assumed arson
+                arson += 0.11 * req["criminalrecord"].get("theft", 0)  # assumed steal jackets
                 arson += 0.66 * req["criminalrecord"].get("auto_theft", 0)  # assumed Steal Parked Car
                 arson -= 0.5 * req["criminalrecord"].get("drug_deals", 0)  # assumed -5k for 10k
                 arson += 0.5 * req["criminalrecord"].get("computer_crimes", 0)  # assumed Stealth Virus
@@ -3241,10 +3251,10 @@ class Crimes(models.Model):
                 arson = 0
                 rank = 0
             else:
-                 name = member.name
-                 nnb = member.nnb
-                 arson = member.arson
-                 rank = member.crimesRank
+                name = member.name
+                nnb = member.nnb
+                arson = member.arson
+                rank = member.crimesRank
             participants.append([id, name, nnb, arson, rank])
         return participants
 

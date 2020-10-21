@@ -2375,7 +2375,7 @@ def armory(request):
                 return render(request, page, context)
 
             # update and get news
-            if tsnow() - faction.armoryUpda > 60 * 15:
+            if settings.DEBUG or tsnow() - faction.armoryUpda > 60 * 15:
                 state, message = faction.updateLog()
             else:
                 message = False
