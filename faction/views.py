@@ -1086,6 +1086,46 @@ def combined(request):
         return returnError(exc=e, session=request.session)
 
 
+def membersExport(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+
+            # in case of error
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                return render(request, page, context)
+
+            # get members
+            members = faction.member_set.all()
+
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="members_report.csv"'
+
+            csv_data = [['Name', 'Last Action', 'Status', 'Days In Faction', 'Energy', 'CE Rank', 'NNB', 'EA', 'Strength', 'Speed', 'Defence', 'Dexterity', 'Total']]
+
+            for m in members:
+                csv_data.append([m.name, m.lastAction, m.state, m.daysInFaction, m.energy, m.crimesRank, m.nnb, m.arson, m.strength, m.speed, m.defense, m.dexterity, m.getTotalStats])
+
+            t = loader.get_template('faction/members/export.txt')
+            c = {'data': csv_data}
+            response.write(t.render(c))
+
+            return response
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
 def reportExport(request, chainId, type):
     try:
         if request.session.get('player'):
@@ -3186,7 +3226,6 @@ def oc(request):
                     todel.append(k)
                 elif len(currentCrimes.filter(team_id=k)):
                     v["active"] = True
-
 
             for k in todel:
                 del teamsDB[k]
