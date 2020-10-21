@@ -55,6 +55,10 @@ Create a local .env file
     # The amount of revive report crontabs to run when running crons manually via python dev_cron.py
     REVIVE_REPORT = 1
 
+    #Sentry for error capture
+    #ENABLE_SENTRY=True
+    #SENTRY_DSN=YOURDSN
+    #SENTRY_ENVIRONMENT=dev
 Then run setup.py to initalise everything
 
     python setup.py

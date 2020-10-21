@@ -29,6 +29,12 @@ from faction.views import report as chainReport
 from faction.views import attacksReport
 from faction.views import revivesReport
 
+# sentry
+from django.urls import path
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
 app_name = "yata"
 urlpatterns = [
     # app
@@ -62,6 +68,9 @@ urlpatterns = [
     path('<slug:share>/chains/<slug:chainId>/', chainReport, name='chainReport'),
     path('<slug:share>/attacks/<slug:reportId>/', attacksReport, name='attacksReport'),
     path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
+
+    #sentry
+    path('sentry-debug/', trigger_error),
 
 ]
 

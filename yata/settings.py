@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if config("DATABASE", default="sqlite", cast=str )== "postgresql":
+if config("DATABASE", default="sqlite", cast=str) == "postgresql":
     print(f"SETTINGS: DATABASE=postgresql")
 
     DATABASES = {
@@ -164,6 +164,7 @@ def get_cache():
             }
         }
 
+
 CACHES = get_cache()
 
 
@@ -221,3 +222,14 @@ WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+
+if config("ENABLE_SENTRY"):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=config("SENTRY_DSN"),
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        environment=config("SENTRY_ENVIRONMENT"),
+    )
