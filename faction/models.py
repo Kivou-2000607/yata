@@ -166,7 +166,7 @@ class Faction(models.Model):
 
     # armory / networth
     armoryUpda = models.IntegerField(default=0)
-    armoryNewsFilter = models.CharField(default="", max_length=32)
+    armoryNewsFilter = models.CharField(default="", max_length=32, blank=True)
     # armoryOld = models.IntegerField(default=8035200)
 
     # crimes
@@ -659,7 +659,7 @@ class Faction(models.Model):
         last_armory = 0
         last_fund = 0
         bulk_mgr = BulkCreateManager(chunk_size=20)
-        if news.count() is not 0:
+        if news.count():
             last_armory = news.filter(type="armorynews").order_by("timestamp").last().timestamp
             last_fund = news.filter(type="fundsnews").order_by("timestamp").last().timestamp
 
