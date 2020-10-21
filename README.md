@@ -42,9 +42,9 @@ Create a local .env file
 
     ###### OPTIONAL ######
     # Your TORN API KEY
-    APIKEY="API KEY HERE" 
+    APIKEY="API KEY HERE"
     # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
-    CACHE_RESPONSE=10 
+    CACHE_RESPONSE=10
 
     # The amount of chain report crontabs to run when running crons manually via python dev_cron.py
     CHAIN_REPORT = 1
@@ -55,8 +55,8 @@ Create a local .env file
     # The amount of revive report crontabs to run when running crons manually via python dev_cron.py
     REVIVE_REPORT = 1
 
-    #Sentry for error capture
-    #ENABLE_SENTRY=True
+    # Sentry for error capture
+    ENABLE_SENTRY=False
     #SENTRY_DSN=YOURDSN
     #SENTRY_ENVIRONMENT=dev
 Then run setup.py to initalise everything

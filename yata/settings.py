@@ -223,7 +223,9 @@ WHITENOISE_MANIFEST_STRICT = False
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
-if config("ENABLE_SENTRY"):
+if config("ENABLE_SENTRY", default=False, cast=bool):
+    print(f"SETTINGS: SENTRY=ENABLED")
+
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 
