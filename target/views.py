@@ -259,6 +259,7 @@ def targetsList(request):
                                 "baseRespect": float(v["baseRespect"]),
                                 "flatRespect": float(v["flatRespect"]),
                                 "result": str(v["result"])[:16],
+                                "color": int(v["color"]),
                                 "note": str(v["note"])[:128]}
 
                             player.targetinfo_set.get_or_create(target_id=k, defaults=defaults)

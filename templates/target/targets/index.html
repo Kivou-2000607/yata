@@ -30,11 +30,11 @@ This file is part of yata.
                   5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
-                  // 11: function(node, table, cellIndex) { return $(node).find("input.target-list-note").val(); },
                   11: function(node, table, cellIndex) {
                       let a = $(node).attr("data-col")>0?$(node).attr("data-col"):4;
                       let b = $(node).find("input.target-list-note").val()?$(node).find("input.target-list-note").val():"zzzz";
-                      return a + b; },
+                      // console.log($(node).attr("data-col") + $(node).find("input.target-list-note").val() + "->" + a + "-" + b);
+                      return a + "-" + b; },
                   12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
                 cssAsc: 'up',
