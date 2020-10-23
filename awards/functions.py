@@ -969,9 +969,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [253, 255, 257, 475, 476, 641]:
+                if int(k) in [253, 255, 257, 475, 476, 641, 916]:
                     # 253 {'name': 'Chainer 1', 'description': 'Participate in a 10 length chain', 'type': 8, 'circulation': 39418, 'rarity': 'Common', 'awardType': 'Honor'}
                     # "641": { "name": "Strongest Link", "description": "Make 100 hits in a single chain", "type": 8,
+            		# "916": { "name": "Chain Saver", "description": "Save a 100+ chain 10 seconds before it breaks", "type": 8,
                     type = "Chains"
                     vp["goal"] = 1
                     vp["current"] = 1 if int(k) in honors_awarded else 0

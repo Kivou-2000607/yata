@@ -342,6 +342,7 @@ d = {
     641: 150619086,  # Strongest Link
     414: 606974195,  # Triple Tap
     955: 491353134,  # Yoink
+    916: 947193097,  # Chain Saver
     476: 0,  # Chainer 5
 
     # 9
