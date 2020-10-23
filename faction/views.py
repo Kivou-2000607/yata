@@ -584,7 +584,7 @@ def chains(request):
             # update chains if AA
             error = False
             message = False
-            if player.factionAA and (tsnow() - faction.chainsUpda) > 15 * 60:
+            if player.factionAA and (settings.DEBUG or (tsnow() - faction.chainsUpda) > 15 * 60):
                 key = player.getKey()
                 req = apiCall('faction', faction.tId, 'chain,chains', key=key)
                 faction.chainsUpda = tsnow()
@@ -600,7 +600,9 @@ def chains(request):
                 if apichains is not None:
                     for k, v in req.get("chains", dict({})).items():
                         old = tsnow() - int(v['end']) > faction.getHist("chains")
-                        if v['chain'] < faction.hitsThreshold or old:
+                        new = tsnow() - int(v['end']) < 60 * 10  # catch live chain in stadard output
+
+                        if v['chain'] < faction.hitsThreshold or old or new:
                             chains.filter(tId=k).delete()
                         elif v['chain'] >= faction.hitsThreshold and not old:
                             try:
