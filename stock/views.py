@@ -158,21 +158,52 @@ def prices(request, tId, period=None):
             av = stock.get('t').averagePrice
 
             graph = []
-            for h in history:
-                t = h.timestamp
-                dt = stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB  # day tendancy
-                wt = stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB  # week tendancy
-                line = [t, h.tCurrentPrice, dt, wt, h.tAvailableShares, h.tTotalShares, h.tForecast, h.tDemand, av]
+
+            if periodS > 2592000:  # use averaged values for larg graphs (> 1 month)
+                floatingTS = history.first().timestamp
+                avg_val = [0, 0, 0, 0]
+                n = 0
+                for h in history:
+                    n += 1
+                    t = h.timestamp
+                    dt = stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB  # day tendancy
+                    wt = stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB  # week tendancy
+
+                    avg_val[0] += h.timestamp
+                    avg_val[1] += h.tCurrentPrice
+                    avg_val[2] += h.tAvailableShares
+                    avg_val[3] += h.tTotalShares
+
+                    # make the average and save the line every week
+                    if (t - floatingTS > 60 * 60 * 24 * 7):
+                        floatingTS = t
+                        line = [avg_val[0] // n, avg_val[1] / float(n), dt, wt, avg_val[2] // n, avg_val[3] // n, h.tForecast, h.tDemand, av]
+                        graph.append(line)
+                        avg_val = [0, 0, 0, 0]
+                        n = 0
+
+                # record last point
+                line = [avg_val[0] // n, avg_val[1] / float(n), dt, wt, avg_val[2] // n, avg_val[3] // n, h.tForecast, h.tDemand, av]
                 graph.append(line)
 
+            else:  # use all values for recent data
+
+                for h in history:
+                    t = h.timestamp
+                    dt = stock.get('t').dayTendencyA * float(t) + stock.get('t').dayTendencyB  # day tendancy
+                    wt = stock.get('t').weekTendencyA * float(t) + stock.get('t').weekTendencyB  # week tendancy
+                    line = [t, h.tCurrentPrice, dt, wt, h.tAvailableShares, h.tTotalShares, h.tForecast, h.tDemand, av]
+                    graph.append(line)
+
+            # convert timestamp to date and remove clean interplation lines
+            # keep last point as is (for interpolation problems)
             graphLength = 0
             maxTS = ts
-            for i, (t, p, dt, wt, _, _, _, _, _) in enumerate(graph):
+            for i, (t, p, dt, wt, _, _, _, _, _) in enumerate(graph[:-1]):
+
                 # remove 0 prices
                 if not int(p):
                     graph[i][1] = "null"
-                    # graph[i][2] = "null"
-                    # graph[i][3] = "null"
                 else:
                     graphLength += 1
 
@@ -183,8 +214,9 @@ def prices(request, tId, period=None):
 
                 # convert timestamp to date
                 graph[i][0] = timestampToDate(int(t))
+            graph[-1][0] = timestampToDate(graph[-1][0])
 
-            # # add personal stocks to torn stocks
+            # add personal stocks to torn stocks
             for k, v in json.loads(player.stocksJson).items():
                 if int(v['stock_id']) == int(tId):
 
