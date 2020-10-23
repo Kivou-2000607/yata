@@ -28,6 +28,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.template import loader
 from django.views.decorators.cache import cache_page
+from django.db.models.functions import Lower
 
 import html
 import os
@@ -1102,15 +1103,15 @@ def membersExport(request):
                 return render(request, page, context)
 
             # get members
-            members = faction.member_set.all()
+            members = faction.member_set.all().order_by(Lower("name"))
 
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="members_report.csv"'
 
-            csv_data = [['Name', 'Last Action', 'Status', 'Days In Faction', 'Energy', 'CE Rank', 'NNB', 'EA', 'Strength', 'Speed', 'Defence', 'Dexterity', 'Total']]
+            csv_data = [['Name', 'ID', 'Last Action', 'Status', 'Days In Faction', 'Energy', 'CE Rank', 'NNB', 'EA', 'Strength', 'Speed', 'Defence', 'Dexterity', 'Total']]
 
             for m in members:
-                csv_data.append([m.name, m.lastAction, m.state, m.daysInFaction, m.energy, m.crimesRank, m.nnb, m.arson, m.strength, m.speed, m.defense, m.dexterity, m.getTotalStats])
+                csv_data.append([m.name, m.tId, m.lastAction, m.state, m.daysInFaction, m.energy, m.crimesRank, m.nnb, m.arson, m.strength, m.speed, m.defense, m.dexterity, m.getTotalStats])
 
             t = loader.get_template('faction/members/export.txt')
             c = {'data': csv_data}
