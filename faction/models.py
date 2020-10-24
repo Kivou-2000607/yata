@@ -1499,6 +1499,7 @@ class Chain(models.Model):
         print("{} {} attacks from the API".format(self, len(apiAttacks)))
 
         newEntry = 0
+        bulk_mgr = BulkCreateManager(chunk_size=20)
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
             tsl = max(tsl, ts)
@@ -1516,7 +1517,8 @@ class Chain(models.Model):
             # if newAttack and factionAttack:
             if newAttack and factionAttack:
                 v = modifiers2lvl1(v)
-                self.attackchain_set.get_or_create(tId=int(k), defaults=v)
+                # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
+                bulk_mgr.add(AttackChain(report=self, tId=int(k), **v))
                 newEntry += 1
                 # tsl = max(tsl, ts)
                 if int(v["timestamp_ended"]) - self.end - self.addToEnd <= 0:  # case we're before cooldown
@@ -1526,6 +1528,7 @@ class Chain(models.Model):
 
                 # print("{} attack [{}] current {}".format(self, k, current))
 
+        bulk_mgr.done()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -1780,6 +1783,7 @@ class Chain(models.Model):
         print('{} fill database with counts'.format(self))
         self.count_set.all().delete()
         hitsForStats = []
+        bulk_mgr = BulkCreateManager(chunk_size=20)
         for k, v in attackers.items():
             # for stats later
             if v[1]:
@@ -1810,22 +1814,41 @@ class Chain(models.Model):
             # 11: for chain watch
             # 12: #bonuses
             # 13: #war
-            self.count_set.create(attackerId=k,
-                                  name=v[10],
-                                  hits=v[0],
-                                  wins=v[1],
-                                  bonus=v[12],
-                                  fairFight=v[2],
-                                  war=v[3],
-                                  retaliation=v[4],
-                                  groupAttack=v[5],
-                                  overseas=v[6],
-                                  respect=v[8],
-                                  daysInFaction=v[9],
-                                  beenThere=beenThere,
-                                  graph=graphTmp,
-                                  watcher=watcher,
-                                  warhits=v[13])
+            # self.count_set.create(attackerId=k,
+            #                       name=v[10],
+            #                       hits=v[0],
+            #                       wins=v[1],
+            #                       bonus=v[12],
+            #                       fairFight=v[2],
+            #                       war=v[3],
+            #                       retaliation=v[4],
+            #                       groupAttack=v[5],
+            #                       overseas=v[6],
+            #                       respect=v[8],
+            #                       daysInFaction=v[9],
+            #                       beenThere=beenThere,
+            #                       graph=graphTmp,
+            #                       watcher=watcher,
+            #                       warhits=v[13])
+            bulk_mgr.add(Count( chain=self,
+                                attackerId=k,
+                                name=v[10],
+                                hits=v[0],
+                                wins=v[1],
+                                bonus=v[12],
+                                fairFight=v[2],
+                                war=v[3],
+                                retaliation=v[4],
+                                groupAttack=v[5],
+                                overseas=v[6],
+                                respect=v[8],
+                                daysInFaction=v[9],
+                                beenThere=beenThere,
+                                graph=graphTmp,
+                                watcher=watcher,
+                                warhits=v[13]))
+
+        bulk_mgr.done()
 
         # create attack stats
         stats, statsBins = numpy.histogram(hitsForStats, bins=32)
