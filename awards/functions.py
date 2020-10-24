@@ -732,7 +732,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 778 { "name": "Specialist", "description": "Achieve 100% EXP on 25 different weapons",
                     type = "Other Attacks"
                     vp["goal"] = int(v["description"].split(" ")[4].replace(",", ""))
-                    wexp = userInfo.get("weaponexp", [])
+                    wexp = userInfo.get("weaponexp", [])[:25]
                     maxExp = 0
                     def exp_to_hits(exp):
                         if exp < 25:
@@ -744,20 +744,26 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         else:
                             return (100 - exp) * 40
 
+                    totalHits = 50000
+                    hitsMade = 0
                     for we in wexp:
-                        if we.get("exp") == 100:
+                        we["hits"] = exp_to_hits(we["exp"])
+                        if we["exp"] == 100:
                             we["class"] = "valid"
                             maxExp += 1
-                        elif we.get("exp") > 90:
+                        elif we["exp"] > 90:
                             we["class"] = "warning"
                         else:
                             we["class"] = "error"
-                    # sup5 = ['<span class={}>{:02d} {}</span>: {}%'.format(k.get("class"), i + 1, k.get("name"), k.get("exp")) for i, k in enumerate(wexp) if k.get("exp") > 5]
-                    sup5 = ['<span class={}>{:02d} {}</span>: {}% {}'.format(k.get("class"), i + 1, k.get("name"), k.get("exp"), "({})".format(exp_to_hits(k.get("exp"))) if int(k.get("exp")) < 100 else "") for i, k in enumerate(wexp) if i < 25]
+
+                        hitsMade += we["hits"]
+
+                    sup5 = [f'<span class={k["class"]}>{i + 1:02d} {k["name"]}</span>: {k["exp"]}% {k["hits"] if int(k["exp"]) < 100 else ""}' for i, k in enumerate(wexp)]
                     vp["current"] = maxExp
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["achieve"] = min(1, float(hitsMade) / float(totalHits))
                     if len(sup5):
                         sup5.insert(0, "<b>List of the first 25 weapons with experience</b><br>With remaining hits")
+                        sup5.append(f"<br>Remaining hits {hitsMade:,d} / {totalHits:,d}")
                         vp["comment"] = "<br>".join(sup5)
                     awards[type]["h_" + k] = vp
 
