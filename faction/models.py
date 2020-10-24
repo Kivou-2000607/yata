@@ -1478,6 +1478,9 @@ class Chain(models.Model):
 
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
+            if not n:
+                print(f'{self}\t escape loop because no new attacks')
+                break
 
         # update timestamp
         self.update = tsnow()
