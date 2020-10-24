@@ -158,8 +158,11 @@ def prices(request, tId, period=None):
             av = stock.get('t').averagePrice
 
             graph = []
+            firstTS = history.first().timestamp
+            lastTS = history.last().timestamp
 
-            if periodS > 2592000:  # use averaged values for larg graphs (> 1 month)
+            # if periodS > 2592000:  # use averaged values for larg graphs (> 1 month)
+            if periodS > 1209600:  # use averaged values for larg graphs (> 2 weeks)
                 floatingTS = history.first().timestamp
                 avg_val = [0, 0, 0, 0]
                 n = 0
@@ -175,7 +178,7 @@ def prices(request, tId, period=None):
                     avg_val[3] += h.tTotalShares
 
                     # make the average and save the line every week
-                    if (t - floatingTS > 60 * 60 * 24 * 7):
+                    if t - floatingTS > (lastTS - firstTS) / 256:
                         floatingTS = t
                         line = [avg_val[0] // n, avg_val[1] / float(n), dt, wt, avg_val[2] // n, avg_val[3] // n, h.tForecast, h.tDemand, av]
                         graph.append(line)
@@ -183,8 +186,9 @@ def prices(request, tId, period=None):
                         n = 0
 
                 # record last point
-                line = [avg_val[0] // n, avg_val[1] / float(n), dt, wt, avg_val[2] // n, avg_val[3] // n, h.tForecast, h.tDemand, av]
-                graph.append(line)
+                if n > 0:
+                    line = [avg_val[0] // n, avg_val[1] / float(n), dt, wt, avg_val[2] // n, avg_val[3] // n, h.tForecast, h.tDemand, av]
+                    graph.append(line)
 
             else:  # use all values for recent data
 
