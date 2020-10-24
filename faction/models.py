@@ -1403,10 +1403,14 @@ class Chain(models.Model):
         attacks = [r.tId for r in self.attackchain_set.all()]
         print("{} {} existing attacks".format(self, len(attacks)))
 
-        # get key
-        key = faction.getKey(useFact=True)
-        if key is None:
-            print("{} no key".format(self))
+        # loop over keys to get the attacks
+        apiAttacks = {}
+        keys = faction.masterKeys.filter(useFact=True)
+        nKeys = len(keys)
+
+        # stop if no master keys
+        if not nKeys:
+            print("{} no keys".format(self))
             self.computing = False
             self.crontab = 0
             self.attackchain_set.all().delete()
@@ -1414,55 +1418,71 @@ class Chain(models.Model):
             self.save()
             return self.state
 
-        # prevent cache response
-        delay = tsnow() - self.update
-        delay = min(tsnow() - faction.lastAttacksPulled, delay)
-        if delay < 32:
-            sleeptime = 32 - delay
-            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
-            time.sleep(sleeptime)
+        for i, key in enumerate(keys):
+            print(f"{self} Key #{i}: {key}")
 
-        # make call
-        selection = "chain,attacks,timestamp&from={}&to={}".format(tsl, tse)
-        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
-        key.reason = "Pull attacks for chain report"
-        key.lastPulled = tsnow()
-        key.save()
+            # prevent cache response
+            delay = min(tsnow() - faction.lastAttacksPulled, tsnow() - self.update)
+            if delay < 32:
+                sleeptime = 32 - delay
+                print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+                time.sleep(sleeptime)
+
+            # make call
+            selection = "chain,attacks,timestamp&from={}&to={}".format(tsl, tse)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+            key.reason = "Pull attacks for chain report"
+            key.lastPulled = tsnow()
+            key.save()
+
+            # in case there is an API error
+            # A single key error will trigger a status for the whole report
+            # even if the other keys are good
+            # It can be optimized but since it's never a critical status it's ok for now
+            if "apiError" in req:
+                print('{}\t api key error: {}'.format(self, req['apiError']))
+                if req['apiErrorCode'] in API_CODE_DELETE:
+                    faction.delKey(key=key)
+                    print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                    self.state = -2
+                    self.save()
+                    return self.state
+
+                self.state = -3
+                self.save()
+                return self.state
+
+            # try to catch cache response
+            tornTS = int(req["timestamp"])
+            nowTS = tsnow()
+            cache = abs(nowTS - tornTS)
+            print("{}\t cache = {}s".format(self, cache))
+
+            # in case cache
+            if cache > CACHE_RESPONSE:
+                print('{}\t probably cached response... (blank turn)'.format(self))
+                self.state = -4
+                self.save()
+                return self.state
+
+            if self.live:
+                print("{}\t update values".format(self))
+                self.chain = req["chain"]["current"]
+
+            n = 0
+            for id, attack in req["attacks"].items():
+                if id not in apiAttacks:
+                    n += 1
+                    apiAttacks[id] = attack
+                    tsl = max(tsl, attack["timestamp_ended"])
+
+            print(f'{self}\t adding {n} attacks')
+            print(f'{self}\t last time {timestampToDate(tsl)}')
+
+        # update timestamp
         self.update = tsnow()
         faction.lastAttacksPulled = self.update
         faction.save()
-
-        # in case there is an API error
-        if "apiError" in req:
-            print('{} api key error: {}'.format(self, req['apiError']))
-            if req['apiErrorCode'] in API_CODE_DELETE:
-                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
-                faction.delKey(key=key)
-                self.state = -2
-                self.save()
-                return self.state
-            self.state = -3
-            self.save()
-            return self.state
-
-        # try to catch cache response
-        tornTS = int(req["timestamp"])
-        nowTS = self.update
-        cache = abs(nowTS - tornTS)
-        print("{} cache = {}s".format(self, cache))
-
-        # in case cache
-        if cache > CACHE_RESPONSE:
-            print('{} probably cached response... (blank turn)'.format(self))
-            self.state = -4
-            self.save()
-            return self.state
-
-        if self.live:
-            print("{} update values".format(self))
-            self.chain = req["chain"]["current"]
-
-        apiAttacks = req["attacks"]
 
         # in case empty payload
         if not len(apiAttacks):
