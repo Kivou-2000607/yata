@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 import time
 
@@ -34,10 +35,11 @@ class Command(BaseCommand):
         print("open crontab {}".format(crontabId))
         report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
         if report is not None:
+            if not settings.DEBUG:
+                print("sleep for 30 seconds")
+                time.sleep(30)
             # sleep 30s to avoid cache with chain reports
-            print("sleep for 30 seconds")
-            time.sleep(30)
             state = report.getAttacks()
-            # report.fillReport()
+            report.fillReport()
             # type = "error" if state < 0 else "exit"
             # print("{} {} code {}: {}".format(report, type, state, REPORT_ATTACKS_STATUS.get(state, "code {}".format(state))))

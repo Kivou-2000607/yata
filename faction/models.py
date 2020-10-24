@@ -1403,9 +1403,9 @@ class Chain(models.Model):
         attacks = [r.tId for r in self.attackchain_set.all()]
         print("{} {} existing attacks".format(self, len(attacks)))
 
-        # loop over keys to get the attacks
+        # get the keys and init the attacks dict
         apiAttacks = {}
-        keys = faction.masterKeys.filter(useFact=True)
+        keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
         nKeys = len(keys)
 
         # stop if no master keys
@@ -1418,6 +1418,7 @@ class Chain(models.Model):
             self.save()
             return self.state
 
+        # loop over keys to get the attacks
         for i, key in enumerate(keys):
             print(f"{self} Key #{i}: {key}")
 
@@ -2093,9 +2094,13 @@ class AttacksReport(models.Model):
         attacks = [r.tId for r in self.attackreport_set.all()]
         print("{} {} existing attacks".format(self, len(attacks)))
 
-        # get key
-        key = faction.getKey(useFact=True)
-        if key is None:
+        # get the keys and init the attacks dict
+        apiAttacks = {}
+        keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
+        nKeys = len(keys)
+
+        # stop if no master keys
+        if not keys:
             print("{} no key".format(self))
             self.computing = False
             self.crontab = 0
@@ -2104,51 +2109,66 @@ class AttacksReport(models.Model):
             self.save()
             return -1
 
-        # prevent cache response
-        delay = tsnow() - self.update
-        delay = min(tsnow() - faction.lastAttacksPulled, delay)
-        if delay < 32:
-            sleeptime = 32 - delay
-            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
-            time.sleep(sleeptime)
+        # loop over keys to get the attacks
+        for i, key in enumerate(keys):
+            print(f"{self} Key #{i}: {key}")
 
-        # make call
-        selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
-        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
-        key.reason = "Pull attacks for attacks report"
-        key.lastPulled = tsnow()
-        key.save()
-        self.update = tsnow()
-        faction.lastAttacksPulled = self.update
-        faction.save()
+            # prevent cache response
+            delay = min(tsnow() - faction.lastAttacksPulled, tsnow() - self.update)
+            if delay < 32:
+                sleeptime = 32 - delay
+                print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+                time.sleep(sleeptime)
 
-        # in case there is an API error
-        if "apiError" in req:
-            print('{} api key error: {}'.format(self, req['apiError']))
-            if req['apiErrorCode'] in API_CODE_DELETE:
-                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
-                faction.delKey(key=key)
-                self.state = -2
+            # make call
+            selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+            key.reason = "Pull attacks for attacks report"
+            key.lastPulled = tsnow()
+            key.save()
+
+            # in case there is an API error
+            # A single key error will trigger a status for the whole report
+            # even if the other keys are good
+            # It can be optimized but since it's never a critical status it's ok for now
+            if "apiError" in req:
+                print('{} api key error: {}'.format(self, req['apiError']))
+                if req['apiErrorCode'] in API_CODE_DELETE:
+                    print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                    faction.delKey(key=key)
+                    self.state = -2
+                    self.save()
+                    return -2
+
+                self.state = -3
                 self.save()
-                return -2
-            self.state = -3
-            self.save()
-            return -3
+                return -3
 
-        # try to catch cache response
-        tornTS = int(req["timestamp"])
-        nowTS = self.update
-        cache = abs(nowTS - tornTS)
-        print("{} cache = {}s".format(self, cache))
+            # try to catch cache response
+            tornTS = int(req["timestamp"])
+            nowTS = tsnow()
+            cache = abs(nowTS - tornTS)
+            print("{} cache = {}s".format(self, cache))
 
-        # in case cache
-        if cache > CACHE_RESPONSE:
-            print('{} probably cached response... (blank turn)'.format(self))
-            self.state = -4
-            self.save()
-            return -4
+            # in case cache
+            if cache > CACHE_RESPONSE:
+                print('{} probably cached response... (blank turn)'.format(self))
+                self.state = -4
+                self.save()
+                return -4
 
-        apiAttacks = req["attacks"]
+            n = 0
+            for id, attack in req["attacks"].items():
+                if id not in apiAttacks:
+                    n += 1
+                    apiAttacks[id] = attack
+                    tsl = max(tsl, attack["timestamp_ended"])
+
+            print(f'{self}\t adding {n} attacks')
+            print(f'{self}\t last time {timestampToDate(tsl)}')
+            if not n:
+                print(f'{self}\t escape loop because no new attacks')
+                break
 
         # in case empty payload
         if not len(apiAttacks):
@@ -2163,6 +2183,7 @@ class AttacksReport(models.Model):
 
         # add attacks
         newEntry = 0
+        bulk_mgr = BulkCreateManager(chunk_size=20)
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
 
@@ -2177,7 +2198,8 @@ class AttacksReport(models.Model):
             # chainAttack = int(v["chain"])
             if newAttack:
                 v = modifiers2lvl1(v)
-                self.attackreport_set.create(tId=int(k), **v)
+                # self.attackreport_set.create(tId=int(k), **v)
+                bulk_mgr.add(AttackReport(report=self, tId=int(k), **v))
                 newEntry += 1
                 tsl = max(tsl, ts)
 
@@ -2186,6 +2208,7 @@ class AttacksReport(models.Model):
                 else:
                     self.defends += 1
 
+        bulk_mgr.done()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -2278,25 +2301,36 @@ class AttacksReport(models.Model):
                                          "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
 
         print("{} update factions".format(self))
+        bulk_u_mgr = BulkUpdateManager(['hits', 'attacks', 'defends', 'attacked'], chunk_size=100)
+        bulk_c_mgr = BulkCreateManager(chunk_size=20)
+        all_factions = self.attacksfaction_set.all()
         for k, v in f_set.items():
-            try:
-                f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
-            except MultipleObjectsReturned:
-                print("{} ERROR with {} {}".format(self, k, v))
-                self.attacksfaction_set.filter(faction_id=k).delete()
-                f, s = self.attacksfaction_set.update_or_create(faction_id=k, defaults=v)
+            f = all_factions.filter(faction_id=k).first()
+            if f is not None:  # add to update manager
+                f.hits = v["hits"]
+                f.attacks = v["attacks"]
+                f.defends = v["defends"]
+                f.attacked = v["attacked"]
+                bulk_u_mgr.add(f)
+            else:  # add to create manager
+                bulk_c_mgr.add(AttacksFaction(report=self, **v))
 
         print("{} update players".format(self))
+        all_players = self.attacksplayer_set.all()
         for k, v in p_set.items():
-            try:
-                p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
-            except MultipleObjectsReturned:
-                print("{} ERROR with {} {}".format(self, k, v))
-                self.attacksplayer_set.filter(player_id=k).delete()
-                p, s = self.attacksplayer_set.update_or_create(player_id=k, defaults=v)
+            p = all_players.filter(player_id=k).first()
+            if p is not None:  # add to update manager
+                p.hits = v["hits"]
+                p.attacks = v["attacks"]
+                p.defends = v["defends"]
+                p.attacked = v["attacked"]
+                bulk_u_mgr.add(p)
+            else:  # add to create manager
+                bulk_c_mgr.add(AttacksPlayer(report=self, **v))
 
-            # string = "Create player" if s else "Update player"
-            # print("{} {} {}".format(self, string, p))
+        print("{} execute managers".format(self))
+        bulk_u_mgr.done()
+        bulk_c_mgr.done()
 
         # set show/hide
         print("{} show hide".format(self))
@@ -2379,6 +2413,8 @@ class AttacksReport(models.Model):
 
 class AttacksFaction(models.Model):
     report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
+
+    # faction_id_pk = models.IntegerField(default=0)
 
     faction_id = models.IntegerField(default=0)
     faction_name = models.CharField(default="faction_name", max_length=64, null=True, blank=True)
