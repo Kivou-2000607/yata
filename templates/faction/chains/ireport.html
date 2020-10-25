@@ -61,7 +61,40 @@ This file is part of yata.
 </td>
 {% elif counts|length %}
 <td colspan="12">
-{% for c in counts %}
+  <script>
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Time', 'Chain participation (%)'],
+          {% for a, b in counts.graph %}
+              [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}],
+           {% endfor %}
+        ]);
+
+        var options = {
+          legend: {position: 'top', textStyle: {fontSize: 14}},
+          seriesType: 'bars',
+          series: {
+                    0: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                   },
+          'backgroundColor': 'transparent',
+          'chartArea': {'width': '90%', 'height': '70%'},
+        };
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1]);
+
+        var chart = new google.visualization.ComboChart(document.getElementById('ihistogram-{{memberId}}'));
+
+        chart.draw(data, options);
+      }
+  </script>
+
+  <div id="ihistogram-{{memberId}}"></div>
+  {{counts.chain}}
+{% for c in counts.chains %}
     {% if c %}
         <p>Chain [{{c.chain.tId}}] of <b>{{c.chain.start|ts2date}} ({{c.chain.chain}} hits)</b>
             <span style="margin-left:10px;"><b>{{c.wins}}</b> hit{{c.wins|pluralize}} made {%if c.chain.chain%}({{c.wins|add:c.bonus|mul:100|div:c.chain.chain|floatformat:2}}%){%endif%}{%if c.warhits%} {{c.warhits}} for war{%endif%}

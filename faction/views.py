@@ -887,10 +887,16 @@ def iReport(request):
             if chainId in ["combined"]:
                 # get all chains from joint report
                 chains = faction.chain_set.filter(combine=True).order_by('start')
-                counts = []
+                member = faction.member_set.filter(tId=memberId).first()
+                counts = {"graph": [], "chains": []}
                 for chain in chains:
-                    count = chain.count_set.filter(attackerId=memberId).first()
-                    counts.append(count)
+                    inFaction = tsnow() - chain.start - (member.daysInFaction * 3600 * 24) < 0 if member is not None else True
+                    if inFaction:
+                        count = chain.count_set.filter(attackerId=memberId).first()
+                        if count is not None:
+                            counts["graph"].append([timestampToDate(count.chain.start), 100 * (count.wins + count.bonus) / float(count.chain.chain)])
+                            counts["chains"].append(count)
+
                 context = dict({'counts': counts, 'memberId': memberId})
                 return render(request, 'faction/chains/ireport.html', context)
             else:
