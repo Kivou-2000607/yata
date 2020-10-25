@@ -747,7 +747,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     totalHits = 50000
                     hitsMade = 0
                     for we in wexp:
-                        we["hits"] = exp_to_hits(we["exp"])
+                        we["hits"] = 2000 - exp_to_hits(we["exp"])
                         if we["exp"] == 100:
                             we["class"] = "valid"
                             maxExp += 1
@@ -763,7 +763,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["achieve"] = min(1, float(hitsMade) / float(totalHits))
                     if len(sup5):
                         sup5.insert(0, "<b>List of the first 25 weapons with experience</b><br>With remaining hits")
-                        sup5.append(f"<br>Remaining hits {hitsMade:,d} / {totalHits:,d}")
+                        sup5.append(f"<br>Remaining hits {totalHits - hitsMade:,d} / {totalHits:,d}")
                         vp["comment"] = "<br>".join(sup5)
                     awards[type]["h_" + k] = vp
 
