@@ -1707,8 +1707,8 @@ def attacksReport(request, reportId, share=False):
             for r in attacks_set:
                 attackers[r.attacker_id] = r.attacker_name
                 defenders[r.defender_id] = r.defender_name
-            attackers = sorted(attackers.items(), key=lambda x: x[1])
-            defenders = sorted(defenders.items(), key=lambda x: x[1])
+            attackers = sorted(attackers.items(), key=lambda x: x[1].lower())
+            defenders = sorted(defenders.items(), key=lambda x: x[1].lower())
 
             if order_fa:
                 factions = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
