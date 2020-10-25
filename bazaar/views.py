@@ -850,12 +850,30 @@ def abroadStocks(request):
 
             clients = {c: [i, n] for i, (c, n) in enumerate(sorted(clients.items(), key=lambda x: -x[1]))}
 
-            graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
+            # graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
+
+            # average the prices
+            floatTS = stocks.first().timestamp
+            avg_val = [0, 0, 0]  # ts, quantity, cost
+            n = 0
+            graph = []
+            for s in stocks:
+                n += 1
+                avg_val[0] += s.timestamp
+                avg_val[1] += s.quantity
+                if (floatTS - s.timestamp) > 5 * 60:
+                    floatTS = s.timestamp
+                    line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+                    graph.append(line)
+                    avg_val = [0, 0, 0]
+                    n = 0
+
+            # record last point
+            if n > 0:
+                line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+                graph.append(line)
 
             stock = stocks.first()
-            # eff = stock.get_efficiency(h=48)
-            # stock.n = eff[0]
-            # stock.eff = eff[1]
             context = {'stock': stocks.first(),
                        'graph': graph,
                        'x': [timestampToDate(tsnow() - 48 * 3600),

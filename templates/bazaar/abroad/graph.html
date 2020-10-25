@@ -27,12 +27,21 @@ This file is part of yata.
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
+      {% comment %}
       var data = google.visualization.arrayToDataTable([
         ['Time', 'Stock',  {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
         {% for a, b, c, d, e, f in graph %}
             [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
             "point {shape-type: {% if e == 0%}polygon{% elif e == 1%}diamond{% elif e == 2%}square{% else %}triangle{% endif %}; fill-color: {% if e == 0%}#0B8E14{% elif e == 1%}#3434CC{% elif e == 2%}#CC3434{% else %}#787878{% endif %}}",
             "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}<br><b>Client</b>: {{d}} ({{f}} updates)</div>"],
+         {% endfor %}
+      ]);
+      {% endcomment %}
+      var data = google.visualization.arrayToDataTable([
+        ['Time', 'Stock', {role: 'tooltip', 'p': {'html': true}}],
+        {% for a, b, c in graph %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
+            "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}</div>"],
          {% endfor %}
       ]);
 
@@ -46,7 +55,7 @@ This file is part of yata.
         tooltip: {isHtml: true, position: 'top'},
         seriesType: 'bars',
         series: {
-                0: {type: 'line', color: "#787878", pointSize: 7,   lineWidth: 1},
+                0: {type: 'line', color: "#787878", lineWidth: 2},
                 },
         hAxis: {
             format: 'ha',
@@ -67,7 +76,7 @@ This file is part of yata.
       };
 
       var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1, 2, 3]);
+      view.setColumns([0, 1, 2]);
 
       var chart = new google.visualization.ComboChart(document.getElementById('stocks-history'));
       chart.draw(view, options);

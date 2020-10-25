@@ -58,7 +58,6 @@ This file is part of yata.
     <tbody>
     {% for v in attacks %}
       <tr>
-          {# <td class="a">Revive [{{k}}]</td> #}
           <td class="a">{{v.timestamp_started|ts2date}}</td>
           {%if v.attacker_id == 0 or v.attacker_id == 1%}
               <td class="b">Stealth</td>
