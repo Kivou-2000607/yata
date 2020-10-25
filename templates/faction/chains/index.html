@@ -49,7 +49,15 @@ This file is part of yata.
     });
 </script>
 
-<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s chains <form class="flush-right form-inline"><a id="faction-chain-combined" href=""><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a></form></h2>
+<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s chains
+    <span class="flush-right">
+      <a id="faction-chains-combine-add-all" href=""><i class="fas fa-toggle-on fa-icon-inline" title="Add all reports to the combined report"></i></a>
+      <a id="faction-chains-combine-rem-all" href=""><i class="fas fa-toggle-off fa-icon-inline" title="Remove all reports to the combined report"></i></a>
+    </span>
+    <form class="flush-right form-inline">
+      <a id="faction-chain-combined" href=""><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a>
+    </form>
+  </h2>
 <div class="module">
     {% if chains|length %}
     <table id="faction-chains" class="tablesorter center-large trshadow faction-chains">

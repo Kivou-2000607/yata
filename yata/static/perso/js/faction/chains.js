@@ -69,6 +69,38 @@ $(document).on('click', '.faction-chains-combine', e=>{
     }).html(spinner);
 });
 
+// add all combine report
+$(document).on('click', '#faction-chains-combine-add-all', e=>{
+    e.preventDefault();
+    $(".faction-chains-combine").each(function (index, value) {
+      if($(value).children("i").hasClass("fa-toggle-off")) {
+        var chainId = $(value).attr("data-val");
+        var td = $(value).parents("td");
+        td.load( "/faction/chains/manage/", {
+            type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+        var n = parseInt($("#n-combined").text()) + 1;
+        $("#n-combined").html(n);
+      }
+    });
+});
+
+// remove all combine report
+$(document).on('click', '#faction-chains-combine-rem-all', e=>{
+    e.preventDefault();
+    $(".faction-chains-combine").each(function (index, value) {
+      if($(value).children("i").hasClass("fa-toggle-on")) {
+        var chainId = $(value).attr("data-val");
+        var td = $(value).parents("td");
+        td.load( "/faction/chains/manage/", {
+            type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+        }).html(spinner);
+        var n = parseInt($("#n-combined").text()) - 1;
+        $("#n-combined").html(n);
+      }
+    });
+});
+
 // see report
 $(document).on('click', '.faction-chains-see', e=>{
     e.preventDefault();
