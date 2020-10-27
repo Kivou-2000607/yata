@@ -224,6 +224,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
 if config("ENABLE_SENTRY", default=False, cast=bool):
+    SENTRY = True
     print(f"SETTINGS: SENTRY=ENABLED")
 
     import sentry_sdk
@@ -235,3 +236,5 @@ if config("ENABLE_SENTRY", default=False, cast=bool):
         traces_sample_rate=0,
         environment=config("SENTRY_ENVIRONMENT"),
     )
+else:
+    SENTRY = False

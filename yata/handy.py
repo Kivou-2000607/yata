@@ -184,6 +184,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
     from django.http import HttpResponseNotFound
     from django.template.loader import render_to_string
     from player.models import Player
+    from django.conf import settings
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
@@ -200,7 +201,9 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
             player = Player.objects.filter(tId=-1).first()
         defaults = {"timestamp": tsnow()}
         try:
-            capture_exception(exc)
+            if settings.SENTRY:
+                from sentry_sdk import capture_exception
+                capture_exception(exc)
             player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
         except BaseException as e:
             print("Meta error", e)
