@@ -74,7 +74,7 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     # return dict({"apiError": "API error code 42: debug error."})
 
     if proxy:
-        url = "http://torn-proxy.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+        url = "https://torn-proxy.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
     else:
         url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
 
