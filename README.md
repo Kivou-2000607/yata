@@ -39,6 +39,12 @@ Create a local .env file
     #REDIS_HOST="redis://178.62.1.116:6379/1"
     #REDIS_PASSWORD="***"
 
+    # SENTRY
+    # Sentry for error capture
+    ENABLE_SENTRY=False
+    #SENTRY_DSN=YOURDSN
+    #SENTRY_ENVIRONMENT=dev
+    #SENTRY_SAMPLE_RATE=1.0
 
     ###### OPTIONAL ######
     # Your TORN API KEY

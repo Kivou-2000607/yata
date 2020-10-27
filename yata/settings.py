@@ -223,6 +223,7 @@ WHITENOISE_MANIFEST_STRICT = False
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
+# sentry
 if config("ENABLE_SENTRY", default=False, cast=bool):
     SENTRY = True
     print(f"SETTINGS: SENTRY=ENABLED")
@@ -233,7 +234,7 @@ if config("ENABLE_SENTRY", default=False, cast=bool):
     sentry_sdk.init(
         dsn=config("SENTRY_DSN"),
         integrations=[DjangoIntegration()],
-        traces_sample_rate=0,
+        traces_sample_rate=config("SENTRY_SAMPLE_RATE", default=1.0, cast=float),
         environment=config("SENTRY_ENVIRONMENT"),
     )
 else:
