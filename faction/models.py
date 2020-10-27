@@ -655,14 +655,18 @@ class Faction(models.Model):
 
         # create/delete news
         old = now - self.getHist("armory")
+        self.news_set.filter(type="armorynews").delete()
+
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
-        last_armory = 0
-        last_fund = 0
         bulk_mgr = BulkCreateManager(chunk_size=20)
-        if news.count():
-            last_armory = news.filter(type="armorynews").order_by("timestamp").last().timestamp
-            last_fund = news.filter(type="fundsnews").order_by("timestamp").last().timestamp
+
+        # get last armory ts
+        q = news.filter(type="armorynews").order_by("timestamp").last()
+        last_armory = 0 if q is None else q.timestamp
+        # get last fund ts
+        q = news.filter(type="fundsnews").order_by("timestamp").last()
+        last_fund = 0 if q is None else q.timestamp
 
         for type in ["armorynews", "fundsnews"]:
             if isinstance(factionInfo.get(type), list):
@@ -673,12 +677,8 @@ class Faction(models.Model):
                     v["member"] = v["news"].split(" ")[0]
                     bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=type))
 
-                    # try:
-                    #self.news_set.get_or_create(tId=k, type=type, defaults=v)
-                    # except BaseException:
-                    #self.news_set.filter(tId=k, type=type).delete()
-                    #self.news_set.get_or_create(tId=k, type=type, defaults=v)
         bulk_mgr.done()
+
         # delete old logs
         self.log_set.filter(timestamp__lt=old).delete()
 
