@@ -34,7 +34,7 @@ def updateAttacks(player, full=False):
     query = 'attacksfull,timestamp' if full else 'attacks,timestamp'
     req = apiCall('user', "", query, player.getKey())
     if 'apiError' in req:
-        return req, player.attack_set.all()
+        return req, player.attack_set.order_by("-timestamp_ended").all()
 
     attacks = req.get("attacks", dict({}))
     timestamp = req.get("timestamp", 0)
@@ -121,10 +121,9 @@ def updateRevives(player):
     tId = player.tId
     key = player.getKey()
 
-    error = False
     req = apiCall('user', "", 'revives,timestamp', key)
     if 'apiError' in req:
-        error = req
+        return req, player.revive_set.order_by("-timestamp").all()
     else:
         revives = req.get("revives", dict({}))
         timestamp = req.get("timestamp", 0)
@@ -154,7 +153,7 @@ def updateRevives(player):
         player.revivesUpda = int(timestamp)
         player.save()
 
-    return error
+    return False, player.revive_set.order_by("-timestamp").all()
 
 
 def convertElaspedString(str):

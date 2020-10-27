@@ -80,7 +80,8 @@ def login(request):
             p = request.POST
             print('[view.yata.login] API call with key: {}'.format(p.get('key')))
             try:
-                user = apiCall('user', '', 'profile,bars', p.get('key'))
+                # user = apiCall('user', '', 'profile,bars', p.get('key'))
+                user = apiCall('user', '', 'profile', p.get('key'))
                 if 'apiError' in user:
                     print('[view.yata.login] API error: {}'.format(user))
                     context = user

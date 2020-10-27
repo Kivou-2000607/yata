@@ -475,7 +475,7 @@ def update(request, itemId):
             for k, v in invtmp.items():
                 if v is None:
                     invtmp[k] = dict({})
-            if 'apiError' in invtmp:
+            if 'apiError' in invtmp and invtmp["apiErrorCode"] not in [7]:
                 error = {"apiErrorSub": invtmp["apiError"]}
             else:
                 # modify user

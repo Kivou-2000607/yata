@@ -372,13 +372,12 @@ def revives(request):
             player.lastActionTS = tsnow()
             player.save()
 
-            error = updateRevives(player)
+            error, revives = updateRevives(player)
 
-            revives = Paginator(player.revive_set.order_by("-timestamp"), 25).get_page(request.GET.get('p_re'))
+            revives = Paginator(revives, 25).get_page(request.GET.get('p_re'))
 
             context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
-            if error:
-                context.update(error)
+            context["apiErrorSub"] = error["apiError"] if error else False
 
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
             if request.GET.get('p_re', False):
