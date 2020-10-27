@@ -1899,6 +1899,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
             "Token shop": dict(),
             "TC endurance": dict(),
             "Torn of the dead": dict(),
+            "Trick or treats": dict(),
             "Dog tag": dict()})
 
         for k, v in tornAwards["honors"].items():
@@ -1918,6 +1919,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     # 222 {'name': 'Good Friday', 'description': 'Exchange all eggs for a gold one in the Easter egg hunt competition', 'type': 13, 'circulation': 14880, 'rarity': 'Uncommon', 'awardType': 'Honor', 'img': 566217580, 'title': 'Good Friday [222]: Uncommon (14880)'}
                     # 330 {'name': 'Champion', 'description': '', 'type': 13, 'circulation': 106, 'rarity': 'Extremely Rare', 'awardType': 'Honor', 'img': None, 'title': 'Champion [330]: Extremely Rare (106)'}
                     type = "Other Comp"
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [964, 966, 969]:
+            		# "964": { "name": "Something Humerus", "description": "Upgrade your Halloween Basket to Terrifying", "type": 13,
+            		# "966": { "name": "Oh My Gourd!", "description": "Upgrade your Halloween Basket to Nightmarish", "type": 13,
+            		# "969": { "name": "Phantastic", "description": "Upgrade your Halloween Basket to Frightful", "type": 13,
+                    type = "Trick or treats"
                     vp["goal"] = 1
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     vp["current"] = 1 if int(k) in honors_awarded else 0

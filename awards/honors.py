@@ -447,6 +447,9 @@ d = {
     263: 936063655,  # Survivor
     729: 406130587,  # Hairy
     730: 841650925,  # Backdrop
+    964: 419540552,  # Something Humerus
+    964: 0,  # Oh My Gourd!
+    969: 0,  # Phantastic
 
     # 14
     12: 533285823,  # Pocket Money
