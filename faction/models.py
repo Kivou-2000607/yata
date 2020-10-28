@@ -30,7 +30,6 @@ import re
 import random
 import os
 
-
 from yata.handy import *
 from yata.bulkManager import *
 from player.models import Key

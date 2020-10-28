@@ -10,7 +10,7 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
         type: "update",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<td colspan="14" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html('<td colspan="16" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
 });
 
 // toggle faction target
@@ -79,7 +79,7 @@ $(document).on('click', '#target-refresh', function(e){
     // get refresh color
     let refresh_color = parseInt($(this).attr("data-val"));
     $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
-        if(!refresh_color || $(this).find("span.target-color-" + refresh_color).length) {
+        if ((!refresh_color || $(this).find("span.target-color-" + refresh_color).length) && $(this).attr("data-ref") == "1") {
           var reload = $(this);
           var targetId = reload.attr("id").split("-").pop();
           var wait = i*500 + parseInt(i/10)*3000;
@@ -91,7 +91,7 @@ $(document).on('click', '#target-refresh', function(e){
                       csrfmiddlewaretoken: getCookie("csrftoken")
                   });
                   reload.removeClass('old-refresh');
-                  reload.html('<td colspan="13" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+                  reload.html('<td colspan="16" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
                }, wait);
           })(i);
           i++;
@@ -119,7 +119,7 @@ $(document).on('click', '#target-list-refresh-color', function(e){
     // hide the other colors
     $('.target-list-note-color').each(function() {
       const tr = $(this).parents('tr');
-      if($(this).attr('data-col') != color) {
+      if($(this).attr('data-col') != color && color) {
         tr.hide()
       } else {
         tr.show()
@@ -147,6 +147,7 @@ window.setInterval(function(){
     $(".update-timer").each(function() {
         var tr = $(this).closest("tr");
         var status = tr.find(".status");
+        tr.attr("data-ref", "1");
 
         var tsRefresh = parseInt($.trim($(this).attr("data-val")));
         var tsStatus = parseInt($.trim(status.attr("data-val")));
@@ -171,6 +172,7 @@ window.setInterval(function(){
                     $(this).removeClass('need-refresh');
                     statusStr = status.text().substring(0, 6);
                     statusStr += fancyTimeFormat(tsStatus - tsNow)
+                    tr.attr("data-ref", "0");
                 }
                 // update hosp time
                 status.html(statusStr)
