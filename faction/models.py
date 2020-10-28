@@ -234,19 +234,20 @@ class Faction(models.Model):
         # api call and update key
         key = self.getKey()
 
-        news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
+        if key is None:
+            return {}, False
+        else:
+            news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
 
         if 'apiError' in news:
             return news, False
 
         walls = dict({})
-        for k, v in news.items():
-            reg = 'warreport&warID=\d{1,10}'
+        for _, v in news.items():
+            reg = r'warreport&warID=\d{1,10}'
             if re.findall(reg, v["news"]):
-                reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">'
-                # reg = 'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">(.{1,})</a>'
+                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">'
                 fac1, fac2, war = re.findall(reg, v["news"])
-                wall = dict({})
                 factionId = int(fac1.split("=")[-1].replace('">', ''))
                 assaulting = 1 if factionId == self.tId else 0
                 factionId = int(fac2.split("=")[-1].replace('">', '')) if assaulting else factionId
