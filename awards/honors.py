@@ -194,6 +194,7 @@ d = {
     943: 913517772,  # Penetrated
     944: 393014668,  # Scorched
     945: 148152221,  # Marked
+    951: 388620477,  # Dragon's Breath
 
     # 3
     39: 198010293,  # Woodland Camo
