@@ -59,28 +59,30 @@ def index(request):
 
 # API
 # @cache_page(60)
-@ratelimit(key='ip', rate='1/30s')
+# @ratelimit(key='ip', rate='1/30s')
 def timings(request):
-    if getattr(request, 'limited', False):
-        return JsonResponse({"error": {"code": 429, "error": "Rate limit of 1 call / 30s"}}, status=429)
+    return JsonResponse({"message": "Please update to the new API system and moderate your calls, you're making the whole website crash!"}, status=200)
 
-    try:
-        npcs = dict({})
-        for npc in NPC.objects.filter(show=True).order_by('tId'):
-            t = npc.lootTimings()
-            c = npc.lootTimings("current")
-            n = npc.lootTimings("next")
-            del t[0]
-            npcs[npc.tId] = {
-                "name": npc.name,
-                "hospout": npc.hospitalTS,
-                "update": npc.updateTS,
-                "status": npc.status,
-                "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
-                "levels": {'current': c['lvl'], 'next': n['lvl']}}
+    # if getattr(request, 'limited', False):
+    #     return JsonResponse({"error": {"code": 429, "error": "Rate limit of 1 call / 30s"}}, status=429)
 
-        return HttpResponse(json.dumps(npcs, separators=(',', ':')), content_type="application/json")
+    # try:
+    #     npcs = dict({})
+    #     for npc in NPC.objects.filter(show=True).order_by('tId'):
+    #         t = npc.lootTimings()
+    #         c = npc.lootTimings("current")
+    #         n = npc.lootTimings("next")
+    #         del t[0]
+    #         npcs[npc.tId] = {
+    #             "name": npc.name,
+    #             "hospout": npc.hospitalTS,
+    #             "update": npc.updateTS,
+    #             "status": npc.status,
+    #             "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
+    #             "levels": {'current': c['lvl'], 'next': n['lvl']}}
 
-    except BaseException as e:
-        return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
-    # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")
+    #     return HttpResponse(json.dumps(npcs, separators=(',', ':')), content_type="application/json")
+
+    # except BaseException as e:
+    #     return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
+    # # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")
