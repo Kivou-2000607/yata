@@ -78,8 +78,15 @@ $(document).on('click', '#target-refresh', function(e){
     var i = 1;
     // get refresh color
     let refresh_color = parseInt($(this).attr("data-val"));
-    $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
-        if ((!refresh_color || $(this).find("span.target-color-" + refresh_color).length) && $(this).attr("data-ref") == "1") {
+    let refresh_colors = []
+    $('i[id^=target-list-refresh-color-]').each(function(){
+        if ($(this).hasClass("fa-check-square")) {
+            refresh_colors.push($(this).attr("data-val"));
+        }
+    });
+    $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {        
+        // if ((!refresh_color || $(this).find("span.target-color-" + refresh_color).length) && $(this).attr("data-ref") == "1") {
+        if (refresh_colors.includes($(this).find("span.target-list-note-color").attr("data-col")) && $(this).attr("data-ref") == "1") {
           var reload = $(this);
           var targetId = reload.attr("id").split("-").pop();
           var wait = i*500 + parseInt(i/10)*3000;
@@ -126,6 +133,46 @@ $(document).on('click', '#target-list-refresh-color', function(e){
       }
     });
 
+    // change select checkbox
+    $("i[id^=target-list-refresh-color-]").removeClass("fa-check-square").addClass("fa-square");
+    $("#target-list-refresh-color-" + color).removeClass("fa-square").addClass("fa-check-square");
+    console.log($("#target-list-refresh-color-" + color));
+
+});
+
+// // change hover ticks
+// $(document).on('mouseenter mouseleave', 'i[id^=target-list-refresh-color-]', function (e) {
+//     if ($(this).hasClass("fa-square")) {
+//         $(this).removeClass("fa-square").addClass("fa-check-square")
+//     } else {
+//         $(this).removeClass("fa-check-square").addClass("fa-square")
+//     }
+// }, function (e) {
+//     if ($(this).hasClass("fa-square")) {
+//         $(this).removeClass("fa-square").addClass("fa-check-square")
+//     } else {
+//         $(this).removeClass("fa-check-square").addClass("fa-square")
+//     }
+// });
+
+// select color
+$(document).on('click', 'i[id^=target-list-refresh-color-]', function (e) {
+    const color = $(this).attr("data-val");
+    if ($(this).hasClass("fa-square")) {
+        // add this color
+        $(this).removeClass("fa-square").addClass("fa-check-square");
+        $('.target-list-note-color').each(function () {
+            const tr = $(this).parents('tr');
+            if ($(this).attr('data-col') == color) { tr.show() }
+        });
+    } else {
+        // remove this color
+        $(this).removeClass("fa-check-square").addClass("fa-square");
+        $('.target-list-note-color').each(function () {
+            const tr = $(this).parents('tr');
+            if ($(this).attr('data-col') == color) { tr.hide() }
+        });
+    }
 });
 
 // add target manually

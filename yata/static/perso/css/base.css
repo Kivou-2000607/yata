@@ -535,6 +535,13 @@ i.fa-icon-dropdown { margin-left: 15px; }
   z-index: 1;
 }
 
+/* Dropdown Dark */
+.dropdown-title {
+  background-color: #333;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
 /* Links inside the dropdown */
 .dropdown-content a {
   /* color: black; */
@@ -542,6 +549,16 @@ i.fa-icon-dropdown { margin-left: 15px; }
   text-decoration: none;
   display: block;
   text-align: left;
+}
+
+/* Span inside the dropdown */
+.dropdown-content span {
+  /* color: black; */
+  padding: 0px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  cursor: pointer;
 }
 
 /* Change color of dropdown links on hover */
