@@ -2413,7 +2413,6 @@ def armory(request):
         ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
 
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
@@ -2425,6 +2424,7 @@ def armory(request):
 
             # update and get news
             if settings.DEBUG or tsnow() - faction.armoryUpda > 60 * 15:
+                print("update armory")
                 state, message = faction.updateLog()
             else:
                 message = False

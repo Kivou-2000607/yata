@@ -655,7 +655,6 @@ class Faction(models.Model):
 
         # create/delete news
         old = now - self.getHist("armory")
-        self.news_set.filter(type="armorynews").delete()
 
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
@@ -668,14 +667,23 @@ class Faction(models.Model):
         q = news.filter(type="fundsnews").order_by("timestamp").last()
         last_fund = 0 if q is None else q.timestamp
 
-        for type in ["armorynews", "fundsnews"]:
-            if isinstance(factionInfo.get(type), list):
-                continue
-            for k, v in factionInfo.get(type, dict({})).items():
-                if (v["timestamp"] > old) and ((type == "armorynews" and v["timestamp"] > last_armory) or (type == "fundsnews" and v["timestamp"] > last_fund)):
+        for news_type in ["armorynews", "fundsnews"]:
+            if isinstance(factionInfo.get(news_type), list):
+                continue            
+            for k, v in factionInfo.get(news_type, dict({})).items():
+                news_count = news.filter(tId=k).count()
+
+                if news_count == 1:
+                    continue
+                elif news_count > 1:
+                    news.filter(tId=k).deletee()
+                    print(f"delete {news_count} duplicates for news {k}")
+
+                if (v["timestamp"] > old) and ((news_type == "armorynews" and v["timestamp"] > last_armory) or (news_type == "fundsnews" and v["timestamp"] > last_fund)):
                     v["news"] = cleanhtml(v["news"])[:512]
                     v["member"] = v["news"].split(" ")[0]
-                    bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=type))
+                    bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type))
+                    print(f"create news {k}")
 
         bulk_mgr.done()
 
