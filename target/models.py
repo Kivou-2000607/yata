@@ -276,3 +276,18 @@ class TargetInfo(models.Model):
             }
 
         return False, target.target_id, target_dic
+
+
+class DogTags(models.Model):
+    # target general info
+    target_id = models.IntegerField(default=0)
+    name = models.CharField(default="target_name", max_length=16)
+    rank = models.CharField(default="rank", max_length=128)
+    level = models.IntegerField(default=0)
+    age = models.IntegerField(default=0)
+    defendslost = models.IntegerField(default=0)
+    attackswon = models.IntegerField(default=0)
+    last_action = models.IntegerField(default=0)
+    last_update = models.IntegerField(default=0)
+
+    # profile, personalstats
