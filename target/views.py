@@ -580,8 +580,8 @@ def dogtags(request):
             context = {"player": player, "targets": targets, "n_targets": n_targets, "view": {"dogtags": True}}
 
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
-            # if request.GET.get('page', False):
-            #     page = 'target/dogtags/targets.html'
+            if request.GET.get('nav', False):
+                page = 'target/dogtags/targets.html'
 
             return render(request, page, context)
 

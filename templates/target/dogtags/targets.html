@@ -29,8 +29,8 @@ This file is part of yata.
             <div class="pagination">
                 <span class="step-links">
                     {% if targets.has_previous %}
-                        <a class="page-link" href="{% url 'target:dogtags' %}?page=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'target:dogtags' %}?page={{ targets.previous_page_number }}">previous</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.previous_page_number }}">previous</a>
                     {% endif %}
 
                     <span class="current">
@@ -38,8 +38,8 @@ This file is part of yata.
                     </span>
 
                     {% if targets.has_next %}
-                        <a class="page-link" href="{% url 'target:dogtags' %}?page={{ targets.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'target:dogtags' %}?page={{ targets.paginator.num_pages }}">last &raquo;</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.paginator.num_pages }}">last &raquo;</a>
                     {% endif %}
                 </span>
             </div>
