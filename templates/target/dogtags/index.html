@@ -17,19 +17,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.targets %}
-    {% include "target/targets/index.html" %}
-{% endif %}
-{% if view.attacks %}
-    {% include "target/attacks/index.html" %}
-{% endif %}
-{% if view.revives %}
-    {% include "target/revives/index.html" %}
-{% endif %}
-{% if view.dogtags %}
-    {% include "target/dogtags/index.html" %}
-{% endif %}
+<div class="module rounded">
+    <p>Total of {{n_targets}} targets</p>
+</div>
+<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Targets list</h2>
+<div class="module">
+    <div class="pagination-list">
+        {% include "target/dogtags/targets.html"%}
+    </div>
+</div>

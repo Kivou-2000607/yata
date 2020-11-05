@@ -531,3 +531,62 @@ def targetExport(request):
 
     except BaseException as e:
         return JsonResponse({"message": f"YATA error: {e}"}, status=500)
+
+
+def dogtags(request):
+    from target.models import DogTags
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            if player.tId not in [2000607, 2002288]:
+                print("Section not for you")
+
+            if request.POST.get("type") == "delete":  # delete target
+                uid = request.POST.get("uid")
+                DogTags.objects.filter(target_id=uid).delete()
+                return render(request, "dummy.html")  # dummy template
+
+            elif request.POST.get("type") == "add":  # add personnal attack
+                uid = request.POST.get("uid")
+                target = DogTags.objects.filter(target_id=uid).first()
+                target.failedattack += 1
+                target.save()
+
+                return render(request, "target/dogtags/line.html", {"target": target})  # dummy template
+
+            elif request.POST.get("type") == "compare":  # compare a target
+                uid = request.POST.get("uid")
+                target = DogTags.objects.filter(target_id=uid).first()
+                if target is None:
+                    context = {"error": f'Target ID {uid} not found'}
+                else:
+                    target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
+                    if "apiError" in target_api:
+                        context = {"error": target_api["apiError"]}
+                    else:
+                        deflost = target_api.get("personalstats", {}).get("defendslost", 0)
+                        comparison = {"defendslost": deflost, "defendslost_delta": deflost - target.defendslost - target.failedattack}
+                        context = {"comparison": comparison}
+
+                    context["target"] = target
+                return render(request, "target/dogtags/comparison.html", context)
+
+            # main page (display targets table)
+            targets = DogTags.objects.all().order_by("-level")
+            n_targets = targets.count()
+
+            targets = Paginator(targets, 25).get_page(request.GET.get('page'))
+
+            context = {"player": player, "targets": targets, "n_targets": n_targets, "view": {"dogtags": True}}
+
+            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
+            if request.GET.get('page', False):
+                page = 'target/dogtags/targets.html'
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

@@ -1,0 +1,61 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+<div class="container">
+    <div class="overlay close"></div>
+    {% comment %} <h2 class="title">Coucou</h2> {% endcomment %}
+    <div class="modal-center-large">
+        <div class="module">
+            {% if error %}
+                <p class="error">{{error}}</p>
+            {% else %}
+                {% if comparison.defendslost_delta %}
+                    <h1 class="error"><i class="fas fa-times fa-icon-inline"></i>{{target.name|playerURL:target.target_id|safe}}</h1>
+                {% else %}
+                    <h1 class="valid"><i class="fas fa-check fa-icon-inline"></i>{{target.name|playerURL:target.target_id|safe}}</h1>
+                {% endif %}
+                <p><a href="https://www.torn.com/loader.php?sid=attack&user2ID={{target.target_id}}" target="_blank">Attack</a> -
+                    <a href="https://www.torn.com/personalstats.php?ID={{target.target_id}}&stats=defendslost&from=1 month" target="_blank">Stats</a>
+                </p>
+                <table class="center-large ">
+                    <tr>
+                        <th>Defends lost before Dog tags</th>
+                        <th>Failed attacks</th>
+                        <th>Defends lost now</th>
+                        <th>Diff</th>
+                    </tr>
+                    <tr>
+                        <td>{{target.defendslost}}</td>
+                        <td>{{target.failedattack}}</td>
+                        <td>{{comparison.defendslost}}</td>
+                        {% if comparison.defendslost_delta %}
+                            <td class="error"><i class="fas fa-times fa-icon-inline"></i>+{{comparison.defendslost_delta}}</td>
+                        {% else %}
+                            <td class="valid"><i class="fas fa-check fa-icon-inline"></i>+{{comparison.defendslost_delta}}</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            {% endif %}
+            <hr sytle="display: none;">
+        </div>
+    </div>
+</div>

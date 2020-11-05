@@ -21,5 +21,7 @@ urlpatterns = [
     re_path(r'^revives/breakdown/$', views.revivesBreakdown, name='revivesBreakdown'),
     re_path(r'^revive/$', views.revive, name='revive'),
 
+    re_path(r'^dogtags/$', views.dogtags, name='dogtags'),
+    # re_path(r'^revive/$', views.revive, name='revive'),
 
     ]
