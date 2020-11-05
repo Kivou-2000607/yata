@@ -71,7 +71,7 @@ $(document).on('click', 'a.target-dogtags-clean', function (e) {
     $("tr.target-dogtag").each(function () {
         var tr = $(this);
         const uid = $(this).attr("data-uid");
-        var wait = i * 500 + parseInt(i / 10) * 3000;
+        var wait = i * 1000 + parseInt(i / 10) * 4000;
         (function (index) {
             setTimeout(function () {
                 console.log(uid, i, wait);
