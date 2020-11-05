@@ -565,14 +565,21 @@ def dogtags(request):
                         context = {"error": target_api["apiError"]}
                     else:
                         deflost = target_api.get("personalstats", {}).get("defendslost", 0)
-                        comparison = {"defendslost": deflost, "defendslost_delta": deflost - target.defendslost - target.failedattack}
+                        status = target_api.get("status", {}).get("state", "??")
+                        color = target_api.get("status", {}).get("color", "red")
+                        comparison = {"defendslost": deflost,
+                                      "defendslost_delta": deflost - target.defendslost - target.failedattack,
+                                      "status": status,
+                                      "color": color
+                                      }
                         context = {"comparison": comparison}
 
                     context["target"] = target
                 return render(request, "target/dogtags/comparison.html", context)
 
             # main page (display targets table)
-            targets = DogTags.objects.all().order_by("-level")
+            old = tsnow() - 3600 * 24 * 30
+            targets = DogTags.objects.filter(last_action__lt=old).order_by("-level")
             n_targets = targets.count()
 
             targets = Paginator(targets, 100).get_page(request.GET.get('page'))

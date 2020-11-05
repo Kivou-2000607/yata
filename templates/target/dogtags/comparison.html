@@ -36,6 +36,12 @@ This file is part of yata.
                 <p><a href="https://www.torn.com/loader.php?sid=attack&user2ID={{target.target_id}}" target="_blank">Attack</a> -
                     <a href="https://www.torn.com/personalstats.php?ID={{target.target_id}}&stats=defendslost&from=1 month" target="_blank">Stats</a>
                 </p>
+                <p>
+                    <a style="display: inline;" href="" class="target-dogtags-add-overlay" data-uid="{{target.target_id}}"> <i class="fas fa-plus-square fa-icon-inline"></i></a> <a style="display: inline;" href="" class="target-dogtags-delete-overlay" data-uid="{{target.target_id}}"> <i class="fas fa-trash-alt fa-icon-inline"></i></a>
+                </p>
+
+
+                <p class="{% if comparison.color == "red" %}error{% elif comparison.color == "green" %}valid{% else %}warning{% endif %}">Status: {{comparison.status}}</p>
                 <table class="center-large ">
                     <tr>
                         <th>Defends lost before Dog tags</th>
