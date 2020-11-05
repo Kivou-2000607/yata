@@ -554,12 +554,43 @@ def dogtags(request):
 
                 return render(request, "target/dogtags/line.html", {"target": target})  # dummy template
 
+            elif request.POST.get("type") == "clean":  # check target status attack
+                uid = request.POST.get("uid")
+                target = DogTags.objects.filter(target_id=uid).first()
+                
+                if target is None:
+                    return render(request, "dummy.html")
+
+                # API call
+                target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
+                if "apiError" in target_api:
+                    context = {"error": target_api["apiError"]}
+                    return render(request, "target/dogtags/line.html", context)
+
+                # delete target Federal
+                if target_api["status"]["state"] in ['Federal']:
+                    target.delete()
+                    context = {"error": f'Target deleted: {target_api["status"]["state"]}'}
+                    return render(request, "target/dogtags/line.html", context)
+                
+                # delete target outside hit
+                deflost = target_api.get("personalstats", {}).get("defendslost", 0)
+                delta = deflost - target.defendslost - target.failedattack
+                if delta > 0:
+                    target.delete()
+                    context = {"error": f'Target deleted: Delta = {delta}'}
+                    return render(request, "target/dogtags/line.html", context)
+
+                return render(request, "target/dogtags/line.html", {"target": target})  # dummy template
+
             elif request.POST.get("type") == "compare":  # compare a target
                 uid = request.POST.get("uid")
                 target = DogTags.objects.filter(target_id=uid).first()
                 if target is None:
                     context = {"error": f'Target ID {uid} not found'}
                 else:
+    
+                    # API call
                     target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
                     if "apiError" in target_api:
                         context = {"error": target_api["apiError"]}

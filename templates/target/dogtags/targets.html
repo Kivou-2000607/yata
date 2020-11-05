@@ -58,7 +58,7 @@ This file is part of yata.
     </thead>
     <tbody>
     {% for target in targets %}
-        <tr data-uid="{{target.target_id}}" data-los="{{target.defendslost}}">
+        <tr class="target-dogtag" data-uid="{{target.target_id}}" data-los="{{target.defendslost}}">
             {% include "target/dogtags/line.html" %}
         </tr>
     {% endfor %}

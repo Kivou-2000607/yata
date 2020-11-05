@@ -62,3 +62,26 @@ $(document).on('click', 'a.target-dogtags-add-overlay', function (e) {
     }).html('<td colspan="9">' + spinner + "</td>");
     $("div.container").remove();
 });
+
+
+// check target
+$(document).on('click', 'a.target-dogtags-clean', function (e) {
+    e.preventDefault();
+    let i = 1;
+    $("tr.target-dogtag").each(function () {
+        var tr = $(this);
+        const uid = $(this).attr("data-uid");
+        var wait = i * 500 + parseInt(i / 10) * 3000;
+        (function (index) {
+            setTimeout(function () {
+                console.log(uid, i, wait);
+                tr.load("/target/dogtags/", {
+                    uid: uid,
+                    type: "clean",
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                }).html('<td colspan="9">' + spinner + '</td>');
+            }, wait);
+        })(i);
+        i++;
+    });
+});
