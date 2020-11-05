@@ -575,13 +575,13 @@ def dogtags(request):
             targets = DogTags.objects.all().order_by("-level")
             n_targets = targets.count()
 
-            targets = Paginator(targets, 25).get_page(request.GET.get('page'))
+            targets = Paginator(targets, 100).get_page(request.GET.get('page'))
 
             context = {"player": player, "targets": targets, "n_targets": n_targets, "view": {"dogtags": True}}
 
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
-            if request.GET.get('page', False):
-                page = 'target/dogtags/targets.html'
+            # if request.GET.get('page', False):
+            #     page = 'target/dogtags/targets.html'
 
             return render(request, page, context)
 
