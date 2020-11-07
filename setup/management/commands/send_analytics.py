@@ -19,10 +19,12 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.conf import settings
 
 import json
 import glob
 import datetime
+import re
 
 from setup.models import Analytics
 
@@ -30,21 +32,28 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         # list all json reports
-        for report_file in glob.glob('analytics/reports/*.json'):
+        for report_file in glob.glob(settings.MEDIA_ROOT + '/analytics/*.json'):
             # get name and type
             report_section, report_period = [r.replace('-', ' ') for r in report_file.replace('.json', '').split('/')[-1].split('_')]
             print(report_section, "/", report_period)
 
+            if re.search(r'\d{4}\s\d{2}\s\d{2}', report_period) is None:
+                continue
+
             # open report
             report = json.load(open(report_file, 'r'))
 
-            # get date
-            date_string = report["general"]["date_time"]
-            date = datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S %z")
+            # get date (from when the report is created)
+            # date_string = report["general"]["date_time"]
+            # date = datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S %z")
+            # report_timestamp = int(datetime.datetime.timestamp(date))
+
+            # get date (from the period)
+            date = datetime.datetime.strptime(report_period, "%Y %m %d")
             report_timestamp = int(datetime.datetime.timestamp(date))
 
             # get data for db
-            defaults = {}
+            defaults = {"report_timestamp": report_timestamp}
 
             # general information
             for k in ['total_requests', 'valid_requests', 'failed_requests', 'unique_visitors', 'bandwidth']:
@@ -58,7 +67,7 @@ class Command(BaseCommand):
             defaults["requests_metadata"] = report["requests"]["metadata"]
             defaults["requests_data"] = report["requests"]["data"]
 
-            Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, report_timestamp=report_timestamp, defaults=defaults)
+            Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
 
             # for k, v in report_for_db.items():
             #     print(k, v)
