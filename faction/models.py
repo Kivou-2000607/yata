@@ -676,7 +676,7 @@ class Faction(models.Model):
                 if news_count == 1:
                     continue
                 elif news_count > 1:
-                    news.filter(tId=k).deletee()
+                    news.filter(tId=k).delete()
                     print(f"delete {news_count} duplicates for news {k}")
 
                 if (v["timestamp"] > old) and ((news_type == "armorynews" and v["timestamp"] > last_armory) or (news_type == "fundsnews" and v["timestamp"] > last_fund)):
