@@ -171,8 +171,12 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                 <div>
                 <a href="{% url 'loot:index' %}" class="yata-link-loot" title="Loot">
                     <b><i class="fas fa-user-secret fa-icon-inline"></i>Loot</b></a><br>
-                <span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}"
-                    data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                {% if nextLoot.1 %}
+                    <span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}"
+                        data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                {% else %}
+                    <span>{{nextLoot.0}}</span>
+                {% endif %}
                 </div>
             </td>
             {% if player.tId > 0 %}
