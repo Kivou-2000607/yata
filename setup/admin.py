@@ -22,6 +22,7 @@ from django.contrib import admin
 from yata.handy import timestampToDate
 
 from .models import APIKey
+from .models import Analytics
 
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'key', 'lastCheckTS', 'last_check', 'status', 'error']
@@ -30,3 +31,9 @@ class APIKeyAdmin(admin.ModelAdmin):
         return timestampToDate(instance.lastCheckTS)
 
 admin.site.register(APIKey, APIKeyAdmin)
+
+
+class AnalyticsAdmin(admin.ModelAdmin):
+    list_display = ['report_section', 'report_period', 'report_timestamp']
+
+admin.site.register(Analytics, AnalyticsAdmin)

@@ -48,3 +48,21 @@ class APIKey(models.Model):
 
         self.lastCheckTS = int(timezone.now().timestamp())
         self.save()
+
+
+class Analytics(models.Model):
+    report_section = models.CharField(max_length=32)
+    report_period = models.CharField(max_length=32)
+    report_timestamp = models.IntegerField(default=0)
+
+    total_requests = models.IntegerField(default=0)
+    valid_requests = models.IntegerField(default=0)
+    failed_requests = models.IntegerField(default=0)
+    unique_visitors = models.IntegerField(default=0)
+    bandwidth = models.IntegerField(default=0)
+
+    visitors_metadata = models.TextField(default="{}")
+    visitors_data = models.TextField(default="[]")
+
+    requests_metadata = models.TextField(default="{}")
+    requests_data = models.TextField(default="[]")

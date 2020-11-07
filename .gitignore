@@ -6,7 +6,7 @@ venv
 db.sqlite3*
 secretkey.txt
 staticfiles
-analytics
-yata/settings.local.py
+setup/analytics/logs
+setup/analytics/.backup
 yata/static/honors/img/*.png
 yata/media

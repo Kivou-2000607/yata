@@ -33,6 +33,7 @@ import json
 import os
 import traceback
 import re
+import glob
 
 from player.models import *
 from player.functions import updatePlayer
@@ -169,13 +170,21 @@ def delete(request):
 
 
 def analytics(request):
-    try:
-        fold = "analytics"
-        ls = sorted(os.listdir("{}/{}".format(settings.STATIC_ROOT, fold)))
-        context = {"reports": ls, 'view': {'analytics': True}}
-        return render(request, 'yata.html', context)
-    except BaseException:
-        return returnError()
+    reports = {}
+    for report_file in sorted(glob.glob(settings.MEDIA_ROOT + '/analytics/*.html')):
+        # get file name
+        report_url = f'{settings.MEDIA_URL}analytics/{report_file.split("/")[-1]}'
+
+        # get name and type
+        report_section, report_period = [r.replace('-', ' ') for r in report_file.replace('.html', '').split('/')[-1].split('_')]
+
+        if report_section in reports:
+            reports[report_section].append({"url": report_url, "section": report_section, "period": report_period})
+        else:
+            reports[report_section] = [{"url": report_url, "section": report_section, "period": report_period}]
+
+
+    return render(request, 'analytics.html', {"sections": reports})
 
 
 @csrf_exempt

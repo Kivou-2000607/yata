@@ -1,4 +1,4 @@
-"""
+{% comment %}
 Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
@@ -15,17 +15,22 @@ This file is part of yata.
 
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
+{% endcomment %}
 
-from django.core.management.base import BaseCommand
-from django.utils import timezone
+<html>
+    <head>
+        <title>YATA - Analytics</title>
+    </head>
+    <body>
+        <h1>YATA - Analytics</h1>
 
-from player.models import Player
-
-class Command(BaseCommand):
-    def handle(self, **options):
-        for player in Player.objects.filter(validKey=True):
-            key = player.key_set.first()
-            if key is None:
-                player.addKey(player.apikey)
-            print(player, len(player.key_set.all()))
+        {% for section, reports in sections.items %}
+            <h2>{{section}}</h2>
+            <ul>
+                {% for report in reports %}
+                    <li><a href="{{report.url}}" target="_blank">{{report.period}}</a></li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </body>
+</html>
