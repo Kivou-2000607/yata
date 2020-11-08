@@ -1,0 +1,94 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load mathfilters %}
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Unique Visitors', 'Total requests'],
+            {% for a in web_analytics %}
+                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            title: "Web analytics",
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            //scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('web-analytics'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Unique Visitors', 'Total requests'],
+            {% for a in api_analytics %}
+                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            //scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('api-analytics'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+<h2 class="title">Web analytics</h2>
+<div class="module">
+    <table class="center-large">
+        <tr><td><div id="web-analytics"></div></td></tr>
+    </table>
+</div>
+
+<h2 class="title">API analytics</h2>
+<div class="module">
+    <table class="center-large">
+        <tr><td><div id="api-analytics"></div></td></tr>
+    </table>
+</div>

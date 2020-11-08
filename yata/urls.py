@@ -56,7 +56,7 @@ urlpatterns = [
     path('login', views.login, name="login"),
     path('logout', views.logout, name="logout"),
     path('delete', views.delete, name="delete"),
-    path('analytics', views.analytics, name="analytics"),
+    # path('analytics', views.analytics, name="analytics"),
     path('tmp/gym', views.gym, name="gym"),
     path('api/gym', views.gymImport, name="gymImport"),
     path('discord', RedirectView.as_view(url="https://discord.gg/tZaYpbG"), name="discord"),
