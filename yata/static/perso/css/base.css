@@ -505,7 +505,13 @@ td.border, th.border {
     border-left : 2px solid #aaa;
 }
 
-img.badge { margin: 5px; }
+img.badge {
+  margin: 5px;
+  box-shadow: 0px  0px  1px  1px #aaa!important;
+}
+img.badge:hover {
+  box-shadow: 2px  2px  2px  2px #aaa!important;
+}
 i.fa-icon-inline { margin-right: 8px; }
 i.fa-icon-dropdown { margin-left: 15px; }
 
