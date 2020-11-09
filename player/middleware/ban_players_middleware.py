@@ -17,8 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from yata.handy import returnError
-from django.utils.safestring import mark_safe
+from django.http import JsonResponse
 
 import json
 
@@ -30,24 +29,23 @@ class BanPlayersMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        # get banned ips
+        # get bans lists
         playerdata = PlayerData.objects.first()
+
         if playerdata is None:
-            ipsBan = []
-            uidBan = []
+            ipBan = {}
+            uidBan = {}
         else:
-            ipsBan = json.loads(playerdata.ipsBan)
+            ipBan = json.loads(playerdata.ipsBan)
             uidBan = json.loads(playerdata.uidBan)
 
-        # return 403
-        if request.session.get('player', False) and request.session['player'].get('tId', -1) in uidBan:
-            return returnError(type=403, msg=mark_safe('<p><i class="fas fa-gavel"></i>&nbsp&nbspYour user ID is banned from YATA.</p>'), home=False)
+        uid = str(request.session.get('player', {}).get('tId', -1))
+        ip = str(request.META.get('REMOTE_ADDR'))
 
-        # return 403
-        elif request.META.get('REMOTE_ADDR') in ipsBan:
-            message = '<p><i class="fas fa-gavel"></i>&nbsp&nbspYou are banned from YATA by IP address.</p>\
-                       <p>If you want to know why contact ingame <a href="https://www.torn.com/profiles.php?XID=2000607" target="_blank">Kivou [2000607]</a>.</p>'
-            return returnError(type=403, msg=mark_safe(message), home=False)
+        if uid in uidBan:
+            return JsonResponse({"error": {"code": 2, "error": f'Torn ID {uid} is currently banned: {uidBan.get(uid, "No reasons")}'}}, status=403)
 
-        else:
-            return self.get_response(request)
+        elif ip in ipBan:
+            return JsonResponse({"error": {"code": 2, "error": f'IP address {ip} is currently banned: {ipBan.get(ip, "No reasons")}'}}, status=403)
+
+        return self.get_response(request)
