@@ -66,3 +66,5 @@ class Analytics(models.Model):
 
     requests_metadata = models.TextField(default="{}")
     requests_data = models.TextField(default="[]")
+
+    last_update = models.IntegerField(default=0)

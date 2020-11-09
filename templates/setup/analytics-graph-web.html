@@ -141,11 +141,17 @@ This file is part of yata.
 
 <table class="center-large">
     <thead><tr><th>WEB analytics: <tt>yata.alwaysdata.net</tt></th></tr></thead>
-    <tbody><tr><td><div id="web-analytics"></div></td></tr></tbody>
-    <tbody><tr><td><div id="web-analytics-hour"></div></td></tr></tbody>
+    <tbody>
+        <tr><td><div id="web-analytics"></div></td></tr>
+        <tr><td><div id="web-analytics-hour"></div></td></tr>
+        <tr><td class="update-info">Last update: {{analytics.web.last_update|ts2date}}</td></tr>
+    </tbody>
 </table>
 <table class="center-large">
     <thead><tr><th>API analytics: <tt>api/v1</tt></th></tr></thead>
-    <tbody><tr><td><div id="api-analytics"></div></td></tr></tbody>
-    <tbody><tr><td><div id="api-analytics-hour"></div></td></tr></tbody>
+    <tbody>
+        <tr><td><div id="api-analytics"></div></td></tr>
+        <tr><td><div id="api-analytics-hour"></div></td></tr>
+        <tr><td class="update-info">Last update: {{analytics.api.last_update|ts2date}}</td></tr>
+    </tbody>
 </table>

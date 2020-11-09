@@ -31,6 +31,7 @@ from player.models import PlayerData
 from setup.models import Analytics
 from yata.handy import *
 
+
 def prune(request):
     try:
         if request.session.get('player'):
@@ -82,7 +83,7 @@ def analytics(request):
 
         # WEB day by day and hour / hour graph
         analytics_db = Analytics.objects.filter(report_section="web").filter(report_period__regex=r'\d{4}\s\d{2}\s\d{2}').order_by("report_timestamp")
-        analytics = {"web": {"d": [], "h": [], "update": 0}}
+        analytics = {"web": {"d": [], "h": [], "last_update": 0}}
         for a in analytics_db:
 
             # add last week hourly
@@ -94,10 +95,11 @@ def analytics(request):
             # add all daily
             d = {"report_timestamp": a.report_timestamp, "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
             analytics["web"]["d"].append(d)
+            analytics["web"]["last_update"] = max(a.last_update, analytics["web"]["last_update"])
 
         # API day by day and hour / hour graph
         analytics_db = Analytics.objects.filter(report_section="api v1").filter(report_period__regex=r'\d{4}\s\d{2}\s\d{2}').order_by("report_timestamp")
-        analytics["api"] = {"d": [], "h": []}
+        analytics["api"] = {"d": [], "h": [], "last_update": 0}
         for a in analytics_db:
 
             # add last week hourly
@@ -109,10 +111,10 @@ def analytics(request):
             # add all daily
             d = {"report_timestamp": a.report_timestamp, "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
             analytics["api"]["d"].append(d)
+            analytics["api"]["last_update"] = max(a.last_update, analytics["api"]["last_update"])
 
         context = {"html_reports": html_reports, "player": player, "analytics": analytics, "view": {"analytics": True}}
         return render(request, 'analytics.html', context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-

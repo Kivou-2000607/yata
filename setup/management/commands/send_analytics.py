@@ -27,6 +27,7 @@ import datetime
 import re
 
 from setup.models import Analytics
+from yata.handy import tsnow
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -56,7 +57,7 @@ class Command(BaseCommand):
             report_timestamp = int(datetime.datetime.timestamp(date))
 
             # get data for db
-            defaults = {"report_timestamp": report_timestamp}
+            defaults = {"report_timestamp": report_timestamp, "last_update": tsnow()}
 
             # general information
             for k in ['total_requests', 'valid_requests', 'failed_requests', 'unique_visitors', 'bandwidth']:
