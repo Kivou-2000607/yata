@@ -1,5 +1,6 @@
 #!/bin/bash
 
-./get_logs.bash
+./get.bash
 ./create_days.bash
-./push_reports.bash
+./create_by_day.bash
+./push.bash

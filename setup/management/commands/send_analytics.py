@@ -30,14 +30,17 @@ from setup.models import Analytics
 
 class Command(BaseCommand):
     def handle(self, **options):
+        ymA = datetime.datetime.today().strftime('%Y %m')
+        ymB = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime('%Y %m')
+        print(ymA, ymB)
 
         # list all json reports
         for report_file in glob.glob(settings.MEDIA_ROOT + '/analytics/*.json'):
             # get name and type
             report_section, report_period = [r.replace('-', ' ') for r in report_file.replace('.json', '').split('/')[-1].split('_')]
-            print(report_section, "/", report_period)
 
-            if re.search(r'\d{4}\s\d{2}\s\d{2}', report_period) is None:
+
+            if re.search(ymA + r'\s\d{2}', report_period) is None and re.search(ymB + r'\s\d{2}', report_period) is None:
                 continue
 
             # open report
@@ -67,8 +70,9 @@ class Command(BaseCommand):
             defaults["requests_metadata"] = report["requests"]["metadata"]
             defaults["requests_data"] = report["requests"]["data"]
 
-            Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
-
+            _, create = Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
+            print(report_section, "/", report_period, "->", create)
+            
             # for k, v in report_for_db.items():
             #     print(k, v)
 
