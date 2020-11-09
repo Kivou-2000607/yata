@@ -26,9 +26,9 @@ This file is part of yata.
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Unique Visitors', 'Total requests'],
-            {% for a in web_analytics %}
-                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}],
+            ['Time', 'Unique visitors / day', 'Total requests / day', 'Failed requests / day'],
+            {% for a in analytics.web.d %}
+                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}, {{a.failed_requests}}],
             {% endfor %}
         ]);
 
@@ -56,9 +56,39 @@ This file is part of yata.
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Unique Visitors', 'Total requests'],
-            {% for a in api_analytics %}
+            ['Time', 'Unique visitors / hour', 'Total requests / hour'],
+            {% for a in analytics.web.h %}
                 [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            title: "Web analytics",
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            //scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('web-analytics-hour'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Unique visitors / day', 'Total requests / day', 'Failed requests / day'],
+            {% for a in analytics.api.d %}
+                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}, {{a.failed_requests}}],
             {% endfor %}
         ]);
 
@@ -79,16 +109,43 @@ This file is part of yata.
     }
 </script>
 
-<h2 class="title">Web analytics</h2>
-<div class="module">
-    <table class="center-large">
-        <tr><td><div id="web-analytics"></div></td></tr>
-    </table>
-</div>
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
 
-<h2 class="title">API analytics</h2>
-<div class="module">
-    <table class="center-large">
-        <tr><td><div id="api-analytics"></div></td></tr>
-    </table>
-</div>
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Unique visitors / hour', 'Total requests / hour'],
+            {% for a in analytics.api.h %}
+                [new Date({{a.report_timestamp|mul:1000}}), {{a.unique_visitors}}, {{a.total_requests}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            //scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('api-analytics-hour'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+
+<table class="center-large">
+    <thead><tr><th>WEB analytics: <tt>yata.alwaysdata.net</tt></th></tr></thead>
+    <tbody><tr><td><div id="web-analytics"></div></td></tr></tbody>
+    <tbody><tr><td><div id="web-analytics-hour"></div></td></tr></tbody>
+</table>
+<table class="center-large">
+    <thead><tr><th>API analytics: <tt>api/v1</tt></th></tr></thead>
+    <tbody><tr><td><div id="api-analytics"></div></td></tr></tbody>
+    <tbody><tr><td><div id="api-analytics-hour"></div></td></tr></tbody>
+</table>
