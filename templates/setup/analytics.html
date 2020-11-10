@@ -22,17 +22,26 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Activity over time</h2>
 <div class="module">
-    {% include "setup/analytics-graph-web.html" %}
+    {% comment %} {% include "setup/analytics-graph-web.html" %} {% endcomment %}
 </div>
 
 <h2 class="title"><i class="fas fa-chart-bar fa-icon-inline"></i>Reports</h2>
 <div class="module">    
     {% for section, reports in html_reports.items %}
-        <h2>{{section}}</h2>
-        <ul>
-            {% for report in reports %}
-                <li><a href="{{report.url}}" target="_blank">{{report.period}}</a></li>
-            {% endfor %}
-        </ul>
+        <table class="center analytics-reports trshadow">
+            <thead>
+                <tr class="h-a">
+                    <th>{{section}}<i class="fas fa-caret-right flush-right"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                    <tr class="h-b">
+                        <td><a href="{{report.url}}" target="_blank">{{report.period}}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endfor %}
 </div>
+

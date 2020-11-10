@@ -68,18 +68,14 @@ def analytics(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # html reports
-        html_reports = {}
-        for report_file in sorted(glob.glob(settings.MEDIA_ROOT + '/analytics/*.html')):
+        html_reports = {"web": [], "api v1": [], "old loot": []}
+        for report_file in sorted(glob.glob(settings.MEDIA_ROOT + '/analytics/*.html'), reverse=True):
             # get file name
             report_url = f'{settings.MEDIA_URL}analytics/{report_file.split("/")[-1]}'
 
             # get name and type
             report_section, report_period = [r.replace('-', ' ') for r in report_file.replace('.html', '').split('/')[-1].split('_')]
-
-            if report_section in html_reports:
-                html_reports[report_section].append({"url": report_url, "section": report_section, "period": report_period})
-            else:
-                html_reports[report_section] = [{"url": report_url, "section": report_section, "period": report_period}]
+            html_reports[report_section].append({"url": report_url, "section": report_section, "period": report_period})
 
         # WEB day by day and hour / hour graph
         analytics_db = Analytics.objects.filter(report_section="web").filter(report_period__regex=r'\d{4}\s\d{2}\s\d{2}').order_by("report_timestamp")

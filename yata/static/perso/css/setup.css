@@ -29,3 +29,7 @@ table.analytics-requests td.d { font-weight: bold; }
 
 table.analytics-requests tr.h-a { cursor: pointer; }
 table.analytics-requests tr.h-b { display: none; }
+
+table.analytics-reports tr.h-a { cursor: pointer; }
+table.analytics-reports tr.h-b { display: none; }
+table.analytics-reports td { width: 10%; text-align: center; }
