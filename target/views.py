@@ -538,8 +538,8 @@ def dogtags(request):
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
-            if player.tId not in [2000607, 2002288]:
-                print("Section not for you")
+            if player.tId not in [2002288]:
+                return returnError(type=403, msg="This is a private section.")
 
             if request.POST.get("type") == "delete":  # delete target
                 uid = request.POST.get("uid")

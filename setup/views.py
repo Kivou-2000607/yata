@@ -83,38 +83,53 @@ def analytics(request):
 
         # WEB day by day and hour / hour graph
         analytics_db = Analytics.objects.filter(report_section="web").filter(report_period__regex=r'\d{4}\s\d{2}\s\d{2}').order_by("report_timestamp")
-        analytics = {"web": {"d": [], "h": [], "last_update": 0}}
+        analytics = {"web": {"d": [], "h": [], 'r': [], "last_update": 0}}
         for a in analytics_db:
 
             # add last week hourly
             if a.report_timestamp > tsnow() - 3600 * 24 * 7:
-                for i, ah in enumerate(json.loads(a.visitors_data.replace("'", "\""))):
-                    d = {"report_timestamp": a.report_timestamp + i * 3600, "unique_visitors": ah["visitors"]["count"], "total_requests": ah["hits"]["count"]}
+                for i, ah in enumerate(json.loads(a.visitors_data.replace("'", "\""))[::-1]):
+                    d = {"date": timestampToDate(a.report_timestamp + i * 3600), "unique_visitors": ah["visitors"]["count"], "total_requests": ah["hits"]["count"]}
                     analytics["web"]["h"].append(d)
 
+                # add requests
+                analytics["web"]["r"].append([a.report_period, [r for r in json.loads(a.requests_data.replace("'", "\""))[:5]]])
+
             # add all daily
-            d = {"report_timestamp": a.report_timestamp, "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
+            d = {"date": timestampToDate(a.report_timestamp), "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
             analytics["web"]["d"].append(d)
             analytics["web"]["last_update"] = max(a.last_update, analytics["web"]["last_update"])
 
+
         # API day by day and hour / hour graph
         analytics_db = Analytics.objects.filter(report_section="api v1").filter(report_period__regex=r'\d{4}\s\d{2}\s\d{2}').order_by("report_timestamp")
-        analytics["api"] = {"d": [], "h": [], "last_update": 0}
+        analytics["api"] = {"d": [], "h": [], "r": [], "last_update": 0}
         for a in analytics_db:
 
             # add last week hourly
             if a.report_timestamp > tsnow() - 3600 * 24 * 7:
-                for i, ah in enumerate(json.loads(a.visitors_data.replace("'", "\""))):
-                    d = {"report_timestamp": a.report_timestamp + i * 3600, "unique_visitors": ah["visitors"]["count"], "total_requests": ah["hits"]["count"]}
+                for i, ah in enumerate(json.loads(a.visitors_data.replace("'", "\""))[::-1]):
+                    d = {"date": timestampToDate(a.report_timestamp + i * 3600), "unique_visitors": ah["visitors"]["count"], "total_requests": ah["hits"]["count"]}
                     analytics["api"]["h"].append(d)
 
+                # add requests
+                analytics["api"]["r"].append([a.report_period, [r for r in json.loads(a.requests_data.replace("'", "\""))[:5]]])
+
             # add all daily
-            d = {"report_timestamp": a.report_timestamp, "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
+            d = {"date": timestampToDate(a.report_timestamp), "unique_visitors": a.unique_visitors, "total_requests": a.total_requests, "failed_requests": a.failed_requests}
             analytics["api"]["d"].append(d)
             analytics["api"]["last_update"] = max(a.last_update, analytics["api"]["last_update"])
 
+        # revert requests
+        analytics["api"]["r"] = analytics["api"]["r"][::-1]
+        analytics["web"]["r"] = analytics["web"]["r"][::-1]
+
+        # modify last timestamp for the hourly graphs (not 100% useful)
+        analytics["api"]["h"][-1]["date"] = timestampToDate(tsnow())
+        analytics["web"]["h"][-1]["date"] = timestampToDate(tsnow())
+
         context = {"html_reports": html_reports, "player": player, "analytics": analytics, "view": {"analytics": True}}
-        return render(request, 'analytics.html', context)
+        return render(request, 'setup.html', context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)

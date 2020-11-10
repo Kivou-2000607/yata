@@ -464,8 +464,7 @@ td.buttons i {
     margin-right: 10px;
 }
 
-td.update-info,
-p.update-info {
+.update-info {
     margin-top: 10px!important;
     text-align: right;
     color: #888;

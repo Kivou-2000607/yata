@@ -19,3 +19,11 @@ This file is part of yata.
 
 table.players-users-summary td.a { width: 40%; }
 table.players-users-summary td.b { width: 30%; text-align: center;}
+
+
+table.analytics-requests td.a { width: 40% }
+table.analytics-requests td.b { width: 30%; text-align: right; }
+table.analytics-requests td.c { font-weight: bold; }
+
+table.analytics-requests tr.h-a { cursor: pointer; }
+table.analytics-requests tr.h-b { display: none; }
