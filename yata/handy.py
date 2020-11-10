@@ -73,14 +73,16 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
-    if proxy:
-        url = "https://torn-proxy.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
-    else:
-        url = "https://api.torn.com/{}/{}?selections={}&key={}".format(section, id, selections, key)
+    base_url = "https://torn-proxy.com" if proxy else "https://api.torn.com"
+    url = f"{base_url}/{section}/{id}?selections={selections}&key={key}"
 
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
-    r = requests.get(url)
+
+    try:
+        r = requests.get(url)
+    except BaseException as e:
+        return apiCallError({"error": {"code": 0, "error": f"can't reach {base_url}"}})
 
     err = False
 
