@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source source.bash
+
 t=$(date "+%Y %m" -d "4 day ago")
 t2=$(date "+%Y %m")
 

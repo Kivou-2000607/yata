@@ -10,3 +10,4 @@ setup/analytics/logs
 setup/analytics/.backup
 yata/static/honors/img/*.png
 yata/media
+source.bash
