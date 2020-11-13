@@ -1259,6 +1259,7 @@ class Member(models.Model):
         error = False
         if not self.shareN:
             self.nnb = 0
+            self.arson = 0
         else:
             if not req:
                 req = apiCall("user", "", "perks,bars,crimes", key=key)
@@ -1266,6 +1267,7 @@ class Member(models.Model):
             if 'apiError' in req:
                 error = req
                 self.nnb = 0
+                self.arson = 0
             else:
                 nnb = req['nerve'].get('maximum', 0)
 

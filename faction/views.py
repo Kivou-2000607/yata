@@ -532,6 +532,7 @@ def toggleMemberShare(request):
                 if error:
                     member.shareN = 0
                     member.nnb = 0
+                    member.arson = 0
                     return render(request, 'faction/members/nnb.html', {'errorMessage': error.get('apiErrorString', 'error')})
                 else:
                     context = {"player": player, "member": member}
@@ -1119,6 +1120,11 @@ def membersExport(request):
             csv_data = [['Name', 'ID', 'Last Action', 'Status', 'Days In Faction', 'Energy', 'CE Rank', 'NNB', 'EA', 'Strength', 'Speed', 'Defence', 'Dexterity', 'Total']]
 
             for m in members:
+                if not player.factionAA:
+                    m.strength = 0
+                    m.speed = 0
+                    m.defense = 0
+                    m.dexterity = 0
                 csv_data.append([m.name, m.tId, m.lastAction, m.state, m.daysInFaction, m.energy, m.crimesRank, m.nnb, m.arson, m.strength, m.speed, m.defense, m.dexterity, m.getTotalStats])
 
             t = loader.get_template('faction/members/export.txt')
