@@ -113,6 +113,18 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {% endif %}
                 </span>
                 </div>
+                {# company #}
+                <div>
+                <a href="{% url 'company:index' %}" class="yata-link-company" title="Company">
+                    <b><i class="fas fa-building fa-icon-inline"></i>Company</b></a><br>
+                <span>
+                    {% if player.companyId %}
+                        {{player.companyNa}}{% if player.companyDi%} [Dir]{% endif %}
+                    {% else %}
+                        &empty;
+                    {% endif %}
+                </span>
+                </div>
                 {# faction #}
                 <div>
                 {% if player.tId > 0 %}
@@ -198,6 +210,9 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
     {% elif targetcat %}
         <hr class="sep">
         {% include "target/categories.html" %}
+    {% elif compcat %}
+        <hr class="sep">
+        {% include "company/categories.html" %}
     {% elif factioncat and player.tId > 0 %}
         <hr class="sep">
         {% include "faction/categories.html" %}

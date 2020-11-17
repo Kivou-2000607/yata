@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "perso/css/company.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Company
+{% endblock %}
+
+{% block jquery %}
+    <script src='{% static "perso/js/company/company.js" %}'></script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-update">
+        {% include "company/content-reload.html" %}
+    </div>
+{% endblock %}

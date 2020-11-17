@@ -55,6 +55,15 @@ class Player(models.Model):
     factionAA = models.BooleanField(default=False)
     factionNa = models.CharField(default="My Faction", max_length=64)
 
+    # company
+    companyId = models.IntegerField(default=0)
+    companyTy = models.IntegerField(default=0)
+    companyDi = models.BooleanField(default=False)
+    companyNa = models.CharField(default="My Company", max_length=64)
+    wint = models.IntegerField(default=0)
+    wend = models.IntegerField(default=0)
+    wman = models.IntegerField(default=0)
+
     # user last update
     lastUpdateTS = models.IntegerField(default=0)
     lastActionTS = models.IntegerField(default=0)

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'faction.apps.FactionConfig',
     'bazaar.apps.BazaarConfig',
     'stock.apps.StockConfig',
+    'company.apps.CompanyConfig',
     'loot.apps.LootConfig',
     'setup.apps.SetupConfig',
     'bot.apps.BotConfig',

@@ -401,3 +401,45 @@ def attackLog(code):
 @register.filter(name="key_to_title")
 def key_to_title(key):
     return str(key).replace("_", " ").title()
+
+
+@register.filter(name='workstats')
+def workstats(value, arg):
+    try:
+        if str(value) == "0":
+            return "-"
+        elif str(arg) == "0":
+            return f'{value:,d}'
+        sta = int(arg)
+        req = int(value)
+        m = sta / float(req)
+
+        cl = "valid" if req < sta else "error"
+        return format_html(f'<span class="{cl}">{req:,d} (x{m:,.1f})</span>')
+
+    except BaseException:
+        return value
+
+@register.filter(name='workgains')
+def workgains(value):
+    return "-" if str(value) == "0" else value
+
+@register.filter(name='compstars')
+def compstars(value):
+    if not str(value).isdigit():
+        return value
+
+    n = int(value)
+    stars = ['far']*10
+    for i in range(int(value)):
+        stars[i] = 'fas'
+    htmlstars = "".join([f'<i class="{s} fa-star"></i>' for s in stars])
+    return format_html(f'<span title="{n} stars">{htmlstars}</span>')
+
+@register.filter(name='compprice')
+def compprice(value):
+    if not str(value).isdigit():
+        return value
+
+    v = int(value)
+    return f'${v:,d}' if v else "-"

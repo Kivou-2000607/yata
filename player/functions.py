@@ -112,6 +112,16 @@ def updatePlayer(player, i=None, n=None):
         player.chainInfo = "N/A"
     player.chainUpda = int(timezone.now().timestamp())
 
+    # update company info
+    player.companyId = user.get("job", {}).get("company_id", 0)
+    if player.companyId:
+        player.companyTy = user.get("job", {}).get("company_type", 0)
+        player.companyNa = user.get("job", {}).get("company_name", "-")
+        player.companyDi = True if user.get("job", {}).get("position") == "Director" else False
+    player.wman = user.get("manual_labor", 0)
+    player.wint = user.get("intelligence", 0)
+    player.wend = user.get("endurance", 0)
+
     # update awards info
     # only award score
     player.getAwards(userInfo=user)
