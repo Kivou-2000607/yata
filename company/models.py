@@ -93,10 +93,10 @@ class Company(models.Model):
         if director is None:
             return
 
-        print(f"Company {company} -> update with director key")
-        
+        print(f"Company {self} -> update with director key")
+
         # api call
-        req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey())
+        req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey(), verbose=False)
         if "apiError" in req:
             print(req)
             if req["apiErrorCode"] in [7]:
