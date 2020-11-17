@@ -138,9 +138,9 @@ class Company(models.Model):
             del v["status"]
             # flatten effectiveness
             for eff in v["effectiveness"]:
-                if eff not in ["working_stats", "settled_in", "director_education", "addiction", "total"]:
+                if eff not in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "total"]:
                     print("missing effeciveness key", eff)
-            for eff in ["working_stats", "settled_in", "director_education", "addiction"]:
+            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management"]:
                 v[f'effectiveness_{eff}'] = v.get("effectiveness", {}).get(eff, 0)
             del v["effectiveness"]
 
@@ -163,7 +163,8 @@ class Employee(models.Model):
     effectiveness_settled_in = models.IntegerField(default=0)
     effectiveness_director_education = models.IntegerField(default=0)
     effectiveness_addiction = models.IntegerField(default=0)
-
+    effectiveness_inactivity = models.IntegerField(default=0)
+    effectiveness_management = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.company} employee {self.name} [{self.tId}]"
