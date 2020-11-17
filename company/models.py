@@ -58,7 +58,7 @@ class Company(models.Model):
     # profile
     tId = models.IntegerField(default=0, unique=True)
     rating = models.IntegerField(default=0)
-    name = models.CharField(default="Default company name", max_length=32)
+    name = models.CharField(default="Default company name", max_length=128)
     director = models.IntegerField(default=0)
     employees_hired = models.IntegerField(default=0)
     employees_capacity = models.IntegerField(default=0)
