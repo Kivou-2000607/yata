@@ -22,7 +22,7 @@ class Position(models.Model):
     int_gain = models.IntegerField(default=0)
     end_gain = models.IntegerField(default=0)
     special_ability = models.CharField(default="Default sepcial ability", max_length=32)
-    description = models.CharField(default="Default description", max_length=128)
+    description = models.CharField(default="Default description", max_length=256)
 
     def __str__(self):
         return f"{self.company} position {self.name}"
@@ -31,7 +31,7 @@ class Position(models.Model):
 class Special(models.Model):
     company = models.ForeignKey(CompanyDescription, on_delete=models.CASCADE)
     name = models.CharField(default="Default position name", max_length=32)
-    effect = models.CharField(default="Default position name", max_length=128)
+    effect = models.CharField(default="Default position name", max_length=256)
     cost = models.IntegerField(default=0)
     rating_required = models.IntegerField(default=0)
 
