@@ -88,14 +88,15 @@ class Company(models.Model):
         return f"{self.name} [{self.tId}]"
 
     def update_info(self):
-
         # try to get director's key
         director = Player.objects.filter(tId=self.director).first()
         if director is None:
             return
 
+        print(f"Company {company} -> update with director key")
+        
         # api call
-        req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey(), verbose=True)
+        req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey())
         if "apiError" in req:
             print(req)
             if req["apiErrorCode"] in [7]:
@@ -124,11 +125,16 @@ class Company(models.Model):
         self.save()
 
         employees = req.get("company_employees", {})
+        if employees is None:
+            self.employee_set.all().delete()
+            return
+
         # remove old employees
         for employee in self.employee_set.all():
             if str(employee.tId) not in employees:
                 print(f"company update remove emplyee {employee}")
                 employee.delete()
+
 
         # update all employees
         for k, v in employees.items():

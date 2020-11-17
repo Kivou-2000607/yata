@@ -26,4 +26,5 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         for company in Company.objects.all():
+            print(f"Company {company}")
             company.update_info()
