@@ -22,3 +22,16 @@ class CompanyDescriptionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CompanyDescription, CompanyDescriptionAdmin)
+
+
+class EmployeeInline(admin.TabularInline):
+    model = Employee
+    extra = 0
+
+
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'company_description', 'tId', 'name', 'rating', 'director']
+    list_filter = ['company_description']
+    inlines = [EmployeeInline]
+
+admin.site.register(Company, CompanyAdmin)
