@@ -162,4 +162,4 @@ def tmp(request):
             employee.effectiveness_potential = 100 * (t + n) / t
             payload["effectiveness-PrimaryRatio-SecondayRatio"].append({"e": employee.effectiveness_working_stats, "p": P, "s": S})
 
-        return JsonResponse(payload, status=200)
+    return JsonResponse(payload, status=200)
