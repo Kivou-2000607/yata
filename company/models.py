@@ -177,7 +177,7 @@ class Company(models.Model):
         timestamp = defaults["timestamp"]
         id_ts = timestamp - timestamp % (3600 * 24)
         # remove some data from defaults
-        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name', 'director_hrm']:
+        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
             del defaults[k]
 
         # remove some data from employees
