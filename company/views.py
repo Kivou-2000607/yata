@@ -137,6 +137,9 @@ def ws(request):
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
         employees = company.employee_set.all().order_by("-effectiveness_total")
+
+        manager = employees.filter(position="Manager").first()
+        manager_effectiveness = manager.effectiveness_total if manager is not None else 0
         for employee in employees:
             position = company_positions.filter(name=employee.position).first()
             if position is None:
@@ -172,7 +175,8 @@ def ws(request):
                   "management": employee.effectiveness_management,
                   "book_bonus": employee.effectiveness_book_bonus,
                   "effectiveness_total": employee.effectiveness_total,
-                  "is_manager": True if employee.position == "Manager" else False,
+                  "manager_effectiveness": manager_effectiveness,
+                  "position": employee.position,
                   "primary_ratio": P,
                   "secondary_ratio": S
                   }
