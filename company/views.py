@@ -182,6 +182,7 @@ def ws(request):
                   "effectiveness_total": employee.effectiveness_total,
                   "manager_effectiveness": manager_effectiveness,
                   "position": employee.position,
+                  "director_hrm": company.director_hrm,
                   "primary_ratio": P,
                   "secondary_ratio": S
                   }

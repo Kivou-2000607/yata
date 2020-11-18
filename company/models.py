@@ -64,6 +64,7 @@ class Company(models.Model):
     name = models.CharField(default="Default company name", max_length=128)
     director = models.IntegerField(default=0)
     director_name = models.CharField(default="Player", max_length=16)
+    director_hrm = models.BooleanField(default=False)  # education Human Resource Management (boost in employee effectiveness)
     employees_hired = models.IntegerField(default=0)
     employees_capacity = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
@@ -127,6 +128,10 @@ class Company(models.Model):
         for k in ["company_size", "staffroom_size", "storage_size", "storage_space"]:
             defaults[f'upgrades_{k}'] = req.get("company_detailed", {}).get("upgrades", {}).get(k, 0)
 
+        # get director edication
+        if not self.director_hrm:
+            self.director_hrm = 11 in apiCall("user", "", "education", director.getKey(), verbose=False).get("education_completed", [])
+
         # update employees
         employees = req.get("company_employees", {})
         employees = {} if employees is None else employees
@@ -134,7 +139,7 @@ class Company(models.Model):
         # remove old employees
         for employee in self.employee_set.all():
             if str(employee.tId) not in employees:
-                print(f"company update remove emplyee {employee}")
+                print(f"company update remove employee {employee}")
                 employee.delete()
 
         # update all employees
@@ -172,7 +177,7 @@ class Company(models.Model):
         timestamp = defaults["timestamp"]
         id_ts = timestamp - timestamp % (3600 * 24)
         # remove some data from defaults
-        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
+        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name', 'director_hrm']:
             del defaults[k]
 
         # remove some data from employees
