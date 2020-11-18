@@ -18,6 +18,8 @@ This file is part of yata.
 """
 
 from django.shortcuts import render
+from django.http import JsonResponse
+
 # from django.http import HttpResponse
 # from django.utils import timezone
 # from django.db import connection
@@ -31,7 +33,7 @@ from yata.handy import *
 from player.models import Player
 from player.functions import updatePlayer
 
-# import json
+import math
 
 
 def index(request):
@@ -82,6 +84,7 @@ def supervise(request):
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
         employees = company.employee_set.all().order_by("-effectiveness_total")
+        print(f'EFF\tTH\tDIFF\tP\tS')
         for employee in employees:
             position = company_positions.filter(name=employee.position).first()
             employee.man_required = 0 if position is None else position.man_required
@@ -89,7 +92,27 @@ def supervise(request):
             employee.end_required = 0 if position is None else position.end_required
             t = employee.effectiveness_total
             n = employee.effectiveness_addiction + employee.effectiveness_inactivity
+            # compute theoretical efficiency
+            req = [employee.man_required, employee.int_required, employee.end_required]
+            sta = [employee.manual_labor, employee.intelligence, employee.endurance]
+            Pi = req.index(max(req))
+            Si = req.index(min([s for s in req if s]))
+            P = sta[Pi] / float(req[Pi])
+            S = sta[Si] / float(req[Si])
+            # P = round(sta[Pi] / float(req[Pi]), 0)
+            # S = round(sta[Si] / float(req[Si]), 0)
+            # P = math.ceil(sta[Pi] / float(req[Pi]))
+            # S = math.ceil(sta[Si] / float(req[Si]))
+            employee.effectiveness_theoretical = math.ceil(min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S)))
+            employee.effectiveness_theoretical = min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S))
+
+            print(f'{employee.effectiveness_working_stats}\t{employee.effectiveness_theoretical:.2f}\t{employee.effectiveness_working_stats-employee.effectiveness_theoretical:.2f}\t{P:.2f}\t{S:.2f}')
+            # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
             employee.effectiveness_potential = 100 * (t + n) / t
+
+        for i in range(100):
+            print(0.1*i, (0.1*i)%2)
+
 
         context = {"player": player,
                    "company": company,
@@ -101,3 +124,42 @@ def supervise(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+
+def tmp(request):
+    payload = {"effectiveness-PrimaryRatio-SecondayRatio": []}
+    for company in Company.objects.all():
+        if not company.director:
+            print("no director")
+            continue
+
+        # add employees requirements and potential efficiency on the fly
+        company_positions = company.company_description.position_set.all()
+        employees = company.employee_set.all().order_by("-effectiveness_total")
+        for employee in employees:
+            position = company_positions.filter(name=employee.position).first()
+            employee.man_required = 0 if position is None else position.man_required
+            employee.int_required = 0 if position is None else position.int_required
+            employee.end_required = 0 if position is None else position.end_required
+            t = employee.effectiveness_total
+            n = employee.effectiveness_addiction + employee.effectiveness_inactivity
+            # compute theoretical efficiency
+            req = [employee.man_required, employee.int_required, employee.end_required]
+            sta = [employee.manual_labor, employee.intelligence, employee.endurance]
+            Pi = req.index(max(req))
+            Si = req.index(min([s for s in req if s]))
+            P = sta[Pi] / float(req[Pi])
+            S = sta[Si] / float(req[Si])
+            # P = round(sta[Pi] / float(req[Pi]), 0)
+            # S = round(sta[Si] / float(req[Si]), 0)
+            # P = math.ceil(sta[Pi] / float(req[Pi]))
+            # S = math.ceil(sta[Si] / float(req[Si]))
+            employee.effectiveness_theoretical = math.ceil(min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S)))
+            employee.effectiveness_theoretical = min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S))
+
+            # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
+            employee.effectiveness_potential = 100 * (t + n) / t
+            payload["effectiveness-PrimaryRatio-SecondayRatio"].append({"e": employee.effectiveness_working_stats, "p": P, "s": S})
+
+        return JsonResponse(payload, status=200)
