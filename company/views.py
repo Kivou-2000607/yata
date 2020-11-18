@@ -26,6 +26,11 @@ from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 # from django.core.paginator import Paginator
 
+# cache and rate limit
+from django.views.decorators.cache import cache_page
+from ratelimit.decorators import ratelimit
+from ratelimit.core import get_usage, is_ratelimited
+
 from company.models import CompanyDescription
 from company.models import Company
 
@@ -126,7 +131,7 @@ def supervise(request):
         return returnError(exc=e, session=request.session)
 
 
-
+@cache_page(60*10)
 def ws(request):
     payload = {"effectiveness": []}
     for company in Company.objects.all():
