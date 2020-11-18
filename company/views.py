@@ -108,7 +108,7 @@ def supervise(request):
 
             print(f'{employee.effectiveness_working_stats}\t{employee.effectiveness_theoretical:.2f}\t{employee.effectiveness_working_stats-employee.effectiveness_theoretical:.2f}\t{P:.2f}\t{S:.2f}')
             # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
-            employee.effectiveness_potential = 100 * (t + n) / t
+            employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
 
         for i in range(100):
             print(0.1*i, (0.1*i)%2)
@@ -127,8 +127,8 @@ def supervise(request):
 
 
 
-def tmp(request):
-    payload = {"effectiveness-PrimaryRatio-SecondayRatio": []}
+def ws(request):
+    payload = {"effectiveness": []}
     for company in Company.objects.all():
         if not company.director:
             print("no director")
@@ -139,6 +139,9 @@ def tmp(request):
         employees = company.employee_set.all().order_by("-effectiveness_total")
         for employee in employees:
             position = company_positions.filter(name=employee.position).first()
+            if position is None:
+                continue
+
             employee.man_required = 0 if position is None else position.man_required
             employee.int_required = 0 if position is None else position.int_required
             employee.end_required = 0 if position is None else position.end_required
@@ -159,7 +162,21 @@ def tmp(request):
             employee.effectiveness_theoretical = min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S))
 
             # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
-            employee.effectiveness_potential = 100 * (t + n) / t
-            payload["effectiveness-PrimaryRatio-SecondayRatio"].append({"e": employee.effectiveness_working_stats, "p": P, "s": S})
+            employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
+            ws = {
+                  "working_stats": employee.effectiveness_working_stats,
+                  "settled_in": employee.effectiveness_settled_in,
+                  "director_education": employee.effectiveness_director_education,
+                  "addiction": employee.effectiveness_addiction,
+                  "inactivity": employee.effectiveness_inactivity,
+                  "management": employee.effectiveness_management,
+                  "book_bonus": employee.effectiveness_book_bonus,
+                  "effectiveness_total": employee.effectiveness_total,
+                  "is_manager": True if employee.position == "Manager" else False,
+                  "primary_ratio": P,
+                  "secondary_ratio": S
+                  }
+
+            payload["effectiveness"].append(ws)
 
     return JsonResponse(payload, status=200)

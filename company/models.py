@@ -151,9 +151,9 @@ class Company(models.Model):
                     effectiveness_neg += effv
                 elif eff == "total":
                     effectiveness_total += effv
-                if eff not in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "total"]:
+                if eff not in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "total"]:
                     print("missing effeciveness key", eff)
-            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "total"]:
+            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "total"]:
                 v[f'effectiveness_{eff}'] = v.get("effectiveness", {}).get(eff, 0)
             del v["effectiveness"]
 
@@ -201,6 +201,7 @@ class Employee(models.Model):
     effectiveness_addiction = models.IntegerField(default=0)
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
+    effectiveness_book_bonus = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
     def __str__(self):
