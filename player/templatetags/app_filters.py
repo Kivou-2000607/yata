@@ -116,9 +116,18 @@ def factionURL(value, arg=0):
     else:
         return '-'
 
+@register.filter(name='companyURL')
+def companyURL(value, arg=0):
+    if str(arg) == "0":
+        return '-'
+    elif arg:
+        return '<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
+    else:
+        return '-'
+
 
 @register.filter(name='factionURLShort')
-def factionURL(value, arg=0):
+def factionURLShort(value, arg=0):
     if str(arg) == "0":
         return '-'
     elif arg:
@@ -420,9 +429,48 @@ def workstats(value, arg):
     except BaseException:
         return value
 
+@register.filter(name='workstatsinv')
+def workstatsinv(value, arg):
+    try:
+        if str(value) == "0":
+            return "-"
+        elif str(arg) == "0":
+            return format_html(f'<i style="opacity: 0.5;">{value:,d}</i>')
+        sta = int(value)
+        req = int(arg)
+        m = sta / float(req)
+
+        cl = "valid"
+        cl = "warning" if sta < 2 * req else cl
+        cl = "error" if sta < req else cl
+        return format_html(f'<span class="{cl}">{sta:,d} (x{m:,.1f})</span>')
+
+    except BaseException as e:
+        return value
+
+@register.filter(name='effpot')
+def effpot(value, arg):
+    try:
+        if str(value) == "0":
+            return "-"
+        eff = int(value)
+        pot = int(arg)
+
+        cl = "valid"
+        cl = "warning" if pot < 99 else cl
+        cl = "error" if pot < 90 else cl
+        return format_html(f'<span class="{cl}">{eff:,d} ({pot}%)</span>')
+
+    except BaseException as e:
+        return value
+
 @register.filter(name='workgains')
 def workgains(value):
     return "-" if str(value) == "0" else value
+
+@register.filter(name='wage')
+def wage(value):
+    return "-" if str(value) == "0" else f'${value:,d}'
 
 @register.filter(name='compstars')
 def compstars(value):
@@ -443,3 +491,12 @@ def compprice(value):
 
     v = int(value)
     return f'${v:,d}' if v else "-"
+
+@register.filter(name="compPopColor")
+def compPopColor(p):
+    cl = ""
+    if str(p).isdigit():
+        cl = "valid"
+        cl = "warning" if int(p) < 85 else cl
+        cl = "error" if int(p) < 50 else cl
+    return format_html(f'<span class={cl}>{p}%</class>')

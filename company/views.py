@@ -25,9 +25,11 @@ from django.shortcuts import render
 # from django.core.paginator import Paginator
 
 from company.models import CompanyDescription
+from company.models import Company
 
 from yata.handy import *
 from player.models import Player
+from player.functions import updatePlayer
 
 # import json
 
@@ -66,7 +68,34 @@ def supervise(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        context = {"player": player, "compcat": True, "view": {"supervise": True}}
+        # get company
+        company = Company.objects.filter(tId=player.companyId).first()
+        if company is None and not player.companyDi:
+            context = {"player": player, "compcat": True, "view": {"supervise": True}}
+            page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
+            return render(request, page, context)
+        elif company is None and player.companyDi:
+            updatePlayer(player)
+            company = Company.objects.filter(tId=player.companyId).first()
+            company.update_info()
+
+        # add employees requirements and potential efficiency on the fly
+        company_positions = company.company_description.position_set.all()
+        employees = company.employee_set.all().order_by("-effectiveness_total")
+        for employee in employees:
+            position = company_positions.filter(name=employee.position).first()
+            employee.man_required = 0 if position is None else position.man_required
+            employee.int_required = 0 if position is None else position.int_required
+            employee.end_required = 0 if position is None else position.end_required
+            t = employee.effectiveness_total
+            n = employee.effectiveness_addiction + employee.effectiveness_inactivity
+            employee.effectiveness_potential = 100 * (t + n) / t
+
+        context = {"player": player,
+                   "company": company,
+                   "employees": employees,
+                   "compcat": True,
+                   "view": {"supervise": True}}
         page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
         return render(request, page, context)
 

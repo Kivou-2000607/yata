@@ -20,3 +20,10 @@ table.comapny-details-specials td.d { width: 40%; text-align: center; }  /* x1 *
 table.comapny-details-stocks td.a { width: 40%; text-align: left; }  /* x1 */
 table.comapny-details-stocks td.b { width: 30%; text-align: center; }  /* x1 */
 table.comapny-details-stocks td.c { width: 30%; text-align: center; }  /* x1 */
+
+
+table.company-details-employees td.a { width: 15%; text-align: left; }  /* x1 */
+table.company-details-employees td.b { width: 10%; text-align: left; }  /* x1 */
+table.company-details-employees td.c { width: 10%; text-align: center; }  /* x1 */
+table.company-details-employees td.d { width: 6%; text-align: center; }  /* x4 */
+table.company-details-employees td.e { width: 13%; text-align: right; }  /* x3 */

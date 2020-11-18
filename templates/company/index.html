@@ -21,8 +21,10 @@ This file is part of yata.
 
 <div class="module rounded">
     {% if player.companyId%}
-      <p>You are currently working in <a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={{player.companyId}}" target="_blank">{{player.companyNa}}</a></p>
+      <p>You are currently working in <a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={{player.companyId}}" target="_blank">{{player.companyNa}}.</a></p>
+      <p>Click on supervise to see the details of your company.</p>
     {% else %}
-      <p>You are not working in a compant.</p>
+      <p class="warning">You are not currently working in a company.</p>
+      <p>Click on browse to see the details of all companies.</p>
     {% endif %}
 </div>

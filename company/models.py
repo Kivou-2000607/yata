@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.safestring import mark_safe
+
+import json
 
 from player.models import Player
 from yata.handy import apiCall
@@ -60,8 +63,8 @@ class Company(models.Model):
     rating = models.IntegerField(default=0)
     name = models.CharField(default="Default company name", max_length=128)
     director = models.IntegerField(default=0)
+    director_name = models.CharField(default="Player", max_length=16)
     employees_hired = models.IntegerField(default=0)
-    employees_capacity = models.IntegerField(default=0)
     employees_capacity = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
@@ -83,9 +86,14 @@ class Company(models.Model):
 
     # misc
     timestamp = models.IntegerField(default=0)
+    effectiveness_total = models.IntegerField(default=0)
+    effectiveness_neg = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.name} [{self.tId}]"
+
+    def html_link(self):
+        return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
 
     def update_info(self):
         # try to get director's key
@@ -105,7 +113,7 @@ class Company(models.Model):
             return
 
         # create update dict
-        defaults = {"timestamp": req.get("timestamp", 0)}
+        defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name}
 
         # update profile
         for k in ["rating", "name", "director", "employees_hired", "employees_capacity", "employees_capacity", "daily_income", "daily_customers", "weekly_income", "weekly_customers", "days_old"]:
@@ -119,15 +127,9 @@ class Company(models.Model):
         for k in ["company_size", "staffroom_size", "storage_size", "storage_space"]:
             defaults[f'upgrades_{k}'] = req.get("company_detailed", {}).get("upgrades", {}).get(k, 0)
 
-        # updates
-        for attr, value in defaults.items():
-            setattr(self, attr, value)
-        self.save()
-
+        # update employees
         employees = req.get("company_employees", {})
-        if employees is None:
-            self.employee_set.all().delete()
-            return
+        employees = {} if employees is None else employees
 
         # remove old employees
         for employee in self.employee_set.all():
@@ -135,25 +137,53 @@ class Company(models.Model):
                 print(f"company update remove emplyee {employee}")
                 employee.delete()
 
-
         # update all employees
+        effectiveness_total = 0
+        effectiveness_neg = 0
         for k, v in employees.items():
             # convert last action to only timestamp
             v["last_action"] = v["last_action"]["timestamp"]
             # remove status
             del v["status"]
-            # flatten effectiveness
-            for eff in v["effectiveness"]:
+            # flatten effectiveness and compute total effectiveness
+            for eff, effv in v["effectiveness"].items():
+                if effv < 0:
+                    effectiveness_neg += effv
+                elif eff == "total":
+                    effectiveness_total += effv
                 if eff not in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "total"]:
                     print("missing effeciveness key", eff)
-            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management"]:
+            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "total"]:
                 v[f'effectiveness_{eff}'] = v.get("effectiveness", {}).get(eff, 0)
             del v["effectiveness"]
 
-        for tId, defaults in employees.items():
-            self.employee_set.update_or_create(company=self, tId=tId, defaults=defaults)
+        defaults["effectiveness_total"] = effectiveness_total
+        defaults["effectiveness_neg"] = effectiveness_neg
 
-# Emplaye stock
+        for tId, emp in employees.items():
+            self.employee_set.update_or_create(company=self, tId=tId, defaults=emp)
+
+        # push company updates
+        for attr, value in defaults.items():
+            setattr(self, attr, value)
+        self.save()
+
+        # create historical data
+        timestamp = defaults["timestamp"]
+        id_ts = timestamp - timestamp % (3600 * 24)
+        # remove some data from defaults
+        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
+            del defaults[k]
+
+        # remove some data from employees
+        for emp in employees.values():
+            for k in ["days_in_company", "wage"]:
+                del emp[k]
+        # add employees
+        defaults["employees"] = json.dumps(employees)
+        data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
+
+# Employee
 class Employee(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0)
@@ -171,6 +201,30 @@ class Employee(models.Model):
     effectiveness_addiction = models.IntegerField(default=0)
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
+    effectiveness_total = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.company} employee {self.name} [{self.tId}]"
+
+# Company data
+class CompanyData(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    id_ts = models.IntegerField(default=0)  # timestamp rounded at the day (serves as ID)
+    timestamp = models.IntegerField(default=0)  # real timestamp
+
+    employees_hired = models.IntegerField(default=0)
+    popularity = models.IntegerField(default=0)
+    efficiency = models.IntegerField(default=0)
+    environment = models.IntegerField(default=0)
+    effectiveness_total = models.IntegerField(default=0)
+    effectiveness_neg = models.IntegerField(default=0)
+    daily_income = models.BigIntegerField(default=0)
+    daily_customers = models.IntegerField(default=0)
+    weekly_income = models.BigIntegerField(default=0)
+    weekly_customers = models.IntegerField(default=0)
+    advertising_budget = models.IntegerField(default=0)
+
+    employees = models.TextField(default="{}")
+
+    def __str__(self):
+        return f"Company data {self.company.name} [{self.company.tId}]"

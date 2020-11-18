@@ -28,10 +28,14 @@ class EmployeeInline(admin.TabularInline):
     model = Employee
     extra = 0
 
+class CompanyDataInline(admin.TabularInline):
+    model = CompanyData
+    extra = 0
+
 
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'company_description', 'tId', 'name', 'rating', 'director']
     list_filter = ['company_description']
-    inlines = [EmployeeInline]
+    inlines = [EmployeeInline, CompanyDataInline]
 
 admin.site.register(Company, CompanyAdmin)

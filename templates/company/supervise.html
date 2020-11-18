@@ -18,8 +18,152 @@ This file is part of yata.
 {% endcomment %}
 
 {% load app_filters %}
+{% load mathfilters %}
+{% load humanize %}
 
-<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Your company</h2>
+{% if company %}
+<script>
+    $(document).ready(function () {
+        $("#company-details-employees").tablesorter({
+            textExtraction: {
+                0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                2: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                3: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                4: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+
+            cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
+        });
+    });
+</script>
+
+<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Company details</h2>
 <div class="module">
-    <p>Will be released soon</p>
+  <table class="center-medium">
+    <tbody>
+      <tr>
+        <td><b>Name:</b> {{company.html_link}}</td>
+        <td><b>Type:</b> {{company.company_description.name}}</td>
+        <td><b>Rating:</b> {{company.rating|compstars}}</td>
+      </tr>
+      <tr>
+        <td><b>Director:</b> {{company.director_name|playerURL:company.director|safe}}</td>
+        <td><b>Employees:</b> {{company.employees_hired}} / {{company.employees_capacity}}</td>
+        <td><b>Days old:</b> {{company.days_old|intcomma}}</td>
+      </tr>
+      <tr>
+        <td><b>Popularity:</b> {{company.popularity|compPopColor}}</td>
+        <td><b>Efficiency:</b> {{company.efficiency|compPopColor}}</td>
+        <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
+      </tr>
+      <tr>
+        <td><b>Effectiveness:</b>
+          <span class="valid">{{company.effectiveness_total}}</span> =
+          <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span>
+          -
+          <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
+        </td>
+        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
+        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
+
+  {% comment %}
+  <tr>
+  <td><b></b> </td>
+  <td><b></b> </td>
+  <td><b></b> </td>
+</tr>
+   # profile
+  daily_customers = models.IntegerField(default=0)
+  weekly_income = models.BigIntegerField(default=0)
+
+  # detailed
+  company_bank = models.BigIntegerField(default=0)
+  trains_available = models.IntegerField(default=0)
+  advertising_budget = models.IntegerField(default=0)
+  upgrades_company_size = models.IntegerField(default=0)
+  upgrades_staffroom_size = models.CharField(default="Default company staffroom", max_length=32)
+  upgrades_storage_size = models.CharField(default="Default company storage", max_length=32)
+  upgrades_storage_space = models.IntegerField(default=0)
+
+  # misc
+  timestamp = models.IntegerField(default=0)
+  effectiveness_total = models.IntegerField(default=0)
+  effectiveness_neg = models.IntegerField(default=0)
+  {% endcomment %}
 </div>
+
+<h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Employees</h2>
+<div class="module">
+  <table id="company-details-employees" class="center-large trshadow company-details-employees">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        {# <th>Wage</th> #}
+        <th title="Total effectiveness">E. TOT</th>
+        <th title="Work stats effectiveness">E. WST</th>
+        <th title="Settled in effectiveness">E. STL</th>
+        <th title="Addiction effectiveness">E. ADD</th>
+        <th title="Inactivity effectiveness">E. INA</th>
+        <th>MAN</th>
+        <th>INT</th>
+        <th>END</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in employees %}
+      <tr>
+        <td data-val="{{e.name|lower}}" class="a">{{e.name|playerURL:e.tId|safe}}</td>
+        <td data-val="{{e.position|lower}}" class="b">{{e.position}}</td>
+        {# <td data-val="{{e.wage}}" class="a">{{e.wage|wage}}</td> #}
+        <td data-val="{{e.effectiveness_total}}" class="c">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
+        <td data-val="{{e.effectiveness_working_stats}}" class="d">{{e.effectiveness_working_stats|signColor}}</td>
+        <td data-val="{{e.effectiveness_settled_in}}" class="d">{{e.effectiveness_settled_in|signColor}}</td>
+        <td data-val="{{e.effectiveness_addiction}}" class="d">{{e.effectiveness_addiction|signColor}}</td>
+        <td data-val="{{e.effectiveness_inactivity}}" class="d">{{e.effectiveness_inactivity|signColor}}</td>
+        <td data-val="{{e.manual_labor}}" class="e">{{e.manual_labor|workstatsinv:e.man_required}}</td>
+        <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
+        <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
+      </tr>
+      {# {{employee}}<br> #}
+
+{% comment %}
+days_in_company = models.IntegerField(default=0)
+last_action = models.IntegerField(default=0)
+effectiveness_working_stats = models.IntegerField(default=0)
+effectiveness_settled_in = models.IntegerField(default=0)
+effectiveness_director_education = models.IntegerField(default=0)
+effectiveness_addiction = models.IntegerField(default=0)
+effectiveness_inactivity = models.IntegerField(default=0)
+effectiveness_management = models.IntegerField(default=0)
+effectiveness_total = models.IntegerField(default=0)
+
+{% endcomment %}
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="module rounded">
+  <p>Cool graphs coming soon</p>
+</div>
+{% else %}
+<div class="module rounded">
+  {% if player.companyId %}
+    <p class="warning">Your director is not registered in YATA.</p>
+  {% else %}
+    <p class="warning">You're not working in a company.</p>
+  {% endif %}
+</div>
+{% endif %}
