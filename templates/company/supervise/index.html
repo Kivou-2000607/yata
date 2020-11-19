@@ -23,6 +23,8 @@ This file is part of yata.
 
 {% if company %}
 <script>
+
+    // sort employee table
     $(document).ready(function () {
         $("#company-details-employees").tablesorter({
             textExtraction: {
@@ -41,6 +43,9 @@ This file is part of yata.
             cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
         });
     });
+
+    // company graphs
+
 </script>
 
 <h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Company details</h2>
@@ -155,9 +160,76 @@ effectiveness_total = models.IntegerField(default=0)
   </table>
 </div>
 
+{% if company_data|length %}
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Total effectiveness', 'Weekly income'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.weekly_income}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
+        chart.draw(data, options);
+    }
+
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Weekly income', 'Daily income'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.weekly_income}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-2'));
+        chart.draw(data, options);
+    }
+</script>
+
 <div class="module rounded">
-  <p>Cool graphs coming soon</p>
+  <p id="company-data-1"></p>
+  <p id="company-data-2"></p>
+  <div class="pagination-list">
+      {% include "company/supervise/logs.html" %}
+  </div>
 </div>
+
+
+{% endif %}
+
 {% else %}
 <div class="module rounded">
   {% if player.companyId %}

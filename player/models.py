@@ -37,6 +37,7 @@ SECTION_CHOICES = (
     ('T', 'target'),
     ('A', 'awards'),
     ('S', 'stock'),
+    ('C', 'company'),
     ('L', 'loot'))
 
 

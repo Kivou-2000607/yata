@@ -175,7 +175,7 @@ class Company(models.Model):
 
         # create historical data
         timestamp = defaults["timestamp"]
-        id_ts = timestamp - timestamp % (3600 * 24)
+        id_ts = (timestamp + 3600 * 6) - (timestamp + 3600 * 6) % (3600 * 24)
         # remove some data from defaults
         for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
             del defaults[k]

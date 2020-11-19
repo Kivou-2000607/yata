@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 # from django.http import HttpResponse
 # from django.utils import timezone
@@ -89,7 +90,6 @@ def supervise(request):
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
         employees = company.employee_set.all().order_by("-effectiveness_total")
-        print(f'EFF\tTH\tDIFF\tP\tS')
         for employee in employees:
             position = company_positions.filter(name=employee.position).first()
             employee.man_required = 0 if position is None else position.man_required
@@ -97,33 +97,22 @@ def supervise(request):
             employee.end_required = 0 if position is None else position.end_required
             t = employee.effectiveness_total
             n = employee.effectiveness_addiction + employee.effectiveness_inactivity
-            # compute theoretical efficiency
-            req = [employee.man_required, employee.int_required, employee.end_required]
-            sta = [employee.manual_labor, employee.intelligence, employee.endurance]
-            Pi = req.index(max(req))
-            Si = req.index(min([s for s in req if s]))
-            P = sta[Pi] / float(req[Pi])
-            S = sta[Si] / float(req[Si])
-            # P = round(sta[Pi] / float(req[Pi]), 0)
-            # S = round(sta[Si] / float(req[Si]), 0)
-            # P = math.ceil(sta[Pi] / float(req[Pi]))
-            # S = math.ceil(sta[Si] / float(req[Si]))
-            employee.effectiveness_theoretical = math.ceil(min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S)))
-            employee.effectiveness_theoretical = min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S))
-
-            print(f'{employee.effectiveness_working_stats}\t{employee.effectiveness_theoretical:.2f}\t{employee.effectiveness_working_stats-employee.effectiveness_theoretical:.2f}\t{P:.2f}\t{S:.2f}')
-            # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
             employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
 
-        for i in range(100):
-            print(0.1*i, (0.1*i)%2)
+        company_data = company.companydata_set.all().order_by("-timestamp")
+        company_data_p = Paginator(company_data, 25)
+        if request.GET.get('page') is not None:
+            return render(request, "company/supervise/logs.html", {"company_data_p": company_data_p.get_page(request.GET.get('page'))})
 
-
+        print(company_data_p)
         context = {"player": player,
                    "company": company,
+                   "company_data": company_data,
+                   "company_data_p": company_data_p.get_page(1),
                    "employees": employees,
                    "compcat": True,
                    "view": {"supervise": True}}
+
         page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
         return render(request, page, context)
 
