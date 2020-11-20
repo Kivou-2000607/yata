@@ -492,6 +492,14 @@ def compprice(value):
     v = int(value)
     return f'${v:,d}' if v else "-"
 
+@register.filter(name='compjp')
+def compjp(value):
+    if not str(value).isdigit():
+        return value
+
+    v = int(value)
+    return f'{v:,d}' if v else "No cost"
+
 @register.filter(name="compPopColor")
 def compPopColor(p):
     cl = ""

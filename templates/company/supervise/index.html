@@ -44,8 +44,6 @@ This file is part of yata.
         });
     });
 
-    // company graphs
-
 </script>
 
 <h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Company details</h2>
@@ -80,31 +78,6 @@ This file is part of yata.
     </tbody>
   </table>
   <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
-
-  {% comment %}
-  <tr>
-  <td><b></b> </td>
-  <td><b></b> </td>
-  <td><b></b> </td>
-</tr>
-   # profile
-  daily_customers = models.IntegerField(default=0)
-  weekly_income = models.BigIntegerField(default=0)
-
-  # detailed
-  company_bank = models.BigIntegerField(default=0)
-  trains_available = models.IntegerField(default=0)
-  advertising_budget = models.IntegerField(default=0)
-  upgrades_company_size = models.IntegerField(default=0)
-  upgrades_staffroom_size = models.CharField(default="Default company staffroom", max_length=32)
-  upgrades_storage_size = models.CharField(default="Default company storage", max_length=32)
-  upgrades_storage_space = models.IntegerField(default=0)
-
-  # misc
-  timestamp = models.IntegerField(default=0)
-  effectiveness_total = models.IntegerField(default=0)
-  effectiveness_neg = models.IntegerField(default=0)
-  {% endcomment %}
 </div>
 
 <h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Employees</h2>
@@ -114,7 +87,6 @@ This file is part of yata.
       <tr>
         <th>Name</th>
         <th>Position</th>
-        {# <th>Wage</th> #}
         <th title="Total effectiveness">E. TOT</th>
         <th title="Work stats effectiveness">E. WST</th>
         <th title="Settled in effectiveness">E. STL</th>
@@ -140,21 +112,6 @@ This file is part of yata.
         <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
         <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
       </tr>
-      {# {{employee}}<br> #}
-
-{% comment %}
-days_in_company = models.IntegerField(default=0)
-last_action = models.IntegerField(default=0)
-effectiveness_working_stats = models.IntegerField(default=0)
-effectiveness_settled_in = models.IntegerField(default=0)
-effectiveness_director_education = models.IntegerField(default=0)
-effectiveness_addiction = models.IntegerField(default=0)
-effectiveness_inactivity = models.IntegerField(default=0)
-effectiveness_management = models.IntegerField(default=0)
-effectiveness_total = models.IntegerField(default=0)
-
-{% endcomment %}
-
       {% endfor %}
     </tbody>
   </table>
@@ -168,12 +125,11 @@ effectiveness_total = models.IntegerField(default=0)
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Total effectiveness', 'Weekly income'],
+            ['Time', 'Weekly Customers', 'Weekly income'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.weekly_income}}],
+                [new Date({{d.id_ts|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}],
             {% endfor %}
         ]);
-
 
         var options = {
             displayZoomButtons: false,
@@ -197,12 +153,11 @@ effectiveness_total = models.IntegerField(default=0)
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Weekly income', 'Daily income'],
+            ['Time', 'Total effectiveness', 'popularity', 'efficiency', 'environment'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.weekly_income}}],
+                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.popularity}}, {{d.efficiency}}, {{d.environment}}],
             {% endfor %}
         ]);
-
 
         var options = {
             displayZoomButtons: false,
@@ -219,9 +174,44 @@ effectiveness_total = models.IntegerField(default=0)
     }
 </script>
 
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        {% for h in employees_graph.header %}
+          data.addColumn('number', '{{h.1}}');
+        {% endfor %}
+
+        {% for d1 in employees_graph.data %}
+          data.addRow([new Date({{d1.0|mul:1000}}){% for d2 in d1.1 %}, {{d2.0}}{% endfor %}]);
+        {% endfor %}
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
+        chart.draw(data, options);
+    }
+</script>
+
 <div class="module rounded">
+  <h2>Company weekly income</h2>
   <p id="company-data-1"></p>
+  <h2>Employees effectiveness</h2>
   <p id="company-data-2"></p>
+  <h2>Employees effectiveness</h2>
+  <p id="company-data-3"></p>
+  <h2>Logs</h2>
   <div class="pagination-list">
       {% include "company/supervise/logs.html" %}
   </div>

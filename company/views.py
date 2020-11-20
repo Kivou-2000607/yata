@@ -21,16 +21,13 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-# from django.http import HttpResponse
-# from django.utils import timezone
-# from django.db import connection
-# from django.views.decorators.csrf import csrf_exempt
-# from django.core.paginator import Paginator
-
 # cache and rate limit
 from django.views.decorators.cache import cache_page
 from ratelimit.decorators import ratelimit
 from ratelimit.core import get_usage, is_ratelimited
+
+import math
+import json
 
 from company.models import CompanyDescription
 from company.models import Company
@@ -38,8 +35,6 @@ from company.models import Company
 from yata.handy import *
 from player.models import Player
 from player.functions import updatePlayer
-
-import math
 
 
 def index(request):
@@ -99,17 +94,38 @@ def supervise(request):
             n = employee.effectiveness_addiction + employee.effectiveness_inactivity
             employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
 
+        # send employees if show details
+        if request.POST.get("type", False) == "show-details":
+            company_data = company.companydata_set.filter(timestamp=request.POST.get("timestamp")).first()
+            if company_data is not None:
+                employees = json.loads(company_data.employees)
+            return render(request, "company/supervise/details.html", {"company_data": company_data, "employees": employees})
+
+        # get company data
         company_data = company.companydata_set.all().order_by("-timestamp")
         company_data_p = Paginator(company_data, 25)
         if request.GET.get('page') is not None:
             return render(request, "company/supervise/logs.html", {"company_data_p": company_data_p.get_page(request.GET.get('page'))})
 
-        print(company_data_p)
+        # create employee graph
+        # current employees [id, name]
+        employee_graph_headers = [[str(e.tId), f'{e.name} [{e.tId}]'] for e in employees]
+        employee_graph_data = []
+        for data in company_data:
+            d = json.loads(data.employees)
+            tmp_data = [data.timestamp, []]
+            for e_id, e_name in employee_graph_headers:
+                tmp_data[1].append([d.get(e_id, {}).get("effectiveness_total", "undefined"), d.get(e_id, {}).get("position", "undefined")])
+            employee_graph_data.append(tmp_data)
+
+        employees_graph = {"header": employee_graph_headers, "data": employee_graph_data}
+
         context = {"player": player,
                    "company": company,
                    "company_data": company_data,
                    "company_data_p": company_data_p.get_page(1),
                    "employees": employees,
+                   "employees_graph": employees_graph,
                    "compcat": True,
                    "view": {"supervise": True}}
 

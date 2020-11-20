@@ -31,3 +31,12 @@ $(document).on('change', '#company-select-form', e => {
 
     reload.children("div.module").html(spinner);
 });
+
+// show hide logs details
+$(document).on('click', 'tr.company-logs > td:not(.dont-touch-me)', function(e){
+    e.preventDefault();
+    var timestamp = $(this).parent("tr").attr("data-val");
+    $( "#company-employees-details" ).load( "/company/supervise/", {
+        type: "show-details", timestamp: timestamp, csrfmiddlewaretoken: getCookie("csrftoken"),
+    });
+});

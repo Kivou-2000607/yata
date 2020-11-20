@@ -25,12 +25,12 @@ This file is part of yata.
     <thead>
         <tr>
             <th>Date</th>
-            <th>Employees</th>
-            <th>Advertising</th>
-            <th>Popularity</th>
-            <th>Efficiency</th>
-            <th>Environment</th>
-            <th>Total effectiveness</th>
+            <th>Emp.</th>
+            <th>Adv.</th>
+            <th>Pop.</th>
+            <th>Eff.</th>
+            <th>Env.</th>
+            <th>Effectiveness</th>
             <th>Daily Income</th>
             <th>Daily Customers</th>
             <th>Weekly Income</th>
@@ -39,22 +39,22 @@ This file is part of yata.
     </thead>
     <tbody>
         {% for d in company_data_p %}
-        <tr>
+        <tr class="company-logs" data-val="{{d.timestamp}}">
             <td class="a">{{d.timestamp|ts2date:"%Y/%m/%d"}}</td>
             <td class="b">{{d.employees_hired}}</td>
-            <td class="b">${{d.advertising_budget|intcomma}}</td>
-            <td class="c">{{d.popularity}}%</td>
-            <td class="c">{{d.efficiency}}%</td>
-            <td class="c">{{d.environment}}%</td>
-            <td class="d">{{d.effectiveness_total}}</td>
-            <td class="e">${{d.daily_income|intcomma}}</td>
-            <td class="e">{{d.daily_customers|intcomma}}</td>
-            <td class="e">${{d.weekly_income|intcomma}}</td>
-            <td class="e">{{d.weekly_customers|intcomma}}</td>
+            <td class="c">${{d.advertising_budget|intcomma}}</td>
+            <td class="d">{{d.popularity}}%</td>
+            <td class="d">{{d.efficiency}}%</td>
+            <td class="d">{{d.environment}}%</td>
+            <td class="e">{{d.effectiveness_total}}</td>
+            <td class="f">${{d.daily_income|intcomma}}</td>
+            <td class="f">{{d.daily_customers|intcomma}}</td>
+            <td class="f">${{d.weekly_income|intcomma}}</td>
+            <td class="f">{{d.weekly_customers|intcomma}}</td>
         </tr>
         {% endfor %}
 
-        <tr><td colspan="11">
+        <tr><td colspan="12">
             <div class="pagination">
                 <span class="step-links">
                     {% if company_data_p.has_previous %}

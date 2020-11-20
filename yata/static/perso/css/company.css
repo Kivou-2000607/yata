@@ -27,3 +27,11 @@ table.company-details-employees td.b { width: 10%; text-align: left; }  /* x1 */
 table.company-details-employees td.c { width: 10%; text-align: center; }  /* x1 */
 table.company-details-employees td.d { width: 6%; text-align: center; }  /* x4 */
 table.company-details-employees td.e { width: 13%; text-align: right; }  /* x3 */
+
+
+table.company-logs td.a { width: 10%; text-align: center; }  /* x1 */
+table.company-logs td.b { width: 5%; text-align: center; }  /* x1 */
+table.company-logs td.c { width: 10%; text-align: center; }  /* x1 */
+table.company-logs td.d { width: 5%; text-align: center; }  /* x3 */
+table.company-logs td.e { width: 10%; text-align: center; }  /* x1 */
+table.company-logs td.f { width: 12.5%; text-align: center; }  /* x4 */

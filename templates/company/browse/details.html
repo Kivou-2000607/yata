@@ -45,7 +45,7 @@
             <tr>
                 <th>Name</th>
                 <th>effect</th>
-                <th>Cost</th>
+                <th>Job Points</th>
                 <th>Rating Required</th>
             </tr>
         </thead>
@@ -55,7 +55,7 @@
                     <tr>
                         <td class="a">{{special.name}}</td>
                         <td class="b">{{special.effect}}</td>
-                        <td class="c">{{special.cost|compprice}}</td>
+                        <td class="c">{{special.cost|compjp}}</td>
                         <td class="d">{{special.rating_required|compstars}}</td>
                     </tr>
                 {% endfor %}
