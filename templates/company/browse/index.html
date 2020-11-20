@@ -23,7 +23,7 @@ This file is part of yata.
     <form id="company-select-form">
         <label for="company-select-form">Select a company:</label>
         <select name="companies" id="companies" form="company-select-form">
-            <option value="" disabled>List of all companies</option>
+            <option value="" disabled selected>List of all companies</option>
             {% for company in companies %}
                 {{company.name}}<br>
                 <option value="{{company.tId}}">{{company.name}}</option>
