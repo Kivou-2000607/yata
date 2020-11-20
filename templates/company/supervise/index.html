@@ -201,6 +201,14 @@ This file is part of yata.
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
         chart.draw(data, options);
+        $("#company-details-employees tbody tr").click(function(e){
+            $(this).toggleClass("hideChart");
+            let index = this.sectionRowIndex;
+            if ($(this).hasClass("hideChart"))
+                chart.hideDataColumns(index);
+            else
+                chart.showDataColumns(index);
+        });
     }
 </script>
 
