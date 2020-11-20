@@ -237,8 +237,8 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
 </div>
 
 {% if player.usingProxyKey %}
-<div class="module rounded warning">
-    Using Torn Proxy keys is still in beta. If you experience any issues on the website or with the bot please report them.
+<div class="module rounded error">
+    Support to proxy keys will be over soon. Please move back to regular API key. More information in <a href="https://www.torn.com/forums.php#/p=threads&f=63&t=16178384" target="_blank">this thread</a>.
 </div>
 {% endif %}
 
@@ -252,7 +252,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             </td>
             <td class="d">
                 <form method="post" class="form-inline">
-                    Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> (or a <a href="https://torn-proxy.com" target="_blank">proxy key</a>) to
+                    Enter your <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a> to
                     start using <b>YATA</b>&nbsp;
                     {% csrf_token %}
                     <input id="yata-login-key" placeholder="API key" type=text>
