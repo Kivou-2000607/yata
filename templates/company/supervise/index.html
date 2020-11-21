@@ -46,79 +46,6 @@ This file is part of yata.
 
 </script>
 
-<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Company details</h2>
-<div class="module">
-  <table class="center-medium">
-    <tbody>
-      <tr>
-        <td><b>Name:</b> {{company.html_link}}</td>
-        <td><b>Type:</b> {{company.company_description.name}}</td>
-        <td><b>Rating:</b> {{company.rating|compstars}}</td>
-      </tr>
-      <tr>
-        <td><b>Director:</b> {{company.director_name|playerURL:company.director|safe}}</td>
-        <td><b>Employees:</b> {{company.employees_hired}} / {{company.employees_capacity}}</td>
-        <td><b>Days old:</b> {{company.days_old|intcomma}}</td>
-      </tr>
-      <tr>
-        <td><b>Popularity:</b> {{company.popularity|compPopColor}}</td>
-        <td><b>Efficiency:</b> {{company.efficiency|compPopColor}}</td>
-        <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
-      </tr>
-      <tr>
-        <td><b>Effectiveness:</b>
-          <span class="valid">{{company.effectiveness_total}}</span> =
-          <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span>
-          -
-          <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
-        </td>
-        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
-        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
-</div>
-
-<h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Employees</h2>
-<div class="module">
-  <table id="company-details-employees" class="center-large trshadow company-details-employees">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Position</th>
-        <th title="Total effectiveness">E. TOT</th>
-        <th title="Work stats effectiveness">E. WST</th>
-        <th title="Settled in effectiveness">E. STL</th>
-        <th title="Addiction effectiveness">E. ADD</th>
-        <th title="Inactivity effectiveness">E. INA</th>
-        <th>MAN</th>
-        <th>INT</th>
-        <th>END</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for e in employees %}
-      <tr>
-        <td data-val="{{e.name|lower}}" class="a">{{e.name|playerURL:e.tId|safe}}</td>
-        <td data-val="{{e.position|lower}}" class="b">{{e.position}}</td>
-        {# <td data-val="{{e.wage}}" class="a">{{e.wage|wage}}</td> #}
-        <td data-val="{{e.effectiveness_total}}" class="c">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
-        <td data-val="{{e.effectiveness_working_stats}}" class="d">{{e.effectiveness_working_stats|signColor}}</td>
-        <td data-val="{{e.effectiveness_settled_in}}" class="d">{{e.effectiveness_settled_in|signColor}}</td>
-        <td data-val="{{e.effectiveness_addiction}}" class="d">{{e.effectiveness_addiction|signColor}}</td>
-        <td data-val="{{e.effectiveness_inactivity}}" class="d">{{e.effectiveness_inactivity|signColor}}</td>
-        <td data-val="{{e.manual_labor}}" class="e">{{e.manual_labor|workstatsinv:e.man_required}}</td>
-        <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
-        <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-{% if company_data|length %}
-
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(drawChart);
@@ -139,6 +66,8 @@ This file is part of yata.
             scaleColumns: [0, 1],
             scaleType: "allmaximized",
             scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
         };
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
@@ -167,6 +96,8 @@ This file is part of yata.
             scaleColumns: [0, 1],
             scaleType: "allmaximized",
             scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
         };
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-2'));
@@ -201,25 +132,103 @@ This file is part of yata.
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
         chart.draw(data, options);
-        $("#company-details-employees tbody tr").click(function(e){
-            $(this).toggleClass("hideChart");
-            let index = this.sectionRowIndex;
-            if ($(this).hasClass("hideChart"))
-                chart.hideDataColumns(index);
-            else
-                chart.showDataColumns(index);
+        $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
+            const tr = $(this).parent("tr");
+            tr.toggleClass("hideChart");
+            let index = tr[0].sectionRowIndex;
+            if (tr.hasClass("hideChart")) {
+              chart.hideDataColumns(index);
+              $(this).html('<i class="far fa-eye-slash"></i>');
+            } else {
+              chart.showDataColumns(index);
+              $(this).html('<i class="far fa-eye"></i>');
+            }
         });
     }
 </script>
 
-<div class="module rounded">
-  <h2>Company weekly income</h2>
+<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}</h2>
+<div class="module">
+  <table class="center-medium">
+    <tbody>
+      <tr>
+        <td><b>Name:</b> {{company.html_link}}</td>
+        <td><b>Type:</b> {{company.company_description.name}}</td>
+        <td><b>Rating:</b> {{company.rating|compstars}}</td>
+      </tr>
+      <tr>
+        <td><b>Director:</b> {{company.director_name|playerURL:company.director|safe}}</td>
+        <td><b>Employees:</b> {{company.employees_hired}} / {{company.employees_capacity}}</td>
+        <td><b>Days old:</b> {{company.days_old|intcomma}}</td>
+      </tr>
+      <tr>
+        <td><b>Popularity:</b> {{company.popularity|compPopColor}}</td>
+        <td><b>Efficiency:</b> {{company.efficiency|compPopColor}}</td>
+        <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
+      </tr>
+      <tr>
+        <td><b>Effectiveness:</b>
+          <span class="valid">{{company.effectiveness_total}}</span> =
+          <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span>
+          +
+          <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
+        </td>
+        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
+        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+      </tr>
+    </tbody>
+  </table>
   <p id="company-data-1"></p>
-  <h2>Employees effectiveness</h2>
   <p id="company-data-2"></p>
-  <h2>Employees effectiveness</h2>
-  <p id="company-data-3"></p>
-  <h2>Logs</h2>
+
+  <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
+</div>
+
+<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Employees</h2>
+<div class="module">
+  <table id="company-details-employees" class="center-large trshadow company-details-employees">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th title="Total effectiveness">E. TOT</th>
+        <th title="Work stats effectiveness">E. WST</th>
+        <th title="Settled in effectiveness">E. STL</th>
+        <th title="Addiction effectiveness">E. ADD</th>
+        <th title="Inactivity effectiveness">E. INA</th>
+        <th>MAN</th>
+        <th>INT</th>
+        <th>END</th>
+        <th><i class="far fa-eye"></i></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in employees %}
+      <tr>
+        <td data-val="{{e.name|lower}}" class="a dont-touch-me">{{e.name|playerURL:e.tId|safe}}</td>
+        <td data-val="{{e.position|lower}}" class="b">{{e.position}}</td>
+        {# <td data-val="{{e.wage}}" class="a">{{e.wage|wage}}</td> #}
+        <td data-val="{{e.effectiveness_total}}" class="c">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
+        <td data-val="{{e.effectiveness_working_stats}}" class="d">{{e.effectiveness_working_stats|signColor}}</td>
+        <td data-val="{{e.effectiveness_settled_in}}" class="d">{{e.effectiveness_settled_in|signColor}}</td>
+        <td data-val="{{e.effectiveness_addiction}}" class="d">{{e.effectiveness_addiction|signColor}}</td>
+        <td data-val="{{e.effectiveness_inactivity}}" class="d">{{e.effectiveness_inactivity|signColor}}</td>
+        <td data-val="{{e.manual_labor}}" class="e">{{e.manual_labor|workstatsinv:e.man_required}}</td>
+        <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
+        <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
+        <td data-val="1" class="f toggle-chart"><i class="far fa-eye"></i></td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+  <p id="company-data-3" colspan="10"></p>
+</div>
+
+{% if company_data|length %}
+
+<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Logs</h2>
+<div class="module">
   <div class="pagination-list">
       {% include "company/supervise/logs.html" %}
   </div>

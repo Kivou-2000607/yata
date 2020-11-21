@@ -3,7 +3,7 @@
 {% load app_filters %}
 
 {% if company_details %}
-<h2 class="title">{{company_details.name}}</h2>
+<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company_details.name}}</h2>
 <div class="module">
     <h2>Positions</h2>
     <table class="center-large trshadow comapny-details-positions">
@@ -86,5 +86,6 @@
     </table>
 </div>
 {% else %}
-<div class="module rounded"><p>Select a company above to see its details.</p></div>
+<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>Select a company</h2>
+<div class="module"><p>Select a company from the list above to see its details.</p></div>
 {% endif %}

@@ -26,7 +26,9 @@ table.company-details-employees td.a { width: 15%; text-align: left; }  /* x1 */
 table.company-details-employees td.b { width: 10%; text-align: left; }  /* x1 */
 table.company-details-employees td.c { width: 10%; text-align: center; }  /* x1 */
 table.company-details-employees td.d { width: 6%; text-align: center; }  /* x4 */
-table.company-details-employees td.e { width: 13%; text-align: right; }  /* x3 */
+table.company-details-employees td.e { width: 12%; text-align: right; }  /* x3 */
+table.company-details-employees td.f { width: 3%; text-align: center; cursor: pointer; }  /* x1 */
+table.company-details-employees tr.hideChart { opacity: 0.5; }  /* hide from charts */
 
 
 table.company-logs td.a { width: 10%; text-align: center; }  /* x1 */

@@ -119,7 +119,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     <b><i class="fas fa-building fa-icon-inline"></i>Company</b></a><br>
                 <span>
                     {% if player.companyId %}
-                        {{player.companyNa}}{% if player.companyDi%} [Dir]{% endif %}
+                        {{player.companyNa|safe}}{% if player.companyDi%} [Dir]{% endif %}
                     {% else %}
                         &empty;
                     {% endif %}

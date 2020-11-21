@@ -113,7 +113,7 @@ def supervise(request):
         employee_graph_data = []
         for data in company_data:
             d = json.loads(data.employees)
-            tmp_data = [data.timestamp, []]
+            tmp_data = [data.id_ts, []]
             for e_id, e_name in employee_graph_headers:
                 tmp_data[1].append([d.get(e_id, {}).get("effectiveness_total", "undefined"), d.get(e_id, {}).get("position", "undefined")])
             employee_graph_data.append(tmp_data)

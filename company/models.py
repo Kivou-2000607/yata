@@ -91,7 +91,7 @@ class Company(models.Model):
     effectiveness_neg = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.name} [{self.tId}]"
+        return f"{mark_safe(self.name)} [{self.tId}]"
 
     def html_link(self):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
