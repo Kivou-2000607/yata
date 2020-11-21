@@ -5,6 +5,7 @@ from .views import loot
 from .views import travel
 from .views import targets
 from .views import faction
+from .views import auth
 
 app_name = "api"
 urlpatterns = [
@@ -25,4 +26,7 @@ urlpatterns = [
     # faction
     re_path(r'^v1/faction/crimes/export/$', faction.getCrimes, name="getCrimes"),
     re_path(r'^v1/faction/walls/import/$', faction.importWall, name="importWall"),
+
+    # auth
+    re_path(r'^v1/auth/$', auth.index, name="index"),
     ]

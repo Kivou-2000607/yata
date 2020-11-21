@@ -184,9 +184,14 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
     from django.http import HttpResponseServerError
     from django.http import HttpResponseForbidden
     from django.http import HttpResponseNotFound
+    from django.http import JsonResponse
     from django.template.loader import render_to_string
     from player.models import Player
     from django.conf import settings
+
+
+    if session is not None and session.get('json-output'):
+        return JsonResponse({'error': {'code': 1, 'error': 'Unkown error' if exc is None else str(exc)}}, status=type)
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg

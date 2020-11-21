@@ -1,5 +1,5 @@
 """
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -18,9 +18,11 @@ This file is part of yata.
 """
 
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
 
 import json
 import numpy
@@ -37,8 +39,7 @@ from awards.models import AwardsData
 
 def index(request):
     try:
-        tId = request.session["player"].get("tId") if request.session.get('player') else -1
-        player = getPlayer(tId)
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
         awardsPlayer, awardsTorn, error = player.getAwards(force=True)
 
         # get graph data
@@ -63,7 +64,12 @@ def index(request):
             context[k] = v
         if error:
             context.update(error)
-        return render(request, "awards.html", context)
+
+        if request.session.get('json-output'):
+            context["player"] = model_to_dict(context["player"])
+            return JsonResponse(context, status=200)
+        else:
+            return render(request, "awards.html", context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
