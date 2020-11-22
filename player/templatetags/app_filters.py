@@ -457,7 +457,7 @@ def effpot(value, arg):
         pot = int(arg)
 
         cl = "valid"
-        cl = "warning" if pot < 99 else cl
+        cl = "warning" if pot < 95 else cl
         cl = "error" if pot < 90 else cl
         return format_html(f'<span class="{cl}">{eff:,d} ({pot}%)</span>')
 

@@ -54,7 +54,7 @@ This file is part of yata.
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Weekly Customers', 'Weekly income'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}],
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}],
             {% endfor %}
         ]);
 
@@ -84,7 +84,7 @@ This file is part of yata.
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Total effectiveness', 'popularity', 'efficiency', 'environment'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|mul:1000}}), {{d.effectiveness_total}}, {{d.popularity}}, {{d.efficiency}}, {{d.environment}}],
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.effectiveness_total}}, {{d.popularity}}, {{d.efficiency}}, {{d.environment}}],
             {% endfor %}
         ]);
 
@@ -117,7 +117,7 @@ This file is part of yata.
         {% endfor %}
 
         {% for d1 in employees_graph.data %}
-          data.addRow([new Date({{d1.0|mul:1000}}){% for d2 in d1.1 %}, {{d2.0}}{% endfor %}]);
+          data.addRow([new Date({{d1.0|sub:86400|mul:1000}}){% for d2 in d1.1 %}, {{d2.0}}{% endfor %}]);
         {% endfor %}
 
         var options = {
@@ -223,6 +223,12 @@ This file is part of yata.
     </tbody>
   </table>
   <p id="company-data-3" colspan="10"></p>
+  <p>With the current repartition you reach a total working stats effectiveness of
+    {% if company.effectiveness_ws_max %}
+      <span style="cursor: help;" title="The following repartition would yield {{company.effectiveness_ws_max|floatformat}} working stats efficiency:&#013;{% for p in company.employees_suggestion %}- {{p.0}} as {{p.1}} for {{p.2|floatformat:0}} working stats&#013;{% endfor %}">{{company.effectiveness_ws_act|effpot:company.effectiveness_ws_err}}</span>.
+    {% else %}
+      {{company.effectiveness_ws_act}}.
+    {% endif %}
 </div>
 
 {% if company_data|length %}

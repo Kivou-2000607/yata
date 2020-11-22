@@ -28,6 +28,8 @@ from ratelimit.core import get_usage, is_ratelimited
 
 import math
 import json
+import scipy
+import numpy
 
 from company.models import CompanyDescription
 from company.models import Company
@@ -84,7 +86,11 @@ def supervise(request):
 
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
-        employees = company.employee_set.all().order_by("-effectiveness_total")
+        employees = list(company.employee_set.all().order_by("-effectiveness_total"))
+        positions = [company_positions.filter(name=e.position).first() for e in employees]
+        ws_eff_matrix = []
+        company.effectiveness_ws_act = 0
+        hrm = 1.1 if company.director_hrm else 0.9
         for employee in employees:
             position = company_positions.filter(name=employee.position).first()
             employee.man_required = 0 if position is None else position.man_required
@@ -93,6 +99,29 @@ def supervise(request):
             t = employee.effectiveness_total
             n = employee.effectiveness_addiction + employee.effectiveness_inactivity
             employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
+            company.effectiveness_ws_act += employee.effectiveness_working_stats
+
+            # compute ws_eff matrix (each row is an employee, each column is a position)
+            sta = [employee.manual_labor, employee.intelligence, employee.endurance]
+            ws_eff_matrix_row = []
+            for p in positions:
+                # compute S and P
+                req = [p.man_required, p.int_required, p.end_required]
+                Pi = req.index(max(req))
+                Si = req.index(min([s for s in req if s]))
+                P = hrm * sta[Pi] / float(req[Pi])
+                S = hrm * sta[Si] / float(req[Si])
+                ws_eff = min(45, 45 * P) + max(0, 5*math.log2(P)) + min(45, 45 * S) + max(0, 5*math.log2(S))
+                ws_eff_matrix_row.append(ws_eff)
+            ws_eff_matrix.append(ws_eff_matrix_row)
+        try:
+            ws_eff_matrix = numpy.array(ws_eff_matrix)
+            row_ind, col_ind = scipy.optimize.linear_sum_assignment(ws_eff_matrix, maximize=True)
+            company.effectiveness_ws_max = round(ws_eff_matrix[row_ind, col_ind].sum())
+            company.effectiveness_ws_err = round(100 * (company.effectiveness_ws_act)/company.effectiveness_ws_max)
+            company.employees_suggestion = [[employees[i].name, positions[j].name, ws_eff_matrix[i, j]] for i, j in zip(row_ind, col_ind)]
+        except BaseException:
+            pass
 
         # send employees if show details
         if request.POST.get("type", False) == "show-details":
@@ -119,6 +148,8 @@ def supervise(request):
             employee_graph_data.append(tmp_data)
 
         employees_graph = {"header": employee_graph_headers, "data": employee_graph_data}
+
+        company.save()
 
         context = {"player": player,
                    "company": company,

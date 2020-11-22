@@ -89,6 +89,8 @@ class Company(models.Model):
     timestamp = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
     effectiveness_neg = models.IntegerField(default=0)
+    effectiveness_ws_act = models.IntegerField(default=0)
+    effectiveness_ws_max = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{mark_safe(self.name)} [{self.tId}]"
