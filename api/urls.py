@@ -28,5 +28,5 @@ urlpatterns = [
     re_path(r'^v1/faction/walls/import/$', faction.importWall, name="importWall"),
 
     # auth
-    re_path(r'^v1/auth/$', auth.index, name="index"),
+    re_path(r'^v1/auth/$', auth.index, name="auth"),
     ]

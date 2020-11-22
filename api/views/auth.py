@@ -37,10 +37,12 @@ from player.models import Key
 def index(request):
 
     # get auth
-    auth = request.headers.get('Authorization').split()
+    auth = request.headers.get('Authorization')
+    if auth is None:
+        return JsonResponse({"error": {"code": 2, "error": "No Authorization found"}}, status=400)
+    auth = auth.split()
     if len(auth) != 2:
         return JsonResponse({"error": {"code": 2, "error": "Wrong auth parameters"}}, status=400)
-
     if auth[0].lower() != "basic":
         return JsonResponse({"error": {"code": 2, "error": "Wrong auth parameters (needs basic auth)"}}, status=400)
 
