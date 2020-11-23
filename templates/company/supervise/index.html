@@ -26,6 +26,7 @@ This file is part of yata.
 
     // sort employee table
     $(document).ready(function () {
+        $("#chartHider").data("sorter", false);
         $("#company-details-employees").tablesorter({
             textExtraction: {
                 0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
@@ -39,7 +40,6 @@ This file is part of yata.
                 8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                 9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
             },
-
             cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
         });
     });
@@ -107,20 +107,18 @@ This file is part of yata.
 
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
-    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(()=>drawChart({{employees_graph}}));
 
-    function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('date', 'Date');
-        {% for h in employees_graph.header %}
-          data.addColumn('number', '{{h.1}}');
-        {% endfor %}
+    function drawChart(employees_graph) {
+        const dt = new google.visualization.DataTable();
+        dt.addColumn('date', 'Date');
+        employees_graph.header
+            .forEach(col=>dt.addColumn('number', col[1]));
+        employees_graph.data
+            .map(row=>[new Date(row[0]),...row[1].map(data=>data[0])])
+            .forEach(dt.addRow);
 
-        {% for d1 in employees_graph.data %}
-          data.addRow([new Date({{d1.0|sub:86400|mul:1000}}){% for d2 in d1.1 %}, {{d2.0}}{% endfor %}]);
-        {% endfor %}
-
-        var options = {
+        const options = {
             displayZoomButtons: false,
             displayAnnotations: true,
             displayExactValues: false,
@@ -130,8 +128,8 @@ This file is part of yata.
             scaleFormat: 'short',
         };
 
-        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
-        chart.draw(data, options);
+        const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
+        chart.draw(dt, options);
         $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
             const tr = $(this).parent("tr");
             tr.toggleClass("hideChart");
@@ -143,6 +141,13 @@ This file is part of yata.
               chart.showDataColumns(index);
               $(this).html('<i class="far fa-eye"></i>');
             }
+        });
+        $("#chartHider").click(function(){
+            $(this).toggleClass(['fa-eye','fa-eye-slash']);
+            if ($(this).hasClass("fa-eye"))
+                $('#company-details-employees tbody tr td.toggle-chart i.fa-eye-slash').parent().click();
+            if ($(this).hasClass("fa-eye-slash"))
+                $('#company-details-employees tbody tr td.toggle-chart i.fa-eye').parent().click();
         });
     }
 </script>
@@ -199,7 +204,7 @@ This file is part of yata.
         <th>MAN</th>
         <th>INT</th>
         <th>END</th>
-        <th><i class="far fa-eye"></i></th>
+        <th id="chartHider"><i class="far fa-eye"></i></th>
       </tr>
     </thead>
     <tbody>
