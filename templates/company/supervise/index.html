@@ -105,66 +105,74 @@ This file is part of yata.
 </script>
 
 <script>
-    google.charts.load('current', {'packages':['annotationchart']});
-    {% autoescape off %}
-    google.charts.setOnLoadCallback(()=>drawChart({{employees_graph}}));
-    {% endautoescape %}
+  google.charts.load('current', {'packages':['annotationchart']});
+  {% autoescape off %}
+  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph}}));
+  {% endautoescape %}
 
-    function drawChart(employees_graph) {
-        const dt = new google.visualization.DataTable();
-        dt.addColumn('date', 'Date');
-        employees_graph.header
-            .forEach(col=>dt.addColumn('number', col[1]));
-        employees_graph.data
-            .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:0)])
-            .forEach(row=>dt.addRow(row));
+  function drawChart(employees_graph) {
+    const dt = new google.visualization.DataTable();
+    dt.addColumn('date', 'Date');
+    employees_graph.header
+      .forEach(col=>dt.addColumn('number', col[1]));
+    employees_graph.data
+      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:0)])
+      .forEach(row=>dt.addRow(row));
 
-        const options = {
-            displayZoomButtons: false,
-            displayAnnotations: true,
-            displayExactValues: false,
-            numberFormats: "###,###",
-            scaleColumns: [0, 1],
-            scaleType: "allmaximized",
-            scaleFormat: 'short',
-        };
+    const options = {
+      displayZoomButtons: false,
+      displayAnnotations: true,
+      displayExactValues: false,
+      numberFormats: "###,###",
+      scaleColumns: [0, 1],
+      scaleType: "allmaximized",
+      scaleFormat: 'short',
+    };
 
-        const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
-        chart.draw(dt, options);
+    const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
+    chart.draw(dt, options);
 
-        //Repeatable Actions
-        const toDataColumnsAction = e=>$(e).parent().data('val');
-        const onEyeAction = (i,e)=>$(e).toggleClass(eyeToggle).closest("tr").toggleClass("hideChart");
-        const eyeToggle = ['fa-eye','fa-eye-slash'];
+    //Repeatable Actions
+    const toDataColumnsAction = e=>$(e).parent().data('val');
+    const onEyeAction = (i,e)=>$(e).toggleClass(eyeToggle).closest("tr").toggleClass("hideChart");
+    const eyeToggle = ['fa-eye','fa-eye-slash'];
 
-        //Individual Eye-cons
-        $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
-            const tr = $(this).parent("tr").toggleClass("hideChart");
-            const eye = $(this).find("i.far");
-            eye.toggleClass(eyeToggle);            
-            let index = toDataColumnsAction(eye);
-            if (eye.hasClass("fa-eye-slash"))
-                chart.hideDataColumns(index);
-            else
-                chart.showDataColumns(index);
-            if (
-                ($("#chartHider i.far").hasClass("fa-eye-slash") && $('#company-details-employees tbody .fa-eye-slash').length===0)
-                || ($("#chartHider i.far").hasClass("fa-eye") && $('#company-details-employees tbody .fa-eye').length===0)
-            )
-                $("#chartHider i.far").toggleClass(eyeToggle);
-        });
+    //Table Setup
+    const tieTable = function() {
+      //Individual Eye-cons
+      $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
+        const tr = $(this).parent("tr").toggleClass("hideChart");
+        const eye = $(this).find("i.far");
+        eye.toggleClass(eyeToggle);            
+        let index = toDataColumnsAction(eye);
+        if (eye.hasClass("fa-eye-slash"))
+          chart.hideDataColumns(index);
+        else
+          chart.showDataColumns(index);
+        if (
+          ($("#chartHider i.far").hasClass("fa-eye-slash") && $('#company-details-employees tbody .fa-eye-slash').length===0)
+          || ($("#chartHider i.far").hasClass("fa-eye") && $('#company-details-employees tbody .fa-eye').length===0)
+        )
+          $("#chartHider i.far").toggleClass(eyeToggle);
+      });
 
-        //Header Eye-con
-        $("#chartHider").click(function(){
-            let focus = $(this).find('i.far');
-            focus.toggleClass(eyeToggle);
-            let target = $('#company-details-employees tbody tr td.toggle-chart');
-            if (focus.hasClass("fa-eye"))
-                chart.showDataColumns(target.find('i.fa-eye-slash').each(onEyeAction).get().map(toDataColumnsAction));
-            else
-                chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
-        });
+      //Header Eye-con
+      $("#chartHider").click(function(){
+        let focus = $(this).find('i.far');
+        focus.toggleClass(eyeToggle);
+        let target = $('#company-details-employees tbody tr td.toggle-chart');
+        if (focus.hasClass("fa-eye"))
+          chart.showDataColumns(target.find('i.fa-eye-slash').each(onEyeAction).get().map(toDataColumnsAction));
+        else
+          chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
+      });
     }
+    tieTable();//Init
+    $(document).ajaxComplete((e,x,s)=>{
+      if (s.url==="/company/supervise/")
+        tieTable();
+    });
+  }
 </script>
 
 <h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}</h2>
