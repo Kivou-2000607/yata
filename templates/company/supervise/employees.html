@@ -34,7 +34,7 @@ This file is part of yata.
       <th>MAN</th>
       <th>INT</th>
       <th>END</th>
-      <th><i class="far fa-eye"></i></th>
+      <th id="chartHider" data-sorter="false"><i class="far fa-eye"></i></th>
     </tr>
   </thead>
   <tbody>
@@ -57,7 +57,7 @@ This file is part of yata.
       <td data-val="{{e.manual_labor}}" class="e">{{e.manual_labor|workstatsinv:e.man_required}}</td>
       <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
       <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
-      <td data-val="1" class="f toggle-chart"><i class="far fa-eye"></i></td>
+      <td data-val="{{forloop.counter0}}" class="f toggle-chart"><i class="far fa-eye"></i></td>
     </tr>
     {% endfor %}
   </tbody>
