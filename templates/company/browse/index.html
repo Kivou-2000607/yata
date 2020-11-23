@@ -25,7 +25,6 @@ This file is part of yata.
         <select name="companies" id="companies" form="company-select-form">
             <option value="" disabled selected>List of all companies</option>
             {% for company in companies %}
-                {{company.name}}<br>
                 <option value="{{company.tId}}">{{company.name}}</option>
             {% endfor %}
         </select>

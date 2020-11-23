@@ -379,6 +379,21 @@ def signColor(i, inv=False):
     else:
         return ''
 
+@register.filter(name="signColor0")
+def signColor0(i, inv=False):
+    try:
+        i = int(i)
+        if i > 0:
+            cl = "error" if inv else "valid"
+            return format_html(f'<span class="{escape(cl)}">{i:+,.0f}</span>')
+        elif i < 0:
+            cl = "valid" if inv else "error"
+            return format_html(f'<span class="{escape(cl)}">{i:+,.0f}</span>')
+        else:
+            return format_html('<span class="neutral">0</span>')
+    except:
+        return i
+
 
 @register.filter(name="hexa")
 def hexa(tab):
