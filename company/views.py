@@ -86,20 +86,33 @@ def supervise(request):
 
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
-        employees = list(company.employee_set.all().order_by("-effectiveness_total"))
-        positions = [company_positions.filter(name=e.position).first() for e in employees]
+        employees = company.employee_set.all().order_by("-effectiveness_total")
+
+        # prepare effectiveness matrix
         ws_eff_matrix = []
         company.effectiveness_ws_act = 0
         hrm = 1.1 if company.director_hrm else 0.9
+
+        # modify employees positions on the fy if simu
+        employees_simu = {}
+        if request.POST.get("type", False) == "employees-simu":
+            for k, v in json.loads(request.POST.get("employees_postion_simu", "{}")).items():
+                e = employees.filter(tId=k).first()
+                if e is None:
+                    continue
+                if e.position != v:
+                    employees_simu[k] = v
+
+        # get all current positions
+        positions = [company_positions.filter(name=employees_simu.get(str(e.tId), e.position)).first() for e in employees]
+
+        # loop over employees
         for employee in employees:
+            employee.position = employees_simu.get(str(employee.tId), employee.position)
             position = company_positions.filter(name=employee.position).first()
             employee.man_required = 0 if position is None else position.man_required
             employee.int_required = 0 if position is None else position.int_required
             employee.end_required = 0 if position is None else position.end_required
-            t = employee.effectiveness_total
-            n = employee.effectiveness_addiction + employee.effectiveness_inactivity
-            employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
-            company.effectiveness_ws_act += employee.effectiveness_working_stats
 
             # compute ws_eff matrix (each row is an employee, each column is a position)
             sta = [employee.manual_labor, employee.intelligence, employee.endurance]
@@ -113,15 +126,34 @@ def supervise(request):
                 S = hrm * sta[Si] / float(req[Si])
                 ws_eff = min(45, 45 * P) + max(0, 5*math.log2(P)) + min(45, 45 * S) + max(0, 5*math.log2(S))
                 ws_eff_matrix_row.append(ws_eff)
+
+                # use simu value if necessary
+                if p.name == employee.position and employees_simu.get(str(employee.tId), False):
+                    employee.effectiveness_total -= employee.effectiveness_working_stats
+                    employee.effectiveness_working_stats = ws_eff
+                    employee.effectiveness_total += employee.effectiveness_working_stats
+                    employee.simu = True
+
+            t = employee.effectiveness_total
+            n = employee.effectiveness_addiction + employee.effectiveness_inactivity
+            employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
+            company.effectiveness_ws_act += employee.effectiveness_working_stats
+
             ws_eff_matrix.append(ws_eff_matrix_row)
         try:
             ws_eff_matrix = numpy.array(ws_eff_matrix)
             row_ind, col_ind = scipy.optimize.linear_sum_assignment(ws_eff_matrix, maximize=True)
             company.effectiveness_ws_max = round(ws_eff_matrix[row_ind, col_ind].sum())
             company.effectiveness_ws_err = round(100 * (company.effectiveness_ws_act)/company.effectiveness_ws_max)
-            company.employees_suggestion = [[employees[i].name, positions[j].name, ws_eff_matrix[i, j]] for i, j in zip(row_ind, col_ind)]
-        except BaseException:
+            company.employees_suggestion = [[list(employees)[i].name, list(employees)[i].tId, positions[j].name, ws_eff_matrix[i, j], list(employees)[i].effectiveness_working_stats] for i, j in zip(row_ind, col_ind)]
+        except BaseException as e:
+            print(e)
             pass
+
+        # send employees if simu
+        if request.POST.get("type", False) == "employees-simu":
+            context = {"company": company, "company_positions": company_positions, "employees": employees}
+            return render(request, "company/supervise/employees.html", context)
 
         # send employees if show details
         if request.POST.get("type", False) == "show-details":
@@ -153,6 +185,7 @@ def supervise(request):
 
         context = {"player": player,
                    "company": company,
+                   "company_positions": company_positions,
                    "company_data": company_data,
                    "company_data_p": company_data_p.get_page(1),
                    "employees": employees,

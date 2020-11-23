@@ -184,51 +184,14 @@ This file is part of yata.
   <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
 </div>
 
-<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Employees</h2>
+<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Employees
+  <span class="flush-right"><a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>Reset simulation</a></span>
+</h2>
 <div class="module">
-  <table id="company-details-employees" class="center-large trshadow company-details-employees">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Position</th>
-        <th title="Total effectiveness">E. TOT</th>
-        <th title="Work stats effectiveness">E. WST</th>
-        <th title="Settled in effectiveness">E. STL</th>
-        <th title="Addiction effectiveness">E. ADD</th>
-        <th title="Inactivity effectiveness">E. INA</th>
-        <th>MAN</th>
-        <th>INT</th>
-        <th>END</th>
-        <th><i class="far fa-eye"></i></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for e in employees %}
-      <tr>
-        <td data-val="{{e.name|lower}}" class="a dont-touch-me">{{e.name|playerURL:e.tId|safe}}</td>
-        <td data-val="{{e.position|lower}}" class="b">{{e.position}}</td>
-        {# <td data-val="{{e.wage}}" class="a">{{e.wage|wage}}</td> #}
-        <td data-val="{{e.effectiveness_total}}" class="c">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
-        <td data-val="{{e.effectiveness_working_stats}}" class="d">{{e.effectiveness_working_stats|signColor}}</td>
-        <td data-val="{{e.effectiveness_settled_in}}" class="d">{{e.effectiveness_settled_in|signColor}}</td>
-        <td data-val="{{e.effectiveness_addiction}}" class="d">{{e.effectiveness_addiction|signColor}}</td>
-        <td data-val="{{e.effectiveness_inactivity}}" class="d">{{e.effectiveness_inactivity|signColor}}</td>
-        <td data-val="{{e.manual_labor}}" class="e">{{e.manual_labor|workstatsinv:e.man_required}}</td>
-        <td data-val="{{e.intelligence}}" class="e">{{e.intelligence|workstatsinv:e.int_required}}</td>
-        <td data-val="{{e.endurance}}" class="e">{{e.endurance|workstatsinv:e.end_required}}</td>
-        <td data-val="1" class="f toggle-chart"><i class="far fa-eye"></i></td>
-      </tr>
-      {% endfor %}
-
-    </tbody>
-  </table>
+  <div id="company-reload-employees">
+      {% include "company/supervise/employees.html" %}
+  </div>
   <p id="company-data-3" colspan="10"></p>
-  <p>With the current repartition you reach a total working stats effectiveness of
-    {% if company.effectiveness_ws_max %}
-      <span style="cursor: help;" title="The following repartition would yield {{company.effectiveness_ws_max|floatformat}} working stats efficiency:&#013;{% for p in company.employees_suggestion %}- {{p.0}} as {{p.1}} for {{p.2|floatformat:0}} working stats&#013;{% endfor %}">{{company.effectiveness_ws_act|effpot:company.effectiveness_ws_err}}</span>.
-    {% else %}
-      {{company.effectiveness_ws_act}}.
-    {% endif %}
 </div>
 
 {% if company_data|length %}

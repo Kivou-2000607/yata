@@ -23,12 +23,14 @@ table.comapny-details-stocks td.c { width: 30%; text-align: center; }  /* x1 */
 
 
 table.company-details-employees td.a { width: 15%; text-align: left; }  /* x1 */
-table.company-details-employees td.b { width: 10%; text-align: left; }  /* x1 */
+table.company-details-employees td.b { width: 10%; text-align: left; cursor: pointer; }  /* x1 */
 table.company-details-employees td.c { width: 10%; text-align: center; }  /* x1 */
 table.company-details-employees td.d { width: 6%; text-align: center; }  /* x4 */
 table.company-details-employees td.e { width: 12%; text-align: right; }  /* x3 */
 table.company-details-employees td.f { width: 3%; text-align: center; cursor: pointer; }  /* x1 */
 table.company-details-employees tr.hideChart { opacity: 0.5; }  /* hide from charts */
+table.company-details-employees tr.simu > td { font-style: italic; }  /* simulation */
+table.company-details-employees tr.simu > td > select { font-style: italic; color: #555; }  /* simulation */
 
 
 table.company-logs td.a { width: 10%; text-align: center; }  /* x1 */
@@ -37,3 +39,18 @@ table.company-logs td.c { width: 10%; text-align: center; }  /* x1 */
 table.company-logs td.d { width: 5%; text-align: center; }  /* x3 */
 table.company-logs td.e { width: 10%; text-align: center; }  /* x1 */
 table.company-logs td.f { width: 12.5%; text-align: center; }  /* x4 */
+
+
+select.company-employee-position-form {
+  cursor: pointer;
+  border:none;
+  height: 16px;
+  padding: 0px;
+  margin: 0px;
+  display: block;
+  height: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -ms-appearance: none; /* get rid of default appearance for IE8, 9 and 10*/
+}
