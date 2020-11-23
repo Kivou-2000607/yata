@@ -115,7 +115,7 @@ This file is part of yata.
         employees_graph.header
             .forEach(col=>dt.addColumn('number', col[1]));
         employees_graph.data
-            .map(row=>[new Date(row[0]),...row[1].map(data=>data[0])])
+            .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>data[0])])
             .forEach(dt.addRow);
 
         const options = {
