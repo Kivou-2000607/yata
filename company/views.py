@@ -59,7 +59,6 @@ def browse(request):
 
         if request.POST.get("type") == "company-details":
             company_details = companies.filter(tId=request.POST.get("company_id")).first()
-            print(company_details)
             return render(request, "company/browse/details.html", {"player": player, "company_details": company_details})
 
         page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
@@ -96,7 +95,7 @@ def supervise(request):
         # modify employees positions on the fy if simu
         employees_simu = {}
         if request.POST.get("type", False) == "employees-simu":
-            for k, v in json.loads(request.POST.get("employees_postion_simu", "{}")).items():
+            for k, v in json.loads(request.POST.get("employees_position_simu", "{}")).items():
                 e = employees.filter(tId=k).first()
                 if e is None:
                     continue

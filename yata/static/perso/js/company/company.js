@@ -48,15 +48,33 @@ $(document).on('change', '.company-employee-position-form', e => {
     employee.attr("data-pos", $(e.currentTarget).val())
 
     // get all employees and positions
-    employees_postion = {}
+    employees_position = {}
     $("#company-details-employees > tbody > tr").each(function(i, v) {
-      employees_postion[$(v).attr("data-emp")] = $(v).attr("data-pos")
+      employees_position[$(v).attr("data-emp")] = $(v).attr("data-pos")
     });
-    console.log(employees_postion);
+    console.log(employees_position);
     const reload = $("#company-reload-employees");
     reload.load("/company/supervise/", {
         type: "employees-simu",
-        employees_postion_simu: JSON.stringify(employees_postion),
+        employees_position_simu: JSON.stringify(employees_position),
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    employee.html('<td colspan="11" style="text-align: center;">' + spinner + '</td>');
+});
+
+// apply suggestion
+$(document).on('click', '#company-employees-simu-apply', e => {
+    e.preventDefault();
+    // get all employees and positions
+    employees_position = {}
+    $("#company-employees-simu-data > li").each(function(i, v) {
+      employees_position[$(v).attr("data-emp")] = $(v).attr("data-pos")
+    });
+    console.log(employees_position);
+    const reload = $("#company-reload-employees");
+    reload.load("/company/supervise/", {
+        type: "employees-simu",
+        employees_position_simu: JSON.stringify(employees_position),
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     employee.html('<td colspan="11" style="text-align: center;">' + spinner + '</td>');

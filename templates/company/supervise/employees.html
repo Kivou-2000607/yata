@@ -69,13 +69,14 @@ This file is part of yata.
 </p>
 <div id="company-employees-simu" style="display: none;">
 <p>Keeping the same number of positions, the following repartition would yield <span class="valid">{{company.effectiveness_ws_max|floatformat}}</span> working stats efficiency:
-<ul>
+<ul id="company-employees-simu-data">
   {% for p in company.employees_suggestion %}
-  <li>
+  <li data-emp="{{p.1}}" data-pos="{{p.2}}">
     {{p.0|playerURL:p.1|safe}} as <b>{{p.2}}</b> for <span class="{% if p.3 > p.4 %}valid{% else %}error{% endif %}">{{p.3|floatformat:0}}</span> working stats ({{p.3|sub:p.4|floatformat:0|signColor0}})
   </li>
   {% endfor %}
 </ul>
+<span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span>
 </div>
 <hr class="sep">
 {% endif %}
