@@ -21,6 +21,29 @@ This file is part of yata.
 {% load mathfilters %}
 {% load humanize %}
 
+<script>
+
+    // sort employee table
+    $(document).ready(function () {
+        $("#company-details-employees").tablesorter({
+            textExtraction: {
+                0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                2: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                3: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                4: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
+        });
+    });
+
+</script>
+
 <table id="company-details-employees" class="center-large trshadow company-details-employees">
   <thead>
     <tr>
