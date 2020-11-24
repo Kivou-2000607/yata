@@ -22,43 +22,23 @@ This file is part of yata.
 {% load humanize %}
 
 {% if company %}
-<script>
-    // sort employee table
-    $(document).ready(function () {
-        $("#company-details-employees").tablesorter({
-            textExtraction: {
-                0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                2: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                3: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                4: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-                9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
-            },
-            cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
-        });
-    });
-</script>
 
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(()=>{
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Weekly Customers', 'Weekly income'],
+            ['Time', 'Weekly Customers', 'Weekly income', 'Daily Customers', 'Daily income'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}],
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}, {{d.daily_customers}}, {{d.daily_income}}],
             {% endfor %}
         ]);
 
         var options = {
             displayZoomButtons: false,
-            displayAnnotations: true,
+            // displayAnnotations: true,
             displayExactValues: false,
             numberFormats: "###,###",
-            scaleColumns: [0, 1],
+            scaleColumns: [0, 2, 3],
             scaleType: "allmaximized",
             scaleFormat: 'short',
             thickness: 1.5,
@@ -66,8 +46,28 @@ This file is part of yata.
         };
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
+        // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
         chart.draw(data, options);
-    });
+        chart.hideDataColumns([0, 1]);
+        const eyeToggle = ['fa-eye','fa-eye-slash'];
+
+        const toggleDailyWeekly = function(a, b, c) {
+          $("#company-graph-show-"+a).on('click',function(){
+            const eye = $(this).find("i.far");
+            eye.toggleClass(eyeToggle);
+            $("#company-graph-show-"+b).find("i.far").toggleClass(eyeToggle);
+            if( eye.hasClass("fa-eye") ) {
+              chart.hideDataColumns([(0+c)%4, (1+c)%4])
+              chart.showDataColumns([(2+c)%4, (3+c)%4])
+            } else {
+              chart.showDataColumns([(0+c)%4, (1+c)%4])
+              chart.hideDataColumns([(2+c)%4, (3+c)%4])
+            }
+          });
+        }
+        toggleDailyWeekly("daily", "weekly", 0);
+        toggleDailyWeekly("weekly", "daily", 2);
+    }
 </script>
 
 <script>
@@ -109,7 +109,7 @@ This file is part of yata.
     employees_graph.header
       .forEach(col=>dt.addColumn('number', col[1]));
     employees_graph.data
-      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:0)])
+      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:undefined)])
       .forEach(row=>dt.addRow(row));
 
     const options = {
@@ -117,7 +117,7 @@ This file is part of yata.
       displayAnnotations: true,
       displayExactValues: false,
       numberFormats: "###,###",
-      scaleColumns: [0, 1],
+      // scaleColumns: [0, 1],  # we want only one scale
       scaleType: "allmaximized",
       scaleFormat: 'short',
     };
@@ -175,7 +175,7 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}</h2>
 <div class="module">
-  <table class="center-medium">
+  <table class="center-medium tdshadow">
     <tbody>
       <tr>
         <td><b>Name:</b> {{company.html_link}}</td>
@@ -193,15 +193,19 @@ This file is part of yata.
         <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
       </tr>
       <tr>
-        <td><b>Effectiveness:</b>
-          <span class="valid">{{company.effectiveness_total}}</span> =
-          <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span>
-          +
-          <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
-        </td>
-        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
-        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+        <td><b>Profit:</b> ${{company.profit|intcomma}}</td>
+        <td id="company-graph-show-daily" data-val="0" style="cursor: pointer;"><b>Daily income:</b> ${{company.daily_income|intcomma}}<i class="far fa-eye flush-right"></i></td>
+        <td id="company-graph-show-weekly" data-val="1" style="cursor: pointer;"><b>Weekly income:</b> ${{company.weekly_income|intcomma}}<i class="far fa-eye-slash flush-right"></i></td>
       </tr>
+      <tr>
+
+      <td colspan="3"><b>Effectiveness:</b>
+        <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span> =
+        <span class="valid">{{company.effectiveness_total}}</span>
+        -
+        <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
+      </td>
+    </tr>
     </tbody>
   </table>
   <p id="company-data-1"></p>

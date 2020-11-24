@@ -91,12 +91,16 @@ class Company(models.Model):
     effectiveness_neg = models.IntegerField(default=0)
     effectiveness_ws_act = models.IntegerField(default=0)
     effectiveness_ws_max = models.IntegerField(default=0)
+    total_wage = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{mark_safe(self.name)} [{self.tId}]"
 
     def html_link(self):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
+
+    def profit(self):
+        return self.daily_income - self.total_wage - self.advertising_budget
 
     def update_info(self):
         # try to get director's key
@@ -167,8 +171,11 @@ class Company(models.Model):
         defaults["effectiveness_total"] = effectiveness_total
         defaults["effectiveness_neg"] = effectiveness_neg
 
+        self.total_wage = 0
         for tId, emp in employees.items():
+            self.total_wage += int(emp["wage"])
             self.employee_set.update_or_create(company=self, tId=tId, defaults=emp)
+        defaults["total_wage"] = self.total_wage
 
         # push company updates
         for attr, value in defaults.items():
@@ -231,8 +238,12 @@ class CompanyData(models.Model):
     weekly_income = models.BigIntegerField(default=0)
     weekly_customers = models.IntegerField(default=0)
     advertising_budget = models.IntegerField(default=0)
+    total_wage = models.IntegerField(default=0)
 
     employees = models.TextField(default="{}")
 
     def __str__(self):
         return f"Company data {self.company.name} [{self.company.tId}]"
+
+    def profit(self):
+        return self.daily_income - self.total_wage - self.advertising_budget

@@ -23,6 +23,7 @@ from django.utils.html import format_html
 from django.utils.html import escape
 
 import re
+import math
 
 register = template.Library()
 
@@ -437,9 +438,12 @@ def workstats(value, arg):
         sta = int(arg)
         req = int(value)
         m = sta / float(req)
+        fac = 1 + math.log(m, 2) if m > 1 else m
 
-        cl = "valid" if req < sta else "error"
-        return format_html(f'<span class="{cl}">{req:,d} (x{m:,.1f})</span>')
+        cl = "valid"
+        cl = "warning" if sta < 2 * req else cl
+        cl = "error" if sta < req else cl
+        return format_html(f'<span class="{cl}" title="Your stat: {sta:,d}">{req:,d} (x{fac:,.1f})</span>')
 
     except BaseException:
         return value
@@ -454,11 +458,12 @@ def workstatsinv(value, arg):
         sta = int(value)
         req = int(arg)
         m = sta / float(req)
+        fac = 1 + math.log(m, 2) if m > 1 else m
 
         cl = "valid"
         cl = "warning" if sta < 2 * req else cl
         cl = "error" if sta < req else cl
-        return format_html(f'<span class="{cl}">{sta:,d} (x{m:,.1f})</span>')
+        return format_html(f'<span class="{cl}">{sta:,d} (x{fac:,.1f})</span>')
 
     except BaseException as e:
         return value
@@ -479,9 +484,16 @@ def effpot(value, arg):
     except BaseException as e:
         return value
 
-@register.filter(name='workgains')
-def workgains(value):
-    return "-" if str(value) == "0" else value
+@register.simple_tag(name='workgains')
+def workgains(gain, stat, req):
+    if str(gain) == "0" or str(req) == "0":
+        return "-"
+
+    ratio = stat / float(req)
+    if ratio < 1:
+        return format_html(f'<span class="error">{ratio * gain:,.0f}/{gain}</span>')
+    else:
+        return gain
 
 @register.filter(name='wage')
 def wage(value):
