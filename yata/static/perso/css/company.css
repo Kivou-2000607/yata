@@ -49,6 +49,7 @@ select.company-employee-position-form {
   margin: 0px;
   display: block;
   height: 100%;
+  background-color: #fff0;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

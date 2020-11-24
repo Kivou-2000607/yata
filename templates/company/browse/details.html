@@ -28,9 +28,9 @@
                         <td class="b">{{position.man_required|workstats:player.wman}}</td>
                         <td class="b">{{position.int_required|workstats:player.wint}}</td>
                         <td class="b">{{position.end_required|workstats:player.wend}}</td>
-                        <td class="c">{{position.man_gain|workgains}}</td>
-                        <td class="c">{{position.int_gain|workgains}}</td>
-                        <td class="c">{{position.end_gain|workgains}}</td>
+                        <td class="c">{% workgains position.man_gain player.wman position.man_required %}</td>
+                        <td class="c">{% workgains position.int_gain player.wint position.int_required %}</td>
+                        <td class="c">{% workgains position.end_gain player.wend position.end_required %}</td>
                         <td class="d">{{position.special_ability}}</td>
                         <td class="e" title="{{position.description}}">{{position.description}}</td>
                     </tr>
