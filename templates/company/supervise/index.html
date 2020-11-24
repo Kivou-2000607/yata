@@ -37,10 +37,10 @@ This file is part of yata.
 
         var options = {
             displayZoomButtons: false,
-            displayAnnotations: true,
+            // displayAnnotations: true,
             displayExactValues: false,
             numberFormats: "###,###",
-            scaleColumns: [0, 1],
+            scaleColumns: [0, 2, 3],
             scaleType: "allmaximized",
             scaleFormat: 'short',
             thickness: 1.5,
@@ -114,7 +114,7 @@ This file is part of yata.
     employees_graph.header
       .forEach(col=>dt.addColumn('number', col[1]));
     employees_graph.data
-      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:0)])
+      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:undefined)])
       .forEach(row=>dt.addRow(row));
 
     const options = {
@@ -122,7 +122,7 @@ This file is part of yata.
       displayAnnotations: true,
       displayExactValues: false,
       numberFormats: "###,###",
-      scaleColumns: [0, 1],
+      // scaleColumns: [0, 1],  # we want only one scale
       scaleType: "allmaximized",
       scaleFormat: 'short',
     };
@@ -198,15 +198,19 @@ This file is part of yata.
         <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
       </tr>
       <tr>
-        <td><b>Effectiveness:</b>
-          <span class="valid">{{company.effectiveness_total}}</span> =
-          <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span>
-          +
-          <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
-        </td>
+        <td><b>Profit:</b> ${{company.profit|intcomma}}</td>
         <td id="company-graph-show-daily" data-val="0" style="cursor: pointer;"><b>Daily income:</b> ${{company.daily_income|intcomma}}<i class="far fa-eye flush-right"></i></td>
         <td id="company-graph-show-weekly" data-val="1" style="cursor: pointer;"><b>Weekly income:</b> ${{company.weekly_income|intcomma}}<i class="far fa-eye-slash flush-right"></i></td>
       </tr>
+      <tr>
+
+      <td colspan="3"><b>Effectiveness:</b>
+        <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span> =
+        <span class="valid">{{company.effectiveness_total}}</span>
+        -
+        <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
+      </td>
+    </tr>
     </tbody>
   </table>
   <p id="company-data-1"></p>

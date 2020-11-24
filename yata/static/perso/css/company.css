@@ -38,7 +38,7 @@ table.company-logs td.b { width: 5%; text-align: center; }  /* x1 */
 table.company-logs td.c { width: 10%; text-align: center; }  /* x1 */
 table.company-logs td.d { width: 5%; text-align: center; }  /* x3 */
 table.company-logs td.e { width: 10%; text-align: center; }  /* x1 */
-table.company-logs td.f { width: 12.5%; text-align: center; }  /* x4 */
+table.company-logs td.f { width: 10%; text-align: center; }  /* x5 */
 
 
 select.company-employee-position-form {
