@@ -23,7 +23,6 @@ This file is part of yata.
 
 {% if company %}
 <script>
-
     // sort employee table
     $(document).ready(function () {
         $("#company-details-employees").tablesorter({
@@ -42,14 +41,11 @@ This file is part of yata.
             cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]
         });
     });
-
 </script>
 
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
+    google.charts.setOnLoadCallback(()=>{
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Weekly Customers', 'Weekly income'],
             {% for d in company_data %}
@@ -71,15 +67,12 @@ This file is part of yata.
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
         chart.draw(data, options);
-    }
-
+    });
 </script>
 
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
+    google.charts.setOnLoadCallback(()=>{
         var data = google.visualization.arrayToDataTable([
             ['Time', 'Total effectiveness', 'popularity', 'efficiency', 'environment'],
             {% for d in company_data %}
@@ -101,7 +94,7 @@ This file is part of yata.
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-2'));
         chart.draw(data, options);
-    }
+    });
 </script>
 
 <script>
