@@ -154,6 +154,11 @@ This file is part of yata.
           || ($("#chartHider i.far").hasClass("fa-eye") && $('#company-details-employees tbody .fa-eye').length===0)
         )
           $("#chartHider i.far").toggleClass(eyeToggle);
+      }).dblclick(function(e){
+        let focus = $(this).find('i.far');        
+        let target = $('#company-details-employees tbody tr td.toggle-chart');
+        chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
+        chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
       });
 
       //Header Eye-con
