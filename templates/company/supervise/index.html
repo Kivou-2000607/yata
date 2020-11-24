@@ -29,9 +29,9 @@ This file is part of yata.
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Weekly Customers', 'Weekly income'],
+            ['Time', 'Weekly Customers', 'Weekly income', 'Daily Customers', 'Daily income'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}],
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}, {{d.daily_customers}}, {{d.daily_income}}],
             {% endfor %}
         ]);
 
@@ -48,7 +48,27 @@ This file is part of yata.
         };
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
+        // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
         chart.draw(data, options);
+        chart.hideDataColumns([0, 1]);
+        const eyeToggle = ['fa-eye','fa-eye-slash'];
+
+        const toggleDailyWeekly = function(a, b, c) {
+          $("#company-graph-show-"+a).on('click',function(){
+            const eye = $(this).find("i.far");
+            eye.toggleClass(eyeToggle);
+            $("#company-graph-show-"+b).find("i.far").toggleClass(eyeToggle);
+            if( eye.hasClass("fa-eye") ) {
+              chart.hideDataColumns([(0+c)%4, (1+c)%4])
+              chart.showDataColumns([(2+c)%4, (3+c)%4])
+            } else {
+              chart.showDataColumns([(0+c)%4, (1+c)%4])
+              chart.hideDataColumns([(2+c)%4, (3+c)%4])
+            }
+          });
+        }
+        toggleDailyWeekly("daily", "weekly", 0);
+        toggleDailyWeekly("weekly", "daily", 2);
     }
 
 </script>
@@ -160,7 +180,7 @@ This file is part of yata.
 
 <h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}</h2>
 <div class="module">
-  <table class="center-medium">
+  <table class="center-medium tdshadow">
     <tbody>
       <tr>
         <td><b>Name:</b> {{company.html_link}}</td>
@@ -184,8 +204,8 @@ This file is part of yata.
           +
           <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
         </td>
-        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
-        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+        <td id="company-graph-show-daily" data-val="0" style="cursor: pointer;"><b>Daily income:</b> ${{company.daily_income|intcomma}}<i class="far fa-eye flush-right"></i></td>
+        <td id="company-graph-show-weekly" data-val="1" style="cursor: pointer;"><b>Weekly income:</b> ${{company.weekly_income|intcomma}}<i class="far fa-eye-slash flush-right"></i></td>
       </tr>
     </tbody>
   </table>
