@@ -68,7 +68,7 @@ This file is part of yata.
 <p>With the current repartition you reach a total working stats effectiveness of <span id="company-employees-show-simu" style="cursor: help;" title="Click to see the details.">{{company.effectiveness_ws_act|effpot:company.effectiveness_ws_err}}</span>.
 </p>
 <div id="company-employees-simu" style="display: none;">
-<p>Keeping the same number of positions, the following repartition would yield <span class="valid">{{company.effectiveness_ws_max|floatformat}}</span> working stats efficiency:
+<p>Keeping the same number of positions, the following repartition would yield <span class="valid">{{company.effectiveness_ws_max|floatformat}}</span> working stats effectiveness:
 <ul id="company-employees-simu-data">
   {% for p in company.employees_suggestion %}
   <li data-emp="{{p.1}}" data-pos="{{p.2}}">
@@ -76,7 +76,7 @@ This file is part of yata.
   </li>
   {% endfor %}
 </ul>
-<span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span>
+<p><span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span></p>
 </div>
 <hr class="sep">
 {% endif %}

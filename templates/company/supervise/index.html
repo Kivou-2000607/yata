@@ -143,7 +143,7 @@ This file is part of yata.
       $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
         const tr = $(this).parent("tr").toggleClass("hideChart");
         const eye = $(this).find("i.far");
-        eye.toggleClass(eyeToggle);            
+        eye.toggleClass(eyeToggle);
         let index = toDataColumnsAction(eye);
         if (eye.hasClass("fa-eye-slash"))
           chart.hideDataColumns(index);
@@ -155,7 +155,7 @@ This file is part of yata.
         )
           $("#chartHider i.far").toggleClass(eyeToggle);
       }).dblclick(function(e){
-        let focus = $(this).find('i.far');        
+        let focus = $(this).find('i.far');
         let target = $('#company-details-employees tbody tr td.toggle-chart');
         chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
         chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
@@ -235,7 +235,6 @@ This file is part of yata.
       {% include "company/supervise/logs.html" %}
   </div>
 </div>
-
 
 {% endif %}
 
