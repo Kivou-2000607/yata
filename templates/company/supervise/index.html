@@ -67,7 +67,7 @@ This file is part of yata.
         }
         toggleDailyWeekly("daily", "weekly", 0);
         toggleDailyWeekly("weekly", "daily", 2);
-    }
+    });
 </script>
 
 <script>
@@ -100,14 +100,20 @@ This file is part of yata.
 <script>
   google.charts.load('current', {'packages':['annotationchart']});
   {% autoescape off %}
-  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph}}));
+  let data = {{employees_graph}};
   {% endautoescape %}
+  google.charts.setOnLoadCallback(()=>drawChart(data));
 
   function drawChart(employees_graph) {
+    //Set Visualizer (dt)
     const dt = new google.visualization.DataTable();
+
+    //Map Header (dt.addColumn)
     dt.addColumn('date', 'Date');
     employees_graph.header
       .forEach(col=>dt.addColumn('number', col[1]));
+
+    //Map Row (dt.addRow)
     employees_graph.data
       .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:undefined)])
       .forEach(row=>dt.addRow(row));
@@ -117,7 +123,7 @@ This file is part of yata.
       displayAnnotations: true,
       displayExactValues: false,
       numberFormats: "###,###",
-      // scaleColumns: [0, 1],  # we want only one scale
+      // scaleColumns: [0, 1],  // we want only one scale
       scaleType: "allmaximized",
       scaleFormat: 'short',
     };
@@ -125,12 +131,29 @@ This file is part of yata.
     const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
     chart.draw(dt, options);
 
+    //Add onclick for chart
+    google.visualization.events.addListener(chart,'select',()=>{
+      //Get Selected Row
+      let row = chart.getSelection()[0].row;
+      //Get Timestamp
+      let timestamp = employees_graph.data[row][0];
+      $( "#company-employees-details" )
+        //Throbber
+        .html(`<div class="container"><div class="overlay close"></div><div class="modal-center-large"><h2 class="title">Loading...</h2><div style="text-align:center" class="module"><img src="/static/images/crimes2.gif"/></div></div></div>`)
+        //Load Data
+        .load( "/company/supervise/", {
+          type: "show-details",
+          timestamp: timestamp,
+          csrfmiddlewaretoken: getCookie("csrftoken")
+        },()=>chart.setSelection()); //Disable selection
+    });
+
     //Repeatable Actions
     const toDataColumnsAction = e=>$(e).parent().data('val');
     const onEyeAction = (i,e)=>$(e).toggleClass(eyeToggle).closest("tr").toggleClass("hideChart");
     const eyeToggle = ['fa-eye','fa-eye-slash'];
 
-    //Table Setup
+    //Table Setup hook into chart
     const tieTable = function() {
       //Individual Eye-cons
       $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
@@ -166,8 +189,10 @@ This file is part of yata.
       });
     }
     tieTable();//Init
-    $(document).ajaxComplete((e,x,s)=>{
-      if (s.url==="/company/supervise/")
+
+    //Hook table after re-sim
+    $(document).ajaxComplete((e,x,s)=>{      
+      if (s.url==="/company/supervise/" && s.data.includes('type=employees-simu'))
         tieTable();
     });
   }
