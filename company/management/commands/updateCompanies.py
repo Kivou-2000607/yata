@@ -26,4 +26,4 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         for company in Company.objects.all():
-            company.update_info()
+            company.update_info(rebuildPast=False)

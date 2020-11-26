@@ -30,12 +30,13 @@ This file is part of yata.
             <th>Pop.</th>
             <th>Eff.</th>
             <th>Env.</th>
-            <th>Effectiveness</th>
-            <th>Profit</th>
-            <th>Daily Income</th>
-            <th>Daily Customers</th>
-            <th>Weekly Income</th>
-            <th>Weekly Customers</th>
+            <th>Eff.</th>
+            <th>D. Customers</th>
+            <th>D. Income</th>
+            <th>D. Profit</th>
+            <th>W. Customers</th>
+            <th>W. Income</th>
+            <th>W. Profit</th>
         </tr>
     </thead>
     <tbody>
@@ -48,11 +49,12 @@ This file is part of yata.
             <td class="d">{{d.efficiency}}%</td>
             <td class="d">{{d.environment}}%</td>
             <td class="e">{{d.effectiveness_total}}</td>
-            <td class="f">${{d.profit|intcomma}}</td>
-            <td class="f">${{d.daily_income|intcomma}}</td>
             <td class="f">{{d.daily_customers|intcomma}}</td>
-            <td class="f">${{d.weekly_income|intcomma}}</td>
+            <td class="f">${{d.daily_income|intcomma}}</td>
+            <td class="f">${{d.daily_profit|intcomma}}</td>
             <td class="f">{{d.weekly_customers|intcomma}}</td>
+            <td class="f">${{d.weekly_income|intcomma}}</td>
+            <td class="f">${{d.weekly_profit|intcomma}}</td>
         </tr>
         {% endfor %}
 

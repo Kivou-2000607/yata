@@ -20,6 +20,13 @@ This file is part of yata.
 {% if apiErrorSub %}
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
+{% if errorMessageSub %}
+    {% include "yata/error.html" with errorMessage=errorMessageSub %}
+{% endif %}
+{% if validMessageSub %}
+    {% include "yata/error.html" with validMessage=validMessageSub %}
+{% endif %}
+
 
 {% if view.index %}
     {% include "company/index.html" %}

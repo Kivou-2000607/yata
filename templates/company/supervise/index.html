@@ -27,9 +27,9 @@ This file is part of yata.
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(()=>{
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Weekly Customers', 'Weekly income', 'Daily Customers', 'Daily income'],
+            ['Time', 'Weekly Customer', 'Weekly Income', 'Weekly Profit'],
             {% for d in company_data %}
-                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}, {{d.daily_customers}}, {{d.daily_income}}],
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}, {{d.weekly_profit}}],
             {% endfor %}
         ]);
 
@@ -38,35 +38,17 @@ This file is part of yata.
             // displayAnnotations: true,
             displayExactValues: false,
             numberFormats: "###,###",
-            scaleColumns: [0, 2, 3],
+            scaleColumns: [[0], [1, 2]],
             scaleType: "allmaximized",
             scaleFormat: 'short',
             thickness: 1.5,
             fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
-        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-1'));
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-weekly'));
         // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
         chart.draw(data, options);
-        chart.hideDataColumns([0, 1]);
-        const eyeToggle = ['fa-eye','fa-eye-slash'];
-
-        const toggleDailyWeekly = function(a, b, c) {
-          $("#company-graph-show-"+a).on('click',function(){
-            const eye = $(this).find("i.far");
-            eye.toggleClass(eyeToggle);
-            $("#company-graph-show-"+b).find("i.far").toggleClass(eyeToggle);
-            if( eye.hasClass("fa-eye") ) {
-              chart.hideDataColumns([(0+c)%4, (1+c)%4])
-              chart.showDataColumns([(2+c)%4, (3+c)%4])
-            } else {
-              chart.showDataColumns([(0+c)%4, (1+c)%4])
-              chart.hideDataColumns([(2+c)%4, (3+c)%4])
-            }
-          });
-        }
-        toggleDailyWeekly("daily", "weekly", 0);
-        toggleDailyWeekly("weekly", "daily", 2);
     });
 </script>
 
@@ -74,7 +56,36 @@ This file is part of yata.
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(()=>{
         var data = google.visualization.arrayToDataTable([
-            ['Time', 'Total effectiveness', 'popularity', 'efficiency', 'environment'],
+            ['Time', 'Daily Customer', 'Daily Income', 'Daily Profit'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.daily_customers}}, {{d.daily_income}}, {{d.daily_profit}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            // displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [[0], [1, 2]],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-daily'));
+        // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
+        chart.draw(data, options);
+    });
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Total effectiveness', 'Popularity', 'Efficiency', 'Environment'],
             {% for d in company_data %}
                 [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.effectiveness_total}}, {{d.popularity}}, {{d.efficiency}}, {{d.environment}}],
             {% endfor %}
@@ -85,24 +96,22 @@ This file is part of yata.
             displayAnnotations: true,
             displayExactValues: false,
             numberFormats: "###,###",
-            scaleColumns: [0, 1],
+            scaleColumns: [0, [1, 2, 3]],
             scaleType: "allmaximized",
             scaleFormat: 'short',
             thickness: 1.5,
             fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
-        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-2'));
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-effectiveness'));
         chart.draw(data, options);
     });
 </script>
 
 <script>
   google.charts.load('current', {'packages':['annotationchart']});
-  {% autoescape off %}
-  let data = {{employees_graph}};
-  {% endautoescape %}
-  google.charts.setOnLoadCallback(()=>drawChart(data));
+  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}));
 
   function drawChart(employees_graph) {
     //Set Visualizer (dt)
@@ -126,9 +135,10 @@ This file is part of yata.
       // scaleColumns: [0, 1],  // we want only one scale
       scaleType: "allmaximized",
       scaleFormat: 'short',
+      dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
     };
 
-    const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-3'));
+    const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-employees'));
     chart.draw(dt, options);
 
     //Add onclick for chart
@@ -137,6 +147,7 @@ This file is part of yata.
       let row = chart.getSelection()[0].row;
       //Get Timestamp
       let timestamp = employees_graph.data[row][0];
+      console.log(chart.getSelection())
       $( "#company-employees-details" )
         //Throbber
         .html(`<div class="container"><div class="overlay close"></div><div class="modal-center-large"><h2 class="title">Loading...</h2><div style="text-align:center" class="module"><img src="/static/images/crimes2.gif"/></div></div></div>`)
@@ -191,14 +202,16 @@ This file is part of yata.
     tieTable();//Init
 
     //Hook table after re-sim
-    $(document).ajaxComplete((e,x,s)=>{      
+    $(document).ajaxComplete((e,x,s)=>{
       if (s.url==="/company/supervise/" && s.data.includes('type=employees-simu'))
         tieTable();
     });
   }
 </script>
 
-<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}</h2>
+<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}
+  <span class="flush-right"><a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>Update data</a></span>
+</h2>
 <div class="module">
   <table class="center-medium tdshadow">
     <tbody>
@@ -218,23 +231,35 @@ This file is part of yata.
         <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
       </tr>
       <tr>
-        <td><b>Profit:</b> ${{company.profit|intcomma}}</td>
-        <td id="company-graph-show-daily" data-val="0" style="cursor: pointer;"><b>Daily income:</b> ${{company.daily_income|intcomma}}<i class="far fa-eye flush-right"></i></td>
-        <td id="company-graph-show-weekly" data-val="1" style="cursor: pointer;"><b>Weekly income:</b> ${{company.weekly_income|intcomma}}<i class="far fa-eye-slash flush-right"></i></td>
+        <td><b>Daily customers:</b> {{company.daily_customers|intcomma}}</td>
+        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
+        <td><b>Daily profit:</b> ${{company.daily_profit|intcomma}}</td>
+      </tr>
+      <tr>
+        <td><b>Weekly customers:</b> {{company.weekly_customers|intcomma}}</td>
+        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+        <td><b>Weekly profit:</b> ${{company.weekly_profit|intcomma}}</td>
       </tr>
       <tr>
 
-      <td colspan="3"><b>Effectiveness:</b>
-        <span class="valid">{{company.effectiveness_total|add:company.effectiveness_neg}}</span> =
-        <span class="valid">{{company.effectiveness_total}}</span>
-        -
-        <span class="error">{{company.effectiveness_neg|mul:-1}}</span>
+      <td><b>Effectiveness:</b> <span class="valid">{{company.effectiveness_total}}</span></td>
+      <td><b>Positive:</b>
+        <span class="valid" style="cursor: help" title="working stats">{{company.effectiveness_working_stats}}</span> +
+        <span class="valid" style="cursor: help" title="settled in">{{company.effectiveness_settled_in}}</span> +
+        <span class="valid" style="cursor: help" title="director education">{{company.effectiveness_director_education}}</span> +
+        <span class="valid" style="cursor: help" title="management">{{company.effectiveness_management}}</span> +
+        <span class="valid" style="cursor: help" title="book bonus">{{company.effectiveness_book_bonus}}</span>
+      </td>
+      <td><b>Negative:</b>
+        <span class="error" style="cursor: help" title="addiction">{{company.effectiveness_addiction|mul:-1}}</span> +
+        <span class="error" style="cursor: help" title="inactivity">{{company.effectiveness_inactivity|mul:-1}}</span>
       </td>
     </tr>
     </tbody>
   </table>
-  <p id="company-data-1"></p>
-  <p id="company-data-2"></p>
+  <p id="company-data-weekly"></p>
+  <p id="company-data-daily"></p>
+  <p id="company-data-effectiveness"></p>
 
   <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
 </div>
@@ -246,7 +271,7 @@ This file is part of yata.
   <div id="company-reload-employees">
       {% include "company/supervise/employees.html" %}
   </div>
-  <p id="company-data-3" colspan="10"></p>
+  <p id="company-data-employees" colspan="10"></p>
 </div>
 
 {% if company_data|length %}

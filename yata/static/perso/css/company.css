@@ -33,12 +33,12 @@ table.company-details-employees tr.simu > td { font-style: italic; }  /* simulat
 table.company-details-employees tr.simu > td > select { font-style: italic; color: #555; }  /* simulation */
 
 
-table.company-logs td.a { width: 10%; text-align: center; }  /* x1 */
+table.company-logs td.a { width: 7.5%; text-align: center; }  /* x1 */
 table.company-logs td.b { width: 5%; text-align: center; }  /* x1 */
-table.company-logs td.c { width: 10%; text-align: center; }  /* x1 */
+table.company-logs td.c { width: 7.5%; text-align: center; }  /* x1 */
 table.company-logs td.d { width: 5%; text-align: center; }  /* x3 */
-table.company-logs td.e { width: 10%; text-align: center; }  /* x1 */
-table.company-logs td.f { width: 10%; text-align: center; }  /* x5 */
+table.company-logs td.e { width: 5%; text-align: center; }  /* x1 */
+table.company-logs td.f { width: 10%; text-align: center; }  /* x6 */
 
 
 select.company-employee-position-form {

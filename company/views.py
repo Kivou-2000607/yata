@@ -20,6 +20,7 @@ This file is part of yata.
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
 
 # cache and rate limit
 from django.views.decorators.cache import cache_page
@@ -71,6 +72,7 @@ def browse(request):
 def supervise(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        message = False
 
         # get company
         company = Company.objects.filter(tId=player.companyId).first()
@@ -81,7 +83,11 @@ def supervise(request):
         elif company is None and player.companyDi:
             updatePlayer(player)
             company = Company.objects.filter(tId=player.companyId).first()
-            company.update_info()
+            error, message = company.update_info()
+
+        # update company
+        if player.companyDi and ((tsnow() - company.timestamp) > 3600 or request.POST.get("type") == "update-data"):
+            error, message = company.update_info()
 
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
@@ -191,6 +197,13 @@ def supervise(request):
                    "employees_graph": employees_graph,
                    "compcat": True,
                    "view": {"supervise": True}}
+
+        if message:
+            sub = "Sub" if request.method == 'POST' else ""
+            if error:
+                context["errorMessage" + sub] = "Company: API error {apiErrorString}, data not updated".format(**message)
+            else:
+                context["validMessage" + sub] = "Company data has been updated."
 
         page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
         return render(request, page, context)

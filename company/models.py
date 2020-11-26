@@ -69,8 +69,10 @@ class Company(models.Model):
     employees_capacity = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
+    daily_profit = models.IntegerField(default=0)
     weekly_income = models.BigIntegerField(default=0)
     weekly_customers = models.IntegerField(default=0)
+    weekly_profit = models.IntegerField(default=0)
     days_old = models.IntegerField(default=0)
 
     # detailed
@@ -87,11 +89,19 @@ class Company(models.Model):
 
     # misc
     timestamp = models.IntegerField(default=0)
-    effectiveness_total = models.IntegerField(default=0)
-    effectiveness_neg = models.IntegerField(default=0)
-    effectiveness_ws_act = models.IntegerField(default=0)
+    effectiveness_ws_act = models.IntegerField(default=0)  # to be removed
     effectiveness_ws_max = models.IntegerField(default=0)
     total_wage = models.IntegerField(default=0)
+
+    # company wise effectiveness
+    effectiveness_working_stats = models.IntegerField(default=0)
+    effectiveness_settled_in = models.IntegerField(default=0)
+    effectiveness_director_education = models.IntegerField(default=0)
+    effectiveness_addiction = models.IntegerField(default=0)
+    effectiveness_inactivity = models.IntegerField(default=0)
+    effectiveness_management = models.IntegerField(default=0)
+    effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_total = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{mark_safe(self.name)} [{self.tId}]"
@@ -99,10 +109,7 @@ class Company(models.Model):
     def html_link(self):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
 
-    def profit(self):
-        return self.daily_income - self.total_wage - self.advertising_budget
-
-    def update_info(self):
+    def update_info(self, rebuildPast=False):
         # try to get director's key
         director = Player.objects.filter(tId=self.director).first()
         if director is None:
@@ -113,11 +120,10 @@ class Company(models.Model):
         # api call
         req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey(), verbose=False)
         if "apiError" in req:
-            print(req)
             if req["apiErrorCode"] in [7]:
                 self.director = 0
                 self.save()
-            return
+            return True, req
 
         # create update dict
         defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name}
@@ -148,39 +154,30 @@ class Company(models.Model):
                 print(f"company update remove employee {employee}")
                 employee.delete()
 
-        # update all employees
-        effectiveness_total = 0
-        effectiveness_neg = 0
+        # update all employees and compute company effectiveness
+        defaults["total_wage"] = 0
         for k, v in employees.items():
             # convert last action to only timestamp
             v["last_action"] = v["last_action"]["timestamp"]
             # remove status
             del v["status"]
-            # flatten effectiveness and compute total effectiveness
-            for eff, effv in v["effectiveness"].items():
-                if effv < 0:
-                    effectiveness_neg += effv
-                elif eff == "total":
-                    effectiveness_total += effv
-                if eff not in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "total"]:
-                    print("missing effeciveness key", eff)
+            # flatten effectiveness and compute company effectiveness
             for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "total"]:
-                v[f'effectiveness_{eff}'] = v.get("effectiveness", {}).get(eff, 0)
+                effectiveness_key = f'effectiveness_{eff}'
+                effectiveness_val = v.get("effectiveness", {}).get(eff, 0)
+                v[effectiveness_key] = effectiveness_val
+                defaults[effectiveness_key] = defaults[effectiveness_key] + effectiveness_val if effectiveness_key in defaults else effectiveness_val
             del v["effectiveness"]
+            # compute total wage
+            defaults["total_wage"] += int(v.get("wage", 0))
 
-        defaults["effectiveness_total"] = effectiveness_total
-        defaults["effectiveness_neg"] = effectiveness_neg
-
-        self.total_wage = 0
+        # create total wage and employees
         for tId, emp in employees.items():
-            self.total_wage += int(emp["wage"])
             self.employee_set.update_or_create(company=self, tId=tId, defaults=emp)
-        defaults["total_wage"] = self.total_wage
 
-        # push company updates
+        # set company updates
         for attr, value in defaults.items():
             setattr(self, attr, value)
-        self.save()
 
         # create historical data
         timestamp = defaults["timestamp"]
@@ -195,7 +192,54 @@ class Company(models.Model):
                 del emp[k]
         # add employees
         defaults["employees"] = json.dumps(employees)
-        data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
+        company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
+
+        # create weekly_profit
+        last_week = id_ts - (6 * 24 * 3600 + 1)
+        company_datas = self.companydata_set.filter(id_ts__gt=last_week)
+        n_data = company_datas.count()
+        money_spent = 0
+        for cd in company_datas:
+            money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+
+        company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
+        company_data.weekly_profit = company_data.weekly_income - money_spent
+        company_data.save()
+
+        # update
+        self.daily_profit = company_data.daily_profit
+        self.weekly_profit = company_data.weekly_profit
+        self.save()
+
+        if rebuildPast:
+            print("Rebuild past")
+            for company_data in self.companydata_set.all():
+                # create weekly_profit
+                last_week = company_data.id_ts - (6 * 24 * 3600 + 1)
+                company_datas = self.companydata_set.filter(id_ts__gt=last_week)
+                n_data = company_datas.count()
+                money_spent = 0
+                for cd in company_datas:
+                    money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+
+                company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
+                company_data.weekly_profit = company_data.weekly_income - money_spent
+
+                # create effectiveness
+                defaults = {}
+                defaults["total_wage"] = 0
+                for emp_id, values in json.loads(company_data.employees).items():
+                    for k, v in values.items():
+                        if k[:13] == "effectiveness":
+                            defaults[k] = defaults[k] + v if k in defaults else v
+
+                # set company updates
+                for attr, value in defaults.items():
+                    setattr(company_data, attr, value)
+                company_data.save()
+
+        return False, "updated"
+
 
 # Employee
 class Employee(models.Model):
@@ -231,19 +275,26 @@ class CompanyData(models.Model):
     popularity = models.IntegerField(default=0)
     efficiency = models.IntegerField(default=0)
     environment = models.IntegerField(default=0)
-    effectiveness_total = models.IntegerField(default=0)
-    effectiveness_neg = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
+    daily_profit = models.IntegerField(default=0)
     weekly_income = models.BigIntegerField(default=0)
     weekly_customers = models.IntegerField(default=0)
+    weekly_profit = models.IntegerField(default=0)
     advertising_budget = models.IntegerField(default=0)
     total_wage = models.IntegerField(default=0)
+
+    # company wise effectiveness
+    effectiveness_working_stats = models.IntegerField(default=0)
+    effectiveness_settled_in = models.IntegerField(default=0)
+    effectiveness_director_education = models.IntegerField(default=0)
+    effectiveness_addiction = models.IntegerField(default=0)
+    effectiveness_inactivity = models.IntegerField(default=0)
+    effectiveness_management = models.IntegerField(default=0)
+    effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_total = models.IntegerField(default=0)
 
     employees = models.TextField(default="{}")
 
     def __str__(self):
         return f"Company data {self.company.name} [{self.company.tId}]"
-
-    def profit(self):
-        return self.daily_income - self.total_wage - self.advertising_budget

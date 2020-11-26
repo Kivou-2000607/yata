@@ -52,7 +52,6 @@ $(document).on('change', '.company-employee-position-form', e => {
     $("#company-details-employees > tbody > tr").each(function(i, v) {
       employees_position[$(v).attr("data-emp")] = $(v).attr("data-pos")
     });
-    console.log(employees_position);
     const reload = $("#company-reload-employees");
     reload.load("/company/supervise/", {
         type: "employees-simu",
@@ -70,7 +69,6 @@ $(document).on('click', '#company-employees-simu-apply', e => {
     $("#company-employees-simu-data > li").each(function(i, v) {
       employees_position[$(v).attr("data-emp")] = $(v).attr("data-pos")
     });
-    console.log(employees_position);
     const reload = $("#company-reload-employees");
     reload.load("/company/supervise/", {
         type: "employees-simu",
@@ -95,4 +93,18 @@ $(document).on("click", "#company-employees-reset", e => {
 $(document).on("click", "#company-employees-show-simu", e => {
   e.preventDefault();
   $("#company-employees-simu").toggle()
+});
+
+
+// update data
+$(document).on("click", "#update-data", e => {
+  e.preventDefault();
+  $("#content-update").load("/company/supervise/", {
+      type: "update-data",
+      csrfmiddlewaretoken: getCookie("csrftoken")
+  });
+  $("h2.title").each(function(i, v) {
+    const div = $(v).next("div.module");
+    div.html('<div style="text-align: center; height: '+div.css("height")+';">'+spinner+'</div>');
+  });
 });
