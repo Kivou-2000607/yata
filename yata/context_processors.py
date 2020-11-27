@@ -78,7 +78,6 @@ def nextLoot(request):
     try:
         # get smaller due time
         next = NPC.objects.filter(show=True).exclude(status="Loot level V").order_by('hospitalTS').first()
-        next = None
         if next is None:
             return {"nextLoot": ["All level V", 0, 0]}
         ts = max(next.lootTimings(lvl=4)["ts"], 0)
