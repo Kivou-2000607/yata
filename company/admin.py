@@ -36,6 +36,7 @@ class CompanyDataInline(admin.TabularInline):
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'company_description', 'tId', 'name', 'rating', 'director']
     list_filter = ['company_description']
+    search_fields = ['tId', 'name', "director", "director_name"]
     inlines = [EmployeeInline, CompanyDataInline]
 
 admin.site.register(Company, CompanyAdmin)

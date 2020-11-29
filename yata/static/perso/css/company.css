@@ -22,12 +22,13 @@ table.comapny-details-stocks td.b { width: 30%; text-align: center; }  /* x1 */
 table.comapny-details-stocks td.c { width: 30%; text-align: center; }  /* x1 */
 
 
-table.company-details-employees td.a { width: 15%; text-align: left; }  /* x1 */
-table.company-details-employees td.b { width: 10%; text-align: left; cursor: pointer; }  /* x1 */
-table.company-details-employees td.c { width: 10%; text-align: center; }  /* x1 */
+table.company-details-employees td.a { width: 14%; text-align: left; }  /* x1 */
+table.company-details-employees td.b { width: 9%; text-align: left; cursor: pointer; }  /* x1 */
+table.company-details-employees td.c { width: 8%; text-align: center; }  /* x1 */
 table.company-details-employees td.d { width: 6%; text-align: center; }  /* x4 */
-table.company-details-employees td.e { width: 12%; text-align: right; }  /* x3 */
-table.company-details-employees td.f { width: 3%; text-align: center; cursor: pointer; }  /* x1 */
+table.company-details-employees td.e { width: 10%; text-align: right; }  /* x1 */
+table.company-details-employees td.f { width: 10%; text-align: right; }  /* x3 */
+table.company-details-employees td.g { width: 3%; text-align: center; cursor: pointer; }  /* x1 */
 table.company-details-employees tr.hideChart { opacity: 0.5; }  /* hide from charts */
 table.company-details-employees tr.simu > td { font-style: italic; }  /* simulation */
 table.company-details-employees tr.simu > td > select { font-style: italic; color: #555; }  /* simulation */

@@ -25,6 +25,8 @@ from django.utils.html import escape
 import re
 import math
 
+from yata.handy import tsnow
+
 register = template.Library()
 
 
@@ -93,7 +95,6 @@ def ts2ago(timestamp):
     t = (timestamp - 60 * t) % 60
     s = "" if t == 1 else "s"
     return "{} sec{} ago".format(t, s)
-
 
 @register.filter(name='format')
 def format(value, fmt):

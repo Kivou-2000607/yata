@@ -112,7 +112,9 @@ def supervise(request):
         positions = [company_positions.filter(name=employees_simu.get(str(e.tId), e.position)).first() for e in employees]
 
         # loop over employees
+        now = tsnow()
         for employee in employees:
+            employee.last_action_relative = now - employee.last_action
             employee.position = employees_simu.get(str(employee.tId), employee.position)
             position = company_positions.filter(name=employee.position).first()
             employee.man_required = 0 if position is None else position.man_required
@@ -169,9 +171,15 @@ def supervise(request):
 
         # get company data
         company_data = company.companydata_set.all().order_by("-timestamp")
-        company_data_p = Paginator(company_data, 25)
-        if request.GET.get('page') is not None:
-            return render(request, "company/supervise/logs.html", {"company_data_p": company_data_p.get_page(request.GET.get('page'))})
+        company_data_p = Paginator(company_data, 7)
+        if request.GET.get('page_d') is not None:
+            return render(request, "company/supervise/logs.html", {"company_data_p": company_data_p.get_page(request.GET.get('page_d'))})
+
+        # get company stock
+        company_stock = company.companystock_set.all().order_by("-timestamp")
+        company_stock_p = Paginator(company_stock, 25)
+        if request.GET.get('page_s') is not None:
+            return render(request, "company/supervise/stock.html", {"stock_p": stock_p.get_page(request.GET.get('page_s'))})
 
         # create employee graph
         # current employees [id, name]
@@ -193,6 +201,8 @@ def supervise(request):
                    "company_positions": company_positions,
                    "company_data": company_data,
                    "company_data_p": company_data_p.get_page(1),
+                   "company_stock": company_stock,
+                   "company_stock_p": company_stock_p.get_page(1),
                    "employees": employees,
                    "employees_graph": employees_graph,
                    "compcat": True,

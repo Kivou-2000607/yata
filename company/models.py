@@ -29,6 +29,9 @@ class Position(models.Model):
     special_ability = models.CharField(default="Default sepcial ability", max_length=32)
     description = models.CharField(default="Default description", max_length=256)
 
+    # abv
+    abv = models.CharField(default="-", max_length=4)
+
     def __str__(self):
         return f"{self.company} position {self.name}"
 
@@ -118,7 +121,7 @@ class Company(models.Model):
         print(f"Company {self} -> update with director key")
 
         # api call
-        req = apiCall("company", "", "detailed,employees,profile,timestamp", director.getKey(), verbose=False)
+        req = apiCall("company", "", "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
         if "apiError" in req:
             if req["apiErrorCode"] in [7]:
                 self.director = 0
@@ -227,7 +230,6 @@ class Company(models.Model):
 
                 # create effectiveness
                 defaults = {}
-                defaults["total_wage"] = 0
                 for emp_id, values in json.loads(company_data.employees).items():
                     for k, v in values.items():
                         if k[:13] == "effectiveness":
@@ -238,8 +240,54 @@ class Company(models.Model):
                     setattr(company_data, attr, value)
                 company_data.save()
 
-        return False, "updated"
 
+        # get stocks
+        defaults = {"timestamp": timestamp}
+        stocks = req.get("company_stock", {})
+
+        # create company posisions
+        p_abv = {position.name: position.abv for position in self.company_description.position_set.all()}
+        positions = {v: 0 for k, v in p_abv.items()}
+        total = 0
+        for e in self.employee_set.all():
+            if e.position in p_abv:
+                total += 1
+                positions[p_abv[e.position]] += 1
+        positions["TOT"] = total
+        previous_stock = self.companystock_set.exclude(id_ts=id_ts).order_by("-timestamp").first()
+        if previous_stock is not None:
+            pp = json.loads(previous_stock.positions)
+            delta_positions = {k: v-pp.get(k, 0) for k, v in positions.items()}
+        else:
+            delta_positions = {}
+
+        # loop over stocks
+        for stock_name, stock in stocks.items():
+            for k, v in stock.items():
+                defaults[k] = v
+
+            # get previous stock
+            previous_stock = self.companystock_set.exclude(id_ts=id_ts).filter(name=stock_name).order_by("-timestamp").first()
+            if previous_stock is None:
+                defaults["delta_in_stock"] = defaults["in_stock"]
+                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
+                defaults["delta_created"] = defaults["created"]
+                defaults["delta_sold_worth"] = defaults["sold_worth"]
+            else:
+                defaults["delta_in_stock"] = defaults["in_stock"] - previous_stock.in_stock
+                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
+                defaults["delta_created"] = defaults["created"] - previous_stock.created
+                defaults["delta_sold_worth"] = defaults["sold_worth"] - previous_stock.sold_worth
+
+            defaults["positions"] = json.dumps(positions)
+            defaults["delta_positions"] = json.dumps(delta_positions)
+
+            company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
+            # print(company_stock, create)
+            # for k, v in defaults.items():
+            #     print(k, v)
+
+        return False, "updated"
 
 # Employee
 class Employee(models.Model):
@@ -298,3 +346,42 @@ class CompanyData(models.Model):
 
     def __str__(self):
         return f"Company data {self.company.name} [{self.company.tId}]"
+
+# Company stock
+class CompanyStock(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    id_ts = models.IntegerField(default=0)  # timestamp rounded at the day (serves as ID)
+    timestamp = models.IntegerField(default=0)  # real timestamp
+
+    # dictionnary with number of employees / positions
+    positions = models.TextField(default="{}")
+    delta_positions = models.TextField(default="{}")
+
+    # from API
+    name = models.CharField(default="Stock", max_length=32)
+    cost = models.IntegerField(default=0)
+    rrp = models.IntegerField(default=0)
+    price = models.IntegerField(default=0)
+    in_stock = models.IntegerField(default=0)
+    on_order = models.IntegerField(default=0)
+    sold_amount = models.IntegerField(default=0)
+    sold_worth = models.IntegerField(default=0)
+
+    # computed
+    created = models.IntegerField(default=0)  # sold_amount + delta_in_stock
+
+    # delta
+    delta_in_stock = models.IntegerField(default=0)
+    delta_created = models.IntegerField(default=0)
+    delta_sold_worth = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Company stock {self.company.name} [{self.company.tId}]"
+
+    def display_pos(self):
+        emps = json.loads(self.positions)
+        demps = json.loads(self.delta_positions)
+        pos = ' '.join([f'{k}: {v}' for k, v in emps.items() if k not in ['TOT']])
+        dpos = ' '.join([f'{k}: {v}' for k, v in demps.items() if v])
+        tot = emps.get("TOT", 0)
+        return pos, dpos, tot

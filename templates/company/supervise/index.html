@@ -285,6 +285,17 @@ This file is part of yata.
 
 {% endif %}
 
+{% if company_stock|length %}
+
+<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Stock</h2>
+<div class="module">
+  <div class="pagination-list">
+      {% include "company/supervise/stock.html" %}
+  </div>
+</div>
+
+{% endif %}
+
 {% else %}
 <div class="module rounded">
   {% if player.companyId %}

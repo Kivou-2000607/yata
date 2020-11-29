@@ -1,0 +1,82 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<table class="center-large trshadow company-stocks">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Emp.</th>
+            <th>&Delta;Emp</th>
+            <th>Cost</th>
+            <th>RRP</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>&Delta;Stock</th>
+            <th>Created</th>
+            <th>&Delta;Created</th>
+            <th>Worth</th>
+            <th>&Delta;Worth</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in company_stock_p %}
+        <tr class="company-logs" data-val="{{d.timestamp}}">
+            <td class="a" title="{{d.timestamp|ts2date}}">{% ifchanged %}{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}{% endifchanged%}</td>
+            <td class="b">{{d.name}}</td>
+            <td class="c" title="{{d.display_pos.0}}">{{d.display_pos.2}}</td>
+            <td class="c" title="{{d.display_pos.0}}">{{d.display_pos.1}}</td>
+            <td class="c">${{d.cost|intcomma}}</td>
+            <td class="c">${{d.rrp|intcomma}}</td>
+            <td class="c">${{d.price|intcomma}}</td>
+            <td class="c">{{d.in_stock|intcomma}}</td>
+            <td class="c">{{d.delta_in_stock|intcomma}}</td>
+            <td class="c">{{d.created|intcomma}}</td>
+            <td class="c">{{d.delta_created|intcomma}}</td>
+            <td class="c">${{d.sold_worth|intcomma}}</td>
+            <td class="c">${{d.delta_sold_worth|intcomma}}</td>
+        </tr>
+        {% endfor %}
+
+        <tr><td colspan="13">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if company_stock_p.has_previous %}
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_s=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ company_stock_p.number }}/{{ company_stock_p.paginator.num_pages }}
+                    </span>
+
+                    {% if company_stock_p.has_next %}
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+    </tbody>
+</table>
