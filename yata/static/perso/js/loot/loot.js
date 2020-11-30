@@ -18,3 +18,36 @@ window.setInterval(function(){
         $(this).html(html);
     });
 }, 1000);
+
+
+// schedule an attack
+$(document).on('change', 'select.loot-schedule-attack', e => {
+    e.preventDefault();
+    const schedule_timestamp = $(e.currentTarget).val();
+    const npc_id = $(e.currentTarget).attr("data-val");
+    $("#content-update").load("/loot/", {
+        type: "npc-schedule",
+        schedule_timestamp: schedule_timestamp,
+        npc_id: npc_id,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+
+    $("h2.title").each(function(i, v) {
+      const div = $(v).next("div.module");
+      div.html('<div style="text-align: center; height: '+div.css("height")+';">'+spinner+'</div>');
+    });
+});
+
+// vote
+$(document).on('click', 'span.npc-scheduled-vote', e => {
+    e.preventDefault();
+    const schedule_timestamp = $(e.currentTarget).attr("data-ts");
+    const npc_id = $(e.currentTarget).attr("data-npc");
+    $(e.currentTarget).load("/loot/", {
+        type: "npc-vote",
+        schedule_timestamp: schedule_timestamp,
+        npc_id: npc_id,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
+
+});

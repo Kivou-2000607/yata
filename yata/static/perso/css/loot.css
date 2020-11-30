@@ -5,20 +5,22 @@ div.loot-npc-container {
 }
 
 div.loot-npc {
-    max-width: 48%;
+    /* max-width: 48%; */
     float:left; /* add this */
     text-align: center;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 365px;
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.2);
     margin: 10px;
+    border-radius: 4px;
 }
 div.loot-npc:hover {
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.5);
 }
 
 div.loot-npc-profile {
     float:left;
     width: 125px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.2);
     margin: 10px;
     border-radius: 10px;
 }
@@ -27,6 +29,7 @@ div.loot-npc-profile > div {
     font-weight: bold;
     border-radius: 10px;
 }
+
 div.loot-npc-profile > img.profile {
     width: 125px;
     border-radius: 10px;
@@ -48,8 +51,9 @@ div.hospitalized {
 }
 
 div.loot-npc-content {
-    float:left;
+    float:right;
     text-align: left;
+    width: 200px;
     margin: 10px;
     margin-top: 15px;
     vertical-align: middle;
@@ -67,12 +71,37 @@ div.miniloot > img {
 
 p.loot-level {
     margin-bottom: 0.4em;
-    width: 220px;
+    /* width: 220px; */
 }
 
 p.loot-level-update {
-    margin-top: 20px!important;
+    margin-top: 15px!important;
     text-align: right;
     font-size: 10px;
     opacity: 0.5;
+}
+
+div.loot-npc-schedule {
+  display: block;
+  width: 345px;
+  margin: 10px;
+}
+
+select.loot-schedule-attack {
+  width: 80%;
+  margin-left: 10%;
+  text-align: center;
+  cursor: pointer;
+  border:none;
+  display: block;
+  background-color: #fff0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -ms-appearance: none; /* get rid of default appearance for IE8, 9 and 10*/
+}
+
+span.npc-scheduled-vote {
+  margin-left:10px;
+  cursor: pointer;
 }

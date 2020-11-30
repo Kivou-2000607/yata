@@ -22,67 +22,54 @@ from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db import connection
 
-# cache and rate limit
-from django.views.decorators.cache import cache_page
-from ratelimit.decorators import ratelimit
-from ratelimit.core import get_usage, is_ratelimited
-
-# standards
+# standard
 import json
 
-# yaya
-from yata.handy import returnError
+# yata
+from yata.handy import *
 from player.models import Player
-from loot.models import NPC
+from loot.models import *
 
 
 def index(request):
     try:
-        if request.session.get('player'):
-            print('[view.loot.index] get player id from session')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            player.lastActionTS = int(timezone.now().timestamp())
-            player.active = True
-            player.save()
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        else:
-            player = Player.objects.filter(tId=-1).first()
+        if player.tId > 0 and request.POST.get("type") in ["npc-vote", "npc-schedule"]:
+            npc = NPC.objects.filter(show=True, tId=request.POST.get("npc_id")).first()
+            if npc is not None:
+                print(npc)
+                timestamp = int(request.POST.get("schedule_timestamp"))
+                timestamp -= timestamp % 3600
+                scheduled_attack = npc.scheduledattack_set.filter(timestamp=timestamp).first()
+                if scheduled_attack is None:
+                    scheduled_attack = npc.scheduledattack_set.create(timestamp=timestamp, author=f'{player.name} [{player.tId}]')
+
+                users = json.loads(scheduled_attack.users)
+                if str(player.tId) in users:
+                    del users[str(player.tId)]
+                else:
+                    users[str(player.tId)] = f'{player.name} [{player.tId}]'
+
+                scheduled_attack.vote = len(users)
+                scheduled_attack.users = json.dumps(users)
+
+                if not scheduled_attack.vote:
+                    scheduled_attack.delete()
+                else:
+                    scheduled_attack.save()
+
+                if request.POST.get("type") == "npc-vote":
+                    return render(request, "loot/vote.html", {"player": player, "sa": scheduled_attack})
+
+        ScheduledAttack.objects.filter(timestamp__lt=tsnow()).delete()
+        scheduled_attacks = ScheduledAttack.objects.all().order_by("timestamp")
 
         NPCs = [npc for npc in NPC.objects.filter(show=True).order_by('tId')]
-        context = {"player": player, "NPCs": NPCs}
-        return render(request, "loot.html", context)
+
+        context = {"player": player, "NPCs": NPCs, "scheduled_attacks": scheduled_attacks}
+        page = 'loot/content-reload.html' if request.method == 'POST' else 'loot.html'
+        return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
-
-# API
-# @cache_page(60)
-# @ratelimit(key='ip', rate='1/30s')
-def timings(request):
-    return JsonResponse({"message": "Please update to the new API system and moderate your calls, you're making the whole website crash!"}, status=200)
-
-    # if getattr(request, 'limited', False):
-    #     return JsonResponse({"error": {"code": 429, "error": "Rate limit of 1 call / 30s"}}, status=429)
-
-    # try:
-    #     npcs = dict({})
-    #     for npc in NPC.objects.filter(show=True).order_by('tId'):
-    #         t = npc.lootTimings()
-    #         c = npc.lootTimings("current")
-    #         n = npc.lootTimings("next")
-    #         del t[0]
-    #         npcs[npc.tId] = {
-    #             "name": npc.name,
-    #             "hospout": npc.hospitalTS,
-    #             "update": npc.updateTS,
-    #             "status": npc.status,
-    #             "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
-    #             "levels": {'current': c['lvl'], 'next': n['lvl']}}
-
-    #     return HttpResponse(json.dumps(npcs, separators=(',', ':')), content_type="application/json")
-
-    # except BaseException as e:
-    #     return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
-    # # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")

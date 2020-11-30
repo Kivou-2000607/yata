@@ -3,8 +3,10 @@ from django.utils import timezone
 from django.conf import settings
 
 import requests
+import json
 
 from yata.handy import apiCall
+from yata.handy import tsnow
 from setup.functions import randomKey
 
 
@@ -95,3 +97,35 @@ class NPC(models.Model):
 
     def pictureURL(self):
         return "/static/images/loot/npc_{}.png".format(self.tId)
+
+    def scheduleTimings(self):
+        # get all ts
+        now = tsnow()
+        all_timestamps = [now - now % 3600 + (i + 1) * 3600 for i in range(24)]
+
+        # get scheduled attacks
+        scheduled_attacks = self.scheduledattack_set.all()
+
+        schedule = {}
+        for ts in all_timestamps:
+            scheduled = scheduled_attacks.filter(timestamp=ts).first()
+            if scheduled is None:
+                schedule[ts] = 0
+            else:
+                schedule[ts] = scheduled.vote
+
+        return schedule
+
+class ScheduledAttack(models.Model):
+    npc = models.ForeignKey(NPC, on_delete=models.CASCADE)  # player
+
+    timestamp = models.IntegerField(default=0)
+    vote = models.IntegerField(default=0)
+    users = models.TextField(default="{}")
+    author = models.CharField(default="Player [1]", max_length=32)
+
+    def __str__(self):
+        return f'Scheduled attack by {self.author} on {self.npc}'
+
+    def get_users(self):
+        return json.loads(self.users)

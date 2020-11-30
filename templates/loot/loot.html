@@ -23,6 +23,21 @@ This file is part of yata.
 {% load app_filters %}
 
 
+{% if scheduled_attacks|length %}
+  <h2 class="title"><i class="far fa-clock fa-icon-inline"></i>Scheduled attacks</h2>
+  <div class="module">
+    <p>Upvote a scheduled attack if you can participate. After <b>25</b> upvotes, the bot will send alerts to all its servers.</p>
+    <ol>
+    {% for sa in scheduled_attacks %}
+      <li>Attack on <b>{{sa.npc.name}}</b> at <b>{{sa.timestamp|ts2date}} TCT</b> scheduled by {{sa.author}}
+        <span class="npc-scheduled-vote" data-npc="{{sa.npc.tId}}" data-ts="{{sa.timestamp}}">
+          {% include "loot/vote.html" %}
+        </li>
+    {% endfor %}
+    </ol>
+  </div>
+{% endif %}
+
 <h2 class="title"><i class="fas fa-user-secret fa-icon-inline"></i>List of NPC</h2>
 <div class="module">
     <div class="loot-npc-container">
@@ -56,6 +71,18 @@ This file is part of yata.
                     {% endif %}
                 {% endfor %}
                 <p class='loot-level-update'>Last update: {{npc.updateTS|ts2date}} TCT</p>
+            </div>
+            <div class="loot-npc-schedule">
+               <select name="schedule" class="loot-schedule-attack neutral" data-val="{{npc.tId}}">
+                <option value="" disabled selected>Schedule an attack on {{npc.name}}</option>
+                {% for ts, vote in npc.scheduleTimings.items %}
+                  {% if vote %}
+                    <option value="" disabled>{{ts|ts2date}} ({{vote}} vote{{vote|pluralize}})</option>
+                  {% else %}
+                    <option value="{{ts}}">{{ts|ts2date}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
             </div>
         </div>
     {% endfor %}
