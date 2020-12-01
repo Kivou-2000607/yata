@@ -10,10 +10,10 @@ window.setInterval(function(){
         let cl = "";
 
         // cl = diff < 60*30 ? "valid" : cl;
-        cl = diff < 60*15 ? "warning" : cl;
-        cl = diff < 15 ? "error" : cl;
-        const prog = diff < lvlt ? ' <span class="flush-right">'+parseInt(100 * (lvlt - diff) / lvlt)+'%</span>' : ''
-        const html = diff > 0 ? 'in <span class="'+cl+'">' +cd+'</span>'+prog : ''
+        cl = diff < 60*15 ? "orange" : cl;
+        cl = diff < 15 ? "red" : cl;
+        const p = diff < lvlt ? parseInt(100 * (lvlt - diff) / lvlt) : 0
+        const html = diff < lvlt ? '<div class="progress-bar" title="'+p+'%"><span style="width: '+p+'%;" class="'+cl+'">'+cd+'</span></div>' : cd
 
         $(this).html(html);
     });

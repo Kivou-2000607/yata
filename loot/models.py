@@ -110,9 +110,9 @@ class NPC(models.Model):
         for ts in all_timestamps:
             scheduled = scheduled_attacks.filter(timestamp=ts).first()
             if scheduled is None:
-                schedule[ts] = 0
+                schedule[ts] = [0, ts - now]
             else:
-                schedule[ts] = scheduled.vote
+                schedule[ts] = [scheduled.vote, ts - now]
 
         return schedule
 

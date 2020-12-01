@@ -66,8 +66,13 @@ This file is part of yata.
                 {% for k, v in npc.lootTimings.items %}
                     {% if forloop.counter0 %}
                         <p class="loot-level{% if v.due < 0 %} overdue{% endif %}">
-                            <b>Loot level {{v.lvl|lootLevel}}</b><br>
-                            At {{v.ts|ts2date:"%H:%M:%S"}} TCT <span class="update-timer" data-lts="{{v.ts}}" data-lvl="{{v.lvl}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                            {% if v.due > 0 %}
+                              <b>Loot level {{v.lvl|lootLevel}}</b> at {{v.ts|ts2date:"%H:%M:%S"}} TCT<br>
+                              <span class="update-timer" data-lts="{{v.ts}}" data-lvl="{{v.lvl}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                            {% else %}
+                              <b>Loot level {{v.lvl|lootLevel}}</b><br>
+                              On {{v.ts|ts2date}} TCT
+                            {% endif %}
                         </p>
                     {% endif %}
                 {% endfor %}
@@ -77,11 +82,11 @@ This file is part of yata.
               <div class="loot-npc-schedule">
                  <select name="schedule" class="loot-schedule-attack neutral" data-val="{{npc.tId}}">
                   <option value="" disabled selected>Schedule an attack on {{npc.name}}</option>
-                  {% for ts, vote in npc.scheduleTimings.items %}
-                    {% if vote %}
-                      <option value="" disabled>{{ts|ts2date}} ({{vote}} vote{{vote|pluralize}})</option>
+                  {% for ts, vote_in in npc.scheduleTimings.items %}
+                    {% if vote_in.0 %}
+                      <option value="" disabled>{{ts|ts2date}} in {{vote_in.1|ts2time}} ({{vote_in.0}} vote{{vote_in.0|pluralize}})</option>
                     {% else %}
-                      <option value="{{ts}}">{{ts|ts2date}}</option>
+                      <option value="{{ts}}">{{ts|ts2date}} in {{vote_in.1|ts2time}}</option>
                     {% endif %}
                   {% endfor %}
                 </select>

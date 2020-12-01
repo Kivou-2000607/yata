@@ -20,6 +20,7 @@ div.loot-npc:hover {
 div.loot-npc-profile {
     float:left;
     width: 125px;
+    height: 250px;
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.2);
     margin: 10px;
     border-radius: 10px;
@@ -51,12 +52,14 @@ div.hospitalized {
 }
 
 div.loot-npc-content {
+    position: relative;
     float:right;
     text-align: left;
+    height: 250px;
     width: 200px;
     margin: 10px;
-    margin-top: 15px;
-    vertical-align: middle;
+    /* margin-top: 15px; */
+    /* vertical-align: middle; */
 }
 
 div.miniloot {
@@ -75,9 +78,13 @@ p.loot-level {
 }
 
 p.loot-level-update {
-    margin-top: 15px!important;
-    text-align: right;
+    /* margin-top: 15px!important; */
+    position: absolute;
+    bottom: 0;
+    right: 0;
     font-size: 10px;
+    margin: 0px;
+    padding: 0px;
     opacity: 0.5;
 }
 
@@ -104,4 +111,34 @@ select.loot-schedule-attack {
 span.npc-scheduled-vote {
   margin-left:10px;
   cursor: pointer;
+}
+
+
+/* progress bar */
+div.progress-bar {
+	height: 18px;  /* Can be anything */
+  float: right;
+  width: 100%;
+	background: #eeee;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 2px 4px;
+  margin: 2px;
+}
+
+div.progress-bar > span {
+  display: block;
+  height: 100%;
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  border-top-right-radius: 1px;
+  border-bottom-right-radius: 1px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background-color: #daa520;
+  position: relative;
+  /* overflow: hidden; */
 }
