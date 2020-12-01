@@ -30,7 +30,8 @@ This file is part of yata.
     <ol>
     {% for sa in scheduled_attacks %}
       <li>Attack on <b>{{sa.npc.name}}</b> at <b>{{sa.timestamp|ts2date}} TCT</b> scheduled by {{sa.author}}
-        <span class="npc-scheduled-vote" data-npc="{{sa.npc.tId}}" data-ts="{{sa.timestamp}}">
+
+        <span class="npc-scheduled-vote {% if player.tId > 0 %}npc-scheduled-vote-click{% endif %}" data-npc="{{sa.npc.tId}}" data-ts="{{sa.timestamp}}">
           {% include "loot/vote.html" %}
         </li>
     {% endfor %}
@@ -72,18 +73,20 @@ This file is part of yata.
                 {% endfor %}
                 <p class='loot-level-update'>Last update: {{npc.updateTS|ts2date}} TCT</p>
             </div>
-            <div class="loot-npc-schedule">
-               <select name="schedule" class="loot-schedule-attack neutral" data-val="{{npc.tId}}">
-                <option value="" disabled selected>Schedule an attack on {{npc.name}}</option>
-                {% for ts, vote in npc.scheduleTimings.items %}
-                  {% if vote %}
-                    <option value="" disabled>{{ts|ts2date}} ({{vote}} vote{{vote|pluralize}})</option>
-                  {% else %}
-                    <option value="{{ts}}">{{ts|ts2date}}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            </div>
+            {% if player.tId > 0 %}
+              <div class="loot-npc-schedule">
+                 <select name="schedule" class="loot-schedule-attack neutral" data-val="{{npc.tId}}">
+                  <option value="" disabled selected>Schedule an attack on {{npc.name}}</option>
+                  {% for ts, vote in npc.scheduleTimings.items %}
+                    {% if vote %}
+                      <option value="" disabled>{{ts|ts2date}} ({{vote}} vote{{vote|pluralize}})</option>
+                    {% else %}
+                      <option value="{{ts}}">{{ts|ts2date}}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            {% endif %}
         </div>
     {% endfor %}
     </div>

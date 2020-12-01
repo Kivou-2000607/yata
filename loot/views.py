@@ -38,7 +38,6 @@ def index(request):
         if player.tId > 0 and request.POST.get("type") in ["npc-vote", "npc-schedule"]:
             npc = NPC.objects.filter(show=True, tId=request.POST.get("npc_id")).first()
             if npc is not None:
-                print(npc)
                 timestamp = int(request.POST.get("schedule_timestamp"))
                 timestamp -= timestamp % 3600
                 scheduled_attack = npc.scheduledattack_set.filter(timestamp=timestamp).first()
@@ -69,6 +68,7 @@ def index(request):
 
         context = {"player": player, "NPCs": NPCs, "scheduled_attacks": scheduled_attacks}
         page = 'loot/content-reload.html' if request.method == 'POST' else 'loot.html'
+        page = "loot/vote.html" if request.POST.get("type") == "npc-vote" else page
         return render(request, page, context)
 
     except Exception as e:

@@ -39,7 +39,7 @@ $(document).on('change', 'select.loot-schedule-attack', e => {
 });
 
 // vote
-$(document).on('click', 'span.npc-scheduled-vote', e => {
+$(document).on('click', 'span.npc-scheduled-vote-click', e => {
     e.preventDefault();
     const schedule_timestamp = $(e.currentTarget).attr("data-ts");
     const npc_id = $(e.currentTarget).attr("data-npc");
