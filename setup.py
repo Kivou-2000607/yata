@@ -53,6 +53,10 @@ if reset_db:
     cmd = 'python manage.py createcachetable'
     r = os.system(cmd)
 
+    # setup companies
+    cmd = 'python manage.py initCompanies'
+    r = os.system(cmd)
+
 # create db super user
 if not len(User.objects.all()):
     print('create superuser')
