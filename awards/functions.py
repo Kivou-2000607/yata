@@ -645,6 +645,17 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [1001, 1002, 1003, 1004]:
+                    # "1001": { "name": "Boom!", "description": "Deal over 10,000,000 total damage", "type": 8,
+                    # "1002": { "name": "Bam!", "description": "Deal over 1,000,000 total damage", "type": 8,
+                    # "1003": { "name": "Kapow!", "description": "Deal over 100,000,000 total damage", "type": 8,
+                    # "1004": { "name": "Wham!", "description": "Deal over 100,000 total damage", "type": 8,
+                    type = "Damage"
+                    vp["goal"] = int(v["description"].split(" ")[2].replace(",", ""))
+                    vp["current"] = userInfo.get("personalstats", dict({})).get("attackdamage", 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [763]:
                     # 763: "name": "Bare", "description": "Win 250 unarmored attacks or defends", "type": 8,
                     type = "Other Attacks"
