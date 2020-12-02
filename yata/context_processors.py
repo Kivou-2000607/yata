@@ -78,7 +78,7 @@ def sectionMessage(request):
 def nextLoot(request):
     try:
         # get smaller due time
-        to_late = tsnow() + (15 - 210) * 60
+        to_late = tsnow() - (15 + 210) * 60
         next = NPC.objects.filter(show=True).filter(hospitalTS__gt=to_late).order_by('hospitalTS').first()
         if next is None:
             return {"nextLoot": ["All level V", 0, 0]}
