@@ -7,10 +7,10 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="96"
-   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="1023.7762"
+   inkscape:export-xdpi="1023.7762"
    inkscape:export-filename="/home/roubin/repositories/yata/yata/static/images/loot/loot0.png"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    fill="#fff"
    stroke="#fff"
    stroke-width="0"
@@ -30,7 +30,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -38,13 +38,13 @@
      id="defs22" />
   <sodipodi:namedview
      inkscape:document-rotation="0"
-     inkscape:current-layer="svg18"
+     inkscape:current-layer="g849"
      inkscape:window-maximized="0"
      inkscape:window-y="45"
      inkscape:window-x="0"
-     inkscape:cy="17.515742"
-     inkscape:cx="14.855676"
-     inkscape:zoom="9.7247787"
+     inkscape:cy="18.524532"
+     inkscape:cx="23.64126"
+     inkscape:zoom="13.752914"
      showgrid="false"
      id="namedview20"
      inkscape:window-height="1366"
@@ -63,42 +63,44 @@
      points="9.85 20.7 2.18 13.32 12.72 11.87 17.36 2.29 22 11.87 32.54 13.32 24.87 20.7 26.74 31.17 17.36 26.15 7.98 31.17 9.85 20.7"
      class="cls-1" />
   <path
-     id="path4"
-     style="fill: rgb(218, 165, 32);"
-     d="M17.36,4.59l1.43,3,2.54,5.25,5.78.79,3.25.45L28,16.3l-4.21,4.05,1,5.74.57,3.23L22.5,27.77,17.36,25l-5.14,2.75-2.9,1.55.58-3.23,1-5.74L6.72,16.3,4.36,14l3.25-.45,5.78-.79,2.54-5.25,1.43-2.95m0-4.59-1.8,3.71-1.43,3L12.05,11l-4.72.65-3.24.45L0,12.62l3,2.85,2.37,2.28,3.43,3.3-.84,4.69L7.36,29,6.63,33l3.64-1.94,2.89-1.55,4.2-2.24,4.2,2.24,2.89,1.55L28.09,33,27.36,29l-.57-3.22L26,21.05l3.43-3.3,2.37-2.28,3-2.85-4.09-.57-3.24-.45L22.67,11,20.59,6.66,19.16,3.71,17.36,0Z"
-     class="cls-2" />
+     class="cls-2"
+     d="m 5.32,31.32 1.61,-9 L 0.36,16 4.77,23 Z"
+     style="fill:#da3420;fill-opacity:1"
+     id="path6" />
+  <path
+     class="cls-2"
+     d="m 30.16,23.05 4.41,-7 -6.57,6.3 1.6,9 z"
+     style="fill:#da3420;fill-opacity:1"
+     id="path8" />
+  <path
+     class="cls-2"
+     d="m 1.08,10.2 9,-1.24 4,-8.2 -5.31,6.36 z"
+     style="fill:#da3420;fill-opacity:1"
+     id="path10" />
+  <path
+     class="cls-2"
+     d="m 26,7.12 -5.28,-6.36 4,8.2 9,1.24 z"
+     style="fill:#da3420;fill-opacity:1"
+     id="path12" />
   <g
-     id="g843">
+     id="g849"
+     style="fill:#da3420;fill-opacity:1">
     <path
-       class="cls-2"
-       d="M5.32,31.32l1.61-9L.36,16l4.41,7Z"
-       style="fill: rgb(218, 165, 32);"
-       id="path6" />
-    <path
-       class="cls-2"
-       d="M30.16,23.05l4.41-7L28,22.35l1.6,9Z"
-       style="fill: rgb(218, 165, 32);"
-       id="path8" />
-    <path
-       class="cls-2"
-       d="M1.08,10.2l9-1.24,4-8.2L8.77,7.12Z"
-       style="fill: rgb(218, 165, 32);"
-       id="path10" />
-    <path
-       class="cls-2"
-       d="M26,7.12,20.72.76l4,8.2,9,1.24Z"
-       style="fill: rgb(218, 165, 32);"
-       id="path12" />
-  </g>
-  <g
-     transform="translate(-0.98111725,0.45010733)"
-     id="g4647">
-    <ellipse
-       ry="4.5923243"
-       rx="3.4097779"
-       cy="17.738194"
-       cx="18.341118"
-       id="path837"
-       style="fill:none;stroke:#daa520;stroke-width:1.35025;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke" />
+       id="path4"
+       style="fill:#da3420;fill-opacity:1"
+       d="M17.36,4.59l1.43,3,2.54,5.25,5.78.79,3.25.45L28,16.3l-4.21,4.05,1,5.74.57,3.23L22.5,27.77,17.36,25l-5.14,2.75-2.9,1.55.58-3.23,1-5.74L6.72,16.3,4.36,14l3.25-.45,5.78-.79,2.54-5.25,1.43-2.95m0-4.59-1.8,3.71-1.43,3L12.05,11l-4.72.65-3.24.45L0,12.62l3,2.85,2.37,2.28,3.43,3.3-.84,4.69L7.36,29,6.63,33l3.64-1.94,2.89-1.55,4.2-2.24,4.2,2.24,2.89,1.55L28.09,33,27.36,29l-.57-3.22L26,21.05l3.43-3.3,2.37-2.28,3-2.85-4.09-.57-3.24-.45L22.67,11,20.59,6.66,19.16,3.71,17.36,0Z"
+       class="cls-2" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:14.3247px;line-height:1.25;font-family:Times;-inkscape-font-specification:'Times Bold';fill:#da3420;fill-opacity:1;stroke-width:0"
+       x="12.382269"
+       y="23.902227"
+       id="text840"
+       transform="scale(0.99004421,1.0100559)"><tspan
+         sodipodi:role="line"
+         id="tspan838"
+         x="12.382269"
+         y="23.902227"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#da3420;fill-opacity:1;stroke-width:0">H</tspan></text>
   </g>
 </svg>
