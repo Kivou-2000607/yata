@@ -1,21 +1,39 @@
 // refresh timer target update
 window.setInterval(function(){
     $(".update-timer").each(function() {
+
+        // level of the timer (loop of 1, 2, 3, 4, 5)
         const lvl = parseInt($.trim($(this).attr("data-lvl")));
+
+        // timestamp for reaching lvl
         const loot = parseInt($.trim($(this).attr("data-lts")));
+
+        // current timestamp
         const now = parseInt(Date.now() / 1000);
+
+        // time to reach lvl
         const diff = Math.max(loot-now, 0);
-        const lvlt = lvl > 1 ? 30 * (Math.pow(2, lvl - 2)) * 60 : 0;
+
+        // theoretical time left to reach lvl from previous lvl (30 minutes for lvl 1 since it's not known)
+        const lvlt = 30 * (Math.pow(2, Math.max(lvl - 2, 0))) * 60;
         let cd = fancyTimeFormat(diff);
         let cl = "";
 
         // cl = diff < 60*30 ? "valid" : cl;
         cl = diff < 60*15 ? "orange" : cl;
         cl = diff < 15 ? "red" : cl;
-        const p = diff < lvlt ? parseInt(100 * (lvlt - diff) / lvlt) : 0
-        const html = diff < lvlt ? '<div class="progress-bar" title="'+p+'%"><span style="width: '+p+'%;" class="'+cl+'">'+cd+'</span></div>' : cd
+        const p = parseInt(100 * (lvlt - diff) / lvlt)
+        // const p = 100
 
-        $(this).html(html);
+
+        if(diff < lvlt) {
+          const html = '<div class="progress-bar" title="'+p+'%"><span style="width: '+p+'%;" class="'+cl+'"></span></div>'
+          $(this).html(html);
+          $(this).find("div.progress-bar > span").attr("data-after", cd);
+        } else {
+          $(this).html(cd);
+        }
+
     });
 }, 1000);
 

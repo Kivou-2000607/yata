@@ -22,7 +22,6 @@ from django.utils import timezone
 import random
 import string
 
-
 HISTORY_TIMES = {
     "one_day": 86400,
     "one_week": 604800,

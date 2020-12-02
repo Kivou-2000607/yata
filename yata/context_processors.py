@@ -25,6 +25,7 @@ from player.models import Message
 from player.models import SECTION_CHOICES
 from loot.models import NPC
 
+from yata.handy import tsnow
 
 # def news(request):
 #     if request.session.get('player'):

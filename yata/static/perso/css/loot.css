@@ -122,8 +122,8 @@ div.progress-bar {
 	background: #eeee;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
-	border-radius: 6px;
-	padding: 2px 4px;
+	border-radius: 4px;
+	padding: 2px;
   margin: 2px;
 }
 
@@ -134,11 +134,34 @@ div.progress-bar > span {
   font-weight: bold;
   color: #333;
   text-align: center;
-  border-top-right-radius: 1px;
-  border-bottom-right-radius: 1px;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background-color: #daa520;
+  border-radius: 4px;
+  background-color: #daa520aa;
   position: relative;
+  /* overflow: hidden; */
+}
+/*
+div.progress-bar > span.txt {
+  margin-left: 2px;
+  z-index: 1000!important;
+} */
+
+div.progress-bar > span:after {
+  content: attr(data-after);
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background-image: linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, .2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, .2) 50%,
+    rgba(255, 255, 255, .2) 75%,
+    transparent 75%,
+    transparent
+  );
+  z-index: 0;
+  background-size: 40px 40px;
+  animation: move 2s linear infinite;
+  border-radius: 4px;
   /* overflow: hidden; */
 }
