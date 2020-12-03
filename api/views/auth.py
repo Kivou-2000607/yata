@@ -65,7 +65,7 @@ def index(request):
     player = user_key.player
     request.session['player'] = {'tId': player.tId, 'name': str(player), 'login': True}
     request.session['json-output'] = {'tId': player.tId, 'name': str(player), 'login': True}
-    request.session.set_expiry(10)
+    request.session.set_expiry(3600 * 24)
     response = JsonResponse({"auth": f"Login success {player}"}, status=200)
     response.set_cookie('csrftoken', get_token(request))
     return response
