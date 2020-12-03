@@ -53,9 +53,7 @@ if reset_db:
     cmd = 'python manage.py createcachetable'
     r = os.system(cmd)
 
-    # setup companies
-    cmd = 'python manage.py initCompanies'
-    r = os.system(cmd)
+ 
 
 # create db super user
 if not len(User.objects.all()):
@@ -86,7 +84,10 @@ if not len(NPC.objects.all()):
     NPC.objects.create(tId=4, show=True)
     NPC.objects.create(tId=15, show=True)
 
-
+   # setup companies
+    cmd = 'python manage.py initCompanies'
+    r = os.system(cmd)
+    
 if fill_db:
     cmd = 'python manage.py checkKeys'
     r = os.system(cmd)
