@@ -36,7 +36,7 @@ table.faction-members td.c { width: 10%; text-align: right; cursor: pointer;} /*
 table.faction-members td.d { width: 20%; text-align: left;} /* x1 */
 table.faction-members td.e { width: 7%; text-align: center; cursor: pointer;}  /* x2 */
 table.faction-members td.f { width: 7%; text-align: right; cursor: default;} /* x2 */
-table.faction-members td.g { width: 10%; text-align: center; cursor: default;} /* x1 */
+table.faction-members td.g { width: 10%; text-align: right; cursor: default;} /* x1 */
 table.faction-members td.h { width: 7%; text-align: center; cursor: default;} /* x1 */
 table.faction-members td.z { text-align: center; opacity: 0.3}
 
