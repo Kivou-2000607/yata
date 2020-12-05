@@ -29,15 +29,16 @@ table.faction-aa-keys td.a { width: 30%; text-align: left; } /* x2 */
 table.faction-aa-keys td.b { width: 10%; text-align: center; }  /* x1 */
 table.faction-aa-keys td.c { width: 30%; text-align: center; }  /* x1 */
 
-/* abcde ffgh */
-table.faction-members td.a { width: 5%; text-align: center;}
-table.faction-members td.b { width: 12.5%; text-align: left}
-table.faction-members td.c { width: 12.5%; text-align: right; cursor: pointer;}
-table.faction-members td.d { width: 25%; text-align: left;}
-table.faction-members td.e { width: 5%; text-align: center; cursor: pointer;}
-table.faction-members td.f { width: 7%; text-align: center; cursor: default;}
-table.faction-members td.g { width: 13%; text-align: center; cursor: default;}
-table.faction-members td.h { width: 13%; text-align: center; cursor: default;}
+/* abcde ffgh i */
+table.faction-members td.a { width: 5%; text-align: center;} /* x1 */
+table.faction-members td.b { width: 10%; text-align: left} /* x1 */
+table.faction-members td.c { width: 10%; text-align: right; cursor: pointer;} /* x1 */
+table.faction-members td.d { width: 20%; text-align: left;} /* x1 */
+table.faction-members td.e { width: 7%; text-align: center; cursor: pointer;}  /* x2 */
+table.faction-members td.f { width: 7%; text-align: right; cursor: default;} /* x2 */
+table.faction-members td.g { width: 10%; text-align: center; cursor: default;} /* x1 */
+table.faction-members td.h { width: 7%; text-align: center; cursor: default;} /* x1 */
+table.faction-members td.z { text-align: center; opacity: 0.3}
 
 table.faction-chains td.a { width: 10%; }
 table.faction-chains td.b { width: 15%; text-align: center;} /* x2 */
@@ -59,10 +60,11 @@ table.faction-report tr.my-row       { background: #cee8d0; font-weight: bold;}
 table.faction-report tr.my-row:hover { background: #e6f3e7; font-weight: bold;}
 
 
-table.faction-jbonus td.a { width: 30%; text-align: left; }
-table.faction-jbonus td.b { width: 20%; text-align: left; }
+table.faction-jbonus td.a { width: 25%; text-align: left; }
+table.faction-jbonus td.b { width: 17.5%; text-align: left; }
 table.faction-jbonus td.c { width: 10%; text-align: center; }  /* x3 */
-table.faction-jbonus td.d { width: 20%; text-align: right; }
+table.faction-jbonus td.d { width: 17.5%; text-align: right; }
+table.faction-jbonus td.e { width: 10%; text-align: center; }
 
 table.faction-jsummary td.a { width: 20%; text-align: left; }
 table.faction-jsummary td.b { width: 20%; text-align: left; }

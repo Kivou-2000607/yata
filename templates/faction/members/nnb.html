@@ -26,7 +26,7 @@ This file is part of yata.
 {% if member.tId == player.tId %}
     <span style="cursor: pointer;">
     {% if member.shareN %}
-        <span class="error faction-member-shareN" title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes&#10;Click to stop sharing your nerve bar.">
+        <span class="neutral faction-member-shareN" title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes&#10;Click to stop sharing your nerve bar.">
             {{member.nnb}} | {{member.arson|intcomma}}
         </span>
     {% else %}

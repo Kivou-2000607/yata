@@ -435,7 +435,7 @@ def updateMember(request):
             try:
                 status = membersAPI.get(memberId, dict({})).get("status", {})
                 member.updateStatus(**status)
-                lastAction = membersAPI.get(memberId, dict({})).get("status", {})
+                lastAction = membersAPI.get(memberId, dict({})).get("last_action", {})
                 member.updateLastAction(**lastAction)
             except BaseException as e:
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Error with member {}: {}'.format(memberId, e)})
@@ -448,10 +448,14 @@ def updateMember(request):
                 member.shareS = -1
                 member.save()
             elif member.shareE > 0 or member.shareN > 0 or member.shareS > 0:
-                req = apiCall("user", "", "perks,bars,crimes,battlestats", key=tmpP.getKey())
+                req = apiCall("user", "", "perks,bars,crimes,battlestats,honors,refills,cooldowns", key=tmpP.getKey())
                 member.updateEnergy(key=tmpP.getKey(), req=req)
                 member.updateStats(key=tmpP.getKey(), req=req)
                 member.updateNNB(key=tmpP.getKey(), req=req)
+                member.updateHonors(key=tmpP.getKey(), req=req)
+            elif member.singleHitHonors < 3:
+                req = apiCall("user", "", "honors", key=tmpP.getKey())
+                member.updateHonors(key=tmpP.getKey(), req=req)
 
             context = {"player": player, "member": member}
             return render(request, 'faction/members/line.html', context)
@@ -1061,11 +1065,15 @@ def combined(request):
             arrayCounts = [v for k, v in sorted(counts.items(), key=lambda x: (-x[1]["wins"] - x[1]["bonus"], -x[1]["respect"]))]
             arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
+            now = tsnow()
             for i, bonus in enumerate(arrayBonuses):
-                try:
-                    arrayBonuses[i].append(faction.member_set.filter(tId=bonus[0]).first().lastAction)
-                except BaseException:
+                member = faction.member_set.filter(tId=bonus[0]).first()
+                if member is None:
                     arrayBonuses[i].append(False)
+                    arrayBonuses[i].append(False)
+                else:
+                    arrayBonuses[i].append(now - member.lastActionTS)
+                    arrayBonuses[i].append(member.singleHitHonors if member.shareE > -1 else -1)
 
             # hack for joint report total time
             totalTime = 0

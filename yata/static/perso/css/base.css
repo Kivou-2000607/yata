@@ -511,7 +511,7 @@ img.badge {
 img.badge:hover {
   box-shadow: 2px  2px  2px  2px #aaa!important;
 }
-i.fa-icon-inline { margin-right: 8px; }
+.fa-icon-inline { margin-right: 8px; }
 i.fa-icon-dropdown { margin-left: 15px; }
 
 /* Style The Dropdown Button */

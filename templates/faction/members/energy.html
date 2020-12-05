@@ -17,6 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load app_filters %}
+
 {% if errorMessage %}
     <span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
 {% endif %}
@@ -24,8 +26,10 @@ This file is part of yata.
 {% if member.tId == player.tId %}
     <span style="cursor: pointer;">
     {% if member.shareE %}
-        <span class="error faction-member-shareE" title="Stop sharing your energy.">
-            {{member.energy}}
+        <span class="neutral faction-member-shareE" title="Stop sharing your energy.">
+            <span class="fa-icon-inline">{{member.energy|stringformat:" 4d"}}</span>
+            <i class="far fa{% if member.energyRefillUsed %}-check{% endif %}-square fa-icon-inline"></i>
+            <i class="fas fa-cannabis fa-icon-inline" style="opacity:{% if member.drugCD > 3600 %}1{% elif member.drugCD > 0%}0.5{% else %}0.1{% endif %}" title="{{member.drugCD|ts2time}} of durg CD"></i>
         </span>
     {% else %}
         <span class="valid faction-member-shareE" title="Start sharing your energy with your factionmates. You will be able to stop sharing whenever you want by clicking your the energy.">
@@ -39,6 +43,8 @@ This file is part of yata.
     {% elif member.shareE == 0 %}
         <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
     {% elif member.shareE == 1 %}
-        {{member.energy}}
+        <span class="fa-icon-inline">{{member.energy}}</span>
+        <i class="far fa{% if member.energyRefillUsed %}-check{% endif %}-square fa-icon-inline"></i>
+        <i class="fas fa-cannabis fa-icon-inline" style="opacity:{% if member.drugCD > 3600 %}1{% elif member.drugCD > 0%}0.5{% else %}0.1{% endif %}" title="{{member.drugCD|ts2time}} of drug CD"></i>
     {% endif %}
 {% endif %}

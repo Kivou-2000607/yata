@@ -27,7 +27,7 @@ along with yata. If not, see
 {% if member.tId == player.tId %}
 <span style="cursor: pointer;">
     {% if member.shareS %}
-    <span class="error faction-member-shareS"
+    <span class="neutral faction-member-shareS"
         title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}&#10;&#10;Click to stop sharing your battle stats.">
         {{member.getTotalStats|intcomma}}
     </span>

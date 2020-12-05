@@ -26,32 +26,18 @@ This file is part of yata.
     <script>
 
     $(function() {
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'ago',
-            is: function(s, table, cell, $cell) {
-                // return false so this parser is not auto detected
-                return false;
-            },
-            format: function(s, table, cell, cellIndex) {
-                // format your data for normalization
-                var ret = s.toLowerCase()
-                .replace(/days/,86400).replace(/day/,86400)
-                .replace(/hours/,3600).replace(/hour/,3600)
-                .replace(/hrs/,3600).replace(/hr/,3600)
-                .replace(/minutes/,60).replace(/minute/,60)
-                .replace(/mins/,60).replace(/min/,60).split(' ');
-                return String(parseInt(ret[1], 10)*parseInt(ret[0], 10));
-            },
-            // set type, either numeric or text
-            type: 'numeric',
-        });
+      $(document).ready(function () {
+          $("#faction-jbonus").tablesorter({
+              textExtraction: {
+                  0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                  1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                  6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                  7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+              },
 
-        $("#faction-jbonus").tablesorter({
-            headers: { 5: { sorter: 'ago' } },
-            cssAsc: 'up', cssDesc: 'down', sortList: [[4,1]],
-        });
-        // $("#faction-jbonus").bind("sortStart",function() {});
+              cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1]]
+          });
+      });
     });
 
     </script>
@@ -70,6 +56,7 @@ This file is part of yata.
                     <th>Hits</th>
                     <th>Respect</th>
                     <th>Report</th>
+                    <th>CMG</th>
                 </tr>
             </thead>
             <tbody>
@@ -113,15 +100,17 @@ This file is part of yata.
                     <th>Hits</th>
                     <th title="#hit / (respect earnt with bonus) or #hit if no bonus">Score</th>
                     <th>Last action</th>
+                    <th>CMG&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      title="Carnage (10 respect bonus 10+)&#10;Massacre (100 respect bonus 250+)&#10;Genocide (1000 respect bonus 2500+)"></i></th>
                 </tr>
             </thead>
             <tbody>
                 {%for bonus in bonuses%}
                     <tr>
                         {% if bonus.5 %}
-                            <td class="a">{{bonus.1|playerURL:bonus.0|safe}}</td>
+                            <td class="a" data-val="{{bonus.1}}">{{bonus.1|playerURL:bonus.0|safe}}</td>
                             {% if bonus.3 %}
-                                <td class="b" title="{{bonus.2}}">{{bonus.2}}</td>
+                                <td class="b" title="{{bonus.2}}" data-val="{{bonus.3}}">{{bonus.2}}</td>
                             {% else %}
                                 <td class="b">&empty;</td>
                             {% endif %}
@@ -132,7 +121,8 @@ This file is part of yata.
                             {% else %}
                                 <td class="c" title="{{bonus.3}}">{{bonus.4|floatformat:2}}</td>
                             {% endif %}
-                            <td class="d">{{bonus.5}}</td>
+                            <td class="d" data-val="{{bonus.5}}">{{bonus.5|ts2ago}}</td>
+                            <td class="e" data-val="{{bonus.6}}">{{bonus.6|cmg}}</td>
                         {% endif %}
                     </tr>
                 {%endfor%}

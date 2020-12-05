@@ -33,6 +33,9 @@ along with yata. If not, see
                     5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                     6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                     7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    10: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
 
                 cssAsc: 'up', cssDesc: 'down', sortList: [[1, 0]]
@@ -57,15 +60,24 @@ along with yata. If not, see
                     <th>Last action</th>
                     <th>Status</th>
                     <th title="Days in Faction">DIF</th>
-                    <th>Energy</th>
+
                     <th>CE Rank &nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
-                            title="CE ranking is based on NNB, equivalent arsons and the last 250 OC rankings of your members. Global ranking is not part of the API so it can be wrong. The more members you have on YATA the more accurate it is."></i>
+                      title="CE ranking is based on NNB, equivalent arsons and the last 250 OC rankings of your members. Global ranking is not part of the API so it can be wrong. The more members you have on YATA the more accurate it is."></i>
                     </th>
+
                     <th>NNB | EA &nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
-                            title="Natural nerve bar and rough estimation of Equivalent Arsons&#10;&#10;Frauds are assumed arson warehouse&#10;Thefts are assumed steal jackets&#10;Auto theft are assumed steal parked car&#10;2 drug deals remove 1 arson (it corresponds to doing drug crimes at 40NNB)&#10;Computer crimes are assumed steal virus&#10;Murders are assumed Assassinate mob boss&#10;Recent (among the last 250 OC) PH and PA are accounted for&#10;&#10;See TornStats CE predictor for more information"></i>
+                      title="Natural nerve bar and rough estimation of Equivalent Arsons&#10;&#10;Frauds are assumed arson warehouse&#10;Thefts are assumed steal jackets&#10;Auto theft are assumed steal parked car&#10;2 drug deals remove 1 arson (it corresponds to doing drug crimes at 40NNB)&#10;Computer crimes are assumed steal virus&#10;Murders are assumed Assassinate mob boss&#10;Recent (among the last 250 OC) PH and PA are accounted for&#10;&#10;See TornStats CE predictor for more information"></i>
                     </th>
+
+                    <th>Energy&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                            title="Square checked if refill used"></i>
+                    </th>
+
                     <th>Stats&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
-                            title="Only AA members can see these stats"></i></th>
+                      title="Only AA members can see these stats"></i></th>
+
+                    <th>CMG&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      title="Carnage (10 respect bonus 10+)&#10;Massacre (100 respect bonus 250+)&#10;Genocide (1000 respect bonus 2500+)"></i></th>
             </thead>
             <tbody>
                 {% for member in members %}

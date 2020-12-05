@@ -38,16 +38,21 @@ This file is part of yata.
         {% endif %}
     </td>
     <td class="e" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
-    <td class="f{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareE > 0%}{{member.energy}}{%endif%}">
-        {% include "faction/members/energy.html"%}
+    <td class="e" data-val="{{member.crimesRank}}">
+      #{{member.crimesRank}}
     </td>
-    <td class="f" data-val="{{member.crimesRank}}">
-        #{{member.crimesRank}}
-    </td>
-    <td class="g{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
+    {% if member.shareE < 0 %}
+      <td class="z" colspan="4"><span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span></td>
+    {% else %}
+      <td class="f{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
         {% include "faction/members/nnb.html"%}
-    </td>
-    <td class="h{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareS > 0%}{{member.getTotalStats}}{%endif%}">
-        {% include "faction/members/stats.html"%}
-    </td>
+      </td>
+      <td class="f{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareE > 0%}{{member.energy}}{%endif%}">
+          {% include "faction/members/energy.html"%}
+      </td>
+      <td class="g{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareS > 0%}{{member.getTotalStats}}{%endif%}">
+          {% include "faction/members/stats.html"%}
+      </td>
+      <td class="h" data-val="{{member.singleHitHonors}}">{{member.singleHitHonors|cmg}}</td>
+    {% endif %}
 {% endif %}

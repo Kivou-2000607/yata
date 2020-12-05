@@ -100,6 +100,20 @@ def ts2ago(timestamp):
 def format(value, fmt):
     return fmt.format(value)
 
+@register.filter(name='cmg')
+def cmg(value):
+    n = int(value)
+    if n < 0:
+        return format_html(f'<span style="opacity: 0.3;" title="Member not in YATA"><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></span>')
+
+    honors = ["Carnage", "Massacre", "Genocide"]
+    stars = ['far']*3
+    for i in range(int(value)):
+        stars[i] = 'fas'
+    title = ", ".join([h for h in honors[:value]])
+    htmlstars = "".join([f'<i class="{s} fa-star"></i>' for s in stars])
+    return format_html(f'<span title="{title}">{htmlstars}</span>')
+
 
 @register.filter(name='rarity')
 def rarity(circulation):
@@ -127,6 +141,15 @@ def companyURL(value, arg=0):
     else:
         return '-'
 
+
+@register.filter(name='factionURLShort')
+def factionURLShort(value, arg=0):
+    if str(arg) == "0":
+        return '-'
+    elif arg:
+        return '<a href="https://www.torn.com/factions.php?step=profile&ID={id}" target="_blank">{name}</a>'.format(name=value, id=arg)
+    else:
+        return '-'
 
 @register.filter(name='factionURLShort')
 def factionURLShort(value, arg=0):

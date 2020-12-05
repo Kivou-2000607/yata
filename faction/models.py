@@ -470,7 +470,7 @@ class Faction(models.Model):
         # it's not possible to delete all memebers and recreate the base
         # otherwise the target list will be lost
 
-        now = int(timezone.now().timestamp())
+        now = tsnow()
 
         # don't update if less than 1 hour ago and force is False
         if not force and (now - self.membersUpda) < 3600:
@@ -514,6 +514,8 @@ class Faction(models.Model):
                 if player is None:
                     memberDB.shareE = -1
                     memberDB.energy = 0
+                    memberDB.energyRefillUsed = False
+                    memberDB.drugCD = 0
                     memberDB.shareS = -1
                     memberDB.dexterity = 0
                     memberDB.speed = 0
@@ -522,6 +524,7 @@ class Faction(models.Model):
                     memberDB.shareN = -1
                     memberDB.nnb = 0
                     memberDB.arson = 0
+                    memberDB.singleHitHonors = 0
                 else:
                     # pass from -1 to 1 in case
                     memberDB.shareN = 1 if memberDB.shareN == -1 else memberDB.shareN
@@ -550,12 +553,15 @@ class Faction(models.Model):
                 memberTmp.shareN = -1 if player is None else memberTmp.shareN
                 memberTmp.shareS = -1 if player is None else memberTmp.shareS
                 memberTmp.energy = 0
+                memberTmp.energyRefillUsed = False
+                memberTmp.drugCD = 0
                 memberTmp.nnb = 0
                 memberTmp.arson = 0
                 memberTmp.dexterity = 0
                 memberTmp.strength = 0
                 memberTmp.speed = 0
                 memberTmp.defense = 0
+                memberTmp.singleHitHonors = 0
 
                 memberTmp.save()
 
@@ -669,7 +675,7 @@ class Faction(models.Model):
 
         for news_type in ["armorynews", "fundsnews"]:
             if isinstance(factionInfo.get(news_type), list):
-                continue            
+                continue
             for k, v in factionInfo.get(news_type, dict({})).items():
                 news_count = news.filter(tId=k).count()
 
@@ -1149,10 +1155,15 @@ class Member(models.Model):
     color = models.CharField(default="", max_length=16, blank=True)
     until = models.IntegerField(default=0)
 
+    # honors
+    singleHitHonors = models.IntegerField(default=0)  # 1: carnage, 2: massacren 3: genocide
+
     # share energy and NNB with faction
     # -1: not on YATA 0: doesn't wish to share 1: share
     shareE = models.IntegerField(default=1)
     energy = models.IntegerField(default=0)
+    energyRefillUsed = models.BooleanField(default=False)
+    drugCD = models.IntegerField(default=0)
 
     # share natural nerve bar
     # -1: not on YATA 0: doesn't wish to share 1: share
@@ -1211,18 +1222,45 @@ class Member(models.Model):
             self.energy = 0
         else:
             if not req:
-                req = apiCall("user", "", "bars", key=key)
+                req = apiCall("user", "", "bars,refills,cooldowns", key=key)
 
             # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
             # req = requests.get(url).json()
             if 'apiError' in req:
                 error = req
                 self.energy = 0
+                self.energyRefillUsed = True
+                self.drugCD = 0
             else:
                 energy = req['energy'].get('current', 0)
                 self.energy = energy
+                self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
+                self.drugCD = req["cooldowns"]["drug"]
 
         self.save()
+
+        return error
+
+    def updateHonors(self, key=None, req=False):
+        if self.singleHitHonors == 3:
+            return False
+
+        error = False
+        if not req:
+            req = apiCall("user", "", "honors", key=key)
+
+        if 'apiError' in req:
+            error = req
+        else:
+            if 478 in req["honors_awarded"]:
+                self.singleHitHonors = 3
+                self.save()
+            elif 477 in req["honors_awarded"]:
+                self.singleHitHonors = 2
+                self.save()
+            elif 256 in req["honors_awarded"]:
+                self.singleHitHonors = 1
+                self.save()
 
         return error
 
