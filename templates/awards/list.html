@@ -47,6 +47,7 @@ This file is part of yata.
 
             $("#awards-list").tablesorter({
                 textExtraction: {
+                  1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
