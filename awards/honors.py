@@ -452,8 +452,8 @@ d = {
     263: 936063655,  # Survivor
     729: 406130587,  # Hairy
     730: 841650925,  # Backdrop
-    969: 419540552,  # Phantastic
-    964: 801196866,  # Something Humerus
+    969: 524309184,  # Phantastic
+    964: 775408521,  # Something Humerus
     966: 0,  # Oh My Gourd!
 
     # 14
