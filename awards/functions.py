@@ -24,6 +24,8 @@ from yata.handy import tsnow
 
 import random
 
+from awards.honors import d as honorsId
+
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
 HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
@@ -213,7 +215,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -428,7 +430,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -480,7 +482,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -989,7 +991,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1084,7 +1086,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1338,7 +1340,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1370,10 +1372,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         secondsOfFlight = int(userInfo.get("personalstats", dict({})).get("traveltime", 0))
                         hoursOfFlight = float(secondsOfFlight / 3600.)
                         daysOfFlight = float(hoursOfFlight / 24.0)
-                        vp["current"] = "{:.1f}".format(daysOfFlight)
+                        vp["current"] = float("{:.1f}".format(daysOfFlight))
                         vp["achieve"] = min(1, daysOfFlight / float(vp["goal"]))
                         ratio = daysOfFlight / daysSince15
-                        vp["left"] = "{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else -1
+                        vp["left"] = float("{:.1f}".format(max(float(vp["goal"] - daysOfFlight) / ratio, 0.0)) if ratio > 0 else -1)
                         vp["comment"] = "Current ratio of {:.2g} hours / day<br>Current state {:.1f} / {} hours".format(ratio * 24, hoursOfFlight, vp["goal"] * 24)
                     else:
                         vp["current"] = 0
@@ -1544,7 +1546,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1701,7 +1703,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1773,7 +1775,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -1928,7 +1930,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -2039,7 +2041,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:
@@ -2141,7 +2143,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["goal"] = str2int[v["description"].split(" ")[-2]]
                     tmp = daysOld / 365.
                     vp["achieve"] = min(1, tmp / float(vp["goal"]))
-                    vp["current"] = "{:.2f}".format(tmp)
+                    vp["current"] = float("{:.2f}".format(tmp))
                     vp["left"] = max(365 * vp["goal"] - daysOld, 0)
                     vp["comment"] = "{:.0f} days left man... No more, no less.".format(vp["left"])
                     awards[type]["m_" + k] = vp
@@ -2200,7 +2202,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                 # vp["left"] = 0
                 # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
-                vp["img"] = honorId2Img(int(k))
+                vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
                     vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
                 else:

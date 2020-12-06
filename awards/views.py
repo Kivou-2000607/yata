@@ -67,6 +67,7 @@ def index(request):
 
         if request.session.get('json-output'):
             context["player"] = model_to_dict(context["player"])
+            json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
             return JsonResponse(context, status=200)
         else:
             return render(request, "awards.html", context)
