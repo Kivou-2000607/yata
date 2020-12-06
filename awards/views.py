@@ -67,7 +67,7 @@ def index(request):
 
         if request.session.get('json-output'):
             context["player"] = model_to_dict(context["player"])
-            json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
+            # json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
             return JsonResponse(context, status=200)
         else:
             return render(request, "awards.html", context)
@@ -138,8 +138,8 @@ def hof(request):
         userInfo = awardsPlayer.get('userInfo')
         summaryByType = awardsPlayer.get('summaryByType')
 
-        hof = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by('-awardsScor').exclude(tId=-1))]
-        hof = Paginator(hof, 50).get_page(1)
+        hof_full = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by('-awardsScor').exclude(tId=-1))]
+        hof = Paginator(hof_full, 50).get_page(1)
 
         graph = []
         for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
@@ -155,15 +155,23 @@ def hof(request):
                    "view": {"hof": True},
                    "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]),
                    "awardscat": True,
-                   "awards": awardsPlayer.get('awards'),
+                   # "awards": awardsPlayer.get('awards'),
                    "summaryByType": summaryByType,
                    "graph": graph,
                    "graph2": graph2,
                    "hof": hof,
                    "pinnedAwards": pinnedAwards,
                    "hofGraph": json.loads(AwardsData.objects.first().hofHistogram)}
-        page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
-        return render(request, page, context)
+
+        if request.session.get('json-output'):
+            del context["player"]
+            # del context["awards"]
+            context["hof"] = [{"player_name": v["player"].name, "player_id": v["player"].tId, "player_faction_name": v["player"].factionNa, "player_faction_id": v["player"].factionId, "rank": v["rank"]} for v in hof_full]
+            # json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
+            return JsonResponse(context, status=200)
+        else:
+            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+            return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
@@ -218,7 +226,10 @@ def togglePin(request):
                 player.awardsPinn = json.dumps(pinnedAwards)
                 player.save()
 
-            return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
+            if request.session.get('json-output'):
+                return JsonResponse({"awardId": awardId, "pinnedAwards": pinnedAwards}, status=200)
+            else:
+                return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
