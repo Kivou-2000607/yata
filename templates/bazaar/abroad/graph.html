@@ -107,7 +107,7 @@ This file is part of yata.
     <div class="modal-center-large">
         <h2 class="title">Stocks in {{stock.country}} for {{stock.item}} over the last <span id="n-hours">24</span> hours</h2>
         <div class="module">
-            <span style="position: absolute; top:40px; right: 10px;"><button>{{stock.item.display_large}}</button></span>
+            <span style="position: absolute; top:40px; right: 10px;"><button>{% itemImg stock.item.tId stock.item.tName "large" %}</button></span>
             <p>Tendency per week over last week: {{stock.item.weekTendency|priceTendency|safe}}</p>
             <p>Tendency per week over last month: {{stock.item.monthTendency|priceTendency|safe}}</p>
             <!-- <p>Efficiency of the updates (on 5 minutes periods): {{stock.eff|floatformat:2}}%</p> -->

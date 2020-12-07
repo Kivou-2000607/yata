@@ -115,6 +115,14 @@ def cmg(value):
     return format_html(f'<span title="{title}">{htmlstars}</span>')
 
 
+@register.simple_tag(name='itemImg')
+def itemImg(item_id, item_name, size):
+    return format_html(f'<img src="{settings.STATIC_URL}items/img/{item_id}.png" alt="{item_name} [{item_id}]" class="item-{size}" />')
+
+@register.simple_tag(name='flagImg')
+def flagImg(country, cl):
+    return format_html(f'<img src="{settings.STATIC_URL}images/flags/fl_{country}.png" alt="{country}" class="{cl}" />')
+
 @register.filter(name='rarity')
 def rarity(circulation):
     try:

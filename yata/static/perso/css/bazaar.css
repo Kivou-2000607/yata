@@ -25,7 +25,6 @@ table.bazaar-categories td {
 }
 
 h2.title > img{
-    height: 26px;
     margin:0 10px 2px -7px ;
     background:#ccc url("/static/images/bg_hospital.jpg") left top repeat;
     border-radius: 4px;
@@ -149,4 +148,18 @@ div.abroad-soft:hover {
 div.abroad-soft > div {
     display: table-cell;
     vertical-align: middle;
+}
+
+/* no need for now */
+/* img.item-large {
+  width: 100px;
+  height: 50px;
+} */
+img.item-small {
+  height: 26px;
+  margin-right: 8px
+}
+
+img.flag {
+  width: 20px;
 }

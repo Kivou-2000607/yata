@@ -69,7 +69,7 @@ This file is part of yata.
     <div class="modal-center-large">
         <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
         <div class="module">
-            <span style="position: absolute; top:40px; right: 10px;"><button>{{item.display_large}}</button></span>
+            <span style="position: absolute; top:40px; right: 10px;"><button>{% itemImg item.tId item.tName "large" %}</button></span>
             <p>Tendency per week over last week: {{item.weekTendency|priceTendency|safe}}</p>
             <p>Tendency per week over last month: {{item.monthTendency|priceTendency|safe}}</p>
             {% if graphLength == 0 %}

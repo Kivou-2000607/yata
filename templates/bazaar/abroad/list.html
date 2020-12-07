@@ -57,7 +57,8 @@ This file is part of yata.
             {% else %}
                 <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
                     {% if country.flag %}
-                        <img class="flag-gs" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{country.flag}}.png" alt="{{id}}">
+                        {% flagImg country.flag "flag-gs" %}
+                        <!-- <img class="flag-gs" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{country.flag}}.png" alt="{{id}}"> -->
                     {% else %}
                         <i class="fas fa-toggle-off"></i>
                     {% endif %}
@@ -109,10 +110,9 @@ This file is part of yata.
             {% for stock in stocks %}
             <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow abroad-item-stocks">
                   <td class="a" data-val="{{stock.get_country.id}}">
-                  <img class="flag" src="https://www.torn.com/images/v2/travel_agency/flags/fl_{{stock.get_country.flag}}.png" alt="{{id}}">
-                    {{stock.country}}
+                  {% flagImg stock.get_country.flag "flag" %} {{stock.country}}
                 </td>
-                <td class="b dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}">{{stock.item.tName}}</td>
+                <td class="b dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}">{% itemImg stock.item.tId stock.item.tName "small" %} {{stock.item.tName}}</td>
                 <td class="c">{{stock.item.tType}}</td>
                 <td class="d" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>
                 <td class="e" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
