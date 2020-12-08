@@ -58,6 +58,7 @@ This file is part of yata.
             <th>Started</th>
             <th>Ready</th>
             <th>In / Since</th>
+            <th>Progress</th>
     </thead>
     <tbody>
     {% for crime in currentCrimes %}
@@ -82,10 +83,13 @@ This file is part of yata.
           {% if crime.time_left %}
             <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
             <td class="e" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
+            <td>{{crimesDB[crime.crime_id-1][1]["time"][1]}}</td>
           {% else %}
             <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
             <td class="e" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
+            <td>100%</td>
           {% endif %}
+          
       </tr>
     {% endfor %}
     </tbody>
