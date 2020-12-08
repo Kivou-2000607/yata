@@ -17,7 +17,7 @@ Pillow==7.2.0
 
 # math modules
 numpy==1.18.5
-scipy==1.4.1
+scipy
 
 cloudscraper==1.2.34
 python-decouple==3.3
