@@ -403,7 +403,7 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
         forComment = dict({
             "Cannabis ": 75,
             "Ecstasy ": 210,
-            "Ketamine ": 70,
+            "Ketamine ": 55,
             "LSD ": 425,
             "Opium ": 215,
             "Shrooms ": 209.5,
