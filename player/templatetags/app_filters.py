@@ -214,7 +214,7 @@ def badge(value, arg):
 @register.filter(name='honorUrl')
 def honorUrl(id):
     # return "https://awardimages.torn.com/435540163.png" if url is None else url
-    print(id)
+    # print(id)
     url = "{}honors/img/{}.png".format(settings.STATIC_URL, id)
     return url
 

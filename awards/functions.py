@@ -2539,14 +2539,14 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
 
             # next crime
             if typeOfAwards == "crimes":
-                if category != "Jail" and int(v1.get("left", 0)):
-                    # multiply by 100 in order to compare int and not floats
-                    # so with a precision of E-2
-                    if int(100 * v1["left"]) < nextNerve:
+                if category != "Jail" and int(1000 * v1.get("left", 0)):
+                    # multiply by 1000 in order to compare int and not floats
+                    # so with a precision of E-3
+                    if int(1000 * v1["left"]) < nextNerve:
                         nextCrime = [(category, k1)]
-                        nextNerve = int(100 * v1["left"])
-                    elif int(100 * v1["left"]) == nextNerve:
-                        nextNerve = int(100 * v1["left"])
+                        nextNerve = int(1000 * v1["left"])
+                    elif int(1000 * v1["left"]) == nextNerve:
+                        nextNerve = int(1000 * v1["left"])
                         nextCrime.append((category, k1))
 
     if typeOfAwards == "crimes":
