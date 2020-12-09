@@ -450,12 +450,13 @@ table.faction-crimes-breakdown td.d { width: 9%; text-align: right; }
 table.faction-crimes-breakdown td.e { width: 7%; text-align: right; }
 table.faction-crimes-breakdown td.f { width: 7%; text-align: center; }
 
-/* a b c dd e */
-table.faction-crimes-list-current td.a { width: 14%; text-align: left; font-weight: bold; }
-table.faction-crimes-list-current td.b { width: 17.5%; text-align: left; }
-table.faction-crimes-list-current td.c { width: 14.5%; text-align: left; }
-table.faction-crimes-list-current td.d { width: 17%; text-align: center; }
-table.faction-crimes-list-current td.e { width: 15%; text-align: right; }
+/* a b c dd e f */
+table.faction-crimes-list-current td.a { width: 13%; text-align: left; font-weight: bold; }
+table.faction-crimes-list-current td.b { width: 20%; text-align: left; }
+table.faction-crimes-list-current td.c { width: 17%; text-align: left; }
+table.faction-crimes-list-current td.d { width: 13%; text-align: center; }
+table.faction-crimes-list-current td.e { width: 14%; text-align: right; }
+table.faction-crimes-list-current td.f { width: 10%; text-align: center; }
 
 /* a b cc dd e f */
 table.faction-crimes-list-past td.a { width: 5%; text-align: center; }

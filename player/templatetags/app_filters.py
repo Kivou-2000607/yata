@@ -21,7 +21,7 @@ from django import template
 from django.conf import settings
 from django.utils.html import format_html
 from django.utils.html import escape
-
+from datetime import datetime
 import re
 import math
 
@@ -96,6 +96,7 @@ def ts2ago(timestamp):
     s = "" if t == 1 else "s"
     return "{} sec{} ago".format(t, s)
 
+
 @register.filter(name='format')
 def format(value, fmt):
     return fmt.format(value)
@@ -139,6 +140,7 @@ def factionURL(value, arg=0):
         return '<a href="https://www.torn.com/factions.php?step=profile&ID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
     else:
         return '-'
+
 
 @register.filter(name='companyURL')
 def companyURL(value, arg=0):
@@ -331,6 +333,7 @@ def sTooltip(t):
     else:
         return '-'
 
+
 @register.filter(name='float2IfFloat')
 def float2IfFloat(f):
     try:
@@ -414,6 +417,7 @@ def signColor(i, inv=False):
     else:
         return ''
 
+
 @register.filter(name="signColor0")
 def signColor0(i, inv=False):
     try:
@@ -457,6 +461,7 @@ def trURL(string):
 def attackLog(code):
     return 'https://www.torn.com/loader.php?sid=attackLog&ID={}'.format(code)
 
+
 @register.filter(name="key_to_title")
 def key_to_title(key):
     return str(key).replace("_", " ").title()
@@ -482,6 +487,7 @@ def workstats(value, arg):
     except BaseException:
         return value
 
+
 @register.filter(name='workstatsinv')
 def workstatsinv(value, arg):
     try:
@@ -502,6 +508,7 @@ def workstatsinv(value, arg):
     except BaseException as e:
         return value
 
+
 @register.filter(name='effpot')
 def effpot(value, arg):
     try:
@@ -518,6 +525,7 @@ def effpot(value, arg):
     except BaseException as e:
         return value
 
+
 @register.simple_tag(name='workgains')
 def workgains(gain, stat, req):
     if str(gain) == "0" or str(req) == "0":
@@ -529,9 +537,11 @@ def workgains(gain, stat, req):
     else:
         return gain
 
+
 @register.filter(name='wage')
 def wage(value):
     return "-" if str(value) == "0" else f'${value:,d}'
+
 
 @register.filter(name='compstars')
 def compstars(value):
@@ -539,11 +549,12 @@ def compstars(value):
         return value
 
     n = int(value)
-    stars = ['far']*10
+    stars = ['far'] * 10
     for i in range(int(value)):
         stars[i] = 'fas'
     htmlstars = "".join([f'<i class="{s} fa-star"></i>' for s in stars])
     return format_html(f'<span title="{n} stars">{htmlstars}</span>')
+
 
 @register.filter(name='compprice')
 def compprice(value):
@@ -553,6 +564,7 @@ def compprice(value):
     v = int(value)
     return f'${v:,d}' if v else "-"
 
+
 @register.filter(name='compjp')
 def compjp(value):
     if not str(value).isdigit():
@@ -560,6 +572,7 @@ def compjp(value):
 
     v = int(value)
     return f'{v:,d}' if v else "No cost"
+
 
 @register.filter(name="compPopColor")
 def compPopColor(p):

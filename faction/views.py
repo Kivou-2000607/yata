@@ -34,6 +34,7 @@ import html
 import os
 import json
 import csv
+import math
 
 from yata.handy import *
 from faction.models import *
@@ -3177,6 +3178,7 @@ def simulatorChallenge(request):
 
 # SECTION: organised crimes
 def oc(request):
+    from datetime import datetime
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
@@ -3235,6 +3237,11 @@ def oc(request):
                 v["respect"][3] = round(v["respect"][2] / float(v["crimes"][0]), 2)
                 v["respect"][4] = OC_EFFICIENCY[k]["respect"]
                 v["respect"][5] = round(100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"]))
+
+            # compute current crimes progress
+            now = tsnow()
+            for crime in currentCrimes:
+                crime.progress = math.floor(100 * min((now - crime.time_started) / (crime.time_ready - crime.time_started), 1))
 
             # compute teamsDB averages
             todel = []
