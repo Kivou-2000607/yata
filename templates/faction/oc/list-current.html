@@ -3,18 +3,19 @@ Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
 
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
 
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with yata. If not, see
+<https: //www.gnu.org/licenses />.
 {% endcomment %}
 
 {% load static %}
@@ -24,32 +25,39 @@ This file is part of yata.
 
 
 {% if reloadTooltips %}
-    <script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
 {% endif %}
 
 {% if currentCrimes|length %}
 <table id="faction-crimes-list-current" class="center-large trshadow faction-crimes-list-current">
     <thead>
 
-        <tr><td colspan="6">
-            <div class="pagination">
-                <span class="step-links">
-                    {% if currentCrimes.has_previous %}
-                        <a class="page-link" href="{% url 'faction:ocList' %}?p_ccrimes=1{{getfilters}}">&laquo; first</a>
-                        <a class="page-link" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.previous_page_number }}{{getfilters}}">previous</a>
-                    {% endif %}
+        <tr>
+            <td colspan="6">
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if currentCrimes.has_previous %}
+                        <a class="page-link" href="{% url 'faction:ocList' %}?p_ccrimes=1{{getfilters}}">&laquo;
+                            first</a>
+                        <a class="page-link"
+                            href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.previous_page_number }}{{getfilters}}">previous</a>
+                        {% endif %}
 
-                    <span class="current">
-                        {{ currentCrimes.number }}/{{ currentCrimes.paginator.num_pages }}
+                        <span class="current">
+                            {{ currentCrimes.number }}/{{ currentCrimes.paginator.num_pages }}
+                        </span>
+
+                        {% if currentCrimes.has_next %}
+                        <a class="page-link"
+                            href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.next_page_number }}{{getfilters}}">next</a>
+                        <a class="page-link"
+                            href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.paginator.num_pages }}{{getfilters}}">last
+                            &raquo;</a>
+                        {% endif %}
                     </span>
-
-                    {% if currentCrimes.has_next %}
-                        <a class="page-link" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.next_page_number }}{{getfilters}}">next</a>
-                        <a class="page-link" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.paginator.num_pages }}{{getfilters}}">last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
-        </td></tr>
+                </div>
+            </td>
+        </tr>
 
         <tr>
             <th>Team</th>
@@ -61,37 +69,39 @@ This file is part of yata.
             <th>Progress</th>
     </thead>
     <tbody>
-    {% for crime in currentCrimes %}
-      <tr class="hover">
-          <td class="a valid" data-val="{{crime.participants|length}}">
-             {% with participants=crime.get_participants %}
-              <span rel="tooltip" style="cursor: help;" data-val="{{participants|length}}" title='{% include "faction/oc/participants.html" with participants=participants id=crime.team_id %}'>
-                <i class="fas fa-users" ></i>&nbsp;&nbsp;<tt>{{crime.team_id}}</tt> #{{participants|length}}
-              </span>
-              {% include "faction/oc/filter.html" with type="team_id" id=crime.team_id %}
-              {% endwith %}
-          </td>
-          <td class="b" data-val="{{crime.tId}}">{{crime.crime_name}} [{{crime.tId}}]
-              {% include "faction/oc/filter.html" with type="crime_id" id=crime.crime_id %}
-          </td>
-          <td class="c">{% with p=crime.get_planned_by %}
-                            {{p.0|playerURL:p.1|safe}}
-                            {% include "faction/oc/filter.html" with type="planned_by" id=p.1 %}
+        {% for crime in currentCrimes %}
+        <tr class="hover">
+            <td class="a valid" data-val="{{crime.participants|length}}">
+                {% with participants=crime.get_participants %}
+                <span rel="tooltip" style="cursor: help;" data-val="{{participants|length}}"
+                    title='{% include "faction/oc/participants.html" with participants=participants id=crime.team_id %}'>
+                    <i class="fas fa-users"></i>&nbsp;&nbsp;<tt>{{crime.team_id}}</tt> #{{participants|length}}
+                </span>
+                {% include "faction/oc/filter.html" with type="team_id" id=crime.team_id %}
+                {% endwith %}
+            </td>
+            <td class="b" data-val="{{crime.tId}}">{{crime.crime_name}} [{{crime.tId}}]
+                {% include "faction/oc/filter.html" with type="crime_id" id=crime.crime_id %}
+            </td>
+            <td class="c">{% with p=crime.get_planned_by %}
+                {{p.0|playerURL:p.1|safe}}
+                {% include "faction/oc/filter.html" with type="planned_by" id=p.1 %}
 
-                        {% endwith %}</td>
-          <td class="d">{{crime.time_started|ts2date}}</td>
-          {% if crime.time_left %}
+                {% endwith %}</td>
+            <td class="d">{{crime.time_started|ts2date}}</td>
+            {% if crime.time_left %}
             <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
             <td class="e" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
-            <td>{{crimesDB[crime.crime_id-1][1]["time"][1]}}</td>
-          {% else %}
+
+            <td>{{crime|ocpercentage}}</td>
+            {% else %}
             <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
             <td class="e" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
             <td>100%</td>
-          {% endif %}
-          
-      </tr>
-    {% endfor %}
+            {% endif %}
+
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 {% else %}

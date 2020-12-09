@@ -3169,6 +3169,7 @@ def simulatorChallenge(request):
 
 # SECTION: organised crimes
 def oc(request):
+    from datetime import datetime
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
