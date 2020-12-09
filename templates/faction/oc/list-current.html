@@ -33,7 +33,7 @@ along with yata. If not, see
     <thead>
 
         <tr>
-            <td colspan="6">
+            <td colspan="7">
                 <div class="pagination">
                     <span class="step-links">
                         {% if currentCrimes.has_previous %}
@@ -90,15 +90,13 @@ along with yata. If not, see
                 {% endwith %}</td>
             <td class="d">{{crime.time_started|ts2date}}</td>
             {% if crime.time_left %}
-            <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
-            <td class="e" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
-
-            <td>{{crime|ocpercentage}}</td>
+              <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+              <td class="e" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
             {% else %}
-            <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
-            <td class="e" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
-            <td>100%</td>
+              <td class="d" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+              <td class="e" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
             {% endif %}
+            <td class="f {% if crime.progress == 100 %}valid{% endif %}">{{crime.progress}}%</td>
 
         </tr>
         {% endfor %}

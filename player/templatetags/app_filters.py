@@ -30,11 +30,6 @@ from yata.handy import tsnow
 register = template.Library()
 
 
-@register.filter(name='ocpercentage')
-def ocpercentage(crime):
-    return str(round((100.0 * (datetime.now() - datetime.fromtimestamp(crime.time_started)) / (datetime.fromtimestamp(crime.time_ready) - datetime.fromtimestamp(crime.time_started))))) + "%"
-
-
 @register.filter(name='ts2date')
 def ts2date(timestamp, fmt=None):
     import datetime
