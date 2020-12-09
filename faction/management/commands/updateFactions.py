@@ -41,6 +41,8 @@ class Command(BaseCommand):
                     faction.updateLog()
                     print("[command.faction.update] faction {}: update upgrades".format(faction))
                     faction.updateUpgrades()
+                    print("[command.faction.update] faction {}: update crimes".format(faction))
+                    faction.updateCrimes()
                     # faction.resetSimuUpgrades(update=True)
                     # faction.getFactionTree()
                 else:

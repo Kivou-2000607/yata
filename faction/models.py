@@ -272,7 +272,7 @@ class Faction(models.Model):
 
         # api call and update key
         key = self.getKey()
-        crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes")
+        crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes", verbose=False)
 
         if 'apiError' in crimesAPI:
             return self.crimes_set.all(), True, crimesAPI
@@ -284,20 +284,26 @@ class Faction(models.Model):
         # get db crimes
         crimesDB = self.crimes_set.all()
 
+        # information dictionnary for the output
+        n = {"created": 0, "updated": 0, "deleted": 0, "ready": 0}
+
         # loop over db crimes to check for cancelled crimes (ie not in api)
         for crime in crimesDB.filter(initiated=False):
             if str(crime.tId) not in crimesAPI:
+                n["deleted"] += 1
                 crime.delete()
 
         # sort crimes API
         crimesAPI = sorted(crimesAPI.items(), key=lambda x: x[1]["time_started"])
 
         # second loop over API to create new crimes
-        n = {"created": 0, "updated": 0, "deleted": 0, "ready": 0}
         for k, v in crimesAPI:
 
             # ignore old crimes
             if v["initiated"] and v["time_completed"] < old:
+                # if in the DB but not initated change it to initated so that it's deleted after the loop
+                # it can happen if crimes haven't been update for a while
+                self.crimes_set.filter(tId=k).update(initiated=True)
                 continue
 
             # define if ready
@@ -330,8 +336,9 @@ class Faction(models.Model):
                 del v["participants"]
                 self.crimes_set.filter(tId=k).update(**v)
 
+        # delete old initiated crimes
         nDeleted, _ = crimesDB.filter(initiated=True, time_completed__lt=old).delete()
-        n["deleted"] = nDeleted
+        n["deleted"] += nDeleted
 
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
@@ -683,13 +690,11 @@ class Faction(models.Model):
                     continue
                 elif news_count > 1:
                     news.filter(tId=k).delete()
-                    print(f"delete {news_count} duplicates for news {k}")
 
                 if (v["timestamp"] > old) and ((news_type == "armorynews" and v["timestamp"] > last_armory) or (news_type == "fundsnews" and v["timestamp"] > last_fund)):
                     v["news"] = cleanhtml(v["news"])[:512]
                     v["member"] = v["news"].split(" ")[0]
                     bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type))
-                    print(f"create news {k}")
 
         bulk_mgr.done()
 
