@@ -10,7 +10,7 @@ table.comapny-details-positions td.a { width: 10%; text-align: left; }  /* x1 */
 table.comapny-details-positions td.b { width: 8%; text-align: center; }  /* x3 */
 table.comapny-details-positions td.c { width: 7%; text-align: center; }  /* x3 */
 table.comapny-details-positions td.d { width: 10%; text-align: left; }  /* x1 */
-table.comapny-details-positions td.e { width: 35%; text-align: left; }  /* x1 */
+table.comapny-details-positions td.e { width: 35%; text-align: left; white-space: normal }  /* x1 */
 
 table.comapny-details-specials td.a { width: 25%; text-align: left; }  /* x1 */
 table.comapny-details-specials td.b { width: 25%; text-align: left; }  /* x1 */

@@ -127,11 +127,17 @@ def supervise(request):
             for p in positions:
                 # compute S and P
                 req = [p.man_required, p.int_required, p.end_required]
-                Pi = req.index(max(req))
-                Si = req.index(min([s for s in req if s]))
-                P = hrm * sta[Pi] / float(req[Pi])
-                S = hrm * sta[Si] / float(req[Si])
-                ws_eff = min(45, 45 * P) + max(0, 5*math.log2(P)) + min(45, 45 * S) + max(0, 5*math.log2(S))
+
+                # test if not unassined
+                if sum(req):
+                    Pi = req.index(max(req))
+                    Si = req.index(min([s for s in req if s]))
+                    P = hrm * sta[Pi] / float(req[Pi])
+                    S = hrm * sta[Si] / float(req[Si])
+                    ws_eff = min(45, 45 * P) + max(0, 5*math.log2(P)) + min(45, 45 * S) + max(0, 5*math.log2(S))
+                else:
+                    ws_eff = 0
+
                 ws_eff_matrix_row.append(ws_eff)
 
                 # use simu value if necessary

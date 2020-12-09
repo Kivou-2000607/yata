@@ -47,6 +47,12 @@ class Command(BaseCommand):
             for k1, v1 in positions.items():
                 position, create = company.position_set.update_or_create(name=k1, defaults=v1)
                 print("\t", position, create)
+            # create unassigned
+            k1 = 'Unassigned'
+            v1 = {'man_required': 0, 'int_required': 0, 'end_required': 0, 'man_gain': 0, 'int_gain': 0, 'end_gain': 0, 'special_ability': 'None', 'description': 'This position is tasked with the heavy duties of ball scratching and looking busy whilst being utterly unproductive.'}
+            position, create = company.position_set.update_or_create(name=k1, defaults=v1)
+            print("\t", position, create)
+
             for k1, v1 in stocks.items():
                 stocks, create = company.stock_set.update_or_create(name=k1, defaults=v1)
                 print("\t", stocks, create)
