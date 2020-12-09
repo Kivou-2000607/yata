@@ -208,6 +208,9 @@ class UpgradeAdmin(admin.ModelAdmin):
 
 class CrimesAdmin(admin.ModelAdmin):
     list_display = ['pk', 'tId', 'initiated', 'success', 'ready']
+    search_fields = ('tId',)
+    list_filter = ('faction__name', 'initiated', 'success', 'ready')
+
 
 admin.site.register(Crimes, CrimesAdmin)
 # admin.site.register(Upgrade, UpgradeAdmin)
