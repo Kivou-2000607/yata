@@ -412,7 +412,7 @@ d = {
     166: 507297243,  # Stairway To Heaven
     375: 994774255,  # Resolution
     731: 782638013,  # Tornication
-    873: 0,  # Welcome
+    873: 276392311,  # Welcome
 
     # 12
     18: 978797305,  # Another Brick In The Wall
