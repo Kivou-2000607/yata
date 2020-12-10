@@ -132,9 +132,9 @@ def supervise(request):
                 if sum(req):
                     Pi = req.index(max(req))
                     Si = req.index(min([s for s in req if s]))
-                    P = hrm * sta[Pi] / float(req[Pi])
-                    S = hrm * sta[Si] / float(req[Si])
-                    ws_eff = min(45, 45 * P) + max(0, 5*math.log2(P)) + min(45, 45 * S) + max(0, 5*math.log2(S))
+                    P = max(hrm * sta[Pi] / float(req[Pi]), 1)
+                    S = max(hrm * sta[Si] / float(req[Si]), 1)
+                    ws_eff = min(45, 45 * P) + 5*math.log2(P) + min(45, 45 * S) + 5*math.log2(S)
                 else:
                     ws_eff = 0
 
@@ -185,7 +185,7 @@ def supervise(request):
         company_stock = company.companystock_set.all().order_by("-timestamp")
         company_stock_p = Paginator(company_stock, 25)
         if request.GET.get('page_s') is not None:
-            return render(request, "company/supervise/stock.html", {"stock_p": stock_p.get_page(request.GET.get('page_s'))})
+            return render(request, "company/supervise/stock.html", {"stock_p": company_stock_p.get_page(request.GET.get('page_s'))})
 
         # create employee graph
         # current employees [id, name]
