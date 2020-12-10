@@ -66,8 +66,7 @@ def index(request):
             context.update(error)
 
         if request.session.get('json-output'):
-            context["player"] = model_to_dict(context["player"])
-            # json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
+            context["player"] = {"awardsUpda": player.awardsUpda, "awardsScor": player.awardsScor, "awardsNumb": player.awardsNumb, "awardsPinn": json.loads(player.awardsPinn)}
             return JsonResponse(context, status=200)
         else:
             return render(request, "awards.html", context)
