@@ -470,35 +470,35 @@ def updateMember(request):
 
 
 # @cache_page(60)
-def getCrimes(request):
-    try:
-        # check if API key is valid with api call
-        key = request.GET.get("key", False)
-        if not key:
-            return JsonResponse({"error": "No keys provided"}, status=400)
-
-        call = apiCall('user', '', '', key=key)
-        if "apiError" in call:
-            return JsonResponse({"error": call["apiError"]}, status=400)
-
-        #  check if can get faction
-        factionId = call.get("faction", {}).get("faction_id")
-        faction = Faction.objects.filter(tId=factionId).first()
-        if faction is None:
-            return JsonResponse({"message": "Can't find faction {} in YATA database".format(factionId)}, status=400)
-
-        # update crimes
-        faction.updateCrimes()
-
-        # get members
-        members = {}
-        for member in faction.member_set.all():
-            members[str(member.tId)] = {"NNB": member.nnb, "equivalent_arsons": member.arson, "ce_rank": member.crimesRank}
-
-        return JsonResponse({"members": members}, status=200)
-
-    except BaseException as e:
-        return JsonResponse({"message": "Server error... YATA's been poorly coded: {}".format(e)}, status=400)
+# def getCrimes(request):
+#     try:
+#         # check if API key is valid with api call
+#         key = request.GET.get("key", False)
+#         if not key:
+#             return JsonResponse({"error": "No keys provided"}, status=400)
+#
+#         call = apiCall('user', '', '', key=key)
+#         if "apiError" in call:
+#             return JsonResponse({"error": call["apiError"]}, status=400)
+#
+#         #  check if can get faction
+#         factionId = call.get("faction", {}).get("faction_id")
+#         faction = Faction.objects.filter(tId=factionId).first()
+#         if faction is None:
+#             return JsonResponse({"message": "Can't find faction {} in YATA database".format(factionId)}, status=400)
+#
+#         # update crimes
+#         faction.updateCrimes()
+#
+#         # get members
+#         members = {}
+#         for member in faction.member_set.all():
+#             members[str(member.tId)] = {"NNB": member.nnb, "equivalent_arsons": member.arson, "ce_rank": member.crimesRank}
+#
+#         return JsonResponse({"members": members}, status=200)
+#
+#     except BaseException as e:
+#         return JsonResponse({"message": "Server error... YATA's been poorly coded: {}".format(e)}, status=400)
 
 
 def toggleMemberShare(request):

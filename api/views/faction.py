@@ -60,7 +60,10 @@ def getCrimes(request):
         # get members
         members = {}
         for member in faction.member_set.all():
-            members[str(member.tId)] = {"NNB": member.nnb, "equivalent_arsons": member.arson, "ce_rank": member.crimesRank}
+            if member.nnb:
+                members[str(member.tId)] = {"NNB": member.nnb, "equivalent_arsons": member.arson, "ce_rank": member.crimesRank}
+            else:
+                members[str(member.tId)] = {"NNB": None, "equivalent_arsons": None, "ce_rank": member.crimesRank}
 
         return JsonResponse({"members": members, "timestamp": tsnow()}, status=200)
 
