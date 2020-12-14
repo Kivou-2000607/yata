@@ -89,9 +89,58 @@ def dashboard(request, secret=False):
         else:
             servers = player.server_set.all()
             for server in servers:
+                configurations = json.loads(server.configuration)
+
                 if server.secret == 'x':
-                    server.secret = json.loads(server.configuration).get("admin", {}).get("secret", 'x')
-                    server.save()
+                    server.secret = configurations.get("admin", {}).get("secret", 'x')
+
+                # clean old channels and roles
+
+                # get all channels and roles
+                recorded_channels = configurations.get("admin", {}).get("channels", {})
+                recorded_roles = configurations.get("admin", {}).get("roles", {})
+
+                # loop over the sections (loot, verify, etc, ...)
+                for section, options in configurations.items():
+                    # skip admin
+                    if section == "admin":
+                        continue
+
+                    # loop over all the options in each section
+                    for option, vals in options.items():
+
+                        # check if the section is about roles or channels or factions
+                        is_channels_option = option[:9] == "channels_"
+                        is_roles_option = option[:6] == "roles_"
+                        is_faction = section == "verify" and option == "factions"
+                        if is_channels_option or is_roles_option or is_faction:
+
+                            # list with ids to delete
+                            to_del = []
+
+                            # loop over the roles or channels and check if they are in recorded_roles or recorded_channels
+                            for val in vals:
+                                if is_roles_option and val not in recorded_roles:
+                                    to_del.append(val)
+                                if is_channels_option and val not in recorded_channels:
+                                    to_del.append(val)
+
+                                # special case of facion which is a sub config with roles
+                                if is_faction:
+                                    to_del_sub = []
+                                    for val_sub in vals[val]:
+                                        if val_sub not in recorded_roles:
+                                            to_del_sub.append(val_sub)
+
+                                    for k in to_del_sub:
+                                        del vals[val][val_sub]
+
+                            # delete role in configuration
+                            for k in to_del:
+                                del vals[k]
+
+                server.configuration = json.dumps(configurations)
+                server.save()
 
         context = {"player": player, "servers": servers, "botcat": True, "secret": secret, "view": {"dashboard": True}}
         return render(request, page, context)
