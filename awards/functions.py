@@ -808,10 +808,10 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                             return (100 - exp) * 40
 
                     totalHits = 50000
-                    remainingHits = 0
+                    totalHitsMade = 0
                     for we in wexp:
-                        we["hits"] = exp_to_hits(we["exp"])
-                        we["progress"] = 100 * min(1, float(2000 - we["hits"]) / 2000.)
+                        we["hits"] = 2000 - exp_to_hits(we["exp"])
+                        we["progress"] = 100 * min(1, float(we["hits"]) / 2000.)
                         if we["exp"] == 100:
                             we["class"] = "valid"
                             maxExp += 1
@@ -820,15 +820,16 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                         else:
                             we["class"] = "error"
 
-                        remainingHits += we["hits"]
+                        totalHitsMade += we["hits"]
 
-                    sup5 = [f'<span class={w["class"]}>{i + 1:02d} {w["name"]}</span>: {w["progress"]:,.0f}% {w["hits"] if int(w["exp"]) < 100 else ""}' for i, w in enumerate(wexp)]
+                    sup5 = [f'<span class={w["class"]}>{i + 1:02d} {w["name"]}</span>: {w["progress"]:,.0f}% {2000 - w["hits"] if int(w["exp"]) < 100 else ""}' for i, w in enumerate(wexp)]
                     vp["current"] = maxExp
-                    vp["achieve"] = min(1, float(remainingHits) / float(totalHits))
+                    vp["achieve"] = min(1, float(totalHitsMade) / float(totalHits))
                     if len(sup5):
                         sup5.insert(0, "<b>List of the first 25 highest experienced weapons</b><br>with progress and remaining hits:<br>")
-                        sup5.append(f'<br>Total hits made {totalHits - remainingHits:,d} / {totalHits:,d} ({100 * vp["achieve"]:,.0f}%).')
-                        sup5.append(f"<i>The progress is based on hits made so it is different from the weapon experience.</i>")
+                        sup5.append(f'<br>Total hits made {totalHitsMade:,d} / {totalHits:,d} ({100 * vp["achieve"]:,.0f}%).')
+                        sup5.append(f'Total remaining hits {totalHits - totalHitsMade:,d}.')
+                        sup5.append(f"<br><i>The progress is based on hits made so it is different from the weapon experience.</i>")
                         vp["comment"] = "<br>".join(sup5)
                     awards[type]["h_" + k] = vp
 
