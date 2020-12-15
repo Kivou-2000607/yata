@@ -18,6 +18,7 @@ This file is part of yata.
 """
 # django
 from django.http import JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # cache and rate limit
@@ -66,6 +67,45 @@ def getCrimes(request):
                 members[str(member.tId)] = {"NNB": None, "equivalent_arsons": None, "ce_rank": member.crimesRank}
 
         return JsonResponse({"members": members, "timestamp": tsnow()}, status=200)
+
+    except BaseException as e:
+        return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
+
+
+@csrf_exempt
+def updateRanking(request):
+    try:
+
+        # check if API key is valid with api call
+        key = request.GET.get("key", False)
+        if not key:
+            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+
+        # check if body contains sub_ranking
+        sub_ranking = request.POST.get("sub_ranking")
+        if sub_ranking is None:
+            return JsonResponse({"error": {"code": 2, "error": "No sub ranking provided"}}, status=400)
+
+        # insure its a list of ints
+        if not isinstance(sub_ranking, list) and not all([str(_).isdigit() for _ in sub_ranking]):
+            return JsonResponse({"error": {"code": 2, "error": "Sub ranking not well formated"}}, status=400)
+        sub_ranking = [int(_) for _ in sub_ranking]
+
+        # get faction ID
+        call = apiCall('user', '', '', key=key)
+        if "apiError" in call:
+            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+
+        #  check if can get faction
+        factionId = call.get("faction", {}).get("faction_id")
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return JsonResponse({"error": {"code": 2, "error": f"Can't find faction {factionId} in YATA database"}}, status=400)
+
+        # update crimes
+        faction.updateRanking([sub_ranking])
+
+        return HttpResponse(status=200)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
