@@ -82,7 +82,8 @@ def updateRanking(request):
             return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
 
         # check if body contains sub_ranking
-        sub_ranking = request.POST.get("sub_ranking")
+        payload = json.loads(request.body)
+        sub_ranking = payload.get("sub_ranking")
         if sub_ranking is None:
             return JsonResponse({"error": {"code": 2, "error": "No sub ranking provided"}}, status=400)
 
