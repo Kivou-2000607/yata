@@ -360,47 +360,46 @@ class Faction(models.Model):
         # get members for ranking
         faction_members = self.member_set.order_by("-nnb", "-arson").only("tId", "nnb", 'crimesRank')
 
-        for i, _ in enumerate(faction_members):
-            print(i, _, _.nnb)
-
-        # erase main ranking for nnb ranking
-        main_ranking = [m.tId for m in faction_members]
-
         # get previous main ranking
         previous_ranking = json.loads(self.crimesRank)
 
+        main_ranking = previous_ranking if len(previous_ranking) else [m.tId for m in faction_members]
+
         # if no empty set it as first sub ranking
-        if len(previous_ranking):
-            sub_ranking.insert(0, previous_ranking)
+        # if len(previous_ranking):
+        #     sub_ranking.insert(0, previous_ranking)
 
-        # loop over the sub rankings
-        for team in sub_ranking:                        
+        for main_member in [m for m in faction_members if m.arson > 0]:
+            # loop over the sub rankings
+            for team in sub_ranking:
+                if main_member.tId not in team:
+                    pass
 
-            # first loop over participants (member point of view)
-            for member in [p for p in team if p in main_ranking]:
+                # first loop over participants (member point of view)
+                for member in [p for p in team if p in main_ranking]:
 
-                # get member main and sub rank
-                mem_m_rank = main_ranking.index(member)
-                mem_s_rank = team.index(member)
+                    # get member main and sub rank
+                    mem_m_rank = main_ranking.index(member)
+                    mem_s_rank = team.index(member)
 
-                # second loop over participants (for comparison)
-                for participant in [p for p in team if p != member and p in main_ranking]:
+                    # second loop over participants (for comparison)
+                    for participant in [p for p in team if p != member and p in main_ranking]:
 
-                    # get participant global and crime rank
-                    par_m_rank = main_ranking.index(participant)
-                    par_s_rank = team.index(participant)
+                        # get participant global and crime rank
+                        par_m_rank = main_ranking.index(participant)
+                        par_s_rank = team.index(participant)
 
-                    # check if bad ordering
-                    if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
+                        # check if bad ordering
+                        if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
 
-                        # change global ordering
-                        if par_s_rank < mem_s_rank:
-                            # participant should be above member
-                            main_ranking.insert(mem_m_rank, main_ranking.pop(par_m_rank))
+                            # change global ordering
+                            if par_s_rank < mem_s_rank:
+                                # participant should be above member
+                                main_ranking.insert(mem_m_rank, main_ranking.pop(par_m_rank))
 
-                        elif par_s_rank > mem_s_rank:
-                            # member should be above member
-                            main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
+                            elif par_s_rank > mem_s_rank:
+                                # member should be above member
+                                main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
 
         # cleanup old members
         for rank_id in main_ranking:
