@@ -261,7 +261,7 @@ class Faction(models.Model):
 
         return sorted(walls.items(), key=lambda x: -x[1]["n"]), True
 
-    def updateCrimes(self, force=False):
+    def updateCrimes(self, force=True):
 
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
@@ -360,6 +360,9 @@ class Faction(models.Model):
         # get members for ranking
         faction_members = self.member_set.order_by("-nnb", "-arson").only("tId", "nnb", 'crimesRank')
 
+        for i, _ in enumerate(faction_members):
+            print(i, _, _.nnb)
+
         # erase main ranking for nnb ranking
         main_ranking = [m.tId for m in faction_members]
 
@@ -371,13 +374,10 @@ class Faction(models.Model):
             sub_ranking.insert(0, previous_ranking)
 
         # loop over the sub rankings
-        for team in sub_ranking:
-            # first loop over participants (member point of view)
-            for member in team:
+        for team in sub_ranking:                        
 
-                # add member to ranking if necessary
-                if member not in main_ranking:
-                    main_ranking.append(member)
+            # first loop over participants (member point of view)
+            for member in [p for p in team if p in main_ranking]:
 
                 # get member main and sub rank
                 mem_m_rank = main_ranking.index(member)
