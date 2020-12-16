@@ -457,6 +457,7 @@ def updateMember(request):
             elif member.singleHitHonors < 3:
                 req = apiCall("user", "", "honors", key=tmpP.getKey())
                 member.updateHonors(key=tmpP.getKey(), req=req)
+            member.save()
 
             context = {"player": player, "member": member}
             return render(request, 'faction/members/line.html', context)

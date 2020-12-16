@@ -346,37 +346,42 @@ class Faction(models.Model):
 
         # get list of sub rankings
         sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v.get("participants", False)]
-        main_ranking = self.updateRanking(sub_ranking)
+        main_ranking = self.updateRanking(sub_ranking, save_members_ranking=False)
 
         self.save()
         return self.crimes_set.all(), False, n
 
-    def updateRanking(self, sub_ranking):
+    def updateRanking(self, sub_ranking, save_members_ranking=False):
 
         # get members for ranking
-        faction_members = [member.tId for member in self.member_set.order_by("-nnb", "-arson").only("tId")]
+        faction_members = self.member_set.order_by("-nnb", "-arson").only("tId", "nnb", 'crimesRank')
 
-        # get current crimes rank
-        main_ranking = json.loads(self.crimesRank)
+        # erase main ranking for nnb ranking
+        main_ranking = [m.tId for m in faction_members]
 
-        # set default if no previous ranking
+        # get previous main ranking
+        previous_ranking = json.loads(self.crimesRank)
+
+        # if no empty set it as first sub ranking
         if not len(main_ranking):
-            main_ranking = faction_members
+            sub_ranking.insert(0, previous_ranking)
 
-        no_rank = []
-        # loop over the members to modify the main_ranking
+        # loop over the members to modify the main_ranking based
         for member in faction_members:
+
+            # append new faction member to main ranking
+            if member.tId not in main_ranking:
+                main_ranking.append(member.tId)
 
             # loop over the sub rankings
             for team in sub_ranking:
-                # print(member.tId, team)
 
                 # check if member in crime
-                if member in team:
+                if member.tId in team:
 
                     # get member main and sub rank
-                    mem_m_rank = main_ranking.index(member)
-                    mem_s_rank = team.index(member)
+                    mem_m_rank = main_ranking.index(member.tId)
+                    mem_s_rank = team.index(member.tId)
 
                     # loop over participants of the crime
                     for participant in [p for p in team if p != member and p in main_ranking]:
@@ -397,23 +402,29 @@ class Faction(models.Model):
                                 # member should be above member
                                 main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
 
-            if member not in main_ranking:
-                no_rank.append(member)
-
         # cleanup old members
         for rank_id in main_ranking:
-            if rank_id not in faction_members:
+            if rank_id not in [m.tId for m in faction_members]:
                 main_ranking.remove(rank_id)
 
-        # append members not in the sub ranking
-        for no_rank_id in no_rank:
-            main_ranking.append(no_rank_id)
+        # for i, id in enumerate(main_ranking):
+        #     print(i, id)
 
-        for i, id in enumerate(main_ranking):
-            print(i, id)
-
+        # update crimesRank
         self.crimesRank = json.dumps(main_ranking)
         self.save()
+
+        # save members ranking
+        if save_members_ranking:
+            bulk_u_mgr = BulkUpdateManager(['crimesRank'], chunk_size=100)
+            for member in faction_members:
+                try:
+                    member.crimesRank = main_ranking.index(member.tId) + 1
+                except BaseException:
+                    member.crimesRank = 100
+                bulk_u_mgr.add(member)
+            bulk_u_mgr.done()
+
         return main_ranking
 
 
@@ -524,6 +535,11 @@ class Faction(models.Model):
         if 'apiError' in membersAPI:
             return membersAPI
 
+        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction', 'crimesRank',
+                                        'shareE', 'energy', 'energyRefillUsed', 'drugCD',
+                                        'shareS', 'dexterity', 'speed', 'strength', 'defense',
+                                        'shareN', 'nnb', 'arson', 'singleHitHonors'], chunk_size=100)
+
         membersDB = self.member_set.all()
         crimesRank = json.loads(self.crimesRank)
         for m in membersAPI:
@@ -537,7 +553,7 @@ class Faction(models.Model):
                 try:
                     memberDB.crimesRank = crimesRank.index(memberDB.tId) + 1
                 except BaseException:
-                    memberDB.crimesRank = 0
+                    memberDB.crimesRank = 100
 
                 # update status
                 memberDB.updateStatus(**membersAPI[m]['status'])
@@ -570,7 +586,8 @@ class Faction(models.Model):
                         memberDB.updateNNB(key=player.getKey(), req=req)
                         memberDB.updateStats(key=player.getKey(), req=req)
 
-                memberDB.save()
+                # memberDB.save()
+                bulk_u_mgr.add(memberDB)
 
             # member exists but from another faction
             elif Member.objects.filter(tId=m).first() is not None:
@@ -597,7 +614,8 @@ class Faction(models.Model):
                 memberTmp.defense = 0
                 memberTmp.singleHitHonors = 0
 
-                memberTmp.save()
+                # memberTmp.save()
+                bulk_u_mgr.add(memberTmp)
 
             # new member
             else:
@@ -616,6 +634,8 @@ class Faction(models.Model):
                     memberNew.updateLastAction(**membersAPI[m]['last_action'])
                 except BaseException:
                     pass
+
+        bulk_u_mgr.done()
 
         # delete old members
         for m in membersDB:
@@ -1248,7 +1268,7 @@ class Member(models.Model):
         if save:
             self.save()
 
-    def updateEnergy(self, key=None, req=False):
+    def updateEnergy(self, key=None, save=False, req=False):
         error = False
         if not self.shareE:
             self.energy = 0
@@ -1269,11 +1289,12 @@ class Member(models.Model):
                 self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
                 self.drugCD = req["cooldowns"]["drug"]
 
-        self.save()
+        if save:
+            self.save()
 
         return error
 
-    def updateHonors(self, key=None, req=False):
+    def updateHonors(self, key=None, save=False, req=False):
         if self.singleHitHonors == 3:
             return False
 
@@ -1286,17 +1307,17 @@ class Member(models.Model):
         else:
             if 478 in req["honors_awarded"]:
                 self.singleHitHonors = 3
-                self.save()
             elif 477 in req["honors_awarded"]:
                 self.singleHitHonors = 2
-                self.save()
             elif 256 in req["honors_awarded"]:
                 self.singleHitHonors = 1
-                self.save()
+
+        if save:
+            self.save()
 
         return error
 
-    def updateStats(self, key=None, req=False):
+    def updateStats(self, key=None, save=False, req=False):
         error = False
         if not self.shareS:
             self.dexterity = 0
@@ -1321,11 +1342,12 @@ class Member(models.Model):
                 self.speed = int(str(req.get('speed', 0)).replace(",", ""))
                 self.strength = int(str(req.get('strength', 0)).replace(",", ""))
 
-        self.save()
+        if save:
+            self.save()
 
         return error
 
-    def updateNNB(self, key=None, req=False):
+    def updateNNB(self, key=None, save=False, req=False):
         error = False
         if not self.shareN:
             self.nnb = 0
@@ -1375,8 +1397,9 @@ class Member(models.Model):
                         add = 650 if len(oc) == 4 else 150  # PA or PH
                         arson += add
                 self.arson = int(arson)
+        if save:
+            self.save()
 
-        self.save()
         return error
 
     def getTotalStats(self):

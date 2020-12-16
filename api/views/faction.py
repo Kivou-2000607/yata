@@ -104,7 +104,7 @@ def updateRanking(request):
             return JsonResponse({"error": {"code": 2, "error": f"Can't find faction {factionId} in YATA database"}}, status=400)
 
         # update crimes
-        faction.updateRanking([sub_ranking])
+        faction.updateRanking([sub_ranking], save_members_ranking=True)
 
         return HttpResponse(status=200)
 
