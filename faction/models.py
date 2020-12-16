@@ -293,7 +293,11 @@ class Faction(models.Model):
                 crime.delete()
 
         # sort crimes API
-        crimesAPI = sorted(crimesAPI.items(), key=lambda x: x[1]["time_started"])
+        crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
+
+        # create ranking based on sub ranking
+        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
+        main_ranking = self.updateRanking(sub_ranking, save_members_ranking=True)
 
         # second loop over API to create new crimes
         for k, v in crimesAPI:
@@ -344,9 +348,9 @@ class Faction(models.Model):
         # save only participants ids of successful PH and PA
         self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)])
 
-        # get list of sub rankings
-        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v.get("participants", False)]
-        main_ranking = self.updateRanking(sub_ranking, save_members_ranking=False)
+
+        # for i, sub in enumerate(test):
+        #     print(i, sub)
 
         self.save()
         return self.crimes_set.all(), False, n
@@ -363,44 +367,40 @@ class Faction(models.Model):
         previous_ranking = json.loads(self.crimesRank)
 
         # if no empty set it as first sub ranking
-        if not len(main_ranking):
+        if len(previous_ranking):
             sub_ranking.insert(0, previous_ranking)
 
-        # loop over the members to modify the main_ranking based
-        for member in faction_members:
+        # loop over the sub rankings
+        for team in sub_ranking:
+            # first loop over participants (member point of view)
+            for member in team:
 
-            # append new faction member to main ranking
-            if member.tId not in main_ranking:
-                main_ranking.append(member.tId)
+                # add member to ranking if necessary
+                if member not in main_ranking:
+                    main_ranking.append(member)
 
-            # loop over the sub rankings
-            for team in sub_ranking:
+                # get member main and sub rank
+                mem_m_rank = main_ranking.index(member)
+                mem_s_rank = team.index(member)
 
-                # check if member in crime
-                if member.tId in team:
+                # second loop over participants (for comparison)
+                for participant in [p for p in team if p != member and p in main_ranking]:
 
-                    # get member main and sub rank
-                    mem_m_rank = main_ranking.index(member.tId)
-                    mem_s_rank = team.index(member.tId)
+                    # get participant global and crime rank
+                    par_m_rank = main_ranking.index(participant)
+                    par_s_rank = team.index(participant)
 
-                    # loop over participants of the crime
-                    for participant in [p for p in team if p != member and p in main_ranking]:
+                    # check if bad ordering
+                    if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
 
-                        # get participant global and crime rank
-                        par_m_rank = main_ranking.index(participant)
-                        par_s_rank = team.index(participant)
+                        # change global ordering
+                        if par_s_rank < mem_s_rank:
+                            # participant should be above member
+                            main_ranking.insert(mem_m_rank, main_ranking.pop(par_m_rank))
 
-                        # check if bad ordering
-                        if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
-
-                            # change global ordering
-                            if par_s_rank < mem_s_rank:
-                                # participant should be above member
-                                main_ranking.insert(mem_m_rank, main_ranking.pop(par_m_rank))
-
-                            elif par_s_rank > mem_s_rank:
-                                # member should be above member
-                                main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
+                        elif par_s_rank > mem_s_rank:
+                            # member should be above member
+                            main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
 
         # cleanup old members
         for rank_id in main_ranking:
@@ -408,7 +408,7 @@ class Faction(models.Model):
                 main_ranking.remove(rank_id)
 
         # for i, id in enumerate(main_ranking):
-        #     print(i, id)
+        #     print(i + 1, id)
 
         # update crimesRank
         self.crimesRank = json.dumps(main_ranking)
