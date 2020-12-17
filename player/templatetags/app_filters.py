@@ -180,6 +180,10 @@ def playerURL(value, arg):
     else:
         return '-'
 
+@register.simple_tag(name='displayplayer')
+def displayplayer(name, id):
+    return format_html(f'<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>')
+
 
 @register.filter(name='playerURLShort')
 def playerURL(value, arg):
