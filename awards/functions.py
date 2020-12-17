@@ -1227,7 +1227,6 @@ def createAwards(tornAwards, userInfo, typeOfAwards, pinned=False):
                     vp["current"] = userInfo.get("personalstats", dict({})).get("itemsdumped", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["left"] = max((vp["goal"] - vp["current"]), 0)
-                    vp["comment"] = ["left", ""]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [743]:
