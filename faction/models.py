@@ -261,7 +261,7 @@ class Faction(models.Model):
 
         return sorted(walls.items(), key=lambda x: -x[1]["n"]), True
 
-    def updateCrimes(self, force=True):
+    def updateCrimes(self, force=False):
 
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
