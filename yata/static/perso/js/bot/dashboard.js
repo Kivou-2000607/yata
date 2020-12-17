@@ -43,6 +43,7 @@ $(document).on('click', '.dashboard-option-tr', e=>{
 
 $(document).on('click', '.dashboard-option-li', e=>{
     e.preventDefault();
+    console.log("triggers dashboard-option-li")
     if($('#dashboard-readonly').length) return;
 
     const target = $(e.currentTarget).closest("li");
@@ -56,6 +57,30 @@ $(document).on('click', '.dashboard-option-li', e=>{
 
         // couple key / value
         key: target.attr("data-key"),
+        val: target.attr("data-val"),
+
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    target.html(spinner);
+});
+
+$(document).on('click', '.dashboard-option-span', e=>{
+    e.preventDefault();
+    console.log("triggers dashboard-option-span")
+    if($('#dashboard-readonly').length) return;
+
+    const target = $(e.currentTarget).closest("span");
+    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+
+        // bot /server / module / type (select the section in the configuration)
+        bid: target.attr("data-bid"),
+        sid: target.attr("data-sid"),
+        mod: target.attr("data-mod"),
+        typ: target.attr("data-typ"),
+
+        // couple key / value
+        key: target.attr("data-key"),
+        sub: target.attr("data-sub"),
         val: target.attr("data-val"),
 
         csrfmiddlewaretoken: getCookie("csrftoken")

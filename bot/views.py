@@ -29,7 +29,7 @@ from player.models import Player
 from bot.models import *
 
 import json
-
+import html
 
 def index(request):
     try:
@@ -205,12 +205,13 @@ def dashboardOption(request):
                 elif post.get("typ") in configuration_keys:
                     type = post.get("typ")  # channels or roles
                     id = post.get("key", 0)
+                    sub = post.get("sub", False)
                     name = post.get("val", "???")
 
                     if type not in c:
                         c[type] = {}
 
-                    if id in c[type] and isinstance(c[type], dict):  # force toggle
+                    if id in c[type] and isinstance(c[type], dict) and not sub:  # force toggle
                         c[type].pop(id)
                         if not len(c[type]):  # del if empty
                             del c[type]
@@ -218,7 +219,21 @@ def dashboardOption(request):
                         if type in ["sending", "blacklist"]:
                             c[type][id] = name
 
-                        elif type in ["channels_allowed", "positions", "notifications"]:
+                        elif type in ["positions"]:
+                            if sub:
+                                if name in c["positions"][id][html.unescape(sub)]:
+                                    del c["positions"][id][html.unescape(sub)][name]
+                                else:
+                                    c["positions"][id][html.unescape(sub)][name] = True
+                            else:
+                                faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
+                                if "apiError" in faction_info:
+                                    print("error")
+                                else:
+                                    positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
+                                    c[type][id] = positions
+
+                        elif type in ["channels_allowed", "notifications"]:
                             # if type == "currents" and name == "disable" and id in c[type]:
                             c[type][id] = name  # (multiple)
 
@@ -234,6 +249,8 @@ def dashboardOption(request):
 
                             if not len(c[type][fid]):  # del if empty
                                 del c[type][fid]
+                                if fid in c["positions"]:  # del positions with faction
+                                    del c["positions"][fid]
 
                         elif type in ["other"]:
                             c[type][id] = 1
@@ -257,9 +274,9 @@ def dashboardOption(request):
 
                     configuration[module] = c
 
-                for k, v in configuration.items():
-                    if k not in ["admin"]:
-                        print(k, v)
+                # for k, v in configuration.items():
+                #     if k not in ["admin"]:
+                #         print(k, v)
 
                 server.configuration = json.dumps(configuration)
                 server.save()
