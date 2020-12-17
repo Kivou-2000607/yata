@@ -13,7 +13,7 @@ psycopg2-binary==2.8.4
 django-extensions==3.0.8
 
 # image modules
-Pillow==7.2.0
+Pillow==8.0.1
 
 # math modules
 numpy==1.18.5
