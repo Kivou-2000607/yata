@@ -1,40 +1,40 @@
 # core modules
-Django==3.1.2
-django-mathfilters==1.0.0
-requests==2.22.0
-django-json-widget==1.0.1
+Django>=3.1.2
+django-mathfilters>=1.0.0
+requests>=2.22.0
+django-json-widget>=1.0.1
 
 # not needed for:
 # - development server (./manage.py runserver)
 # - sqlite3 database
-gunicorn==20.0.4
-# psycopg2==2.8.4
-psycopg2-binary==2.8.4
-django-extensions==3.0.8
+gunicorn>=20.0.4
+psycopg2>=2.8.4  # need to install (sudo apt-get install libpq-dev)
+# psycopg2-binary>=2.8.4
+django-extensions>=3.0.8
 
 # image modules
-Pillow==8.0.1
+Pillow>=8.0.1
 
 # math modules
-numpy==1.18.5
+numpy>=1.18.5
 scipy
 
-cloudscraper==1.2.34
-python-decouple==3.3
-schedule==0.6.0
+cloudscraper>=1.2.34
+python-decouple>=3.3
+schedule>=0.6.0
 
 # memcache and ratemimit
-# python-memcached==1.59
-django-ratelimit==3.0.1
-django_redis==4.12.1
-django-redisboard==4.1.1
+python-memcached>=1.59
+django-ratelimit>=3.0.1
+django_redis>=4.12.1
+django-redisboard>=4.1.1
 
 #min
-django-htmlmin==0.11.0
-django-brotli==0.2.0
+django-htmlmin>=0.11.0
+django-brotli>=0.2.0
 
 # whitenoise
-whitenoise==5.2.0
+whitenoise>=5.2.0
 
 #sentry
-sentry-sdk==0.19.1
+sentry-sdk>=0.19.1
