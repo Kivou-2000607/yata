@@ -577,6 +577,8 @@ class Faction(models.Model):
                     memberDB.nnb = 0
                     memberDB.arson = 0
                     memberDB.singleHitHonors = 0
+                    memberDB.crimesRank = 100
+
                 else:
                     # pass from -1 to 1 in case
                     memberDB.shareN = 1 if memberDB.shareN == -1 else memberDB.shareN
@@ -594,6 +596,9 @@ class Faction(models.Model):
             # member exists but from another faction
             elif Member.objects.filter(tId=m).first() is not None:
                 memberTmp = Member.objects.filter(tId=m).first()
+
+                skip_manager = memberTmp != self  # skip the buld manage if different faction (doesn't seem to save otherwise)
+
                 memberTmp.faction = self
                 memberTmp.name = membersAPI[m]['name']
                 memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
@@ -615,9 +620,12 @@ class Faction(models.Model):
                 memberTmp.speed = 0
                 memberTmp.defense = 0
                 memberTmp.singleHitHonors = 0
+                memberTmp.crimesRank = 100
 
-                # memberTmp.save()
-                bulk_u_mgr.add(memberTmp)
+                if skip_manager:
+                    memberTmp.save()
+                else:
+                    bulk_u_mgr.add(memberTmp)
 
             # new member
             else:
@@ -625,7 +633,7 @@ class Faction(models.Model):
                     # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
                     player = Player.objects.filter(tId=m).first()
                     memberNew = self.member_set.create(
-                        tId=m, name=membersAPI[m]['name'],
+                        tId=m, name=membersAPI[m]['name'], crimesRank=100,
                         lastAction=membersAPI[m]['last_action']['relative'],
                         lastActionTS=membersAPI[m]['last_action']['timestamp'],
                         daysInFaction=membersAPI[m]['days_in_faction'],
@@ -1224,7 +1232,7 @@ class Member(models.Model):
     shareN = models.IntegerField(default=1)
     nnb = models.IntegerField(default=0)
     arson = models.IntegerField(default=0)
-    crimesRank = models.IntegerField(default=0)
+    crimesRank = models.IntegerField(default=100)
 
     # share stats
     # -1: not on YATA 0: doesn't wish to share 1: share
