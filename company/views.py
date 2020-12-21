@@ -232,62 +232,56 @@ def supervise(request):
         return returnError(exc=e, session=request.session)
 
 
-@cache_page(60*10)
-def ws(request):
-    payload = {"effectiveness": []}
-    for company in Company.objects.all():
-        if not company.director:
-            print("no director")
-            continue
-
-        # add employees requirements and potential efficiency on the fly
-        company_positions = company.company_description.position_set.all()
-        employees = company.employee_set.all().order_by("-effectiveness_total")
-
-        manager = employees.filter(position="Manager").first()
-        manager_effectiveness = manager.effectiveness_total if manager is not None else 0
-        for employee in employees:
-            position = company_positions.filter(name=employee.position).first()
-            if position is None:
-                continue
-
-            employee.man_required = 0 if position is None else position.man_required
-            employee.int_required = 0 if position is None else position.int_required
-            employee.end_required = 0 if position is None else position.end_required
-            t = employee.effectiveness_total
-            n = employee.effectiveness_addiction + employee.effectiveness_inactivity
-            # compute theoretical efficiency
-            req = [employee.man_required, employee.int_required, employee.end_required]
-            sta = [employee.manual_labor, employee.intelligence, employee.endurance]
-            Pi = req.index(max(req))
-            Si = req.index(min([s for s in req if s]))
-            P = sta[Pi] / float(req[Pi])
-            S = sta[Si] / float(req[Si])
-            # P = round(sta[Pi] / float(req[Pi]), 0)
-            # S = round(sta[Si] / float(req[Si]), 0)
-            # P = math.ceil(sta[Pi] / float(req[Pi]))
-            # S = math.ceil(sta[Si] / float(req[Si]))
-            employee.effectiveness_theoretical = math.ceil(min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S)))
-            employee.effectiveness_theoretical = min(60, 60 * P) + max(0, 5*math.log2(P)) + min(30, 30 * S) + max(0, 5*math.log2(S))
-
-            # employee.effectiveness_theoretical = min(60, 60 * P) + math.ceil(max(0, 5*math.log2(P))) + min(30, 30 * S) + math.ceil(max(0, 5*math.log2(S)))
-            employee.effectiveness_potential = 100 * (t + n) / max(t, 1)
-            ws = {
-                  "working_stats": employee.effectiveness_working_stats,
-                  "settled_in": employee.effectiveness_settled_in,
-                  "director_education": employee.effectiveness_director_education,
-                  "addiction": employee.effectiveness_addiction,
-                  "inactivity": employee.effectiveness_inactivity,
-                  "management": employee.effectiveness_management,
-                  "book_bonus": employee.effectiveness_book_bonus,
-                  "effectiveness_total": employee.effectiveness_total,
-                  "manager_effectiveness": manager_effectiveness,
-                  "position": employee.position,
-                  "director_hrm": company.director_hrm,
-                  "primary_ratio": P,
-                  "secondary_ratio": S
-                  }
-
-            payload["effectiveness"].append(ws)
-
-    return JsonResponse(payload, status=200)
+# @cache_page(60*10)
+# def ws(request):
+#     payload = {"effectiveness": []}
+#     for company in Company.objects.all():
+#         if not company.director:
+#             continue
+#
+#         # add employees requirements and potential efficiency on the fly
+#         company_positions = company.company_description.position_set.all()
+#         employees = company.employee_set.all().order_by("-effectiveness_total")
+#
+#         manager = employees.filter(position="Manager").first()
+#         manager_effectiveness = manager.effectiveness_total if manager is not None else 0
+#         for employee in employees:
+#             position = company_positions.filter(name=employee.position).first()
+#             if position is None:
+#                 continue
+#
+#             employee.man_required = 0 if position is None else position.man_required
+#             employee.int_required = 0 if position is None else position.int_required
+#             employee.end_required = 0 if position is None else position.end_required
+#             t = employee.effectiveness_total
+#             n = employee.effectiveness_addiction + employee.effectiveness_inactivity
+#             # compute theoretical efficiency
+#             req = [employee.man_required, employee.int_required, employee.end_required]
+#             sta = [employee.manual_labor, employee.intelligence, employee.endurance]
+#             if sum(req):
+#                 Pi = req.index(max(req))
+#                 Si = req.index(min([s for s in req if s]))
+#                 P = sta[Pi] / float(req[Pi])
+#                 S = sta[Si] / float(req[Si])
+#
+#                 ws = {
+#                       "working_stats": employee.effectiveness_working_stats,
+#                       "settled_in": employee.effectiveness_settled_in,
+#                       "director_education": employee.effectiveness_director_education,
+#                       "addiction": employee.effectiveness_addiction,
+#                       "inactivity": employee.effectiveness_inactivity,
+#                       "management": employee.effectiveness_management,
+#                       "book_bonus": employee.effectiveness_book_bonus,
+#                       "effectiveness_total": employee.effectiveness_total,
+#                       "manager_effectiveness": manager_effectiveness,
+#                       "position": employee.position,
+#                       "director_hrm": company.director_hrm,
+#                       "primary_ratio": P,
+#                       "secondary_ratio": S,
+#                       "company_id": company.company_description.tId,
+#                       "company_name": company.company_description.name
+#                       }
+#
+#                 payload["effectiveness"].append(ws)
+#
+#     return JsonResponse(payload, status=200)
