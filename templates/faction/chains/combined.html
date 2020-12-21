@@ -85,10 +85,10 @@ This file is part of yata.
         <br>
         {% include "faction/chains/report-table.html" with totalHits=total.nHits %}
     </div>
-    <h2 class="title">Bonus Score</h2>
+    <h2 class="title"><i class="fas fa-trophy fa-icon-inline"></i>Bonus Score</h2>
     <div class="module">
         <table class="center">
-            <thead><tr><th>Summary of all the bonus taken over the chains of the joint report</th></tr></thead>
+            <thead><tr><th>Summary of all the bonus taken over the chains of the combined report</th></tr></thead>
         </table>
         <table id="faction-jbonus" class="tablesorter center trshadow faction-jbonus">
             <thead>
@@ -127,5 +127,7 @@ This file is part of yata.
                 {%endfor%}
             </tbody>
         </table>
+        <hr class="sep">
+        <p>Are accounted for in this table all members that have received at least one bonus or made more hits than the lowest number of hits of the table.</p>
     </div>
 </div>

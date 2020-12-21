@@ -1204,6 +1204,7 @@ class Member(models.Model):
     tId = models.IntegerField(default=0, unique=True)
     name = models.CharField(default="Duke", max_length=15)
     daysInFaction = models.IntegerField(default=0)
+    bonusScore = models.IntegerField(default=0)
 
     # last action
     lastAction = models.CharField(default="-", max_length=200)

@@ -1068,20 +1068,27 @@ def combined(request):
             arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
 
             now = tsnow()
+            bulk_u_mgr = BulkUpdateManager(['bonusScore'], chunk_size=100)
             for i, bonus in enumerate(arrayBonuses):
                 member = faction.member_set.filter(tId=bonus[0]).first()
                 if member is None:
                     arrayBonuses[i].append(False)
                     arrayBonuses[i].append(False)
+                    member.bonusScore = 0
                 else:
                     arrayBonuses[i].append(now - member.lastActionTS)
                     arrayBonuses[i].append(member.singleHitHonors if member.shareE > -1 else -1)
+                    member.bonusScore = int(100 * bonus[4] / float(max(1, bonus[3])))
+
+                bulk_u_mgr.add(member)
+            bulk_u_mgr.done()
 
             # hack for joint report total time
             totalTime = 0
             for c in chains:
                 totalTime += (c.end - c.start)
             chain = {"start": 0, "end": totalTime, "tId": False}
+
             # context
             context = dict({'chainsReport': chains,  # chains of joint report
                             'total': total,  # for general info

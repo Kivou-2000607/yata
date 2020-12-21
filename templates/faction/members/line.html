@@ -23,7 +23,7 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if errorMessage %}
-    <td colspan="14" class="error" style="text-align: center;">{{errorMessage}}</td>
+    <td colspan="15" class="error" style="text-align: center;">{{errorMessage}}</td>
 {% else %}
     <td class="a" title="{{member.lastActionStatus}}" data-val='{% if member.lastActionStatus == "Offline" %}-1{% elif member.lastActionStatus == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{member.lastActionStatus}}"></i></td>
     <td class="b dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
@@ -55,4 +55,5 @@ This file is part of yata.
       </td>
       <td class="h" data-val="{{member.singleHitHonors}}">{{member.singleHitHonors|cmg}}</td>
     {% endif %}
+    <td class="h" data-val="{{member.bonusScore}}">{{member.bonusScore|div:100|floatformat:2}}</td>
 {% endif %}

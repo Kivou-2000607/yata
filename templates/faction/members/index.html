@@ -36,6 +36,7 @@ along with yata. If not, see
                     8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                     9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                     10: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    11: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
 
                 cssAsc: 'up', cssDesc: 'down', sortList: [[1, 0]]
@@ -78,6 +79,9 @@ along with yata. If not, see
 
                     <th>CMG&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
                       title="Carnage (10 respect bonus 10+)&#10;Massacre (100 respect bonus 250+)&#10;Genocide (1000 respect bonus 2500+)"></i></th>
+
+                    <th>Score&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      title="Bonus score based on the combined report: Total hit made / respect earn with bonus. Visit the combined report page to update the values."></i></th>
             </thead>
             <tbody>
                 {% for member in members %}
