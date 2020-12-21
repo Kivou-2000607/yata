@@ -103,13 +103,14 @@ $(document).on('click', 'a.page-link', function(e){
 });
 
 // show/hide module
-$(document).on('click', 'h2.toggle-display', function(e){
+$(document).on('click', 'h2.title.toggle-display', function(e){
     e.preventDefault();
     var h = $(this);
     // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
     if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
         var i = h.find("i.fa-caret-right");
-        var div = h.closest(".catch-me").children("div");
+        // var div = h.closest(".catch-me").children("div");
+        var div = h.next("div");
         if(div.css("display") == "none") {
             h.removeClass("rounded");
             i.addClass("fa-rotate-90");

@@ -14,6 +14,10 @@ $(document).on('click', '.dashboard-option', e=>{
         // couple key / value
         key: target.attr("data-key"),
         val: target.attr("data-val"),
+
+        // ux enhancement
+        ux: target.attr("data-ux"),
+
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     target.html(spinner);
@@ -35,6 +39,9 @@ $(document).on('click', '.dashboard-option-tr', e=>{
         // couple key / value
         key: target.attr("data-key"),
         val: target.attr("data-val"),
+
+        // ux enhancement
+        ux: target.attr("data-ux"),
 
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
@@ -59,6 +66,9 @@ $(document).on('click', '.dashboard-option-li', e=>{
         key: target.attr("data-key"),
         val: target.attr("data-val"),
 
+        // ux enhancement
+        ux: target.attr("data-ux"),
+
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     target.html(spinner);
@@ -82,6 +92,9 @@ $(document).on('click', '.dashboard-option-span', e=>{
         key: target.attr("data-key"),
         sub: target.attr("data-sub"),
         val: target.attr("data-val"),
+
+        // ux enhancement
+        ux: target.attr("data-ux"),
 
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
@@ -108,6 +121,9 @@ $(document).on('click', '.dashboard-option-af', e=>{
         key: target.attr("data-key"),
         val: target.attr("data-val"),
         fid: id,
+
+        // ux enhancement
+        ux: target.attr("data-ux"),
 
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
@@ -154,7 +170,15 @@ $(document).on('change', 'input.new-message', e=>{
         key: target.attr("data-key"),
         val: target.val(),
 
+        // ux enhancement
+        ux: target.attr("data-ux"),
+
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     target.html(spinner);
+});
+
+$(document).on('click', 'span.dashboard-option-modify-positions', e=>{
+    e.preventDefault();
+    $(e.currentTarget).parent("li").find("div.to-hide").toggle(100);
 });

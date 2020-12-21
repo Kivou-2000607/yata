@@ -70,6 +70,11 @@ div.module p:last-child {
     margin: 0px;
 }
 
+span.h-spacer {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 /* div.tutorial {
     margin-bottom: 0px;
 } */

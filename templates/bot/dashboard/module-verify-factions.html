@@ -39,29 +39,40 @@ This file is part of yata.
             <li>Faction [{{faction_id}}]
             </li>
             <ul>
-                <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-val="{{faction_id}}"> Give positions roles
-                    {% if faction_id in v.positions %}
-                        <i class="fas fa-toggle-on valid"></i>
-                    {% else %}
-                        <i class="fas fa-toggle-off"></i>
-                    {% endif %}
-                </li>
-                {% for i, positions in v.positions.items %}
-                {% if i == faction_id %}
-                    {% for position_name, position_roles in positions.items %}
-                      <li>Position {{position_name}}:
-                        {% for discord_id, discord_name in server.get_roles.items %}
-                          <span class="dashboard-option-span {% if discord_id not in position_roles %}un{% endif %}selected" title="{{discord_id}}" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-sub="{{position_name}}" data-val="{{discord_id}}">@{{discord_name|safe}} </span>
-                        {% endfor %}
-                      </li>
-                    {% endfor %}
-                {% endif %}
-                {% endfor %}
-                {% for discord_id, discord_name in role.items %}
-                <li>
-                    <tt class="dashboard-settings {% if discord_id in server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}}</tt>
-                </li>
-                {% endfor %}
+              {% for discord_id, discord_name in role.items %}
+              <li>
+                  <tt class="dashboard-settings {% if discord_id in server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}}</tt>
+              </li>
+              {% endfor %}
+              <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-val="{{faction_id}}"> Positions roles
+                  {% if faction_id in v.positions %}
+                      <i class="fas fa-toggle-on valid"></i>
+                  {% else %}
+                      <i class="fas fa-toggle-off"></i>
+                  {% endif %}
+              </li>
+              <ul>
+              {% for i, positions in v.positions.items %}
+              {% if i == faction_id %}
+                  {% for position_name, position_roles in positions.items %}
+                    <li><span class="dashboard-option-modify-positions">Position {{position_name}}</span>
+                      {% for discord_id, discord_name in server.get_roles.items %}
+                        {% if discord_id in position_roles %}
+                          <tt class="dashboard-settings {% if discord_id in server.get_roles %}valid{% else %}warning{% endif %}" title="{{discord_id}}">@{{discord_name|safe}}</tt>
+                        {% endif %}
+                      {% endfor %}
+                      <br>
+                      <div class="to-hide{% if not view.ux == position_name %} hidden{% endif %}">
+                      {% for discord_id, discord_name in server.get_roles.items %}
+                        <span class="dashboard-option-span {% if discord_id not in position_roles %}un{% endif %}selected" title="{{discord_id}}" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-sub="{{position_name}}" data-val="{{discord_id}}" data-ux="{{position_name}}">@{{discord_name|safe}} </span>
+                      {% endfor %}
+                      </div>
+                    </li>
+                  {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </ul>
+
             </ul>
             {% endfor %}
         </ul>

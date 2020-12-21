@@ -97,6 +97,7 @@ table.dashboard-revive-servers td.e { width: 10%; text-align: center; }  /* x1 *
 img.bot-tuto {width: 500px; margin: 5px 20px; padding: 5px; border-radius: 5px; border: solid 1px #447e9b;}
 
 
+span.dashboard-option-modify-positions,
 span.dashboard-option-af,
 span.dashboard-option {
     cursor: pointer;

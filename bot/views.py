@@ -87,7 +87,7 @@ def dashboard(request, secret=False):
             servers = Server.objects.filter(secret=secret)
 
         else:
-            servers = player.server_set.all()
+            servers = player.server_set.all().order_by("name", "-bot")
             for server in servers:
                 configurations = json.loads(server.configuration)
 
@@ -169,8 +169,7 @@ def dashboardOption(request):
             player = getPlayer(request.session["player"].get("tId"))
             post = request.POST
             page = None
-
-            context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True}}
+            context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True, "ux": post.get("ux")}}
             server = player.server_set.filter(bot__pk=post.get("bid", 0), discord_id=post.get("sid", 0)).first()
 
             if server is None:
