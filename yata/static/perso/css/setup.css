@@ -33,3 +33,27 @@ table.analytics-requests tr.h-b { display: none; }
 table.analytics-reports tr.h-a { cursor: pointer; }
 table.analytics-reports tr.h-b { display: none; }
 table.analytics-reports td { width: 10%; text-align: center; }
+
+div.donations-buttons-container {
+  position: relative;
+  text-align: center;
+}
+img.donations-qrcode {
+  width: 256px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+}
+img.donations-button {
+  width: 256px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+  cursor: pointer;
+  box-shadow: 0px  0px  1px  1px #aaa!important;
+  border-radius: 40px;
+}
+
+img.donations-button:hover {
+  box-shadow: 2px  2px  2px  2px #aaa!important;
+}

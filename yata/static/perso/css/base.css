@@ -517,6 +517,12 @@ img.badge {
 img.badge:hover {
   box-shadow: 2px  2px  2px  2px #aaa!important;
 }
+
+img.donations-button-inline {
+  height: 28px;
+  border-radius: 14px;
+}
+
 .fa-icon-inline { margin-right: 8px; }
 i.fa-icon-dropdown { margin-left: 15px; }
 

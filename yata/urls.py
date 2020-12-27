@@ -23,6 +23,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from . import views
+from setup import views as setup_views
 
 # for shared reports
 from faction.views import report as chainReport
@@ -61,6 +62,8 @@ urlpatterns = [
     path('tmp/gym', views.gym, name="gym"),
     path('api/gym', views.gymImport, name="gymImport"),
     path('discord', RedirectView.as_view(url="https://discord.gg/tZaYpbG"), name="discord"),
+
+    path('donations', setup_views.donations, name='donations'),
 
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),

@@ -28,7 +28,7 @@ import glob
 
 from player.models import Player
 from player.models import PlayerData
-from setup.models import Analytics
+from setup.models import *
 from yata.handy import *
 
 
@@ -125,6 +125,31 @@ def analytics(request):
         analytics["web"]["h"][-1]["date"] = timestampToDate(tsnow())
 
         context = {"html_reports": html_reports, "player": player, "analytics": analytics, "view": {"analytics": True}}
+        return render(request, 'setup.html', context)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def donations(request):
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+
+        paypal = PayPal.objects.first()
+        paypal_balance = paypal.get_balance()
+
+        droplet = Droplet.objects.first()
+        droplet_balance = droplet.get_balance()
+
+        droplet_specs = droplet.dropletspec_set.order_by("timestamp").last()
+        balances = Balance.objects.all()
+
+        paypal_balance["balance"] = float(paypal_balance["balance"])
+        droplet_balance["account_balance"] = -float(droplet_balance["account_balance"])
+
+        step = request.GET.get("step")
+
+        context = {"player": player, "paypal_balance": paypal_balance, "droplet_balance": droplet_balance, "droplet_specs": droplet_specs, "balances": balances, "view": {"donations": True, "step": step}}
         return render(request, 'setup.html', context)
 
     except Exception as e:
