@@ -78,9 +78,9 @@ class Analytics(models.Model):
 
 
 class PayPal(models.Model):
-    endpoint = models.CharField(max_length=32)
-    user = models.CharField(max_length=32)
-    pwd = models.CharField(max_length=32)
+    endpoint = models.CharField(max_length=64)
+    user = models.CharField(max_length=64)
+    pwd = models.CharField(max_length=64)
     signature = models.CharField(max_length=64)
 
     def __str__(self):
@@ -160,12 +160,12 @@ class DropletSpec(models.Model):
     timestamp = models.IntegerField(default=0)
 
     dropletid = models.IntegerField(default=0)
-    name = models.CharField(default="name", max_length=32)
-    vpc_uuid = models.CharField(default="vpc_uuid", max_length=32)
-    vcpus = models.CharField(default="vcpus", max_length=32)
-    memory = models.CharField(default="memory", max_length=32)
-    disk = models.CharField(default="disk", max_length=32)
-    transfer = models.CharField(default="transfer", max_length=32)
+    name = models.CharField(default="name", max_length=64)
+    vpc_uuid = models.CharField(default="vpc_uuid", max_length=64)
+    vcpus = models.CharField(default="vcpus", max_length=64)
+    memory = models.CharField(default="memory", max_length=64)
+    disk = models.CharField(default="disk", max_length=64)
+    transfer = models.CharField(default="transfer", max_length=64)
 
     image = models.TextField(default="{}")
     size = models.TextField(default="{}")
