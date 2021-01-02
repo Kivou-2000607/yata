@@ -49,18 +49,18 @@ def prune(request):
         return returnError(exc=e, session=request.session)
 
 
-def number(request):
-    try:
-        lastActions = dict({})
-        nPlayers = PlayerData.objects.first()
-        lastActions["hour"] = nPlayers.nHour
-        lastActions["day"] = nPlayers.nDay
-        lastActions["month"] = nPlayers.nMonth
-        lastActions["total"] = nPlayers.nTotal
-        lastActions["string"] = "{} / {} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"], lastActions["hour"])
-        return HttpResponse(json.dumps(lastActions), content_type="application/json")
-    except BaseException:
-        return returnError()
+# def number(request):
+#     try:
+#         lastActions = dict({})
+#         nPlayers = PlayerData.objects.first()
+#         lastActions["hour"] = nPlayers.nHour
+#         lastActions["day"] = nPlayers.nDay
+#         lastActions["month"] = nPlayers.nMonth
+#         lastActions["total"] = nPlayers.nTotal
+#         lastActions["string"] = "{} / {} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"], lastActions["hour"])
+#         return HttpResponse(json.dumps(lastActions), content_type="application/json")
+#     except BaseException:
+#         return returnError()
 
 
 def analytics(request):

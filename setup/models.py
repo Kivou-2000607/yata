@@ -127,6 +127,7 @@ class Droplet(models.Model):
         payload = json.loads(response.content.decode('utf-8'))["droplets"]
         timestamp = int(tsnow() / 86400) * 86400
 
+        total_price = 0
         for droplet in payload:
             droplet_id = droplet["id"]
             defaults = {
@@ -140,6 +141,9 @@ class Droplet(models.Model):
                 "image": json.dumps(droplet["image"])
             }
             self.dropletspec_set.update_or_create(dropletid=droplet_id, timestamp=timestamp, defaults=defaults)
+            total_price += droplet["size"]["price_monthly"]
+
+        return total_price
 
     def get_balance(self):
         client = requests.session()
@@ -181,8 +185,9 @@ class DropletSpec(models.Model):
 
 class Balance(models.Model):
     timestamp = models.IntegerField(default=0)
-    paypal_balance = models.CharField(max_length=16)
-    paypal_currency = models.CharField(max_length=16)
-    droplet_account_balance = models.CharField(max_length=16)
-    droplet_month_to_date_usage = models.CharField(max_length=16)
-    droplet_month_to_date_balance = models.CharField(max_length=16)
+    paypal_balance = models.CharField(default="0", max_length=16)
+    paypal_currency = models.CharField(default="0", max_length=16)
+    droplet_account_balance = models.CharField(default="0", max_length=16)
+    droplet_month_to_date_usage = models.CharField(default="0", max_length=16)
+    droplet_month_to_date_balance = models.CharField(default="0", max_length=16)
+    droplet_month_cost = models.CharField(default="0", max_length=16)

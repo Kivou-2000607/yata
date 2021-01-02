@@ -57,7 +57,7 @@ admin.site.register(DropletSpec, DropletSpecAdmin)
 
 
 class BalanceAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'timestamp', 'date', 'paypal_balance', 'paypal_currency', 'droplet_account_balance', 'droplet_month_to_date_usage', 'droplet_month_to_date_balance']
+    list_display = ['date', 'droplet_month_cost', 'paypal_balance', 'paypal_currency', 'droplet_account_balance', 'droplet_month_to_date_usage', 'droplet_month_to_date_balance']
 
     list_filter = ['paypal_currency']
     search_fields = []

@@ -36,16 +36,17 @@ class Command(BaseCommand):
 
         paypal = PayPal.objects.last().get_balance()
         droplet = Droplet.objects.first()
-        droplet.update_specs()
+        droplet_month_cost = droplet.update_specs()
         droplet = droplet.get_balance()
-        # timestamp = int(tsnow() / 86400) * 86400
-        timestamp = int(tsnow() / 3600) * 3600
+        # timestamp = int(tsnow() / 3600) * 3600
+        timestamp = int(tsnow() / 86400) * 86400
         d = {
             "paypal_balance": paypal["balance"],
             "paypal_currency": paypal["currency"],
             "droplet_account_balance": droplet["account_balance"],
             "droplet_month_to_date_usage": droplet["month_to_date_usage"],
             "droplet_month_to_date_balance": droplet["month_to_date_balance"],
+            "droplet_month_cost": str(droplet_month_cost)
         }
 
-        Balance.objects.get_or_create(timestamp=timestamp, defaults=d)
+        Balance.objects.update_or_create(timestamp=timestamp, defaults=d)

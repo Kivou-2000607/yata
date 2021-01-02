@@ -6,6 +6,7 @@ from .views import travel
 from .views import targets
 from .views import faction
 from .views import auth
+from .views import setup
 
 app_name = "api"
 urlpatterns = [
@@ -30,4 +31,8 @@ urlpatterns = [
 
     # auth
     re_path(r'^v1/auth/$', auth.index, name="auth"),
+
+    # setup
+    re_path(r'^v1/setup/donations/$', setup.donations, name="donations"),
+    re_path(r'^v1/setup/players/$', setup.players, name="players"),
     ]
