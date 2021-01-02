@@ -41,7 +41,6 @@ def donations(request):
             "schemaVersion": 1,
             "label": "Donations",
             "message": f'{float(b.paypal_balance)-float(b.droplet_account_balance):0.2f} EUR',
-            "color": "orange",
             "cacheSeconds": 3600,
             "namedLogo": "paypal",
             "color": "447e9b",
