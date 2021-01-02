@@ -33,36 +33,36 @@ from setup.models import Balance
 from player.models import PlayerData
 
 
-@cache_page(3600)
 def donations(request):
     try:
 
         b = Balance.objects.last()
-        balance = {
-            "paypal": b.paypal_balance,
-            "droplet": b.droplet_account_balance,
-            "string": f'{float(b.paypal_balance)-float(b.droplet_account_balance):0.2f} EUR'
+        payload = {
+            "schemaVersion": 1,
+            "label": "Donations",
+            "message": f'{float(b.paypal_balance)-float(b.droplet_account_balance):0.2f} EUR',
+            "color": "orange",
+            "cacheSeconds": 3600,
+            "namedLogo": "paypal",
         }
-        balance = f'{float(b.paypal_balance)-float(b.droplet_account_balance):0.2f}'
-        return JsonResponse(balance, status=200)
+        return JsonResponse(payload, status=200, safe=False)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
-@cache_page(5)
 def players(request):
     try:
 
         nPlayers = PlayerData.objects.first()
-        last_actions = {
-            "hour": nPlayers.nHour,
-            "day": nPlayers.nDay,
-            "month": nPlayers.nMonth,
-            "total": nPlayers.nTotal,
-            "string": f"{nPlayers.nTotal} / {nPlayers.nMonth} / {nPlayers.nDay} / {nPlayers.nHour}",
+        payload = {
+            "schemaVersion": 1,
+            "label": "Users: Total / Monthly / Daily / Hourly",
+            "message": f"{nPlayers.nTotal} / {nPlayers.nMonth} / {nPlayers.nDay} / {nPlayers.nHour}",
+            "color": "orange",
+            "cacheSeconds": 3600,
         }
-        return JsonResponse(last_actions, status=200)
+        return JsonResponse(last_actions, status=200, safe=False)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
