@@ -44,6 +44,8 @@ def donations(request):
             "color": "orange",
             "cacheSeconds": 3600,
             "namedLogo": "paypal",
+            "color": "447e9b",
+            "style": "for-the-badge",
         }
         return JsonResponse(payload, status=200, safe=False)
 
@@ -61,8 +63,10 @@ def players(request):
             "message": f"{nPlayers.nTotal} / {nPlayers.nMonth} / {nPlayers.nDay} / {nPlayers.nHour}",
             "color": "orange",
             "cacheSeconds": 3600,
+            "color": "447e9b",
+            "style": "for-the-badge",
         }
-        return JsonResponse(last_actions, status=200, safe=False)
+        return JsonResponse(payload, status=200, safe=False)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
