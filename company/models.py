@@ -176,7 +176,11 @@ class Company(models.Model):
 
         # create total wage and employees
         for tId, emp in employees.items():
-            self.employee_set.update_or_create(company=self, tId=tId, defaults=emp)
+            try:
+                self.employee_set.update_or_create(tId=tId, defaults=emp)
+            except BaseException:
+                self.employee_set.filter(tId=tId).delete()
+                self.employee_set.update_or_create(tId=tId, defaults=emp)
 
         # set company updates
         for attr, value in defaults.items():
