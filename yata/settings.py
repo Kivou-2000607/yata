@@ -236,7 +236,7 @@ if config("ENABLE_SENTRY", default=False, cast=bool):
     sentry_sdk.init(
         dsn=config("SENTRY_DSN"),
         integrations=[DjangoIntegration()],
-        traces_sample_rate=config("SENTRY_SAMPLE_RATE", default=1.0, cast=float),
+        traces_sample_rate=config("SENTRY_SAMPLE_RATE", default=0.0, cast=float),
         environment=config("SENTRY_ENVIRONMENT"),
     )
 else:
