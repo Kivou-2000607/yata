@@ -23,17 +23,21 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<span style="display: none;" data-mul="{{v.description.1}}" data-uni="{{v.description.2}}" data-lvl="0" class="merits-button le"></span>
+<span style="display: none;" data-mul="{{v.description.1.0}}" data-uni="{{v.description.2.0}}" data-lvl="0" class="merits-button le"></span>
 
 {% for i in '0123456789'|make_list %}
     {% if forloop.counter > v.level %}
-        <span data-mul="{{v.description.1}}"
-              data-uni="{{v.description.2}}"
+        <span data-mul="{{v.description.1.0}}"
+              data-uni="{{v.description.2.0}}"
+              data-mul2="{{v.description.1.1}}"
+              data-uni2="{{v.description.2.1}}"
               data-lvl="{{forloop.counter}}"
               class="merits-button{% if forloop.counter <= v.fix%} del{% endif%} gt"></span>
     {% else %}
-        <span data-mul="{{v.description.1}}"
-              data-uni="{{v.description.2}}"
+        <span data-mul="{{v.description.1.0}}"
+              data-uni="{{v.description.2.0}}"
+              data-mul2="{{v.description.1.1}}"
+              data-uni2="{{v.description.2.1}}"
               data-lvl="{{forloop.counter}}"
               class="merits-button{% if forloop.counter <= v.fix%} fix{% endif%} le"></span>
     {% endif %}

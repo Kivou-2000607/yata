@@ -78,6 +78,7 @@ def merits(request):
                     merits = player.getMerits(req=req["merits"])
                     context["nMerits"] = len(req.get("honors_awarded")) + len(req.get("medals_awarded")) + int(req["personalstats"].get("meritsbought", 0))
                     context["merits"] = merits
+                    print(merits)
 
                 return render(request, page, context)
 

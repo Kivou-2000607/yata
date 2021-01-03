@@ -83,8 +83,20 @@ $( document ).ready(function() {
           const uni = $( this ).attr("data-uni");
           const description = $( this ).parent("td").next();
           const cl = lvl < fix ? "error": (lvl > fix ? "valid": "neutral")
-          $(description).find("span.merit-description-initial").hide();
-          $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
+
+          if( $( this ).attr("data-mul2") ) {
+            const mul2 = parseFloat($( this ).attr("data-mul2"));
+            const res2 = mul2 < 1? (lvl * mul2).toFixed(1) : (lvl * mul2).toFixed(0)
+            let dif2 = mul2 < 1? ((lvl-fix) * mul2).toFixed(1) : ((lvl-fix) * mul2).toFixed(0)
+            dif2 = lvl-fix > 0 ? `+${dif2}` : dif2
+            const uni2 = $( this ).attr("data-uni2");
+            $(description).find("span.merit-description-initial").hide();
+            $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni}) and ${res2}${uni2} (${dif2}${uni2})`);
+          } else {
+            $(description).find("span.merit-description-initial").hide();
+            $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
+          }
+
 
       }, function() {
           // remove classes
@@ -122,8 +134,19 @@ $( document ).ready(function() {
           const uni = $( this ).attr("data-uni");
           const description = $( this ).parent("td").next();
           const cl = lvl < fix ? "error": (lvl > fix ? "valid": "neutral")
-          $(description).find("span.merit-description-initial").hide();
-          $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
+
+          if( $( this ).attr("data-mul2") ) {
+            const mul2 = parseFloat($( this ).attr("data-mul2"));
+            const res2 = mul2 < 1? (lvl * mul2).toFixed(1) : (lvl * mul2).toFixed(0)
+            let dif2 = mul2 < 1? ((lvl-fix) * mul2).toFixed(1) : ((lvl-fix) * mul2).toFixed(0)
+            dif2 = lvl-fix > 0 ? `+${dif2}` : dif2
+            const uni2 = $( this ).attr("data-uni2");
+            $(description).find("span.merit-description-initial").hide();
+            $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni}) and ${res2}${uni2} (${dif2}${uni2})`);
+          } else {
+            $(description).find("span.merit-description-initial").hide();
+            $(description).find("span.merit-description-update").addClass(cl).html(`${res}${uni} (${dif}${uni})`);
+          }
 
       }, function() {
           // remove classes
@@ -170,12 +193,29 @@ $( document ).ready(function() {
             <td class="b merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits/bar.html" %}</td>
             <td class="c description">
                 {{v.description.0}}
-                {% if v.description.1 %}
+                {% if v.description.1|length == 1 %}
                     <span class="merit-description-initial {% if v.fix > v.level %}error{% elif v.fix < v.level %} valid{% else %}neutral{% endif %}">
-                        {% if v.description.1 < 1 %}
-                            {{v.description.1|mul:v.level|floatformat:1}}{{v.description.2}}<!--
+                        {% if v.description.1.0 < 1 %}
+                            {{v.description.1.0|mul:v.level|floatformat:1}}{{v.description.2.0}}<!--
                         -->{% else %}<!--
-                        -->{{v.description.1|mul:v.level}}{{v.description.2}}<!--
+                        -->{{v.description.1.0|mul:v.level}}{{v.description.2.0}}<!--
+                        -->{% endif %}<!--
+                    --></span><!--
+                    --><span style="font-weight: bold;" class="merit-description-update"></span><!--
+                    -->{{v.description.3}}
+                {% elif v.description.1|length == 2 %}
+                    <span class="merit-description-initial {% if v.fix > v.level %}error{% elif v.fix < v.level %} valid{% else %}neutral{% endif %}">
+                        {% if v.description.1.0 < 1 %}
+                            {{v.description.1.0|mul:v.level|floatformat:1}}{{v.description.2.0}}<!--
+                        -->{% else %}<!--
+                        -->{{v.description.1.0|mul:v.level}}{{v.description.2.0}}<!--
+                        -->{% endif %}<!--
+                    --></span><!--
+                    --><span class="merit-description-initial {% if v.fix > v.level %}error{% elif v.fix < v.level %} valid{% else %}neutral{% endif %}"> and
+                        {% if v.description.1.1 < 1 %}
+                            {{v.description.1.1|mul:v.level|floatformat:1}}{{v.description.2.1}}<!--
+                        -->{% else %}<!--
+                        -->{{v.description.1.1|mul:v.level}}{{v.description.2.1}}<!--
                         -->{% endif %}<!--
                     --></span><!--
                     --><span style="font-weight: bold;" class="merit-description-update"></span><!--
@@ -183,7 +223,7 @@ $( document ).ready(function() {
                 {% endif %}
             </td>
         </tr>
-        {% if forloop.counter == 10 or forloop.counter == 14 %}
+        {% if forloop.counter == 12 or forloop.counter == 16 %}
             <tr><td colspan="3"><hr class="sep" style="margin: 5px"></td></tr>
         {% endif %}
         {% endfor %}
