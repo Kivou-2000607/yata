@@ -20,9 +20,12 @@ This file is part of yata.
 from django.core.management.base import BaseCommand
 
 from awards.models import AwardsData
+from yata.handy import logdate
 
 
 class Command(BaseCommand):
     def handle(self, **options):
+        print(f"[CRON {logdate()}] START awards")
         call = AwardsData.objects.first()
         call.updateApiCall()
+        print(f"[CRON {logdate()}] END")

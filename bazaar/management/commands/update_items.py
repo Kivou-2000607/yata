@@ -27,12 +27,13 @@ import os
 from bazaar.models import Item
 from bazaar.models import BazaarData
 from yata.handy import apiCall
+from yata.handy import logdate
 from setup.functions import randomKey
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.bazaar.scan] start")
+        print(f"[CRON {logdate()}] START items")
 
         points = apiCall("market", "", "pointsmarket", randomKey(), sub="pointsmarket", verbose=False)
         items = apiCall("torn", "", "items,timestamp", randomKey(), sub="items", verbose=False)
@@ -40,9 +41,9 @@ class Command(BaseCommand):
         itemType = dict({})
 
         if items is None:
-            print("[command.bazaar.scan] item is None")
+            print(f"[CRON {logdate()}] item is None")
         elif 'apiError' in items:
-            print("[command.bazaar.scan] api error: {}".format(items["apiError"]))
+            print(f"[CRON {logdate()}] api error: {items['apiError']}")
         else:
 
             bd = BazaarData.objects.first()
@@ -75,7 +76,7 @@ class Command(BaseCommand):
                     #     item.update_bazaar(key=key, n=preference.nItems)
                     item.save()
                 else:
-                    print("[command.bazaar.scan]: request found more than one item id", len(req))
+                    print(f"[CRON {logdate()}]: request found more than one item id {len(req)}")
                     return 0
 
             bd.lastScanTS = int(timezone.now().timestamp())
@@ -91,4 +92,4 @@ class Command(BaseCommand):
         bd.itemType = json.dumps(itemType)
         bd.save()
 
-        print("[command.bazaar.scan] end")
+        print(f"[CRON {logdate()}] END")

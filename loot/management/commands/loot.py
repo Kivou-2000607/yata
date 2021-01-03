@@ -20,15 +20,15 @@ This file is part of yata.
 from django.core.management.base import BaseCommand
 
 from loot.models import NPC
-
+from yata.handy import logdate
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.loot.updateLoot] start")
+        print(f"[CRON {logdate()}] START loot")
 
         # update NPC status
         for npc in NPC.objects.filter(show=True):
-            print("update {}".format(npc))
+            print(f"[CRON {logdate()}] Update {npc}")
             npc.update()
 
-        print("[command.loot.updateLoot] end")
+        print(f"[CRON {logdate()}] END")

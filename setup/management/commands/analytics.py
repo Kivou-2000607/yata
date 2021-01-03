@@ -28,12 +28,14 @@ import re
 
 from setup.models import Analytics
 from yata.handy import tsnow
+from yata.handy import logdate
 
 class Command(BaseCommand):
     def handle(self, **options):
+        print(f"[CRON {logdate()}] START analytics")
+
         ymA = datetime.datetime.today().strftime('%Y %m')
         ymB = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime('%Y %m')
-        print(ymA, ymB)
 
         # list all json reports
         for report_file in glob.glob(settings.MEDIA_ROOT + '/analytics/*.json'):
@@ -73,10 +75,13 @@ class Command(BaseCommand):
 
             _, create = Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
             print(report_section, "/", report_period, "->", create)
-            
+
             # for k, v in report_for_db.items():
             #     print(k, v)
 
         # # get date
         # for k, v in data["general"].items():
         #     print(k, v)
+
+
+        print(f"[CRON {logdate()}] END")

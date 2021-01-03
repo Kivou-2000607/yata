@@ -25,47 +25,51 @@ import json
 import os
 
 from setup.functions import randomKey
-from chain.models import Territory
-from chain.models import Racket
-from chain.models import FactionData
+from faction.models import *
 from yata.handy import apiCall
+from yata.handy import logdate
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.chain.territories] start")
+        print(f"[CRON {logdate()}] START territories")
 
         territories = apiCall("torn", "", "territory,rackets", randomKey(), verbose=False)
-
-        print("[command.chain.territories] update territories")
+        #
         allTerr = territories.get("territory", dict({}))
         allRack = territories.get("rackets", dict({}))
         n = len(allTerr)
         for i, (k, v) in enumerate(allTerr.items()):
-            terr = Territory.objects.filter(tId=k).first()
-            if terr is None:
-                print(f"{i+1} / {n}: create territory {k}")
-                terr = Territory.objects.create(tId=k, **v)
-            else:
-                print(f"{i+1} / {n}: update territory {k}")
-                terr.faction = v.get("faction", 0)
+            v["racket"] = json.dumps(allRack.get(k, dict({})))
+            terr, _ = Territory.objects.update_or_create(tId=k, defaults=v)
+            print(f"[CRON {logdate()}] {i + 1}/{n} {terr}")
 
-            racket = allRack.get(k)
-            if racket is None:
-                terr.racket = json.dumps(dict({}))
-            else:
-                terr.racket = json.dumps(racket)
+        # delete old racket
+        for r in Racket.objects.only("tId").all():
+            if r.tId not in allRack:
+                print(f"[CRON {logdate()}] Delete {r}")
+                r.delete()
 
-            terr.save()
-
-        Racket.objects.all().delete()
         n = len(allRack)
         for i, (k, v) in enumerate(allRack.items()):
-            print(f"{i+1} / {n}: create racket {k}")
-            terr = Racket.objects.create(tId=k, **v)
+            if v.get("war", False):
+                v["assaulting_faction"] = v["war"]["assaulting_faction"]
+                v["defending_faction"] = v["war"]["defending_faction"]
+                v["started"] = v["war"]["started"]
+                v["ends"] = v["war"]["ends"]
+                v["war"] = True
+            else:
+                v["war"] = False
+                v["assaulting_faction"] = 0
+                v["defending_faction"] = 0
+                v["started"] = 0
+                v["ends"] = 0
+
+            r, _ = Racket.objects.update_or_create(tId=k, defaults=v)
+            print(f"[CRON {logdate()}] {i + 1}/{n} {r}")
 
         fd = FactionData.objects.first()
-        fd.territoryTS = int(timezone.now().timestamp())
+        fd.territoryUpda = tsnow()
         fd.save()
 
-        print("[command.chain.territories] end")
+        print(f"[CRON {logdate()}] END")

@@ -26,7 +26,7 @@ class NPC(models.Model):
             key = randomKey()
 
         # req = requests.get('https://api.torn.com/user/{}?&selections=profile,timestamp&key={}'.format(self.tId, key)).json()
-        req = apiCall("user", self.tId, "profile,timestamp", key=key)
+        req = apiCall("user", self.tId, "profile,timestamp", key=key, verbose=False)
 
         if 'apiError' in req:
             return req['apiError']
@@ -42,7 +42,7 @@ class NPC(models.Model):
             else:
                 self.status = status["details"]
 
-            print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
+            # print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
 
     def lootTimings(self, lvl=None):

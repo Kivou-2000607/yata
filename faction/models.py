@@ -29,6 +29,7 @@ import requests
 import re
 import random
 import os
+from decouple import config
 
 from yata.handy import *
 from yata.bulkManager import *
@@ -36,7 +37,6 @@ from player.models import Key
 from player.models import Player
 from faction.functions import *
 
-from decouple import config
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 MINIMAL_API_ATTACKS_STOP = 10

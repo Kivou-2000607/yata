@@ -30,9 +30,11 @@ from setup.models import PayPal
 from setup.models import Droplet
 from setup.models import Balance
 from yata.handy import tsnow
+from yata.handy import logdate
 
 class Command(BaseCommand):
     def handle(self, **options):
+        print(f"[CRON {logdate()}] START donations")
 
         paypal = PayPal.objects.last().get_balance()
         droplet = Droplet.objects.first()
@@ -50,3 +52,5 @@ class Command(BaseCommand):
         }
 
         Balance.objects.update_or_create(timestamp=timestamp, defaults=d)
+
+        print(f"[CRON {logdate()}] END")

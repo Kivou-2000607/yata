@@ -27,11 +27,11 @@ import os
 from bazaar.models import AbroadStocks
 from bazaar.models import BazaarData
 from bazaar.models import VerifiedClient
-
+from yata.handy import logdate
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.bazaar.clients] start")
+        print(f"[CRON {logdate()}] START fstocks_client")
 
         bd = BazaarData.objects.first()
 
@@ -52,4 +52,4 @@ class Command(BaseCommand):
         bd.clientsStats = json.dumps(clients)
         bd.save()
 
-        print("[command.bazaar.clients] end")
+        print(f"[CRON {logdate()}] END")

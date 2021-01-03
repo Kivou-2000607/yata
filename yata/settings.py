@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from decouple import config
+import datetime
+now = datetime.datetime.utcnow()
+datestr = f'{now.year}-{now.month:02d}-{now.day:02d} {now.hour:02d}:{now.minute:02d}:{now.second:02d}'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -21,15 +25,15 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
-print(f"SETTINGS: DEBUG={DEBUG}")
+print(f"[YATA {datestr}] settings DEBUG={DEBUG}")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = config('SECRET_KEY')
-print(f"SETTINGS: SECRET_KEY={SECRET_KEY}")
+print(f"[YATA {datestr}] settings SECRET_KEY={SECRET_KEY}")
 
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS', default="*")]
-print(f"SETTINGS: ALLOWED_HOSTS={ALLOWED_HOSTS}")
+print(f"[YATA {datestr}] settings ALLOWED_HOSTS={ALLOWED_HOSTS}")
 
 # Application definition
 
@@ -103,30 +107,22 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 if config("DATABASE", default="sqlite", cast=str) == "postgresql":
-    print(f"SETTINGS: DATABASE=postgresql")
+    print(f"[YATA {datestr}] settings DATABASE=postgresql")
 
     DATABASES = {
-
         'default': {
-
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
             'NAME': config("PG_NAME"),
-
             'USER': config("PG_USER"),
-
             'PASSWORD': config("PG_PASSWORD"),
-
             'HOST': config("PG_HOST"),
-
             'PORT': config("PG_PORT"),
-
         }
 
     }
 
 else:
-    print(f"SETTINGS: DATABASE=sqlite3")
+    print(f"[YATA {datestr}] settings DATABASE=sqlite3")
 
     DATABASES = {
         'default': {
@@ -143,7 +139,7 @@ else:
 def get_cache():
     import os
     if (config('USE_REDIS', default=False, cast=bool)):
-        print(f"SETTINGS: CACHE=redis")
+        print(f"[YATA {datestr}] settings CACHE=redis")
 
         return {
             'default': {
@@ -157,7 +153,7 @@ def get_cache():
         }
 
     else:
-        print(f"SETTINGS: CACHE=DB")
+        print(f"[YATA {datestr}] settings CACHE=DB")
 
         return {
             'default': {
@@ -228,7 +224,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 # sentry
 if config("ENABLE_SENTRY", default=False, cast=bool):
     SENTRY = True
-    print(f"SETTINGS: SENTRY=ENABLED")
+    print(f"[YATA {datestr}] settings SENTRY=ENABLED")
 
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration

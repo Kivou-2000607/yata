@@ -21,12 +21,14 @@ from django.core.management.base import BaseCommand
 
 from faction.models import Faction
 from faction.functions import updatePoster
+from yata.handy import logdate
 
 import json
 
-
 class Command(BaseCommand):
     def handle(self, **options):
+        print(f'[CRON {logdate()}] START posters')
         for faction in Faction.objects.filter(poster=True).exclude(posterHold=True):
-            print("[command.faction.poster] faction {}".format(faction))
+            print(f'[CRON {logdate()}] faction {faction}')
             updatePoster(faction)
+        print(f'[CRON {logdate()}] END')

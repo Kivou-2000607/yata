@@ -12,3 +12,4 @@ yata/media
 source.bash
 zzz
 /yata/wsgi_prod.py
+cron/logs

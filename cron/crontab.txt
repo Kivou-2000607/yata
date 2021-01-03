@@ -1,0 +1,71 @@
+# setup for with UTC time
+
+YATA_DIR=~/yata
+
+
+# ADMINISTRATION
+0 0 * * *    $YATA_DIR/cron/run_command.bash check_keys
+# 0 * * * *  $YATA_DIR/cron/run_command.bash analytics
+0 0,12 * * * $YATA_DIR/cron/run_command.bash donations
+
+# AWARDS
+5 0,12 * * * $YATA_DIR/cron/run_command.bash awards
+
+# FACTIONS
+0 0,12 * * * $YATA_DIR/cron/run_command.bash factions
+0 1,13 * * * $YATA_DIR/cron/run_command.bash posters
+0 */4  * * * $YATA_DIR/cron/run_command.bash territories
+
+# BAZAAR
+30 2,14 * * * $YATA_DIR/cron/run_command.bash items
+35 2,14 * * * $YATA_DIR/cron/run_command.bash fstocks_clients
+
+# PLAYERS
+1 3,15 * * * $YATA_DIR/cron/run_command.bash players
+0 3,15 * * * $YATA_DIR/cron/run_command.bash players_stats
+
+# COMPANIES (setup to catch before and after Torn update)
+55 16,18 * * * $YATA_DIR/cron/run_command.bash companies
+
+# LOOT
+*/10 * * * * $YATA_DIR/cron/run_command.bash loot
+
+# STOCKS
+*/15 * * * * $YATA_DIR/cron/run_command.bash stocks
+
+# REPORTS
+* * * * * $YATA_DIR/cron/run_command.bash chain 01
+* * * * * $YATA_DIR/cron/run_command.bash chain 02
+* * * * * $YATA_DIR/cron/run_command.bash chain 03
+* * * * * $YATA_DIR/cron/run_command.bash chain 04
+* * * * * $YATA_DIR/cron/run_command.bash chain 05
+* * * * * $YATA_DIR/cron/run_command.bash chain 06
+* * * * * $YATA_DIR/cron/run_command.bash chain 07
+* * * * * $YATA_DIR/cron/run_command.bash chain 08
+* * * * * $YATA_DIR/cron/run_command.bash chain 09
+* * * * * $YATA_DIR/cron/run_command.bash chain 10
+* * * * * $YATA_DIR/cron/run_command.bash chain 11
+
+* * * * * $YATA_DIR/cron/run_command.bash attacks 01
+* * * * * $YATA_DIR/cron/run_command.bash attacks 02
+* * * * * $YATA_DIR/cron/run_command.bash attacks 03
+* * * * * $YATA_DIR/cron/run_command.bash attacks 04
+* * * * * $YATA_DIR/cron/run_command.bash attacks 05
+* * * * * $YATA_DIR/cron/run_command.bash attacks 06
+* * * * * $YATA_DIR/cron/run_command.bash attacks 07
+* * * * * $YATA_DIR/cron/run_command.bash attacks 08
+* * * * * $YATA_DIR/cron/run_command.bash attacks 09
+* * * * * $YATA_DIR/cron/run_command.bash attacks 10
+* * * * * $YATA_DIR/cron/run_command.bash attacks 11
+
+* * * * * $YATA_DIR/cron/run_command.bash revives 01
+* * * * * $YATA_DIR/cron/run_command.bash revives 02
+* * * * * $YATA_DIR/cron/run_command.bash revives 03
+* * * * * $YATA_DIR/cron/run_command.bash revives 04
+* * * * * $YATA_DIR/cron/run_command.bash revives 05
+* * * * * $YATA_DIR/cron/run_command.bash revives 06
+* * * * * $YATA_DIR/cron/run_command.bash revives 07
+* * * * * $YATA_DIR/cron/run_command.bash revives 08
+* * * * * $YATA_DIR/cron/run_command.bash revives 09
+* * * * * $YATA_DIR/cron/run_command.bash revives 10
+* * * * * $YATA_DIR/cron/run_command.bash revives 11

@@ -18,12 +18,10 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
-import time
-
-from faction.models import AttacksReport
-from faction.models import REPORT_ATTACKS_STATUS
+from faction.models import RevivesReport
+from faction.models import REPORT_REVIVES_STATUS
+from yata.handy import logdate
 
 
 class Command(BaseCommand):
@@ -32,14 +30,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         crontabId = options['crontab']
-        print("open crontab {}".format(crontabId))
-        report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
+        print(f"[CRON {logdate()}] START revives on crontab {crontabId}")
+        report = RevivesReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
         if report is not None:
-            if not settings.DEBUG:
-                print("sleep for 30 seconds")
-                time.sleep(30)
-            # sleep 30s to avoid cache with chain reports
-            state = report.getAttacks()
-            report.fillReport()
-            # type = "error" if state < 0 else "exit"
-            # print("{} {} code {}: {}".format(report, type, state, REPORT_ATTACKS_STATUS.get(state, "code {}".format(state))))
+            state = report.getRevives()
+            type = "error" if state < 0 else "exit"
+            status = REPORT_REVIVES_STATUS.get(state, f"code {state}")
+            print(f"[CRON {logdate()}] {report} {type} code {state}: {status}")
+            # report.fillReport()
+
+        print(f"[CRON {logdate()}] END")

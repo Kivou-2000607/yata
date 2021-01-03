@@ -22,32 +22,30 @@ from django.utils import timezone
 
 from faction.models import Faction
 from yata.handy import apiCall
-
-import json
-
+from yata.handy import logdate
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print("[command.faction.update] start")
+        print(f"[CRON {logdate()}] START factions")
         for faction in Faction.objects.filter(nKeys__gt=0):
-            print("[command.faction.update] faction {}".format(faction))
+            print(f"[CRON {logdate()}] faction {faction}")
             try:
-                print("[command.faction.update] faction {}: clean history".format(faction))
+                print(f"[CRON {logdate()}] faction {faction}: clean history")
                 faction.cleanHistory()
-                print("[command.faction.update] faction {}: check keys".format(faction))
+                print(f"[CRON {logdate()}] faction {faction}: check keys")
                 faction.checkKeys()
                 if faction.nKeys > 0:
-                    print("[command.faction.update] faction {}: update logs".format(faction))
+                    print(f"[CRON {logdate()}] faction {faction}: update logs")
                     faction.updateLog()
-                    print("[command.faction.update] faction {}: update upgrades".format(faction))
+                    print(f"[CRON {logdate()}] faction {faction}: update upgrades")
                     faction.updateUpgrades()
-                    print("[command.faction.update] faction {}: update crimes".format(faction))
+                    print(f"[CRON {logdate()}] faction {faction}: update crimes")
                     faction.updateCrimes()
                     # faction.resetSimuUpgrades(update=True)
                     # faction.getFactionTree()
                 else:
-                    print("[command.faction.update] faction {}: no more keys".format(faction))
+                    print(f"[CRON {logdate()}] faction {faction}: no more keys")
             except BaseException as e:
-                print("[command.faction.update] {}".format(e))
+                print(f"[CRON {logdate()}] {e}")
 
-        print("[command.faction.update] end")
+        print(f"[CRON {logdate()}] END")

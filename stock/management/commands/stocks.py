@@ -17,15 +17,30 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-
 from django.core.management.base import BaseCommand
+from django.utils import timezone
+from django.conf import settings
 
-from player.models import PlayerData
+import json
+import os
+
+from stock.models import Stock
+from setup.functions import randomKey
+from yata.handy import apiCall
+from yata.handy import logdate
 
 
 class Command(BaseCommand):
     def handle(self, **options):
+        print(f"[CRON {logdate()}] START stocks")
 
-        print("[command.player.updateplayers] COMPUTE #PLAYERS")
-        nPlayers, _ = PlayerData.objects.get_or_create(pk=1)
-        nPlayers.updateNumberOfPlayers()
+        stocks = apiCall("torn", "", "stocks,timestamp", randomKey())
+        for k, v in stocks["stocks"].items():
+            stock = Stock.objects.filter(tId=int(k)).first()
+            if stock is None:
+                stock = Stock.create(k, v, stocks["timestamp"])
+            else:
+                stock.update(k, v, stocks["timestamp"])
+            stock.save()
+
+        print(f"[CRON {logdate()}] END")

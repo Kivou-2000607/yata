@@ -29,13 +29,14 @@ from player.models import TmpReq
 from player.functions import updatePlayer
 from awards.models import AwardsData
 from yata.handy import tsnow
+from yata.handy import logdate
 
 
 class Command(BaseCommand):
     def handle(self, **options):
 
         # update players info
-        print("[command.player.updateplayers] UPDATE PLAYERS")
+        print(f"[CRON {logdate()}] START players")
         ts_threshold = tsnow() - 3600
         players = Player.objects.filter(validKey=True, lastUpdateTS__lt=ts_threshold).order_by("lastUpdateTS")
         n = len(players)
@@ -43,22 +44,23 @@ class Command(BaseCommand):
             try:
                 updatePlayer(player, i=i + 1, n=n)
             except BaseException as e:
-                print(f"[command.player.updateplayers]: {e}")
+                print(f"[CRON {logdate()}]: {e}")
                 print(traceback.format_exc())
+            break
         del players
 
         # compute rank
-        # print("[command.player.updateplayers] COMPUTE RANKS")
+        # print(f"[CRON {logdate()}] COMPUTE RANKS")
         # for i, player in enumerate(Player.objects.exclude(tId=-1).only("awardsScor", "awardsRank").order_by('-awardsScor')):
-        #     print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player.nameAligned(), player.awardsScor / 10000.))
+        #     print(f"[CRON {logdate()}] #{}: {} {:.4f}".format(i + 1, player.nameAligned(), player.awardsScor / 10000.))
         #     player.awardsRank = i + 1
         #     player.save()
 
         # compute hof graph
-        print("[command.player.updateplayers] COMPUTE HOF GRAPH")
+        print(f"[CRON {logdate()}] COMPUTE HOF GRAPH")
         hofGraph = []
         for i, player in enumerate(Player.objects.exclude(awardsScor=0).only("awardsScor")):
-            print("[command.player.updateplayers] #{}: {} {:.4f}".format(i + 1, player.nameAligned(), player.awardsScor / 10000.))
+            print(f"[CRON {logdate()}] #{i + 1}: {player.nameAligned()} {player.awardsScor / 10000.:.4f}")
             hofGraph.append(float(player.awardsScor / 10000.0))
         bins = numpy.logspace(-2, 2, num=101)
         bins[0] = 0
@@ -73,5 +75,7 @@ class Command(BaseCommand):
         hof.hofHistogram = json.dumps(hofGraph)
         hof.save()
 
-        print("[command.player.updateplayers] CLEAN AWARDS CACHE")
-        print(TmpReq.objects.filter(timestamp__lt=(tsnow() - 3600)).delete())
+        print(f"[CRON {logdate()}] CLEAN AWARDS CACHE")
+        TmpReq.objects.filter(timestamp__lt=(tsnow() - 3600)).delete()
+
+        print(f"[CRON {logdate()}] END")
