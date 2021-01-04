@@ -134,7 +134,7 @@ def supervise(request):
                     Si = req.index(min([s for s in req if s]))
                     P = max(hrm * sta[Pi] / float(req[Pi]), 1)
                     S = max(hrm * sta[Si] / float(req[Si]), 1)
-                    ws_eff = min(45, 45 * P) + 5*math.log2(P) + min(45, 45 * S) + 5*math.log2(S)
+                    ws_eff = min(45, 45 * P) + 5*math.log2(P) + min(45, 45 * S) + 5*math.log2(S) + employee.effectiveness_merits
                 else:
                     ws_eff = 0
 
@@ -185,7 +185,8 @@ def supervise(request):
         company_stock = company.companystock_set.all().order_by("-timestamp")
         company_stock_p = Paginator(company_stock, 25)
         if request.GET.get('page_s') is not None:
-            return render(request, "company/supervise/stock.html", {"stock_p": company_stock_p.get_page(request.GET.get('page_s'))})
+            print(request.GET.get('page_s'))
+            return render(request, "company/supervise/stock.html", {"company_stock_p": company_stock_p.get_page(request.GET.get('page_s'))})
 
         # create employee graph
         # current employees [id, name]
@@ -272,6 +273,7 @@ def supervise(request):
 #                       "inactivity": employee.effectiveness_inactivity,
 #                       "management": employee.effectiveness_management,
 #                       "book_bonus": employee.effectiveness_book_bonus,
+#                       "merits": employee.effectiveness_merits,
 #                       "effectiveness_total": employee.effectiveness_total,
 #                       "manager_effectiveness": manager_effectiveness,
 #                       "position": employee.position,

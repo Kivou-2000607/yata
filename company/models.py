@@ -104,6 +104,7 @@ class Company(models.Model):
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
     effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
     def __str__(self):
@@ -165,7 +166,7 @@ class Company(models.Model):
             # remove status
             del v["status"]
             # flatten effectiveness and compute company effectiveness
-            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "total"]:
+            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "merits", "total"]:
                 effectiveness_key = f'effectiveness_{eff}'
                 effectiveness_val = v.get("effectiveness", {}).get(eff, 0)
                 v[effectiveness_key] = effectiveness_val
@@ -251,17 +252,21 @@ class Company(models.Model):
 
         # create company posisions
         p_abv = {position.name: position.abv for position in self.company_description.position_set.all()}
-        positions = {v: 0 for k, v in p_abv.items()}
+        positions = {}
         total = 0
         for e in self.employee_set.all():
             if e.position in p_abv:
                 total += 1
-                positions[p_abv[e.position]] += 1
+                if p_abv[e.position] in positions:
+                    positions[p_abv[e.position]] += 1
+                else:
+                    positions[p_abv[e.position]] = 1
+
         positions["TOT"] = total
         previous_stock = self.companystock_set.exclude(id_ts=id_ts).order_by("-timestamp").first()
         if previous_stock is not None:
             pp = json.loads(previous_stock.positions)
-            delta_positions = {k: v-pp.get(k, 0) for k, v in positions.items()}
+            delta_positions = {k: f'{int(v - pp.get(k, 0)):+d}' for k, v in positions.items() if v - pp.get(k, 0)}
         else:
             delta_positions = {}
 
@@ -277,11 +282,13 @@ class Company(models.Model):
                 defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
                 defaults["delta_created"] = defaults["created"]
                 defaults["delta_sold_worth"] = defaults["sold_worth"]
+                defaults["delta_sold_amount"] = defaults["sold_amount"]
             else:
                 defaults["delta_in_stock"] = defaults["in_stock"] - previous_stock.in_stock
                 defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
                 defaults["delta_created"] = defaults["created"] - previous_stock.created
                 defaults["delta_sold_worth"] = defaults["sold_worth"] - previous_stock.sold_worth
+                defaults["delta_sold_amount"] = defaults["sold_amount"] - previous_stock.sold_amount
 
             defaults["positions"] = json.dumps(positions)
             defaults["delta_positions"] = json.dumps(delta_positions)
@@ -312,6 +319,7 @@ class Employee(models.Model):
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
     effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
     def __str__(self):
@@ -344,6 +352,7 @@ class CompanyData(models.Model):
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
     effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
     employees = models.TextField(default="{}")
@@ -378,6 +387,7 @@ class CompanyStock(models.Model):
     delta_in_stock = models.IntegerField(default=0)
     delta_created = models.IntegerField(default=0)
     delta_sold_worth = models.IntegerField(default=0)
+    delta_sold_amount = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Company stock {self.company.name} [{self.company.tId}]"

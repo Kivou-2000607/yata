@@ -27,16 +27,14 @@ This file is part of yata.
             <th>Date</th>
             <th>Type</th>
             <th>Emp.</th>
-            <th>&Delta;Emp</th>
+            <th>Positions</th>
             <th>Cost</th>
             <th>RRP</th>
             <th>Price</th>
+            <th>Sold</th>
             <th>Stock</th>
-            <th>&Delta;Stock</th>
             <th>Created</th>
-            <th>&Delta;Created</th>
             <th>Worth</th>
-            <th>&Delta;Worth</th>
         </tr>
     </thead>
     <tbody>
@@ -44,17 +42,15 @@ This file is part of yata.
         <tr class="company-logs" data-val="{{d.timestamp}}">
             <td class="a" title="{{d.timestamp|ts2date}}">{% ifchanged %}{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}{% endifchanged%}</td>
             <td class="b">{{d.name}}</td>
-            <td class="c" title="{{d.display_pos.0}}">{{d.display_pos.2}}</td>
-            <td class="c" title="{{d.display_pos.0}}">{{d.display_pos.1}}</td>
-            <td class="c">${{d.cost|intcomma}}</td>
-            <td class="c">${{d.rrp|intcomma}}</td>
-            <td class="c">${{d.price|intcomma}}</td>
-            <td class="c">{{d.in_stock|intcomma}}</td>
-            <td class="c">{{d.delta_in_stock|intcomma}}</td>
-            <td class="c">{{d.created|intcomma}}</td>
-            <td class="c">{{d.delta_created|intcomma}}</td>
-            <td class="c">${{d.sold_worth|intcomma}}</td>
-            <td class="c">${{d.delta_sold_worth|intcomma}}</td>
+            <td class="c">{{d.display_pos.2}}</td>
+            <td class="d" title="{{d.display_pos.0}}">{% if d.display_pos.1 %}<span class="neutral">{{d.display_pos.1}}</span>{% else %}{{d.display_pos.0}}{% endif %}</td>
+            <td class="e">${{d.cost|intcomma}}</td>
+            <td class="e">${{d.rrp|intcomma}}</td>
+            <td class="e">${{d.price|intcomma}}</td>
+            <td class="f">{{d.sold_amount|intcomma}} ({{d.delta_sold_amount|signColor0}})</td>
+            <td class="f">${{d.sold_worth|intcomma}} ({{d.delta_sold_worth|signColor0}})</td>
+            <td class="f">{{d.in_stock|intcomma}} ({{d.delta_in_stock|signColor0}})</td>
+            <td class="f">{{d.created|intcomma}} ({{d.delta_created|signColor0}})</td>
         </tr>
         {% endfor %}
 
