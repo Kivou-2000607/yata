@@ -73,7 +73,11 @@ class Command(BaseCommand):
             defaults["requests_metadata"] = report["requests"]["metadata"]
             defaults["requests_data"] = report["requests"]["data"]
 
-            _, create = Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
+            try:
+                _, create = Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
+            except BaseException as e:
+                Analytics.objects.filter(report_section=report_section, report_period=report_period).delete()
+                _, create = Analytics.objects.update_or_create(report_section=report_section, report_period=report_period, defaults=defaults)
             print(report_section, "/", report_period, "->", create)
 
             # for k, v in report_for_db.items():
