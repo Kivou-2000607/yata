@@ -46,7 +46,7 @@ class Command(BaseCommand):
             except BaseException as e:
                 print(f"[CRON {logdate()}]: {e}")
                 print(traceback.format_exc())
-            break
+
         del players
 
         # compute rank

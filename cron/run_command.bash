@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # YATA root directory
-YATA_DIR=~/yata
+if [ "$YATA_DIR" == "" ]; then
+  YATA_DIR=~/yata
+fi
 
 # virtualenv root directory
-VENV_DIR=~/.virtualenvs/yata/
+if [ "$YATA_VENV_DIR" == "" ]; then
+  YATA_VENV_DIR=~/.virtualenvs/yata/
+fi
 
 # log file
 if [ "$2" == "" ]; then
@@ -20,6 +24,8 @@ mkdir -p $LOG_DIR
 
 # echo
 echo "[BASH $(date -u "+%Y-%m-%d %T")] START" >> $LOG_FILE 2>&1
+echo "[BASH $(date -u "+%Y-%m-%d %T")] YATA dir: $YATA_DIR" >> $LOG_FILE 2>&1
+echo "[BASH $(date -u "+%Y-%m-%d %T")] YATA venv dir: $YATA_VENV_DIR" >> $LOG_FILE 2>&1
 echo "[BASH $(date -u "+%Y-%m-%d %T")] Log file: $LOG_FILE" >> $LOG_FILE 2>&1
 
 # sleep if report
@@ -36,7 +42,7 @@ else
 fi
 
 # run command
-source $VENV_DIR/bin/activate
+source $YATA_VENV_DIR/bin/activate
 flock -n $LOCK_FILE -c "python $YATA_DIR/manage.py $1 $2" >> $LOG_FILE 2>&1
 # flock -n $LOCK_FILE -c "python $YATA_DIR/manage.py $1 $2"
 

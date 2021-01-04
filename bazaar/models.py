@@ -61,7 +61,7 @@ class Item(models.Model):
 
     @classmethod
     def create(cls, k, v):
-        print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
+        # print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
         item = cls(tId=int(k),
                    tName=v['name'],
                    tType=v['type'].replace(" ", ""),
@@ -111,7 +111,7 @@ class Item(models.Model):
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
             self.weekTendency = 0.0
-        print("[model.bazaar.item] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
+        # print("[model.bazaar.item] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
 
         # month Tendency
         try:
@@ -143,7 +143,7 @@ class Item(models.Model):
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
             self.monthTendency = 0.0
-        print("[model.bazaar.item] month tendancy:", self.monthTendencyA, self.monthTendencyB, self.monthTendency)
+        # print("[model.bazaar.item] month tendancy:", self.monthTendencyA, self.monthTendencyB, self.monthTendency)
 
         # print(self.monthTendency, self.monthTendencyA, self.monthTendencyB)
         # self.lastUpdateTS =
@@ -159,7 +159,7 @@ class Item(models.Model):
         #      'market_value': 2094,
         #      'circulation': 68911,
         #      'image': 'http://www.torn.com/images/items/6/large.png'}
-        print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
+        # print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
         self.tName = v['name']
         self.tType = v['type'].replace(" ", "")
         self.tMarketValue = int(v['market_value'])
@@ -179,7 +179,7 @@ class Item(models.Model):
                 to_del.append(t)
 
         for t in to_del:
-            print("[model.bazaar.item] remove history entry {}: {}".format(t, priceHistory[t]))
+            # print("[model.bazaar.item] remove history entry {}: {}".format(t, priceHistory[t]))
             del priceHistory[t]
 
         priceHistory[ts] = int(v["market_value"])

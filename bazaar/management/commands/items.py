@@ -57,6 +57,7 @@ class Command(BaseCommand):
             bd.save()
 
             for k, v in items.items():
+                print(f'[CRON {logdate()}] Update {k} {v["name"]}')
                 type = v["type"]
                 name = v["name"].split(":")[0].strip()
                 if type in itemType:
