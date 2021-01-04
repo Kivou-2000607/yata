@@ -32,13 +32,15 @@ from yata.handy import isProxyKey
 
 
 SECTION_CHOICES = (
-    ('B', 'bazaar'),
-    ('F', 'faction'),
-    ('T', 'target'),
-    ('A', 'awards'),
-    ('S', 'stock'),
-    ('C', 'company'),
-    ('L', 'loot'))
+    ('all', 'all'),
+    ('home', 'home'),
+    ('bazaar', 'bazaar'),
+    ('faction', 'faction'),
+    ('target', 'target'),
+    ('awards', 'awards'),
+    ('stock', 'stock'),
+    ('company', 'company'),
+    ('loot', 'loot'))
 
 
 class Player(models.Model):

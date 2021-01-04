@@ -38,41 +38,9 @@ from yata.handy import tsnow
 #         return {}
 
 def sectionMessage(request):
-    if request.session.get('player'):
-        section = request.get_full_path().split("/")[1]
-        section_short = ""
-        for k, v in SECTION_CHOICES:
-            if v == section:
-                section_short = k
-        sectionMessage = Message.objects.filter(section=section_short).order_by("date").last()
-
-        # temprorary (shows the welcome message at each login)
-        # # del request.session['player']['seen_message']
-        # # print(request.session['player'])
-        # if request.session['player'].get('seen_message', False):
-        #     seen_message = False
-        # else:
-        #     seen_message = True
-        #     tmp = dict(request.session['player'])
-        #     tmp['seen_message'] = True
-        #     request.session['player'] = dict(tmp)
-        #     try:
-        #         for member in Member.objects.filter(tId=int(request.session['player']['tId'])):
-        #             member.shareE = 1
-        #             member.shareN = 1
-        #             member.shareS = 1
-        #             member.save()
-        #
-        #     except BaseException as e:
-        #         pass
-        seen_message = False
-
-        if sectionMessage is not None:
-            return {"sectionMessage": sectionMessage, "seen_message": seen_message}
-        else:
-            return {"sectionMessage": False, "seen_message": seen_message}
-    else:
-        return {}
+    section = request.get_full_path().split("/")[1]
+    sectionMessages = Message.objects.filter(section__in=[section, "all"]).order_by("-date")
+    return {"sectionMessages": sectionMessages}
 
 
 def nextLoot(request):

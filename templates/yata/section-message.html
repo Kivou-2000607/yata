@@ -21,8 +21,8 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-{% if sectionMessage %}
+{% for sectionMessage in sectionMessages %}
     <div class="module rounded">
         <span class="neutral"><i class="fas fa-info-circle fa-icon-inline"></i>{{sectionMessage.text|safe}}</span><span class="flush-right"><i>{{sectionMessage.authorName|playerURL:sectionMessage.authorId|safe}},&nbsp;{{sectionMessage.date}}</i></span>
     </div>
-{% endif %}
+{% endfor %}
