@@ -43,7 +43,7 @@ def index(request):
         awardsPlayer, awardsTorn, error = player.getAwards(force=True)
 
         # get graph data
-        awards = awardsPlayer.get('awards')
+        # awards = awardsPlayer.get('awards')
         pinnedAwards = awardsPlayer.get('pinnedAwards')
 
         graph = []
