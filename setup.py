@@ -10,6 +10,7 @@ from setup.models import APIKey
 from awards.models import AwardsData
 from faction.models import FactionData
 from bazaar.models import BazaarData
+from company.models import CompanyDescription
 from loot.models import NPC
 from decouple import config
 
@@ -53,8 +54,6 @@ if reset_db:
     cmd = 'python manage.py createcachetable'
     r = os.system(cmd)
 
- 
-
 # create db super user
 if not len(User.objects.all()):
     print('create superuser')
@@ -79,31 +78,35 @@ if not len(BazaarData.objects.all()):
 if not len(FactionData.objects.all()):
     print('Create Faction data')
     FactionData.objects.create()
+    cmd = 'python manage.py init_faction_tree'
+    r = os.system(cmd)
 if not len(NPC.objects.all()):
     print('Create NPC')
     NPC.objects.create(tId=4, show=True)
     NPC.objects.create(tId=15, show=True)
+if not len(CompanyDescription.objects.all()):
+    print('Create NPC')
+    cmd = 'python manage.py init_companies'
+    r = os.system(cmd)
 
-   # setup companies
-    cmd = 'python manage.py initCompanies'
-    r = os.system(cmd)
-    
 if fill_db:
-    cmd = 'python manage.py checkKeys'
+    cmd = 'python manage.py check_keys'
     r = os.system(cmd)
-    cmd = 'python manage.py updateStocks'
+    cmd = 'python manage.py stocks'
     r = os.system(cmd)
-    cmd = 'python manage.py updateAwards'
+    cmd = 'python manage.py awards'
     r = os.system(cmd)
-    cmd = 'python manage.py updateTerritories'
+    cmd = 'python manage.py territories'
     r = os.system(cmd)
-    cmd = 'python manage.py updateItems'
+    cmd = 'python manage.py items'
     r = os.system(cmd)
-    cmd = 'python manage.py updatePlayers'
+    cmd = 'python manage.py players'
     r = os.system(cmd)
-    cmd = 'python manage.py updateLoot'
+    cmd = 'python manage.py loot'
     r = os.system(cmd)
-    cmd = 'python manage.py updateFactionTree'
+    cmd = 'python manage.py factions'
+    r = os.system(cmd)
+    cmd = 'python manage.py companies'
     r = os.system(cmd)
 
 if static_file:

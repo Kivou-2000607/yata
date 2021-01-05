@@ -25,7 +25,6 @@ from yata.handy import apiCall
 
 class Command(BaseCommand):
     def handle(self, **options):
-        print(randomKey())
         companies = apiCall("torn", "", "companies", randomKey())
         # print(companies)
         for k, v in companies["companies"].items():
@@ -59,3 +58,13 @@ class Command(BaseCommand):
             for k1, v1 in specials.items():
                 special, create = company.special_set.update_or_create(name=k1, defaults=v1)
                 print("\t", special, create)
+
+        # create ABV
+        for position in Position.objects.all():
+            name = position.name.replace("-", " ")
+            if len(name.split()) == 1:
+                abv = name[:2]
+            else:
+                abv = "".join(n[0].upper() for n in name.split())
+            position.abv = abv
+            position.save()
