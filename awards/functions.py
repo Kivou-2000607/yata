@@ -1724,15 +1724,12 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
 
                 # get time reduction
                 educationTimeReduction = 1.0
-                for perk in userInfo.get("merit_perks", []):
-                    start, end = perk.split(" ")[1], " ".join(perk.split(" ")[2:])
-                    educationTimeReduction = educationTimeReduction * (1. - float(start.replace("%", "")) / 100.) if end == "Education length" else educationTimeReduction
-                for perk in userInfo.get("stock_perks", []):
-                    start, end = perk.split(" ")[1], " ".join(perk.split(" ")[2:])
-                    educationTimeReduction = educationTimeReduction * (1. - float(start.replace("%", "")) / 100.) if end == "Education length reduction (WSSB)" else educationTimeReduction
-                for perk in userInfo.get("job_perks", []):
-                    start, end = perk.split(" ")[1], " ".join(perk.split(" ")[2:])
-                    educationTimeReduction = educationTimeReduction * (1. - float(start.replace("%", "")) / 100.) if end == "Education time" else educationTimeReduction
+                edu_red_perks = []
+                for perks_string in ["merit_perks", "stock_perks", "job_perks"]:
+                    edu_red_perks += [int(perk.replace("- ", "").split("%")[0]) for perk in [_ for _ in userInfo.get(perks_string, []) if 'Education length' in _]]
+
+                for red in edu_red_perks:
+                    educationTimeReduction *= (1. - float(red) / 100.)
 
                 if int(k) in [53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64]:
                     # 53 {'name': 'Biology Bachelor', 'description': 'Complete all classes in Biology', 'type': 4, 'circulation': 28936, 'rarity': 'Common', 'awardType': 'Honor', 'img': None, 'title': 'Biology Bachelor [53]: Common (28936)'}
