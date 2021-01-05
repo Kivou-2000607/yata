@@ -233,12 +233,12 @@ This file is part of yata.
       <tr>
         <td><b>Daily customers:</b> {{company.daily_customers|intcomma}}</td>
         <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
-        <td><b>Daily profit:</b> ${{company.daily_profit|intcomma}}</td>
+        <td><b>Daily profit:</b> {{company.daily_profit|signColor0}}</td>
       </tr>
       <tr>
         <td><b>Weekly customers:</b> {{company.weekly_customers|intcomma}}</td>
         <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
-        <td><b>Weekly profit:</b> ${{company.weekly_profit|intcomma}}</td>
+        <td><b>Weekly profit:</b> {{company.weekly_profit|signColor0}}</td>
       </tr>
       <tr>
 
@@ -277,7 +277,7 @@ This file is part of yata.
 
 {% if company_data|length %}
 
-<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Logs</h2>
+<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Company records</h2>
 <div class="module">
   <div class="pagination-list">
       {% include "company/supervise/logs.html" %}
@@ -288,7 +288,7 @@ This file is part of yata.
 
 {% if company_stock|length %}
 
-<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Stock</h2>
+<h2 class="title"><i class="fas fa-parachute-box fa-icon-inline"></i>Stock records</h2>
 <div class="module">
   <div class="pagination-list">
       {% include "company/supervise/stock.html" %}

@@ -27,6 +27,7 @@ def every_30_minutes():
     os.system('python manage.py awards')
     os.system('python manage.py territories')
     os.system('python manage.py companies')
+    os.system('python manage.py players_stats')
 
 
 print("Emulating cron jobs. Hourly or daily scripts will run on a 30 minute basis for debugging")

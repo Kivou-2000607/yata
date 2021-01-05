@@ -451,7 +451,7 @@ span.login-message {
     color: #447e9b!important;
 }
 
-span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 10px;}
+span.section-status { opacity: 0.8; font-weight: normal!important; margin-left: 10px; cursor: help;}
 
 
 /* member status */
@@ -634,3 +634,31 @@ h1.module-doc { cursor: pointer; }
 div.module-doc { margin-left: 10px; display: none;}
 h2.command-doc { cursor: pointer; }
 div.command-doc { margin-left: 20px; display: none;}
+
+
+span.inline-logo {
+  float: right;
+  margin: 0px;
+}
+
+span.inline-logo > svg {
+  width: 128px;
+  height: 128px;
+  border-radius: 64px;
+  -webkit-transition: transform 0.5s linear, border-radius 0.5s linear;
+  transition: transform 0.5s linear, border-radius 0.5s linear;
+}
+
+span.inline-logo > svg:hover {
+  border-radius: 0px;
+  border-radius: 0px;
+  -webkit-transform: scale(2), translate(-64px, -64px;);
+  -moz-transform: scale(2), translate(-64px, -64px;);
+  -o-transform: scale(2), translate(-64px, -64px;);
+  transform: scale(2), translate(-64px, -64px;);
+}
+
+a.closed-link {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

@@ -33,7 +33,11 @@ This file is part of yata.
             <a href="{% url 'bot:host' %}"><i class="fas fa-laptop fa-icon-inline"></i>Host the bot</a>
         </td>
         <td>
-            <a href="{% url 'bot:dashboard' %}"><i class="fas fa-tachometer-alt fa-icon-inline"></i>Dashboard</a>
+            {% if player.tId > 0 %}
+              <a href="{% url 'bot:dashboard' %}"><i class="fas fa-tachometer-alt fa-icon-inline"></i>Dashboard</a>
+            {% else %}
+              <a class="closed-link"><i class="fas fa-tachometer-alt fa-icon-inline"></i>Dashboard</a>
+            {% endif %}
         </td>
     </tr>
     </tbody>

@@ -19,7 +19,8 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<div class="module rounded">
+<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>Company</h2>
+<div class="module">
     {% if player.companyId %}
       <p>You are currently working in <a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={{player.companyId}}" target="_blank">{{player.companyNa|safe}}.</a></p>
       <p>Checkout <span class="neutral">supervise</span> to see the details of your company.</p>

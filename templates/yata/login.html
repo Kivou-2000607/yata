@@ -77,9 +77,15 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
 
                 {# home #}
                 <div>
-                <a href="{% url 'player:index' %}" class="yata-link-player" title="Home">
-                    <b class="valid"><i class="fas fa-home fa-icon-inline"></i>Home</b></a><br>
-                <span>{{player.name}}{% if player.usingProxyKey %} (proxy){% endif %}</span>
+                {% if player.tId > 0 %}
+                  <a href="{% url 'player:index' %}" class="yata-link-player valid" title="Home">
+                    <i class="fas fa-home fa-icon-inline"></i>Home</a><br>
+                    <span>{{player}}{% if player.usingProxyKey %} (proxy){% endif %}</span>
+                {% else %}
+                  <a class="neutral closed-link" title="Home">
+                    <i class="fas fa-home fa-icon-inline"></i>Home</a><br>
+                    <span><a class="valid" href="/">Login</a></span>
+                {% endif %}
                 </div>
                 {# bazaar #}
                 <div>
@@ -93,7 +99,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}
                     {% endif %}
                     {% else %}
-                    Can't update price yourself
+                    limited
                     {% endif %}
                 </span>
                 </div>
@@ -109,7 +115,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
                     {% endif %}
                     {% else %}
-                    Don't show your blocks
+                    limited
                     {% endif %}
                 </span>
                 </div>
@@ -121,14 +127,14 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {% if player.companyId %}
                         {{player.companyNa|safe}}{% if player.companyDi%} [Dir]{% endif %}
                     {% else %}
-                        &empty;
+                    limited
                     {% endif %}
                 </span>
                 </div>
                 {# faction #}
                 <div>
                 {% if player.tId > 0 %}
-                <a href="{% url 'faction:index' %}" class="yata-link-chain" title="Faction">
+                <a href="{% url 'faction:index' %}" class="yata-link-chyata-link-ain" title="Faction">
                     <b><i class="fas fa-fist-raised fa-icon-inline"></i>Faction</b></a>
                 <br>
                 <span>
@@ -139,10 +145,9 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {% endif %}
                 </span>
                 {% else %}
-                <a class="neutral" title="Faction">
-                    <b><i class="fas fa-fist-raised fa-icon-inline"></i>Faction</b></a>
-                <br>
-                <span>Not available</span>
+                <a class="neutral closed-link" title="Faction">
+                    <b><i class="fas fa-fist-raised fa-icon-inline"></i>Faction</b></a><br>
+                    <span>closed</span>
                 {% endif %}
                 </div>
                 {# targets #}
@@ -158,9 +163,9 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {% endif %}
                 </span>
                 {% else %}
-                <a class="neutral" title="Targets">
+                <a class="neutral closed-link" title="Targets">
                     <b><i class="fas fa-crosshairs fa-icon-inline"></i>Targets</b></a><br>
-                <span>Not available</span>
+                    <span>closed</span>
                 {% endif %}
                 </div>
                 {# awards #}
@@ -175,7 +180,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {{player.awardsInfo|floatformat:2}}% rarity score
                     {% endif %}
                     {% else %}
-                    Don't show progress
+                    limited
                     {% endif %}
                 </span>
                 </div>

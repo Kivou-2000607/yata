@@ -22,21 +22,27 @@ This file is part of yata.
 
 <!-- <h2 class="title">What is YATA</h2> -->
 <div class="module rounded">
+    <span class="inline-logo">{% include "svg/logo.egg.opt.svg" %}</span>
+
     <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
         It has been designed to enhance your gameplay using information from the <a href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
         To see what's in there browse through the following categories.<br />
         Some parts are public and you can browse them anonymously but if you want to unleash the full power of YATA you need to enter your API key.
     </p>
     <p>
-        <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><b><i class="fas fa-store fa-icon-inline"></i>Bazaar overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to updated them and set custom lists.">partially public</span><br>
+        <a class="yata-link-player" href="{% url 'player:index' %}"><b><i class="fas fa-home fa-icon-inline"></i>Home</b></a><span class="section-status error" title="For obvious reasons">private</span><br>
+        Checkout your personal stats and use the simulators.
+    </p>
+    <p>
+        <a class="yata-link-bazaar" href="{% url 'bazaar:index' %}"><b><i class="fas fa-store fa-icon-inline"></i>Bazaar overview</b></a><span class="section-status warning" title="You can browse the prices but need to login to updated them and set custom lists">limited</span><br>
         Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.
     </p>
     <p>
-        <a class="yata-link-stock" href="{% url 'stock:index' %}"><b><i class="fas fa-chart-line fa-icon-inline"></i>Stock overview</b></a><span class="section-status valid" title="You can browse the prices but need your API key to see your blocks">partially public</span><br>
+        <a class="yata-link-stock" href="{% url 'stock:index' %}"><b><i class="fas fa-chart-line fa-icon-inline"></i>Stock overview</b></a><span class="section-status warning" title="You can browse the stocks but need to login to see your blocks">limited</span><br>
         View all the stock shares, prices and tendencies.
     </p>
     <p>
-        <a class="yata-link-company" href="{% url 'company:index' %}"><b><i class="fas fa-building fa-icon-inline"></i>Company overview</b></a><span class="section-status valid" title="You can browse the different companies but need your API key to see your details">partially public</span><br>
+        <a class="yata-link-company" href="{% url 'company:index' %}"><b><i class="fas fa-building fa-icon-inline"></i>Company overview</b></a><span class="section-status warning" title="You can browse the different company types but need to login to see your company's details">limited</span><br>
         Supervise your company (wip).
     </p>
     <p>
@@ -48,20 +54,20 @@ This file is part of yata.
         Remember your good targets and maximize your respect gains during chains.
     </p>
     <p>
-        <a class="yata-link-awards" href="{% url 'awards:index' %}"><b><i class="fas fa-medal fa-icon-inline"></i>Awards</b></a><span class="section-status valid" title="You can browse awards but will have no information on your progression.">partially public</span><br>
+        <a class="yata-link-awards" href="{% url 'awards:index' %}"><b><i class="fas fa-medal fa-icon-inline"></i>Awards</b></a><span class="section-status warning" title="You can browse awards but need to login to have see your progress">limited</span><br>
         Track the next award you can get.
     </p>
     <p>
-        <a class="yata-link-loot" href="{% url 'loot:index' %}"><b><i class="fas fa-user-secret fa-icon-inline"></i>Loot</b></a><span class="section-status valid" title="Nothing more if you login.">public</span><br>
+        <a class="yata-link-loot" href="{% url 'loot:index' %}"><b><i class="fas fa-user-secret fa-icon-inline"></i>Loot</b></a><span class="section-status valid" title="Nothing more if you login">public</span><br>
         Gives the timing of when NPCs are reaching the loot levels.
     </p>
     <p>
-        <a class="yata-link-bot" href="{% url 'bot:index' %}"><b><i class="fas fa-robot fa-icon-inline"></i>Discord bot</b></a><span class="section-status valid" title="Most of the features requires your API key.">partially public</span><br>
+        <a class="yata-link-bot" href="{% url 'bot:index' %}"><b><i class="fas fa-robot fa-icon-inline"></i>Discord bot</b></a><span class="section-status warning" title="You can read the documentation but need to login to access the dashboard">limited</span><br>
         Discord bot made for Torn.
     </p>
     <p>
-        <a class="yata-link-api" href="{% url 'api:index' %}"><b><i class="fas fa-code fa-icon-inline"></i>API</b></a><span class="section-status valid" title="Some of the features requires your API key.">partially public</span><br>
-        Gives information for loot levels and stocks abroad.
+        <a class="yata-link-api" href="{% url 'api:index' %}"><b><i class="fas fa-code fa-icon-inline"></i>API</b></a><span class="section-status valid" title="Nothing more if you login">public</span><br>
+        Interacts with the YATA database for loot, foreign stocks and more.
     </p>
     {% if player %}
         <hr class="sep">
