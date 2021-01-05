@@ -200,7 +200,11 @@ class Company(models.Model):
                 del emp[k]
         # add employees
         defaults["employees"] = json.dumps(employees)
-        company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
+        try:
+            company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
+        except BaseException as e:
+            self.companydata_set.update_or_create(id_ts=id_ts).delete()
+            company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
         # create weekly_profit
         last_week = id_ts - (6 * 24 * 3600 + 1)
@@ -293,7 +297,11 @@ class Company(models.Model):
             defaults["positions"] = json.dumps(positions)
             defaults["delta_positions"] = json.dumps(delta_positions)
 
-            company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
+            try:
+                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
+            except BaseException as e:
+                self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name).delete()
+                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
             # print(company_stock, create)
             # for k, v in defaults.items():
             #     print(k, v)
