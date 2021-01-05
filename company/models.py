@@ -203,7 +203,7 @@ class Company(models.Model):
         try:
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
         except BaseException as e:
-            self.companydata_set.update_or_create(id_ts=id_ts).delete()
+            self.companydata_set.filter(id_ts=id_ts).delete()
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
         # create weekly_profit
@@ -300,7 +300,7 @@ class Company(models.Model):
             try:
                 company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
             except BaseException as e:
-                self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name).delete()
+                self.companystock_set.filter(id_ts=id_ts, name=stock_name).delete()
                 company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
             # print(company_stock, create)
             # for k, v in defaults.items():
