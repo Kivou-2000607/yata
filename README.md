@@ -1,5 +1,5 @@
-[![Commit activity](https://img.shields.io/github/commit-activity/m/kivou-2000607/yata?color=447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits)
-[![Last commit](https://img.shields.io/github/last-commit/kivou-2000607/yata?color=447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits/master)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/kivou-2000607/yata?color=%23447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits)
+[![Last commit](https://img.shields.io/github/last-commit/kivou-2000607/yata?color=%23447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits/master)
 [![Discord](https://img.shields.io/discord/581227228537421825?style=for-the-badge&color=%23447e9b&label=Join%20the%20discord&logo=discord&logoColor=FFF)](https://yata.alwaysdata.net/discord)
 
 # YATA: Yet Another Torn App
