@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'player.middleware.ip_middleware.XForwardedForMiddleware',
     'django_brotli.middleware.BrotliMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'django.middleware.security.SecurityMiddleware',
