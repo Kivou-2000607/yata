@@ -91,7 +91,7 @@ The admin interface can be accessed via
 
 ### Bazaar Default Items
 
-By default the most commonly traded items are set to appear in https://yata.yt//bazaar/default/. This list can be adjusted.
+By default the most commonly traded items are set to appear in https://yata.yt/bazaar/default/. This list can be adjusted.
 
     1. Logon To the Admin Section
     2. Go to the Items table
