@@ -20,6 +20,7 @@ class XForwardedForMiddleware:
                     break
 
             if remote_addr is None:
+                from django.core.exceptions import SuspiciousOperation
                 raise SuspiciousOperation('Malformed X-Forwarded-For.')
 
             request.META['HTTP_X_PROXY_REMOTE_ADDR'] = request.META['REMOTE_ADDR']
@@ -28,6 +29,8 @@ class XForwardedForMiddleware:
         return self.get_response(request)
 
     def _validated_ip(self, ip):
+        from django.core.exceptions import ValidationError
+        from django.core.validators import validate_ipv46_address
         ip = ip.strip()
         try:
             validate_ipv46_address(ip)
