@@ -1,11 +1,11 @@
 [![Commit activity](https://img.shields.io/github/commit-activity/m/kivou-2000607/yata?color=%23447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits)
 [![Last commit](https://img.shields.io/github/last-commit/kivou-2000607/yata?color=%23447e9b&logo=github&logoColor=white&style=for-the-badge)](https://github.com/Kivou-2000607/yata/commits/master)
-[![Discord](https://img.shields.io/discord/581227228537421825?style=for-the-badge&color=%23447e9b&label=Join%20the%20discord&logo=discord&logoColor=FFF)](https://yata.alwaysdata.net/discord)
+[![Discord](https://img.shields.io/discord/581227228537421825?style=for-the-badge&color=%23447e9b&label=Join%20the%20discord&logo=discord&logoColor=FFF)](https://yata.yt/discord)
 
 # YATA: Yet Another Torn App
 
 Helper website for the text-based online RPG Torn City https://www.torn.com/
-The website is hosted here: https://yata.alwaysdata.net/
+The website is hosted here: https://yata.yt/
 
 # Local Setup Instructions
 
@@ -91,7 +91,7 @@ The admin interface can be accessed via
 
 ### Bazaar Default Items
 
-By default the most commonly traded items are set to appear in https://yata.alwaysdata.net/bazaar/default/. This list can be adjusted.
+By default the most commonly traded items are set to appear in https://yata.yt//bazaar/default/. This list can be adjusted.
 
     1. Logon To the Admin Section
     2. Go to the Items table
