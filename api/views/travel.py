@@ -27,6 +27,7 @@ from ratelimit.core import get_usage, is_ratelimited
 
 # standards
 import json
+from decouple import config
 
 # yata
 from yata.handy import tsnow
@@ -36,7 +37,7 @@ from bazaar.models import VerifiedClient
 from bazaar.models import Item
 
 # @ratelimit(key='ip', rate='5/m')
-@cache_page(60)
+# @cache_page(60)
 def exportStocks(request):
     try:
 
@@ -172,6 +173,16 @@ def importStocks(request):
                 AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
                 v["last"] = True
                 item.abroadstocks_set.create(**v)
+
+            if config("ENABLE_CF", False):
+                # clear CF cache
+                print("[api.travel.import] clear export cache")
+                headers = {
+                    "X-Auth-Email": config("CF_EMAIL"),
+                    "X-Auth-Key": config("CF_API_KEY"),
+                }
+                data = {"files": [{"url": "https://yata.yt/api/v1/travel/export/"}]}
+                r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
 
             return JsonResponse({"message": f"The stocks have been updated with {client}"}, status=200)
 

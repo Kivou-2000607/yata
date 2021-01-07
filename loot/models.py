@@ -4,6 +4,7 @@ from django.conf import settings
 
 import requests
 import json
+from decouple import config
 
 from yata.handy import apiCall
 from yata.handy import tsnow
@@ -31,6 +32,7 @@ class NPC(models.Model):
         if 'apiError' in req:
             return req['apiError']
         else:
+            old_hospitalTS = self.hospitalTS
             self.name = req.get("name", "?")
             self.updateTS = int(req.get("timestamp", 0))
             states = req.get("states")
@@ -44,6 +46,18 @@ class NPC(models.Model):
 
             # print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
+
+        if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
+            print("[loot.NPC.update] clear cache")
+            headers = {
+                "X-Auth-Email": config("CF_EMAIL"),
+                "X-Auth-Key": config("CF_API_KEY"),
+            }
+            data = {"files": [{"url": "https://yata.yt/api/v1/loot/"}]}
+            r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
+
+
+
 
     def lootTimings(self, lvl=None):
         now = int(timezone.now().timestamp())
