@@ -181,7 +181,7 @@ def importStocks(request):
                     "X-Auth-Email": config("CF_EMAIL"),
                     "X-Auth-Key": config("CF_API_KEY"),
                 }
-                data = {"files": [{"url": "https://yata.yt/api/v1/travel/export/"}]}
+                data = {"files": [{"url": "https://yata.yt/api/v1/travel/export*"}]}
                 r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
 
             return JsonResponse({"message": f"The stocks have been updated with {client}"}, status=200)
