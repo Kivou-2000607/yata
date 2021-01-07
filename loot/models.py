@@ -47,15 +47,15 @@ class NPC(models.Model):
             # print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
 
-        if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
+        #if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
+        if self.tId == 4 and config("ENABLE_CF", False):
             print("[loot.NPC.update] clear cache")
             headers = {
                 "X-Auth-Email": config("CF_EMAIL"),
                 "X-Auth-Key": config("CF_API_KEY"),
             }
-            data = {"files": [{"url": "https://yata.yt/api/v1/loot*"}]}
+            data = {"files": [{"url": "https://yata.yt/api/v1/loot/*"}]}
             r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
-
 
 
 
