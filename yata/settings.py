@@ -76,7 +76,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'player.middleware.ban_players_middleware.BanPlayersMiddleware'
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"

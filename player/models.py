@@ -112,10 +112,6 @@ class Player(models.Model):
     def nameAligned(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
-    def getSpinner(self):
-        spinner = Spinner.objects.filter(factionId=self.factionId).first()
-        return "" if (spinner is None or spinner.spinner is None) else "-{}".format(spinner.spinner)
-
     def getKey(self, value=True):
         key = self.key_set.first()
         if key is None:
@@ -323,21 +319,6 @@ class Player(models.Model):
 
         return personnalstats
 
-# class News(models.Model):
-#     player = models.ManyToManyField(Player, blank=True)
-#     type = models.CharField(default="Info", max_length=16)
-#     text = models.TextField()
-#     authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
-#     authorName = models.CharField(default="Kivou", max_length=32)
-#     date = models.DateTimeField(default=timezone.now)
-#
-#     def __str__(self):
-#         return "{} of {:%Y/%M/%d} by {}".format(self.type, self.date, self.authorName)
-#
-#     def read(self):
-#         return len(self.player.all())
-
-
 class Message(models.Model):
     section = models.CharField(default="B", max_length=16, choices=SECTION_CHOICES)
     text = models.TextField()
@@ -380,9 +361,6 @@ class PlayerData(models.Model):
     nDay = models.IntegerField(default=0)
     nHour = models.IntegerField(default=0)
     nMonth = models.IntegerField(default=0)
-
-    ipsBan = models.TextField(default="[]")
-    uidBan = models.TextField(default="[]")
 
     def updateNumberOfPlayers(self):
         players = Player.objects.only("tId", "active", "validKey", "lastActionTS").exclude(tId=-1)
@@ -430,37 +408,6 @@ class TmpReq(models.Model):
     type = models.CharField(default="None", max_length=16)
     req = models.TextField(default="{}")
 
-
-class Spinner(models.Model):
-    factionId = models.IntegerField(default=0)
-    spinner = models.CharField(default="", max_length=64, null=True, blank=True)
-
-
-# class Gym(models.Model):
-#     timestamp = models.IntegerField(default=0)
-#
-#     # stat
-#     stat_type = models.CharField(default="?", max_length=16)
-#     stat_before = models.BigIntegerField(default=0)
-#     stat_after = models.BigIntegerField(default=0)
-#
-#     # energy
-#     energy_used = models.IntegerField(default=0)
-#
-#     # happy
-#     happy_before = models.IntegerField(default=0)
-#     happy_after = models.IntegerField(default=0)
-#
-#     # gym
-#     gym_id = models.IntegerField(default=1)
-#     gym_dot = models.IntegerField(default=0)
-#
-#     # perks
-#     perks_faction = models.IntegerField(default=0)
-#     perks_property = models.IntegerField(default=0)
-#     perks_education = models.IntegerField(default=0)
-#     perks_book = models.IntegerField(default=0)
-#     perks_company = models.IntegerField(default=0)
 
 class TrainFull(models.Model):
     # for debug

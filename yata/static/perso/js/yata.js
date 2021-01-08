@@ -1,3 +1,5 @@
+const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
+
 function toggle_h(h) {
     var d = h.next("div");
     var i = h.find("i[class^='fas fa-caret']");

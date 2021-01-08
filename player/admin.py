@@ -64,14 +64,6 @@ class ErrorAdmin(admin.ModelAdmin):
     def date(self, instance):
         return timestampToDate(instance.timestamp)
 
-
-class SpinnerAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'factionId', 'faction', 'spinner']
-
-    def faction(self, instance):
-        return Faction.objects.filter(tId=instance.factionId).first()
-
-
 def add_gym_book_20(modeladmin, request, queryset):
     queryset.update(perks_gym_book=20)
 
@@ -101,7 +93,6 @@ class TrainFullAdmin(admin.ModelAdmin):
 
 admin.site.register(Error, ErrorAdmin)
 admin.site.register(TrainFull, TrainFullAdmin)
-admin.site.register(Spinner, SpinnerAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Message, MessageAdmin)
