@@ -16,41 +16,35 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
-from django.utils import timezone
+from django.core.cache import cache
 
-# from player.models import News
-from player.models import Player
-from faction.models import Member
 from player.models import Message
-from player.models import SECTION_CHOICES
 from loot.models import NPC
 
 from yata.handy import tsnow
 
-# def news(request):
-#     if request.session.get('player'):
-#         tId = request.session["player"].get("tId")
-#         player = Player.objects.filter(tId=tId).first()
-#         news = News.objects.all().order_by("-date").first()
-#         news = False if news in player.news_set.all() or news.date > (timezone.datetime.now(timezone.utc) + timezone.timedelta(weeks=2)) else news
-#         return {"lastNews": news}
-#     else:
-#         return {}
 
 def sectionMessage(request):
     section = request.get_full_path().split("/")[1]
-    sectionMessages = Message.objects.filter(section__in=[section, "all"]).order_by("-date")
-    return {"sectionMessages": sectionMessages}
+    sm = cache.get("context_processor_message")
+    if sm is None:
+        print("[context_processor] cache message")
+        sm = [m.message for m in Message.objects.filter(section__in=[section, "all"]).order_by("-pk")]
+        cache.set("context_processor_message", sm, 3600)
+
+    return {"sectionMessages": sm}
 
 
 def nextLoot(request):
     try:
-        # get smaller due time
-        to_late = tsnow() - (15 + 210) * 60
-        next = NPC.objects.filter(show=True).filter(hospitalTS__gt=to_late).order_by('hospitalTS').first()
-        if next is None:
-            return {"nextLoot": ["All level V", 0, 0]}
-        ts = max(next.lootTimings(lvl=4)["ts"], 0)
-        return {"nextLoot": [next.name, next.tId, ts]}
+        nl = cache.get("context_processor_loot")
+        if nl is None:
+            print("[context_processor] cache loot")
+            to_late = tsnow() - (15 + 210) * 60
+            next = NPC.objects.filter(show=True).filter(hospitalTS__gt=to_late).order_by('hospitalTS').first()
+            nl =  ["All level V", 0, 0] if next is None else [next.name, next.tId, max(next.lootTimings(lvl=4)["ts"], 0)]
+            cache.set("context_processor_loot", nl, 3600)
+
+        return {"nextLoot": nl}
     except BaseException:
         return {"nextLoot": ["Error", 0, 0]}

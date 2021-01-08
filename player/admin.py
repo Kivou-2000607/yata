@@ -38,7 +38,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'date', 'section', 'authorName', 'authorId']
+    list_display = ['__str__', 'section', 'message']
 
 
 class DonationAdmin(admin.ModelAdmin):

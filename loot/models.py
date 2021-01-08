@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.core.cache import cache
 
 import requests
 import json
@@ -47,15 +48,20 @@ class NPC(models.Model):
             # print("[loot.NPC.update] {}: {} {} {}".format(self, self.status, self.hospitalTS, self.updateTS))
             self.save()
 
-        #if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
-        if self.tId == 4 and config("ENABLE_CF", False):
-            print("[loot.NPC.update] clear cache")
+        # clear context processor caching caching
+        if old_hospitalTS != self.hospitalTS:
+            print("[loot.NPC.update] clear context processor cache")
+            cache.delete("context_processor_loot")
+
+        # clear cloudfare caching
+        if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
             headers = {
                 "X-Auth-Email": config("CF_EMAIL"),
                 "X-Auth-Key": config("CF_API_KEY"),
             }
-            data = {"files": [{"url": "https://yata.yt/api/v1/loot/*"}]}
+            data = {"files": ["https://yata.yt/api/v1/loot/"]}
             r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
+            print("[loot.NPC.update] clear cloudflare cache", r.json())
 
 
 

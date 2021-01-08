@@ -33,7 +33,7 @@ from yata.handy import isProxyKey
 
 SECTION_CHOICES = (
     ('all', 'all'),
-    ('home', 'home'),
+    ('player', 'player'),
     ('bazaar', 'bazaar'),
     ('faction', 'faction'),
     ('target', 'target'),
@@ -321,14 +321,10 @@ class Player(models.Model):
 
 class Message(models.Model):
     section = models.CharField(default="B", max_length=16, choices=SECTION_CHOICES)
-    text = models.TextField()
-    authorId = models.IntegerField(default=2000607)
-    authorName = models.CharField(default="Kivou", max_length=32)
-    date = models.DateTimeField(default=timezone.now)
+    message = models.TextField()
 
     def __str__(self):
-        return "{} of {:%Y/%M/%d} by {}".format(self.section, self.date, self.authorName)
-
+        return f"Message {self.pk} in {self.section}"
 
 class Donation(models.Model):
     event = models.CharField(max_length=512)
