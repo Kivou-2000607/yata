@@ -63,9 +63,14 @@ def index(request):
 
     # create session
     player = user_key.player
-    request.session['player'] = {'tId': player.tId, 'name': str(player), 'login': True}
-    request.session['json-output'] = {'tId': player.tId, 'name': str(player), 'login': True}
+    request.session['player'] = {'tId': player.tId, 'name': str(player)}
+    request.session['json-output'] = True
     request.session.set_expiry(3600 * 24)
     response = JsonResponse({"auth": f"Login success {player}"}, status=200)
-    response.set_cookie('csrftoken', get_token(request))
+    get_token(request)
+    # response.set_cookie()
+    # response.set_cookie('csrfmiddlewaretoken', get_token(request))
+    # print("SERVER: END OF AUTH COOKIES", response.COOKIES)
+    # print(get_token(request))
+
     return response

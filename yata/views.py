@@ -110,7 +110,7 @@ def login(request):
             player.save()
 
             print('[view.yata.login] create session')
-            request.session['player'] = {'tId': player.tId, 'name': str(player), 'login': True}
+            request.session['player'] = {'tId': player.tId, 'name': str(player)}
 
             check = json.loads(p.get('check'))
             if check:
