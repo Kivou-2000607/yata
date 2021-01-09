@@ -37,7 +37,7 @@ class Command(BaseCommand):
 
         # update players info
         print(f"[CRON {logdate()}] START players")
-        ts_threshold = tsnow() - 3600
+        ts_threshold = tsnow() - 86400
         players = Player.objects.filter(validKey=True, lastUpdateTS__lt=ts_threshold).order_by("lastUpdateTS")
         n = len(players)
         for i, player in enumerate(players):
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         print(f"[CRON {logdate()}] COMPUTE HOF GRAPH")
         hofGraph = []
         for i, player in enumerate(Player.objects.exclude(awardsScor=0).only("awardsScor")):
-            print(f"[CRON {logdate()}] #{i + 1}: {player.nameAligned()} {player.awardsScor / 10000.:.4f}")
+            # print(f"[CRON {logdate()}] #{i + 1}: {player.nameAligned()} {player.awardsScor / 10000.:.4f}")
             hofGraph.append(float(player.awardsScor / 10000.0))
         bins = numpy.logspace(-2, 2, num=101)
         bins[0] = 0
