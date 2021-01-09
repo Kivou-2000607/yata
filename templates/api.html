@@ -43,9 +43,12 @@
         ...
     },
     "next_update": Number, // timestamp suggested for next update
+    "timestamp": Number, // timestamp of the server response
 }</code></pre>
       </li>
-      <li><b>Rate limit</b> There is an IP based rate limit of 10 calls / hours. It is recommended to store locally the result and update it based on the suggested timestamp to reduce the number of calls.</li>
+      <li style="text-decoration: line-through;"><b>Rate limit</b> There is an IP based rate limit of 10 calls / hours. It is recommended to store locally the result and update it based on the suggested timestamp to reduce the number of calls.</li>
+      <li><b>Cache</b> The response is cached until an <tt>hosp_out</tt> has changed. You can checkout the server response timestamp to see when last update occured.<br>
+        <span class="warning">Make sure to call the exact url <tt>{% url "api:loot" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.
       <li><b>Loot levels</b> From the hosp out timestamps one can get the different loot level by adding the following number of seconds:
         <pre><code classe="yaml">level 1: 0
 level 2: 30 * 60
@@ -78,7 +81,9 @@ level 5: 450 * 60</code></pre>
     "timestamp": Number, // timestamp of the payload update
 }</code></pre>
       </li>
-      <li><b>Cache</b> The request has a 1 minute cache.</li>
+      <li><b>Cache</b> The response is cached until an <tt>{% url "api:importStocks" %}</tt> request is called. You can checkout the server response timestamp to see when last update occured.<br>
+        <span class="warning">Make sure to call the exact url <tt>{% url "api:exportStocks" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.
+
     </ul>
   </div>
     <h2 class="command-doc">Import stocks [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
@@ -133,6 +138,7 @@ sou: South Africa</code></pre>
         <ul>
           <li>If an item of a country is not in the list, its <code>quantity</code> is automatically set to <tt>0</tt>.</li>
           <li>You can download json examples of the <a href="{% static "abroad/post.json" %}">post</a> request and the server <a href="{% static "abroad/response.json" %}">response.</a></li>
+          <li>This request will clear the <tt>{% url "api:exportStocks" %}</tt> request's cache.</li>
           <li>Your client needs to be added to the database as a "verified client" to be able to write in the database.</li>
         </ul>
       </li>

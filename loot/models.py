@@ -5,10 +5,10 @@ from django.core.cache import cache
 
 import requests
 import json
-from decouple import config
 
 from yata.handy import apiCall
 from yata.handy import tsnow
+from yata.handy import clear_cf_cache
 from setup.functions import randomKey
 
 
@@ -49,20 +49,12 @@ class NPC(models.Model):
             self.save()
 
         # clear context processor caching caching
+        # clear cloudfare caching
         if old_hospitalTS != self.hospitalTS:
             print("[loot.NPC.update] clear context processor cache")
             cache.delete("context_processor_loot")
-
-        # clear cloudfare caching
-        if old_hospitalTS != self.hospitalTS and config("ENABLE_CF", False):
-            headers = {
-                "X-Auth-Email": config("CF_EMAIL"),
-                "X-Auth-Key": config("CF_API_KEY"),
-            }
-            data = {"files": ["https://yata.yt/api/v1/loot/"]}
-            r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
-            print("[loot.NPC.update] clear cloudflare cache", r.json())
-
+            r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
+            print("[loot.NPC.update] clear cloudflare cache", r)
 
 
     def lootTimings(self, lvl=None):

@@ -22,6 +22,8 @@ from django.utils import timezone
 import datetime
 import random
 import string
+import requests
+from decouple import config
 
 HISTORY_TIMES = {
     "one_day": 86400,
@@ -218,3 +220,16 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
         except BaseException as e:
             print("Meta error", e)
         return HttpResponseServerError(render_to_string('500.html', {'exception': exc, 'home': home}))
+
+
+def clear_cf_cache(urls):
+    if config("ENABLE_CF", False):
+        headers = {
+            "X-Auth-Email": config("CF_EMAIL"),
+            "X-Auth-Key": config("CF_API_KEY"),
+        }
+        data = {"files": urls}
+        r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
+        return r.json()
+    else:
+        return {'result': {'id': None}, 'success': False, 'errors': [], 'messages': ["No cloudflare configurations found"]}

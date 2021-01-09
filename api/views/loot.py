@@ -41,8 +41,8 @@ DEFAULT_UPDATE = 60 * 60  # by default next update is in an hour
 
 UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 
-# @cache_page(60*5)
 # @ratelimit(key='ip', rate='10/h')
+# @cache_page(300)
 def loot(request):
     try:
 
@@ -65,7 +65,8 @@ def loot(request):
 
         payload = {
             "hosp_out": npcs,
-            "next_update": next_update
+            "next_update": next_update,
+            "timestamp": tsnow()
         }
 
         return JsonResponse(payload, status=200)
