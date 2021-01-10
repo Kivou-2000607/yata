@@ -23,6 +23,7 @@ import datetime
 import random
 import string
 import requests
+import json
 from decouple import config
 
 HISTORY_TIMES = {
@@ -235,3 +236,15 @@ def clear_cf_cache(urls):
         return r.json()
     else:
         return {'result': {'id': None}, 'success': False, 'errors': [], 'messages': ["No cloudflare configurations found"]}
+
+
+def get_payload(request):
+    if len(request.POST):
+        return request.POST
+
+    try:
+        return json.loads(request.body)
+    except BaseException as e:
+        print(f"[handy.get_payload] {e}")
+        string = request.body.decode('utf-8').replace("'", "\"")
+        return json.loads(string)

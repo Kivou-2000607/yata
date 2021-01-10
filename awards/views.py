@@ -30,13 +30,16 @@ import numpy
 from yata.handy import apiCall
 from yata.handy import returnError
 from yata.handy import getPlayer
+from yata.handy import get_payload
 from awards.functions import createAwards
 from awards.functions import AWARDS_CAT
 from player.models import Player
 
 from awards.models import AwardsData
 
+from django.views.decorators.csrf import csrf_exempt
 
+# API compatible
 def index(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
@@ -126,7 +129,7 @@ def list(request, type):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-
+# API compatible
 def hof(request):
     try:
         tId = request.session["player"].get("tId") if request.session.get('player') else -1
@@ -164,9 +167,7 @@ def hof(request):
 
         if request.session.get('json-output'):
             del context["player"]
-            # del context["awards"]
             context["hof"] = [{"player_name": v["player"].name, "player_id": v["player"].tId, "player_faction_name": v["player"].factionNa, "player_faction_id": v["player"].factionId, "rank": v["rank"]} for v in hof_full]
-            # json.dump(context, open("tmp.json", 'w'), sort_keys=True, indent=4)
             return JsonResponse(context, status=200)
         else:
             page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
@@ -205,37 +206,35 @@ def showPinned(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-
+# API compatible
 def togglePin(request):
-    try:
-        if request.session.get('player') and request.method == "POST":
-            player = getPlayer(request.session["player"].get("tId"))
-            pinnedAwards = json.loads(player.awardsPinn)
-            awardId = request.POST.get("awardId")
+    if request.session.get('player') and request.method == "POST":
+        post_payload = get_payload(request)
 
-            if awardId is not None and not request.POST.get("check", False):
-                if awardId in pinnedAwards:
-                    pinnedAwards.remove(awardId)
-                else:
-                    if awardId.split("_")[-1].isdigit():
-                        if len(pinnedAwards) == 3:
-                            pinnedAwards.pop(0)
-                        pinnedAwards.append(awardId)
+        player = getPlayer(request.session["player"].get("tId"))
+        pinnedAwards = json.loads(player.awardsPinn)
+        awardId = post_payload.get("awardId")
 
-                player.awardsPinn = json.dumps(pinnedAwards)
-                player.save()
-
-            if request.session.get('json-output'):
-                return JsonResponse({"awardId": awardId, "pinnedAwards": pinnedAwards}, status=200)
+        if awardId is not None and not post_payload.get("check", False):
+            if awardId in pinnedAwards:
+                pinnedAwards.remove(awardId)
             else:
-                return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
+                if awardId.split("_")[-1].isdigit():
+                    if len(pinnedAwards) == 3:
+                        pinnedAwards.pop(0)
+                    pinnedAwards.append(awardId)
 
+            player.awardsPinn = json.dumps(pinnedAwards)
+            player.save()
+
+        if request.session.get('json-output'):
+            return JsonResponse({"awardId": awardId, "pinnedAwards": pinnedAwards}, status=200)
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
+            return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
 
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
+    else:
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        return returnError(type=403, msg=message)
 
 
 def bannersId(request):
