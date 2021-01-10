@@ -18,6 +18,7 @@ This file is part of yata.
 """
 
 from django.utils import timezone
+from django.forms.models import model_to_dict
 
 import datetime
 import random
@@ -25,7 +26,6 @@ import string
 import requests
 import json
 from decouple import config
-
 HISTORY_TIMES = {
     "one_day": 86400,
     "one_week": 604800,
@@ -248,3 +248,18 @@ def get_payload(request):
         print(f"[handy.get_payload] {e}")
         string = request.body.decode('utf-8').replace("'", "\"")
         return json.loads(string)
+
+
+def json_context(context):
+    from django.db import models
+
+    for k, v in context.items():
+        if isinstance(v, models.query.QuerySet):
+            # print(k, "queryset")
+            context[k] = [sub_v.json() for sub_v in v]
+        elif isinstance(v, models.Model):
+            context[k] = v.json()
+            # print(k, "model")
+        # else:
+        #     print(k, "?", type(v))
+    return context

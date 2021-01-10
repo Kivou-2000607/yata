@@ -23,6 +23,7 @@ from django.forms.models import model_to_dict
 from django.utils.html import format_html
 from django.core.exceptions import MultipleObjectsReturned
 from django.conf import settings
+from rest_framework import serializers
 
 import json
 import requests
@@ -1198,6 +1199,9 @@ class Faction(models.Model):
 
         return tree, respect
 
+    def json(self):
+        from faction.serializer import FactionSerializer
+        return FactionSerializer(self).data
 
 class Member(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -1415,6 +1419,10 @@ class Member(models.Model):
 
     def getTotalStats(self):
         return self.dexterity + self.speed + self.strength + self.defense
+
+    def json(self):
+        from faction.serializer import MemberSerializer
+        return MemberSerializer(self).data
 
 
 # Chains
@@ -1992,6 +2000,10 @@ class Chain(models.Model):
         else:
             return "Special crontab you lucky bastard..."
 
+    def json(self):
+        from faction.serializer import ChainSerializer
+        return ChainSerializer(self).data
+
 
 class Count(models.Model):
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
@@ -2015,6 +2027,10 @@ class Count(models.Model):
     def __str__(self):
         return format_html("Count for {}".format(self.chain))
 
+    def json(self):
+        from faction.serializer import CountSerializer
+        return CountSerializer(self).data
+
 
 class Bonus(models.Model):
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE)
@@ -2028,6 +2044,9 @@ class Bonus(models.Model):
     def __str__(self):
         return format_html("Bonus for {}".format(self.chain))
 
+    def json(self):
+        from faction.serializer import BonusSerializer
+        return BonusSerializer(self).data
 
 class AttackChain(models.Model):
     report = models.ForeignKey(Chain, on_delete=models.CASCADE)

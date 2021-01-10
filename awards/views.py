@@ -39,7 +39,7 @@ from awards.models import AwardsData
 
 from django.views.decorators.csrf import csrf_exempt
 
-# API compatible
+# (json compatible)
 def index(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
@@ -129,7 +129,7 @@ def list(request, type):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-# API compatible
+# (json compatible)
 def hof(request):
     try:
         tId = request.session["player"].get("tId") if request.session.get('player') else -1
@@ -206,7 +206,7 @@ def showPinned(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-# API compatible
+# (json compatible)
 def togglePin(request):
     if request.session.get('player') and request.method == "POST":
         post_payload = get_payload(request)

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'django_json_widget',
     'redisboard',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

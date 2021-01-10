@@ -4,6 +4,9 @@ django-mathfilters>=1.0.0
 requests>=2.22.0
 django-json-widget>=1.0.1
 
+# for serializer
+djangorestframework>=3.12.2
+
 # not needed for:
 # - development server (./manage.py runserver)
 # - sqlite3 database

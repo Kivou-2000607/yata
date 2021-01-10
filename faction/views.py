@@ -43,6 +43,7 @@ from faction.functions import *
 from scipy import stats
 
 
+# (json compatible)
 def index(request):
     try:
         if request.session.get('player'):
@@ -53,13 +54,14 @@ def index(request):
             # get user info
             user = apiCall('user', '', 'profile', key)
             if 'apiError' in user:
-                context = {'player': player, 'apiError': user["apiError"] + " We can't check your faction so you don't have access to this section."}
+                msg = f'{user["apiError"]} We can\'t check your faction so you don\'t have access to this section.'
                 player.chainInfo = "N/A"
                 player.factionId = 0
                 player.factionNa = "-"
                 player.factionAA = False
                 player.save()
-                return render(request, 'faction.html', context)
+                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, 'faction.html', {'player': player, 'apiError': msg})
+
 
             # update faction information
             factionId = int(user.get("faction")["faction_id"])
@@ -89,8 +91,14 @@ def index(request):
             attacksreports = faction.attacksreport_set.filter(computing=True).order_by('-start')
             revivesreports = faction.revivesreport_set.filter(computing=True).order_by('-start')
             events = faction.event_set.order_by('timestamp')
+
             context = {'player': player, 'faction': faction, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'events': events, 'factioncat': True, 'view': {'index': True}}
-            return render(request, 'faction.html', context)
+            if request.session.get('json-output'):
+                del context['player']
+                context = json_context(context)
+                return JsonResponse(context, status=200)
+            else:
+                return render(request, 'faction.html', context)
 
         else:
             # return redirect('/faction/territories/')
@@ -470,38 +478,6 @@ def updateMember(request):
         return returnError(exc=e, session=request.session)
 
 
-# @cache_page(60)
-# def getCrimes(request):
-#     try:
-#         # check if API key is valid with api call
-#         key = request.GET.get("key", False)
-#         if not key:
-#             return JsonResponse({"error": "No keys provided"}, status=400)
-#
-#         call = apiCall('user', '', '', key=key)
-#         if "apiError" in call:
-#             return JsonResponse({"error": call["apiError"]}, status=400)
-#
-#         #  check if can get faction
-#         factionId = call.get("faction", {}).get("faction_id")
-#         faction = Faction.objects.filter(tId=factionId).first()
-#         if faction is None:
-#             return JsonResponse({"message": "Can't find faction {} in YATA database".format(factionId)}, status=400)
-#
-#         # update crimes
-#         faction.updateCrimes()
-#
-#         # get members
-#         members = {}
-#         for member in faction.member_set.all():
-#             members[str(member.tId)] = {"NNB": member.nnb, "equivalent_arsons": member.arson, "ce_rank": member.crimesRank}
-#
-#         return JsonResponse({"members": members}, status=200)
-#
-#     except BaseException as e:
-#         return JsonResponse({"message": "Server error... YATA's been poorly coded: {}".format(e)}, status=400)
-
-
 def toggleMemberShare(request):
     try:
         if request.session.get('player') and request.method == 'POST':
@@ -572,6 +548,7 @@ def toggleMemberShare(request):
 
 
 # SECTION: chains
+# (json compatible)
 def chains(request):
     try:
         if request.session.get('player'):
@@ -585,8 +562,8 @@ def chains(request):
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-                return render(request, page, context)
+                msg = f'Faction {factionId} not found in the database'
+                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, page, {'player': player, selectError: msg})
 
             # update chains if AA
             error = False
@@ -664,7 +641,15 @@ def chains(request):
                 selectMessage = 'validMessageSub' if request.method == 'POST' else 'validMessage'
                 context.update({selectMessage: message})
 
-            return render(request, page, context)
+            if request.session.get('json-output'):
+                del context['player']
+                context = json_context(context)
+                # for k, v in context.items():
+                #     print(k, v)
+                return JsonResponse(context, status=200)
+            else:
+                return render(request, page, context)
+
 
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -672,10 +657,12 @@ def chains(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
-
+# (json compatible)
 def manageReport(request):
     try:
         if request.session.get('player') and request.method == 'POST':
+            post_payload = get_payload(request)
+
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
             context = {"player": player}
@@ -684,40 +671,42 @@ def manageReport(request):
                 return returnError(type=403, msg="You need AA rights.")
 
             # get faction
-            chainId = request.POST.get("chainId", -1)
+            chainId = post_payload.get("chainId", -1)
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                return render(request, 'yata/error.html', {'inlineError': 'Faction {} not found in the database.'.format(factionId)})
+                msg = f'Faction {factionId} not found in the database'
+                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, 'yata/error.html', {'inlineError': msg})
 
             # get chain
             chain = faction.chain_set.filter(tId=chainId).first()
             if chain is None:
-                return render(request, 'yata/error.html', {'inlineError': 'Chain {} not found in the database.'.format(chainId)})
+                msg = f'Chain {chainId} not found in the database'
+                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, 'yata/error.html', {'inlineError': msg})
 
-            if request.POST.get("type", False) == "share":
+            if post_payload.get("type", False) == "share":
                 if chain.shareId == "":
                     chain.shareId = randomSlug()
                 else:
                     chain.shareId = ""
                 chain.save()
                 context = {"chain": chain}
-                return render(request, 'faction/chains/share.html', context)
+                return JsonResponse(json_context(context), status=200) if request.session.get('json-output') else render(request, 'faction/chains/share.html', context)
 
-            if request.POST.get("type", False) == "combine":
+            if post_payload.get("type", False) == "combine":
                 chain.combine = not chain.combine
                 chain.save()
 
-            if request.POST.get("type", False) == "create":
+            if post_payload.get("type", False) == "create":
                 chain.report = True
                 chain.computing = True
                 chain.cooldown = False
                 chain.status = 1
                 chain.addToEnd = 10
                 c = chain.assignCrontab()
-                print("report assigned to {}".format(c))
+                # print("report assigned to {}".format(c))
                 chain.save()
 
-            if request.POST.get("type", False) == "cooldown":
+            if post_payload.get("type", False) == "cooldown":
                 if chain.cooldown:
                     chain.attackchain_set.filter(timestamp_ended__gt=chain.end).delete()
 
@@ -729,8 +718,10 @@ def manageReport(request):
                 print("report assigned to {}".format(c))
                 chain.save()
 
-            if request.POST.get("type", False) == "delete":
+            if post_payload.get("type", False) == "delete":
                 chain.report = False
+                chain.graphs = "{}"
+                chain.shareId = ""
                 chain.computing = False
                 chain.combine = False
                 chain.current = 0
@@ -743,7 +734,12 @@ def manageReport(request):
 
             chain.status = CHAIN_ATTACKS_STATUS[chain.state]
             context = {"player": player, "chain": chain}
-            return render(request, 'faction/chains/buttons.html', context)
+
+            if request.session.get('json-output'):
+                del context['player']
+                return JsonResponse(json_context(context), status=200)
+            else:
+                return render(request, 'faction/chains/buttons.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -753,6 +749,7 @@ def manageReport(request):
         return returnError(exc=e, session=request.session)
 
 
+# (json compatible)
 def report(request, chainId, share=False):
     try:
         if request.session.get('player') or share == "share":
@@ -775,8 +772,8 @@ def report(request, chainId, share=False):
                 # get faction
                 if faction is None:
                     selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
-                    return render(request, page, context)
+                    msg = f'Faction {factionId} not found in the database'
+                    return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, page, {selectError: msg})
 
                 chains = faction.chain_set.order_by('-end')
                 combined = len(chains.filter(combine=True))
@@ -787,8 +784,8 @@ def report(request, chainId, share=False):
                 chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
                 if chain is None:
                     selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context = {'player': player, 'faction': faction, selectError: "Chain not found. It might come from a API issue. Click on chain report again please."}
-                    return render(request, page, context)
+                    msg = f'Chain {chainId} not found in the database'
+                    return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, page, {selectError: msg})
 
             # create graph
             graphs = json.loads(chain.graphs)
@@ -869,7 +866,12 @@ def report(request, chainId, share=False):
                                 'graph': graph,  # for report
                                 'view': {'chains': True, 'report': True}})  # views
 
-            return render(request, page, context)
+            if request.session.get('json-output'):
+                del context['player']
+                del context['chains']
+                return JsonResponse(json_context(context), status=200)
+            else:
+                return render(request, page, context)
 
         else:
             return returnError(type=403, msg="You might want to log in.")
