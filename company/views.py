@@ -17,7 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
@@ -44,9 +44,10 @@ def index(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        context = {"player": player, "compcat": True, "view": {"index": True}}
-        page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
-        return render(request, page, context)
+        if player.companyId:
+            return redirect('company:supervise')
+        else:
+            return redirect('company:browse')
 
     except Exception as e:
         return returnError(exc=e, session=request.session)

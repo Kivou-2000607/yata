@@ -3,10 +3,39 @@
 {% load app_filters %}
 
 {% if company_details %}
+
+<script>
+
+    $(document).ready(function () {
+        $("#comapny-details-positions").tablesorter({
+            textExtraction: {
+                0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                2: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                3: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                4: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            sortList: [[0, 1]]
+        });
+    });
+
+    $(document).ready(function () {
+        $("#company-details-specials").tablesorter({
+            textExtraction: {
+                3: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            sortList: [[3, 0]]
+        });
+    });
+
+</script>
+
 <h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company_details.name}}</h2>
 <div class="module">
     <h2>Positions</h2>
-    <table class="center-large trshadow comapny-details-positions">
+    <table id="comapny-details-positions" class="center-large trshadow comapny-details-positions">
         <thead>
             <tr>
                 <th>Name</th>
@@ -24,14 +53,14 @@
             {% with company_details.position_set.all as positions %}
                 {% for position in positions %}
                     <tr>
-                        <td class="a">{{position.name}}</td>
-                        <td class="b">{{position.man_required|workstats:player.wman}}</td>
-                        <td class="b">{{position.int_required|workstats:player.wint}}</td>
-                        <td class="b">{{position.end_required|workstats:player.wend}}</td>
-                        <td class="c">{% workgains position.man_gain player.wman position.man_required %}</td>
-                        <td class="c">{% workgains position.int_gain player.wint position.int_required %}</td>
-                        <td class="c">{% workgains position.end_gain player.wend position.end_required %}</td>
-                        <td class="d">{{position.special_ability}}</td>
+                        <td class="a" data-val="{{position.man_required|add:position.int_required|add:position.end_required}}">{{position.name}}</td>
+                        <td class="b" data-val="{{position.man_required}}">{{position.man_required|workstats:player.wman}}</td>
+                        <td class="b" data-val="{{position.int_required}}">{{position.int_required|workstats:player.wint}}</td>
+                        <td class="b" data-val="{{position.end_required}}">{{position.end_required|workstats:player.wend}}</td>
+                        <td class="c" data-val="{{position.man_gain}}">{% workgains position.man_gain player.wman position.man_required %}</td>
+                        <td class="c" data-val="{{position.int_gain}}">{% workgains position.int_gain player.wint position.int_required %}</td>
+                        <td class="c" data-val="{{position.end_gain}}">{% workgains position.end_gain player.wend position.end_required %}</td>
+                        <td class="d" data-val="{{position.special_ability}}">{{position.special_ability}}</td>
                         <td class="e" title="{{position.description}}">{{position.description}}</td>
                     </tr>
                 {% endfor %}
@@ -40,7 +69,7 @@
     </table>
 
     <h2>Specials</h2>
-    <table class="center-medium trshadow comapny-details-specials">
+    <table id="company-details-specials" class="center-medium trshadow comapny-details-specials">
         <thead>
             <tr>
                 <th>Name</th>
@@ -56,7 +85,7 @@
                         <td class="a">{{special.name}}</td>
                         <td class="b">{{special.effect}}</td>
                         <td class="c">{{special.cost|compjp}}</td>
-                        <td class="d">{{special.rating_required|compstars}}</td>
+                        <td class="d" data-val="{{special.rating_required}}">{{special.rating_required|compstars}}</td>
                     </tr>
                 {% endfor %}
             {% endwith %}
