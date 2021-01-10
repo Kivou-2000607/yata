@@ -18,16 +18,22 @@ This file is part of yata.
 {% endcomment %}
 
 {% load app_filters %}
+{% load humanize %}
 
-<div class="module rounded">
+<h2 class="title"><i class="fas fa-list-ol fa-icon-inline"></i>Browse</h2>
+<div class="module">
+    {% if player.tId > 0 %}
+      <p><b>Your working stats:</b> <span class="neutral">{{player.wman|intcomma}}</span> MAN <span class="neutral">{{player.wint|intcomma}}</span> INT <span class="neutral">{{player.wend|intcomma}}</span> END</p>
+    {% endif %}
     <form id="company-select-form">
-        <label for="company-select-form">Select a company:</label>
+        <p><b>Select a company:</b>
         <select name="companies" id="companies" form="company-select-form">
             <option value="" disabled selected>List of all companies</option>
             {% for company in companies %}
                 <option value="{{company.tId}}">{{company.name}}</option>
             {% endfor %}
         </select>
+        </p>
     </form>
 </div>
 

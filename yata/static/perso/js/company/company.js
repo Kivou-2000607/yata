@@ -21,7 +21,7 @@ $(document).on('click', 'table.company-categories td', function (e) {
 $(document).on('change', '#company-select-form', e => {
     e.preventDefault();
     const reload = $("#company-details");
-    const company_id = $(e.currentTarget).children("select").val();
+    const company_id = $(e.currentTarget).children("p").children("select").val();
     reload.load("/company/browse/", {
         type: "company-details",
         company_id: company_id,
