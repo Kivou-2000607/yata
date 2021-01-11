@@ -63,7 +63,7 @@ class Server(models.Model):
                                 ["Server discord ID", from_db.get("guild_id"), False],
                                 ["Server owner name", from_db.get("owner_dname"), False],
                                 ["Server owner discord ID", from_db.get("owner_did"), False],
-                                ["Server secret", from_db.get("secret"), "Read only access to the dashboard:&#10http://yata.alwaysdata.net/bot/dashboard/" + str(from_db.get("secret"))],
+                                ["Server secret", from_db.get("secret"), "Read only access to the dashboard:&#10http://yata.yt/bot/dashboard/" + str(from_db.get("secret"))],
                                 ["Server admins", ", ".join(admins), "When needed the admins API keys will be used.&#10You can ask an @Helper to change this list."]],
                 "prefix": {"type": "prefix", "all": {'!': '!', '.': '.', '>': '>', '<': '<', '$': '$', '-': '-', '_': '_', '?': '?', '#': '#'}, "selected": from_db.get("prefix", "!"), "prefix": "", "title": "Bot prefix", "help": "Select the bot prefix", "mandatory": False},
                 "channels_admin": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_admin", {}), "prefix": "#", "title": "Admin channel for the bot", "help": "Select one channel for administration purposes", "tooltip": "Errors will be sent to this channel along with potential messages from me.", "mandatory": True},

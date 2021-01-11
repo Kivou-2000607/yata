@@ -29,7 +29,7 @@ This file is part of yata.
         <h1 class="module-doc">Administration&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
         <div class="module-doc">
             <p>Non admin can access a read only view of this dashboard at this address:
-                <a href="{% url 'bot:dashboardReadOnly' server.secret %}">https://yata.alwaysdata.net{% url 'bot:dashboardReadOnly' server.secret %}</a>
+                <a href="{% url 'bot:dashboardReadOnly' server.secret %}">https://yata.yt{% url 'bot:dashboardReadOnly' server.secret %}</a>
             </p>
             {% include "bot/dashboard/modules.html" with module="admin"%}
         </div>
