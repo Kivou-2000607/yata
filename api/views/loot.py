@@ -21,11 +21,10 @@ from django.http import JsonResponse
 
 # cache and rate limit
 from django.views.decorators.cache import cache_page
-from ratelimit.decorators import ratelimit
-from ratelimit.core import get_usage, is_ratelimited
 
 # yata
 from yata.handy import tsnow
+from yata.handy import timestampToDate
 from loot.models import NPC
 
 # update level
@@ -41,7 +40,6 @@ DEFAULT_UPDATE = 60 * 60  # by default next update is in an hour
 
 UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 
-# @ratelimit(key='ip', rate='10/h')
 # @cache_page(300)
 def loot(request):
     try:
@@ -63,11 +61,20 @@ def loot(request):
                 next_update = hosp_out + UPDATE_LEVEL + UPDATE_TIME
                 break
 
+        debug = {
+            "hosp_out": {k: timestampToDate(v, fmt=True) for k, v in npcs.items()},
+            "next_update": timestampToDate(next_update, fmt=True),
+            "timestamp": timestampToDate(ts, fmt=True),
+            "message": "This field is temporary to help debug cloudflare cache system. Don't use it in your code."
+        }
+
         payload = {
             "hosp_out": npcs,
             "next_update": next_update,
-            "timestamp": tsnow()
+            "timestamp": ts,
+            "debug": debug
         }
+
 
         return JsonResponse(payload, status=200)
 
