@@ -20,7 +20,8 @@ This file is part of yata.
 from django.http import JsonResponse
 
 # cache and rate limit
-from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from yata.decorators import never_ever_cache
 
 # yata
 from yata.handy import tsnow
@@ -40,7 +41,8 @@ DEFAULT_UPDATE = 60 * 60  # by default next update is in an hour
 
 UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 
-# @cache_page(300)
+
+@method_decorator(never_ever_cache)
 def loot(request):
     try:
 

@@ -21,9 +21,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # cache and rate limit
-from django.views.decorators.cache import cache_page
-from ratelimit.decorators import ratelimit
-from ratelimit.core import get_usage, is_ratelimited
+from django.utils.decorators import method_decorator
+from yata.decorators import never_ever_cache
 
 # standards
 import json
@@ -36,8 +35,8 @@ from bazaar.models import AbroadStocks
 from bazaar.models import VerifiedClient
 from bazaar.models import Item
 
-# @ratelimit(key='ip', rate='5/m')
-# @cache_page(60)
+
+@method_decorator(never_ever_cache)
 def exportStocks(request):
     try:
 

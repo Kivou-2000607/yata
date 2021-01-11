@@ -31,10 +31,11 @@ from faction.views import attacksReport
 from faction.views import revivesReport
 
 # sentry
-from django.urls import path
-
 def trigger_error(request):
     division_by_zero = 1 / 0
+
+# redirect favicon
+favicon_view = RedirectView.as_view(url='/static/images/icon.png', permanent=True)
 
 app_name = "yata"
 urlpatterns = [
@@ -75,6 +76,9 @@ urlpatterns = [
 
     #sentry
     path('sentry-debug/', trigger_error),
+
+    # redirect default favicon
+    path('favicon.ico', favicon_view),
 
 ]
 
