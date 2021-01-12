@@ -2,7 +2,7 @@
 
 source source.bash
 
-t=$(date "+%Y" -d "4 day ago")
+t=$(date "+%Y" -d "8 day ago")
 t2=$(date "+%Y")
 
 echo $t
