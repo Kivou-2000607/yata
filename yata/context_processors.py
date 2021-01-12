@@ -29,10 +29,12 @@ def sectionMessage(request):
     sm = cache.get("context_processor_message")
     if sm is None:
         print("[context_processor] cache message")
-        sm = [m.message for m in Message.objects.filter(section__in=[section, "all"]).order_by("-pk")]
+        sm = []
+        for m in Message.objects.order_by("-pk"):
+            sm.append([m.section, m.message, m.level])
         cache.set("context_processor_message", sm, 3600)
 
-    return {"sectionMessages": sm}
+    return {"sectionMessages": [m for m in sm if m[0] in [section, "all"]]}
 
 
 def nextLoot(request):

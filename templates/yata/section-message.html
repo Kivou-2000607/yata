@@ -22,7 +22,19 @@ This file is part of yata.
 {% load app_filters %}
 
 {% for sm in sectionMessages %}
-    <div class="module rounded">
-        <p class="neutral"><i class="fas fa-info-circle fa-icon-inline"></i>{{sm|safe}}</p>
+    <div class="module rounded citymap">
+        <p class="neutral">
+          {% if sm.2 == "warning" %}
+            <span title="Warning" class="warning">
+              <i class="fas fa-exclamation-triangle fa-icon-inline"></i>
+          {% elif sm.2 == "error" %}
+            <span title="Danger" class="error">
+              <i class="fas fa-radiation-alt fa-icon-inline"></i>
+          {% else %}
+            <span title="Notice">
+              <i class="fas fa-info-circle fa-icon-inline"></i>
+          {% endif %}
+          {{sm.0|title}}</span><br/>{{sm.1|safe}}
+        </p>
     </div>
 {% endfor %}

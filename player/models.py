@@ -42,6 +42,11 @@ SECTION_CHOICES = (
     ('company', 'company'),
     ('loot', 'loot'))
 
+LEVEL_CHOICES = (
+    ('notice', 'notice'),
+    ('warning', 'warning'),
+    ('error', 'error'))
+
 
 class Player(models.Model):
     # user information: basic
@@ -320,7 +325,8 @@ class Player(models.Model):
         return personnalstats
 
 class Message(models.Model):
-    section = models.CharField(default="B", max_length=16, choices=SECTION_CHOICES)
+    section = models.CharField(default="all", max_length=16, choices=SECTION_CHOICES)
+    level = models.CharField(default="notice", max_length=16, choices=LEVEL_CHOICES)
     message = models.TextField()
 
     def __str__(self):

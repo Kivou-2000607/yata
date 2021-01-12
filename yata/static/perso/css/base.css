@@ -662,3 +662,11 @@ a.closed-link {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+div.citymap {
+  /* background: none; */
+  background-image: linear-gradient(to left, #FFF5, #FFFF), url("/static/images/citymap/citymap.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: right top, right bottom;
+  background-size: cover;
+}
