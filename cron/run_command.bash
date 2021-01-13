@@ -2,12 +2,12 @@
 
 # YATA root directory
 if [ "$YATA_DIR" == "" ]; then
-  YATA_DIR=~/yata
+  YATA_DIR=$HOME/yata
 fi
 
 # virtualenv root directory
 if [ "$YATA_VENV_DIR" == "" ]; then
-  YATA_VENV_DIR=~/.virtualenvs/yata/
+  YATA_VENV_DIR=$HOME/.virtualenvs/yata/
 fi
 
 # log file

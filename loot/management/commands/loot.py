@@ -21,14 +21,24 @@ from django.core.management.base import BaseCommand
 
 from loot.models import NPC
 from yata.handy import logdate
+from yata.handy import clear_cf_cache
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('-cc', '--clear-cache', action='store_true')
+        
     def handle(self, **options):
         print(f"[CRON {logdate()}] START loot")
-
+        
         # update NPC status
         for npc in NPC.objects.filter(show=True):
             print(f"[CRON {logdate()}] Update {npc}")
             npc.update()
 
+        if options.get("clear_cache", False):
+            r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
+            print("[loot.NPC.update] clear cloudflare cache", r)
+    
         print(f"[CRON {logdate()}] END")
+
+        
