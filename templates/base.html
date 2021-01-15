@@ -34,7 +34,7 @@ This file is part of yata.
     <!-- perso -->
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
 
     <!-- load fontawesome -->
     <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
@@ -55,7 +55,7 @@ This file is part of yata.
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- yata main js -->
-    <script src='{% static "perso/js/yata.js" %}'></script>
+    <script src='{% static "yata/js/yata.js" %}'></script>
 
     <!-- local css -->
     {% block css%}{% endblock %}
@@ -65,7 +65,7 @@ This file is part of yata.
 
 
     <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
     <title>YATA{% block title%}{% endblock%}</title>
 </head>
@@ -75,9 +75,6 @@ This file is part of yata.
 
     <div id="container">
         <div id="content">
-            {# <h1><img src="{% static "logo/yata.full.svg" %}" alt="YATA - Yet Another Torn App"></h1> #}
-            {# <h1>{% include "svg/yata.full.svg" %}</h1> #}
-            {# <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1> #}
             <div id="yata-login">
                 {% include "yata/login.html" %}
             </div>

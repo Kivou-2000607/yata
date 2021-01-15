@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css%}
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/target.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/target.css" %} />
 {% endblock%}
 
 {% block title%}
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block jquery %}
-  <script src='{% static "perso/js/targets/main.js" %}'></script>
+  <script src='{% static "yata/js/targets/main.js" %}'></script>
 {% endblock %}
 
 {% block content %}
@@ -137,7 +137,7 @@ sou: South Africa</code></pre>
       <li><b>Notes</b>
         <ul>
           <li>If an item of a country is not in the list, its <code>quantity</code> is automatically set to <tt>0</tt>.</li>
-          <li>You can download json examples of the <a href="{% static "abroad/post.json" %}">post</a> request and the server <a href="{% static "abroad/response.json" %}">response.</a></li>
+          <li>You can download json examples of the <a href="{% static "payloads/api-travel-post.json" %}" target="_blank">post</a> request and the server <a href="{% static "payloads/api-travel-response.json" %}" target="_blank">response.</a></li>
           <li>This request will clear the <tt>{% url "api:exportStocks" %}</tt> request's cache.</li>
           <li>Your client needs to be added to the database as a "verified client" to be able to write in the database.</li>
         </ul>

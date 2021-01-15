@@ -28,13 +28,13 @@ This file is part of yata.
         <th colspan="2">
             <div class="item-image">
                 {% if player.tId == -1 %}
-                    <button title="{{item.tName}}">{% itemImg item.tId item.tName "large" %}</button>
+                    <button title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
                 {% else %}
                     <form method="post">{% csrf_token %}
                         {% if apiErrorSub %}
                             <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
                         {% else %}
-                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}">{% itemImg item.tId item.tName "large" %}</button></a>
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button></a>
                         {% endif %}
                     </form>
                 {% endif %}

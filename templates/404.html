@@ -33,7 +33,7 @@ This file is part of yata.
     <!-- css -->
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
     <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "perso/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
 
     <!-- favicon -->
     <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
@@ -51,7 +51,7 @@ This file is part of yata.
         <div id="content">
             <div id="yata-login">
                 <div class="module">
-                    <a class="yata-logo" href="{% url 'index' %}" title="Home">{% include "svg/yata.full.svg" %}</a>
+                    <a class="yata-logo-full" href="{% url 'index' %}" title="Home"><img src="/media/svg/yata.full.svg" alt="YATA" class="yata-logo-full"/></a>
                     <div class="http-status">
                         <h2 class="warning"><i class="fas fa-exclamation-triangle fa-icon-inline"></i>Error 404: Not Found</h2>
                         <p>{{exception}}</p>
