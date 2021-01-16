@@ -16,7 +16,9 @@ psycopg2>=2.8.4  # need to install (sudo apt-get install libpq-dev python3-dev)
 django-extensions>=3.0.8
 
 # image modules
-Pillow>=8.0.1
+# If OOM errors with the posters with Pillox 8.1.0 and python 3.9:
+# pip install --compile --install-option=-O1 Pillow
+Pillow>=8.1.0
 
 # math modules
 numpy>=1.18.5

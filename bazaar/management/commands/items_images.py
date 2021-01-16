@@ -34,7 +34,7 @@ class Command(BaseCommand):
         print(f"[CRON {logdate()}] START items_images")
 
         for item in Item.objects.all():
-            image_file = os.path.join(os.path.join(settings.STATICFILES_DIRS[0], "items/img"), f'{item.tId}.png')
+            image_file = os.path.join(os.path.join(settings.MEDIA_ROOT, "items"), f'{item.tId}.png')
             if not os.path.isfile(image_file):
                 print(f"Missing image for {item}")
                 print(image_file)
