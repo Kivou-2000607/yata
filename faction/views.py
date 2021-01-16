@@ -209,7 +209,7 @@ def configurations(request):
 
             # add poster
             if faction.poster:
-                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.MEDIA_ROOT + '/font/')))}
+                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(FONT_DIR)))}
                 posterOpt = json.loads(faction.posterOpt)
                 context['posterOpt'] = posterOpt
                 context['random'] = random.randint(0, 65535)
@@ -353,9 +353,9 @@ def configurationsPoster(request):
             context = {'faction': faction}
 
             # update poster if needed
-            url = "{}/posters/{}.png".format(settings.MEDIA_ROOT, faction.tId)
+            url = os.path.join(settings.MEDIA_ROOT, f"posters/{faction.tId}.png")
             if faction.poster:
-                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.MEDIA_ROOT + '/font/')))}
+                fntId = {i: [f.split("__")[0].replace("-", " "), int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(FONT_DIR)))}
                 posterOpt = json.loads(faction.posterOpt)
                 context['posterOpt'] = posterOpt
                 context['random'] = random.randint(0, 65535)

@@ -116,14 +116,6 @@ def cmg(value):
     return format_html(f'<span title="{title}">{htmlstars}</span>')
 
 
-@register.simple_tag(name='itemImg')
-def itemImg(item_id, item_name, size):
-    return format_html(f'<img src="{settings.STATIC_URL}items/img/{item_id}.png" alt="{item_name} [{item_id}]" class="item-{size}" />')
-
-@register.simple_tag(name='flagImg')
-def flagImg(country, cl):
-    return format_html(f'<img src="{settings.STATIC_URL}images/flags/fl_{country}.png" alt="{country}" class="{cl}" />')
-
 @register.filter(name='rarity')
 def rarity(circulation):
     try:
@@ -215,27 +207,6 @@ def badge(value, arg):
     b = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="112" height="20"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="112" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path fill="#555" d="M0 0h71v20H0z"/><path fill="#447e9b" d="M71 0h41v20H71z"/><path fill="url(#b)" d="M0 0h112v20H0z"/></g><g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110"> <text x="365" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="610">{title}</text><text x="365" y="140" transform="scale(.1)" textLength="610">{title}</text><text x="905" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="310">{value}</text><text x="905" y="140" transform="scale(.1)" textLength="310">{value}</text></g> </svg>'.format(title=value, value=n)
 
     return b
-
-
-@register.filter(name='honorUrl')
-def honorUrl(id):
-    # return "https://awardimages.torn.com/435540163.png" if url is None else url
-    # print(id)
-    url = "{}honors/img/{}.png".format(settings.STATIC_URL, id)
-    return url
-
-@register.filter(name='honorBanner')
-def honorBanner(url, name):
-    if url is None:
-        return "<div class=\"award-default\"><img class=\"award-default\" src=\"{}honors/defaultBanner.png\" title=\"{}\"><span class=\"award-default\">{}</span></div>".format(settings.STATIC_URL, name, name)
-    else:
-        return "<img class=\"award-default\" src=\"{}\" title=\"{}\">".format(url, name)
-
-
-@register.filter(name='medalUrl')
-def medalUrl(id):
-    url = "{}medals/img/{}_r.png".format(settings.STATIC_URL, id)
-    return url
 
 
 @register.filter(name='priceTendency')
@@ -586,3 +557,73 @@ def compPopColor(p):
         cl = "warning" if int(p) < 85 else cl
         cl = "error" if int(p) < 50 else cl
     return format_html(f'<span class={cl}>{p}%</class>')
+
+
+# MEDIA URLS
+# @register.filter(name='honorUrl')
+# def honorUrl(id):
+#     # return "https://awardimages.torn.com/435540163.png" if url is None else url
+#     # print(id)
+#     url = "{}images/honors/{}.png".format(settings.STATIC_URL, id)
+#     return url
+#
+# @register.filter(name='stocksUrl')
+# def stocksUrl(id):
+#     # return "https://awardimages.torn.com/435540163.png" if url is None else url
+#     # print(id)
+#     url = "{}images/stocks/{}.png".format(settings.STATIC_URL, id)
+#     return url
+#
+# @register.filter(name='honorBanner')
+# def honorBanner(url, name):
+#     if url is None:
+#         return "<div class=\"award-default\"><img class=\"award-default\" src=\"{}honors/defaultBanner.png\" title=\"{}\"><span class=\"award-default\">{}</span></div>".format(settings.STATIC_URL, name, name)
+#     else:
+#         return "<img class=\"award-default\" src=\"{}\" title=\"{}\">".format(url, name)
+#
+#
+# @register.filter(name='medalUrl')
+# def medalUrl(id):
+#     url = "{}images/medals/{}_r.png".format(settings.STATIC_URL, id)
+#     return url
+#
+# @register.simple_tag(name='itemImg')
+# def itemImg(item_id, item_name, size):
+#     return format_html(f'<img src="{settings.STATIC_URL}items/img/{item_id}.png" alt="{item_name} [{item_id}]" class="item-{size}" />')
+#
+# @register.simple_tag(name='flagImg')
+# def flagImg(country, cl):
+#     return format_html(f'<img src="{settings.STATIC_URL}images/flags/fl_{country}.png" alt="{country}" class="{cl}" />')
+
+
+
+@register.simple_tag(name='url_img_npc')
+def url_img_npc(key):
+    return f"/media/loot/npc_{int(key)}.png"
+
+@register.simple_tag(name='url_img_honor')
+def url_img_honor(key):
+    return f"/media/honors/{int(key)}.png"
+
+@register.simple_tag(name='url_img_medal')
+def url_img_medal(key):
+    return f"/media/medals/{int(key)}_r.png"
+
+@register.simple_tag(name='url_img_stocks')
+def url_img_stocks(key):
+    return f"/media/stocks/{int(key)}.png"
+
+@register.simple_tag(name='url_img_item')
+def url_img_item(key):
+    print("key", key)
+    return f"/media/items/{int(key)}.png"
+
+@register.simple_tag(name='url_img_flag')
+def url_img_flag(key):
+    return f"/media/flags/fl_{key}.png"
+
+
+# TORN LINKS
+@register.simple_tag(name='player_link')
+def player_link(player_id, player_name="Player"):
+    return format_html(f'<a href="https://www.torn.com/userimages.php?XID={player_id}" title="{player_name} [{player_id}]" target="_blank">{player_name} [{player_id}]</a>')

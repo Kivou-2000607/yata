@@ -239,3 +239,7 @@ if config("ENABLE_SENTRY", default=False, cast=bool):
     )
 else:
     SENTRY = False
+
+
+#  src directory
+SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')

@@ -19,7 +19,6 @@ This file is part of yata.
 
 {% load mathfilters %}
 {% load humanize %}
-{% load static %}
 {% load app_filters %}
 
 
@@ -45,9 +44,9 @@ This file is part of yata.
     {% for npc in NPCs %}
         <div class="loot-npc">
             <div class="loot-npc-profile">
-                <img class="profile" src="{{npc.pictureURL}}">
+                <img class="profile" src='{% url_img_npc npc.tId %}'>
                 <div>
-                    {{npc.name|playerURL:npc.tId|safe}}
+                    {% player_link npc.tId  npc.name %}
                     {% if npc.currentLevel.lvl %}
                         <div class="hospitalized valid">Loot level {{npc.currentLevel.lvl|lootLevel}}</div>
                     {% else %}
@@ -55,11 +54,11 @@ This file is part of yata.
                     {% endif %}
                 </div>
                 <div class="miniloot">
-                    <img {% if npc.currentLevel.lvl < 1 %}class="overdue"{% endif %} src="{% static "images/loot/loot1.svg" %}">
-                    <img {% if npc.currentLevel.lvl < 2 %}class="overdue"{% endif %} src="{% static "images/loot/loot2.svg" %}">
-                    <img {% if npc.currentLevel.lvl < 3 %}class="overdue"{% endif %} src="{% static "images/loot/loot3.svg" %}">
-                    <img {% if npc.currentLevel.lvl < 4 %}class="overdue"{% endif %} src="{% static "images/loot/loot4.svg" %}">
-                    <img {% if npc.currentLevel.lvl < 5 %}class="overdue"{% endif %} src="{% static "images/loot/loot5.svg" %}">
+                    <img {% if npc.currentLevel.lvl < 1 %}class="overdue"{% endif %} src="/media/loot/loot_lvl_1.svg">
+                    <img {% if npc.currentLevel.lvl < 2 %}class="overdue"{% endif %} src="/media/loot/loot_lvl_2.svg">
+                    <img {% if npc.currentLevel.lvl < 3 %}class="overdue"{% endif %} src="/media/loot/loot_lvl_3.svg">
+                    <img {% if npc.currentLevel.lvl < 4 %}class="overdue"{% endif %} src="/media/loot/loot_lvl_4.svg">
+                    <img {% if npc.currentLevel.lvl < 5 %}class="overdue"{% endif %} src="/media/loot/loot_lvl_5.svg">
                 </div>
             </div>
             <div class="loot-npc-content">

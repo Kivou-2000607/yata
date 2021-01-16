@@ -32,20 +32,16 @@ This file is part of yata.
                 {# name #}
                 <p>
                 {% if award.awardType == "Honor" %}
-                  {% with 'honors/img/'|add:award.img|add:'.png' as image_static %}
-                    {% if award.img == "0" %}
-                      <div class="award-default">
-                        <img src="{% static image_static %}" class="honors">
-                        <span class="award-default">{{award.name}}</span>
-                      </div>
+                  {% if award.img == "0" %}
+                    <div class="award-default">
+                      <img src="{% url_img_honor award.img %}" class="honors">
+                      <span class="award-default">{{award.name}}</span>
+                    </div>
                     {% else %}
-                      <img src="{% static image_static %}" class="honors">
+                      <img src="{% url_img_honor award.img %}" class="honors">
                     {% endif %}
-                  {% endwith %}
                 {% else %}
-                    {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
-                        <img src="{% static image_static %}" class="medals">
-                    {% endwith %}
+                    <img src="{% url_img_medal award.img %}" class="medals">
                 {% endif %}
                 </p>
 

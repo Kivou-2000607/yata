@@ -8,7 +8,7 @@ secretkey.txt
 staticfiles
 setup/analytics/logs
 setup/analytics/.backup
-yata/media
+yata/media/posters
 source.bash
 zzz
 /yata/wsgi_prod.py

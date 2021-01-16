@@ -35,7 +35,7 @@ def trigger_error(request):
     division_by_zero = 1 / 0
 
 # redirect favicon
-favicon_view = RedirectView.as_view(url='/static/images/icon.png', permanent=True)
+favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 app_name = "yata"
 urlpatterns = [

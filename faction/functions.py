@@ -258,7 +258,10 @@ def updatePoster(faction):
     from io import BytesIO
     from django.core.files.base import ContentFile
 
-    url = "{}/posters/{}.png".format(settings.MEDIA_ROOT, faction.tId)
+    from faction.models import FONT_DIR
+
+    url = os.path.join(settings.MEDIA_ROOT, f"poster/{faction.tId}.png")
+
     bridge = {"Criminality": 0,
               "Fortitude": 1,
               "Voracity": 2,
@@ -308,15 +311,15 @@ def updatePoster(faction):
 
     # choose font
     fontFamily = posterOpt.get('fontFamily', [0])[0]
-    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(settings.MEDIA_ROOT + '/font/')))}
+    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(FONT_DIR)))}
     if fontFamily not in fntId:
         fontFamily = 0
 
     print(fntId)
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
-    fntBig = ImageFont.truetype(settings.MEDIA_ROOT + '/font/' + fntId[fontFamily][0], fntId[fontFamily][1] + 10)
-    fnt = ImageFont.truetype(settings.MEDIA_ROOT + '/font/' + fntId[fontFamily][0], fntId[fontFamily][1])
+    fntBig = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1] + 10)
+    fnt = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1])
     d = ImageDraw.Draw(img)
 
     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
@@ -334,16 +337,16 @@ def updatePoster(faction):
     iconType = posterOpt.get('iconType', [0])[0]
     print("[function.chain.factionTree] iconType: {}".format(iconType))
     for branch, upgrades in tree.items():
-        icon = Image.open(settings.MEDIA_ROOT + '/posters/tier_unlocks_b{}_t{}.png'.format(bridge[branch], iconType))
+        icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
         icon = icon.convert("RGBA")
         img.paste(icon, (10, y), mask=icon)
-
         txt = ""
         txt += "  {}\n".format(branch)
         for k, v in upgrades.items():
             txt += "    {}: {}\n".format(k, v["ability"])
         txt += "\n"
 
+        # txt = "a"
         d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
         xTmp, yTmp = d.textsize(txt, font=fnt)
         x = max(xTmp, x)
@@ -352,22 +355,18 @@ def updatePoster(faction):
         # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
     img = img.crop((0, 0, x + 90 + 10, y))
-    print(faction.posterImg)
 
     # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
     # img.crop((0, 0, x + 90 + 10, y)).save(url)
     # print('[function.chain.factionTree] image saved {}'.format(url))
-    print(img)
 
     f = BytesIO()
     try:
         faction.posterImg.delete()
-        
+
         img.save(f, format='png')
         faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
-        print(f'posters/{faction.tId}.png')
         faction.posterImg.name = f'posters/{faction.tId}.png'
-        print(faction.posterImg.path)
     finally:
         f.close()
 
