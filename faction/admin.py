@@ -11,7 +11,7 @@ class EventAdmin(admin.TabularInline):
 
 class FactionAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'nKeys']
     autocomplete_fields = ("masterKeys", )
@@ -87,7 +87,7 @@ delete_chain.short_description = "Delete chain"
 
 class ChainAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'live', 'computing', 'cooldown', 'current', 'attacks', 'chain', 'progress', 'crontab', 'state', 'status', '_update', 'elapsed']
     list_filter = ('computing', 'live', 'cooldown', 'state', 'report', 'crontab')
@@ -136,7 +136,7 @@ class AttacksPlayerAdmin(admin.TabularInline):
 
 class AttacksReportAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
@@ -151,7 +151,7 @@ class AttacksReportAdmin(admin.ModelAdmin):
 
 class RevivesReportAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
@@ -164,7 +164,7 @@ class RevivesReportAdmin(admin.ModelAdmin):
 
 class WallAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'attackerFactionName', 'defenderFactionName']
     search_fields = ('attackerFactionName', 'defenderFactionName', 'tId')
@@ -183,7 +183,7 @@ class LogAdmin(admin.ModelAdmin):
 
 class ContributorsAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['__str__', 'stat', 'timestamphour', 'timestamp']
     search_fields = ('faction__name', 'stat')

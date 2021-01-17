@@ -18,7 +18,7 @@ class KeyAdmin(admin.ModelAdmin):
 
 class PlayerAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['tId', 'name', 'active', 'validKey', 'dId']
     search_fields = ['name', 'tId']

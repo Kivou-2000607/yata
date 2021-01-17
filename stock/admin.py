@@ -13,7 +13,7 @@ class HistoryInline(admin.TabularInline):
 
 class StockAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
     list_display = ['__str__']
     # inlines = [HistoryInline]
 

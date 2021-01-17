@@ -65,7 +65,7 @@ def put_on_market(modeladmin, request, queryset):
 
 class ItemAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['tName', 'tId', 'tType', 'lastUpdateTS', 'tMarketValue', 'onMarket']
     inlines = [MarketDataInline]
