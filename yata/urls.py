@@ -34,9 +34,6 @@ from faction.views import revivesReport
 def trigger_error(request):
     division_by_zero = 1 / 0
 
-# redirect favicon
-favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
-
 app_name = "yata"
 urlpatterns = [
     # app
@@ -78,7 +75,7 @@ urlpatterns = [
     path('sentry-debug/', trigger_error),
 
     # redirect default favicon
-    path('favicon.ico', favicon_view),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
 
 ]
 
