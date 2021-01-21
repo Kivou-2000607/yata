@@ -45,6 +45,7 @@ This file is part of yata.
             {% endif %}
             </li>
             <li>Link to poster: <a href="{{faction.posterImg.url}}" target="_blank">https://yata.yt{{faction.posterImg.url}}</a></li>
+            <li>Link to gym poster: <a href="{{faction.posterGymImg.url}}" target="_blank">https://yata.yt{{faction.posterGymImg.url}}</a></li>
 
         {% else %}
             <li><span class="error">Upgrades poster is disabled</span></li>
@@ -112,6 +113,9 @@ This file is part of yata.
 <div style="width: 55%; margin: 0 auto;">
     <p><a href="{{faction.posterImg.url}}" target="_blank" atl="faction upgrade tree">
         <img src="{{faction.posterImg.url}}?cache={{random}}" style="border: solid 1px;" width="100%">
+    </a></p>
+    <p><a href="{{faction.posterGymImg.url}}" target="_blank" atl="faction upgrade tree">
+        <img src="{{faction.posterGymImg.url}}?cache={{random}}" style="border: solid 1px;" width="100%">
     </a></p>
 </div>
 

@@ -286,7 +286,6 @@ def updatePoster(faction):
     # call for upgrades
     req = apiCall('faction', faction.tId, 'basic,upgrades', key.value, verbose=False)
     if 'apiError' in req and req['apiErrorCode'] in API_CODE_DELETE:
-        print("[function.faction.updatePoster] Faction {}: del key {}".format(faction, key))
         faction.delKey(key=key)
         return 0
 
@@ -306,7 +305,6 @@ def updatePoster(faction):
 
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    print("[function.chain.factionTree] background color: {}".format(background))
     img = Image.new('RGBA', (5000, 5000), color=background)
 
     # choose font
@@ -315,7 +313,6 @@ def updatePoster(faction):
     if fontFamily not in fntId:
         fontFamily = 0
 
-    print(fntId)
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
     fntBig = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1] + 10)
@@ -323,7 +320,8 @@ def updatePoster(faction):
     d = ImageDraw.Draw(img)
 
     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
-    print("[function.chain.factionTree] fontColor: {}".format(fontColor))
+
+    # FACTION PERKS POSTER
 
     # add title
     txt = "{}".format(req["name"])
@@ -335,7 +333,6 @@ def updatePoster(faction):
     x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
-    print("[function.chain.factionTree] iconType: {}".format(iconType))
     for branch, upgrades in tree.items():
         icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
         icon = icon.convert("RGBA")
@@ -355,11 +352,6 @@ def updatePoster(faction):
         # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
     img = img.crop((0, 0, x + 90 + 10, y))
-
-    # img.crop((0, 0, x + 90 + 10, y + 10 + 10)).save(url)
-    # img.crop((0, 0, x + 90 + 10, y)).save(url)
-    # print('[function.chain.factionTree] image saved {}'.format(url))
-
     f = BytesIO()
     try:
         faction.posterImg.delete()
@@ -367,6 +359,31 @@ def updatePoster(faction):
         img.save(f, format='png')
         faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
         faction.posterImg.name = f'posters/{faction.tId}.png'
+    finally:
+        f.close()
+
+
+    # FACTION GYM POSTER
+    img_gym = Image.new('RGBA', (5000, 5000), color=background)
+    gym_perks = {"Strength": 0, "Defense": 0, "Dexterity": 0, "Speed": 0}
+
+    for k, v in tree.get("Steadfast", {}).items():
+        stat_type = k.split(" ")[0]
+        gym_perks[stat_type] = v["level"]
+
+    txt = ' '.join(f'{k}: {v}%' for k, v in gym_perks.items())
+    d = ImageDraw.Draw(img_gym)
+    d.text((10, 10), txt, font=fntBig, fill=fontColor)
+    x, y = d.textsize(txt, font=fntBig)
+    img_gym = img_gym.crop((0, 0, x + 20 , y + 20))
+
+    f = BytesIO()
+    try:
+        faction.posterGymImg.delete()
+
+        img_gym.save(f, format='png')
+        faction.posterGymImg.save(f'posters/{faction.tId}-gym.png', ContentFile(f.getvalue()))
+        faction.posterGymImg.name = f'posters/{faction.tId}-gym.png'
     finally:
         f.close()
 

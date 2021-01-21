@@ -156,6 +156,7 @@ class Faction(models.Model):
     posterHold = models.BooleanField(default=False)
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
+    posterGymImg = models.ImageField(blank=True)
 
     # respect simulator
     upgradesUpda = models.IntegerField(default=0)

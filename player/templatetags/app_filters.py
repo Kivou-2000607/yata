@@ -615,7 +615,6 @@ def url_img_stocks(key):
 
 @register.simple_tag(name='url_img_item')
 def url_img_item(key):
-    print("key", key)
     return f"/media/items/{int(key)}.png"
 
 @register.simple_tag(name='url_img_flag')
