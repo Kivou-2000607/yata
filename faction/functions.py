@@ -365,15 +365,17 @@ def updatePoster(faction):
 
     # FACTION GYM POSTER
     img_gym = Image.new('RGBA', (5000, 5000), color=background)
-    gym_perks = {"Strength": 0, "Defense": 0, "Dexterity": 0, "Speed": 0}
+    gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
 
     for k, v in tree.get("Steadfast", {}).items():
-        stat_type = k.split(" ")[0]
+        stat_type = k.split(" ")[0][:3].upper()
         gym_perks[stat_type] = v["level"]
 
-    txt = ' '.join(f'{k}: {v}%' for k, v in gym_perks.items())
+
     d = ImageDraw.Draw(img_gym)
-    d.text((10, 10), txt, font=fntBig, fill=fontColor)
+    sep = [' ', '\n', ' ', '']
+    txt = ''.join(f'{k} {v}%{s}' for s, (k, v) in zip(sep, gym_perks.items()))
+    d.text((10, 5), txt, font=fntBig, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
     img_gym = img_gym.crop((0, 0, x + 20 , y + 20))
 
