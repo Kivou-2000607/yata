@@ -621,6 +621,10 @@ def url_img_item(key):
 def url_img_flag(key):
     return f"/media/flags/fl_{key}.png"
 
+@register.simple_tag(name='url_userscript')
+def url_userscript(key):
+    return f"/static/yata/js/userscripts/{key}.user.js"
+
 
 # TORN LINKS
 @register.simple_tag(name='player_link')
