@@ -503,9 +503,11 @@ def toggleMemberShare(request):
                 if error:
                     member.shareE = 0
                     member.energy = 0
+                    member.save()
                     return render(request, 'faction/members/energy.html', {'errorMessage': error.get('apiErrorString', 'error')})
                 else:
                     context = {"player": player, "member": member}
+                    member.save()
                     return render(request, 'faction/members/energy.html', context)
 
             elif request.POST.get("type") == "nerve":
@@ -516,9 +518,11 @@ def toggleMemberShare(request):
                     member.shareN = 0
                     member.nnb = 0
                     member.arson = 0
+                    member.save()
                     return render(request, 'faction/members/nnb.html', {'errorMessage': error.get('apiErrorString', 'error')})
                 else:
                     context = {"player": player, "member": member}
+                    member.save()
                     return render(request, 'faction/members/nnb.html', context)
 
             elif request.POST.get("type") == "stats":
@@ -531,9 +535,11 @@ def toggleMemberShare(request):
                     member.defense = 0
                     member.strength = 0
                     member.speed = 0
+                    member.save()
                     return render(request, 'faction/members/stats.html', {'errorMessage': error.get('apiErrorString', 'error')})
                 else:
                     context = {"player": player, "member": member}
+                    member.save()
                     return render(request, 'faction/members/stats.html', context)
 
                 # member.save()
