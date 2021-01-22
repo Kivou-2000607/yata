@@ -2792,18 +2792,18 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
     doubled = []
     nextNerve = 9999999999  # lowest nerve left
     nextCrime = []  # list of next crime (if same lowest nerve)
-    for category, aw in awards.items():
+    for subcat, aw in awards.items():
         for k1, v1 in aw.items():
             # special case for dirty bomb
             if k1 == "h_14":
-                awards[category]["h_14"]["double"] = True
-                awards[category]["h_156"]["double"] = True
+                awards[subcat]["h_14"]["double"] = True
+                awards[subcat]["h_156"]["double"] = True
 
             # special case for triple lvl 100
             if k1 == "h_264":
-                awards[category]["h_264"]["triple"] = True
-                awards[category]["h_265"]["triple"] = True
-                awards[category]["m_53"]["triple"] = True
+                awards[subcat]["h_264"]["triple"] = True
+                awards[subcat]["h_265"]["triple"] = True
+                awards[subcat]["m_53"]["triple"] = True
 
             for k2, v2 in aw.items():
                 # if(k1 != k2 and v1.get("goal") == v2.get("goal") and v1.get("left") == v2.get("left") and k2 not in doubled and v1["awardType"] != v2["awardType"]):
@@ -2812,31 +2812,31 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     if k1 in ["h_906"] or k2 in ["h_906"]:
                         continue
 
-                    awards[category][k1]["double"] = True
-                    awards[category][k2]["double"] = True
+                    awards[subcat][k1]["double"] = True
+                    awards[subcat][k2]["double"] = True
 
-                    if category == "crimes":
+                    if subcat == "crimes":
                         try:
-                            awards[category][k1]["left"] /= 2.0
-                            awards[category][k2]["left"] /= 2.0
-                            awards[category][k1]["comment"][1] += "<br><i>Note: nerve needed / 2</i>"
-                            awards[category][k2]["comment"][1] += "<br><i>Note: nerve needed / 2</i>"
+                            awards[subcat][k1]["left"] /= 2.0
+                            awards[subcat][k2]["left"] /= 2.0
+                            awards[subcat][k1]["comment"][1] += "<br><i>Note: nerve needed / 2</i>"
+                            awards[subcat][k2]["comment"][1] += "<br><i>Note: nerve needed / 2</i>"
                         except BaseException:
                             pass
 
                     doubled.append(k1)
 
             # next crime
-            if category == "crimes":
-                if category != "Jail" and int(1000 * v1.get("left", 0)):
+            if v1["category"] == "crimes":
+                if subcat != "Jail" and int(1000 * v1.get("left", 0)):
                     # multiply by 1000 in order to compare int and not floats
                     # so with a precision of E-3
                     if int(1000 * v1["left"]) < nextNerve:
-                        nextCrime = [(category, k1)]
+                        nextCrime = [(subcat, k1)]
                         nextNerve = int(1000 * v1["left"])
                     elif int(1000 * v1["left"]) == nextNerve:
                         nextNerve = int(1000 * v1["left"])
-                        nextCrime.append((category, k1))
+                        nextCrime.append((subcat, k1))
 
     if category == "crimes":
         for (c, k) in nextCrime:
