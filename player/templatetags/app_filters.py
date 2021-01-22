@@ -452,12 +452,12 @@ def workstats(value, arg):
         sta = int(arg)
         req = int(value)
         m = sta / float(req)
-        fac = 1 + math.log(m, 2) if m > 1 else m
+        fac = round(5*math.log(m, 2)) if m > 1 else round(45 * (m - 1.))
 
         cl = "valid"
         cl = "warning" if sta < 2 * req else cl
         cl = "error" if sta < req else cl
-        return format_html(f'<span class="{cl}" title="Your stat: {sta:,d}">{req:,d} (x{fac:,.1f})</span>')
+        return format_html(f'<span class="{cl}" title="Working stat: {sta:,d}">{req:,d} (<span title="Relative stats effectiveness compared to minimal requirement">{fac:+,d}</span>)</span>')
 
     except BaseException:
         return value
@@ -473,12 +473,12 @@ def workstatsinv(value, arg):
         sta = int(value)
         req = int(arg)
         m = sta / float(req)
-        fac = 1 + math.log(m, 2) if m > 1 else m
+        fac = round(5*math.log(m, 2)) if m > 1 else round(45 * (m - 1.))
 
         cl = "valid"
         cl = "warning" if sta < 2 * req else cl
         cl = "error" if sta < req else cl
-        return format_html(f'<span class="{cl}">{sta:,d} (x{fac:,.1f})</span>')
+        return format_html(f'<span class="{cl}" title="Requirement: {req:,d}">{sta:,d} (<span title="Relative stats effectiveness compared to minimal requirement">{fac:+,d}</span>)</span>')
 
     except BaseException as e:
         return value
