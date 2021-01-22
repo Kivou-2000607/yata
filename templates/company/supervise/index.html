@@ -231,9 +231,15 @@ This file is part of yata.
         <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
       </tr>
       <tr>
-        <td><b>Daily customers:</b> {{company.daily_customers|intcomma}}</td>
-        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}</td>
-        <td><b>Daily profit:</b> {{company.daily_profit|signColor0}}</td>
+        <td><b>Daily customers:</b> {{company.daily_customers|intcomma}}
+            <span title="Comparison to last week on the same day">({{company.daily_customers|sub:company.lastw_customers|signColor0}})</span>
+          </td>
+        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}
+            <span title="Comparison to last week on the same day">({{company.daily_income|sub:company.lastw_income|signColor0}})</span>
+          </td>
+        <td><b>Daily profit:</b> {{company.daily_profit|signColor0}}
+            <span title="Comparison to last week on the same day">({{company.daily_profit|sub:company.lastw_profit|signColor0}})</span>
+          </td>
       </tr>
       <tr>
         <td><b>Weekly customers:</b> {{company.weekly_customers|intcomma}}</td>

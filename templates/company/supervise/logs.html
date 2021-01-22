@@ -49,12 +49,12 @@ This file is part of yata.
             <td class="d">{{d.efficiency}}%</td>
             <td class="d">{{d.environment}}%</td>
             <td class="e">{{d.effectiveness_total}}</td>
-            <td class="f">{{d.daily_customers|intcomma}}</td>
-            <td class="f">${{d.daily_income|intcomma}}</td>
-            <td class="f">${{d.daily_profit|intcomma}}</td>
-            <td class="f">{{d.weekly_customers|intcomma}}</td>
-            <td class="f">${{d.weekly_income|intcomma}}</td>
-            <td class="f">${{d.weekly_profit|intcomma}}</td>
+            <td class="f">{{d.daily_customers|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_customers|sub:d.lastw_customers|signColor0}})</span></td>
+            <td class="f">${{d.daily_income|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_income|sub:d.lastw_income|signColor0}})</span></td>
+            <td class="f">{{d.daily_profit|signColor0}} <span title="Comparison to last week on the same day">({{d.daily_profit|sub:d.lastw_profit|signColor0}})</span></td>
+            <td class="g">{{d.weekly_customers|intcomma}}</td>
+            <td class="g">${{d.weekly_income|intcomma}}</td>
+            <td class="g">{{d.weekly_profit|signColor0}}</td>
         </tr>
         {% endfor %}
 

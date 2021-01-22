@@ -47,10 +47,10 @@ This file is part of yata.
             <td class="e">${{d.cost|intcomma}}</td>
             <td class="e">${{d.rrp|intcomma}}</td>
             <td class="e">${{d.price|intcomma}}</td>
-            <td class="f">{{d.sold_amount|intcomma}} ({{d.delta_sold_amount|signColor0}})</td>
-            <td class="f">${{d.sold_worth|intcomma}} ({{d.delta_sold_worth|signColor0}})</td>
-            <td class="f">{{d.in_stock|intcomma}} ({{d.delta_in_stock|signColor0}})</td>
-            <td class="f">{{d.created|intcomma}} ({{d.delta_created|signColor0}})</td>
+            <td class="f">{{d.sold_amount|intcomma}} <span title="Comparison to the day before">({{d.delta_sold_amount|signColor0}})</span></td>
+            <td class="f">${{d.sold_worth|intcomma}} <span title="Comparison to the day before">({{d.delta_sold_worth|signColor0}})</span></td>
+            <td class="f">{{d.in_stock|intcomma}} <span title="Comparison to the day before">({{d.delta_in_stock|signColor0}})</span></td>
+            <td class="f">{{d.created|intcomma}} <span title="Comparison to the day before">({{d.delta_created|signColor0}})</span></td>
         </tr>
         {% endfor %}
 

@@ -72,10 +72,13 @@ class Company(models.Model):
     employees_capacity = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
-    daily_profit = models.IntegerField(default=0)
+    daily_profit = models.BigIntegerField(default=0)
+    lastw_income = models.BigIntegerField(default=0)
+    lastw_customers = models.IntegerField(default=0)
+    lastw_profit = models.BigIntegerField(default=0)
     weekly_income = models.BigIntegerField(default=0)
     weekly_customers = models.IntegerField(default=0)
-    weekly_profit = models.IntegerField(default=0)
+    weekly_profit = models.BigIntegerField(default=0)
     days_old = models.IntegerField(default=0)
 
     # detailed
@@ -207,12 +210,20 @@ class Company(models.Model):
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
         # create weekly_profit
-        last_week = id_ts - (6 * 24 * 3600 + 1)
+        last_week = id_ts - (7 * 24 * 3600 + 1)
+        # contains 7 days before for the last week daily comparison and 6 to 1 days before for the weekly
         company_datas = self.companydata_set.filter(id_ts__gt=last_week)
         n_data = company_datas.count()
         money_spent = 0
         for cd in company_datas:
-            money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+            if cd.id_ts == id_ts - (7 * 24 * 3600):
+                company_data.lastw_profit = cd.daily_profit
+                company_data.lastw_customers = cd.daily_customers
+                company_data.lastw_income = cd.daily_income
+
+            else:
+                money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+
 
         company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
         company_data.weekly_profit = company_data.weekly_income - money_spent
@@ -221,18 +232,27 @@ class Company(models.Model):
         # update
         self.daily_profit = company_data.daily_profit
         self.weekly_profit = company_data.weekly_profit
+        self.lastw_profit = company_data.lastw_profit
+        self.lastw_customers = company_data.lastw_customers
+        self.lastw_income = company_data.lastw_income
         self.save()
 
         if rebuildPast:
             print("Rebuild past")
             for company_data in self.companydata_set.all():
                 # create weekly_profit
-                last_week = company_data.id_ts - (6 * 24 * 3600 + 1)
+                last_week = company_data.id_ts - (7 * 24 * 3600 + 1)
                 company_datas = self.companydata_set.filter(id_ts__gt=last_week)
                 n_data = company_datas.count()
                 money_spent = 0
                 for cd in company_datas:
-                    money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+                    if cd.id_ts == id_ts - (7 * 24 * 3600):
+                        company_data.lastw_profit = cd.daily_profit
+                        company_data.lastw_customers = cd.daily_customers
+                        company_data.lastw_income = cd.daily_income
+
+                    else:
+                        money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
 
                 company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
                 company_data.weekly_profit = company_data.weekly_income - money_spent
@@ -345,10 +365,13 @@ class CompanyData(models.Model):
     environment = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
-    daily_profit = models.IntegerField(default=0)
+    daily_profit = models.BigIntegerField(default=0)
+    lastw_income = models.BigIntegerField(default=0)
+    lastw_customers = models.IntegerField(default=0)
+    lastw_profit = models.BigIntegerField(default=0)
     weekly_income = models.BigIntegerField(default=0)
     weekly_customers = models.IntegerField(default=0)
-    weekly_profit = models.IntegerField(default=0)
+    weekly_profit = models.BigIntegerField(default=0)
     advertising_budget = models.IntegerField(default=0)
     total_wage = models.IntegerField(default=0)
 
