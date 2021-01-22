@@ -7,12 +7,13 @@
 // @updateURL    https://yata.yt/static/yata/js/userscripts/gym.user.js
 // @author       Kivou [2000607]
 // @grant        GM_addStyle
+// @grant        GM_getResourceText
 // @run-at       document-end
 // @match        https://www.torn.com/gym.php*
 // @resource     YATA_CSS https://yata.yt/static/yata/css/userscripts.css
 // ==/UserScript==
 
-var cssTxt  = GM_getResourceText ("YATA_CSS");
+var cssTxt = GM_getResourceText ("YATA_CSS");
 GM_addStyle (cssTxt);
 
 const faction_id = ""; // enter your faction ID here
