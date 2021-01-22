@@ -300,8 +300,8 @@ class Faction(models.Model):
         crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
 
         # create ranking based on sub ranking
-        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
-        main_ranking = self.updateRanking(sub_ranking, save_members_ranking=True)
+        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and v.get("inittiated", False)]
+        main_ranking = self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
         for k, v in crimesAPI:
@@ -352,17 +352,17 @@ class Faction(models.Model):
         # save only participants ids of successful PH and PA
         self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)])
 
-
         # for i, sub in enumerate(test):
         #     print(i, sub)
 
         self.save()
         return self.crimes_set.all(), False, n
 
-    def updateRanking(self, sub_ranking, save_members_ranking=True):
+    def updateRanking(self, sub_ranking):
 
         # get members for ranking
         faction_members = self.member_set.order_by("-nnb", "-arson").only("tId", "nnb", 'crimesRank')
+        faction_members_nnb = {m.tId: m.nnb for m in faction_members}
 
         # DEBUG
         # members_full = {m.tId: m for m in self.member_set.all()}
@@ -370,14 +370,55 @@ class Faction(models.Model):
         # get previous main ranking
         previous_ranking = json.loads(self.crimesRank)
 
+        # append new members
+        for m_id in [m.tId for m in faction_members]:
+            if m_id not in previous_ranking:
+                previous_ranking.append(m_id)
+
+        # reorder with NNB in case there are new members
+        # (well all the time...)
+        current_nnb = 60
+        wrong_nnb = []
+        for i, m_id in enumerate(previous_ranking):
+            m_nnb = faction_members_nnb[m_id]
+            if m_nnb > current_nnb:
+                wrong_nnb.append(m_id)
+            else:
+                # update current nnb if not 0 (ie if nnb is known)
+                current_nnb = m_nnb if m_nnb else current_nnb
+
+        for m_id in wrong_nnb:
+            # get member NNB
+            m_nnb = faction_members_nnb[m_id]
+            # get previous ranking with NNB
+            previous_ranking_nnb = [[m_id, faction_members_nnb[m_id]] for m_id in previous_ranking]
+            # get member wrong rank
+            m_rank = previous_ranking.index(m_id)
+
+            # find the lowest position with this NNB in the previous ranking
+            for p_id, p_nnb in previous_ranking_nnb:
+                if p_nnb < m_nnb:  # NNB lower (assign this position then exit)
+                    # assign m_id to p_id postion then exit the loop
+                    # 1. get index of p_id
+                    p_rank = previous_ranking.index(p_id)
+                    # 2. put m_id at p_id
+                    previous_ranking.insert(p_rank, previous_ranking.pop(m_rank))
+                    break
+
         # main ranking based on previous if possible or ordered NNB
+        # NOTE: can directly put previous_ranking now that we append missing members just above
         main_ranking = previous_ranking if len(previous_ranking) else [m.tId for m in faction_members]
 
         # DEBUG
         # main_ranking_before = main_ranking[:]
 
+        # print("rank before:", main_ranking.index(1836309))
+
         # loop over the sub rankings
         for team in sub_ranking:
+
+            # if 1836309 in team:
+            #     print(team)
 
             # first loop over participants (member point of view)
             for member in [p for p in team if p in main_ranking]:
@@ -405,6 +446,9 @@ class Faction(models.Model):
                         #     # member should be above member
                         #     main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
 
+        # print("rank after:", main_ranking.index(1836309))
+
+
         # cleanup old members
         for rank_id in main_ranking:
             if rank_id not in [m.tId for m in faction_members]:
@@ -421,15 +465,15 @@ class Faction(models.Model):
         self.save()
 
         # save members ranking
-        if save_members_ranking:
-            bulk_u_mgr = BulkUpdateManager(['crimesRank'], chunk_size=100)
-            for member in faction_members:
-                try:
-                    member.crimesRank = main_ranking.index(member.tId) + 1
-                except BaseException:
-                    member.crimesRank = 100
-                bulk_u_mgr.add(member)
-            bulk_u_mgr.done()
+        bulk_u_mgr = BulkUpdateManager(['crimesRank'], chunk_size=100)
+        for member in faction_members:
+            # print(member.name, member.crimesRank, main_ranking.index(member.tId) + 1)
+            # try:
+            member.crimesRank = main_ranking.index(member.tId) + 1
+            # except BaseException:
+            # member.crimesRank = 100
+            bulk_u_mgr.add(member)
+        bulk_u_mgr.done()
 
         return main_ranking
 
