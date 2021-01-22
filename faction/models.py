@@ -300,7 +300,7 @@ class Faction(models.Model):
         crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
 
         # create ranking based on sub ranking
-        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and v.get("inittiated", False)]
+        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
         main_ranking = self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
