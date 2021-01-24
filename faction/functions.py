@@ -36,6 +36,8 @@ API_CODE_DELETE = [2, 7]
 OC_EFFICIENCY = {1: {"money": 5000, "respect": 1.0}, 2: {"money": 8750, "respect": 1.25}, 3: {"money": 16667, "respect": 1.11}, 4: {"money": 30000, "respect": 1.2}, 5: {"money": 141667, "respect": 1.17}, 6: {"money": 305556, "respect": 0.89}, 7: {"money": 892857, "respect": 1.79}, 8: {"money": 9375000, "respect": 9.38}}
 
 
+POSTER_WIDTH = 750
+
 def getBonusHits(hitNumber, ts):
     # new report timestamp based on ched annoncement date
     # https://www.torn.com/forums.php#!p=threads&t=16067103
@@ -305,7 +307,7 @@ def updatePoster(faction):
 
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    img = Image.new('RGBA', (5000, 5000), color=background)
+    main = Image.new('RGBA', (5000, 5000), color=background)
 
     # choose font
     fontFamily = posterOpt.get('fontFamily', [0])[0]
@@ -317,7 +319,7 @@ def updatePoster(faction):
     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
     fntBig = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1] + 10)
     fnt = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1])
-    d = ImageDraw.Draw(img)
+    d = ImageDraw.Draw(main)
 
     fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
 
@@ -336,7 +338,7 @@ def updatePoster(faction):
     for branch, upgrades in tree.items():
         icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
         icon = icon.convert("RGBA")
-        img.paste(icon, (10, y), mask=icon)
+        main.paste(icon, (10, y), mask=icon)
         txt = ""
         txt += "  {}\n".format(branch)
         for k, v in upgrades.items():
@@ -351,12 +353,44 @@ def updatePoster(faction):
 
         # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
 
-    img = img.crop((0, 0, x + 90 + 10, y))
+    main = main.crop((0, 0, x + 90 + 10, y))
+
+
+    # resize main
+    main_ratio = POSTER_WIDTH / float(main.size[0])
+    main = main.resize((POSTER_WIDTH, int(main_ratio * main.size[1])))
+    full_poster = [main]
+    full_height = main.size[1]
+
+    # check header
+    if faction.posterHeadImg:
+        head = Image.open(faction.posterHeadImg)
+        head_ratio = POSTER_WIDTH / float(head.size[0])
+        head = head.resize((POSTER_WIDTH, int(head_ratio * head.size[1])))
+        full_poster.insert(0, head)
+        full_height += head.size[1]
+
+    if faction.posterTailImg:
+        tail = Image.open(faction.posterTailImg)
+        tail_ratio = POSTER_WIDTH / float(tail.size[0])
+        tail = tail.resize((POSTER_WIDTH, int(tail_ratio * tail.size[1])))
+        full_poster.append(tail)
+        full_height += tail.size[1]
+
+
+    print(full_poster)
+
+    poster = Image.new('RGBA', (POSTER_WIDTH, full_height), color=background)
+
+    for i, img_tmp in enumerate(full_poster):
+        y = y + full_poster[i-1].size[1] if i else 0
+        poster.paste(img_tmp, (0, y))
+
     f = BytesIO()
     try:
         faction.posterImg.delete()
 
-        img.save(f, format='png')
+        poster.save(f, format='png')
         faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
         faction.posterImg.name = f'posters/{faction.tId}.png'
     finally:

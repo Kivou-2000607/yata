@@ -37,7 +37,7 @@ from yata.bulkManager import *
 from player.models import Key
 from player.models import Player
 from faction.functions import *
-
+from faction.storage import OverwriteStorage
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 MINIMAL_API_ATTACKS_STOP = 10
@@ -132,6 +132,15 @@ BB_BRIDGE = {
     "allgyms": "Energy all stats"}
 
 
+def posterRenameHead(instance, filename):
+    ext = filename.split('.')[-1]
+    return f'posters/{instance.tId}-head.{ext}'
+
+def posterRenameTail(instance, filename):
+    ext = filename.split('.')[-1]
+    return f'posters/{instance.tId}-tail.{ext}'
+
+
 # Faction
 class Faction(models.Model):
     # direct torn values
@@ -157,6 +166,8 @@ class Faction(models.Model):
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
     posterGymImg = models.ImageField(blank=True)
+    posterHeadImg = models.ImageField(max_length=64, blank=True, upload_to=posterRenameHead, storage=OverwriteStorage())
+    posterTailImg = models.ImageField(max_length=64, blank=True, upload_to=posterRenameTail, storage=OverwriteStorage())
 
     # respect simulator
     upgradesUpda = models.IntegerField(default=0)

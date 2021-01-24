@@ -20,7 +20,7 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div id="faction-poster-main">
+<div>
 <form>{% csrf_token %}
     <p><ul>
         {% if faction.poster %}
@@ -107,6 +107,30 @@ This file is part of yata.
     </form>
 </div>
 
+<hr class="sep">
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <ul>
+    <li>
+      {% if faction.posterHeadImg %}Update{% else %}Add{% endif %} poster header
+      <input type="hidden" name="upload_image" value="1">
+      <input type="hidden" name="upload_head" value="1">
+      <input type="file" name="posterHeadImg" accept="image/*" id="id_posterHeadImg" required>
+      <button type="submit">Upload</button>
+    </li>
+  </ul>
+</form>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <ul>
+    <li>
+      Add poster footer
+      <input type="hidden" name="upload_image" value="1">
+      <input type="hidden" name="upload_tail" value="1">
+      <input type="file" name="posterTailImg" accept="image/*" id="id_posterTailImg" required>
+      <button type="submit">Upload</button>
+    </li>
+  </ul>
+</form>
 <hr class="sep">
 
 <div style="width: 55%; margin: 0 auto;">

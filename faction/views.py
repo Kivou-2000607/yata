@@ -41,7 +41,7 @@ from faction.models import *
 from target.models import Target
 from faction.functions import *
 from scipy import stats
-
+from faction.forms import *
 
 # (json compatible)
 def index(request):
@@ -174,6 +174,8 @@ def target(request):
 def configurations(request):
     try:
         if request.session.get('player'):
+            print(request.POST)
+
             # get player
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
@@ -205,7 +207,25 @@ def configurations(request):
             faction.liveTime = faction.getHistName("live")
 
             events = faction.event_set.order_by('timestamp')
-            context = {'player': player, "events": events, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'keys': keys, 'view': {'aa': True}}
+            context = {'player': player, "events": events, 'factioncat': True, "bonus": BONUS_HITS, "faction": faction, 'posterForm': [PosterHeadForm(), PosterTailForm()], 'keys': keys, 'view': {'aa': True}}
+
+            # handle upload of poster head/tail
+            if request.POST.get("upload_head"):
+                form = PosterHeadForm(request.POST, request.FILES, instance=faction)
+                valid_form = form.is_valid()
+                if valid_form:
+                    form.save()
+                    context["validMessageSub"] = "Poster header uploaded"
+                else:
+                    context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
+            if request.POST.get("upload_tail"):
+                form = PosterTailForm(request.POST, request.FILES, instance=faction)
+                valid_form = form.is_valid()
+                if valid_form:
+                    form.save()
+                    context["validMessageSub"] = "Poster footer uploaded"
+                else:
+                    context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
 
             # add poster
             if faction.poster:
@@ -216,7 +236,14 @@ def configurations(request):
                 context['fonts'] = fntId
                 updatePoster(faction)
 
+
+
+
+
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+            if request.POST.get("upload_image"):
+                page = 'faction.html'
+
             return render(request, page, context)
 
         else:
@@ -339,8 +366,11 @@ def configurationsPoster(request):
                 faction.posterHold = faction.posterHold if faction.poster else False
 
                 if not faction.poster:
-                    faction.posterImg.delete(save=True)
-                    faction.posterGymImg.delete(save=True)
+                    faction.posterImg.delete()
+                    faction.posterGymImg.delete()
+                    faction.posterHeadImg.delete()
+                    faction.posterTailImg.delete()
+                    faction.save()
 
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
