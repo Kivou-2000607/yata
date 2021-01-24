@@ -623,7 +623,7 @@ def url_img_flag(key):
 
 @register.simple_tag(name='url_userscript')
 def url_userscript(key):
-    return f"/static/yata/js/userscripts/{key}.user.js"
+    return f"https://github.com/Kivou-2000607/yata/raw/master/yata/static/yata/js/userscripts/{key}.user.js"
 
 
 # TORN LINKS
