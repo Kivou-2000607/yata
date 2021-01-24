@@ -381,6 +381,14 @@ class Faction(models.Model):
         # get previous main ranking
         previous_ranking = json.loads(self.crimesRank)
 
+        # remove old players from previous ranking
+        to_delete = []
+        for m_id in previous_ranking:
+            if m_id not in faction_members_nnb:
+                to_delete.append(m_id)
+        for m_id in to_delete:
+            previous_ranking.remove(m_id)
+
         # append new members
         for m_id in [m.tId for m in faction_members]:
             if m_id not in previous_ranking:
