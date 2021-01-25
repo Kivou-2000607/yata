@@ -248,7 +248,7 @@ def dashboardOption(request):
 
                             if not len(c[type][fid]):  # del if empty
                                 del c[type][fid]
-                                if fid in c["positions"]:  # del positions with faction
+                                if "postitions" in c and fid in c["positions"]:  # del positions with faction
                                     del c["positions"][fid]
 
                         elif type in ["other"]:
