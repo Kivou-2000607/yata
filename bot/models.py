@@ -141,14 +141,14 @@ class Server(models.Model):
 
     def get_verify(self):
         from_db = json.loads(self.configuration).get("verify", False)
-        all = ["daily_check", "weekly_check", "daily_verify", "weekly_verify", "force_verify"]
+        all = ["daily_check", "weekly_check", "daily_verify", "weekly_verify", "force_verify", "tag", "disable_id"]
         if from_db:
             for_template = {
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the commands", "help": "Select one or several channels for the <tt>!verify</tt> commands", "mandatory": True},
                 "channels_welcome": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_welcome", {}), "prefix": "#", "title": "Welcome channel", "help": "Select one channel for the verified welcome message", "tooltip": "If none selected, no messages will be sent.", "mandatory": False},
                 "roles_verified": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_verified", {}), "prefix": "@", "title": "Role for the verified members", "help": "Select one role for the verified players", "tooltip": "This role will be attributed the the player if the verification is successful (whatever the faction it belongs to).", "mandatory": True},
                 "factions": {"type": "role", "selected": from_db.get("factions", {}), "positions": from_db.get("positions", {}), "title": "Factions roles", "prefix": "@", "help": "Select factions and roles for each of them", "tooltip": "Additional roles can be attributed to members on verification depending on their faction.&#10You can choose as many factions as you want and linked them to as many roles as you want.&#10You can remove a role from the configuration by selecting the same faction and the same role (toggle).", "mandatory": False},
-                "other": {"type": "bool", "all": all, "selected": from_db.get("other", []), "title": "Other options", "prefix": "", "help": "Select the different other options", "tooltip": "check: !checkFactions&#10verify: !verifyAll&#10force: sends a pm when a member joins and is not verified", "mandatory": False},
+                "other": {"type": "bool", "all": all, "selected": from_db.get("other", []), "title": "Other options", "prefix": "", "help": "Select the different other options", "tooltip": "check: !checkFactions&#10verify: !verifyAll&#10force: sends a pm when a member joins and is not verified&#10tag: enable the !tag command&#10disable id: does not append torn ID in the nickname (not recommanded)", "mandatory": False},
                 # ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
             }
             return for_template
