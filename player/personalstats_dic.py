@@ -38,6 +38,7 @@ d = {
     "stockpayouts": {"category": "money", "sub": "default", "type": "integer", "name": "stock payouts"},
 
     # attacks
+    "elo": {"category": "attacks", "sub": "default", "type": "integer", "name": "elo"},
     "attackcriticalhits": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "critical"},
     "attackhits": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "hits"},
     "attackmisses": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "misses"},
@@ -164,6 +165,7 @@ d = {
     "organisedcrimes": {"category": "faction", "sub": "default", "type": "integer", "name": "organised crimes"},
     "territorytime": {"category": "faction", "sub": "default", "type": "time", "name": "territory time"},
     "respectforfaction": {"category": "faction", "sub": "default", "type": "integer", "name": "respect earned"},
+    "retals": {"category": "faction", "sub": "default", "type": "integer", "name": "retals made"},
 
     # racing
     "racingpointsearned": {"category": "racing", "sub": "default", "type": "integer", "name": "points earned"},
