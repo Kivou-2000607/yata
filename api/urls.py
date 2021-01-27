@@ -2,6 +2,7 @@ from django.urls import re_path
 
 from .views import main
 from .views import loot
+from .views import stocks
 from .views import travel
 from .views import targets
 from .views import faction
@@ -15,6 +16,9 @@ urlpatterns = [
 
     # loot
     re_path(r'^v1/loot/$', loot.loot, name="loot"),
+
+    # stocks
+    re_path(r'^v1/stocks/alerts/$', stocks.alerts, name="stocksAlerts"),
 
     # travel
     re_path(r'^v1/travel/export/$', travel.exportStocks, name="exportStocks"),

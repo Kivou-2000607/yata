@@ -244,27 +244,3 @@ def prices(request, tId, period=None):
 
     except Exception:
         return returnError()
-
-
-# API
-def alerts(request):
-    try:
-        stocks = Stock.objects.all()
-        payload = dict({})
-        for stock in stocks:
-            triggers = json.loads(stock.triggers)
-            if triggers:
-                ts = int(timezone.now().timestamp())
-                periodS = 3600 * 24 * 14
-                graph = []
-                for h in stock.history_set.filter(timestamp__gte=(ts - periodS)).order_by('timestamp'):
-                    graph.append([h.timestamp, h.tCurrentPrice])
-
-                payload[stock.tAcronym] = {"alerts": triggers, "price": stock.tCurrentPrice, "shares":
-                stock.tAvailableShares, "graph": graph}
-
-        return HttpResponse(json.dumps(payload, separators=(',', ':')), content_type="application/json")
-
-    except BaseException as e:
-        return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
-    # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")

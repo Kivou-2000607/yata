@@ -35,8 +35,8 @@ from player.models import Key
 @ratelimit(key='ip', rate='10/h')
 def exportTargets(request):
     try:
-        if getattr(request, 'limited', False):
-            return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
+        # if getattr(request, 'limited', False):
+        #     return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
 
         # get api key
         key = request.GET.get("key")

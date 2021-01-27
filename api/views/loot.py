@@ -45,9 +45,8 @@ UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 @method_decorator(never_ever_cache)
 def loot(request):
     try:
-
-        if getattr(request, 'limited', False):
-            return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
+        # if getattr(request, 'limited', False):
+        #     return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
 
         # get time
         ts = tsnow()
@@ -63,18 +62,18 @@ def loot(request):
                 next_update = hosp_out + UPDATE_LEVEL + UPDATE_TIME
                 break
 
-        debug = {
-            "hosp_out": {k: timestampToDate(v, fmt=True) for k, v in npcs.items()},
-            "next_update": timestampToDate(next_update, fmt=True),
-            "timestamp": timestampToDate(ts, fmt=True),
-            "message": "This field is temporary to help debug cloudflare cache system. Don't use it in your code."
-        }
+        # debug = {
+        #     "hosp_out": {k: timestampToDate(v, fmt=True) for k, v in npcs.items()},
+        #     "next_update": timestampToDate(next_update, fmt=True),
+        #     "timestamp": timestampToDate(ts, fmt=True),
+        #     "message": "This field is temporary to help debug cloudflare cache system. Don't use it in your code."
+        # }
 
         payload = {
             "hosp_out": npcs,
             "next_update": next_update,
             "timestamp": ts,
-            "debug": debug
+            # "debug": debug
         }
 
 
