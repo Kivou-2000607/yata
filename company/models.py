@@ -68,6 +68,7 @@ class Company(models.Model):
     director = models.IntegerField(default=0)
     director_name = models.CharField(default="Player", max_length=16)
     director_hrm = models.BooleanField(default=False)  # education Human Resource Management (boost in employee effectiveness)
+    director_yata = models.BooleanField(default=True)
     employees_hired = models.IntegerField(default=0)
     employees_capacity = models.IntegerField(default=0)
     daily_income = models.BigIntegerField(default=0)
@@ -116,24 +117,41 @@ class Company(models.Model):
     def html_link(self):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
 
-    def update_info(self, rebuildPast=False):
+    def update_info(self, rebuildPast=False, player=None):
+
         # try to get director's key
         director = Player.objects.filter(tId=self.director).first()
-        if director is None:
-            return
 
-        print(f"Company {self} -> update with director key")
+        if director is not None:
+            print(f"Company {self} -> update with director key ({director})")
 
-        # api call
-        req = apiCall("company", "", "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
-        if "apiError" in req:
-            if req["apiErrorCode"] in [7]:
-                self.director = 0
-                self.save()
-            return True, req
+            # api call
+            req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=True)
+            if "apiError" in req:
+                if req["apiErrorCode"] in [7]:
+                    req = apiCall("company", self.tId, "profile", director.getKey(), verbose=True)
+                    self.director = req.get("company", {}).get("director", 0)
+                    self.director_hrm = False
+                    self.director_name = "Player"
+                    self.save()
+                    print(f"Company {self} -> New director ID ({self.director})")
+                    director = Player.objects.filter(tId=self.director).first()
+                    print(f"Company {self} -> New director ({director})")
+                else:
+                    return True, req
+
+        if director is None and player is not None:
+            print(f"Company {self} -> update with player key ({player})")
+
+            req = apiCall("company", self.tId, "employees,profile,timestamp", player.getKey(), verbose=True)
+            if "apiError" in req:
+                return True, req
+
+        if director is None and player is None:
+            return True, {"error": "no director and no player"}
 
         # create update dict
-        defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name}
+        defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name if director is not None else "Player", "director_yata": director is not None}
 
         # update profile
         for k in ["rating", "name", "director", "employees_hired", "employees_capacity", "employees_capacity", "daily_income", "daily_customers", "weekly_income", "weekly_customers", "days_old"]:
@@ -148,7 +166,7 @@ class Company(models.Model):
             defaults[f'upgrades_{k}'] = req.get("company_detailed", {}).get("upgrades", {}).get(k, 0)
 
         # get director edication
-        if not self.director_hrm:
+        if not self.director_hrm and director is not None:
             self.director_hrm = 11 in apiCall("user", "", "education", director.getKey(), verbose=False).get("education_completed", [])
 
         # update employees
@@ -158,7 +176,7 @@ class Company(models.Model):
         # remove old employees
         for employee in self.employee_set.all():
             if str(employee.tId) not in employees:
-                print(f"company update remove employee {employee}")
+                print(f"Company {self} -> remove employee {employee})")
                 employee.delete()
 
         # update all employees and compute company effectiveness
@@ -199,7 +217,7 @@ class Company(models.Model):
 
         # remove some data from employees
         for emp in employees.values():
-            for k in ["days_in_company", "wage"]:
+            for k in [_ for _ in ["days_in_company", "wage"] if _ in emp]:
                 del emp[k]
         # add employees
         defaults["employees"] = json.dumps(employees)

@@ -81,14 +81,14 @@ def supervise(request):
             context = {"player": player, "compcat": True, "view": {"supervise": True}}
             page = 'company/content-reload.html' if request.method == 'POST' else 'company.html'
             return render(request, page, context)
-        elif company is None and player.companyDi:
+        elif company is None:
             updatePlayer(player)
             company = Company.objects.filter(tId=player.companyId).first()
-            error, message = company.update_info()
+            error, message = company.update_info(player=player)
 
         # update company
-        if player.companyDi and ((tsnow() - company.timestamp) > 3600 or request.POST.get("type") == "update-data"):
-            error, message = company.update_info()
+        if ((tsnow() - company.timestamp) > 3600 or request.POST.get("type") == "update-data"):
+            error, message = company.update_info(player=player)
 
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()

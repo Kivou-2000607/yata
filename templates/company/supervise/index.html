@@ -209,6 +209,12 @@ This file is part of yata.
   }
 </script>
 
+{% if not company.director_yata %}
+<div class="module rounded warning">
+  <p>Your director is not on YATA. Data will only be partially updated.</p>
+</div>
+{% endif %}
+
 <h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}
   <span class="flush-right"><a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>Update data</a></span>
 </h2>
