@@ -608,6 +608,11 @@ img.yata-logo-square {
   transition: transform 0.5s linear, border-radius 0.5s linear;
 }
 
+img.yata-bot-verified {
+  height: 128px;
+  border-radius: 8px;
+}
+
 img.yata-logo-square:hover {
     /* filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5)); */
     border-radius: 0px;

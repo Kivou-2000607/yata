@@ -599,27 +599,45 @@ def compPopColor(p):
 
 @register.simple_tag(name='url_img_npc')
 def url_img_npc(key):
-    return f"/media/loot/npc_{int(key)}.png"
+    try:
+        return f"/media/loot/npc_{int(key)}.png"
+    except BaseException:
+        return f"/media/loot/npc_default.png"
 
 @register.simple_tag(name='url_img_honor')
 def url_img_honor(key):
-    return f"/media/honors/{int(key)}.png"
+    try:
+        return f"/media/honors/{int(key)}.png"
+    except BaseException:
+        return f"/media/honors/default.png"
 
 @register.simple_tag(name='url_img_medal')
 def url_img_medal(key):
-    return f"/media/medals/{int(key)}_r.png"
+    try:
+        return f"/media/medals/{int(key)}_r.png"
+    except BaseException:
+        return f"/media/medals/default_r.png"
 
 @register.simple_tag(name='url_img_stocks')
 def url_img_stocks(key):
-    return f"/media/stocks/{int(key)}.png"
+    try:
+        return f"/media/stocks/{int(key)}.png"
+    except BaseException:
+        return f"/media/stocks/default.png"
 
 @register.simple_tag(name='url_img_item')
 def url_img_item(key):
-    return f"/media/items/{int(key)}.png"
+    try:
+        return f"/media/items/{int(key)}.png"
+    except BaseException:
+        return f"/media/items/default.png"
 
 @register.simple_tag(name='url_img_flag')
 def url_img_flag(key):
-    return f"/media/flags/fl_{key}.png"
+    try:
+        return f"/media/flags/fl_{key}.png"
+    except BaseException:
+        return f"/media/flags/fl_default.png"
 
 @register.simple_tag(name='url_userscript')
 def url_userscript(key):
