@@ -228,20 +228,31 @@ class Company(models.Model):
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
         # create weekly_profit
-        last_week = id_ts - (7 * 24 * 3600 + 1)
-        # contains 7 days before for the last week daily comparison and 6 to 1 days before for the weekly
-        company_datas = self.companydata_set.filter(id_ts__gt=last_week)
-        n_data = company_datas.count()
+        id_ts_lastw = id_ts - (7 * 24 * 3600)
+        # contains 7 days before for the last week daily comparison and 1 to 6 days before for the weekly
+        # company_datas.count() should be 8 if all data are found
+        company_datas = self.companydata_set.filter(id_ts__gte=id_ts_lastw).order_by("id_ts")
+
+
+        # get last week data
+        cd = company_datas.filter(id_ts=id_ts_lastw).first()
+        if cd is None:
+            # didn't find last week entry
+            company_data.lastw_profit = 0
+            company_data.lastw_customers = 0
+            company_data.lastw_income = 0
+        else:
+            # found last week entry
+            company_data.lastw_profit = cd.daily_profit
+            company_data.lastw_customers = cd.daily_customers
+            company_data.lastw_income = cd.daily_income
+            # remove from query_set
+            company_datas = company_datas.exclude(id_ts=id_ts - (7 * 24 * 3600))
+
         money_spent = 0
-        for cd in company_datas:
-            if cd.id_ts == id_ts - (7 * 24 * 3600):
-                company_data.lastw_profit = cd.daily_profit
-                company_data.lastw_customers = cd.daily_customers
-                company_data.lastw_income = cd.daily_income
-
-            else:
-                money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
-
+        n_data = company_datas.count()  # should be 7 if all data are found (8-1 for removing last week)
+        for i, cd in enumerate(company_datas):
+            money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(n_data)  # in case less than 7 data (missing data)
 
         company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
         company_data.weekly_profit = company_data.weekly_income - money_spent
@@ -256,21 +267,34 @@ class Company(models.Model):
         self.save()
 
         if rebuildPast:
-            print("Rebuild past")
+            print(f"Company {self} -> rebuild past")
             for company_data in self.companydata_set.all():
                 # create weekly_profit
-                last_week = company_data.id_ts - (7 * 24 * 3600 + 1)
-                company_datas = self.companydata_set.filter(id_ts__gt=last_week)
-                n_data = company_datas.count()
-                money_spent = 0
-                for cd in company_datas:
-                    if cd.id_ts == id_ts - (7 * 24 * 3600):
-                        company_data.lastw_profit = cd.daily_profit
-                        company_data.lastw_customers = cd.daily_customers
-                        company_data.lastw_income = cd.daily_income
+                id_ts_lastw = id_ts - (7 * 24 * 3600)
+                # contains 7 days before for the last week daily comparison and 1 to 6 days before for the weekly
+                # company_datas.count() should be 8 if all data are found
+                company_datas = self.companydata_set.filter(id_ts__gte=id_ts_lastw).order_by("id_ts")
 
-                    else:
-                        money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(company_datas.count())  # in case less than 7 data
+
+                # get last week data
+                cd = company_datas.filter(id_ts=id_ts_lastw).first()
+                if cd is None:
+                    # didn't find last week entry
+                    company_data.lastw_profit = 0
+                    company_data.lastw_customers = 0
+                    company_data.lastw_income = 0
+                else:
+                    # found last week entry
+                    company_data.lastw_profit = cd.daily_profit
+                    company_data.lastw_customers = cd.daily_customers
+                    company_data.lastw_income = cd.daily_income
+                    # remove from query_set
+                    company_datas = company_datas.exclude(id_ts=id_ts - (7 * 24 * 3600))
+
+                money_spent = 0
+                n_data = company_datas.count()  # should be 7 if all data are found (8-1 for removing last week)
+                for i, cd in enumerate(company_datas):
+                    money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(n_data)  # in case less than 7 data (missing data)
 
                 company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
                 company_data.weekly_profit = company_data.weekly_income - money_spent

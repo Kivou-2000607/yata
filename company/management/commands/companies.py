@@ -24,9 +24,12 @@ from yata.handy import apiCall
 from yata.handy import logdate
 
 class Command(BaseCommand):
-    def handle(self, **options):
+    def add_arguments(self, parser):
+        parser.add_argument('-r', '--rebuild-past', action='store_true')
 
-        print(f'[CRON {logdate()}] START companies')
+    def handle(self, **options):
+        rebuild_past = options.get("rebuild_past", False)
+        print(f'[CRON {logdate()}] start companies: rebuild past = {rebuild_past}')
         for company in Company.objects.all():
-            company.update_info(rebuildPast=False)
-        print(f'[CRON {logdate()}] END')
+            company.update_info(rebuildPast=rebuild_past)
+        print(f'[CRON {logdate()}] end')

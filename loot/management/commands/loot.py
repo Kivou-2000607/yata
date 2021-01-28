@@ -25,20 +25,20 @@ from yata.handy import clear_cf_cache
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('-cc', '--clear-cache', action='store_true')
-        
+        parser.add_argument('-c', '--clear-cache', action='store_true')
+
     def handle(self, **options):
-        print(f"[CRON {logdate()}] START loot")
-        
+        print(f"[CRON {logdate()}] start loot")
+
         # update NPC status
         for npc in NPC.objects.filter(show=True):
-            print(f"[CRON {logdate()}] Update {npc}")
+            print(f"[CRON {logdate()}] update {npc}")
             npc.update()
 
         if options.get("clear_cache", False):
             r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
-            print("[loot.NPC.update] clear cloudflare cache", r)
-    
-        print(f"[CRON {logdate()}] END")
+            print(f"[CRON {logdate()}] clear cloudflare cache:")
+            for k, v in  r.items():
+                print(f"[CRON {logdate()}]\t\t{k}: {v}")
 
-        
+        print(f"[CRON {logdate()}] end")
