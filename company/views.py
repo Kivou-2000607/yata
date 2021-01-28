@@ -84,11 +84,11 @@ def supervise(request):
         elif company is None:
             updatePlayer(player)
             company = Company.objects.filter(tId=player.companyId).first()
-            error, message = company.update_info(player=player)
+            error, message = company.update_info()
 
         # update company
         if ((tsnow() - company.timestamp) > 3600 or request.POST.get("type") == "update-data"):
-            error, message = company.update_info(player=player)
+            error, message = company.update_info()
 
         # add employees requirements and potential efficiency on the fly
         company_positions = company.company_description.position_set.all()
@@ -223,7 +223,10 @@ def supervise(request):
         if message:
             sub = "Sub" if request.method == 'POST' else ""
             if error:
-                context["errorMessage" + sub] = "Company: API error {apiErrorString}, data not updated".format(**message)
+                if "apiErrorString" in message:
+                    context["errorMessage" + sub] = f'Company: API error {message["apiErrorString"]}, data not updated'
+                elif "error" in message:
+                    context["errorMessage" + sub] = f'Company: {message["error"]}'
             else:
                 context["validMessage" + sub] = "Company data has been updated."
 

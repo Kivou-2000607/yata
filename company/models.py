@@ -117,38 +117,44 @@ class Company(models.Model):
     def html_link(self):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
 
-    def update_info(self, rebuildPast=False, player=None):
+    def update_info(self, rebuildPast=False):
 
         # try to get director's key
         director = Player.objects.filter(tId=self.director).first()
 
-        if director is not None:
-            print(f"Company {self} -> update with director key ({director})")
+        if director is None:
+            return True, {"error": "Your director is not on YATA anymore, the data are not updated."}
 
-            # api call
-            req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
-            if "apiError" in req:
-                if req["apiErrorCode"] in [7]:
-                    req = apiCall("company", self.tId, "profile", director.getKey(), verbose=False)
-                    self.director = req.get("company", {}).get("director", 0)
-                    self.director_hrm = False
-                    self.director_name = "Player"
-                    self.save()
-                    print(f"Company {self} -> New director ID ({self.director})")
-                    director = Player.objects.filter(tId=self.director).first()
-                    print(f"Company {self} -> New director ({director})")
-                else:
-                    return True, req
+        print(f"Company {self} -> update with director key: {director}")
 
-        if director is None and player is not None:
-            print(f"Company {self} -> update with player key ({player})")
-
-            req = apiCall("company", self.tId, "employees,profile,timestamp", player.getKey(), verbose=False)
-            if "apiError" in req:
+        # api call
+        req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
+        if "apiError" in req:
+            if req["apiErrorCode"] in [7]:
+                req = apiCall("company", self.tId, "profile", director.getKey(), verbose=False)
+                self.director = req.get("company", {}).get("director", 0)
+                self.director_hrm = False
+                self.director_name = "Player"
+                self.save()
+                print(f"Company {self} -> New director ID: {self.director}")
+                director = Player.objects.filter(tId=self.director).first()
+                print(f"Company {self} -> New director: {director}")
+            else:
                 return True, req
 
-        if director is None and player is None:
-            return True, {"error": "no director and no player"}
+        # if director is None and player is not None:
+        #     print(f"Company {self} -> update with player key: {player}")
+        #
+        #     req = apiCall("company", "", "profile,employees,timestamp", player.getKey(), verbose=False)
+        #     if "apiError" in req:
+        #         return True, req
+        #
+        #     # check if it's still the same company
+        #     if req.get("company", {}).get("ID") != self.tId:
+        #         return True, {"error": "You seem to have changed company"}
+        #
+        # if director is None and player is None:
+        #     return True, {"error": "no director and no player"}
 
         # create update dict
         defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name if director is not None else "Player", "director_yata": director is not None}
@@ -212,7 +218,7 @@ class Company(models.Model):
         timestamp = defaults["timestamp"]
         id_ts = (timestamp + 3600 * 6) - (timestamp + 3600 * 6) % (3600 * 24)
         # remove some data from defaults
-        for k in ['company_bank', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
+        for k in ['company_bank', 'director_yata', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
             del defaults[k]
 
         # remove some data from employees
@@ -267,7 +273,6 @@ class Company(models.Model):
         self.save()
 
         if rebuildPast:
-            print(f"Company {self} -> rebuild past")
             for company_data in self.companydata_set.all():
                 # create weekly_profit
                 id_ts_lastw = id_ts - (7 * 24 * 3600)
