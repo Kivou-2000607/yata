@@ -126,10 +126,10 @@ class Company(models.Model):
             print(f"Company {self} -> update with director key ({director})")
 
             # api call
-            req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=True)
+            req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
             if "apiError" in req:
                 if req["apiErrorCode"] in [7]:
-                    req = apiCall("company", self.tId, "profile", director.getKey(), verbose=True)
+                    req = apiCall("company", self.tId, "profile", director.getKey(), verbose=False)
                     self.director = req.get("company", {}).get("director", 0)
                     self.director_hrm = False
                     self.director_name = "Player"
@@ -143,7 +143,7 @@ class Company(models.Model):
         if director is None and player is not None:
             print(f"Company {self} -> update with player key ({player})")
 
-            req = apiCall("company", self.tId, "employees,profile,timestamp", player.getKey(), verbose=True)
+            req = apiCall("company", self.tId, "employees,profile,timestamp", player.getKey(), verbose=False)
             if "apiError" in req:
                 return True, req
 
