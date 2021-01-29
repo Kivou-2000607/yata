@@ -105,12 +105,20 @@ div.module input[type="submit"]:active {
     background-position: 0 -48px;
 }
 
-div.http-status {
-    padding: 10px;
-    margin: 10px;
-    background: #fff;
-    -webkit-box-shadow: inset 0 0 5px #888;
-    box-shadow: inset 0 0 5px #888;
+table.http-status {
+  width: 100%;
+  border-radius: 6px;
+}
+
+table.http-status td.a {
+    width: 10%;
+    text-align: center;
+    border: 0px;
+}
+table.http-status td.b {
+    width: 90%;
+    text-align: left;
+    border: 0px;
 }
 
 h2.title {
@@ -595,7 +603,7 @@ img.yata-logo-full {
   height: 35px;
 }
 
-img.yata-logo-full:hover {
+a.yata-logo-full:hover {
     filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
 }
 

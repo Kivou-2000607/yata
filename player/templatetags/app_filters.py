@@ -646,5 +646,15 @@ def url_userscript(key):
 
 # TORN LINKS
 @register.simple_tag(name='player_link')
-def player_link(player_id, player_name="Player"):
-    return format_html(f'<a href="https://www.torn.com/userimages.php?XID={player_id}" title="{player_name} [{player_id}]" target="_blank">{player_name} [{player_id}]</a>')
+def player_link(player_id, player_name="Player", page=None):
+    if page == "attack":
+        # path = f'loader2.php?sid=getInAttack&user2ID={player_id}'
+        path = f'loader.php?sid=attack&user2ID={player_id}'
+    elif page == "image":
+        path = f'userimages.php?XID={player_id}'
+    elif page == "message":
+        path = f'messages.php#/p=compose&XID={player_id}'
+    else:
+        path = f'profiles.php?XID={player_id}'
+
+    return format_html(f'<a href="https://www.torn.com/{path}" title="{player_name} [{player_id}]" target="_blank">{player_name} [{player_id}]</a>')

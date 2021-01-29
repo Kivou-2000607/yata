@@ -148,7 +148,7 @@ window.setInterval(function(){
             cl = "warning"
         }
 
-        $(this).html('<a class="'+cl+'" href="https://www.torn.com/profiles.php?XID='+tid+'" target="_blank">'+name+': '+cd+'</a>');
+        $(this).html('<a class="'+cl+'" href="https://www.torn.com/loader.php?sid=attack&user2ID='+tid+'" target="_blank">'+name+': '+cd+'</a>');
 
     });
 }, 1000);

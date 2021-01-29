@@ -20,6 +20,7 @@ This file is part of yata.
 <!DOCTYPE html>
 {% load static %}
 {% load i18n %}
+{% load app_filters %}
 
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -41,28 +42,28 @@ This file is part of yata.
     <!-- meta  -->
     <meta name="robots" content="NONE,NOARCHIVE" />
     <meta charset="UTF-8">
+    {% block meta %}{% endblock %}
 
-    <title>YATA - Redirection</title>
+    <title>{% block title%}{% endblock%}</title>
 </head>
-
 
 <body>
     <div id="container">
         <div id="content">
             <div id="yata-login">
-                <div class="module">
-                    <table>
-                      <tr>
-                        <td>
-                          <a class="yata-logo" href="{% url 'index' %}" title="Home">{% include "svg/yata.full.svg" %}</a>
-                        </td>
-                        <td style="vertical-align: middle;">
-                          <p style="font-size: 20px; padding: 0; margin: 0">
-                          <span class="warning">YATA's domain name changed.<br>Please use the following address now: </span>
-                          <span class="neutral"><a href="https://yata.yt">yata.yt</a></span><p>
-                        </td>
-                      </tr>
-                    </table>
+                <div class="module citymap">
+
+                  <table class="http-status">
+                  <tr>
+                    <td class="a">
+                      <a class="yata-logo-full" href="{% url 'index' %}" title="Home" ><img src="/media/svg/yata.full.svg" alt="YATA" width="100%"/></a>
+                    </td>
+                    <td class="b">
+                        <h2 class="error">{% block header%}{% endblock%}</h2>
+                        {% block text %}{% endblock %}
+                    </td>
+                  </tr>
+                  </table>
                 </div>
             </div>
         </div> <!--end of content-->

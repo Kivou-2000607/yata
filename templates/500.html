@@ -1,3 +1,4 @@
+{% extends 'base-error.html' %}
 {% comment %}
 Copyright 2020 kivou.2000607@gmail.com
 
@@ -17,57 +18,27 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
-{% load static %}
-{% load i18n %}
-{% load app_filters %}
+{% block title %}YATA - Error 500{% endblock %}
+{% block header %}<i class="fas fa-bomb fa-icon-inline"></i>Error 500: Server Error{% endblock %}
+{% block text %}
+  <p>This is not normal.</p>
 
-{% get_current_language as LANGUAGE_CODE %}
+    <p>
+      Please check if a similar issue has been reported:
+    </p>
 
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
+    <ul>
+        <li>On the <a href='{% url "discord" %}' target="_blank">discord server</a> in <tt>#bug-and-issues</tt>.</li>
+        <li>On the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">forum thread</a>.
+    </ul>
 
-    <!-- load fontawesome -->
-    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
-
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
-
-    <!-- favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>YATA - Error 500</title>
-</head>
-
-<body>
-    <div id="container">
-        <div id="content">
-            <div id="yata-login">
-                <div class="module">
-                    <a class="yata-logo-full" href="{% url 'index' %}" title="Home"><img src="/media/svg/yata.full.svg" alt="YATA" class="yata-logo-full"/></a>
-                    <div class="http-status">
-                        <h2 class="error"><i class="fas fa-bomb fa-icon-inline"></i>Error 500: Server Error</h2>
-                        <p>This is not normal.
-                        Please check if a similar issue has been reported:
-                        <ul>
-                            <li>On the <a href='{% url "discord" %}' target="_blank">discord server</a> in <tt>#bug-and-issues</tt>.</li>
-                            <li>On the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">forum thread</a>.
-                        </ul>
-                        And if not please report the error by copy pasting the following:
-                        </p>
-                        <pre>{{exception}}</pre>
-                        Please don't PM {{"Kivou"|playerURL:"2000607"|safe}}.
-                    </div>
-                </div>
-            </div>
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+    <p>And if not please report the error by copy pasting the following:</p>
+    {% if exception %}
+      <pre>{{exception}}</pre>
+    {% else %}
+      <pre>No proper error messages have been found because YATA has been coded with the feet.</pre>
+    {% endif %}
+    <p>Please don't PM <a href="https://discord.com/channels/581227228537421825/625796758164733988" target=_blank>Kivou [2000607]</a>.<br /><br />
+      Thanks!
+    </p>
+{% endblock %}

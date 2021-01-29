@@ -1,3 +1,4 @@
+{% extends 'base-error.html' %}
 {% comment %}
 Copyright 2020 kivou.2000607@gmail.com
 
@@ -17,48 +18,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
-{% load static %}
-{% load i18n %}
-
-{% get_current_language as LANGUAGE_CODE %}
-
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
-
-    <!-- load fontawesome -->
-    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
-
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
-
-    <!-- favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>YATA - Error 404</title>
-</head>
-
-
-<body>
-    <div id="container">
-        <div id="content">
-            <div id="yata-login">
-                <div class="module">
-                    <a class="yata-logo-full" href="{% url 'index' %}" title="Home"><img src="/media/svg/yata.full.svg" alt="YATA" class="yata-logo-full"/></a>
-                    <div class="http-status">
-                        <h2 class="warning"><i class="fas fa-exclamation-triangle fa-icon-inline"></i>Error 404: Not Found</h2>
-                        <p>{{exception}}</p>
-                    </div>
-                </div>
-            </div>
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+{% block title %}YATA - Error 404{% endblock %}
+{% block header %}<i class="fas fa-question-circle fa-icon-inline"></i>Error 404: Not Found{% endblock %}
+{% block text %}
+  <p class="neutral">{{exception}}</p>
+{% endblock %}
