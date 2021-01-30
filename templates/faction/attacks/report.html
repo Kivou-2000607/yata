@@ -47,14 +47,19 @@ $(function () {
 
 </script>
 
-<h2 class="title"><i class="fas fa-skull fa-icon-inline"></i>{{faction.name}}'s attacks report [{{report.pk}}]{% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Synchronize report</a></span>{% endif %}</h2>
+<h2 class="title"><i class="fas fa-skull fa-icon-inline"></i>{{faction.name}}'s attacks report [{{report.pk}}]
+  {# from when reports were filled by the user {% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Synchronize report</a></span>{% endif %} #}
+</h2>
 <div class="module">
 
-    {% if report.fill < report.update and player.factionAA %}
+    {% comment %}
+       # from when reports were filled by the user
+      {% if report.fill < report.update and player.factionAA %}
         <p style="text-align: center; margin-bottom: 10px;"><span class="warning"><i class="fas fa-sync-alt fa-icon-inline"></i>New attacks has been entered in the database since last synchronization.</span><br>
-            Please synchronize your report with the button on the top right of this frame.
-        </p>
-    {% endif %}
+        Please synchronize your report with the button on the top right of this frame.
+      </p>
+      {% endif %}
+    {% endcomment %}
     <table class="tablesorter center trshadow contract-summary">
         <thead>
             <tr><th colspan="3" class="buttons">Report summary

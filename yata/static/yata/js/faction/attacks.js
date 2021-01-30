@@ -80,16 +80,16 @@ $(document).on('click', 'a#faction-attacks-report-members', e=>{
     }).html(spinner);
 });
 
-// show hide
-$(document).on('click', '#faction-attacks-report-update', e=>{
-    e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
-    $( "#content-update" ).load( "/faction/attacks/" + reportId, {
-        reportId: reportId, update: true,
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Synchronizing report');
-});
+// from when reports were filled by the user
+// $(document).on('click', '#faction-attacks-report-update', e=>{
+//     e.preventDefault();
+//     var reportId = $(e.currentTarget).attr("data-val");
+//     $( "#content-update" ).load( "/faction/attacks/" + reportId, {
+//         reportId: reportId, update: true,
+//         csrfmiddlewaretoken: getCookie("csrftoken")
+//     });
+//     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Synchronizing report');
+// });
 
 // player filter
 $(document).on('click', 'form.attacks > i.filter-player,form.attacks > i.filter-player-activated', e=>{

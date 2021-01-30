@@ -1734,12 +1734,13 @@ def attacksReport(request, reportId, share=False):
                     report.state = 0
                     report.save()
 
-            if 'update' in request.POST:
-
-                if not player.factionAA:
-                    return returnError(type=403, msg="You need AA rights.")
-
-                report.fillReport()
+            # from when reports were filled by the user
+            # if 'update' in request.POST:
+            #
+            #     if not player.factionAA:
+            #         return returnError(type=403, msg="You need AA rights.")
+            #
+            #     report.fillReport()
 
             factions = json.loads(report.factions)
 

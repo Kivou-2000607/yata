@@ -2204,7 +2204,8 @@ class AttacksReport(models.Model):
     state = models.IntegerField(default=0)  # output status of last attack pulled
     crontab = models.IntegerField(default=0)
     update = models.IntegerField(default=0)
-    fill = models.IntegerField(default=0)
+    # from when reports were filled by the user
+    # fill = models.IntegerField(default=0)
 
     # global information for the report
     factions = models.TextField(default="[]")
@@ -2436,6 +2437,7 @@ class AttacksReport(models.Model):
             return 2
 
         self.state = 3
+        self.update = tsnow()
         self.save()
         return 3
 
@@ -2539,7 +2541,7 @@ class AttacksReport(models.Model):
             self.attacksfaction_set.filter(faction_id=int(f)).update(show=True)
             self.attacksplayer_set.filter(player_faction_id=int(f)).update(show=True)
 
-        self.fill = tsnow()
+        # self.fill = tsnow()
         self.save()
 
     def getMembersBreakdown(self, order=6):
