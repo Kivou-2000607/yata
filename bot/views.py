@@ -133,7 +133,7 @@ def dashboard(request, secret=False):
                                             to_del_sub.append(val_sub)
 
                                     for k in to_del_sub:
-                                        del vals[val][val_sub]
+                                        del vals[val][k]
 
                             # delete role in configuration
                             for k in to_del:
