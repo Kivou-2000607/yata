@@ -133,9 +133,9 @@ def supervise(request):
                 if sum(req):
                     Pi = req.index(max(req))
                     Si = req.index(min([s for s in req if s]))
-                    P = max(hrm * sta[Pi] / float(req[Pi]), 1)
-                    S = max(hrm * sta[Si] / float(req[Si]), 1)
-                    ws_eff = min(45, 45 * P) + 5*math.log2(P) + min(45, 45 * S) + 5*math.log2(S) + employee.effectiveness_merits
+                    P = hrm * sta[Pi] / float(req[Pi])
+                    S = hrm * sta[Si] / float(req[Si])
+                    ws_eff = min(45, 45 * P) + 5*math.log2(max(P, 1)) + min(45, 45 * S) + 5*math.log2(max(S, 1)) + employee.effectiveness_merits
                 else:
                     ws_eff = 0
 
