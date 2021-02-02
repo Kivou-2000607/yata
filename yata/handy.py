@@ -82,7 +82,7 @@ def apiCall(section, id, selections, key, sub=None, verbose=True):
     # return dict({"apiError": "API error code 42: debug error."})
 
     base_url = "https://torn-proxy.com" if proxy else "https://api.torn.com"
-    url = f"{base_url}/{section}/{id}?selections={selections}&key={key}"
+    url = f"{base_url}/{section}/{id}?selections={selections}&key={key}&comment=yata"
 
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
