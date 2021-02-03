@@ -226,6 +226,12 @@ class Stocks(models.Model):
     timestamp = models.IntegerField(default=0)
     rackets = models.TextField(default="{}")
 
+class Assist(models.Model):
+    target_id = models.IntegerField(default=0)
+    target_name = models.CharField(default="Player", max_length=32)
+    player_id = models.IntegerField(default=0)
+    player_name = models.CharField(default="Player", max_length=32)
+
 
 # needed for past migrations...
 def channel_names_reg():

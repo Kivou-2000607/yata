@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.utils import timezone
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
@@ -391,6 +392,27 @@ def toggleNoti(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+@csrf_exempt
+def assist(request):
+    payload = json.loads(request.body)
+
+    target_id = str(payload.get("target_id"))
+    if not target_id.isdigit():
+        return JsonResponse({"message": "wrong target id"})
+
+    player_name = str(payload.get("player_name"))
+    if player_name in ['', None]:
+        player_name = "Player"
+
+    target_name = str(payload.get("target_name"))
+    if target_name in ['', None]:
+        target_name = "Player"
+
+    Assist.objects.create(target_name=target_name, player_name=player_name, target_id=target_id)
+
+    return JsonResponse({"message": "hey"})
 
 
 @csrf_exempt
