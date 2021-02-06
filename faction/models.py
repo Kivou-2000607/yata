@@ -2792,9 +2792,12 @@ class RevivesReport(models.Model):
         revives = [r.tId for r in self.revive_set.all()]
         print("{} {} existing revives".format(self, len(revives)))
 
-        # get key
-        key = faction.getKey(useFact=True)
-        if key is None:
+        # get the keys and init the attacks dict
+        apiRevives = {}
+        keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
+        nKeys = len(keys)
+
+        if not keys:
             print("{} no key".format(self))
             self.computing = False
             self.crontab = 0
@@ -2803,50 +2806,54 @@ class RevivesReport(models.Model):
             self.save()
             return -1
 
-        # prevent cache response
-        delay = tsnow() - self.update
-        delay = min(tsnow() - faction.lastRevivesPulled, delay)
-        if delay < 32:
-            sleeptime = 32 - delay
-            print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
-            time.sleep(sleeptime)
+        # loop over keys to get the attacks
+        for i, key in enumerate(keys):
+            print(f"{self} Key #{i}: {key}")
 
-        # make call
-        selection = "revives,timestamp&from={}&to={}".format(tsl, tse)
-        req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
-        key.reason = "Pull revives for report"
-        key.lastPulled = tsnow()
-        key.save()
-        self.update = tsnow()
-        faction.lastRevivesPulled = self.update
-        faction.save()
+            # prevent cache response
+            delay = tsnow() - self.update
+            delay = min(tsnow() - faction.lastRevivesPulled, delay)
+            if delay < 32:
+                sleeptime = 32 - delay
+                print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
+                time.sleep(sleeptime)
 
-        # in case there is an API error
-        if "apiError" in req:
-            print('{} api key error: {}'.format(self, req['apiError']))
-            if req['apiErrorCode'] in API_CODE_DELETE:
-                print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
-                faction.delKey(key=key)
-                self.state = -2
+            # make call
+            selection = "revives,timestamp&from={}&to={}".format(tsl, tse)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
+            key.reason = "Pull revives for report"
+            key.lastPulled = tsnow()
+            key.save()
+
+            # in case there is an API error
+            if "apiError" in req:
+                print('{} api key error: {}'.format(self, req['apiError']))
+                if req['apiErrorCode'] in API_CODE_DELETE:
+                    print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                    faction.delKey(key=key)
+                    self.state = -2
+                    self.save()
+                    return -2
+                self.state = -3
                 self.save()
-                return -2
-            self.state = -3
-            self.save()
-            return -3
+                return -3
 
-        # try to catch cache response
-        tornTS = int(req["timestamp"])
-        nowTS = self.update
-        cache = abs(nowTS - tornTS)
-        print("{} cache = {}s".format(self, cache))
-        # in case cache
-        if cache > CACHE_RESPONSE:
-            print('{} probably cached response... (blank turn)'.format(self))
-            self.state = -4
-            self.save()
-            return -4
+            # try to catch cache response
+            tornTS = int(req["timestamp"])
+            nowTS = tsnow()
+            cache = abs(nowTS - tornTS)
+            print("{} cache = {}s".format(self, cache))
+            # in case cache
+            if cache > CACHE_RESPONSE:
+                print('{} probably cached response... (blank turn)'.format(self))
+                self.state = -4
+                self.save()
+                return -4
 
-        apiRevives = req["revives"]
+            # add revive to global dictionnary
+            for id, r in req["revives"].items():
+                apiRevives[id] = r
+                tsl = max(tsl, r["timestamp"])
 
         # in case empty payload
         if not len(apiRevives):
@@ -2858,9 +2865,13 @@ class RevivesReport(models.Model):
             return -5
 
         print("{} {} revives from the API".format(self, len(apiRevives)))
+        self.update = tsnow()
+        faction.lastRevivesPulled = self.update
+        faction.save()
 
         # add attacks
         newEntry = 0
+        bulk_mgr = BulkCreateManager(chunk_size=20)
         for k, v in apiRevives.items():
             ts = int(v["timestamp"])
 
@@ -2874,11 +2885,13 @@ class RevivesReport(models.Model):
             v["target_last_action_status"] = v["target_last_action"].get("status", "Unkown")
             v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
             del v["target_last_action"]
-            try:
-                a = self.revive_set.update_or_create(tId=int(k), defaults=v)
-            except BaseException as e:
-                self.revive_set.filter(tId=int(k)).delete()
-                a = self.revive_set.update_or_create(tId=int(k), defaults=v)
+
+            bulk_mgr.add(Revive(report=self, tId=int(k), **v))
+            # try:
+            #     a = self.revive_set.update_or_create(tId=int(k), defaults=v)
+            # except BaseException as e:
+            #     self.revive_set.filter(tId=int(k)).delete()
+            #     a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
             if v["reviver_faction"] == faction.tId:
@@ -2886,6 +2899,7 @@ class RevivesReport(models.Model):
             else:
                 self.revivesReceived += 1
 
+        bulk_mgr.done()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
