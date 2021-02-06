@@ -2874,7 +2874,11 @@ class RevivesReport(models.Model):
             v["target_last_action_status"] = v["target_last_action"].get("status", "Unkown")
             v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
             del v["target_last_action"]
-            a = self.revive_set.update_or_create(tId=int(k), defaults=v)
+            try:
+                a = self.revive_set.update_or_create(tId=int(k), defaults=v)
+            except BaseException as e:
+                self.revive_set.filter(tId=int(k)).delete()
+                a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
             if v["reviver_faction"] == faction.tId:
