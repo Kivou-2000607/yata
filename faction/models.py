@@ -605,7 +605,7 @@ class Faction(models.Model):
             return membersAPI
 
         bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction', 'crimesRank',
-                                        'shareE', 'energy', 'energyRefillUsed', 'drugCD',
+                                        'shareE', 'energy', 'energyRefillUsed', 'revive', 'drugCD',
                                         'shareS', 'dexterity', 'speed', 'strength', 'defense',
                                         'shareN', 'nnb', 'arson', 'singleHitHonors'], chunk_size=100)
 
@@ -634,6 +634,7 @@ class Faction(models.Model):
                     memberDB.shareE = -1
                     memberDB.energy = 0
                     memberDB.energyRefillUsed = False
+                    memberDB.revive = False
                     memberDB.drugCD = 0
                     memberDB.shareS = -1
                     memberDB.dexterity = 0
@@ -679,6 +680,7 @@ class Faction(models.Model):
                 memberTmp.shareS = -1 if player is None else memberTmp.shareS
                 memberTmp.energy = 0
                 memberTmp.energyRefillUsed = False
+                memberTmp.revive = False
                 memberTmp.drugCD = 0
                 memberTmp.nnb = 0
                 memberTmp.arson = 0
@@ -1296,6 +1298,7 @@ class Member(models.Model):
     shareE = models.IntegerField(default=1)
     energy = models.IntegerField(default=0)
     energyRefillUsed = models.BooleanField(default=False)
+    revive = models.BooleanField(default=False)
     drugCD = models.IntegerField(default=0)
 
     # share natural nerve bar
@@ -1355,7 +1358,7 @@ class Member(models.Model):
             self.energy = 0
         else:
             if not req:
-                req = apiCall("user", "", "bars,refills,cooldowns", key=key)
+                req = apiCall("user", "", "bars,refills,cooldowns,perks", key=key)
 
             # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
             # req = requests.get(url).json()
@@ -1368,6 +1371,7 @@ class Member(models.Model):
                 energy = req['energy'].get('current', 0)
                 self.energy = energy
                 self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
+                self.revive = "+ Ability to revive" in req["job_perks"]
                 self.drugCD = req["cooldowns"]["drug"]
 
         if save:
