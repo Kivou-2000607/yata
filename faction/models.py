@@ -798,7 +798,8 @@ class Faction(models.Model):
 
         news = self.news_set.all()
         news.filter(timestamp__lt=old).delete()
-        bulk_mgr = BulkCreateManager(chunk_size=20)
+        # bulk_mgr = BulkCreateManager(chunk_size=20)
+        batch = News.objects.bulk_operation()
 
         # get last armory ts
         q = news.filter(type="armorynews").order_by("timestamp").last()
@@ -821,9 +822,12 @@ class Faction(models.Model):
                 if (v["timestamp"] > old) and ((news_type == "armorynews" and v["timestamp"] > last_armory) or (news_type == "fundsnews" and v["timestamp"] > last_fund)):
                     v["news"] = cleanhtml(v["news"])[:512]
                     v["member"] = v["news"].split(" ")[0]
-                    bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type))
+                    # bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type))
+                    batch.update_or_create(faction_id=int(self.id), member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type)
 
-        bulk_mgr.done()
+        # bulk_mgr.done()
+        if batch.count():
+            batch.run()
 
         # delete old logs
         self.log_set.filter(timestamp__lt=old).delete()
@@ -2907,7 +2911,9 @@ class RevivesReport(models.Model):
                 self.revivesMade += 1
             else:
                 self.revivesReceived += 1
-        batch.run()
+
+        if batch.count():
+            batch.run()
         # bulk_mgr.done()
         self.last = tsl
 
@@ -3159,6 +3165,8 @@ class News(models.Model):
     timestamp = models.IntegerField(default=0)
     news = models.CharField(default="news", max_length=512)
     member = models.CharField(default="?", max_length=32)
+
+    objects = BulkManager()
 
     def __str__(self):
         return format_html("{} {} [{}]".format(self.faction, self.type, self.tId))

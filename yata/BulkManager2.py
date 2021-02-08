@@ -67,7 +67,7 @@ class BulkManager(BulkUpdateManager):
 
                 for q in self._queries[batch * batch_size:batch * batch_size + batch_size]:
                     search = q['search']
-                    
+
                     group = '('
                     for f in fields:
                         vals.append(search[f])
@@ -78,7 +78,7 @@ class BulkManager(BulkUpdateManager):
 
                 wherestr = wherestr.rstrip('or ')
                 sql = 'select * from "' + self.mgr.model._meta.db_table +'"' + wherestr
-                
+
                 qset = self.mgr.model.objects.raw(
                     sql,
                     vals
@@ -90,6 +90,9 @@ class BulkManager(BulkUpdateManager):
                 batch += 1
 
             return results
+
+        def count(self):
+            return len(self._queries)
 
         def run(self, batch_size=5000):
             if len(self._queries) == 0:
