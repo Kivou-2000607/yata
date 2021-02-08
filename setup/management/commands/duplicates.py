@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 
+from faction.models import Faction
 from faction.models import RevivesReport
 from faction.models import AttacksReport
 from yata.handy import logdate
@@ -27,6 +28,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-r', '--revives', action='store_true')
         parser.add_argument('-a', '--attacks', action='store_true')
+        parser.add_argument('-n', '--news', action='store_true')
 
     def handle(self, **options):
 
@@ -39,8 +41,9 @@ class Command(BaseCommand):
             print(f"[CRON {logdate()}] start looking for duplicates in revives")
 
             # loop over reports
-            for report in RevivesReport.objects.all():
-                print(f"[CRON {logdate()}] {report}")
+            all_reports = RevivesReport.objects.all()
+            for i, report in enumerate(all_reports):
+                print(f"[CRON {logdate()}] {i}/{len(all_reports)} {report}")
 
                 # find duplicates
 
@@ -53,7 +56,7 @@ class Command(BaseCommand):
                 for obj in objs:
                     # check if objs tId already registered
                     if obj.tId in objs_tid_all:
-                        print(f"[CRON {logdate()}] found duplicate obj tid = {obj.tId}")
+                        # print(f"[CRON {logdate()}] found duplicate obj tid = {obj.tId}")
                         # append in duplicate list
                         objs_tid_duplicates.append(obj.tId)
                     else:
@@ -89,8 +92,9 @@ class Command(BaseCommand):
             print(f"[CRON {logdate()}] start looking for duplicates in attacks")
 
             # loop over reports
-            for report in AttacksReport.objects.all():
-                print(f"[CRON {logdate()}] {report}")
+            all_reports = AttacksReport.objects.all()
+            for i, report in enumerate(all_reports):
+                print(f"[CRON {logdate()}] {i}/{len(all_reports)} {report}")
 
                 # find duplicates
 
@@ -103,7 +107,7 @@ class Command(BaseCommand):
                 for obj in objs:
                     # check if objs tId already registered
                     if obj.tId in objs_tid_all:
-                        print(f"[CRON {logdate()}] found duplicate obj tid = {obj.tId}")
+                        # print(f"[CRON {logdate()}] found duplicate obj tid = {obj.tId}")
                         # append in duplicate list
                         objs_tid_duplicates.append(obj.tId)
                     else:
@@ -113,8 +117,8 @@ class Command(BaseCommand):
                 # delete duplicates
 
                 # loop over the duplicated tId
-                for i, obj_tid in enumerate(objs_tid_duplicates):
-                    print(f"[CRON {logdate()}] {i}/{len(objs_tid_duplicates)} deletes tid = {obj_tid}")
+                for j, obj_tid in enumerate(objs_tid_duplicates):
+                    print(f"[CRON {logdate()}] {j}/{len(objs_tid_duplicates)} deletes tid = {obj_tid}")
                     # get all duplicated objects
                     objs_duplicates = objs.filter(tId=obj_tid)
                     # get first one (to keep it)
@@ -131,3 +135,50 @@ class Command(BaseCommand):
                     report.fillReport()
 
             print(f"[CRON {logdate()}] end looking for duplicates in attacks")
+
+
+        #
+        # NEWS
+        #
+
+        if options.get("news", False):
+
+            print(f"[CRON {logdate()}] start looking for duplicates in news")
+
+            # loop over reports
+            all_factions = Faction.objects.all()
+            for i, faction in enumerate(all_factions):
+                print(f"[CRON {logdate()}] {i}/{len(all_factions)} {faction}")
+
+                # find duplicates
+
+                # get all objs of the faction
+                objs = faction.news_set.all()
+                # init tid lists to check for duplicates and store them
+                objs_tid_all = []
+                objs_tid_duplicates = []
+                # loop over objs
+                for obj in objs:
+                    # check if objs tId already registered
+                    if obj.tId in objs_tid_all:
+                        # print(f"[CRON {logdate()}] found duplicate obj tid = {obj.tId}")
+                        # append in duplicate list
+                        objs_tid_duplicates.append(obj.tId)
+                    else:
+                        objs_tid_all.append(obj.tId)
+
+
+                # delete duplicates
+
+                # loop over the duplicated tId
+                for j, obj_tid in enumerate(objs_tid_duplicates):
+                    print(f"[CRON {logdate()}] {j}/{len(objs_tid_duplicates)} deletes tid = {obj_tid}")
+                    # get all duplicated objects
+                    objs_duplicates = objs.filter(tId=obj_tid)
+                    # get first one (to keep it)
+                    first_obj = objs_duplicates.first()
+                    # delete the others
+                    objs_to_delete = objs_duplicates.exclude(id=first_obj.id)
+                    objs_to_delete.delete()
+
+            print(f"[CRON {logdate()}] end looking for duplicates in news")
