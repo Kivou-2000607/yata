@@ -5,7 +5,7 @@ from django.db import transaction
 import math
 from bulk_update.manager import BulkUpdateManager
 
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 
 
 class BulkManager(BulkUpdateManager):
