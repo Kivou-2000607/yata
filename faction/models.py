@@ -23,7 +23,9 @@ from django.forms.models import model_to_dict
 from django.utils.html import format_html
 from django.core.exceptions import MultipleObjectsReturned
 from django.conf import settings
+from numpy.core.numeric import normalize_axis_tuple
 from rest_framework import serializers
+from yata.BulkManager2 import BulkManager
 
 import json
 import requests
@@ -135,6 +137,7 @@ BB_BRIDGE = {
 def posterRenameHead(instance, filename):
     ext = filename.split('.')[-1]
     return f'posters/{instance.tId}-head.{ext}'
+
 
 def posterRenameTail(instance, filename):
     ext = filename.split('.')[-1]
@@ -467,7 +470,6 @@ class Faction(models.Model):
 
         # print("rank after:", main_ranking.index(1836309))
 
-
         # cleanup old members
         for rank_id in main_ranking:
             if rank_id not in [m.tId for m in faction_members]:
@@ -495,7 +497,6 @@ class Faction(models.Model):
         bulk_u_mgr.done()
 
         return main_ranking
-
 
     def cleanHistory(self):
         # clean chains
@@ -1271,6 +1272,7 @@ class Faction(models.Model):
         from faction.serializer import FactionSerializer
         return FactionSerializer(self).data
 
+
 class Member(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     tId = models.IntegerField(default=0, unique=True)
@@ -2023,23 +2025,23 @@ class Chain(models.Model):
             #                       graph=graphTmp,
             #                       watcher=watcher,
             #                       warhits=v[13])
-            bulk_mgr.add(Count( chain=self,
-                                attackerId=k,
-                                name=v[10],
-                                hits=v[0],
-                                wins=v[1],
-                                bonus=v[12],
-                                fairFight=v[2],
-                                war=v[3],
-                                retaliation=v[4],
-                                groupAttack=v[5],
-                                overseas=v[6],
-                                respect=v[8],
-                                daysInFaction=v[9],
-                                beenThere=beenThere,
-                                graph=graphTmp,
-                                watcher=watcher,
-                                warhits=v[13]))
+            bulk_mgr.add(Count(chain=self,
+                               attackerId=k,
+                               name=v[10],
+                               hits=v[0],
+                               wins=v[1],
+                               bonus=v[12],
+                               fairFight=v[2],
+                               war=v[3],
+                               retaliation=v[4],
+                               groupAttack=v[5],
+                               overseas=v[6],
+                               respect=v[8],
+                               daysInFaction=v[9],
+                               beenThere=beenThere,
+                               graph=graphTmp,
+                               watcher=watcher,
+                               warhits=v[13]))
 
         bulk_mgr.done()
 
@@ -2117,6 +2119,7 @@ class Bonus(models.Model):
     def json(self):
         from faction.serializer import BonusSerializer
         return BonusSerializer(self).data
+
 
 class AttackChain(models.Model):
     report = models.ForeignKey(Chain, on_delete=models.CASCADE)
@@ -2875,7 +2878,8 @@ class RevivesReport(models.Model):
 
         # add attacks
         newEntry = 0
-        bulk_mgr = BulkCreateManager(chunk_size=20)
+       # bulk_mgr = BulkCreateManager(chunk_size=20)
+        batch = Revive.objects.bulk_operation()
         for k, v in apiRevives.items():
             ts = int(v["timestamp"])
 
@@ -2890,7 +2894,8 @@ class RevivesReport(models.Model):
             v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
             del v["target_last_action"]
 
-            bulk_mgr.add(Revive(report=self, tId=int(k), **v))
+            batch.update_or_create(tId=int(k), report_id=int(self.id), defaults=v)
+            #bulk_mgr.add(Revive(report=self, tId=int(k), **v))
             # try:
             #     a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             # except BaseException as e:
@@ -2902,8 +2907,8 @@ class RevivesReport(models.Model):
                 self.revivesMade += 1
             else:
                 self.revivesReceived += 1
-
-        bulk_mgr.done()
+        batch.run()
+        # bulk_mgr.done()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -3139,6 +3144,8 @@ class Revive(models.Model):
     target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
     target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
+
+    objects = BulkManager()
 
     def __str__(self):
         return "{} -> {}".format(self.reviver_factionname, self.target_factionname)
