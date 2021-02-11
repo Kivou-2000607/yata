@@ -241,13 +241,21 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
 
 </div>
 
-{% if player.usingProxyKey %}
-<div class="module rounded error">
-    Support to proxy keys will be over soon. Please move back to regular API key. More information in <a href="https://www.torn.com/forums.php#/p=threads&f=63&t=16178384" target="_blank">this thread</a>.
-</div>
-{% endif %}
-
 {% else %}
+
+<script>
+
+  // WARNING: IT IS NOT TOLERATED TO MODIFY THIS JAVASCRIPT
+  // as it will remove the warning when users enter their API key on non official instances of YATA.
+  // Changing it will be seen as making your instance of YATA look official and thus raise suspicions.
+  $(document).on('click', '#yata-login-key', function(e){
+      if (window.location.host != "yata.yt") {
+        alert("This is not the official YATA website which is hosted on https://yata.yt.\nMake sure you know who's hosting it and that they have no malicious intents.")
+      }
+  });
+
+</script>
+
 
 <div class="module">
     <table class="yata-login">
