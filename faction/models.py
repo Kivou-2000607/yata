@@ -2831,7 +2831,7 @@ class RevivesReport(models.Model):
 
             # make call
             selection = "revives,timestamp&from={}&to={}".format(tsl, tse)
-            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull revives for report"
             key.lastPulled = tsnow()
             key.save()
@@ -2862,9 +2862,18 @@ class RevivesReport(models.Model):
                 return -4
 
             # add revive to global dictionnary
+            n = 0
             for id, r in req["revives"].items():
-                apiRevives[id] = r
+                if id not in apiRevives:
+                    apiRevives[id] = r
+                    n += 1
                 tsl = max(tsl, r["timestamp"])
+
+            print(f'{self}\t adding {n} attacks')
+            print(f'{self}\t last time {timestampToDate(tsl)}')
+            if not n:
+                print(f'{self}\t escape loop because no new attacks')
+                break
 
         # in case empty payload
         if not len(apiRevives):
