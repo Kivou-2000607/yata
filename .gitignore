@@ -13,3 +13,5 @@ source.bash
 zzz
 /yata/wsgi_prod.py
 cron/logs
+yata_uwsgi.ini
+yata.sock
