@@ -12,6 +12,7 @@ djangorestframework>=3.12.2
 # - sqlite3 database
 gunicorn>=20.0.4
 psycopg2>=2.8.4  # need to install (sudo apt-get install libpq-dev python3-dev)
+uwsgi
 # psycopg2-binary>=2.8.4
 django-extensions>=3.0.8
 django-bulk-update
