@@ -173,19 +173,21 @@ def dashboardOption(request):
             context = {"player": player, "force_display": post.get("typ"), "botcat": True, "view": {"dashboard": True, "ux": post.get("ux")}}
             server = player.server_set.filter(bot__pk=post.get("bid", 0), discord_id=post.get("sid", 0)).first()
 
+            print(post)
             if server is None:
                 context["error"] = "No server found..."
 
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try a !sync in the discord server..."
 
-            elif post.get("mod") in ["rackets", "loot", "admin", "revive", "verify", "oc", "stocks", "chain"]:
+            elif post.get("mod") in ["rackets", "wars", "loot", "admin", "revive", "verify", "oc", "stocks", "chain"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
                 configuration_keys = {
                     "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
+                    "wars": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],

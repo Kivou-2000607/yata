@@ -64,6 +64,15 @@ This file is part of yata.
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
+{% elif module == "wars" %}
+    {% with mod=server.get_war %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
 {% elif module == "loot" %}
     {% with mod=server.get_loot %}
         {% if mod %}

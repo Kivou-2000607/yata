@@ -74,6 +74,18 @@ class RacketsAdmin(admin.ModelAdmin):
     def ago(self, instance):
         return "{:.1f}".format((tsnow() - instance.timestamp) / float(60))
 
+class WarsAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'date', 'ago']
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
+
+    def date(self, instance):
+        return timestampToDate(instance.timestamp, fmt="%Y/%m/%d %H:%M")
+
+    def ago(self, instance):
+        return "{:.1f}".format((tsnow() - instance.timestamp) / float(60))
+
 class StocksAdmin(admin.ModelAdmin):
     list_display = ['timestamp', 'date', 'ago']
     formfield_overrides = {
@@ -89,6 +101,7 @@ class StocksAdmin(admin.ModelAdmin):
 
 admin.site.register(Stocks, StocksAdmin)
 admin.site.register(Rackets, RacketsAdmin)
+admin.site.register(Wars, WarsAdmin)
 admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
 admin.site.register(Server, ServerAdmin)

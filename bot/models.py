@@ -87,6 +87,18 @@ class Server(models.Model):
         else:
             return False
 
+    def get_war(self):
+        from_db = json.loads(self.configuration).get("wars", False)
+        if from_db:
+            for_template = {
+                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts", "help": "Select one role for the alerts", "mandatory": False},
+                # ["roles_alerts", self.get_roles(), from_db.get("roles_alerts", {}), "@", "Role for the alerts"],
+            }
+            return for_template
+        else:
+            return False
+
     def get_loot(self):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
@@ -220,6 +232,11 @@ class Credential(models.Model):
 class Rackets(models.Model):
     timestamp = models.IntegerField(default=0)
     rackets = models.TextField(default="{}")
+
+
+class Wars(models.Model):
+    timestamp = models.IntegerField(default=0)
+    wars = models.TextField(default="{}")
 
 
 class Stocks(models.Model):
