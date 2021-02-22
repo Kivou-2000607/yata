@@ -86,9 +86,6 @@ class StocksAdmin(admin.ModelAdmin):
     def ago(self, instance):
         return "{:.1f}".format((tsnow() - instance.timestamp) / float(60))
 
-class AssistAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'target_id', 'target_name', 'player_id', 'player_name']
-
 
 admin.site.register(Stocks, StocksAdmin)
 admin.site.register(Rackets, RacketsAdmin)
@@ -96,4 +93,3 @@ admin.site.register(Credential, CredentialAdmin)
 admin.site.register(Chat, ChatAdmin)
 admin.site.register(Server, ServerAdmin)
 admin.site.register(Bot, BotAdmin)
-admin.site.register(Assist, AssistAdmin)

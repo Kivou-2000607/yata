@@ -395,34 +395,6 @@ def toggleNoti(request):
 
 
 @csrf_exempt
-def assist(request):
-
-    try:
-        # get data from payload
-        payload = json.loads(request.body)
-        target_id = str(payload.get("target_id"))
-        if not target_id.isdigit():
-            return JsonResponse({"message": f"Wrong target id: {target_id}"}, status=500)
-        player_name = str(payload.get("player_name"))
-        if player_name in ['', None]:
-            player_name = "Player"
-        target_name = str(payload.get("target_name"))
-        if target_name in ['', None]:
-            target_name = "Player"
-
-        # check if assist alrady exists
-        print(Assist.objects.filter(target_id=target_id).count())
-        if Assist.objects.filter(target_id=target_id).count():
-            return JsonResponse({"message": f"Assists already sent. Wait a couple of seconds if you need more."}, status=400)
-
-        Assist.objects.create(target_name=target_name, player_name=player_name, target_id=target_id)
-
-        return JsonResponse({"message": "Call sent for 4 joins."}, status=200)
-    except BaseException as e:
-        return JsonResponse({"message": f"Server error: {e}"}, status=500)
-
-
-@csrf_exempt
 def secret(request):
     if request.method == 'POST':
         try:
