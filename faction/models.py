@@ -3170,7 +3170,8 @@ class Revive(models.Model):
 class News(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
     type = models.CharField(default="typenews", max_length=16)
-    tId = models.IntegerField(default=0)
+    # tId = models.IntegerField(default=0)
+    tId = models.CharField(default="a", max_length=32)
     timestamp = models.IntegerField(default=0)
     news = models.CharField(default="news", max_length=512)
     member = models.CharField(default="?", max_length=32)
