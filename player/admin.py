@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.core.cache import cache
 
 from .models import *
 from faction.models import Faction
@@ -37,9 +38,12 @@ class PlayerAdmin(admin.ModelAdmin):
 #     filter_horizontal = ('player',)
 
 
+def clear_message_cache(modeladmin, request, queryset):
+    cache.delete("context_processor_message")
+
 class MessageAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'section', 'level', 'message']
-
+    actions = [clear_message_cache]
 
 class DonationAdmin(admin.ModelAdmin):
     list_display = ['__str__']
