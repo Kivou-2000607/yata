@@ -25,6 +25,8 @@ class Revive(models.Model):
     target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
     target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
+    chance = models.IntegerField(default=100)
+    result = models.BooleanField(default=True)
 
     paid = models.BooleanField(default=False)
 

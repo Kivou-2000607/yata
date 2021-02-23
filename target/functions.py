@@ -144,6 +144,7 @@ def updateRevives(player):
                 revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unkown")
                 revives[k]["target_last_action_timestamp"] = revives[k]["target_last_action"].get("timestamp", 0)
                 del v["target_last_action"]
+                v["result"] = v["result"] == "success"
                 try:
                     player.revive_set.get_or_create(tId=int(k), defaults=v)
                 except BaseException:
