@@ -2257,21 +2257,19 @@ def revivesReport(request, reportId, share=False):
                     return returnError(type=403, msg="You need AA rights.")
 
                 type = request.POST["type"]
-                online = not report.filter >= 10 if type == "online" else report.filter >= 10
-                hospit = not bool(report.filter % 10) if type == "hospit" else bool(report.filter % 10)
+                if type in ["online", "hospit"]:
+                    online = not report.filter >= 10 if type == "online" else report.filter >= 10
+                    hospit = not bool(report.filter % 10) if type == "hospit" else bool(report.filter % 10)
 
-                filter = 1 if hospit else 0
-                report.filter = filter + 10 if online else filter
-                report.save()
+                    filter = 1 if hospit else 0
+                    report.filter = filter + 10 if online else filter
+                    report.save()
 
-                # report.fillReport()
+                elif type in ["failed"]:
 
-            if 'update' in request.POST:
-
-                if not player.factionAA:
-                    return returnError(type=403, msg="You need AA rights.")
-
-                report.fillReport()
+                    report.include_failed = not report.include_failed
+                    report.save()
+                    report.fillReport()
 
             e = report.getFilterExt()
 

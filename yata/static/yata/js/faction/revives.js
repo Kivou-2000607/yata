@@ -70,17 +70,6 @@ $(document).on('click', '.faction-revives-report-toggle', e=>{
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');
 });
 
-// show hide
-$(document).on('click', '#faction-revives-report-update', e=>{
-    e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
-    $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, update: true,
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
-});
-
 // filters
 $(document).on('click', 'span[id^="faction-revives-report-"]', e=>{
     e.preventDefault();

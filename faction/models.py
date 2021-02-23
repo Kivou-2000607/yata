@@ -2713,7 +2713,10 @@ class RevivesReport(models.Model):
     player_filter = models.IntegerField(default=0)
     filter = models.IntegerField(default=0)  # 0: no filters, 10: online, 01: hosp, 11: both
     revivesMade = models.IntegerField(default=0)
+    revivesMadeSuccess = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
+    revivesReceivedSuccess = models.IntegerField(default=0)
+    include_failed = models.BooleanField(default=False)
 
     # share ID
     shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
@@ -2906,6 +2909,8 @@ class RevivesReport(models.Model):
             v["target_last_action_status"] = v["target_last_action"].get("status", "Unkown")
             v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
             del v["target_last_action"]
+            # convert restul to bool
+            v["result"] = v["result"] == "success"
 
             batch.update_or_create(tId=int(k), report_id=int(self.id), defaults=v)
             #bulk_mgr.add(Revive(report=self, tId=int(k), **v))
@@ -2959,8 +2964,16 @@ class RevivesReport(models.Model):
         print("{} fill report".format(self))
         allRevives = self.revive_set.all()
 
-        self.revivesMade = len(allRevives.filter(reviver_faction=self.faction.tId))
-        self.revivesReceived = len(allRevives.exclude(reviver_faction=self.faction.tId))
+        tmp = allRevives.filter(reviver_faction=self.faction.tId)
+        self.revivesMade = len(tmp)
+        self.revivesMadeSuccess = 100 * len(tmp.filter(result=True)) / float(max(self.revivesMade, 1))
+
+        tmp = allRevives.exclude(reviver_faction=self.faction.tId)
+        self.revivesReceived = len(tmp)
+        self.revivesReceivedSuccess = 100 * len(tmp.filter(result=True)) / float(max(self.revivesReceived, 1))
+
+        if not self.include_failed:
+            allRevives = allRevives.exclude(result=False)
 
         print("{} revives {} {}".format(self, self.revivesMade, self.revivesReceived))
         print("{} set players and factions counts".format(self))
@@ -3159,6 +3172,8 @@ class Revive(models.Model):
     target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
     target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
+    chance = models.IntegerField(default=100)
+    result = models.BooleanField(default=True)
 
     objects = BulkManager()
 

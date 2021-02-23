@@ -43,7 +43,13 @@ This file is part of yata.
 
 {# </script> #}
 
-<h2 class="title"><i class="fas fa-notes-medical fa-icon-inline"></i>{{faction.name}}'s revives report [{{report.pk}}]{% if not share %}{%include "faction/revives/filter-buttons.html"%}<span id="faction-revives-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Compute report</a></span>{% endif %}</h2>
+<h2 class="title"><i class="fas fa-notes-medical fa-icon-inline"></i>{{faction.name}}'s revives report [{{report.pk}}]
+    {% if not share %}
+      {%include "faction/revives/filter-buttons.html"%}
+      <span id="faction-revives-report-failed" data-val="{{report.pk}}" class="flush-right">
+      </span>
+    {% endif %}
+</h2>
 <div class="module">
     <table class="tablesorter center trshadow contract-summary">
         <thead>
@@ -63,8 +69,8 @@ This file is part of yata.
                 <td><b>Report status:</b> {% include "faction/revives/status.html"%}</td>
             </tr>
             <tr>
-                <td><b>Made: </b> {{report.revivesMade|intcomma}}</td>
-                <td><b>Received: </b> {{report.revivesReceived|intcomma}}</td>
+                <td><b>Made: </b> {{report.revivesMade|intcomma}} ({{report.revivesMadeSuccess|floatformat:0}}%)</td>
+                <td><b>Received: </b> {{report.revivesReceived|intcomma}} ({{report.revivesReceivedSuccess|floatformat:0}}%)</td>
                 <td><b>Total: </b> {{report.revivesReceived|add:report.revivesMade|intcomma}}</td>
             </tr>
         </tbody>

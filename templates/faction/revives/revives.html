@@ -32,21 +32,29 @@ This file is part of yata.
             <th>Faction</th>
             <th>{% include "faction/revives/revives-header-filter.html" with type="targets" %}</th>
             <th>Faction</th>
+            <th>Chance</th>
             <th title="Hospital reason">Hospital</th>
             <th title="Online status"><i class="fas fa-circle"></i></th>
+            <th title="Success"><i class="fas fa-check valid"></i></th>
     </thead>
     <tbody>
     {% if revives|length %}
     {% for v in revives %}
-        <tr>
+        <tr class="{% if v.result %}success{% else %}fail{% endif%}">
             {# <td class="a">{{v}}</td> #}
             <td class="a">{{v.timestamp|ts2date}}</td>
             <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.reviver_id %}</td>
             <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
             <td class="b">{{v.target_name|playerURL:v.target_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.target_id %}</td>
             <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
-            <td class="c">{{v.target_hospital_reason|cleanhtml}}</td>
-            <td class="d" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
+            <td class="c">{{v.chance}}%</td>
+            <td class="d">{{v.target_hospital_reason|cleanhtml}}</td>
+            <td class="e" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
+            {% if v.result %}
+              <td class="f" title="{{v.result}}" data-val='1'><i class="fas fa-check valid"></i></td>
+            {% else %}
+              <td class="f" title="{{v.result}}" data-val='0'><i class="fas fa-times error"></i></td>
+            {% endif %}
         </tr>
     {% endfor %}
 
