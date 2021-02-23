@@ -38,6 +38,13 @@ This file is part of yata.
         <i class="fas fa-times error"></i>
     {% endif %}
 </td>
+<td class="e">
+    {% if revive_server.freevive %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
 <td class="d">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
         {% if revive_server.server_id in config.sending %}
