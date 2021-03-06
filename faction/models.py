@@ -2961,22 +2961,24 @@ class RevivesReport(models.Model):
         return 3
 
     def fillReport(self):
-        print("{} fill report".format(self))
+        print(f"[YATA {datestr()}] {self} fill report")
         allRevives = self.revive_set.all()
 
         tmp = allRevives.filter(reviver_faction=self.faction.tId)
-        self.revivesMade = len(tmp)
-        self.revivesMadeSuccess = 100 * len(tmp.filter(result=True)) / float(max(self.revivesMade, 1))
+        self.revivesMade = tmp.count()
+        self.revivesMadeSuccess = tmp.filter(result=True).count()
 
         tmp = allRevives.exclude(reviver_faction=self.faction.tId)
-        self.revivesReceived = len(tmp)
-        self.revivesReceivedSuccess = 100 * len(tmp.filter(result=True)) / float(max(self.revivesReceived, 1))
+        self.revivesReceived = tmp.count()
+        self.revivesReceivedSuccess = tmp.filter(result=True).count()
 
+        print(f'[YATA {datestr()}] {self} include failed: {self.include_failed}')
         if not self.include_failed:
             allRevives = allRevives.exclude(result=False)
 
-        print("{} revives {} {}".format(self, self.revivesMade, self.revivesReceived))
-        print("{} set players and factions counts".format(self))
+        print(f"[YATA {datestr()}] {self} made {self.revivesMadeSuccess}/{self.revivesMade}")
+        print(f"[YATA {datestr()}] {self} received {self.revivesReceivedSuccess}/{self.revivesReceived}")
+        print(f"[YATA {datestr()}] {self} set players and factions counts")
         # create factions and players
         f_set = dict({})
         p_set = dict({})
@@ -3042,26 +3044,26 @@ class RevivesReport(models.Model):
                                        "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
                                        "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
-        print("{} update factions".format(self))
+        print(f"[YATA {datestr()}] {self} update factions")
         for k, v in f_set.items():
             try:
                 f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
             except MultipleObjectsReturned:
-                print("{} ERROR with {} {}".format(self, k, v))
+                print(f"{self} ERROR with {k} {v}")
                 self.revivesfaction_set.filter(faction_id=k).delete()
                 f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
 
-        print("{} update players".format(self))
+        print(f"[YATA {datestr()}] {self} update players")
         for k, v in p_set.items():
             try:
                 p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
             except MultipleObjectsReturned:
-                print("{} ERROR with {} {}".format(self, k, v))
+                print(f"{self} ERROR with {k} {v}")
                 self.revivesplayer_set.filter(player_id=k).delete()
                 p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
 
         # set show/hide
-        print("{} show hide".format(self))
+        print(f"[YATA {datestr()}] {self} show hide")
         self.revivesfaction_set.all().update(show=False)
         self.revivesplayer_set.all().update(show=False)
         for f in json.loads(self.factions):

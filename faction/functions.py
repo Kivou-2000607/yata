@@ -32,7 +32,7 @@ import random
 
 # global bonus hits
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
-API_CODE_DELETE = [2, 7]
+API_CODE_DELETE = [2, 7, 13]
 OC_EFFICIENCY = {1: {"money": 5000, "respect": 1.0}, 2: {"money": 8750, "respect": 1.25}, 3: {"money": 16667, "respect": 1.11}, 4: {"money": 30000, "respect": 1.2}, 5: {"money": 141667, "respect": 1.17}, 6: {"money": 305556, "respect": 0.89}, 7: {"money": 892857, "respect": 1.79}, 8: {"money": 9375000, "respect": 9.38}}
 
 

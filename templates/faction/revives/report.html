@@ -69,9 +69,9 @@ This file is part of yata.
                 <td><b>Report status:</b> {% include "faction/revives/status.html"%}</td>
             </tr>
             <tr>
-                <td><b>Made: </b> {{report.revivesMade|intcomma}} ({{report.revivesMadeSuccess|floatformat:0}}%)</td>
-                <td><b>Received: </b> {{report.revivesReceived|intcomma}} ({{report.revivesReceivedSuccess|floatformat:0}}%)</td>
-                <td><b>Total: </b> {{report.revivesReceived|add:report.revivesMade|intcomma}}</td>
+                <td><b>Made: </b> {{report.revivesMadeSuccess|intcomma}} / {{report.revivesMade|intcomma}}</td>
+                <td><b>Received: </b> {{report.revivesReceivedSuccess|intcomma}} / {{report.revivesReceived|intcomma}}</td>
+                <td><b>Total: </b> {{report.revivesReceivedSuccess|add:report.revivesMadeSuccess|intcomma}} / {{report.revivesReceived|add:report.revivesMade|intcomma}}</td>
             </tr>
         </tbody>
     </table>

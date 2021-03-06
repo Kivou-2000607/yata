@@ -2266,7 +2266,6 @@ def revivesReport(request, reportId, share=False):
                     report.save()
 
                 elif type in ["failed"]:
-
                     report.include_failed = not report.include_failed
                     report.save()
                     report.fillReport()
@@ -2332,6 +2331,9 @@ def revivesReport(request, reportId, share=False):
                 revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
             else:
                 revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+
+            if not report.include_failed:
+                revivesFilter = revivesFilter & Q(result=True)
 
             # revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
             revives_set = report.revive_set.filter(revivesFilter).order_by("-timestamp")
@@ -2437,6 +2439,10 @@ def revivesList(request, reportId):
                 revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
             else:
                 revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+
+            if not report.include_failed:
+                revivesFilter = revivesFilter & Q(result=True)
+
             revives_set = report.revive_set.filter(revivesFilter).order_by("-timestamp")
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
