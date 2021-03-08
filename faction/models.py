@@ -2875,7 +2875,7 @@ class RevivesReport(models.Model):
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
             if not n:
-                print(f'{self}\t escape loop because no new attacks')
+                print(f'{self}\t escape loop because no new revives')
                 break
 
         # in case empty payload
@@ -3045,30 +3045,25 @@ class RevivesReport(models.Model):
                                        "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
 
         print(f"[YATA {datestr()}] {self} update factions")
+        batch = RevivesFaction.objects.bulk_operation()
         for k, v in f_set.items():
-            try:
-                f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
-            except MultipleObjectsReturned:
-                print(f"{self} ERROR with {k} {v}")
-                self.revivesfaction_set.filter(faction_id=k).delete()
-                f, s = self.revivesfaction_set.update_or_create(faction_id=k, defaults=v)
+            batch.update_or_create(report_id=self.id, faction_id=k, defaults=v)
+        if batch.count():
+            batch.run()
 
         print(f"[YATA {datestr()}] {self} update players")
+        batch = RevivesPlayer.objects.bulk_operation()
         for k, v in p_set.items():
-            try:
-                p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
-            except MultipleObjectsReturned:
-                print(f"{self} ERROR with {k} {v}")
-                self.revivesplayer_set.filter(player_id=k).delete()
-                p, s = self.revivesplayer_set.update_or_create(player_id=k, defaults=v)
+            batch.update_or_create(report_id=self.id, player_id=k, defaults=v)
+        if batch.count():
+            batch.run()
 
         # set show/hide
         print(f"[YATA {datestr()}] {self} show hide")
         self.revivesfaction_set.all().update(show=False)
         self.revivesplayer_set.all().update(show=False)
-        for f in json.loads(self.factions):
-            self.revivesfaction_set.filter(faction_id=int(f)).update(show=True)
-            self.revivesplayer_set.filter(player_faction_id=int(f)).update(show=True)
+        self.revivesfaction_set.filter(faction_id__in=json.loads(self.factions)).update(show=True)
+        self.revivesplayer_set.filter(player_faction_id__in=json.loads(self.factions)).update(show=True)
 
         self.save()
 
@@ -3090,6 +3085,9 @@ class RevivesFaction(models.Model):
     revivesReceivedB = models.IntegerField(default=0)
 
     show = models.BooleanField(default=False)
+
+    # bulk manager
+    objects = BulkManager()
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.faction_name, self.faction_id, self.revivesMade, self.revivesReceived)
@@ -3134,6 +3132,9 @@ class RevivesPlayer(models.Model):
     revivesReceivedB = models.IntegerField(default=0)
 
     show = models.BooleanField(default=False)
+
+    # bulk manager
+    objects = BulkManager()
 
     def __str__(self):
         return "{} [{}]: {} {}".format(self.player_name, self.player_id, self.revivesMade, self.revivesReceived)
