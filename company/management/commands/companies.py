@@ -32,4 +32,6 @@ class Command(BaseCommand):
         print(f'[CRON {logdate()}] start companies: rebuild past = {rebuild_past}')
         for company in Company.objects.all():
             company.update_info(rebuildPast=rebuild_past)
+        print(f'[CRON {logdate()}] clean spurious data')
+        CompanyData.objects.filter(id_ts=0).delete()
         print(f'[CRON {logdate()}] end')

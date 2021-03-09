@@ -162,6 +162,9 @@ def supervise(request):
             company.employees_suggestion = [[list(employees)[i].name, list(employees)[i].tId, positions[j].name, ws_eff_matrix[i, j], list(employees)[i].effectiveness_working_stats] for i, j in zip(row_ind, col_ind)]
         except BaseException as e:
             print(e)
+            company.effectiveness_ws_max = 0
+            company.effectiveness_ws_err = 0
+            company.employees_suggestion = []
             pass
 
         # send employees if simu
