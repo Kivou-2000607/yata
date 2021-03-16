@@ -1035,8 +1035,8 @@ def combined(request):
                 total['respect'] += float(chain.respect)
                 # loop over counts
                 chainCounts = chain.count_set.all()
-                chainBonuses = chain.bonus_set.all()
-                for bonus in chainBonuses:
+                chain_bonuses = chain.bonus_set.all()
+                for bonus in chain_bonuses:
                     if bonus.tId in bonuses:
                         bonuses[bonus.tId][1].append(bonus.hit)
                         bonuses[bonus.tId][2] += bonus.respect
@@ -1050,11 +1050,11 @@ def combined(request):
                         counts[count.attackerId]['wins'] += count.wins
                         counts[count.attackerId]['bonus'] += count.bonus
                         counts[count.attackerId]['respect'] += count.respect
-                        counts[count.attackerId]['fairFight'] += count.fairFight
+                        counts[count.attackerId]['fair_fight'] += count.fair_fight
                         counts[count.attackerId]['war'] += count.war
                         counts[count.attackerId]['warhits'] += count.warhits
                         counts[count.attackerId]['retaliation'] += count.retaliation
-                        counts[count.attackerId]['groupAttack'] += count.groupAttack
+                        counts[count.attackerId]['group_attack'] += count.group_attack
                         counts[count.attackerId]['overseas'] += count.overseas
                         counts[count.attackerId]['watcher'] += count.watcher / float(len(chains))
                         counts[count.attackerId]['beenThere'] = count.beenThere or counts[count.attackerId]['beenThere']  # been present to at least one chain
@@ -1071,11 +1071,11 @@ def combined(request):
                                                     'wins': count.wins,
                                                     'bonus': count.bonus,
                                                     'respect': count.respect,
-                                                    'fairFight': count.fairFight,
+                                                    'fair_fight': count.fair_fight,
                                                     'war': count.war,
                                                     'warhits': count.warhits,
                                                     'retaliation': count.retaliation,
-                                                    'groupAttack': count.groupAttack,
+                                                    'group_attack': count.group_attack,
                                                     'overseas': count.overseas,
                                                     'watcher': count.watcher / float(len(chains)),
                                                     'daysInFaction': dif,
@@ -1227,7 +1227,7 @@ def reportExport(request, chainId, type):
                 csv_data = [['Attacker ID', 'Name', 'Hits', 'Bonus', 'Wins', 'Respect', 'Fair Fight', 'War', 'Retaliation', 'Group Attack', 'Overseas', 'Days In Faction', 'Watcher', 'War Hits']]
 
                 for c in chain.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect')):
-                    csv_data.append([c.attackerId, c.name, c.hits, c.bonus, c.wins, c.respect, c.fairFight, c.war, c.retaliation, c.groupAttack, c.overseas, c.daysInFaction, c.watcher, c.warhits])
+                    csv_data.append([c.attackerId, c.name, c.hits, c.bonus, c.wins, c.respect, c.fair_fight, c.war, c.retaliation, c.group_attack, c.overseas, c.daysInFaction, c.watcher, c.warhits])
 
                 t = loader.get_template('faction/chains/csv-counts.txt')
                 c = {'data': csv_data}
@@ -2046,7 +2046,7 @@ def attacksExport(request, reportId, type):
                 keys = ["tId", "timestamp_started",
                         "attacker_faction", "attacker_factionname", "attacker_id", "attacker_name",
                         "defender_faction", "defender_factionname", "defender_id", "defender_name",
-                        "result", "respect_gain", "chain", "fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus", "code"
+                        "result", "respect_gain", "chain", "fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "code"
                         ]
 
                 csv_data = [keys]

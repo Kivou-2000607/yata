@@ -189,7 +189,6 @@ def supervise(request):
         company_stock = company.companystock_set.all().order_by("-timestamp")
         company_stock_p = Paginator(company_stock, 25)
         if request.GET.get('page_s') is not None:
-            print(request.GET.get('page_s'))
             return render(request, "company/supervise/stock.html", {"company_stock_p": company_stock_p.get_page(request.GET.get('page_s'))})
 
         # create employee graph

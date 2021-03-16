@@ -251,12 +251,12 @@ $(document).ready(function() {
                 {% endif %}
 
                 {% if c.wins %}
-                    <!-- <td class="c">{{c.fairFight|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.fair_fight|div:c.wins|floatformat:2}}</td> -->
                     <!-- <td class="c">{{c.war|div:c.wins|floatformat:2}}</td> -->
                     <!-- <td class="c">{{c.retaliation|div:c.wins|floatformat:2}}</td> -->
-                    <!-- <td class="c">{{c.groupAttack|div:c.wins|floatformat:2}}</td> -->
+                    <!-- <td class="c">{{c.group_attack|div:c.wins|floatformat:2}}</td> -->
                     <!-- <td class="c">{{c.overseas|div:c.wins|floatformat:2}}</td> -->
-                    <td class="c">{{c.fairFight|div:c.wins|mul:c.war|div:c.wins|mul:c.retaliation|div:c.wins|mul:c.groupAttack|div:c.wins|mul:c.overseas|div:c.wins|floatformat:2}}</td>
+                    <td class="c">{{c.fair_fight|div:c.wins|mul:c.war|div:c.wins|mul:c.retaliation|div:c.wins|mul:c.group_attack|div:c.wins|mul:c.overseas|div:c.wins|floatformat:2}}</td>
                 {% else %}
                     <!-- <td class="c">0.00</td>
                     <td class="c">0.00</td>
@@ -264,7 +264,7 @@ $(document).ready(function() {
                     <td class="c">0.00</td> -->
                     <td class="c">0.00</td>
                 {% endif %}
-                <!-- <td class="c">{{c.fairFight|floatformat:2}}</td> -->
+                <!-- <td class="c">{{c.fair_fight|floatformat:2}}</td> -->
                 {% if c.wins %}
                     <td class="c">{{c.respect|div:c.wins|floatformat:2}}</td>
                 {% else %}

@@ -255,9 +255,9 @@ def targetsList(request):
                             defaults = {
                                 "update_timestamp": int(v["update_timestamp"]),
                                 "last_attack_timestamp": int(v["last_attack_timestamp"]),
-                                "fairFight": float(v["fairFight"]),
-                                "baseRespect": float(v["baseRespect"]),
-                                "flatRespect": float(v["flatRespect"]),
+                                "fair_fight": float(v["fair_fight"]),
+                                "base_respect": float(v["base_respect"]),
+                                "flat_respect": float(v["flat_respect"]),
                                 "result": str(v["result"])[:16],
                                 "color": int(v["color"]),
                                 "note": str(v["note"])[:128]}
@@ -557,7 +557,7 @@ def dogtags(request):
             elif request.POST.get("type") == "clean":  # check target status attack
                 uid = request.POST.get("uid")
                 target = DogTags.objects.filter(target_id=uid).first()
-                
+
                 if target is None:
                     return render(request, "dummy.html")
 
@@ -572,7 +572,7 @@ def dogtags(request):
                     target.delete()
                     context = {"error": f'Target deleted: {target_api["status"]["state"]}'}
                     return render(request, "target/dogtags/line.html", context)
-                
+
                 # delete target outside hit
                 deflost = target_api.get("personalstats", {}).get("defendslost", 0)
                 delta = deflost - target.defendslost - target.failedattack
@@ -589,7 +589,7 @@ def dogtags(request):
                 if target is None:
                     context = {"error": f'Target ID {uid} not found'}
                 else:
-    
+
                     # API call
                     target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
                     if "apiError" in target_api:

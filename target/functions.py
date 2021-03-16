@@ -51,7 +51,7 @@ def updateAttacks(player, full=False):
             v["defender_name"] = "Player"
             v["defender_factionname"] = "Faction"
             v["chain"] = 0
-            v["modifiers"] = {"fairFight": 1, "war": 1, "retaliation": 1, "groupAttack": 1, "overseas": 1, "chainBonus": 1}
+            v["modifiers"] = {"fair_fight": 1, "war": 1, "retaliation": 1, "group_attack": 1, "overseas": 1, "chain_bonus": 1}
 
         # ignore stealth incoming
         if v.get("stealthed") and v["defender_id"] == player.tId:
@@ -66,21 +66,24 @@ def updateAttacks(player, full=False):
 
         if v["chain"] in BONUS_HITS:
             # case attacker and bonus hit
-            v["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
+            v["flat_respect"] = float(v["respect_gain"]) / float(v['modifiers']['chain_bonus'])
             v["bonus"] = v["chain"]
 
         else:
             allModifiers = 1.0
-            for mod, val in v['modifiers'].items():
-                allModifiers *= float(val)
+            for mod in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus"]:
+                allModifiers *= float(v['modifiers'].get(mod, 1))
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
-            baseRespect = float(v["respect_gain"]) / allModifiers
-            level = 1 if full else int(math.exp(4. * baseRespect - 1))
-            v["baseRespect"] = baseRespect
-            v["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
+            base_respect = float(v["respect_gain"]) / allModifiers
+            level = 1 if full else int(math.exp(4. * base_respect - 1))
+            v["base_respect"] = base_respect
+            v["flat_respect"] = float(v['modifiers']["fair_fight"]) * base_respect
             v["bonus"] = 0
             v["level"] = level
+
+        if v["defender_name"] == "Gareth-Bale":
+            print(f'{allModifiers}')
 
         v = modifiers2lvl1(v)
         try:

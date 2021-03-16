@@ -1834,12 +1834,12 @@ class Chain(models.Model):
         for m in members:
             # 0: attacks
             # 1: wins
-            # 2: fairFight
+            # 2: fair_fight
             # 3: war
             # 4: retaliation
-            # 5: groupAttack
+            # 5: group_attack
             # 6: overseas
-            # 7: chainBonus
+            # 7: chain_bonus
             # 8: respect_gain
             # 9: daysInFaction
             # 10: tId
@@ -1912,13 +1912,13 @@ class Chain(models.Model):
                         bonus.append((att.chain, attackerID, attackerName, att.respect_gain, r, att.defender_id, att.defender_name))
                     else:
                         attackers[attackerID][1] += 1
-                        attackers[attackerID][2] += float(att.fairFight)
+                        attackers[attackerID][2] += float(att.fair_fight)
                         attackers[attackerID][3] += float(att.war)
                         attackers[attackerID][4] += float(att.retaliation)
-                        attackers[attackerID][5] += float(att.groupAttack)
+                        attackers[attackerID][5] += float(att.group_attack)
                         attackers[attackerID][6] += float(att.overseas)
-                        attackers[attackerID][7] += float(att.chainBonus)
-                        attackers[attackerID][8] += float(att.respect_gain) / float(att.chainBonus)
+                        attackers[attackerID][7] += float(att.chain_bonus)
+                        attackers[attackerID][8] += float(att.respect_gain) / float(att.chain_bonus)
                         if float(att.war) > 1.0:
                             attackers[attackerID][13] += 1
 
@@ -2001,12 +2001,12 @@ class Chain(models.Model):
                 watcher = 0
             # 0: attacks
             # 1: wins
-            # 2: fairFight
+            # 2: fair_fight
             # 3: war
             # 4: retaliation
-            # 5: groupAttack
+            # 5: group_attack
             # 6: overseas
-            # 7: chainBonus
+            # 7: chain_bonus
             # 8:respect_gain
             # 9: daysInFaction
             # 10: tId
@@ -2018,10 +2018,10 @@ class Chain(models.Model):
             #                       hits=v[0],
             #                       wins=v[1],
             #                       bonus=v[12],
-            #                       fairFight=v[2],
+            #                       fair_fight=v[2],
             #                       war=v[3],
             #                       retaliation=v[4],
-            #                       groupAttack=v[5],
+            #                       group_attack=v[5],
             #                       overseas=v[6],
             #                       respect=v[8],
             #                       daysInFaction=v[9],
@@ -2035,10 +2035,10 @@ class Chain(models.Model):
                                hits=v[0],
                                wins=v[1],
                                bonus=v[12],
-                               fairFight=v[2],
+                               fair_fight=v[2],
                                war=v[3],
                                retaliation=v[4],
-                               groupAttack=v[5],
+                               group_attack=v[5],
                                overseas=v[6],
                                respect=v[8],
                                daysInFaction=v[9],
@@ -2089,10 +2089,10 @@ class Count(models.Model):
     bonus = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
-    fairFight = models.FloatField(default=0)
+    fair_fight = models.FloatField(default=0)
     war = models.FloatField(default=0)
     retaliation = models.FloatField(default=0)
-    groupAttack = models.FloatField(default=0)
+    group_attack = models.FloatField(default=0)
     overseas = models.FloatField(default=0)
     daysInFaction = models.IntegerField(default=0)
     beenThere = models.BooleanField(default=False)
@@ -2147,12 +2147,12 @@ class AttackChain(models.Model):
     code = models.SlugField(default="0", max_length=32)
 
     # mofifiers
-    fairFight = models.FloatField(default=0.0)
+    fair_fight = models.FloatField(default=0.0)
     war = models.IntegerField(default=0)
     retaliation = models.FloatField(default=0.0)
-    groupAttack = models.FloatField(default=0.0)
+    group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
-    chainBonus = models.FloatField(default=0.0)
+    chain_bonus = models.FloatField(default=0.0)
 
     def __str__(self):
         return format_html("Attack for chain [{}]".format(self.tId))
@@ -2683,12 +2683,12 @@ class AttackReport(models.Model):
     code = models.SlugField(default="0", max_length=32)
 
     # mofifiers
-    fairFight = models.FloatField(default=0.0)
+    fair_fight = models.FloatField(default=0.0)
     war = models.IntegerField(default=0)
     retaliation = models.FloatField(default=0.0)
-    groupAttack = models.FloatField(default=0.0)
+    group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
-    chainBonus = models.FloatField(default=0.0)
+    chain_bonus = models.FloatField(default=0.0)
 
     def __str__(self):
         return "{} -> {}".format(self.attacker_factionname, self.defender_factionname)

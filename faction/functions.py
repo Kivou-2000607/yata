@@ -141,7 +141,7 @@ def getCrontabs():
 
 
 def modifiers2lvl1(v):
-    for tmpKey in ["fairFight", "war", "retaliation", "groupAttack", "overseas", "chainBonus"]:
+    for tmpKey in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus"]:
         v[tmpKey] = float(v["modifiers"][tmpKey])
     del v["modifiers"]
     if v["stealthed"] and v["attacker_id"] == "":

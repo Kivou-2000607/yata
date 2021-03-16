@@ -53,19 +53,19 @@ class Attack(models.Model):
     code = models.SlugField(default="0", max_length=32)
 
     # mofifiers
-    fairFight = models.FloatField(default=0.0)
+    fair_fight = models.FloatField(default=0.0)
     war = models.FloatField(default=1.0)
     retaliation = models.FloatField(default=1.0)
-    groupAttack = models.FloatField(default=1.0)
+    group_attack = models.FloatField(default=1.0)
     overseas = models.FloatField(default=1.0)
-    chainBonus = models.FloatField(default=1.0)
+    chain_bonus = models.FloatField(default=1.0)
 
     # perso fields
     attacker = models.BooleanField(default=False)
     targetId = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)
-    baseRespect = models.FloatField(default=0.0)
-    flatRespect = models.FloatField(default=0.0)
+    base_respect = models.FloatField(default=0.0)
+    flat_respect = models.FloatField(default=0.0)
     level = models.FloatField(default=0.0)
 
     paid = models.BooleanField(default=False)
@@ -186,9 +186,9 @@ class TargetInfo(models.Model):
     update_timestamp = models.IntegerField(default=0)
     last_attack_timestamp = models.IntegerField(default=0)
     last_attack_attacker = models.BooleanField(default=True)
-    fairFight = models.FloatField(default=1.0)
-    baseRespect = models.FloatField(default=0)
-    flatRespect = models.FloatField(default=0)
+    fair_fight = models.FloatField(default=1.0)
+    base_respect = models.FloatField(default=0)
+    flat_respect = models.FloatField(default=0)
     result = models.CharField(default="", max_length=16, null=True, blank=True)
     note = models.CharField(default="", max_length=128, null=True, blank=True)
     color = models.IntegerField(default=0)
@@ -221,18 +221,18 @@ class TargetInfo(models.Model):
             if last_attack is not None:
                 isWar = last_attack.war - 1.0 > 0.001
                 attacker = last_attack.attacker_id == self.player.tId
-                respect = last_attack.flatRespect > 0.001
+                respect = last_attack.flat_respect > 0.001
                 if not isWar and attacker and respect:
                     # if not war, not problem we know FF
-                    self.fairFight = last_attack.fairFight
-                    self.flatRespect = last_attack.flatRespect
-                    self.baseRespect = last_attack.baseRespect
+                    self.fair_fight = last_attack.fair_fight
+                    self.flat_respect = last_attack.flat_respect
+                    self.base_respect = last_attack.base_respect
 
                 elif not respect:
                     # we update flat respect to be base respect if unknown
-                    self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
-                    self.fairFight = max(last_attack.fairFight, self.fairFight)
-                    self.flatRespect = self.baseRespect * self.fairFight
+                    self.base_respect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
+                    self.fair_fight = max(last_attack.fair_fight, self.fair_fight)
+                    self.flat_respect = self.base_respect * self.fair_fight
 
                 self.last_attack_timestamp = last_attack.timestamp_ended
                 self.result = last_attack.result
@@ -240,10 +240,10 @@ class TargetInfo(models.Model):
                 self.update_timestamp = target.update_timestamp
                 self.save()
 
-            if self.flatRespect < 0.001:
+            if self.flat_respect < 0.001:
                 # we update flat respect to be base respect if unknown
-                self.baseRespect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
-                self.flatRespect = self.baseRespect * self.fairFight
+                self.base_respect = 0.25 * (math.log(float(target.level)) + 1.0) if target.level else 0.0
+                self.flat_respect = self.base_respect * self.fair_fight
                 self.update_timestamp = target.update_timestamp
                 self.save()
 
@@ -269,9 +269,9 @@ class TargetInfo(models.Model):
             "note": self.note,
             "color": self.color,
             "result": self.result,
-            "fairFight": self.fairFight,
-            "flatRespect": self.flatRespect,
-            "baseRespect": self.baseRespect,
+            "fair_fight": self.fair_fight,
+            "flat_respect": self.flat_respect,
+            "base_respect": self.base_respect,
 
             # additional fields for rendering
             "win": 0 if self.result in ATTACK_LOST else 1,

@@ -41,9 +41,9 @@ This file is part of yata.
     <td class="c">{{target.level}}</td>
     <td class="g" title="{{target.last_action_status}}" data-val='{% if target.last_action_status == "Offline" %}-1{% elif target.last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{target.last_action_status}}"></i></td>
     <td class="f" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
-    <td class="c">{{target.fairFight|floatformat:2}}</td>
-    <td class="c"><b title="{{target.fairFight|floatformat:2}} x {{target.baseRespect|floatformat:2}}">{{target.flatRespect|floatformat:2}}</b></td>
-    {# <td class="c">{{target.flat_respect|mul:target.fairFight|floatformat:2}}</td> #}
+    <td class="c">{{target.fair_fight|floatformat:2}}</td>
+    <td class="c"><b title="{{target.fair_fight|floatformat:2}} x {{target.base_respect|floatformat:2}}">{{target.flat_respect|floatformat:2}}</b></td>
+    {# <td class="c">{{target.flat_respect|mul:target.fair_fight|floatformat:2}}</td> #}
     <td class="d" data-val="{{target.life_current}}">
         <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
             <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
