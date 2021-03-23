@@ -6,6 +6,7 @@ from player.models import Player
 from faction.models import Faction
 from target.functions import updateAttacks
 from yata.handy import *
+from yata.BulkManager2 import BulkManager
 
 ATTACK_LOST = ["Lost", "Assist", "Timeout", "Escape"]
 
@@ -48,9 +49,12 @@ class Attack(models.Model):
     defender_factionname = models.CharField(default="defender_factionname", max_length=64, null=True, blank=True)
     result = models.CharField(default="result", max_length=64)
     stealthed = models.IntegerField(default=0)
-    respect_gain = models.FloatField(default=0.0)
+    respect = models.FloatField(default=0.0)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
+    raid = models.BooleanField(default=False)
+    respect_gain = models.FloatField(default=0.0)
+    respect_loss = models.FloatField(default=0.0)
 
     # mofifiers
     fair_fight = models.FloatField(default=0.0)
@@ -69,6 +73,8 @@ class Attack(models.Model):
     level = models.FloatField(default=0.0)
 
     paid = models.BooleanField(default=False)
+
+    objects = BulkManager()
 
     def __str__(self):
         return "Attack [{}]: {} [{}] -> {} [{}]".format(self.timestamp_started, self.attacker_name, self.attacker_id, self.defender_name, self.defender_id)

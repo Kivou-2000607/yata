@@ -1698,7 +1698,7 @@ class Chain(models.Model):
         print("{} {} attacks from the API".format(self, len(apiAttacks)))
 
         newEntry = 0
-        bulk_mgr = BulkCreateManager(chunk_size=20)
+        batch = AttackChain.objects.bulk_operation()
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
             tsl = max(tsl, ts)
@@ -1717,7 +1717,7 @@ class Chain(models.Model):
             if newAttack and factionAttack:
                 v = modifiers2lvl1(v)
                 # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
-                bulk_mgr.add(AttackChain(report=self, tId=int(k), **v))
+                batch.update_or_create(report_id=int(self.id), tId=int(k), defaults=v)
                 newEntry += 1
                 # tsl = max(tsl, ts)
                 if int(v["timestamp_ended"]) - self.end - self.addToEnd <= 0:  # case we're before cooldown
@@ -1727,7 +1727,8 @@ class Chain(models.Model):
 
                 # print("{} attack [{}] current {}".format(self, k, current))
 
-        bulk_mgr.done()
+        if batch.count():
+            batch.run()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -2142,9 +2143,13 @@ class AttackChain(models.Model):
     defender_factionname = models.CharField(default="defender_factionname", max_length=64, null=True, blank=True)
     result = models.CharField(default="result", max_length=64)
     stealthed = models.IntegerField(default=0)
+    respect = models.FloatField(default=0.0)
     respect_gain = models.FloatField(default=0.0)
+    respect_lost = models.FloatField(default=0.0)
+    raid = models.BooleanField(default=False)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
+
 
     # mofifiers
     fair_fight = models.FloatField(default=0.0)
@@ -2153,6 +2158,8 @@ class AttackChain(models.Model):
     group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chain_bonus = models.FloatField(default=0.0)
+
+    objects = BulkManager()
 
     def __str__(self):
         return format_html("Attack for chain [{}]".format(self.tId))
@@ -2394,7 +2401,7 @@ class AttacksReport(models.Model):
 
         # add attacks
         newEntry = 0
-        bulk_mgr = BulkCreateManager(chunk_size=20)
+        batch = AttackReport.objects.bulk_operation()
         for k, v in apiAttacks.items():
             ts = int(v["timestamp_ended"])
 
@@ -2409,8 +2416,7 @@ class AttacksReport(models.Model):
             # chainAttack = int(v["chain"])
             if newAttack:
                 v = modifiers2lvl1(v)
-                # self.attackreport_set.create(tId=int(k), **v)
-                bulk_mgr.add(AttackReport(report=self, tId=int(k), **v))
+                batch.update_or_create(report_id=int(self.id), tId=int(k), defaults=v)
                 newEntry += 1
                 tsl = max(tsl, ts)
 
@@ -2419,7 +2425,8 @@ class AttacksReport(models.Model):
                 else:
                     self.defends += 1
 
-        bulk_mgr.done()
+        if batch.count():
+            batch.run()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
@@ -2678,7 +2685,10 @@ class AttackReport(models.Model):
     defender_factionname = models.CharField(default="defender_factionname", max_length=64, null=True, blank=True)
     result = models.CharField(default="result", max_length=64)
     stealthed = models.IntegerField(default=0)
+    respect = models.FloatField(default=0.0)
     respect_gain = models.FloatField(default=0.0)
+    respect_lost = models.FloatField(default=0.0)
+    raid = models.BooleanField(default=False)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
 
@@ -2689,6 +2699,8 @@ class AttackReport(models.Model):
     group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chain_bonus = models.FloatField(default=0.0)
+
+    objects = BulkManager()
 
     def __str__(self):
         return "{} -> {}".format(self.attacker_factionname, self.defender_factionname)

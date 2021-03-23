@@ -27,6 +27,7 @@ from target.models import *
 
 
 def updateAttacks(player, full=False):
+    from target.models import Attack
 
     # if tsnow() - player.attacksUpda < 15 * 60:
     #     return False, player.attack_set.all()
@@ -44,6 +45,7 @@ def updateAttacks(player, full=False):
         attacks = dict({})
 
     remove = []
+    batch = Attack.objects.bulk_operation()
     for k, v in attacks.items():
         if full:
             v["attacker_name"] = "Player"
@@ -66,7 +68,7 @@ def updateAttacks(player, full=False):
 
         if v["chain"] in BONUS_HITS:
             # case attacker and bonus hit
-            v["flat_respect"] = float(v["respect_gain"]) / float(v['modifiers']['chain_bonus'])
+            v["flat_respect"] = float(v["respect"]) / float(v['modifiers']['chain_bonus'])
             v["bonus"] = v["chain"]
 
         else:
@@ -75,7 +77,7 @@ def updateAttacks(player, full=False):
                 allModifiers *= float(v['modifiers'].get(mod, 1))
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
-            base_respect = float(v["respect_gain"]) / allModifiers
+            base_respect = float(v["respect"]) / allModifiers
             level = 1 if full else int(math.exp(4. * base_respect - 1))
             v["base_respect"] = base_respect
             v["flat_respect"] = float(v['modifiers']["fair_fight"]) * base_respect
@@ -86,20 +88,12 @@ def updateAttacks(player, full=False):
             print(f'{allModifiers}')
 
         v = modifiers2lvl1(v)
-        try:
-            target, create = player.attack_set.get_or_create(tId=int(k), defaults=v)
-        except BaseException:
-            player.attack_set.filter(tId=int(k)).all().delete()
-            target, create = player.attack_set.get_or_create(tId=int(k), defaults=v)
 
-        # update if based on 1k
-        if not create and target.attacker_name == "Player":
-            try:
-                player.attack_set.update_or_create(tId=int(k), defaults=v)
-            except BaseException:
-                pass
+        batch.update_or_create(tId=int(k), player_id=int(player.id), defaults=v)
 
 
+    if batch.count():
+        batch.run()
     old = tsnow() - 2678400  # 1 month old
     player.attack_set.filter(timestamp_ended__lt=old).delete()
 
