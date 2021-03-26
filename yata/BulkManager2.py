@@ -191,7 +191,7 @@ class BulkManager(BulkUpdateManager):
             for key in self.fields_to_update():
                 if key in mod_dict['defaults']:
                     setattr(new_model, key, mod_dict['defaults'][key])
-                else:
+                elif key in mod_dict['search']:
                     setattr(new_model, key, mod_dict['search'][key])
 
             return new_model

@@ -45,8 +45,12 @@ def updateAttacks(player, full=False):
         attacks = dict({})
 
     remove = []
+    old = tsnow() - 2678400  # 1 month old
     batch = Attack.objects.bulk_operation()
     for k, v in attacks.items():
+        if v["timestamp_ended"] < old:
+            continue
+
         if full:
             v["attacker_name"] = "Player"
             v["attacker_factionname"] = "Faction"
@@ -94,7 +98,6 @@ def updateAttacks(player, full=False):
 
     if batch.count():
         batch.run()
-    old = tsnow() - 2678400  # 1 month old
     player.attack_set.filter(timestamp_ended__lt=old).delete()
 
     player.attacksUpda = int(timestamp)
