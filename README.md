@@ -30,11 +30,12 @@ Create a local .env file
     # Database selection
     DATABASE=sqlite
     #DATABASE=postgresql
-    #PG_NAME=yata
-    #PG_USER=username
-    #PG_PASSWORD=password
-    #PG_HOST=localhost
-    #PG_PORT=5432
+    #DATABASE=mysql
+    #DB_NAME=yata
+    #DB_USER=username
+    #DB_PASSWORD=password
+    #DB_HOST=localhost
+    #DB_PORT=5432
 
     ###### OPTIONAL ######
     # Your TORN API KEY (only needed for the setup phase)

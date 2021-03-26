@@ -111,16 +111,29 @@ if config("DATABASE", default="sqlite", cast=str) == "postgresql":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config("PG_NAME"),
-            'USER': config("PG_USER"),
-            'PASSWORD': config("PG_PASSWORD"),
-            'HOST': config("PG_HOST"),
-            'PORT': config("PG_PORT"),
+            'NAME': config("DB_NAME"),
+            'USER': config("DB_USER"),
+            'PASSWORD': config("DB_PASSWORD"),
+            'HOST': config("DB_HOST"),
+            'PORT': config("DB_PORT"),
             'CONN_MAX_AGE': 600,
         }
 
     }
+elif config("DATABASE", default="sqlite", cast=str) == "mysql":
+    print(f"[YATA {datestr()}] settings DATABASE=mysql")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config("DB_NAME"),
+            'USER': config("DB_USER"),
+            'PASSWORD': config("DB_PASSWORD"),
+            'HOST': config("DB_HOST"),
+            'PORT': config("DB_PORT"),
+            'CONN_MAX_AGE': 600,
+        }
 
+    }
 else:
     print(f"[YATA {datestr()}] settings DATABASE=sqlite3")
 
