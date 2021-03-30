@@ -105,9 +105,11 @@ WSGI_APPLICATION = 'yata.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if config("DATABASE", default="sqlite", cast=str) == "postgresql":
+if config("DATABASE", default="sqlite", cast=str) == "postgresql":    
     print(f"[YATA {datestr()}] settings DATABASE=postgresql")
-
+    conn_max = config("PG_CONN_MAX_AGE", cast=int, default=600)
+    print(f"[YATA {datestr()}] settings CONN_MAX_AGE={conn_max}")
+    
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -116,9 +118,8 @@ if config("DATABASE", default="sqlite", cast=str) == "postgresql":
             'PASSWORD': config("PG_PASSWORD"),
             'HOST': config("PG_HOST"),
             'PORT': config("PG_PORT"),
-            'CONN_MAX_AGE': config("PG_CONN_MAX_AGE"),
+            'CONN_MAX_AGE': conn_max,
         }
-
     }
 
 else:
