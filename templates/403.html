@@ -1,5 +1,6 @@
+{% extends 'base-error.html' %}
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -17,49 +18,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
-{% load static %}
-{% load i18n %}
-
-{% get_current_language as LANGUAGE_CODE %}
-
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
-
-    <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-
-    <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>YATA - Error 403</title>
-</head>
-
-<body>
-    <div id="container" style="margin-top: 20px;">
-        <div id="content">
-            <h1>{% include "svg/yata.full.svg" %}</h1>
-
-            <h2 class="title"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Error 403: Permission Denied</h2>
-            <div class="module">
-                <p>{{exception}}</p>
-                {% if home %}
-                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
-                {% endif %}
-            </div>
-
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+{% block title %}YATA - Error 403{% endblock %}
+{% if redirect %}
+  {% block meta %}<meta http-equiv="refresh" content="5; URL=/" />{% endblock %}
+{% endif %}
+{% block header %}<i class="fas fa-exclamation-triangle fa-icon-inline"></i>Error 403: Permission Denied{% endblock %}
+{% block text %}
+  <p class="neutral">{{exception}}</p>
+  {% if redirect %}
+  <p>You will be redirected to the home page...</p>
+  <p><img src="/media/misc/crimes2.gif"</p>
+  {% endif %}
+{% endblock %}

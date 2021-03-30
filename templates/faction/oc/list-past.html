@@ -1,0 +1,116 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    // $(document).ready(function() {
+    //     $("#faction-crimes-list-past").tablesorter({
+    //         textExtraction: {
+    //           0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+    //           1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+    //           4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+    //           5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+    //           6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+    //         },
+    //         cssAsc: 'up',
+    //         cssDesc: 'down',
+    //         sortList: [[4,1]]
+    //     });
+    // });
+</script>
+
+{% if reloadTooltips %}
+    <script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+{% endif %}
+
+{% if pastCrimes|length %}
+<table id="faction-crimes-list-past" class="center-large trshadow faction-crimes-list-past">
+    <thead>
+
+        <tr><td colspan="8">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if pastCrimes.has_previous %}
+                        <a class="page-link" href="{% url 'faction:ocList' %}?p_pcrimes=1{{getfilters}}">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:ocList' %}?p_pcrimes={{ pastCrimes.previous_page_number }}{{getfilters}}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ pastCrimes.number }}/{{ pastCrimes.paginator.num_pages }}
+                    </span>
+
+                    {% if pastCrimes.has_next %}
+                        <a class="page-link" href="{% url 'faction:ocList' %}?p_pcrimes={{ pastCrimes.next_page_number }}{{getfilters}}">next</a>
+                        <a class="page-link" href="{% url 'faction:ocList' %}?p_pcrimes={{ pastCrimes.paginator.num_pages }}{{getfilters}}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+
+        <tr>
+            <th>Team</th>
+            <th>Crime</th>
+            <th>Planned</th>
+            <th>Initiated</th>
+            <th>Completed</th>
+            <th>Waiting</th>
+            <th>Money</th>
+            <th>Respect</th>
+    </thead>
+    <tbody>
+    {% for crime in pastCrimes %}
+      <tr class="hover">
+          <td class="a" data-val="{{crime.participants|length}}">
+              <i rel="tooltip" class="fas fa-users" style="cursor: help;" title='{% include "faction/oc/participants.html" with participants=crime.get_participants id=crime.team_id %}'></i>
+              {% include "faction/oc/filter.html" with type="team_id" id=crime.team_id %}
+          </td>
+          <td class="b" data-val="{{crime.participants|length}}">
+              <a href="https://www.torn.com/factions.php?step=your#/tab=crimes&crimeID={{crime.tId}}" target="_blank">{{crime.crime_name}} [{{crime.tId}}]</a>
+              {% include "faction/oc/filter.html" with type="crime_id" id=crime.crime_id %}
+          </td>
+         <td class="c"> {% with p=crime.get_planned_by %}
+                            {{p.0|playerURL:p.1|safe}}
+                            {% include "faction/oc/filter.html" with type="planned_by" id=p.1 %}
+                        {% endwith %}</td>
+         <td class="c"> {% with p=crime.get_initiated_by %}
+                            {{p.0|playerURL:p.1|safe}}
+                            {% include "faction/oc/filter.html" with type="initiated_by" id=p.1 %}
+                        {% endwith %}</td>
+         <td class="d" data-val="{{crime.time_completed}}">{{crime.time_completed|ts2date}}</td>
+         <td class="d" data-val="{{crime.time_completed|sub:crime.time_ready}}">{{crime.time_completed|sub:crime.time_ready|ts2time:"DHM"}}</td>
+
+          {% if crime.success %}
+            <td class="e valid" data-val="{{crime.money_gain}}">${{crime.money_gain|intcomma}}</td>
+            <td class="f valid">{{crime.respect_gain}}</td>
+          {% else %}
+            <td class="e error">Failure</td>
+            <td class="f error">Failure</td>
+          {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="error">No crimes found.</p>
+{% endif %}

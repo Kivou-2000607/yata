@@ -27,122 +27,45 @@ This file is part of yata.
 <!-- Current language: {{ LANGUAGE_CODE }} -->
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
+    <!-- meta  -->
+    <meta charset="UTF-8">
+    <meta name="robots" content="NONE,NOARCHIVE" />
+
+    <!-- perso -->
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
 
     <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
+    {# <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"> #}
 
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/tooltip.css" %} />
-    {% block css%}{% endblock %}
+    <!-- jquery -->
+    <script src='{% static "thirdparty/js/jquery-3.4.1.min.js" %}'></script>
+    <script src='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.js" %}'></script>
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.css" %}'>
 
-    <!-- load jquery from https://code.jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    	    crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-    		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-    		crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!-- tooltips  -->
+    <link rel="stylesheet" type="text/css" href='{% static "thirdparty/css/tooltip.css" %}' />
 
-    <!-- load table sorter  -->
-    <script type="text/javascript" src={% static "perso/js/jquery.tablesorter.min.js" %}></script>
-
-    <!-- load mathjax  -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <!-- tablesorter  -->
+    <script src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
 
     <!-- google charts -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <!-- scripts jquery perso -->
+    <!-- yata main js -->
+    <script src='{% static "yata/js/yata.js" %}'></script>
+
+    <!-- local css -->
+    {% block css%}{% endblock %}
+    <!-- local js -->
     {% block jquery %}{% endblock %}
-    <script>
 
-        $(document).on('click', 'a[class^="yata-link"]', function(e){
-            $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Loading '+$(this).attr("title"))
-            $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
-        });
 
-        $(document).on('click', 'a.news-read', function(e){
-            e.preventDefault();
-            $(this).closest("form").load("/player/readNews/", {
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $(this).closest("div").fadeOut(2000);
-        });
-
-        // show/hide module
-        $(document).on('click', 'h2.toggle-display', function(e){
-            e.preventDefault();
-            var h = $(this);
-            // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
-            if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
-                var i = h.find("i.fa-caret-right");
-                var div = h.closest(".catch-me").children("div");
-                if(div.css("display") == "none") {
-                    h.removeClass("rounded");
-                    i.addClass("fa-rotate-90");
-                }
-                div.slideToggle("fast", function(){
-                    if(div.css("display") == "none") {
-                        h.addClass("rounded");
-                        i.removeClass("fa-rotate-90");
-                    }
-                });
-            }
-        });
-
-        // refresh timer target update
-        window.setInterval(function(){
-            $("span#loot-countdown").each(function() {
-                var timeRefresh = $.trim($(this).text());
-                var splitRefresh = timeRefresh.split(" ");
-                var sRefresh = 0;
-                if (splitRefresh.length == 2) {
-                    sRefresh = parseInt(splitRefresh[0]);
-                } else if (splitRefresh.length == 4) {
-                    sRefresh = parseInt(splitRefresh[2]) + 60 * parseInt(splitRefresh[0]);
-                } else if (splitRefresh.length == 6) {
-                    sRefresh = parseInt(splitRefresh[4]) + 60 * parseInt(splitRefresh[2]) + 3600 * parseInt(splitRefresh[0]);
-                }
-
-                sRefresh --;
-                sRefresh = Math.max(sRefresh, 0)
-                if (sRefresh == 0) {
-                    $(this).parent("span").addClass("error");
-                    $(this).parent("span").html("NOW");
-                }
-                hRefresh = Math.floor(sRefresh / 3600);
-                sRefresh = sRefresh % 3600;
-                mRefresh = Math.floor(sRefresh / 60);
-                sRefresh = sRefresh % 60;
-                if (hRefresh) {
-                    spad = ("0"+sRefresh.toString()).slice(-2);
-                    $(this).html(hRefresh.toString()+" hrs "+mRefresh.toString()+" mins "+spad+" s");
-                }
-                else if (mRefresh) {
-                    spad = ("0"+sRefresh.toString()).slice(-2);
-                    $(this).html(mRefresh.toString()+" mins "+spad+" s");
-                } else {
-                    $(this).html(sRefresh.toString()+" s");
-                }
-            });
-        }, 1000);
-
-    </script>
 
     <!-- favicon -->
-    {# <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} /> #}
-    {# <link rel="icon" type="image/svg+xml" href={% static "logo/yata.icon.svg" %} /> #}
-    <link rel="icon" type="image/png" href={% static "images/icon.png" %} />
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
     <title>YATA{% block title%}{% endblock%}</title>
 </head>
@@ -152,12 +75,10 @@ This file is part of yata.
 
     <div id="container">
         <div id="content">
-            {# <h1><img src="{% static "logo/yata.full.svg" %}" alt="YATA - Yet Another Torn App"></h1> #}
-            {# <h1>{% include "svg/yata.full.svg" %}</h1> #}
-            {# <h1><b>YATA:</b> <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp</a></h1> #}
             <div id="yata-login">
                 {% include "yata/login.html" %}
             </div>
+
             {% include "yata/section-message.html" %}
             {% include "yata/error.html" %}
 

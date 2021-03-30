@@ -22,26 +22,40 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+{% if player.tId == 2419808 %}
+<script>
+    // Just to see where it goes...
+    // https://www.torn.com/forums.php#/p=threads&f=61&t=16156664
+    $(document).ready(function() {
+        var table = $("#awards-list");
+        var tbody = table.children("tbody");
+        tbody.children("tr.award-todo").each(function( id, tr ) {
+            var goal = parseInt($(tr.children[5]).children("span").text().replace(",", "").replace("$", ""));
+            var state = Math.floor(Math.random() * (goal - 1))
+            var acheive = Math.floor( 100 * state /  (1.0 * goal) );
+            $(tr.children[4]).html('<span rel="tooltip" title="Current: '+state+'">'+state+'</span>');
+            $(tr.children[6]).html('<span rel="tooltip" title="Achieved: '+acheive+'%">'+acheive+'%</span>');
+        });
+    });
+</script>
+{% endif %}
+
+<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+
 <script>
         $(document).ready(function() {
 
-
-            $.tablesorter.addParser({
-                // set a unique id
-                id: 'dataVal',
-                // check if cell value has a numerical value
-                is: function(s, table, cell, $cell) {
-                    return !isNaN($cell.attr("data-val"));
+            $("#awards-list").tablesorter({
+                textExtraction: {
+                  1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
-                // format data for normalization
-                format: function(s, table, cell, cellIndex) {
-                    return parseFloat($(cell).attr("data-val"));
-                },
-                // set type, either numeric or text
-                type: 'numeric'
+                cssAsc: 'up',
+                cssDesc: 'down',
+                sortList: [[0,0], [4,1], [5,0]]
             });
-
-            $("#awards-list").tablesorter({ header: {6: 'dataVal', 7: 'dataVal'}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,0], [4,1], [5,0]], });
 
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -50,7 +64,7 @@ This file is part of yata.
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                 {% for h, c, s, im, p, r in graph %}
-                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={% url_img_honor im %} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -76,7 +90,7 @@ This file is part of yata.
               var data2 = google.visualization.arrayToDataTable([
                   ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                   {% for h, c, s, im, p, r in graph2 %}
-                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|medalUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, '<h3><img src="{% url_img_medal im %}" atl={{h|safe}} height=19px;></h3> <span class="{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%'],
                   {% endfor %}
               ]);
 
@@ -105,11 +119,14 @@ This file is part of yata.
 
 </script>
 
-<script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
+<div id="awards-show-pinned">
+    {% include "awards/pin.html" %}
+</div>
 
-<h2 class="title">Awards tracker
-    <span class="flush-right">Last update: {{player.awardsUpda|ts2date}}</span>
-    <span id="toggle-awards-done" class="red-link" style="margin-right: 10px; display: inline; float:right; cursor: pointer;">&nbsp; &nbsp; <i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</span>
+<h2 class="title"><i class="fas fa-medal fa-icon-inline"></i>Awards tracker
+    <span class="flush-right">
+        <a id="toggle-awards-done" class="flush-right" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
+    </span>
 </h2>
 <div class="module">
 
@@ -149,6 +166,7 @@ This file is part of yata.
             <th class="f" >Achieve</th>
             <th class="g" >Days left</th>
             <th class="i"></th>
+            <th class="i"></th>
         </tr>
     </thead>
     <tbody>
@@ -157,11 +175,20 @@ This file is part of yata.
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
                 <td class="a"><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
-                  <td class="b award-todo"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">{{award.img|honorBanner:award.name|safe}}</span></td>
+                  <td class="b award-todo" data-val="{{award.name}}">
+                      <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">
+                            {% if award.img == "0" %}
+                              <div class="award-default">
+                                <img src="{% url_img_honor award.img %}" class="honors">
+                                <span class="award-default">{{award.name}}</span>
+                              </div>
+                            {% else %}
+                              <img src="{% url_img_honor award.img %}" class="honors">
+                            {% endif %}
+                      </div>
+                  </td>
                 {% else %}
-                    {% with 'medals/img/'|add:award.img|add:'_r.png' as image_static %}
-                        <td class="b"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% static image_static %}" class="medals"> &nbsp; {{award.name}}</span></td>
-                    {% endwith %}
+                    <td class="b"><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% url_img_medal award.img %}" class="medals"> &nbsp; {{award.name}}</span></td>
                 {% endif %}
                 <td class="c"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %} rel="tooltip">{{award.circulation|intcomma}}</span></td>
                 <td class="d"><span title="{{award.description}}" rel="tooltip">{{award.description}}</span></td>
@@ -176,16 +203,25 @@ This file is part of yata.
                     </td>
                 {% else %}
                     <td class="f {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Achieved: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
-                    <td class="g" data-val="{{award.left|convertInf}}">
-                        {% if award.left %}
-                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
-                        {% elif award.comment %}
-                            <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
-                        {% endif %}
-                    </td>
+                    {% if award.left < 0 %}
+                        <td class="g" data-val="1e10">
+                            <span class="thelp" rel="tooltip">&infin;</span>
+                        </td>
+                    {% else %}
+                        <td class="g" data-val="{{award.left}}">
+                            {% if award.left %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
+                            {% elif award.comment %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 {% endif %}
                 <td class="i">
-                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to get!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
+                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to do!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
+                </td>
+                <td class="i" data-val="{% if awardId in pinnedAwards %}1{% else %}0{% endif %}">
+                    {% include "awards/pin-button.html" %}
                 </td>
             </tr>
         {% endfor %}
@@ -197,5 +233,7 @@ This file is part of yata.
     <tr><td><div id="chart"></div></td></tr>
     <tr><td><div id="chart2"></div></td></tr>
 </table>
+
+<p class="update-info">Last update of the list: {{player.awardsUpda|ts2date}}</p>
 
 </div>

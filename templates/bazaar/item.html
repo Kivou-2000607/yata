@@ -28,13 +28,13 @@ This file is part of yata.
         <th colspan="2">
             <div class="item-image">
                 {% if player.tId == -1 %}
-                    <button title="{{item.tName}}">{{item.display_large}}</button>
+                    <button title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
                 {% else %}
                     <form method="post">{% csrf_token %}
                         {% if apiErrorSub %}
                             <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
                         {% else %}
-                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}">{{item.display_large}}</button></a>
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button></a>
                         {% endif %}
                     </form>
                 {% endif %}
@@ -104,18 +104,18 @@ This file is part of yata.
 <tbody>
     {% for data in item.get_bazaar %}
         {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
-            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ignore ggt "   title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="ignore gt "    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="ignore llt"    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="ignore lt "    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% else %}                                             <tr class="ignore eq "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ignore ggt "   title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="ignore gt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="ignore llt"    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="ignore lt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% else %}                                             <tr class="ignore eq "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
             {% endif %}
         {% else %}
-            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ggt "   title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="gt "    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="llt"    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="lt "    title="cumulative: ${{data.cumulative|intcomma}}">
-            {% else %}                                             <tr class="eq "    title="cumulative: ${{data.cumulative|intcomma}}">
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ggt "   title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="gt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="llt"    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="lt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% else %}                                             <tr class="eq "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
             {% endif %}
         {% endif %}
         <td class="A">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>

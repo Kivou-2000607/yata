@@ -1,0 +1,41 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<div class="catch-me">
+    <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring fa-icon-inline"></i>Help&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <div class="module tutorial" style="display: none;">
+        <p>
+            To do a simulation, modify the <b>order</b> of a branch or the <b>level</b> of an upgrade in the table above by clicking on the corresponding number (available modifications are in bold).<br>
+            Colored numbers will show you the difference between the current state and the simulation.
+        <ul>
+            <li>If you modify the <b>order</b> of an upgrade, the whole branch order will be modified and, if needed, the order of another branches will be changed to avoid identical orders.</li>
+            <li>If you modify the <b>level</b> of an upgrade, the order of all the branches will be modified to <span class="valid">minimize the respect used</span> and, if needed, the levels of other upgrades of the branch will be <span class="valid">set to their minimal required values</span>.</li>
+            <li><b>Challenges</b> are not taken into account for the simulation. You can see the availability of the upgrade levels by clicking on the upgrade name.</li>
+        </ul>
+        </p>
+        <p><i class="fas fa-toilet-paper fa-icon-inline"></i>You can reset to simulation to the current state by clicking on the reset button on the top right.
+        </p>
+        <p><span class="warning">Warning:</span> the simulations are saved on the fly for the faction (not for a member). Modifications of the upgrades by two members at the same time can lead to strange behaviors!</p>
+
+    </div>
+</div>

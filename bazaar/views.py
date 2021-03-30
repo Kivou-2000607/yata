@@ -19,15 +19,23 @@ This file is part of yata.
 
 from django.shortcuts import render
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+from django.views.decorators.cache import cache_page
+from ratelimit.decorators import ratelimit
 
 import json
 
 from bazaar.models import Item
 from bazaar.models import BazaarData
+from bazaar.models import AbroadStocks
+from bazaar.models import VerifiedClient
 from player.models import Player
 from yata.handy import apiCall
 from yata.handy import returnError
 from yata.handy import timestampToDate
+from yata.handy import tsnow
 
 
 def index(request):
@@ -42,7 +50,7 @@ def index(request):
         player = Player.objects.filter(tId=tId).first()
         player.lastActionTS = int(timezone.now().timestamp())
         player.active = True
-        key = player.key
+        key = player.getKey()
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
         player.bazaarInfo = "{}".format(len(playerList))
@@ -84,7 +92,7 @@ def index(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -92,8 +100,8 @@ def index(request):
         # else:
         #     return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def custom(request):
@@ -105,7 +113,6 @@ def custom(request):
             player.lastActionTS = int(timezone.now().timestamp())
             player.save()
 
-            # key = player.key
             bazaarJson = json.loads(player.bazaarJson)
             playerList = bazaarJson.get("list", [])
 
@@ -125,14 +132,14 @@ def custom(request):
                 items["Custom"].append(item)
                 # item.save()
 
-            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def default(request):
@@ -148,7 +155,6 @@ def default(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -172,12 +178,12 @@ def default(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def sets(request):
@@ -193,36 +199,113 @@ def sets(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
         print('[view.bazaar.default] get all items on market')
-        itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
+        allItems = Item.objects.all().order_by('tName')
         print('[view.bazaar.default] get all tTypes')
         tTypes = ["Flower", "Plushie"]
         # print('[view.bazaar.default] {}'.format(tTypes))
         print('[view.bazaar.default] create output items')
-        items = {tType: [] for tType in tTypes}
+        sets = {
+            "Plushie set": {
+                "ids": [186, 187, 215, 258, 261, 266, 268, 269, 273, 274, 281, 384, 618],
+                "type": "Plushie",
+                "items": [],
+                "quantities": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                "points": 10,
+                "market_value": 0,
+            },
+            "Exotic flower set": {
+                "ids": [260, 263, 264, 267, 271, 272, 276, 277, 282, 385, 617],
+                "type": "Flower",
+                "items": [],
+                "quantities": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                "points": 10,
+                "market_value": 0,
+            },
+            "Medieval coin set": {
+                "ids": [450, 451, 452],
+                "type": "Coins",
+                "items": [],
+                "quantities": [1, 1, 1],
+                "points": 100,
+                "market_value": 0,
+            },
+            "Quran Scripts set": {
+                "ids": [455, 456, 457],
+                "type": "Scripts",
+                "items": [],
+                "quantities": [1, 1, 1],
+                "points": 1000,
+                "market_value": 0,
+            },
+            "Senet game set": {
+                "ids": [460, 461, 462],
+                "type": "Senet",
+                "items": [],
+                "quantities": [5, 5, 1],
+                "points": 2000,
+                "market_value": 0,
+            },
+            "Vairocana Buddha": {
+                "ids": [454],
+                "type": "Vairocana",
+                "items": [],
+                "quantities": [1],
+                "points": 100,
+                "market_value": 0,
+            },
+            "Ganesha Sculpture": {
+                "ids": [453],
+                "type": "Ganesha",
+                "items": [],
+                "quantities": [1],
+                "points": 250,
+                "market_value": 0,
+            },
+            "Shabti Sculpture": {
+                "ids": [458],
+                "type": "Shabti",
+                "items": [],
+                "quantities": [1],
+                "points": 500,
+                "market_value": 0,
+            },
+            "Egyptian Amulet": {
+                "ids": [459],
+                "type": "Egyptian",
+                "items": [],
+                "quantities": [1],
+                "points": 10000,
+                "market_value": 0,
+            },
+        }
 
         inventory = bazaarJson.get("inventory", dict({}))
         bazaar = bazaarJson.get("bazaar", dict({}))
         display = bazaarJson.get("display", dict({}))
-        for tType in items:
-            for item in itemsOnMarket.filter(tType=tType):
+        point_value = BazaarData.objects.first().pointsValue
+        for tType, set in sets.items():
+            for item in allItems.filter(tId__in=set.get('ids', [])):
                 item.stockI = inventory.get(str(item.tId), 0)
                 item.stockB = bazaar.get(str(item.tId), 0)
                 item.stockD = display.get(str(item.tId), 0)
                 item.stock = item.stockI + item.stockB + item.stockD
-                items[tType].append(item)
-                # item.save()
+                set["items"].append(item)
+                set["market_value"] += set["quantities"][set["ids"].index(item.tId)] * item.tMarketValue
+            set["points_value"] = point_value * set["points"]
+            set["benefits"] = set["points_value"] - set["market_value"]
+            set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
+            # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def all(request):
@@ -238,7 +321,6 @@ def all(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -262,12 +344,12 @@ def all(request):
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def top10(request):
@@ -283,7 +365,6 @@ def top10(request):
         player.lastActionTS = int(timezone.now().timestamp())
         player.save()
 
-        # key = player.key
         bazaarJson = json.loads(player.bazaarJson)
         playerList = bazaarJson.get("list", [])
 
@@ -293,14 +374,14 @@ def top10(request):
         inventory = bazaarJson.get("inventory", dict({}))
         bazaar = bazaarJson.get("bazaar", dict({}))
         display = bazaarJson.get("display", dict({}))
-        for item in Item.objects.all().order_by('weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
             item.stockI = inventory.get(str(item.tId), 0)
             item.stockB = bazaar.get(str(item.tId), 0)
             item.stockD = display.get(str(item.tId), 0)
             item.stock = item.stockI + item.stockB + item.stockD
             items["Buy"].append(item)
             # item.save()
-        for item in Item.objects.all().order_by('-weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
             item.stockI = inventory.get(str(item.tId), 0)
             item.stockB = bazaar.get(str(item.tId), 0)
             item.stockD = display.get(str(item.tId), 0)
@@ -308,12 +389,12 @@ def top10(request):
             items["Sell"].append(item)
             # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True}}
+        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def details(request, itemId):
@@ -328,8 +409,8 @@ def details(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def prices(request, itemId):
@@ -365,8 +446,8 @@ def prices(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def update(request, itemId):
@@ -375,7 +456,7 @@ def update(request, itemId):
             print('[view.bazaar.updateItem] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            key = player.key
+            key = player.getKey()
             bazaarJson = json.loads(player.bazaarJson)
             playerList = bazaarJson.get("list", [])
 
@@ -394,7 +475,7 @@ def update(request, itemId):
             for k, v in invtmp.items():
                 if v is None:
                     invtmp[k] = dict({})
-            if 'apiError' in invtmp:
+            if 'apiError' in invtmp and invtmp["apiErrorCode"] not in [7]:
                 error = {"apiErrorSub": invtmp["apiError"]}
             else:
                 # modify user
@@ -419,8 +500,8 @@ def update(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def delete(request, itemId):
@@ -440,8 +521,8 @@ def delete(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
 def toggle(request, itemId):
@@ -459,9 +540,9 @@ def toggle(request, itemId):
             else:
                 playerList.append(itemId)
 
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), 0)
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), 0)
-            item.stockD = bazaarJson["display"].get(str(item.tId), 0)
+            item.stockI = bazaarJson.get("inventory", {}).get(str(item.tId), 0)
+            item.stockB = bazaarJson.get("bazaar", {}).get(str(item.tId), 0)
+            item.stockD = bazaarJson.get("display", {}).get(str(item.tId), 0)
             item.stock = item.stockI + item.stockB + item.stockD
 
             bazaarJson["list"] = playerList
@@ -475,5 +556,334 @@ def toggle(request, itemId):
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
             return returnError(type=403, msg=message)
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+# @csrf_exempt
+# def abroadImport(request):
+#     from bazaar.countries import countries
+
+#     if request.method == 'POST':
+#         try:
+#             payload = json.loads(request.body)
+
+#             # check mandatory keys
+#             for key in ["country", "items"]:
+#                 if key not in payload:
+#                     return JsonResponse({"message": "Missing \'{}\' key in payload".format(key)}, status=400)
+
+#             # check items length
+#             if not len(payload["items"]):
+#                 return JsonResponse({"message": "Empty items list"}, status=400)
+
+#             # check country:
+#             country_key = str(payload["country"]).lower().strip()[:3]
+#             if country_key not in countries:
+#                 return JsonResponse({"message": "Unknown country key {}".format(country_key)}, status=400)
+
+#             country = countries[country_key]["name"]
+#             items = payload["items"]
+#             # uid = int(payload.get("uid", 0)) if str(payload.get("uid", 0)).isdigit() else 0
+#             client_name = payload.get("client", "unknown").strip()
+#             client_version = payload.get("version", "0.0")
+#             timestamp = tsnow()
+
+#             # convert list to dict and check keys
+#             # for all keys to be int
+#             if isinstance(items, list):
+#                 items_list = items
+#                 items = dict({})
+#                 for item in items_list:
+#                     for key in ["id", "quantity", "cost"]:
+#                         if not str(item.get(key)).isdigit():
+#                             return JsonResponse({"message": "Wrong {} for item object: {}".format(key, item.get(key))}, status=400)
+#                     items[int(item["id"])] = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
+
+#             elif isinstance(items, dict):
+#                 # cast to int the keys
+#                 cast_to_int = []
+#                 for item_id, item in items.items():
+#                     if not str(item_id).isdigit():
+#                         return JsonResponse({"message": "Wrong item id {}".format(item_id)}, status=400)
+#                     for key in ["quantity", "cost"]:
+#                         if not str(item.get(key)).isdigit():
+#                             return JsonResponse({"message": "Wrong item {} for item {}".format(key, item_id)}, status=400)
+
+#                     item = {"cost": int(item["cost"]), "quantity": int(item["quantity"])}
+#                     if not isinstance(item_id, int):
+#                         cast_to_int.append(item_id)
+
+#                 # cast to int the keys
+#                 for k in cast_to_int:
+#                     items[int(k)] = items[k]
+#                     del items[k]
+
+#             else:
+#                 return JsonResponse({"message": "Wrong item list format {}".format(type(items))}, status=400)
+
+#             # get all unique items from this country
+#             distinct_items = [k['item_id'] for k in AbroadStocks.objects.filter(country_key=country_key).values('item_id').distinct()]
+
+#             # add items not in db
+#             # for all keys and values to be int
+#             for k in items:
+#                 if k not in distinct_items:
+#                     distinct_items.append(k)
+
+#             stocks = dict({})
+#             for item_id in distinct_items:
+#                 item = items.get(item_id, False)
+#                 cost = 0
+#                 quantity = 0
+#                 if item:
+#                     cost = item["cost"]
+#                     quantity = item["quantity"]
+#                 else:
+#                     lastItem = AbroadStocks.objects.filter(item_id=item_id, country_key=country_key).order_by("-timestamp").first()
+#                     cost = 0 if lastItem is None else lastItem.cost
+#                     quantity = 0
+
+#                 stocks[item_id] = {"country": country,
+#                                    "country_key": country_key,
+#                                    "client": "{} [{}]".format(client_name, client_version),
+#                                    "timestamp": timestamp,
+#                                    "cost": cost,
+#                                    "quantity": quantity
+#                                    }
+
+#             client, _ = VerifiedClient.objects.get_or_create(name=client_name, version=client_version)
+#             client.update_author(payload)
+#             if client.verified:
+#                 for k, v in stocks.items():
+#                     item = Item.objects.filter(tId=k).first()
+#                     if item is None:
+#                         return JsonResponse({"message": "Item {} not found in database".format(k)}, status=400)
+
+#                     AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
+#                     v["last"] = True
+#                     item.abroadstocks_set.create(**v)
+
+#                 successMessage = "The stocks have been updated with {}.".format(client)
+#             else:
+#                 # client = VerifiedClient.objects.filter(verified=True, name=v["client"]).first()
+#                 successMessage = "Your client '{} [{}]' made a successful request but has not been added to the official API list. If you feel confident it's working correctly contact Kivou [2000607] to start updating the database.".format(client_name, client_version)
+
+#             return JsonResponse({"message": successMessage, "stocks": stocks}, status=200)
+
+#         except BaseException as e:
+#             return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
+
+#     else:
+#         return returnError(type=403, msg="Expecting a POST request.")
+
+
+# # @cache_page(30)
+# @ratelimit(key='ip', rate='2/m')
+# def abroadExport(request):
+#     from bazaar.countries import countries
+
+#     if getattr(request, 'limited', False):
+#         return JsonResponse({"message": "IP rate limit of 2 calls / m"}, status=429)
+
+#     # print("run")
+#     try:
+#         # get all last stocks
+#         stocksDB = AbroadStocks.objects.filter(last=True)
+
+#         # filter by type
+#         if request.GET.get("type", False):
+#             print("Filter", request.GET.get("type", False))
+#             type = str(request.GET.get("type")).strip().title()
+#             if type not in ["Drug", "Plushie", "Flower"]:
+#                 return JsonResponse({"message": "Unknown type {}".format(type)}, status=400)
+#             stocksDB = stocksDB.filter(item__tType=type)
+
+#         # filter by country
+#         if request.GET.get("country", False):
+#             print("Filter", request.GET.get("country", False))
+#             country_key = str(request.GET.get("country")).lower().strip()[:3]
+#             if country_key not in countries:
+#                 return JsonResponse({"message": "Unknown country key {}".format(country_key)}, status=400)
+#             stocksDB = stocksDB.filter(country_key=country_key)
+
+#         if request.GET.get("format", False):
+
+#             # select the format
+#             format = request.GET.get("format")
+#             if format == "country":
+#                 stocksJS = dict({})
+#                 for stock in stocksDB:
+#                     if stock.country_key not in stocksJS:
+#                         stocksJS[stock.country_key] = dict({})
+#                     stocksJS[stock.country_key][stock.item.tId] = stock.payload()
+
+#             elif format == "item":
+#                 stocksJS = dict({})
+#                 for stock in stocksDB:
+#                     if stock.item.tId not in stocksJS:
+#                         stocksJS[stock.item.tId] = dict({})
+#                     stocksJS[stock.item.tId][stock.country_key] = stock.payload()
+
+#             elif format == "flat":
+#                 stocksJS = dict({})
+#                 for stock in stocksDB:
+#                     id_b = "{}_{}".format(stock.item.tId, stock.country_key)
+#                     stocksJS[id_b] = stock.payload()
+#             else:
+#                 return JsonResponse({"message": "Unknown format {}".format(format)}, status=400)
+
+#         else:
+
+#             # default the format
+#             stocksJS = []
+#             for stock in stocksDB:
+#                 stocksJS.append(stock.payload())
+
+#         return JsonResponse({"stocks": stocksJS}, status=200)
+
+#     except BaseException as e:
+#         return JsonResponse({"message": "Server error: {}".format(e)}, status=500)
+
+
+# @cache_page(60)
+def abroad(request):
+    try:
+        # build up filters list
+        from bazaar.countries import countries as country_list
+        from bazaar.countries import types as type_list
+        country_list["all"] = {"name": "All", "n": 0}
+        type_list["all"] = {"name": "All", "n": 0}
+
+        # get player and page
+        if request.session.get('player'):
+            tId = request.session["player"].get("tId")
+        else:
+            tId = -1
+        player = Player.objects.filter(tId=tId).first()
+        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+
+        # get filters
+        filters = request.session.get('stocks-filters', {"countries": "all", "types": ["all"]})
+        if not isinstance(filters["types"], list):
+            filters["types"] = ["all"]
+
+        # set filters
+        if request.POST.get("filter", False) and request.POST.get("key"):
+            page = "bazaar/abroad/list.html"
+            post_filter = request.POST.get("filter")
+            post_key = request.POST.get("key")
+
+            if post_filter in "types" and post_key in type_list:
+                if post_key != "all":
+                    if "all" in filters[post_filter]:
+                        filters[post_filter].remove("all")
+                    if post_key in filters[post_filter]:
+                        filters[post_filter].remove(post_key)
+                    else:
+                        filters[post_filter].append(post_key)
+                if not len(filters[post_filter]) or post_key == "all":
+                    filters[post_filter] = ["all"]
+
+            elif post_filter in "countries" and post_key in country_list:
+                filters[post_filter] = post_key if post_key != filters[post_filter] else "all"
+
+        request.session["stocks-filters"] = filters
+
+        # old stocks
+        old = tsnow() - 48 * 3600
+        AbroadStocks.objects.filter(timestamp__lt=old).delete()
+        stocks = AbroadStocks.objects.filter(last=True)
+        bd = BazaarData.objects.first()
+        if bd is None:
+            clients = {}
+        else:
+            clients = json.loads(bd.clientsStats)
+
+        if filters["countries"] != "all":
+            stocks = stocks.filter(country_key=filters["countries"])
+        if "all" not in filters["types"]:
+            stocks = stocks.filter(item__tType__in=filters["types"])
+
+        # add fields
+        for stock in stocks:
+            stock.profit = stock.item.tMarketValue - stock.cost
+            stock.profitperhour = round(30 * stock.profit / stock.get_country()["fly_time"])
+            stock.update = tsnow() - stock.timestamp
+
+        context = {"player": player,
+                   "filters": filters,
+                   "country_list": country_list,
+                   "type_list": type_list,
+                   "stocks": stocks,
+                   "clients": sorted(clients.items(), key=lambda x: -x[1][0]),
+                   "bazaarcat": True,
+                   "view": {"abroad": True}}
+
+        return render(request, page, context)
+
+    except Exception as e:
+        del request.session["stocks-filters"]
+        return returnError(exc=e, session=request.session)
+
+
+def abroadStocks(request):
+    try:
+        if request.method == "POST":
+            item_id = request.POST.get('item_id', False)
+            country_key = request.POST.get('country_key', False)
+            old = tsnow() - 48 * 3600
+            stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id, timestamp__gt=old).order_by("-timestamp")
+
+            if stocks is None:
+                context = {'item': None, "graph": []}
+                return render(request, 'bazaar/abroad/graph.html', context)
+
+            # get clients statistics
+            clients = dict({})
+            for stock in stocks:
+                if stock.client == "":
+                    continue
+                if stock.client not in clients:
+                    clients[stock.client] = 0
+                clients[stock.client] += 1
+
+            clients = {c: [i, n] for i, (c, n) in enumerate(sorted(clients.items(), key=lambda x: -x[1]))}
+
+            # graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
+
+            # average the prices
+            floatTS = stocks.first().timestamp
+            avg_val = [0, 0, 0]  # ts, quantity, cost
+            n = 0
+            graph = []
+            for s in stocks:
+                n += 1
+                avg_val[0] += s.timestamp
+                avg_val[1] += s.quantity
+                if (floatTS - s.timestamp) > 5 * 60:
+                    floatTS = s.timestamp
+                    line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+                    graph.append(line)
+                    avg_val = [0, 0, 0]
+                    n = 0
+
+            # record last point
+            if n > 0:
+                line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+                graph.append(line)
+
+            stock = stocks.first()
+            context = {'stock': stocks.first(),
+                       'graph': graph,
+                       'x': [timestampToDate(tsnow() - 48 * 3600),
+                             timestampToDate(tsnow() - 24 * 3600),
+                             timestampToDate(tsnow())]}
+            return render(request, 'bazaar/abroad/graph.html', context)
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

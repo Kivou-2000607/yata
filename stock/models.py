@@ -21,8 +21,8 @@ class Stock(models.Model):
     tDemand = models.CharField(default="Average", max_length=200)
     tRequirement = models.BigIntegerField(default=0)
     tDescription = models.CharField(default="tDescription", blank=True, max_length=200)
-    priceHistory = models.TextField(default="{}")  # dictionary {timestamp: price}
-    quantityHistory = models.TextField(default="{}")  # dictionary {timestamp: quantity}
+    # priceHistory = models.TextField(default="{}")  # dictionary {timestamp: price}
+    # quantityHistory = models.TextField(default="{}")  # dictionary {timestamp: quantity}
     dayTendency = models.FloatField(default=0.0)
     dayTendencyA = models.FloatField(default=0.0)
     dayTendencyB = models.FloatField(default=0.0)
@@ -30,6 +30,12 @@ class Stock(models.Model):
     weekTendencyA = models.FloatField(default=0.0)
     weekTendencyB = models.FloatField(default=0.0)
     timestamp = models.IntegerField(default=0)
+
+    # 4 month average price
+    averagePrice = models.FloatField(default=0.0)
+
+    # trigger
+    triggers = models.TextField(default="{}")
 
     def __str__(self):
         return "{} ({}) [{}]".format(self.tName, self.tAcronym, self.tId)
@@ -54,6 +60,12 @@ class Stock(models.Model):
 
     def update(self, k, v, ts):
         print("[model.stock.update] update: ", k, v['acronym'])
+
+        # get previous snapshot for triggers
+        tPreviousShares = self.tAvailableShares
+        tPreviousTotalShares = self.tTotalShares
+        tPreviousForecast = self.tForecast
+
         self.tName = v['name']
         self.tAcronym = v['acronym']
         self.tDirector = v['director']
@@ -67,27 +79,36 @@ class Stock(models.Model):
         self.tDescription = v.get('benefit', dict({'description': ""}))['description']
         self.timestamp = int(ts) - int(ts) % 3600  # get the hour rounding
 
-        # update price history/quantity
-        priceHistory = json.loads(self.priceHistory)
-        quantityHistory = json.loads(self.quantityHistory)
+        # get the hour rounding
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
-        to_del = []
-        for t, p in priceHistory.items():
-            if ts - int(t) > 3600 * 24 * 7:  # remove older than 1 week data
-                to_del.append(t)
 
-        for t in to_del:
-            print("[model.stock.update] remove history entry {}: {}".format(t, priceHistory[t]))
-            del priceHistory[t]
-            try:
-                del quantityHistory[t]
-            except BaseException:
-                pass
+        # create/update history
+        lastHistory = self.history_set.filter(timestamp=self.timestamp).first()
+        if lastHistory is None:
+            self.history_set.create(tCurrentPrice=self.tCurrentPrice,
+                                    tMarketCap=self.tMarketCap,
+                                    tTotalShares=self.tTotalShares,
+                                    tAvailableShares=self.tAvailableShares,
+                                    tForecast=self.tForecast,
+                                    tDemand=self.tDemand,
+                                    timestamp=self.timestamp)
+        else:
+            lastHistory.tCurrentPrice = self.tCurrentPrice
+            lastHistory.tMarketCap = self.tMarketCap
+            lastHistory.tTotalShares = self.tTotalShares
+            lastHistory.tAvailableShares = self.tAvailableShares
+            lastHistory.tForecast = self.tForecast
+            lastHistory.tDemand = self.tDemand
+            lastHistory.timestamp = self.timestamp
+            lastHistory.save()
 
-        priceHistory[str(ts)] = float(v['current_price'])
-        self.priceHistory = json.dumps(priceHistory)
-        quantityHistory[str(ts)] = int(v['available_shares'])
-        self.quantityHistory = json.dumps(quantityHistory)
+        # get 4 month average
+        p = [h.tCurrentPrice for h in self.history_set.filter(timestamp__gte=ts - 3600 * 24 * 31 * 4)]
+        if len(p):
+            self.averagePrice = sum(p) / len(p)
+
+        history = self.history_set.filter(timestamp__gte=ts - 3600 * 24 * 7)
+        priceHistory = {h.timestamp: h.tCurrentPrice for h in history}
 
         # update tendency
         ts = 0
@@ -124,7 +145,7 @@ class Stock(models.Model):
             self.dayTendencyA = 0.0
             self.dayTendencyB = 0.0
             self.dayTendency = 0.0
-        print("[model.stock.update] day tendancy:", self.dayTendencyA, self.dayTendencyB, self.dayTendency)
+        # print("[model.stock.update] day tendancy:", self.dayTendencyA, self.dayTendencyB, self.dayTendency)
 
         # 24h Tendency
         try:
@@ -156,18 +177,47 @@ class Stock(models.Model):
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
             self.weekTendency = 0.0
-        print("[model.stock.update] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
+        # print("[model.stock.update] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
+
+        # compute triggers
+        triggers = dict({})
+
+        # trigger: shares available
+        # if self.tAvailableShares:
+        #     triggers["shares"] = True
+
+        # trigger: below average
+        if self.tCurrentPrice < self.averagePrice:
+            triggers["below"] = True
+
+        # trigger new shares available
+        if not tPreviousShares and self.tAvailableShares:
+            triggers["new"] = True
+
+        # trigger shares injection by the system
+        if self.tTotalShares > 1.05 * tPreviousTotalShares:
+            triggers["injection"] = True
+
+        # trigger more than 1% total
+        if self.tAvailableShares > 0.01 * self.tTotalShares:
+            triggers["enough"] = True
+
+        # trigger if forcast move from bad to good
+        if tPreviousForecast in ["Poor", "Very Poor"] and self.tForecast in ["Average", "Good", "Very Good"]:
+            triggers["forecast"] = True
+
+        self.triggers = json.dumps(triggers)
 
         self.save()
 
-        if not len(self.history_set.filter(timestamp=self.timestamp)):
-            self.history_set.create(tCurrentPrice=self.tCurrentPrice,
-                                    tMarketCap=self.tMarketCap,
-                                    tTotalShares=self.tTotalShares,
-                                    tAvailableShares=self.tAvailableShares,
-                                    tForecast=self.tForecast,
-                                    tDemand=self.tDemand,
-                                    timestamp=self.timestamp)
+        # if not len(self.history_set.filter(timestamp=self.timestamp)):
+        #     self.history_set.create(tCurrentPrice=self.tCurrentPrice,
+        #                             tMarketCap=self.tMarketCap,
+        #                             tTotalShares=self.tTotalShares,
+        #                             tAvailableShares=self.tAvailableShares,
+        #                             tForecast=self.tForecast,
+        #                             tDemand=self.tDemand,
+        #                             timestamp=self.timestamp)
 
 
 class History(models.Model):

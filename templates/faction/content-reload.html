@@ -1,0 +1,123 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{# {% include "yata/ban.js" %} #}
+
+{# errors #}
+{% if apiErrorSub %}
+    {% include "yata/error.html" with apiError=apiErrorSub %}
+{% endif %}
+{% if errorMessageSub %}
+    {% include "yata/error.html" with errorMessage=errorMessageSub %}
+{% endif %}
+{% if validMessageSub %}
+    {% include "yata/error.html" with validMessage=validMessageSub %}
+{% endif %}
+
+{# index #}
+{% if view.index %}
+    {% include "faction/index.html" %}
+{% endif %}
+
+{# aa #}
+{% if view.aa %}
+    {% include "faction/aa/index.html" %}
+{% endif %}
+
+{# members #}
+{% if view.members %}
+    {% include "faction/members/index.html" %}
+{% endif %}
+
+{# chain reports #}
+{% if view.report %}
+    {% include "faction/chains/report.html" %}
+{% endif %}
+{% if view.combined %}
+    {% include "faction/chains/combined.html" %}
+{% endif %}
+{% if view.chains %}
+    {% include "faction/chains/index.html" %}
+{% endif %}
+
+{# walls #}
+{% if view.walls %}
+    {% include "faction/walls/index.html" %}
+{% endif %}
+
+{# attack reports #}
+{% if view.attacksReports %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% include "faction/attacks/index.html" %}
+{% endif %}
+
+{% if view.attacksReport %}
+    {% include "faction/attacks/report.html" %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% if not share %}
+        {% include "faction/attacks/index.html" %}
+    {% endif %}
+{% endif %}
+
+{% if view.revivesReports %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
+    {% include "faction/revives/index.html" %}
+{% endif %}
+{% if view.revivesReport %}
+  {% include "faction/revives/report.html" %}
+{% endif %}
+
+{% if view.armory %}
+    {% include "faction/armory/index.html" %}
+{% endif %}
+{% if view.armoryList %}
+    {% include "faction/armory/news.html" %}
+{% endif %}
+
+{% if view.bb %}
+    {% include "faction/bigbrother/index.html" %}
+{% endif %}
+
+{% if view.territories %}
+    {% include "faction/territories/index.html" %}
+{% endif %}
+
+{% if view.simulator %}
+    {% include "faction/simulator/index.html" %}
+    {% include "faction/tutorials/simulator.html" %}
+{% endif %}
+
+{% if view.oc %}
+    {% include "faction/oc/index.html" %}
+{% endif %}

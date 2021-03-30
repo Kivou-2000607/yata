@@ -18,11 +18,11 @@ This file is part of yata.
 {% endcomment %}
 
 <form>{% csrf_token %}
-    <p>
+    <p>Here is your status:
         {% if player.dId%}
-            <span class="valid">{{player.dId}}</span>
+            <span class="valid">Your discord account <tt>{{player.dId}}</tt> is officially verified by Torn.</span>
         {% else %}
-            <span class="error">unset</span>
+            <span class="error">Your discord account is not officialy verified by Torn.&nbsp;&nbsp;<i class="fas fa-question-circle" title="Gog get your discord account verified on the official Torn discord."></i></span>
         {% endif %}
         <a id="discord-update-id" href="{% url 'bot:updateId' %}">&nbsp;&nbsp;<i class="fas fa-sync-alt" title="Update discord ID"></i></a>
         {% if error %}&nbsp;&nbsp;<span class="error">{{error.apiErrorSub}}</span>{% endif %}

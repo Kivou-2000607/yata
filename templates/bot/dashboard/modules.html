@@ -1,0 +1,137 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+{% if module == "admin"%}
+    {% with mod=server.get_admin %}
+        {% if mod %}
+            {% for k, v in server.get_admin.items %}
+                {% if k == "server_info" %}
+                    {% include "bot/dashboard/module-list.html" %}
+                {% elif k == "message_welcome" %}
+                    {% include "bot/dashboard/module-message.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-others.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="error">You need to do an initial <tt>!sync</tt> on your discord server.</p>
+        {% endif %}
+    {% endwith %}
+{% elif module == "verify" %}
+    {% with mod=server.get_verify %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "factions" %}
+                    {% include "bot/dashboard/module-verify-factions.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-others.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "rackets" %}
+    {% with mod=server.get_racket %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "wars" %}
+    {% with mod=server.get_war %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "loot" %}
+    {% with mod=server.get_loot %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "revive" %}
+    {% with mod=server.get_revive %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "revive_servers" %}
+                    {% include "bot/dashboard/module-revive-servers.html" %}
+                {% elif k == "other" %}
+                    {% include "bot/dashboard/module-others.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "oc" %}
+    {% with mod=server.get_oc %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "currents" %}
+                    {% include "bot/dashboard/module-currents.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "chain" %}
+    {% with mod=server.get_chain %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% if k == "currents" %}
+                    {% include "bot/dashboard/module-currents.html" %}
+                {% else %}
+                    {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% elif module == "stocks" %}
+    {% with mod=server.get_stocks %}
+        {% if mod %}
+            {% for k, v in mod.items %}
+                {% include "bot/dashboard/module-dict.html" %}
+            {% endfor %}
+        {% endif %}
+        {% include "bot/dashboard/module-enable-disable.html" %}
+    {% endwith %}
+{% else %}
+    <p class="error">{{error}}</p>
+{% endif %}

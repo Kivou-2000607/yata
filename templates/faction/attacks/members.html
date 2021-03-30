@@ -1,0 +1,102 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<table class="center-large trshadow faction-attacks-members-breakdown">
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="7">Outgoing attacks</th>
+            <th colspan="7">Incoming attacks</th>
+        </tr>
+        <tr>
+            <th>Player</th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=0">#leaves</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=1">#mug</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=2">#hosp</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=3">#war</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=4">#win</a></th>
+            <th><a title="lost / assist / stalemate / timeout / escape" style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=5">#lost</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=6">#total</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=7">#leaves</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=8">#mug</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=9">#hosp</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=10">#war</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=11">#win</a></th>
+            <th><a title="lost / assist / stalemate / timeout / escape" style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=12">#lost</a></th>
+            <th><a style="margin: 0px;" class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=13">#total</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if members|length %}
+        {% for id, m in members %}
+        <tr>
+            {% if id %}
+                <td class="a">{{m.name|playerURL:id|safe}}</td>
+            {% else %}
+                <td class="a">Stealth</td>
+            {% endif %}
+            {# # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 lost, 5 total] #}
+            <td class="c">{{m.out.0}}</td>
+            <td class="c">{{m.out.1}}</td>
+            <td class="c">{{m.out.2}}</td>
+            <td class="c">{{m.out.3}}</td>
+            <td class="c">{{m.out.4}}</td>
+            <td class="c">{{m.out.5}}</td>
+            <td class="c"><b>{{m.out.6}}</b></td>
+            <td class="c">{{m.in.0}}</td>
+            <td class="c">{{m.in.1}}</td>
+            <td class="c">{{m.in.2}}</td>
+            <td class="c">{{m.in.3}}</td>
+            <td class="c">{{m.in.4}}</td>
+            <td class="c">{{m.in.5}}</td>
+            <td class="c"><b>{{m.in.6}}</b></td>
+        </tr>
+        {% endfor %}
+        <tr><td colspan="15">
+            <div class="pagination" style="margin:0;" >
+                <span class="step-links">
+                    {% if members.has_previous %}
+                        <a class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me={{o_me}}&p_me=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me={{o_me}}&p_me={{ members.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ members.number }}/{{ members.paginator.num_pages }}
+                    </span>
+
+                    {% if members.has_next %}
+                        <a class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me={{o_me}}&p_me={{ members.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me={{o_me}}&p_me={{ members.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="15">No players found. Click on the eyes to select factions members.</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

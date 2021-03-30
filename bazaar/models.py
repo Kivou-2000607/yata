@@ -25,6 +25,7 @@ import math
 from scipy import stats
 
 from yata.handy import apiCall
+from yata.handy import tsnow
 
 
 class Item(models.Model):
@@ -60,7 +61,7 @@ class Item(models.Model):
 
     @classmethod
     def create(cls, k, v):
-        print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
+        # print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
         item = cls(tId=int(k),
                    tName=v['name'],
                    tType=v['type'].replace(" ", ""),
@@ -110,7 +111,7 @@ class Item(models.Model):
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
             self.weekTendency = 0.0
-        print("[model.bazaar.item] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
+        # print("[model.bazaar.item] week tendancy:", self.weekTendencyA, self.weekTendencyB, self.weekTendency)
 
         # month Tendency
         try:
@@ -142,7 +143,7 @@ class Item(models.Model):
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
             self.monthTendency = 0.0
-        print("[model.bazaar.item] month tendancy:", self.monthTendencyA, self.monthTendencyB, self.monthTendency)
+        # print("[model.bazaar.item] month tendancy:", self.monthTendencyA, self.monthTendencyB, self.monthTendency)
 
         # print(self.monthTendency, self.monthTendencyA, self.monthTendencyB)
         # self.lastUpdateTS =
@@ -158,7 +159,7 @@ class Item(models.Model):
         #      'market_value': 2094,
         #      'circulation': 68911,
         #      'image': 'http://www.torn.com/images/items/6/large.png'}
-        print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
+        # print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
         self.tName = v['name']
         self.tType = v['type'].replace(" ", "")
         self.tMarketValue = int(v['market_value'])
@@ -178,7 +179,7 @@ class Item(models.Model):
                 to_del.append(t)
 
         for t in to_del:
-            print("[model.bazaar.item] remove history entry {}: {}".format(t, priceHistory[t]))
+            # print("[model.bazaar.item] remove history entry {}: {}".format(t, priceHistory[t]))
             del priceHistory[t]
 
         priceHistory[ts] = int(v["market_value"])
@@ -211,14 +212,18 @@ class Item(models.Model):
         bData = self.marketdata_set.all().order_by('cost')
         try:
             cData = []
-            tmp = 0
+            tmpP = 0
+            tmpQ = 0
             for i in range(len(bData)):
                 cData.append({'cost': bData[i].cost,
                               'quantity': bData[i].quantity,
                               'itemmarket': bData[i].itemmarket,
-                              'cumulative': int(float(bData[i].quantity) * float(bData[i].cost)) + tmp}
+                              'cumulativeQ': bData[i].quantity + tmpQ,
+                              'cumulativeP': int(float(bData[i].quantity) * float(bData[i].cost)) + tmpP,
+                              }
                              )
-                tmp = cData[i]["cumulative"]
+                tmpP = cData[i]["cumulativeP"]
+                tmpQ = cData[i]["cumulativeQ"]
         except BaseException:
             cData = []
         return cData
@@ -278,3 +283,98 @@ class BazaarData(models.Model):
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
     itemType = models.TextField(default="{}")
+    pointsValue = models.IntegerField(default=0)
+    clientsStats = models.TextField(default="{}")
+
+
+class VerifiedClient(models.Model):
+    author_id = models.IntegerField(default=0)
+    author_name = models.CharField(default="Player", max_length=16)
+    name = models.CharField(default="?", max_length=64)
+    version = models.CharField(default="0.0", max_length=16)
+    verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{} [{}] by {} [{}]".format(self.name, self.version, self.author_name, self.author_id)
+
+    def update_author(self, payload, auto_verified=True):
+        if payload.get("author_id", False):
+            self.author_id = payload.get("author_id")
+        if payload.get("author_name", False):
+            self.author_name = payload.get("author_name")
+        if payload.get("version", False):
+            self.version = payload.get("version")
+        if auto_verified and not self.verified and len(VerifiedClient.objects.filter(pk__lt=self.pk, verified=True, name=self.name)):
+            self.verified = True
+
+        self.save()
+
+
+class AbroadStocks(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+    country_key = models.CharField(default="???", max_length=3)
+    country = models.CharField(max_length=32)
+    quantity = models.IntegerField(default=0)
+    cost = models.BigIntegerField(default=0)
+    timestamp = models.IntegerField(default=0)
+
+    client = models.CharField(default="unknown [0.0]", max_length=64, blank=True)
+
+    last = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "{} in {}".format(self.item, self.country)
+
+    def payload(self):
+        from bazaar.countries import countries
+
+        return {
+            # "country_key": self.country_key,
+            "country_name": self.country,
+            "item_id": self.item.tId,
+            "item_name": self.item.tName,
+            "item_type": self.item.tType,
+            "abroad_cost": self.cost,
+            "abroad_quantity": self.quantity,
+            "timestamp": self.timestamp,
+            # "item_maket_value": self.item.tMarketValue,
+            # "item_sell_price": self.item.tSellPrice,
+            # "item_buy_price": self.item.tBuyPrice,
+            # "item_week_tendency": self.item.weekTendency,
+            # "country_fly_time": countries[self.country_id]["fly_time"],
+            }
+
+    def payloadLight(self):
+        from bazaar.countries import countries
+
+        return {
+            # "id": f'{self.country_key}-{self.item.tId}',
+            "id": self.item.tId,
+            "name": self.item.tName,
+            # "country": self.country_key,
+            "quantity": self.quantity,
+            # "timestamp": self.timestamp,
+            # "item_type": self.item.tType,
+            "cost": self.cost,
+            # "item_maket_value": self.item.tMarketValue,
+            # "item_sell_price": self.item.tSellPrice,
+            # "item_buy_price": self.item.tBuyPrice,
+            # "item_week_tendency": self.item.weekTendency,
+            # "country_fly_time": countries[self.country_id]["fly_time"],
+            }
+
+    def get_country(self):
+        from bazaar.countries import countries
+        return countries.get(self.country_key)
+
+    def get_efficiency(self, h=48):
+        # compute efficiency
+        old = tsnow() - h * 3600
+        size_ts = h * 3600 // (5 * 60)
+        tss = [0] * size_ts
+        stocks = AbroadStocks.objects.filter(item=self.item, country_key=self.country_key, timestamp__gt=old)
+        for stock in stocks:
+            i = min(size_ts * (stock.timestamp - old) // (h * 3600), size_ts - 1)
+            tss[i] = 1
+        return [len(stocks), 100 * sum(tss) / float(size_ts)]

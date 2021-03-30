@@ -23,6 +23,8 @@ This file is part of yata.
 
 {% if view.analytics %}
     {% include "yata/analytics.html" %}
+{% elif view.prune %}
+    {% include "yata/prune.html" %}
 {% else %}
     {% include "yata/standard.html" %}
 {% endif %}

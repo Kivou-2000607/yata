@@ -2,37 +2,17 @@
 {% load static %}
 
 {% block css%}
-    {# <link rel="stylesheet" type="text/css" href={% static "perso/css/discord.css" %} /> #}
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/bot.css" %} />
 {% endblock%}
 
 {% block title%}
-    - Loot
+    - Discord bot
 {% endblock %}
 
 {% block jquery %}
-<script>
+<script src='{% static "yata/js/bot/bot.js" %}'></script>
+<script src='{% static "yata/js/bot/dashboard.js" %}'></script>
 
-    // update discord id
-    $(document).on('click', '#discord-update-id', function(e){
-        e.preventDefault();
-        var reload = $("#discord-id");
-        reload.load( "/bot/updateId/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.html('<p><i class="fas fa-spinner fa-pulse"></i></p>');
-    });
-
-    // update discord id
-    $(document).on('click', '[id^=pref-toggle-]', function(e){
-        e.preventDefault();
-        var type = $(this).attr('id').split('-').pop();
-        $(this).load( "/bot/togglePref/"+type+"/", {
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        $(this).html('<i class="fas fa-spinner fa-pulse"></i>');
-    });
-
-</script>
 {% endblock %}
 
 {% block content %}

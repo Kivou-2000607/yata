@@ -21,4 +21,20 @@ This file is part of yata.
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
 
-{% include "bot/notifications.html" %}
+{% if view.index %}
+    {% include "bot/index.html" %}
+    {% include "bot/guilds.html" %}
+{% endif %}
+{% if view.doc %}
+    {% include "bot/commands.html" %}
+    {% include "bot/keys.html" %}
+    {% include "bot/verified.html" %}
+{% endif %}
+
+{% if view.host %}
+    {% include "bot/host.html" %}
+    {% include "bot/verified.html" %}
+{% endif %}
+{% if view.dashboard %}
+    {% include "bot/dashboard/index.html" %}
+{% endif %}

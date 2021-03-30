@@ -1,0 +1,66 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+<div id="target-dogtags-compare"></div>
+
+<table id="target-dogtags" class="center-large trshadow target-dogtags">
+    <thead>
+
+        <tr><td colspan="9">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if targets.has_previous %}
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ targets.number }}/{{ targets.paginator.num_pages }}
+                    </span>
+
+                    {% if targets.has_next %}
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+        <tr>
+            <th>Last update</th>
+            <th>Target</th>
+            <th>Level / Ranks</th>
+            <th>Age</th>
+            <th>Last Action</th>
+            <th>Defends Lost</th>
+            <th>Attacks Won</th>
+            <th>Failed attacks</th>
+            <th>Add failed / Delete</th>
+    </thead>
+    <tbody>
+    {% for target in targets %}
+        <tr class="target-dogtag" data-uid="{{target.target_id}}" data-los="{{target.defendslost}}">
+            {% include "target/dogtags/line.html" %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

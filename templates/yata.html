@@ -1,35 +1,17 @@
 {% extends 'base.html' %}
-{% load app_filters %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/setup.css" %} />
+{% endblock%}
 
 {% block title%}
     - Home
 {% endblock %}
 
 {% block jquery %}
-<script>
-    $(document).on('click', '#yata-login-submit', function(e){
-        e.preventDefault();
-        var reload = $("#yata-login");
-        $( "#yata-login" ).load( "{% url 'login' %}", {
-            key: $("#yata-login-key").val(),
-            check: $("#yata-login-remember").is(':checked'),
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        reload.find("td.d").html('<span class="login-message"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</span>');
-    });
+<script src='{% static "yata/js/login.js" %}'></script>
 
-    $(document).on('click', '#yata-delete-submit', function(e){
-        var r = confirm("Are you sure you want to delete your account? All data will be removed from the database.");
-        if (r == false) {
-            e.preventDefault();
-        }
-    });
-
-    // $(document).ready(function(){
-    //     $("#badges").load("badges");
-    // });
-
-</script>
 {% endblock %}
 
 {% block content %}

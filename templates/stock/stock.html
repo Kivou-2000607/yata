@@ -17,8 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load humanize %}
 {% load mathfilters %}
+{% load humanize %}
 {% load static %}
 {% load app_filters %}
 
@@ -26,7 +26,11 @@ This file is part of yata.
 <thead>
     <tr>
         <th colspan="2">
-          <button><a href="{% url 'stock:details' stock.t.tId %}" class="stock-details" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]"><img src="/static/stocks/{{stock.t.tId}}.png" alt="{{stock.t.tName}} [{{stock.t.tAcronym}}]"></a></button>
+            <button>
+              <a href="{% url 'stock:details' stock.t.tId %}" class="stock-details" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]">
+                <img src="{% url_img_stocks stock.t.tId %}" alt="{{stock.t.tName}} [{{stock.t.tAcronym}}]">
+              </a>
+            </button>
         </th>
     </tr>
     <tr><th colspan="2"><a href="{% url 'stock:details' stock.t.tId %}" class="stock-details" title="{{stock.t.tName}} [{{stock.t.tAcronym}}]">{{stock.t.tAcronym}}</a></th></tr>

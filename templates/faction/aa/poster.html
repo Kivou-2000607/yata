@@ -1,0 +1,147 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<div>
+<form>{% csrf_token %}
+    <p><ul>
+        {% if faction.poster %}
+            <li><span class="valid">Upgrades poster is enabled</span></li>
+            <li>
+                {% if faction.posterHold %}
+                    <span class="error">Automatic update of the poster is on hold</span>
+                {% else %}
+                    <span class="valid">Automatic update of your poster is on</span>
+                {% endif %}
+            </li>
+            <li>
+                Enable/Disable poster: <a id="faction-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on" title="Disable Poster"></i></a>
+            </li>
+            <li>
+            {% if faction.posterHold %}
+                Resume automatic update: <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-play-circle" title="Resume update"></i></a>
+            {% else %}
+                Hold automatic update: <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-stop-circle" title="Hold update"></i></a>
+            {% endif %}
+            </li>
+            <li>Link to poster: <a href="{{faction.posterImg.url}}" target="_blank">https://yata.yt{{faction.posterImg.url}}</a></li>
+            <li>Link to gym poster: <a href="{{faction.posterGymImg.url}}" target="_blank">https://yata.yt{{faction.posterGymImg.url}}</a></li>
+            <li>Userscript displaying faction perks on gym page: <a href="{% url_userscript 'gym' %}" target="_blank">{% url_userscript "gym" %}</a></li>
+
+        {% else %}
+            <li><span class="error">Upgrades poster is disabled</span></li>
+            <li>Enable/Disable poster: <a id="faction-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off" title="Disable Poster"></i></a></li>
+        {% endif %}
+    </ul></p>
+</form>
+
+{% if posterDeleted %}
+    <p class="error"><i class="fas fa-trash fa-icon-inline"></i>Your poster has been deleted</p>
+{% endif %}
+
+{% if faction.poster %}
+<hr class="sep">
+
+<div style="width: 100%; margin: 0 auto; text-align: center;">
+    <form id="faction-poster">
+        <h4>Font color</h4>
+        <p>
+            <label for="faction-poster-fontColor-0">Red </label>
+            <input id="faction-poster-fontColor-0" type="range" min="0" max="255" value="{{posterOpt.fontColor.0}}">
+            <label for="faction-poster-fontColor-1">Green </label>
+            <input id="faction-poster-fontColor-1" type="range" min="0" max="255" value="{{posterOpt.fontColor.1}}">
+            <label for="faction-poster-fontColor-2">Blue </label>
+            <input id="faction-poster-fontColor-2" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
+            <label for="faction-poster-fontColor-3">Transparency </label>
+            <input id="faction-poster-fontColor-3" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}">
+            <label for="faction-poster-fontColor-4">Hexadecimal </label>
+            <input id="faction-poster-fontColor-4" class="poster-hexa" type="text" placeholder="#{{posterOpt.fontColor|hexa}}">
+        </p>
+        <h4>Background color</h4>
+        <p>
+            <label for="faction-poster-background-0">Red </label>
+            <input id="faction-poster-background-0" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
+            <label for="faction-poster-background-1">Green </label>
+            <input id="faction-poster-background-1" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
+            <label for="faction-poster-background-2">Blue </label>
+            <input id="faction-poster-background-2" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
+            <label for="faction-poster-background-3">Transparency </label>
+            <input id="faction-poster-background-3" type="range" min="0" max="255" value="{{posterOpt.background.3}}">
+            <label for="faction-poster-background-4">Hexadecimal </label>
+            <input id="faction-poster-background-4" class="poster-hexa" type="text" placeholder="#{{posterOpt.background|hexa}}">
+        </p>
+        <h4>Icons and font</h4>
+        <p>
+            <label for="faction-poster-iconType-0">Icon: </label>
+            <select id="faction-poster-iconType-0">
+                <option value="0" {% if 0 == posterOpt.iconType.0 %}selected{% endif %}>Green</option>
+                <option value="1" {% if 1 == posterOpt.iconType.0 %}selected{% endif %}>Light Green</option>
+                <option value="2" {% if 2 == posterOpt.iconType.0 %}selected{% endif %}>Grey</option>
+                <option value="3" {% if 3 == posterOpt.iconType.0 %}selected{% endif %}>Blue</option>
+            </select>
+            <label for="faction-poster-fontFamily-0">Font family: </label>
+            <select id="faction-poster-fontFamily-0">
+                {% for k, v in fonts.items %}
+                    <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>{{v.0}}</option>
+                 {% endfor %}
+            </select>
+        </p>
+    </form>
+</div>
+
+<hr class="sep">
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <ul>
+    <li>
+      {% if faction.posterHeadImg %}Update{% else %}Add{% endif %} poster header
+      <input type="hidden" name="upload_image" value="1">
+      <input type="hidden" name="upload_head" value="1">
+      <input type="file" name="posterHeadImg" accept="image/*" id="id_posterHeadImg" required>
+      <button type="submit">Upload</button>
+    </li>
+  </ul>
+</form>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <ul>
+    <li>
+      Add poster footer
+      <input type="hidden" name="upload_image" value="1">
+      <input type="hidden" name="upload_tail" value="1">
+      <input type="file" name="posterTailImg" accept="image/*" id="id_posterTailImg" required>
+      <button type="submit">Upload</button>
+    </li>
+  </ul>
+</form>
+<hr class="sep">
+
+<div style="width: 55%; margin: 0 auto;">
+    <p><a href="{{faction.posterImg.url}}" target="_blank" atl="faction upgrade tree">
+        <img src="{{faction.posterImg.url}}?cache={{random}}" style="border: solid 1px;" width="100%">
+    </a></p>
+    <p><a href="{{faction.posterGymImg.url}}" target="_blank" atl="faction upgrade tree">
+        <img src="{{faction.posterGymImg.url}}?cache={{random}}" style="border: solid 1px;" width="100%">
+    </a></p>
+</div>
+
+
+{%endif%}
+</div>

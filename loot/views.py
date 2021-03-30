@@ -16,63 +16,60 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
-
+# django
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.db import connection
 
+# standard
 import json
 
-from yata.handy import returnError
+# yata
+from yata.handy import *
 from player.models import Player
-from loot.models import NPC
+from loot.models import *
 
 
 def index(request):
     try:
-        if request.session.get('player'):
-            print('[view.loot.index] get player id from session')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            player.lastActionTS = int(timezone.now().timestamp())
-            player.active = True
-            player.save()
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-            context = {"player": player, "NPCs": [npc for npc in NPC.objects.filter(show=True).order_by('tId')]}
-            return render(request, "loot.html", context)
+        if player.tId > 0 and request.POST.get("type") in ["npc-vote", "npc-schedule"]:
+            npc = NPC.objects.filter(show=True, tId=request.POST.get("npc_id")).first()
+            if npc is not None:
+                timestamp = int(request.POST.get("schedule_timestamp"))
+                timestamp -= timestamp % 3600
+                scheduled_attack = npc.scheduledattack_set.filter(timestamp=timestamp).first()
+                if scheduled_attack is None:
+                    scheduled_attack = npc.scheduledattack_set.create(timestamp=timestamp, author=f'{player.name} [{player.tId}]')
 
-        else:
+                users = json.loads(scheduled_attack.users)
+                if str(player.tId) in users:
+                    del users[str(player.tId)]
+                else:
+                    users[str(player.tId)] = f'{player.name} [{player.tId}]'
 
-            player = Player.objects.filter(tId=-1).first()
-            context = {"player": player, "NPCs": [npc for npc in NPC.objects.filter(show=True).order_by('tId')]}
-            return render(request, "loot.html", context)
-            # return returnError(type=403, msg="You might want to log in.")
+                scheduled_attack.vote = len(users)
+                scheduled_attack.users = json.dumps(users)
 
-    except Exception:
-        return returnError()
+                if not scheduled_attack.vote:
+                    scheduled_attack.delete()
+                else:
+                    scheduled_attack.save()
 
+                if request.POST.get("type") == "npc-vote":
+                    return render(request, "loot/vote.html", {"player": player, "sa": scheduled_attack})
 
-# API
-def timings(request):
-    try:
-        npcs = dict({})
-        for npc in NPC.objects.filter(show=True).order_by('tId'):
-            t = npc.lootTimings()
-            c = npc.lootTimings("current")
-            n = npc.lootTimings("next")
-            del t[0]
-            npcs[npc.tId] = {
-                "name": npc.name,
-                "hospout": npc.hospitalTS,
-                "update": npc.updateTS,
-                "status": npc.status,
-                "timings": {k: {"due": t[k]['due'], "ts": t[k]['ts'], "pro": t[k]['pro']} for k in t},
-                "levels": {'current': c['lvl'], 'next': n['lvl']}
-                }
+        ScheduledAttack.objects.filter(timestamp__lt=tsnow()).delete()
+        scheduled_attacks = ScheduledAttack.objects.all().order_by("timestamp")
 
-        return HttpResponse(json.dumps(npcs, separators=(',', ':')), content_type="application/json")
+        NPCs = [npc for npc in NPC.objects.filter(show=True).order_by('tId')]
 
-    except BaseException as e:
-        return HttpResponse(json.dumps({"error": {"code": 500, "error": "{}".format(type(e))}}), content_type="application/json")
-    # return HttpResponse(json.dumps({"error": {"code": 500, "error": "API currently closed... sorry"}}), content_type="application/json")
+        context = {"player": player, "NPCs": NPCs, "scheduled_attacks": scheduled_attacks}
+        page = 'loot/content-reload.html' if request.method == 'POST' else 'loot.html'
+        page = "loot/vote.html" if request.POST.get("type") == "npc-vote" else page
+        return render(request, page, context)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

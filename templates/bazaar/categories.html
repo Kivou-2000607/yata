@@ -20,25 +20,28 @@ This file is part of yata.
 <!-- categories -->
 <form>
     {% csrf_token %}
-<table class="center tdshadow bazaar-categories">
+<table class="center-large tdshadow bazaar-categories">
     <tbody>
     <tr>
         <td>
-            <a href="{% url 'bazaar:default' %}"><i class="fas fa-star"></i>&nbsp;&nbsp;Default</a>
+            <a href="{% url 'bazaar:default' %}"><i class="fas fa-star fa-icon-inline"></i>Default</a>
         </td>
         <td>
-            <a href="{% url 'bazaar:sets' %}"><i class="fas fa-plane-departure"></i>&nbsp;&nbsp;Sets</a>
+            <a href="{% url 'bazaar:sets' %}"><i class="fas fa-gopuram fa-icon-inline"></i>Museum</a>
         </td>
         {% if player.tId > 0%}
             <td>
-                <a href="{% url 'bazaar:custom' %}"><i class="fas fa-heart"></i>&nbsp;&nbsp;Custom</a>
+                <a href="{% url 'bazaar:custom' %}"><i class="fas fa-heart fa-icon-inline"></i>Custom</a>
             </td>
         {% endif %}
         <td>
-            <a href="{% url 'bazaar:top10' %}"><i class="fas fa-shopping-cart"></i>&nbsp;&nbsp;Top 10</a>
+            <a href="{% url 'bazaar:top10' %}"><i class="fas fa-shopping-cart fa-icon-inline"></i>Top 10</a>
         </td>
         <td>
-            <a href="{% url 'bazaar:all' %}"><i class="fas fa-list"></i>&nbsp;&nbsp;All</a>
+            <a href="{% url 'bazaar:all' %}"><i class="fas fa-list fa-icon-inline"></i>All</a>
+        </td>
+        <td>
+            <a href="{% url 'bazaar:abroad' %}"><i class="fas fa-plane-departure fa-icon-inline"></i>Foreign Stock</a>
         </td>
     </tr>
     </tbody>

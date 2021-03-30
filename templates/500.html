@@ -1,5 +1,6 @@
+{% extends 'base-error.html' %}
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -17,52 +18,27 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
-{% load static %}
-{% load i18n %}
-{% load app_filters %}
+{% block title %}YATA - Error 500{% endblock %}
+{% block header %}<i class="fas fa-bomb fa-icon-inline"></i>Error 500: Server Error{% endblock %}
+{% block text %}
+  <p>This is not normal.</p>
 
-{% get_current_language as LANGUAGE_CODE %}
+    <p>
+      Please check if a similar issue has been reported:
+    </p>
 
-<!-- Current language: {{ LANGUAGE_CODE }} -->
-<html lang="{{ LANGUAGE_CODE }}">
-<head>
+    <ul>
+        <li>On the <a href='{% url "discord" %}' target="_blank">discord server</a> in <tt>#bug-and-issues</tt>.</li>
+        <li>On the <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16100118" target="_blank">forum thread</a>.
+    </ul>
 
-    <!-- load fontawesome -->
-    <!-- https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/base.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "admin/css/forms.css" %} />
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/base.css" %} />
-
-    <!-- favicon -->
-    <link rel="icon" type="image/png" href={% static "images/items/268/small.png" %} />
-
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-
-    <title>YATA - Error 500</title>
-</head>
-
-<body>
-    <div id="container" style="margin-top: 20px;">
-        <div id="content">
-            <h1>{% include "svg/yata.full.svg" %}</h1>
-
-            <h2 class="title"><i class="fas fa-bomb"></i>&nbsp;&nbsp;Error 500: Server Error</h2>
-            <div class="module">
-                <p>This is not normal.
-                Please contact {{"Kivou"|playerURL:"2000607"|safe}} and copy paste this message:</p>
-                <pre>{{exception}}</pre>
-                {% if home %}
-                    <p><a class="valid" href="{% url 'index' %}"><i class="fas fa-home"></i>&nbsp; Home</a></p>
-                {% endif %}
-            </div>
-
-        </div> <!--end of content-->
-    </div> <!--end of container-->
-</body>
-</html>
+    <p>And if not please report the error by copy pasting the following:</p>
+    {% if exception %}
+      <pre>{{exception}}</pre>
+    {% else %}
+      <pre>No proper error messages have been found because YATA has been coded with the feet.</pre>
+    {% endif %}
+    <p>Please don't PM <a href="https://discord.com/channels/581227228537421825/625796758164733988" target=_blank>Kivou [2000607]</a>.<br /><br />
+      Thanks!
+    </p>
+{% endblock %}

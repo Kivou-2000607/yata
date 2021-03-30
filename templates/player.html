@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css%}
-    <link rel="stylesheet" type="text/css" href={% static "perso/css/player.css" %} />
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/player.css" %} />
 {% endblock%}
 
 {% block title%}
@@ -10,6 +10,8 @@
 {% endblock %}
 
 {% block jquery %}
+<script src='{% static "yata/js/player/player.js" %}'></script>
+
 {% endblock %}
 
 {% block content %}
@@ -17,5 +19,4 @@
         {% include "player/content-reload.html" %}
     </div>
 
-    {# tutorial #}
 {% endblock %}

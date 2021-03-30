@@ -1,0 +1,33 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if currentSimu %}
+<div class="module rounded warning">
+  {{currentSimu.player}} is modifying the simulation ({{currentSimu.delta|ts2ago}}).
+</div>
+{% endif %}
+
+<h2 class="title"><i class="fas fa-project-diagram fa-icon-inline"></i>Respect Simulator<span id="faction-tree-reset" class="flush-right"><a href=""><i class="fas fa-toilet-paper fa-icon-inline"></i>Reset simulation</a></span><span id="faction-tree-refresh" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Refresh faction upgrades</a></span></h2>
+<div id="faction-upgrade-tree" class="module">
+    {% include "faction/simulator/table.html" %}
+</div>

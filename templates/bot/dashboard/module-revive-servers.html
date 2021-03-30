@@ -1,0 +1,32 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+<div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
+    <p>{{v.help|safe}}{% if v.tooltip%} <i style="cursor: help;" class="fas fa-question-circle" title="{{v.tooltip|safe}}"></i>{%endif%}</p>
+    <div class="pagination-list">
+        {% include "bot/dashboard/module-revive-servers-table.html" with config=v %}
+    </div>
+</div>

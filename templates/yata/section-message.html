@@ -21,8 +21,22 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-{% if sectionMessage %}
-    <div class="module rounded">
-        <span class="neutral"><i class="fas fa-info-circle"></i>&nbsp;&nbsp;{{sectionMessage.text|safe}}</span><span class="flush-right"><i>{{sectionMessage.authorName|playerURL:sectionMessage.authorId|safe}},&nbsp;{{sectionMessage.date}}</i></span>
-    </div>
+{% if sectionMessages|length %}
+  <div class="module rounded">
+  {% for sm in sectionMessages %}
+          <p>
+            {% if sm.2 == "warning" %}
+              <span title="Warning" class="warning">
+                <i class="fas fa-exclamation-triangle fa-icon-inline"></i>
+            {% elif sm.2 == "error" %}
+              <span title="Danger" class="error">
+                <i class="fas fa-radiation-alt fa-icon-inline"></i>
+            {% else %}
+              <span title="Notice" class="neutral">
+                <i class="fas fa-info-circle fa-icon-inline"></i>
+            {% endif %}
+            {{sm.0|title}}</span><span style="margin-left:10px;">{{sm.1|safe}}</span>
+          </p>
+  {% endfor %}
+  </div>
 {% endif %}

@@ -1,0 +1,31 @@
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<table class="tooltip">
+    <head>
+        <tr>
+            <th colspan="2">Statistics over {{contributors|length}} members</th>
+        </tr>
+    </head>
+    <body>
+        <tr>
+            <td class="title">Total</td>
+            <td class="value">{{s.0|floatformat:0|intcomma}}</td>
+        </tr>
+        <tr>
+            <td class="title">Mean</td>
+            <td class="value">{{s.1|floatformat:1|intcomma}}</td>
+        </tr>
+        <tr>
+            <td class="title">Standard deviation</td>
+            <td class="value">{{s.2|floatformat:1|intcomma}}</td>
+        </tr>
+        <tr>
+            <td class="title">Coefficient of variation</td>
+            <td class="value">{{s.3|floatformat:2}}</td>
+        </tr>
+    </body>
+</table>

@@ -1,0 +1,77 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+
+<script>
+    $(document).ready(function() {
+        $("#target-attacks-breakdown-type").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
+        $("#target-attacks-breakdown-player").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
+    });
+</script>
+
+
+<div class="container">
+    <div class="overlay close"></div>
+    <div class="modal-center-large">
+        <h2 class="title"><i class="fas fa-list-ul fa-icon-inline"></i>Breakdown</h2>
+        <div class="module">
+            <table id="target-attacks-breakdown-type" class="center-full-half trshadow target-attacks-breakdown">
+                <thead>
+                    <tr>
+                        <th>Result</th>
+                        <th>Outgoing</th>
+                        <th>Incoming</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k, v in breakdownType %}
+                        <tr>
+                            <td class="a">{{k}}</td>
+                            <td class="b">{{v.0}}</td>
+                            <td class="b">{{v.1}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <table id="target-attacks-breakdown-player" class="center-full-half trshadow target-attacks-breakdown">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Outgoing</th>
+                        <th>Incoming</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k, v in breakdownPlayer %}
+                        <tr>
+                            <td class="a">{{v.2|playerURL:k|safe}}</td>
+                            <td class="b">{{v.0}}</td>
+                            <td class="b">{{v.1}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr sytle="display: none;">
+        </div>
+    </div>
+</div>

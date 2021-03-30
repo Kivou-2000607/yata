@@ -1,5 +1,5 @@
 """
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -20,73 +20,141 @@ This file is part of yata.
 import json
 import math
 
-from yata.handy import apiCall
-from chain.functions import BONUS_HITS
+from yata.handy import *
+from faction.functions import BONUS_HITS
+from faction.functions import modifiers2lvl1
+from target.models import *
 
 
-def updateAttacks(player):
-    tId = player.tId
-    key = player.key
-    targetJson = json.loads(player.targetJson)
+def updateAttacks(player, full=False):
+    from target.models import Attack
 
-    error = False
-    req = apiCall('user', "", 'attacks,timestamp', key)
+    # if tsnow() - player.attacksUpda < 15 * 60:
+    #     return False, player.attack_set.all()
+
+    query = 'attacksfull,timestamp' if full else 'attacks,timestamp'
+    req = apiCall('user', "", query, player.getKey())
     if 'apiError' in req:
-        error = req
+        return req, player.attack_set.order_by("-timestamp_ended").all()
+
+    attacks = req.get("attacks", dict({}))
+    timestamp = req.get("timestamp", 0)
+
+    # in case 0 attacks API returns []
+    if not len(attacks):
+        attacks = dict({})
+
+    remove = []
+    old = tsnow() - 2678400  # 1 month old
+    batch = Attack.objects.bulk_operation()
+    for k, v in attacks.items():
+        if v["timestamp_ended"] < old:
+            continue
+
+        if full:
+            v["attacker_name"] = "Player"
+            v["attacker_factionname"] = "Faction"
+            v["defender_name"] = "Player"
+            v["defender_factionname"] = "Faction"
+            v["chain"] = 0
+            v["modifiers"] = {"fair_fight": 1, "war": 1, "retaliation": 1, "group_attack": 1, "overseas": 1, "chain_bonus": 1}
+
+        # ignore stealth incoming
+        if v.get("stealthed") and v["defender_id"] == player.tId:
+            continue
+
+        if v["attacker_id"] == player.tId:
+            v["attacker"] = True
+            v["targetId"] = v["defender_id"]
+        else:
+            v["attacker"] = False
+            v["targetId"] = v["attacker_id"]
+
+        if v["chain"] in BONUS_HITS:
+            # case attacker and bonus hit
+            v["flat_respect"] = float(v["respect"]) / float(v['modifiers']['chain_bonus'])
+            v["bonus"] = v["chain"]
+
+        else:
+            allModifiers = 1.0
+            for mod in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus"]:
+                allModifiers *= float(v['modifiers'].get(mod, 1))
+            if v["result"] == "Mugged":
+                allModifiers *= 0.75
+            base_respect = float(v["respect"]) / allModifiers
+            level = 1 if full else int(math.exp(4. * base_respect - 1))
+            v["base_respect"] = base_respect
+            v["flat_respect"] = float(v['modifiers']["fair_fight"]) * base_respect
+            v["bonus"] = 0
+            v["level"] = level
+
+        if v["defender_name"] == "Gareth-Bale":
+            print(f'{allModifiers}')
+
+        v = modifiers2lvl1(v)
+
+        batch.update_or_create(tId=int(k), player_id=int(player.id), defaults=v)
+
+
+    if batch.count():
+        batch.run()
+    player.attack_set.filter(timestamp_ended__lt=old).delete()
+
+    player.attacksUpda = int(timestamp)
+    player.save()
+
+    return False, player.attack_set.order_by("-timestamp_ended").all()
+
+
+def getTargets(player):
+    targets = dict({})
+
+    # get Target Info of the player
+    for targetInfo in player.targetinfo_set.all():
+        _, target_id, target = targetInfo.getTarget()
+        targets[target_id] = target
+
+    return targets
+
+
+def updateRevives(player):
+    tId = player.tId
+    key = player.getKey()
+
+    req = apiCall('user', "", 'revives,timestamp', key)
+    if 'apiError' in req:
+        return req, player.revive_set.order_by("-timestamp").all()
     else:
-        attacks = req.get("attacks", dict({}))
+        revives = req.get("revives", dict({}))
         timestamp = req.get("timestamp", 0)
 
-        # in case 0 attacks API returns []
-        if not len(attacks):
-            attacks = dict({})
+        # needs to convert to dict if empty because if empty returns []
+        if not len(revives):
+            revives = dict({})
 
-        remove = []
-        for k, v in attacks.items():
-            v["defender_id"] = str(v["defender_id"])  # have to string for json key
-            if v["defender_id"] == str(tId):
-                if v.get("attacker_name") is not None:
-                    attacks[k]["defender_id"] = str(v.get("attacker_id"))
-                    attacks[k]["defender_name"] = v.get("attacker_name")
-                    attacks[k]["bonus"] = 0
-                    attacks[k]["result"] += " you"
-                    attacks[k]["endTS"] = int(v["timestamp_ended"])
-                else:
-                    remove.append(k)
+        # get database revives and delete 1 month old
+        player_revives = player.revive_set.all()
+        lastMonth = timestamp - 31 * 24 * 3600
+        player_revives.filter(timestamp__lt=lastMonth).delete()
 
-            elif int(v["chain"]) in BONUS_HITS:
-                attacks[k]["endTS"] = int(v["timestamp_ended"])
-                attacks[k]["flatRespect"] = float(v["respect_gain"]) / float(v['modifiers']['chainBonus'])
-                attacks[k]["bonus"] = int(v["chain"])
+        for k, v in revives.items():
+            exists = len(player_revives.filter(tId=int(k)))
+            old = v.get("timestamp", 0) < lastMonth
+            if not old:
+                revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unkown")
+                revives[k]["target_last_action_timestamp"] = revives[k]["target_last_action"].get("timestamp", 0)
+                del v["target_last_action"]
+                v["result"] = v["result"] == "success"
+                try:
+                    player.revive_set.get_or_create(tId=int(k), defaults=v)
+                except BaseException:
+                    player.revive_set.filter(tId=int(k)).all().delete()
+                    player.revive_set.get_or_create(tId=int(k), defaults=v)
 
-            else:
-                allModifiers = 1.0
-                for mod, val in v['modifiers'].items():
-                    allModifiers *= float(val)
-                if v["result"] == "Mugged":
-                    allModifiers *= 0.75
-                baseRespect = float(v["respect_gain"]) / allModifiers
-                level = int(math.exp(4. * baseRespect - 1))
-                attacks[k]["endTS"] = int(v["timestamp_ended"])
-                attacks[k]["flatRespect"] = float(v['modifiers']["fairFight"]) * baseRespect
-                attacks[k]["bonus"] = 0
-                attacks[k]["level"] = level
-                if int(v['modifiers']["war"]) == 2:
-                    attacks[k]["modifiers"]["fairFight"] = 0
-
-        for k in remove:
-            del attacks[k]
-
-        targetJson["attacks"] = attacks
-        player.targetJson = json.dumps(targetJson)
-        nTargets = 0 if "targets" not in targetJson else len(targetJson["targets"])
-        player.targetInfo = "{}".format(nTargets)
-        # player.targetUpda = int(timezone.now().timestamp())
-        player.targetUpda = int(timestamp)
-        # player.lastUpdateTS = int(timezone.now().timestamp())
+        player.revivesUpda = int(timestamp)
         player.save()
 
-    return error
+    return False, player.revive_set.order_by("-timestamp").all()
 
 
 def convertElaspedString(str):

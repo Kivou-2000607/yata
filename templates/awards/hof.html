@@ -22,9 +22,11 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+
 <script>
         $(document).ready(function() {
-            $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [3,1]]});
+            // $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [3,1]]});
 
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -33,7 +35,7 @@ This file is part of yata.
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                 {% for h, c, s, im, p, r in graph %}
-                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|honorUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src=\"{% url_img_honor im %}\" atl=\"{{h|safe}}\" height=\"19px;\" /></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -59,7 +61,7 @@ This file is part of yata.
                 var data2 = google.visualization.arrayToDataTable([
                     ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
                     {% for h, c, s, im, p, r in graph2 %}
-                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={{im|medalUrl|safe}} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src=\"{% url_img_medal im %}\" atl=\"{{h|safe}}\" height=\"19px;\"></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
                     {% endfor %}
                 ]);
 
@@ -120,37 +122,15 @@ This file is part of yata.
         });
 </script>
 
-<script type="text/javascript" src={% static "perso/js/tooltip.js" %}></script>
+{% include "awards/pin.html" %}
 
-<h2 class="title">Hall of fame (top 50)</h2>
+<h2 class="title"><i class="fas fa-crown fa-icon-inline"></i>Hall of fame</h2>
 <div class="module">
 
     <!-- hof -->
-    <table id="awards-hof" class="center trshadow awards-hof">
-        <thead>
-            <tr>
-                <th>rank</th>
-                <th>Name</th>
-                <th>Faction</th>
-                <th>Awarded</th>
-                <th>Rarity score</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for k in hof %}
-                <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
-                    <td class="a">#{{k.player.awardsRank}}</td>
-                    <td class="b">{{k.player.name|playerURL:k.player.tId|safe}}</a></td>
-                    <td class="b">{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
-                    <td class="c" title="{{k.nAwarded}} / {{k.nAwards}}" rel="tooltip">{{k.nAwarded|div:k.nAwards|mul:100|floatformat:2}}%</td>
-                    <td class="c">{{k.rscore|floatformat:4}}%</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <table class="center-large">
-        <tr><td><div id="chartHOF"></div></td></tr>
-    </table>
+    <div class="pagination-list">
+      {% include "awards/hof-list.html"%}
+    </div>
     <table class="center-large">
         <tr><td><div id="chart"></div></td></tr>
         <tr><td><div id="chart2"></div></td></tr>

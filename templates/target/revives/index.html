@@ -1,0 +1,40 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if revives %}
+
+<div id="revives-breakdown"></div>
+
+<h2 class="title"><i class="fas fa-heartbeat fa-icon-inline"></i>List of recent revives<span id="targets-revives-breakdown" class="flush-right"><a href=""><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a></span></h2>
+<div class="module">
+    <div class="pagination-list">
+        {% include "target/revives/revives.html"%}
+    </div>
+    <p class="update-info">Last update of the list: {{player.revivesUpda|ts2date}}</p>
+
+</div>
+
+{% else %}
+<div class="module rounded">
+    <span class="error">It seems you didn't make any revives this month...</span>
+</div>
+{% endif %}

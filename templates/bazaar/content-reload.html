@@ -21,4 +21,14 @@ This file is part of yata.
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
 
-{% include "bazaar/loop-types.html" %}
+{% if view.loopType %}
+    {% include "bazaar/loop-types.html" %}
+{% endif %}
+
+{% if view.loopSets %}
+    {% include "bazaar/loop-sets.html" %}
+{% endif %}
+
+{% if view.abroad %}
+    {% include "bazaar/abroad/index.html" %}
+{% endif %}

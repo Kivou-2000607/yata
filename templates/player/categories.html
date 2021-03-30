@@ -1,0 +1,38 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<!-- categories -->
+<form>
+    {% csrf_token %}
+<table class="center tdshadow player-categories">
+    <tbody>
+    <tr>
+        <td>
+            <a href="{% url 'player:merits' %}"><i class="fas fa-medal fa-icon-inline"></i>Merits simulator</a>
+        </td>
+        <td>
+            <a href="{% url 'player:stats' %}"><i class="fas fa-chart-line fa-icon-inline"></i>Personal stats</a>
+        </td>
+        <td>
+          <a class="closed-link" href="{% url 'player:gym' %}"><i class="fas fa-dumbbell fa-icon-inline"></i>Gym simulator</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</form>

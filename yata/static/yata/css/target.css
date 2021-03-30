@@ -1,0 +1,192 @@
+/*
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+table.target-categories td {
+    text-align: center;
+    /* width: 14.29%; */
+    cursor: pointer;
+    border: 0;
+}
+
+table.target-categories td a:hover,
+table.target-categories td a:focus,
+table.target-categories td a:active { text-decoration: none; color: #447e9b; }
+
+table.target-attacks tr.zero-respect       { background:#ff00001e; }
+table.target-attacks tr.max-fair-fight       { background:#d9ead3ee; }
+table.target-attacks tr.good-fair-fight       { background:#d9ead3ae; }
+table.target-attacks tr.bonus-attack       { background:#a8b6d73e; }
+table.target-attacks tr.war-attack       { background:#FF8C003e; }
+
+/* abbceddff */
+table.target-attacks td.a { width: 20%; text-align: center; }
+table.target-attacks td.b { width: 20%; text-align: left; }
+table.target-attacks td.c { width: 10%; text-align: left; }
+table.target-attacks td.d { width: 7.5%; text-align: center; } /* x2 */
+table.target-attacks td.e { width: 5%; text-align: center; }
+table.target-attacks td.f { width: 5%; text-align: center; }
+
+/* a c bb bbb */
+table.target-losses td.a { width: 25%; text-align: left; }
+table.target-losses td.c { width: 25%; text-align: center; }
+table.target-losses td.b { width: 10%; text-align: center; }
+table.target-losses tr.needpay { background:#FF8C003e; }
+
+table.target-targets td.a { width: 7%; text-align: left; } /* x2 */
+table.target-targets td.b { width: 10%; text-align: left; }
+table.target-targets td.c { width: 7%; text-align: center; } /* x3 */
+table.target-targets td.d { width: 8%; text-align: center; }
+table.target-targets td.e { width: 9%; text-align: left; }
+table.target-targets td.f { width: 8%; text-align: center; }
+table.target-targets td.g { width: 2%; text-align: center; } /* x4  */
+table.target-targets td.h { width: 14%; text-align: left; }
+
+table.target-targets td.okay { color:#0B8E14; }
+table.target-targets td.not-okay { color:#CC3434; }
+table.target-targets i.not-okay { color:#aaa; }
+table.target-targets td.status { cursor: default; }
+
+table.target-revives tr.fail    { background:#ff00001e; }
+table.target-revives tr.success { background:#d9ead3ee; }
+
+/* abbbbcdeff */
+table.target-revives td.a { width: 12.5%; text-align: center; }
+table.target-revives td.b { width: 14%; text-align: left; }
+table.target-revives td.c { width: 5%; text-align: center; }
+table.target-revives td.d { width: 15%; text-align: left; }
+table.target-revives td.e { width: 5%; text-align: center; }
+table.target-revives td.f { width: 5%; text-align: center; }
+
+
+
+/* abb */
+table.target-attacks-breakdown td.a { width: 50%; text-align: left; }
+table.target-attacks-breakdown td.b { width: 25%; text-align: center; }
+
+/* abb or cdee */
+table.target-revives-breakdown td.a { width: 50%; text-align: left; }
+table.target-revives-breakdown td.b { width: 25%; text-align: center; }
+table.target-revives-breakdown td.c { width: 25%; text-align: left; }
+table.target-revives-breakdown td.d { width: 35%; text-align: left; }
+table.target-revives-breakdown td.e { width: 20%; text-align: center; }
+
+input.target-list-note {
+    height: 16px;
+    width: 80%;
+    margin-top: 2px;
+    margin-left: 5px;
+    border-width: 0px;
+    border: 0;
+    background: #00000000;
+}
+
+input.target-list-note:focus {
+    border-width: 1px;
+    outline:0;
+}
+
+div.life-bar {
+    background-color: lightgray;
+    border-radius: 4px;
+    width: 100%;
+    height: 14px;
+    display: inline-block;
+}
+
+div.life-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background-color: rgb(150,150,150);
+  box-shadow:
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  line-height:14px;
+  font-weight: bold;
+  background-color: #7d93c4;
+}
+
+/* @-webkit-keyframes need-refresh {
+  0% { background-color: #ff00001e; }
+  50% { background-color: inherit; }
+  100% { background-color: #ff00001e; }
+}
+@-moz-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@-o-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@keyframes need-refresh {
+    0% { text-shadow: 10px 10px 10px #ff00001e; }
+    50% { text-shadow: inherit; }
+    100% { text-shadow: 10px 10px 10px #ff00001e; }
+}
+
+.need-refresh {
+  -webkit-animation: need-refresh 2s infinite;
+  -moz-animation:    need-refresh 2s infinite;
+  -o-animation:      need-refresh 2s infinite;
+  animation:         need-refresh 2s infinite;
+} */
+
+.need-refresh {
+    -webkit-animation: glow .75s infinite alternate;
+    -moz-animation: glow .75s infinite alternate;
+    -o-animation: glow .75s infinite alternate;
+    animation: glow .75s infinite alternate;
+}
+
+@keyframes glow {
+    to {
+        text-shadow: 0 0 10px #CC3434;
+        color: #A02525;
+    }
+}
+
+
+span.target-list-color-click {
+    cursor: pointer;
+}
+
+a.target-color-1,
+span.target-color-1,
+input.target-color-1 {
+    color: #30C63B  !important; /* green */
+    cursor: pointer;
+}
+a.target-color-2,
+span.target-color-2,
+input.target-color-2 {
+    color: #FFB24F !important; /* orange */
+    cursor: pointer;
+}
+a.target-color-3,
+span.target-color-3,
+input.target-color-3 {
+    color: #FF4F4F !important; /* red */
+    cursor: pointer;
+}

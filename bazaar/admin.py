@@ -22,6 +22,8 @@ from django.contrib import admin
 from .models import MarketData
 from .models import Item
 from .models import BazaarData
+from .models import AbroadStocks
+from .models import VerifiedClient
 
 
 class BazaarDataAdmin(admin.ModelAdmin):
@@ -45,6 +47,14 @@ class MarketDataAdmin(admin.ModelAdmin):
 admin.site.register(MarketData, MarketDataAdmin)
 
 
+class AbroadStocksAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'client', 'item', 'country', 'cost', 'quantity', 'timestamp', 'last']
+    list_filter = ['country', 'client', 'last', 'item__tType']
+
+
+admin.site.register(AbroadStocks, AbroadStocksAdmin)
+
+
 def remove_from_market(modeladmin, request, queryset):
     queryset.update(onMarket=False)
 
@@ -55,7 +65,7 @@ def put_on_market(modeladmin, request, queryset):
 
 class ItemAdmin(admin.ModelAdmin):
     class Media:
-        css = {'all': ('perso/css/admin.css',)}
+        css = {'all': ('yata/css/admin.css',)}
 
     list_display = ['tName', 'tId', 'tType', 'lastUpdateTS', 'tMarketValue', 'onMarket']
     inlines = [MarketDataInline]
@@ -63,4 +73,21 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter = ['onMarket', 'tType']
     search_fields = ['tName', 'tId', 'tType']
 
+
 admin.site.register(Item, ItemAdmin)
+
+
+def verify(modeladmin, request, queryset):
+    queryset.update(verified=True)
+
+
+def unverify(modeladmin, request, queryset):
+    queryset.update(verified=False)
+
+
+class VerifiedClientAdmin(admin.ModelAdmin):
+    list_display = ['name', 'author_name', 'author_id', 'version', 'verified']
+    actions = [verify, unverify]
+
+
+admin.site.register(VerifiedClient, VerifiedClientAdmin)

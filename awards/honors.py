@@ -38,7 +38,7 @@ d = {
     231: 175241290,  # Discovery
     566: 572050307,  # You've Got Some Nerve
     572: 422587009,  # Motorhead
-    164: 789829185,  # Keen
+    # 164: 789829185,  # Keen
     5: 647299034,  # Journalist
     620: 195436798,  # OP
     156: 951557928,  # RDD
@@ -46,6 +46,16 @@ d = {
     614: 670053246,  # Honored
     734: 182849928,  # Wrecked
     288: 317742122,  # Fresh Start
+    571: 559214781,  # Chequered Past
+    334: 204652023,  # Compulsive
+    581: 832763049,  # On Track
+    839: 172807476,  # RNG
+    845: 410458383,  # Historian
+    860: 562883592,  # Landlord
+    888: 525693299,  # Nice
+    4: 904962349,  # Intern
+    164: 738476338,  # Stuck in a Rut
+    742: 541423641,  # Overtime
 
     # 1
     171: 228001376,  # Afghanistan
@@ -172,7 +182,19 @@ d = {
     143: 744664817,  # Pin Puller
     515: 245161575,  # Unarmed
     491: 638480635,  # Modded
-    778: 714786529,  # Specialist
+    800: 956179599,  # Surplus
+    793: 144692020,  # Bandolier
+    611: 433435448,  # War Machine
+    791: 891318875,  # Quartermaster
+    778: 615034470,  # Specialist
+    851: 631155576,  # Mod Boss
+    871: 890122926,  # Leonidas
+    902: 397903095,  # Gone Finishing
+    942: 926285168,  # Maimed
+    943: 913517772,  # Penetrated
+    944: 393014668,  # Scorched
+    945: 148152221,  # Marked
+    951: 388620477,  # Dragon's Breath
 
     # 3
     39: 198010293,  # Woodland Camo
@@ -210,6 +232,7 @@ d = {
     659: 494666789,  # Clever Dick
     651: 693932389,  # Wise Guy
     656: 513618856,  # Whiz Kid
+    844: 215268269,  # Working Bee
 
     # 5
     25: 566282329,  # Candy Man
@@ -261,6 +284,8 @@ d = {
     541: 456129092,  # Mule
     542: 500114722,  # Smuggler
     543: 267993904,  # Trafficker
+    853: 661177633,  # Souvenir
+    846: 832087778,  # International
 
     # 8
     20: 778719620,  # Precision
@@ -304,6 +329,25 @@ d = {
     740: 853474729,  # Devastation
     488: 918833578,  # Vengeance
     781: 235478737,  # Riddled
+    741: 257870729,  # Obliteration
+    786: 401026803,  # Annihilation
+    719: 240076845,  # Invictus
+    834: 265487578,  # Lead Salad
+    828: 502452396,  # Final
+    827: 501001885,  # Deadly Duo
+    836: 886071515,  # Peppered
+    838: 948029275,  # Lovestruck
+    843: 751068112,  # Hands Solo
+    670: 177445753,  # Giant Slayer
+    896: 876587407,  # Going Postal
+    641: 150619086,  # Strongest Link
+    414: 606974195,  # Triple Tap
+    955: 491353134,  # Yoink
+    916: 947193097,  # Chain Saver
+    1001: 912394006,  # Boom!
+    1002: 589863560,  # Bam!
+    1003: 149967611,  # Kapow!
+    1004: 101698604,  # Wham!
     476: 0,  # Chainer 5
 
     # 9
@@ -314,7 +358,7 @@ d = {
     269: 739646998,  # Spinner
     327: 796833908,  # One in Six
     326: 156400756,  # Highs and Lows
-    513: 814368109,  # Daddys New Shoes
+    513: 216607095,  # Daddys New Shoes
     276: 494694037,  # Lucky Break
     275: 689389128,  # Jackpot
     237: 446331026,  # Poker King
@@ -350,6 +394,7 @@ d = {
     498: 914416584,  # Shielded
     690: 662053219,  # Ripped
     704: 174689730,  # Shredded
+    700: 706832937,  # Leaderboard
 
     # 11
     163: 431464057,  # Fascination
@@ -365,6 +410,9 @@ d = {
     219: 534607883,  # Social Butterfly
     246: 536984897,  # Pyramid Scheme
     166: 507297243,  # Stairway To Heaven
+    375: 994774255,  # Resolution
+    731: 782638013,  # Tornication
+    873: 276392311,  # Welcome
 
     # 12
     18: 978797305,  # Another Brick In The Wall
@@ -404,6 +452,9 @@ d = {
     263: 936063655,  # Survivor
     729: 406130587,  # Hairy
     730: 841650925,  # Backdrop
+    969: 524309184,  # Phantastic
+    964: 775408521,  # Something Humerus
+    966: 0,  # Oh My Gourd!
 
     # 14
     12: 533285823,  # Pocket Money
@@ -416,6 +467,7 @@ d = {
     521: 120811903,  # Saintly
     523: 899062871,  # Devout
     522: 768442023,  # Sacrificial
+    869: 798918905,  # Monopoly
 
     # 15
     367: 474813486,  # Clotted
@@ -423,13 +475,18 @@ d = {
     418: 832724939,  # Transfusion
     7: 559177183,  # Magical Veins
     398: 670385087,  # Anaemic
-    4: 408554952,  # I'm a Real Doctor
+    # 4: 408554952,  # I'm a Real Doctor
     248: 922672544,  # Bar Breaker
     252: 937648106,  # Freedom Isn't Free
     23: 493291412,  # Florence Nightingale
     249: 359869168,  # Aiding And Abetting
     267: 856740501,  # Second Chance
     250: 689889266,  # Don't Drop It
+    322: 389182165,  # Miracle Worker
+    870: 299135287,  # Resurrection
+    863: 408571758,  # Crucifixion
+    903: 233036142,  # Booboo
+    906: 442561096,  # Repeat Offender
 
     # 16
     239: 275270401,  # Middleman
@@ -446,6 +503,8 @@ d = {
     716: 877813810,  # Wipeout
     717: 254193787,  # Foul Play
     743: 273202925,  # Lavish
+    699: 725072235,  # Collector
+    882: 312835313,  # Radaway
 
     # 17
     371: 668653618,  # Protege

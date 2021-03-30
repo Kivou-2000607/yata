@@ -24,54 +24,146 @@ from django.utils import timezone
 import json
 
 from player.models import Player
-from player.models import PlayerData
-from player.models import News
-from yata.handy import returnError
+from yata.handy import *
+
+from player.forms import GymForm
+
+# def index(request):
+#     try:
+#         if request.session.get('player'):
+#             player = getPlayer(request.session["player"].get("tId"))
+#             context = {"player": player, 'playercat': True}
+#             page = "player/content-reload.html" if request.POST else "player.html"
+#             return render(request, page, context)
+#
+#         else:
+#             return returnError(type=403, msg="You might want to log in.")
+#
+#     except Exception as e:
+#         return returnError(exc=e, session=request.session)
 
 
-def readNews(request):
-    try:
-        if request.session.get('player') and request.method == 'POST':
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
-            news = News.objects.last()
-            news.player.add(player)
-
-            return HttpResponse("{} marked as read".format(news.type))
-        else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
-
-    except Exception:
-        return returnError()
-
-
-def prune(request):
+def merits(request):
     try:
         if request.session.get('player'):
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
+            player = getPlayer(request.session["player"].get("tId"))
+            context = {"player": player, 'playercat': True, 'view': {'merits': True}}
+            page = "player/content-reload.html" if request.POST else "player.html"
 
-            nPlayers = PlayerData.objects.first()
+            # update merits
+            if request.POST and "merits" in request.POST:
+                merits = dict({})
+                for it in json.loads(request.POST.get("merits")):
+                    merits[it[0]] = [int(it[1]), int(it[2])]
 
-            context = {"player": player, "nTotal": nPlayers.nTotal, "nInact": nPlayers.nInact, "nValid": nPlayers.nValid, "nInval": nPlayers.nInval, "nPrune": nPlayers.nPrune}
-            return render(request, "player.html", context)
+                k, v = json.loads(request.POST.get("simu"))
+                merits[k][0] = int(v)
+
+                merits = player.getMerits(req=merits)
+
+                context["merits"] = merits
+                context["nMerits"] = request.POST.get("n_merits", 0)
+                return render(request, "player/merits/index.html", context)
+
+            else:
+
+                req = apiCall("user", "", "personalstats,merits,honors,medals", key=player.getKey())
+
+                for key in ["merits", "honors_awarded", "medals_awarded", "personalstats"]:
+                    if key not in req:
+                        context["apiErrorSub"] = req["apiError"] if "apiError" in req else "#blameched"
+                        break
+
+                if "apiErrorSub" not in context:
+                    merits = player.getMerits(req=req["merits"])
+                    context["nMerits"] = len(req.get("honors_awarded")) + len(req.get("medals_awarded")) + int(req["personalstats"].get("meritsbought", 0))
+                    context["merits"] = merits
+
+                return render(request, page, context)
+
         else:
             return returnError(type=403, msg="You might want to log in.")
 
-    except Exception:
-        return returnError()
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 
-def number(request):
+def stats(request):
     try:
-        lastActions = dict({})
-        nPlayers = PlayerData.objects.first()
-        lastActions["hour"] = nPlayers.nHour
-        lastActions["day"] = nPlayers.nDay
-        lastActions["month"] = nPlayers.nMonth
-        lastActions["total"] = nPlayers.nTotal
-        lastActions["string"] = "{} / {} / {} / {}".format(lastActions["total"], lastActions["month"], lastActions["day"], lastActions["hour"])
-        return HttpResponse(json.dumps(lastActions), content_type="application/json")
-    except BaseException:
-        return returnError()
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            context = {"player": player, 'playercat': True, 'view': {'stats': True}}
+            page = "player/content-reload.html" if request.POST else "player.html"
+
+            req = apiCall("user", "", "personalstats", key=player.getKey())
+
+            for key in ["personalstats"]:
+                if key not in req:
+                    context["apiErrorSub"] = req["apiError"] if "apiError" in req else "#blameched"
+                    break
+
+            if "apiErrorSub" not in context:
+                context["personalstats"] = player.getPersonalstats(req=req["personalstats"])
+
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def gym(request):
+    # # if this is a POST request we need to process the form data
+    # if request.method == 'POST':
+    #     # create a form instance and populate it with data from the request:
+    #     form = GymForm(request.POST)
+    #     # check whether it's valid:
+    #     if form.is_valid():
+    #         # process the data in form.cleaned_data as required
+    #         # ...
+    #         # redirect to a new URL:
+    #         return HttpResponseRedirect('/thanks/')
+    #
+    # # if a GET (or any other method) we'll create a blank form
+    # else:
+    #     form = NameForm()
+    #
+    # return render(request, 'name.html', {'form': form})
+
+    try:
+        player = getPlayer(request.session.get('player', {}).get("tId", -1))
+        context = {"player": player, 'playercat': True, 'view': {'gym': True}}
+        page = "player/content-reload.html" if request.POST else "player.html"
+
+        # init value if logged in
+        # if player.tId > 0:
+        #     req = apiCall("user", "", "personalstats", key=player.getKey())
+        #
+        #     for key in ["personalstats"]:
+        #         if key not in req:
+        #             context["apiErrorSub"] = req["apiError"] if "apiError" in req else "#blameched"
+        #             break
+        #
+        #     if "apiErrorSub" not in context:
+        #         context["personalstats"] = player.getPersonalstats(req=req["personalstats"])
+
+        # if click on train
+        if request.method == 'POST':
+            form = GymForm(request.POST)
+            if form.is_valid():
+                print("VALID")
+            else:
+                print("NOT VALID")
+            print(form.cleaned_data)
+
+
+        form = GymForm()
+
+        context['form'] = form
+        return render(request, page, context)
+
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)

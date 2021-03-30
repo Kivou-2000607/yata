@@ -1,0 +1,76 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title"><i class="fas fa-fist-raised fa-icon-inline"></i>Your faction</h2>
+<div class="module">
+    <h1>Faction Events</h1>
+    {% if events|length %}
+    <div class="faction-event-container">
+        {% for event in events %}
+            {% include "faction/events/index.html" %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1>Reports currently being computed</h1>
+    <ul>
+        {% if chainsreports|length %}<li>Chains</li>
+        <ul>
+            {% for report in chainsreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:report" report.tId %}'>Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if attacksreports|length %}<li>Attacks reports</li>
+            <ul>
+            {% for report in attacksreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if revivesreports|length %}<li>Revives reports</li>
+            <ul>
+            {% for report in revivesreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:revives" report.pk %}'>Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% else %}
+                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </ul>
+    <h1>Faction target list</h1>
+    {% include "faction/targets/index.html" %}
+
+</div>

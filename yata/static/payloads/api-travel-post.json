@@ -1,0 +1,24 @@
+{
+  "country": "mex",
+  "client": "my cool script",
+  "version": "0.1",
+  "author_name": "Kivou",
+  "author_id": 2000607,
+  "items": [
+        { "id": 11, "quantity": 134, "cost": 75000 },
+        { "id": 26, "quantity": 13, "cost": 15000 },
+        { "id": 31, "quantity": 24, "cost": 950000 },
+        { "id": 107, "quantity": 85, "cost": 500000 },
+        { "id": 111, "quantity": 6, "cost": 8000 },
+        { "id": 159, "quantity": 645, "cost": 25 },
+        { "id": 177, "quantity": 12, "cost": 70000 },
+        { "id": 178, "quantity": 24, "cost": 7500 },
+        { "id": 229, "quantity": 300, "cost": 15000 },
+        { "id": 231, "quantity": 27, "cost": 45000 },
+        { "id": 232, "quantity": 27, "cost": 65000 },
+        { "id": 258, "quantity": 775, "cost": 10000 },
+        { "id": 260, "quantity": 9718, "cost": 300 },
+        { "id": 399, "quantity": 7, "cost": 20000000 },
+        { "id": 409, "quantity": 74, "cost": 20000 }
+    ]
+}

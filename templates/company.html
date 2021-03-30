@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/company.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Company
+{% endblock %}
+
+{% block jquery %}
+    <script src='{% static "yata/js/company/company.js" %}'></script>
+{% endblock %}
+
+{% block content %}
+    <div id="company-employees-details"></div>
+
+    <div id="content-update">
+        {% include "company/content-reload.html" %}
+    </div>
+{% endblock %}

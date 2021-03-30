@@ -21,29 +21,38 @@ from django.db import models
 from django.utils import timezone
 
 import json
+import numpy
 
 from yata.handy import apiCall
-from awards.functions import updatePlayerAwards
-from chain.models import Faction
-from awards.models import AwardsData
+from yata.handy import tsnow
+from yata.handy import isProxyKey
+# from awards.functions import updatePlayerAwards
+# from faction.models import Faction
+# from awards.models import AwardsData
 
 
 SECTION_CHOICES = (
-    ('B', 'bazaar'),
-    ('F', 'faction'),
-    ('T', 'target'),
-    ('A', 'awards'),
-    ('S', 'stock'),
-    ('L', 'loot'),
-    )
+    ('all', 'all'),
+    ('player', 'player'),
+    ('bazaar', 'bazaar'),
+    ('faction', 'faction'),
+    ('target', 'target'),
+    ('awards', 'awards'),
+    ('stock', 'stock'),
+    ('company', 'company'),
+    ('loot', 'loot'))
+
+LEVEL_CHOICES = (
+    ('notice', 'notice'),
+    ('warning', 'warning'),
+    ('error', 'error'))
 
 
 class Player(models.Model):
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
-    key = models.CharField(default="AAAA", max_length=16)
-    dId = models.BigIntegerField(default=0)
+    # apikey = models.CharField(default="AAAA", max_length=16)
 
     # BooleanField states
     active = models.BooleanField(default=True)
@@ -52,7 +61,16 @@ class Player(models.Model):
     # user information: faction
     factionId = models.IntegerField(default=0)
     factionAA = models.BooleanField(default=False)
-    factionNa = models.CharField(default="My Faction", max_length=32)
+    factionNa = models.CharField(default="My Faction", max_length=64)
+
+    # company
+    companyId = models.IntegerField(default=0)
+    companyTy = models.IntegerField(default=0)
+    companyDi = models.BooleanField(default=False)
+    companyNa = models.CharField(default="My Company", max_length=64)
+    wint = models.IntegerField(default=0)
+    wend = models.IntegerField(default=0)
+    wman = models.IntegerField(default=0)
 
     # user last update
     lastUpdateTS = models.IntegerField(default=0)
@@ -65,8 +83,8 @@ class Player(models.Model):
 
     # info for target APP
     targetInfo = models.CharField(default="N/A", max_length=255)
-    targetJson = models.TextField(default="{}")
-    targetUpda = models.IntegerField(default=0)
+    attacksUpda = models.IntegerField(default=0)
+    revivesUpda = models.IntegerField(default=0)
 
     # info for target APP
     bazaarInfo = models.CharField(default="N/A", max_length=255)
@@ -74,148 +92,245 @@ class Player(models.Model):
     bazaarUpda = models.IntegerField(default=0)
 
     # info for awards APP
-    awardsInfo = models.CharField(default="N/A", max_length=255)
-    awardsJson = models.TextField(default="{}")
+    # awardsInfo = models.CharField(default="N/A", max_length=255)
+    # awardsJson = models.TextField(default="{}")
     awardsUpda = models.IntegerField(default=0)
-    awardsRank = models.IntegerField(default=99999)
+    # awardsRank = models.IntegerField(default=99999)
     awardsScor = models.IntegerField(default=0)  # int(10000 x score in %)
+    awardsNumb = models.IntegerField(default=0)  # number of awards
+    awardsPinn = models.CharField(default="[]", max_length=32)
 
     # info for stocks APP
     stocksInfo = models.CharField(default="N/A", max_length=255)
     stocksJson = models.TextField(default="{}")
     stocksUpda = models.IntegerField(default=0)
 
+    # discord id and permission to give the bot the right to pull information
+    dId = models.BigIntegerField(default=0)
+    # botPerm = models.BooleanField(default=False)
+    activateNotifications = models.BooleanField(default=False)
+    notifications = models.TextField(default="{}")
+
     def __str__(self):
+        return "{} [{}]".format(self.name, self.tId)
+
+    def nameAligned(self):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
-    def update_info(self, i=None, n=None):
-        """ update player information
-
-        """
-
-        progress="{:04}/{:04}: ".format(i, n) if i is not None else ""
-
-        # API Calls
-        user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,networth,merits,profile,medals,honors,icons,bars,discord', self.key, verbose=False)
-
-        # set active
-        self.active = int(timezone.now().timestamp()) - self.lastActionTS < 60 * 60 * 24 * 31
-
-        # change to false if error code 2
-        self.validKey = False if user.get('apiErrorCode', 0) == 2 else self.validKey
-
-        # change to true if fetch result
-        self.validKey = True if user.get('name', False) else self.validKey
-
-        # discrod id
-        dId = user.get('discord', {'discordID': ''})['discordID']
-        self.dId = 0 if dId in [''] else dId
-
-        # skip if not yata active and no valid key
-        if not self.active and not self.validKey:
-            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, self, self.lastActionTS, self.active, self.validKey))
-            # self.delete()
-            self.save()
-            return 0
-
-        # skip if api error (not invalid key)
-        elif 'apiError' in user:
-            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, self, self.lastActionTS, self.active, self.validKey, user["apiError"]))
-            self.save()
-            return 0
-
-        # skip if not active in torn since last update
-        elif self.lastUpdateTS > int(user.get("last_action")["timestamp"]):
-            print("[player.models.update_info] {}{} skip since not active since last update".format(progress, self))
-            return 0
-
-        # do update
+    def getKey(self, value=True):
+        key = self.key_set.first()
+        if key is None:
+            return False
         else:
-            print("[player.models.update_info] {}{} action: {:010} active: {:1} api: {:1}".format(progress, self, self.lastActionTS, self.active, self.validKey))
+            return key.value if value else key
 
-        # update basic info (and chain)
-        self.name = user.get("name", "?")
-        self.factionId = user.get("faction", dict({})).get("faction_id", 0)
-        self.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
-
-        # update chain info
-        if self.factionId:
-            faction = Faction.objects.filter(tId=self.factionId).first()
-            if faction is None:
-                faction = Faction.objects.create(tId=self.factionId)
-            faction.name = self.factionNa
-
-            chains = apiCall("faction", "", "chains", self.key, verbose=False)
-            if chains.get("chains") is not None:
-                self.factionAA = True
-                self.chainInfo = "{} [AA]".format(self.factionNa)
-                faction.addKey(self.tId, self.key)
-            else:
-                self.factionAA = False
-                self.chainInfo = "{}".format(self.factionNa)
-                faction.delKey(self.tId)
-
-            faction.save()
-
+    def addKey(self, key):
+        playerKey = self.key_set.first()
+        if playerKey is None:
+            self.key_set.create(value=key, tId=self.tId)
         else:
-            self.factionAA = False
-            self.chainInfo = "N/A"
-        self.chainUpda = int(timezone.now().timestamp())
-
-        # update awards info
-        # tornAwards = apiCall('torn', '', 'honors,medals', self.key)
-        tornAwards = AwardsData.objects.first().loadAPICall()
-        if 'apiError' in tornAwards:
-            self.awardsJson = json.dumps(tornAwards)
-            self.awardsInfo = "0"
-        else:
-            updatePlayerAwards(self, tornAwards, user)
-        self.awardsUpda = int(timezone.now().timestamp())
-
-        # clean '' targets
-        targetsAttacks = json.loads(self.targetJson)
-        if len(targetsAttacks):
-            targets = targetsAttacks.get("targets", dict({}))
-            for k, v in targets.items():
-                if k == '':
-                    print("[player.models.update_info] delete target of player {}: {}".format(self, v))
-            if targets.get('') is not None:
-                del targets['']
-            targetsAttacks["targets"] = targets
-            self.targetJson = json.dumps(targetsAttacks)
-            self.targetInfo = len(targets)
-
-        self.lastUpdateTS = int(timezone.now().timestamp())
+            playerKey.value = key
+            playerKey.save()
+        # temporary for the bot...
+        self.apikey = key
         self.save()
+        return
 
-        # print("[player.models.update_info] {} / {}".format(self.chainInfo, self.awardsInfo))
+    def update_discord_id(self):
+        error = False
+        discord = apiCall("user", "", "discord", self.getKey())
+        if 'apiError' in discord:
+            error = {"apiErrorSub": discord["apiError"]}
+        else:
+            dId = discord.get('discord', {'discordID': ''})['discordID']
+            self.dId = 0 if dId in [''] else dId
+            self.save()
+
+        return error
+
+    def usingProxyKey(self):
+        key = self.getKey()
+        # test in case getKey return False
+        if isinstance(key, str):
+            return isProxyKey(self.getKey())
+        else:
+            False
+
+    def getAwards(self, userInfo=dict({}), force=False):
+        from awards.models import AwardsData
+        from awards.functions import AWARDS_CAT
+        from awards.functions import createAwards
+
+        # get torn awards
+        awardsTorn = AwardsData.objects.first().loadAPICall()
+        error = False
+
+        if self.tId > 0:
+
+            if not len(userInfo):
+                dbInfo = self.tmpreq_set.filter(type="awards").first()
+                if dbInfo is not None:
+                    userInfo = json.loads(dbInfo.req)
+
+                else:
+                    userInfo = dict({})
+                    error = {'apiError': "Your data can't be found in the database."}
+
+            if not len(userInfo) or force:
+                req = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
+                if 'apiError' not in req:
+                    self.awardsUpda = tsnow()
+                    defaults = {"req": json.dumps(req), "timestamp": tsnow()}
+                    try:
+                        self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+                    except BaseException as e:
+                        self.tmpreq_set.filter(type="awards").delete()
+                        self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
+
+                    userInfo = req
+                    error = False
+
+                else:
+                    error = req
+
+        medals = awardsTorn["medals"]
+        honors = awardsTorn["honors"]
+        remove = [k for k, v in honors.items() if v["type"] == 1]
+        for k in remove:
+            del honors[k]
+        myMedals = userInfo.get("medals_awarded", [])
+        myHonors = userInfo.get("honors_awarded", [])
+
+        awards = dict()
+        summaryByType = dict({})
+        for type in AWARDS_CAT:
+            awardsTmp, awardsSummary = createAwards(awardsTorn, userInfo, type)
+            summaryByType[type.title()] = awardsSummary["All awards"]
+            awards.update(awardsTmp)
+
+        # get pinned
+        pinnedAwards = {k: dict({}) for k in json.loads(self.awardsPinn)}
+
+        # delete completed pinned awared
+        todel = []
+        for aid in pinnedAwards:
+            if aid[0] == "m" and aid[2:].isdigit() and int(aid[2:]) in myMedals:
+                todel.append(aid)
+            if aid[0] == "h" and aid[2:].isdigit() and int(aid[2:]) in myHonors:
+                todel.append(aid)
+        for aid in todel:
+            del pinnedAwards[aid]
+        self.awardsPinn = json.dumps([k for k in pinnedAwards])
+        i = len(pinnedAwards)
+        for type, awardsTmp in awards.items():
+            for id in pinnedAwards:
+                if id in awardsTmp:
+                    pinnedAwards[id] = awardsTmp[id]
+                    i -= 1
+            if not i:
+                break
+
+        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
+        summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
+
+        rScorePerso = 0.0
+        for k, v in awardsTorn["honors"].items():
+            if v.get("achieve", 0) == 1:
+                rScorePerso += v.get("rScore", 0)
+        for k, v in awardsTorn["medals"].items():
+            if v.get("achieve", 0) == 1:
+                rScorePerso += v.get("rScore", 0)
+
+        awardsPlayer = {"userInfo": userInfo,
+                        "awards": awards,
+                        "pinnedAwards": pinnedAwards,
+                        "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
+
+        if self.tId > 0 and not error:
+            self.awardsScor = int(rScorePerso * 10000)
+            self.awardsNumb = len(myMedals) + len(myHonors)
+            self.save()
+
+        return awardsPlayer, awardsTorn, error
+
+    def awardsInfo(self):
+        return "{:.4f}".format(self.awardsScor / 10000.)
+
+    def getMerits(self, req=None, init=False):
+        if req is None:
+            return dict({})
+
+        merits = dict({})
+
+        for k, v in req.items():
+            if isinstance(v, list):
+                merits[k] = {"level": v[0], "fix": v[1]}
+            else:
+                merits[k] = {"level": v, "fix": v}
+            if k == "Nerve Bar":
+                merits[k]["description"] = ["Increases maximum nerve bar by", [1], [""], " points."]
+            elif k == "Critical Hit Rate":
+                merits[k]["description"] = ["Increases critical hit rate by", [1], ["%"], "."]
+            elif k == "Life Points":
+                merits[k]["description"] = ["Constantly modifies life by", [5], ["%"], "."]
+            elif k == "Crime Experience":
+                merits[k]["description"] = ["Increases crime success ability by", [3], ["%"], "."]
+            elif k == "Education Length":
+                merits[k]["description"] = ["Decreases education course length by", [2], ["%"], "."]
+            elif k == "Awareness":
+                merits[k]["description"] = ["Increases ability to find items.", [0], [""], ""]
+            elif k == "Bank Interest":
+                merits[k]["description"] = ["Increases bank interest by", [5], ["%"], "."]
+            elif k == "Masterful Looting":
+                merits[k]["description"] = ["Increases money gained from mugging by", [5], ["%"], "."]
+            elif k == "Stealth":
+                merits[k]["description"] = ["Increases ability to do stealth attacks.", [0], [""], "."]
+            elif k == "Hospitalizing":
+                merits[k]["description"] = ["Increases time when hospitalizing people by", [10], [""], " minutes."]
+            elif k == "Addiction Mitigation":
+                merits[k]["description"] = ["Reduces the negative effects of addiction by", [2], ["%"], "."]
+            elif k == "Employee Effectiveness":
+                merits[k]["description"] = ["Increases employee effectiveness by", [1], [""], "."]
+            elif k in ["Brawn", "Protection", "Sharpness", "Evasion"]:
+                b = {"Brawn": "strength", "Protection": "defense", "Evasion": "dexterity", "Sharpness": "speed"}
+                merits[k]["description"] = ["Passive bonus of", [3], ["%"], " in {}.".format(b.get(k))]
+            elif k.split(" ")[-1] == "Mastery":
+                merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [3, 0.2], ["%", ""], " respectively."]
+
+        return merits
 
 
-class News(models.Model):
-    player = models.ManyToManyField(Player, blank=True)
-    type = models.CharField(default="Info", max_length=16)
-    text = models.TextField()
-    authorId = models.IntegerField(default=2000607)  # hopefully it will be relevent not to put this as default some day...
-    authorName = models.CharField(default="Kivou", max_length=32)
-    date = models.DateTimeField(default=timezone.now)
+    def getPersonalstats(self, req=None):
+        from player.personalstats_dic import d as personalstats_dic
+        if req is None:
+            return dict({})
 
-    def __str__(self):
-        return "{} of {:%Y/%M/%d} by {}".format(self.type, self.date, self.authorName)
+        personnalstats = dict({})
 
-    def read(self):
-        return len(self.player.all())
+        for k, v in req.items():
+            s = personalstats_dic.get(k, {"category": "Unkown", "sub": "default", "type": "integer", "name": k})
+            if s["category"] not in personnalstats:
+                personnalstats[s["category"]] = [[], dict({})]
+            if s["sub"] == "default":
+                personnalstats[s["category"]][0].append([s["name"], v, s["type"]])
+            else:
+                if s["sub"] not in personnalstats[s["category"]][1]:
+                    personnalstats[s["category"]][1][s["sub"]] = []
+                personnalstats[s["category"]][1][s["sub"]].append([s["name"], v, s["type"]])
 
+            if s["category"] == "Unkown":
+                print(k, v)
+
+        return personnalstats
 
 class Message(models.Model):
-    section = models.CharField(default="B", max_length=16, choices=SECTION_CHOICES)
-    text = models.TextField()
-    authorId = models.IntegerField(default=2000607)
-    authorName = models.CharField(default="Kivou", max_length=32)
-    date = models.DateTimeField(default=timezone.now)
+    section = models.CharField(default="all", max_length=16, choices=SECTION_CHOICES)
+    level = models.CharField(default="notice", max_length=16, choices=LEVEL_CHOICES)
+    message = models.TextField()
 
     def __str__(self):
-        return "{} of {:%Y/%M/%d} by {}".format(self.section, self.date, self.authorName)
-
+        return f"Message {self.pk} in {self.section}"
 
 class Donation(models.Model):
     event = models.CharField(max_length=512)
@@ -249,10 +364,8 @@ class PlayerData(models.Model):
     nHour = models.IntegerField(default=0)
     nMonth = models.IntegerField(default=0)
 
-    ipsBan = models.TextField(default="[]")
-
     def updateNumberOfPlayers(self):
-        players = Player.objects.exclude(tId=-1)
+        players = Player.objects.only("tId", "active", "validKey", "lastActionTS").exclude(tId=-1)
 
         self.nTotal = len(players)
         self.nValid = len(players.filter(active=True).exclude(validKey=False))
@@ -265,4 +378,142 @@ class PlayerData(models.Model):
         self.nDay = len(players.filter(lastActionTS__gte=(t - (24 * 3600))))
         self.nMonth = len(players.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))
 
+        self.save()
+
+
+class Key(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    tId = models.IntegerField(default=0)
+    value = models.SlugField(default="aaaa", max_length=32)  # key
+    lastPulled = models.IntegerField(default=0)  # ts when last pulled
+    reason = models.CharField(default="-", max_length=64)  # reason why it was pulled
+
+    # player can decide to tell YATA not use their key
+    useSelf = models.BooleanField(default=True)
+    useFact = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "Key of {}".format(self.player)
+
+
+class Error(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    timestamp = models.IntegerField(default=0)
+    short_error = models.CharField(default="-", max_length=128)
+    long_error = models.TextField(default="-")
+    fixed = models.BooleanField(default=False)
+
+
+class TmpReq(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
+    timestamp = models.IntegerField(default=0)
+    type = models.CharField(default="None", max_length=16)
+    req = models.TextField(default="{}")
+
+
+class TrainFull(models.Model):
+    # for debug
+    id_key = models.CharField(default="x", max_length=32)
+    timestamp = models.IntegerField(default=0)
+    time_diff = models.IntegerField(default=0)
+
+    # happy
+    happy_before = models.IntegerField(default=0)
+    happy_after = models.IntegerField(default=0)
+    happy_delta = models.IntegerField(default=0)
+
+    # energy
+    energy_used = models.IntegerField(default=0)
+    single_train = models.IntegerField(default=False)
+
+    # stat
+    stat_type = models.CharField(default="None", max_length=16)
+    stat_before = models.FloatField(default=0.0)
+    stat_after = models.FloatField(default=0.0)
+    stat_delta = models.FloatField(default=0.0)
+
+    # gym
+    gym_id = models.IntegerField(default=1)
+    gym_dot = models.IntegerField(default=0)
+
+    # gains perks
+    perks_faction = models.IntegerField(default=0)
+    perks_property = models.IntegerField(default=0)
+    perks_education_stat = models.IntegerField(default=0)
+    perks_education_all = models.IntegerField(default=0)
+    perks_company = models.IntegerField(default=0)
+    perks_company_happy_red = models.IntegerField(default=0)
+
+    # books
+    perks_gym_book = models.IntegerField(default=0)
+    perks_happy_book = models.IntegerField(default=0)
+
+    # error
+    error = models.FloatField(default=0.0)
+
+    # tmp for debug
+    req = models.TextField(default="{}")
+
+    def stat_before_cap(self):
+        return min(self.stat_before, 50000000)
+
+    def stat_after_cap(self):
+        return min(self.stat_after, 50000000)
+
+    def happy(self):
+        return self.happy_before
+
+    def bonus(self, type="x"):
+        if type == "+":
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat + self.perks_education_all, self.perks_company, self.perks_gym_book]
+        else:
+            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company, self.perks_gym_book]
+        b_perks = [1 + p / 100. for p in perks_list]
+        return numpy.prod(b_perks) - 1.
+
+    def gym(self):
+        return self.gym_dot / 10.
+
+    def vladar(self):
+        # coefficients
+        a = 0.0000003480061091
+        b = 250.
+        c = 0.000003091619094
+        d = 0.0000682775184551527
+        e = -0.0301431777
+
+        # states coefficients
+        alpha = (a * numpy.log(self.happy() + b) + c) * (1. + self.bonus()) * self.gym()
+        beta = (d * (self.happy() + b) + e) * (1. + self.bonus()) * self.gym()
+
+        # stat cap
+        stat_cap = min(self.stat_before, 50000000.0)
+
+        return (alpha * stat_cap + beta) * self.energy_used
+
+    def vladar_diff(self):
+        return self.stat_delta - self.vladar()
+
+    def normalized_gain(self, type="x"):
+        return self.stat_delta / (self.gym() * (1. + self.bonus(type=type)) * float(self.energy_used))
+
+    def current(self):
+        # stat cap
+        stat_cap = min(self.stat_before, 50000000.0)
+
+        # normalization
+        norm = (1. + self.bonus()) * self.gym() * self.energy_used / 200000.
+        happy_func = stat_cap * numpy.round(1 + 0.07 * numpy.round(numpy.log(1. + self.happy() / 250.), decimals=4), decimals=4) + 8 * numpy.power(self.happy(), 1.05)
+        return happy_func * norm
+
+    def current_diff(self):
+        return self.stat_delta - self.current()
+
+    def set_single_train(self):
+        from yata.gyms import gyms
+        self.single_train = gyms.get(self.gym_id, {"energy": 0})["energy"] == self.energy_used
+        self.save()
+
+    def set_error(self):
+        self.error = abs(self.current_diff())
         self.save()

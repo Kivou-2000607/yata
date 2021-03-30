@@ -1,0 +1,82 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<table class="center-large trshadow company-logs">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Emp.</th>
+            <th>Adv.</th>
+            <th>Pop.</th>
+            <th>Eff.</th>
+            <th>Env.</th>
+            <th>Eff.</th>
+            <th>D. Customers</th>
+            <th>D. Income</th>
+            <th>D. Profit</th>
+            <th>W. Customers</th>
+            <th>W. Income</th>
+            <th>W. Profit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in company_data_p %}
+        <tr class="company-logs" data-val="{{d.timestamp}}">
+            <td class="a" title="{{d.timestamp|ts2date}}">{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}</td>
+            <td class="b">{{d.employees_hired}}</td>
+            <td class="c">${{d.advertising_budget|intcomma}}</td>
+            <td class="d">{{d.popularity}}%</td>
+            <td class="d">{{d.efficiency}}%</td>
+            <td class="d">{{d.environment}}%</td>
+            <td class="e">{{d.effectiveness_total}}</td>
+            <td class="f">{{d.daily_customers|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_customers|sub:d.lastw_customers|signColor0}})</span></td>
+            <td class="f">${{d.daily_income|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_income|sub:d.lastw_income|signColor0}})</span></td>
+            <td class="f">{{d.daily_profit|signColor0}} <span title="Comparison to last week on the same day">({{d.daily_profit|sub:d.lastw_profit|signColor0}})</span></td>
+            <td class="g">{{d.weekly_customers|intcomma}}</td>
+            <td class="g">${{d.weekly_income|intcomma}}</td>
+            <td class="g">{{d.weekly_profit|signColor0}}</td>
+        </tr>
+        {% endfor %}
+
+        <tr><td colspan="13">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if company_data_p.has_previous %}
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_d=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ company_data_p.number }}/{{ company_data_p.paginator.num_pages }}
+                    </span>
+
+                    {% if company_data_p.has_next %}
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+    </tbody>
+</table>

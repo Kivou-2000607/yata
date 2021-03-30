@@ -4,9 +4,9 @@ from . import views
 
 app_name = "player"
 urlpatterns = [
-    # re_path(r'^$', views.index, name='index'),
+    re_path(r'^$', views.merits, name='index'),
 
-    re_path(r'^readNews/$', views.readNews, name='readNews'),
-    re_path(r'^prune/$', views.prune, name='prune'),
-    re_path(r'^number/$', views.number, name='number'),
+    re_path(r'^merits/$', views.merits, name='merits'),
+    re_path(r'^stats/$', views.stats, name='stats'),
+    re_path(r'^gym/$', views.gym, name='gym'),
     ]

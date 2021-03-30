@@ -1,0 +1,9 @@
+<form style="display: inline;">
+    <select class="faction-armory-header-filter">
+        <option value="0" selected="selected" disabled>Members</option>
+        {% for m in members %}
+            <option value="{{m}}">{{m}}</option>
+        {% endfor %}
+        <option value="">All</option>
+    </select>
+</form>

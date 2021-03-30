@@ -1,0 +1,41 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if attacks %}
+
+
+<div id="attack-losses"></div>
+<div id="attack-breakdown"></div>
+
+<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>List of recent attacks<span id="targets-attacks-breakdown" class="flush-right"><a href=""><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a></span><span id="targets-attacks-losses" class="flush-right"><a href=""><i class="fas fa-dollar-sign"></i>&nbsp;Buying losses</a></span><span class="flush-right"><a href="?full=true"><i class="fas fa-angle-double-down"></i>&nbsp;Get last 1k attacks</a></span></h2>
+<div class="module">
+    <div class="pagination-list">
+        {% include "target/attacks/attacks.html"%}
+    </div>
+    <p class="update-info">Last update of the list: {{player.attacksUpda|ts2date}}</p>
+</div>
+
+{% else %}
+<div class="module rounded">
+    <span class="error">It seems you don't have any attacks...</span>
+</div>
+{% endif %}

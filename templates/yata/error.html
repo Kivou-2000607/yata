@@ -19,12 +19,22 @@ This file is part of yata.
 
 {% if apiError %}
     <div class="module error">
-        <span><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{apiError}}</span>
+        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiError|safe}}</span>
     </div>
 {% endif %}
 
 {% if errorMessage %}
     <div class="module error">
-        <span><i class="fas fa-skull-crossbones"></i>&nbsp;&nbsp;{{errorMessage}}</span>
+        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{errorMessage|safe}}</span>
     </div>
+{% endif %}
+
+{% if validMessage %}
+    <div class="module valid">
+        <span><i class="fas fa-check fa-icon-inline"></i>{{validMessage|safe}}</span>
+    </div>
+{% endif %}
+
+{% if inlineError %}
+    <span class="error" title="{{inlineError}}"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{inlineError|safe}}</span>
 {% endif %}

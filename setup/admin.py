@@ -21,7 +21,7 @@ from django.contrib import admin
 
 from yata.handy import timestampToDate
 
-from .models import APIKey
+from .models import *
 
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'key', 'lastCheckTS', 'last_check', 'status', 'error']
@@ -30,3 +30,39 @@ class APIKeyAdmin(admin.ModelAdmin):
         return timestampToDate(instance.lastCheckTS)
 
 admin.site.register(APIKey, APIKeyAdmin)
+
+
+class AnalyticsAdmin(admin.ModelAdmin):
+    list_display = ['report_section', 'report_period', 'report_timestamp']
+
+admin.site.register(Analytics, AnalyticsAdmin)
+
+
+class PayPalAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+admin.site.register(PayPal, PayPalAdmin)
+
+
+class DropletAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+admin.site.register(Droplet, DropletAdmin)
+
+
+class DropletSpecAdmin(admin.ModelAdmin):
+    list_display = ['__str__']
+
+admin.site.register(DropletSpec, DropletSpecAdmin)
+
+
+class BalanceAdmin(admin.ModelAdmin):
+    list_display = ['date', 'droplet_month_cost', 'paypal_balance', 'paypal_currency', 'droplet_account_balance', 'droplet_month_to_date_usage', 'droplet_month_to_date_balance']
+
+    list_filter = ['paypal_currency']
+    search_fields = []
+
+    def date(self, instance):
+        return timestampToDate(instance.timestamp)
+
+admin.site.register(Balance, BalanceAdmin)

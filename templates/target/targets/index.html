@@ -1,0 +1,128 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+
+
+<script>
+
+        $(document).ready(function() {
+            $("#target-targets").tablesorter({
+                textExtraction: {
+                  0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  11: function(node, table, cellIndex) {
+                      let a = $(node).attr("data-col")>0?$(node).attr("data-col"):4;
+                      let b = $(node).find("input.target-list-note").val()?$(node).find("input.target-list-note").val():"zzzz";
+                      // console.log($(node).attr("data-col") + $(node).find("input.target-list-note").val() + "->" + a + "-" + b);
+                      return a + "-" + b; },
+                  12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+                cssAsc: 'up',
+                cssDesc: 'down',
+                sortList: [[6,1],[3,1],[2,0]]
+            });
+        });
+</script>
+
+
+<h2 class="title">
+    <i class="fas fa-crosshairs fa-icon-inline"></i>List of targets
+    <form class="form-inline flush-right">
+        <span class="flush-right">{% include "target/targets/colors.html" %}</span>
+        <a id="target-refresh" class="flush-right" href="" data-val="0">
+            <i class="fas fa-sync-alt fa-icon-inline"></i>Refresh all
+        </a>
+    </form>
+</h2>
+<div class="module">
+
+{% if targets %}
+    <table id="target-targets" class="tablesorter center-large trshadow target-targets">
+        <thead>
+            <tr>
+                <th title="Last attack elapsed time">Last attack</th>
+                <th title="Last attack result">Result</th>
+                <!-- <th title="">Result</th> -->
+                <!-- <th title="">Attacker</th> -->
+                <th title="Name of the target">Name</th>
+                <th title="Level of the target">Level</th>
+                <!-- <th title="">Rank</th> -->
+                <th title="Online status"><i class="fas fa-circle"></i></th>
+                <th title="Last action of the target">Last action</th>
+                <th title="Fair fight bonus of the last attack">Fair Fight</th>
+                <th title="Flat respect (fair fight) x (base respect) = (fair fight) x 0.25(ln(level) + 1)">Flat Respect</th>
+                <!-- <th title="Score = (fair fight) x (flat respect)">Score</th> -->
+                <th title="Life of the target">Life</th>
+                <th title="Status of the target">Status</th>
+                <th title="Time since last update">Update</th>
+                <th title="Notes about the target">Notes</th>
+                <th title="Attack target">Attack</th>
+                <!-- <th title="Refresh information">R</th> -->
+                <th title="Delete target">Delete</th>
+                <th title="Faction target">Faction</th>
+        </thead>
+        <tbody>
+        {% for targetId, target in targets.items %}
+            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}">
+                {% include "target/targets/line.html" %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% else %}
+    <p class="no-margin">You don't have any target saved. Look at your last attacks to start building your target list.</p>
+{% endif %}
+    <hr class="sep">
+
+    <form method="post" style="margin:10px;">
+        <i class="fas fa-plus-circle fa-icon-inline"></i>Enter the ID of the target you want to add:
+        {% csrf_token %}
+        <input id="target-add-id" placeholder="Torn ID" type=text>
+        <input id="target-add-submit" type="submit" value="Add">
+        &nbsp;
+        {% if apiErrorAdd %}<span class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{ apiErrorAdd }}</span>{% endif %}
+    </form>
+    <form method="post" action="{% url 'target:targetsList' %}" style="margin:10px;">
+        <i class="fas fa-upload fa-icon-inline"></i>Export your target list:
+        {% csrf_token %}
+        <input type="hidden" name="action_type" value="export">
+        <input type="submit" value="Export JSON">
+    </form>
+    <form method="post" action="{% url 'target:targetsList' %}" style="margin:10px;" enctype="multipart/form-data">
+        <i class="fas fa-download fa-icon-inline"></i>Import your target list <i class="fas fa-question-circle" title="Only import files you exported here"></i>:
+        {% csrf_token %}
+        <input type="hidden" name="action_type" value="import">
+        <input type="submit" value="Import JSON">
+        <input type="file" name="json_file">
+    </form>
+    <form method="post" action="{% url 'target:targetsList' %}" style="margin:10px;" onsubmit="return confirm('Are you sure you want to delete your list?');">
+        <i class="fas fa-trash-alt fa-icon-inline"></i>Delete your entire target list:
+        {% csrf_token %}
+        <input type="hidden" name="action_type" value="delete">
+        <input type="submit" value="Delete List">
+    </form>
+
+  <hr class="sep">
+  <p>Chaining on your phone? Try <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16163503" target="_blank">Torn PDA</a> from {{"Manuito"|playerURL:2225097|safe}}, you can automatically sync all your targets with YATA.</p>
+</div>

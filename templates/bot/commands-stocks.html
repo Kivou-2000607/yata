@@ -1,0 +1,69 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<h1 id="{{anchor}}" class="module-doc"><i class="fas fa-chart-line fa-icon-inline"></i>Module Stocks&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<p>This module gives information on wssb and tcb sharing group and notifies good investments on the stock market.</p>
+
+<h2 class="command-doc privacy-personal-private">Command <tt>!wssb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Give education's time left and BB ownership for all that have the wssb role.</p>
+<p><b>Syntax:</b> <tt>!wssb</tt></p>
+<pre>
+NAME            | EDU TIME LEFT | WSSB
+ --------------------------------------
+userA           |  0d  5h 31min |  x
+userB           |  5d 15h 56min |
+userC           |  8d  8h 15min |
+userD           |  8d 11h 55min |  x
+</pre>
+</p>
+</div>
+
+<h2 class="command-doc privacy-personal-private">Command <tt>!tcb</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Give bank investment's time left and BB ownership for all that have the tcb role.</p>
+<p><b>Syntax:</b> <tt>!tcb</tt></p>
+<pre>
+NAME            | INV TIME LEFT | TCB
+--------------------------------------
+userA           | 10d 13h 13min |
+userB           | 14d 15h 54min |  x
+userC           | 20d 16h 56min |
+</pre>
+</div>
+
+<h2 class="command-doc privacy-none">Command <tt>!assign stocks</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives or removes the stocks role of the command author.</p>
+<p><b>Syntax:</b> <tt>!assign stocks</tt></p>
+</div>
+
+<h2 class="command-doc privacy-none">Notifications&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Notifies the stocks role for good investments on the stock market. Triggers are when:
+<ul>
+    <li>forecast from bad to avg / good & shares available & price lower than trimestrial average</li>
+    <li>new shares are injected by the system</li>
+</ul>
+</p>
+{# <p class="privacy-none valid">No key needed.</p> #}
+</div>
+
+</div>

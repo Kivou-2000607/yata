@@ -26,7 +26,7 @@ This file is part of yata.
     <div class="modal-center">
         <h2 class="title">Details of item {{item.tId}}</h2>
         <div class="module">
-            <center><button>{{item.display_large}}</button></center>
+            <center><button><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button></center>
             <h3>{{item.tName}} ({{item.tType}})</h3>
             <h3>Market value: ${{item.tMarketValue|intcomma}}</h3>
             <h3>Sell Price: ${{item.tSellPrice|intcomma}}</h3>

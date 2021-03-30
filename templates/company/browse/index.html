@@ -1,0 +1,42 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load humanize %}
+
+<h2 class="title"><i class="fas fa-list-ol fa-icon-inline"></i>Browse</h2>
+<div class="module">
+    {% if player.tId > 0 %}
+      <p><b>Your working stats:</b> <span class="neutral">{{player.wman|intcomma}}</span> MAN <span class="neutral">{{player.wint|intcomma}}</span> INT <span class="neutral">{{player.wend|intcomma}}</span> END</p>
+    {% endif %}
+    <form id="company-select-form">
+        <p><b>Select a company:</b>
+        <select name="companies" id="companies" form="company-select-form">
+            <option value="" disabled selected>List of all companies</option>
+            {% for company in companies %}
+                <option value="{{company.tId}}">{{company.name}}</option>
+            {% endfor %}
+        </select>
+        </p>
+    </form>
+</div>
+
+<div id="company-details">
+    {% include "company/browse/details.html" %}
+</div>

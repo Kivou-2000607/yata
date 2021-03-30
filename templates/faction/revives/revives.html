@@ -1,0 +1,86 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<table id="faction-revives-list" class="center-large trshadow faction-revives-list">
+    <thead>
+        <tr>
+            {# <th>Revive [ID]</th> #}
+            <th>Start</th>
+            <th>{% include "faction/revives/revives-header-filter.html" with type="revivers" %}</th>
+            <th>Faction</th>
+            <th>{% include "faction/revives/revives-header-filter.html" with type="targets" %}</th>
+            <th>Faction</th>
+            <th>Chance</th>
+            <th title="Hospital reason">Hospital</th>
+            <th title="Online status"><i class="fas fa-circle"></i></th>
+            <th title="Success"><i class="fas fa-check valid"></i></th>
+    </thead>
+    <tbody>
+    {% if revives|length %}
+    {% for v in revives %}
+        <tr class="{% if v.result %}success{% else %}fail{% endif%}">
+            {# <td class="a">{{v}}</td> #}
+            <td class="a">{{v.timestamp|ts2date}}</td>
+            <td class="b">{{v.reviver_name|playerURL:v.reviver_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.reviver_id %}</td>
+            <td class="b">{{v.reviver_factionname|factionURL:v.reviver_faction|safe}}</td>
+            <td class="b">{{v.target_name|playerURL:v.target_id|safe}}{% include "faction/revives/revives-inline-filter.html" with tId=v.target_id %}</td>
+            <td class="b">{{v.target_factionname|factionURL:v.target_faction|safe}}</td>
+            <td class="c">{{v.chance}}%</td>
+            <td class="d">{{v.target_hospital_reason|cleanhtml}}</td>
+            <td class="e" title="{{v.target_last_action_status}}" data-val='{% if v.target_last_action_status == "Offline" %}-1{% elif v.target_last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{v.target_last_action_status}}"></i></td>
+            {% if v.result %}
+              <td class="f" title="{{v.result}}" data-val='1'><i class="fas fa-check valid"></i></td>
+            {% else %}
+              <td class="f" title="{{v.result}}" data-val='0'><i class="fas fa-times error"></i></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+
+    <tr><td colspan="7">
+        <div class="pagination">
+            <span class="step-links">
+                {% if revives.has_previous %}
+                    <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re=1">&laquo; first</a>
+                    <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    {{ revives.number }}/{{ revives.paginator.num_pages }}
+                </span>
+
+                {% if revives.has_next %}
+                    <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.next_page_number }}">next</a>
+                    <a class="page-link" href="{% url 'faction:revivesList' report.pk %}?p_re={{ revives.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </td></tr>
+    </tbody>
+    {% else %}
+    <tr>
+      <td colspan="7">Your report didn't start computing. You can refresh this page in a couple of minutes.</td>
+    </tr>
+    {% endif %}
+</table>

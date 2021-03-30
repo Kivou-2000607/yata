@@ -1,0 +1,38 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+
+<h2 class="title"><i class="fas fa-terminal fa-icon-inline"></i>List of commands</h2>
+<div class="module">
+<span class="inline-logo"><img src="/media/svg/yata.discord.svg" alt="YATA" class="yata-logo-square"/></span>
+<p>The bot's commands are classified in modules. Click on the module for the list of commands and on the command for the documentation.</p>
+{% include "bot/commands-admin.html" with anchor="admin" %}
+{% include "bot/commands-verify.html" with anchor="verify" %}
+{% include "bot/commands-loot.html" with anchor="loot" %}
+{% include "bot/commands-chain.html" with anchor="chain" %}
+{% include "bot/commands-rackets.html" with anchor="rackets" %}
+{% include "bot/commands-wars.html" with anchor="wars" %}
+{% include "bot/commands-stocks.html" with anchor="stocks" %}
+{% include "bot/commands-revive.html" with anchor="revive" %}
+{% include "bot/commands-crimes.html" with anchor="crimes" %}
+{% include "bot/commands-api.html" with anchor="api" %}
+{% include "bot/commands-legend.html" with anchor="legend" %}
+
+</div>

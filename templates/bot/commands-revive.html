@@ -1,0 +1,52 @@
+
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<h1 id="{{anchor}}" class="module-doc"><i class="fas fa-ambulance fa-icon-inline"></i>Module Revive&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<div class="module-doc">
+<p>This module gives the possibility to send and receive revive calls mentionning the revive role throughout several discord servers. The destination servers can be configured by the server admin. The bot can potentially <b>send calls to servers that host the YATA bot</b> and have their revive module activated.
+<br />
+<span class="warning">Disclamer:</span> The bot does not handle the revive payments or contracts.</p>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!revive</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Sends a revive calls to the current server and to other servers (depending on your server's configuration). A revive call mention the role <tt>@Reviver</tt> and has the format:</p>
+<pre>
+@Reviver Kivou [2000607] from Nub Navy needs a revive https://www.torn.com/profiles.php?XID=2000607
+In hospital for 3h28min (hospitalized by Ched)
+</pre>
+<p>If <tt>&lt;tornId&gt;</tt> is given it sends the call for player ID <tt>&lt;tornId&gt;</tt> on behalf of the author.</p>
+<p>All messages of a call are deleted from the servers after 5 minutes.</p>
+<p><b>Syntax:</b> <tt>!revive</tt> or <tt>!revive &lt;tornId&gt;</tt></p>
+<p><b>Aliases:</b> <tt>!r</tt></p>
+</div>
+
+<h2 class="command-doc privacy-personal-public">Command <tt>!freevive</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Same as <tt>!revive</tt> but with a message stipulating that the sender expect a <b>free</b> revive.</p>
+<p><b>Aliases:</b> <tt>!fr</tt></p>
+</div>
+
+<h2 class="command-doc privacy-none">Command <tt>!assign revive</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+<p>Gives or removes the revive role of the command author.</p>
+<p><b>Syntax:</b> <tt>!assign revive</tt></p>
+</div>
+
+</div>

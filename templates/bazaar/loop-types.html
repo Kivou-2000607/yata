@@ -17,9 +17,11 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+{% load app_filters %}
+
 {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
 <div class="catch-me">
-    <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}">{{v.0.display_small}} {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
+    <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}"><img src="{% url_img_item v.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
         {% if view.refreshType and player.tId > 0 %}
             <form class="form-inline"><a href="bazaar/updateType/{{k}}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
         {% endif %}

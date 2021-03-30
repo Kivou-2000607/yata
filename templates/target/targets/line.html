@@ -1,0 +1,87 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if apiErrorLine %}
+    <td colspan="15" style="text-align: center;"><span class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorLine}}</span></td>
+{% elif target %}
+    {% if target.last_attack_timestamp %}
+        <td class="a" title="{{target.last_attack_timestamp|ts2date}}" data-val="{{ts|sub:target.last_attack_timestamp}}">{{ts|sub:target.last_attack_timestamp|ts2ago}}</td>
+        {% if target.last_attack_attacker %}
+            <td class="a" title="Last attack on {{target.last_attack_timestamp|ts2date}}"><span class="{% if target.win %}player-status-green{%else%}player-status-red{% endif %}"> {{target.result}}</span></td>
+        {% else %}
+            <td class="a" title="Last attacked on {{target.last_attack_timestamp|ts2date}}"><span class="{% if target.win %}player-status-red{%else%}player-status-green{% endif %}"><i class="fas fa-shield-alt"></i>&nbsp;{{target.result}}</span></td>
+        {% endif %}
+    {% else %}
+        <td colspan="2"><i>No recent attacks</i></td>
+    {% endif %}
+    {% if targetId %}
+        <td class="b dont-touch-me">{{target.name|playerURL:targetId|safe}}</td>
+    {% else %}
+        <td class="b dont-touch-me">{{target.name}} [<span class="error"><i class="far fa-dizzy"></i></span>]</td>
+    {% endif %}
+    <td class="c">{{target.level}}</td>
+    <td class="g" title="{{target.last_action_status}}" data-val='{% if target.last_action_status == "Offline" %}-1{% elif target.last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{target.last_action_status}}"></i></td>
+    <td class="f" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
+    <td class="c">{{target.fair_fight|floatformat:2}}</td>
+    <td class="c"><b title="{{target.fair_fight|floatformat:2}} x {{target.base_respect|floatformat:2}}">{{target.flat_respect|floatformat:2}}</b></td>
+    {# <td class="c">{{target.flat_respect|mul:target.fair_fight|floatformat:2}}</td> #}
+    <td class="d" data-val="{{target.life_current}}">
+        <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
+            <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
+        </div>
+    </td>
+    <td class='e status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
+    <td class="f update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}">
+        {% now "U" as ts %}
+        {% with seconds=ts|sub:target.update_timestamp%}
+            {% if seconds > 7199 %}
+                > 2 hrs
+            {% else %}
+                {{seconds|ts2time}}
+            {% endif %}
+        {% endwith %}
+    </td>
+
+    {% if targetId %}
+        <td class="h no-padding dont-touch-me" data-col="{{target.color}}">
+            {% include "target/targets/note.html" %}
+        </td>
+        <td class="g dont-touch-me" data-val='{% if target.status_state == "Okay" %}1{%else%}0{% endif %}'>
+            <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class='fas fa-crosshairs {% if target.status_state == "Okay" %}error{% endif %}' title="Attack target"></i></a>
+        </td>
+        <td class="g dont-touch-me">
+            <!-- delete -->
+            <form style="display: inline;">{% csrf_token %}
+                <a id="target-list-delete-{{targetId}}" class="target-list-delete" href=""><i class="fas fa-trash-alt" title="Delete target"></i></a>
+            </form>
+        </td>
+        <td class="g dont-touch-me">
+            <!-- add to faction -->
+            {% include "target/targets/faction.html" %}
+        </td>
+    {% else %}
+        <td colspan="3"><span class="error"><i class="far fa-dizzy fa-icon-inline"></i>No recorded id. Will be deleted soon.</span></td>
+    {% endif %}
+
+
+
+{% endif %}

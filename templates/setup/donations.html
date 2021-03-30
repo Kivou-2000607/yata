@@ -1,0 +1,153 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load mathfilters %}
+{% load static %}
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Total money available', 'Yearly fees', 'Monthly fees'],
+            {% for b in balances %}
+                [new Date({{b.timestamp|mul:1000}}), {{b.paypal_balance|sub:b.droplet_account_balance}}, {{b.droplet_month_cost|mul:12}}, {{b.droplet_month_cost}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            numberFormats: "###,###.## EUR",
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            min: 0,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('donations-graph'));
+        chart.draw(data, options);
+    });
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Host Account Balance', 'Host Month to date Usage', 'Host Month to date Balance'],
+            {% for b in balances %}
+                [new Date({{b.timestamp|mul:1000}}), {{b.droplet_account_balance|mul:-1}}, {{b.droplet_month_to_date_usage}}, {{b.droplet_month_to_date_balance|mul:-1}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            numberFormats: "###,###.## EUR",
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            min: 0,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('host-graph'));
+        chart.draw(data, options);
+    });
+</script>
+
+
+{% if view.step == "cancel" %}
+ <div class="module rounded warning">
+   <p>Your donation has been canceled.</p>
+ </div>
+{% elif view.step == "completed" %}
+<div class="module rounded valid">
+  <p>Thank you for your donation, we deeply appreciate it.</p>
+</div>
+{% endif %}
+
+<div class="module rounded">
+  <p>With the increasing number of users and features of the website and the bot, YATA had to move to a dedicated server in order to run smoothly.
+  For this reason we opened a <i>real money</i> donation account in order to pay for the server costs.<br>
+  Please keep in mind that <i class="warning">this is not mandatory</i> and <i class="warning">does not unlock some premium features</i>. You should only donate <i class="warning">if you can afford it</i>.</p>
+  <hr class="sep">
+  <p>If you're interested in doing a donation well... first of all <i>thank you very much!</i> We really appreciate it.<br>
+    Also there are a couple of things that I think you should be aware of.</p>
+  <ul>
+    <li>
+      The account is based in France so the currency used on this page is the Euro.
+    </li>
+    <li>
+      The account used to collect the money is on <a href="https://www.paypal.com" target="_blank">PayPal</a>. They charge for each donations and the base fees are currently <tt class="neutral">0.35 EUR + 2.9% of the donation</tt> to which additional fees can apply based on several criteria (country, currency, ...).<br>
+      If you make a 1 euro donation we will receive 0.62 euros. If you make 10 euros donation, we will receive 9.36 euros.<br>
+      I am fully aware that the static 0.35 euros fees are rather high for the expected amounts so I'm currently trying to lower these fees by enabling what they call micropayments.<br>
+      An other way to lower these fees is to use the QR code below and the PayPal app which yield fees of <tt class="neutral">0.10 EUR + 0.6% of the donation</tt>.<br><br>
+      Rule of thumb is:
+      <ul>
+        <li>Do a single donation rather than several small donations (if you had in mind to do several small donations of course).</li>
+        <li>It is more efficient to use the QR code.</li>
+      </ul>
+    </li>
+    <li>All money received will only be used to pay for the servers. Donations will be stopped if the amount received covers the cost over a long enough periode of time.</li>
+    <li>The server costs will increase in the near futur as we will complete the ongoing migration.</li>
+  </ul>
+  <hr class="sep">
+  <div class="donations-buttons-container">
+    <img src="/media/misc/donation_qrcode.png" title="Donate to YATA" class="donations-qrcode">
+    <a href="https://www.paypal.com/donate?hosted_button_id=B6QFKDKF35EX4&source=url">
+      <img src="/media/misc/donation_button.png" title="Donate to YATA" class="donations-button">
+    </a>
+  </div>
+</div>
+
+<h2 class="title"><i class="fas fa-euro-sign fa-icon-inline"></i>Donations</h2>
+<div class="module">
+  <div class="donations-buttons-container">
+    <div title="Money on the PayPal account (update: {{paypal_balance.timestamp|ts2date}} TCT)" class="donations-balances">
+      <i class="fab fa-paypal fa-icon-inline"></i><span class="{% if paypal_balance.balance > 0 %}valid{% else %}error{% endif %}">{{paypal_balance.balance}} {{paypal_balance.currency}}</span>
+    </div>
+    <div title="Money on the the host account (update: {{droplet_balance.timestamp|ts2date}} TCT)" class="donations-balances">
+      <i class="fab fa-digital-ocean fa-icon-inline"></i><span class="{% if droplet_balance.account_balance > 0 %}valid{% else %}error{% endif %}">{{droplet_balance.account_balance}} {{droplet_balance.currency}}</span>
+    </div>
+  </div>
+
+
+
+  </p>
+
+  <p id="donations-graph"></p>
+  <p id="host-graph"></p>
+</div>
+
+<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Specs and prices</h2>
+<div class="module">
+  {% with droplet_size=droplet_specs.get_size droplet_image=droplet_specs.get_image %}
+  <h3>DigitalOcean Droplet <tt>{{droplet_size.slug}}</tt></h3>
+  <ul>
+    <li><b>vCPUs:</b> {{droplet_size.vcpus}}</li>
+    <li><b>Memory:</b> {{droplet_size.memory}} MB</li>
+    <li><b>Disk:</b> {{droplet_size.disk}} GB</li>
+    <li><b>Transfer:</b> {{droplet_size.transfer}} TB</li>
+    <li><b>Price Monthly:</b> {{droplet_size.price_monthly}} EUR</li>
+    <li><b>Image:</b> {{droplet_image.distribution}} {{droplet_image.name}}</li>
+  </ul>
+  {% endwith %}
+</div>

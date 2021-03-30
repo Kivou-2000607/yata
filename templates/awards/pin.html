@@ -1,0 +1,67 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+{% if pinnedAwards|length %}
+    <h2 class="title green"><i class="fas fa-thumbtack fa-icon-inline"></i>Pinned awards</h2>
+    <div class="module">
+        {% for awardId, award in pinnedAwards.items %}
+            <div class="awards-pinned center-full-third" title="<p><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i></p><p>{{award.comment|safe}}</p>" rel="tooltip">
+                <div class="awards-pinned2">
+
+                {# name #}
+                <p>
+                {% if award.awardType == "Honor" %}
+                  {% if award.img == "0" %}
+                    <div class="award-default">
+                      <img src="{% url_img_honor award.img %}" class="honors">
+                      <span class="award-default">{{award.name}}</span>
+                    </div>
+                    {% else %}
+                      <img src="{% url_img_honor award.img %}" class="honors">
+                    {% endif %}
+                {% else %}
+                    <img src="{% url_img_medal award.img %}" class="medals">
+                {% endif %}
+                </p>
+
+                {# acheive  #}
+                <p>
+                {% if award.achieve == 1%}
+                    <span class="valid">Awarded on {{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
+                {% else %}
+                    <span class="error">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%
+                        &nbsp;&nbsp;{{award.head}}{{award.current|intcomma}} / {{award.head}}{{award.goal|intcomma}}
+                        {% if award.left %}
+                            &nbsp;&nbsp;{{award.left|float2IfSmall|safe}} days left
+                        {% endif %}
+                    </span>
+                {% endif %}
+
+                </p>
+            </div>
+            </div>
+        {% endfor %}
+        <hr style="width: 0px;">
+</div>
+{% endif %}

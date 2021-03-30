@@ -1,0 +1,72 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<td class="a">{{revive_server.server_name}}</td>
+<td class="b"><tt>{{revive_server.server_id}}</tt></td>
+<td class="c">
+    {{revive_server.admins.0.name|playerURL:revive_server.admins.0.torn_id|safe}}
+    {% if revive_server.admins|length > 1 %}
+        &nbsp;&nbsp;<i class="fas fa-info-circle" title="{% for v in revive_server.admins %}{{v.name}} [{{v.torn_id|safe}}]{% if not forloop.last %}&#10;{% endif %}{% endfor %}"></i>
+    {% endif %}
+</td>
+<td class="e">
+    {% if revive_server.public %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
+<td class="e">
+    {% if revive_server.freevive %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
+<td class="d">
+    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
+        {% if revive_server.server_id in config.sending %}
+             <i class="fas fa-toggle-on valid"></i>
+        {% else %}
+            <i class="fas fa-toggle-off"></i>
+        {% endif %}
+    </span>
+</td>
+<td class="e">
+    {% if server.discord_id|slugify in revive_server.sending %}
+        <i class="fas fa-check valid"></i>
+    {% else %}
+        <i class="fas fa-times error"></i>
+    {% endif %}
+</td>
+<td class="d">
+    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
+        {% if revive_server.server_id in config.blacklist %}
+            <i class="fas fa-toggle-on error"></i>
+        {% else %}
+            <i class="fas fa-toggle-off"></i>
+        {% endif %}
+    </span>
+</td>

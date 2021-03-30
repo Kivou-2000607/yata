@@ -1,0 +1,83 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load static %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title"><i class="fas fa-key fa-icon-inline"></i>Keys</h2>
+<div class="module">
+    <p>This is a summary of your faction's keys used for the creation of the reports (chains/attacks/revives) and for the poster updates.<br />
+        This keys corresponds to AA members that have used YATA.
+        If you don't want YATA to use your key you can disable it here.
+    </p>
+    <table class="center faction-aa-keys">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Keys</th>
+                <th>Last pulled</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in keys %}
+                <tr>
+                    <td class="a">{{key.player.name|playerURL:key.player.tId|safe}}</td>
+                    <td class="b buttons">{% include "faction/aa/keys.html" %}</td>
+                    <td class="c">{{key.lastPulled|ts2date}}</td>
+                    <td class="a" title="{{key.reason}}">{{key.reason}}</td>
+                </tr>
+            {% endfor %}
+            {% if faction.nKeys %}
+                <tr><td colspan="4"><span class="valid"><i class="fas fa-check fa-icon-inline"></i>You have {{faction.nKeys}} key{{faction.nKeys|pluralize}} enabled.</td></tr>
+            {% else %}
+                <tr><td colspan="4"><span class="warning"><i class="fas fa-exclamation-circle fa-icon-inline"></i>You don't have any key enabled. Your reports will never be updated.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<h2 class="title"><i class="fas fa-calendar fa-icon-inline"></i>Events</h2>
+<div class="module">
+    {% include "faction/aa/events.html" %}
+</div>
+
+<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>Reports and logging history</h2>
+<div class="module">
+    <h3>History length</h3>
+    <ul>
+      <li>Armory / networth: <i>{{faction.armoryTime}}</i></li>
+      <li>Chains reports: <i>{{faction.chainsTime}}</i></li>
+      <li>Attacks reports: <i>{{faction.attacksTime}}</i></li>
+      <li>Revives reports: <i>{{faction.revivesTime}}</i></li>
+      <li>Organized crimes: <i>{{faction.crimesTime}}</i></li>
+      <li>Live length: <i>{{faction.liveTime}}</i></li>
+    </ul>
+    <h3>Chain threshold</h3>
+    {% include "faction/aa/threshold.html" %}
+</div>
+
+<h2 id="faction-poster" class="title"><i class="fas fa-scroll fa-icon-inline"></i>Poster</h2>
+<div class="module">
+    <div id="faction-aa-poster">
+        {% include "faction/aa/poster.html" %}
+    </div>
+</div>

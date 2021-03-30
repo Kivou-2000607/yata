@@ -1,0 +1,45 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+{# <form class="form-inline" style="margin-left: 10px">{% csrf_token %} #}
+    {# <a class="faction-attacks-export" data-type="{{type}}" data-val="{{report.pk}}" href="{% url 'faction:attacks' report.pk %}"><i class="fas fa-file-export" title="Export factions to CSV"></i></a> #}
+    {# <span id="faction-attacks-report-export dropdown" data-val="{{report.pk}}" class="flush-right"> #}
+        {# <i class="fas fa-file-export fa-icon-inline"></i>Export report #}
+        {# <div class="dropdown-content"> #}
+            {# <a href="#">Link 1</a> #}
+            {# <a href="#">Link 2</a> #}
+            {# <a href="#">Link 3</a> #}
+        {# </div> #}
+    {# </span> #}
+{# </form> #}
+
+<div class="dropdown">
+  <i class="fas fa-file-export" style="cursor: pointer;"></i>
+  <div class="dropdown-content">
+    <a href="{% url 'faction:attacksExport' report.pk 0 %}" target="_blank">Factions</a>
+    <a href="{% url 'faction:attacksExport' report.pk 1 %}" target="_blank">Players</a>
+    <a href="{% url 'faction:attacksExport' report.pk 2 %}" target="_blank">Breakdown</a>
+    <a href="{% url 'faction:attacksExport' report.pk 3 %}" target="_blank">Attacks</a>
+  </div>
+</div>
