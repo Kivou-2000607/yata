@@ -116,7 +116,7 @@ if config("DATABASE", default="sqlite", cast=str) == "postgresql":
             'PASSWORD': config("PG_PASSWORD"),
             'HOST': config("PG_HOST"),
             'PORT': config("PG_PORT"),
-            'CONN_MAX_AGE': 600,
+            'CONN_MAX_AGE': config("PG_CONN_MAX_AGE"),
         }
 
     }

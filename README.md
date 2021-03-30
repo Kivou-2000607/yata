@@ -35,6 +35,7 @@ Create a local .env file
     #PG_PASSWORD=password
     #PG_HOST=localhost
     #PG_PORT=5432
+    #PG_CONN_MAX_AGE=600
 
     ###### OPTIONAL ######
     # Your TORN API KEY (only needed for the setup phase)
