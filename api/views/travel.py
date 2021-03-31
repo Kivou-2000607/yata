@@ -94,7 +94,9 @@ def importStocks(request):
 
         last_update = AbroadStocks.objects.filter(country_key=country_key).only("timestamp").last()
         if tsnow() - last_update.timestamp < 60:
+            print("[api.travel.import] ignore update", country_key)
             return JsonResponse({"message": f"The stocks have been updated less than 60s ago"}, status=200)
+        print("[api.travel.import] update stocks")
 
         country = countries[country_key]["name"]
         items = payload["items"]
