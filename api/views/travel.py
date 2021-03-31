@@ -96,7 +96,8 @@ def importStocks(request):
         if tsnow() - last_update.timestamp < 60:
             print("[api.travel.import] ignore update", country_key)
             return JsonResponse({"message": f"The stocks have been updated less than 60s ago"}, status=200)
-        print("[api.travel.import] update stocks")
+        else:
+            print("[api.travel.import] update stocks", country_key)
 
         country = countries[country_key]["name"]
         items = payload["items"]
