@@ -57,8 +57,8 @@ urlpatterns = [
     path('logout', views.logout, name="logout"),
     path('delete', views.delete, name="delete"),
     # path('analytics', views.analytics, name="analytics"),
-    path('tmp/gym', views.gym, name="gym"),
-    path('api/gym', views.gymImport, name="gymImport"),
+    # path('tmp/gym', views.gym, name="gym"),
+    # path('api/gym', views.gymImport, name="gymImport"),
     path('discord', RedirectView.as_view(url="https://discord.gg/tZaYpbG"), name="discord"),
 
     path('donations', setup_views.donations, name='donations'),

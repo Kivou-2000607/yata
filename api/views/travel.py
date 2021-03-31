@@ -19,6 +19,7 @@ This file is part of yata.
 # django
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 
 # cache and rate limit
 from django.utils.decorators import method_decorator
@@ -39,6 +40,7 @@ from bazaar.models import Item
 @method_decorator(never_ever_cache)
 def exportStocks(request):
     try:
+        print("[api.travel.export] get stocks")
 
         # if getattr(request, 'limited', False):
         #     return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
@@ -92,11 +94,11 @@ def importStocks(request):
         if country_key not in countries:
             return JsonResponse({"error": {"code": 2, "error": f'Unknown country key \'{country_key}\''}}, status=400)
 
-        last_update = AbroadStocks.objects.filter(country_key=country_key).only("timestamp").last()
-        if tsnow() - last_update.timestamp < 60:
+        if cache.get(f"foreign_stocks_lock_{country_key}", False):
             print("[api.travel.import] ignore update", country_key)
             return JsonResponse({"message": f"The stocks have been updated less than 60s ago"}, status=200)
         else:
+            cache.set(f"foreign_stocks_lock_{country_key}", True, 60)
             print("[api.travel.import] update stocks", country_key)
 
         country = countries[country_key]["name"]
@@ -184,8 +186,8 @@ def importStocks(request):
                 item.abroadstocks_set.create(**v)
 
             # clear cloudflare cache
-            r = clear_cf_cache(["https://yata.yt/api/v1/travel/export/"])
-            print("[api.travel.import] clear cloudflare cache", r)
+            # r = clear_cf_cache(["https://yata.yt/api/v1/travel/export/"])
+            # print("[api.travel.import] clear cloudflare cache", r)
 
             return JsonResponse({"message": f"The stocks have been updated with {client}"}, status=200)
 
