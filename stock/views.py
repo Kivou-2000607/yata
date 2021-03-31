@@ -30,25 +30,17 @@ from stock.models import Stock
 from yata.handy import apiCall
 from yata.handy import returnError
 from yata.handy import timestampToDate
+from yata.handy import getPlayer
 
 
 def index(request, select='all'):
     try:
-        if request.session.get('player'):
-            print('[view.stock.list] get player id from session')
-            tId = request.session["player"].get("tId")
-        else:
-            print('[view.stock.list] anon')
-            tId = -1
-
-        player = Player.objects.filter(tId=tId).first()
-        player.lastActionTS = int(timezone.now().timestamp())
-        player.active = True
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
         key = player.getKey()
 
         # update personal stocks
         error = False
-        if tId > 0:
+        if player.tId > 0:
             myStocks = apiCall("user", "", "stocks,timestamp", key=key)
             if 'apiError' in myStocks:
                 error = {"apiErrorSub": myStocks["apiError"]}
@@ -131,14 +123,7 @@ def details(request, tId):
 def prices(request, tId, period=None):
     try:
         if request.method == "POST":
-            if request.session.get('player'):
-                print('[view.stock.prices] get player id from session')
-                playerId = request.session["player"].get("tId")
-            else:
-                print('[view.stock.prices] anon')
-                playerId = -1
-
-            player = Player.objects.filter(tId=playerId).first()
+            player = getPlayer(request.session.get("player", {}).get("tId", -1))
             stock = {'t': Stock.objects.filter(tId=tId).first()}
 
             # timestamp rounded at the hour

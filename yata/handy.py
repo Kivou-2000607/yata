@@ -19,6 +19,7 @@ This file is part of yata.
 
 from django.utils import timezone
 from django.forms.models import model_to_dict
+from django.core.cache import cache
 
 import datetime
 import random
@@ -59,7 +60,7 @@ def isProxyKey(key):
 
 
 
-def apiCall(section, id, selections, key, sub=None, verbose=True):
+def apiCall(section, id, selections, key, sub=None, verbose=False):
     import requests
 
     key = str(key)
@@ -157,11 +158,21 @@ def cleanhtml(raw_html):
 def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     from player.models import Player
     from player.functions import updatePlayer
-    from django.http import HttpResponseForbidden
-    from django.template.loader import render_to_string
 
+    # get cache
+    player_cache = cache.get(f'player_{tId}')
+    print(f"[getPlayer] cached {player_cache}")
+
+    # if player in cache and no update force return cache directly
+    if player_cache is not None and not forceUpdate:
+        return player_cache
+
+    # skip update
     if skipUpdate:
-        return Player.objects.filter(tId=tId).first()
+        # set cache
+        player = Player.objects.filter(tId=tId).first()
+        player_cache = cache.set(f'player_{tId}', player, 3600)
+        return player
 
     player, _ = Player.objects.get_or_create(tId=tId)
     player.lastActionTS = tsnow()
@@ -171,6 +182,10 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
         updatePlayer(player)
 
     player.save()
+
+    # set cache
+    player_cache = cache.set(f'player_{tId}', player, 3600)
+
     return player
 
 
