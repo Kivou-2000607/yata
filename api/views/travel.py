@@ -73,7 +73,10 @@ def importStocks(request):
         if request.method != 'POST':
             return JsonResponse({"error": {"code": 2, "error": "POST request needed"}}, status=400)
 
-        payload = json.loads(request.body)
+        try:
+            payload = json.loads(request.body)
+        except BaseException as e:
+            return JsonResponse({"error": {"code": 2, "error": "wrong body format"}}, status=400)
 
         # check mandatory keys
         for key in ["country", "items"]:
@@ -88,6 +91,10 @@ def importStocks(request):
         country_key = str(payload["country"]).lower().strip()[:3]
         if country_key not in countries:
             return JsonResponse({"error": {"code": 2, "error": f'Unknown country key \'{country_key}\''}}, status=400)
+
+        last_update = AbroadStocks.objects.filter(country_key=country_key).only("timestamp").last()
+        if tsnow() - last_update.timestamp < 60:
+            return JsonResponse({"message": f"The stocks have been updated less than 60s ago"}, status=200)
 
         country = countries[country_key]["name"]
         items = payload["items"]
