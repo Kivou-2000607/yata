@@ -82,34 +82,60 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 ROOT_URLCONF = 'yata.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'yata.context_processors.sectionMessage',
-                'yata.context_processors.nextLoot',
-            ],
+if DEBUG:
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [os.path.join(BASE_DIR, 'templates')],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'yata.context_processors.sectionMessage',
+                    'yata.context_processors.nextLoot',
+                ],
+            },
         },
-    },
-]
+    ]
+else:
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [os.path.join(BASE_DIR, 'templates')],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'yata.context_processors.sectionMessage',
+                    'yata.context_processors.nextLoot',
+                ],
+                'loaders': [(
+                    'django.template.loaders.cached.Loader', [
+                        'django.template.loaders.app_directories.Loader',
+                        'django.template.loaders.filesystem.Loader',
+                    ]
+                )]
+            },
+        },
+    ]
+
 
 WSGI_APPLICATION = 'yata.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if config("DATABASE", default="sqlite", cast=str) == "postgresql":    
+if config("DATABASE", default="sqlite", cast=str) == "postgresql":
     print(f"[YATA {datestr()}] settings DATABASE=postgresql")
     conn_max = config("PG_CONN_MAX_AGE", cast=int, default=600)
     print(f"[YATA {datestr()}] settings CONN_MAX_AGE={conn_max}")
-    
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
