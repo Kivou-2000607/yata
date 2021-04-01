@@ -49,6 +49,12 @@ LEVEL_CHOICES = (
 
 
 class Player(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['dId']),
+            models.Index(fields=['id']),
+            models.Index(fields=['tId']),
+        ]
     # user information: basic
     tId = models.IntegerField(default=4, unique=True)
     name = models.CharField(default="Duke", max_length=200)
@@ -300,7 +306,6 @@ class Player(models.Model):
 
         return merits
 
-
     def getPersonalstats(self, req=None):
         from player.personalstats_dic import d as personalstats_dic
         if req is None:
@@ -324,6 +329,7 @@ class Player(models.Model):
 
         return personnalstats
 
+
 class Message(models.Model):
     section = models.CharField(default="all", max_length=16, choices=SECTION_CHOICES)
     level = models.CharField(default="notice", max_length=16, choices=LEVEL_CHOICES)
@@ -331,6 +337,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message {self.pk} in {self.section}"
+
 
 class Donation(models.Model):
     event = models.CharField(max_length=512)
