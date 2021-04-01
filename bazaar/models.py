@@ -311,6 +311,12 @@ class VerifiedClient(models.Model):
 
 
 class AbroadStocks(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['country_key']),
+            models.Index(fields=['item_id', 'country_key']),
+            models.Index(fields=['timestamp']),
+        ]
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
     country_key = models.CharField(default="???", max_length=3)
@@ -343,7 +349,7 @@ class AbroadStocks(models.Model):
             # "item_buy_price": self.item.tBuyPrice,
             # "item_week_tendency": self.item.weekTendency,
             # "country_fly_time": countries[self.country_id]["fly_time"],
-            }
+        }
 
     def payloadLight(self):
         from bazaar.countries import countries
@@ -362,7 +368,7 @@ class AbroadStocks(models.Model):
             # "item_buy_price": self.item.tBuyPrice,
             # "item_week_tendency": self.item.weekTendency,
             # "country_fly_time": countries[self.country_id]["fly_time"],
-            }
+        }
 
     def get_country(self):
         from bazaar.countries import countries
