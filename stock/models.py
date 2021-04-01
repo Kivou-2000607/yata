@@ -221,6 +221,11 @@ class Stock(models.Model):
 
 
 class History(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['stock_id', 'timestamp']),
+            models.Index(fields=['timestamp']),
+        ]
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     tCurrentPrice = models.FloatField(default=0.0)
     tMarketCap = models.BigIntegerField(default=0)
