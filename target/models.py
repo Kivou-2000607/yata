@@ -81,6 +81,10 @@ class Attack(models.Model):
 
 
 class Target(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['target_id']),
+        ]
     # target general info
     target_id = models.IntegerField(default=0)
     name = models.CharField(default="target_name", max_length=16)
