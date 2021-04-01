@@ -2127,6 +2127,10 @@ class Bonus(models.Model):
 
 
 class AttackChain(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['report_id', 'timestamp_ended']),
+        ]
     report = models.ForeignKey(Chain, on_delete=models.CASCADE)
 
     # API Fields
@@ -2149,7 +2153,6 @@ class AttackChain(models.Model):
     raid = models.BooleanField(default=False)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
-
 
     # mofifiers
     fair_fight = models.FloatField(default=0.0)
