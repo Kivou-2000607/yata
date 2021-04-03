@@ -208,11 +208,17 @@ def dashboardOption(request):
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
+                loot_conf = ["channels_allowed"]
+                for i, v in NPCS:
+                    loot_conf.append(f"channels_alerts_{i}")
+                    loot_conf.append(f"roles_alerts_{i}")
+                    loot_conf.append(f"loot_level_{i}")
+                print(loot_conf)
                 configuration_keys = {
                     "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "wars": ["channels_alerts", "roles_alerts", "channels_allowed"],
-                    "loot": ["channels_alerts", "roles_alerts", "channels_allowed", "other", "roles_4", "roles_10", "roles_15", "roles_17", "roles_19", "roles_20"],
+                    "loot": loot_conf,
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
                     "oc": ["channels_allowed", "currents", "notifications"],
@@ -233,7 +239,6 @@ def dashboardOption(request):
                     id = post.get("key", 0)
                     sub = post.get("sub", False)
                     name = post.get("val", "???")
-                    print(type)
 
                     if type not in c:
                         c[type] = {}
@@ -279,7 +284,7 @@ def dashboardOption(request):
                                 if "postitions" in c and fid in c["positions"]:  # del positions with faction
                                     del c["positions"][fid]
 
-                        elif type in ["other"]:
+                        elif type == "other" or type in [f"loot_level_{i}" for i, v in NPCS]:
                             c[type][id] = 1
                             for a, b in [["weekly_check", "daily_check"], ["weekly_verify", "daily_verify"]]:
                                 if id == a and b in c[type]:
@@ -300,10 +305,6 @@ def dashboardOption(request):
                             c[type] = {id: name}  # (single)
 
                     configuration[module] = c
-
-                # for k, v in configuration.items():
-                #     if k not in ["admin"]:
-                #         print(k, v)
 
                 server.configuration = json.dumps(configuration)
                 server.save()

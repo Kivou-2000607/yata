@@ -77,7 +77,7 @@ This file is part of yata.
     {% with mod=server.get_loot %}
         {% if mod %}
             {% for k, v in mod.items %}
-                {% if k == "other" %}
+                {% if k|slice:":11" == "loot_level_" %}
                   {% include "bot/dashboard/module-others.html" %}
                 {% else %}
                   {% include "bot/dashboard/module-dict.html" %}

@@ -10,6 +10,7 @@ import json
 from player.models import Player
 from faction.models import Faction
 
+NPCS = [(4, "Duke"), (15, "Leslie"), (10, "Scrooge"), (15, "Leslie"), (17, "Easter Bunny"), (19, "Jimmy"), (20, "Fernando")]
 
 def check_json(value):
     try:
@@ -103,18 +104,14 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
-                "channels_alerts": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_alerts", {}), "prefix": "#", "title": "Channel for the alerts", "help": "Select one channel for the alerts", "mandatory": True},
-                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_alerts", {}), "prefix": "@", "title": "Role for the alerts of all NPCs", "help": "Select one role for the alerts of all NPCs", "mandatory": False},
-                "roles_4": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_4", {}), "prefix": "@", "title": "Role for the alerts on Duke", "help": "Select one role for the alerts of Duke", "mandatory": False},
-                "roles_10": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_10", {}), "prefix": "@", "title": "Role for the alerts on Scrooge", "help": "Select one role for the alerts of Scrooge", "mandatory": False},
-                "roles_15": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_15", {}), "prefix": "@", "title": "Role for the alerts on Leslie", "help": "Select one role for the alerts of Leslie", "mandatory": False},
-                "roles_17": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_17", {}), "prefix": "@", "title": "Role for the alerts on Easter Bunny", "help": "Select one role for the alerts of Easter Bunny", "mandatory": False},
-                "roles_19": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_19", {}), "prefix": "@", "title": "Role for the alerts on Jimmy", "help": "Select one role for the alerts of Jimmy", "mandatory": False},
-                "roles_20": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_20", {}), "prefix": "@", "title": "Role for the alerts on Fernando", "help": "Select one role for the alerts of Fernando", "mandatory": False},
-                "other": {"type": "bool", "all": ["level_1", "level_2", "level_3", "level_4", "level_5"], "selected": from_db.get("other", []), "title": "Level of alerts", "help": "If none are selected it will ping at level 4 only", "prefix": "", "mandatory": False},
-
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command <tt>!loot</tt>", "help": "Select one or several channels for the commands", "mandatory": True},
             }
+            for i, v in NPCS:
+                for_template[f"channels_alerts_{i}"] = {"type": "channel", "all": self.get_channels(), "selected": from_db.get(f"channels_alerts_{i}", {}), "prefix": "#", "title": f"Channel for {v} alerts", "help": f"Select one channel for the {v} alerts", "mandatory": True}
+                if for_template[f"channels_alerts_{i}"]["selected"]:
+                    for_template[f"roles_alerts_{i}"] = {"type": "role", "all": self.get_roles(), "selected": from_db.get(f"roles_alerts_{i}"), "prefix": "@", "title": f"Role for the {v} alerts", "help": f"Select one role for the {v} alerts", "mandatory": False}
+                    for_template[f"loot_level_{i}"] = {"type": "bool", "all": ["level_1", "level_2", "level_3", "level_4", "level_5"], "selected": from_db.get(f"loot_level_{i}", []), "title": f"Loot level for {v}", "prefix": "", "help": "Send alerts for these loot levels.", "mandatory": True}
+
             return for_template
         else:
             return False
