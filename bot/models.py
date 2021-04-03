@@ -105,7 +105,7 @@ class Server(models.Model):
         if from_db:
             for_template = {
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
-                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get(f"roles_alerts"), "prefix": "@", "title": f"Generic role for the <tt>!assign loot</tt> command", "help": f"Select one role", "mandatory": False}
+                "roles_alerts": {"type": "role", "all": self.get_roles(), "selected": from_db.get(f"roles_alerts"), "prefix": "@", "title": f"Generic role", "help": f"Select one role for the <tt>!assign loot</tt> command", "mandatory": False}
             }
             for i, v in NPCS:
                 for_template[f"channels_alerts_{i}"] = {"type": "channel", "all": self.get_channels(), "selected": from_db.get(f"channels_alerts_{i}", {}), "prefix": "#", "title": f"Channel for {v} alerts", "help": f"Select one channel for the {v} alerts", "mandatory": True}
