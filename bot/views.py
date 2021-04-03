@@ -208,12 +208,12 @@ def dashboardOption(request):
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
-                loot_conf = ["channels_allowed"]
+                loot_conf = ["channels_allowed", "roles_alerts"]
                 for i, v in NPCS:
                     loot_conf.append(f"channels_alerts_{i}")
                     loot_conf.append(f"roles_alerts_{i}")
                     loot_conf.append(f"loot_level_{i}")
-                print(loot_conf)
+
                 configuration_keys = {
                     "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
