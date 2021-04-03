@@ -104,7 +104,7 @@ class Server(models.Model):
         from_db = json.loads(self.configuration).get("loot", False)
         if from_db:
             for_template = {
-                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command <tt>!loot</tt>", "help": "Select one or several channels for the commands", "mandatory": True},
+                "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the command", "help": "Select one or several channels for the <tt>!loot</tt> commands", "mandatory": True},
             }
             for i, v in NPCS:
                 for_template[f"channels_alerts_{i}"] = {"type": "channel", "all": self.get_channels(), "selected": from_db.get(f"channels_alerts_{i}", {}), "prefix": "#", "title": f"Channel for {v} alerts", "help": f"Select one channel for the {v} alerts", "mandatory": True}
