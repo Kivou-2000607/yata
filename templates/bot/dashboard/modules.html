@@ -77,7 +77,11 @@ This file is part of yata.
     {% with mod=server.get_loot %}
         {% if mod %}
             {% for k, v in mod.items %}
-                {% include "bot/dashboard/module-dict.html" %}
+                {% if k == "other" %}
+                  {% include "bot/dashboard/module-others.html" %}
+                {% else %}
+                  {% include "bot/dashboard/module-dict.html" %}
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}

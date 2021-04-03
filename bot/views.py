@@ -116,21 +116,43 @@ def dashboard(request, secret=False):
                         is_faction = section == "verify" and option == "factions"
                         if is_channels_option or is_roles_option or is_faction:
 
+                            # update names
+                            # if is_channels_option:
+                            #     for k, v in vals.items():
+                            #         print(k, v, recorded_channels.get(k))
+                            #
+                            # if is_roles_option:
+                            #     for k, v in vals.items():
+                            #         print(k, v, recorded_roles.get(k))
+
+                            # if is_faction:
+                            #     for k, v in vals.items():
+                            #         print(k, v, recorded_roles.get(k))
+
                             # list with ids to delete
                             to_del = []
 
                             # loop over the roles or channels and check if they are in recorded_roles or recorded_channels
-                            for val in vals:
-                                if is_roles_option and val not in recorded_roles:
-                                    to_del.append(val)
-                                if is_channels_option and val not in recorded_channels:
-                                    to_del.append(val)
+                            for val, name in vals.items():
+                                if is_roles_option:
+                                    if val in recorded_roles:
+                                        configurations[section][option][val] = recorded_roles[val]
+                                    else:
+                                        to_del.append(val)
+
+                                if is_channels_option:
+                                    if val in recorded_channels:
+                                        configurations[section][option][val] = recorded_channels[val]
+                                    else:
+                                        to_del.append(val)
 
                                 # special case of facion which is a sub config with roles
                                 if is_faction:
                                     to_del_sub = []
                                     for val_sub in vals[val]:
-                                        if val_sub not in recorded_roles:
+                                        if val_sub in recorded_roles:
+                                            configurations[section][option][val][val_sub] = recorded_roles[val_sub]
+                                        else:
                                             to_del_sub.append(val_sub)
 
                                     for k in to_del_sub:
@@ -139,6 +161,8 @@ def dashboard(request, secret=False):
                             # delete role in configuration
                             for k in to_del:
                                 del vals[k]
+
+
 
                 server.configuration = json.dumps(configurations)
                 server.save()
@@ -188,7 +212,7 @@ def dashboardOption(request):
                     "admin": ["prefix", "channels_admin", "channels_welcome", "message_welcome", "other"],
                     "rackets": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "wars": ["channels_alerts", "roles_alerts", "channels_allowed"],
-                    "loot": ["channels_alerts", "roles_alerts", "channels_allowed"],
+                    "loot": ["channels_alerts", "roles_alerts", "channels_allowed", "other", "roles_4", "roles_10", "roles_15", "roles_17", "roles_19", "roles_20"],
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
                     "oc": ["channels_allowed", "currents", "notifications"],
@@ -209,6 +233,7 @@ def dashboardOption(request):
                     id = post.get("key", 0)
                     sub = post.get("sub", False)
                     name = post.get("val", "???")
+                    print(type)
 
                     if type not in c:
                         c[type] = {}
