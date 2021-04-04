@@ -17,8 +17,6 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{# {% include "yata/ban.js" %} #}
-
 {# errors #}
 {% if apiErrorSub %}
     {% include "yata/error.html" with apiError=apiErrorSub %}
@@ -33,32 +31,39 @@ This file is part of yata.
 {# index #}
 {% if view.index %}
     {% include "faction/index.html" %}
+    {% include "faction/tutorials/index.html" %}
 {% endif %}
 
 {# aa #}
 {% if view.aa %}
     {% include "faction/aa/index.html" %}
+    {% include "faction/tutorials/aa.html" %}
 {% endif %}
 
 {# members #}
 {% if view.members %}
     {% include "faction/members/index.html" %}
+    {% include "faction/tutorials/members.html" %}
 {% endif %}
 
 {# chain reports #}
 {% if view.report %}
     {% include "faction/chains/report.html" %}
+    {% include "faction/tutorials/chains.html" %}
 {% endif %}
 {% if view.combined %}
     {% include "faction/chains/combined.html" %}
+    {% include "faction/tutorials/chains.html" %}
 {% endif %}
 {% if view.chains %}
     {% include "faction/chains/index.html" %}
+    {% include "faction/tutorials/chains.html" %}
 {% endif %}
 
 {# walls #}
 {% if view.walls %}
     {% include "faction/walls/index.html" %}
+    {% include "faction/tutorials/walls.html" %}
 {% endif %}
 
 {# attack reports #}
@@ -70,6 +75,7 @@ This file is part of yata.
         });
     </script>
     {% include "faction/attacks/index.html" %}
+    {% include "faction/tutorials/attacks.html" %}
 {% endif %}
 
 {% if view.attacksReport %}
@@ -82,9 +88,11 @@ This file is part of yata.
     </script>
     {% if not share %}
         {% include "faction/attacks/index.html" %}
+        {% include "faction/tutorials/attacks.html" %}
     {% endif %}
 {% endif %}
 
+{# revive reports #}
 {% if view.revivesReports %}
     <script>
         $(function () {
@@ -93,31 +101,42 @@ This file is part of yata.
         });
     </script>
     {% include "faction/revives/index.html" %}
+    {% include "faction/tutorials/revives.html" %}
 {% endif %}
 {% if view.revivesReport %}
   {% include "faction/revives/report.html" %}
+  {% include "faction/tutorials/revives.html" %}
 {% endif %}
 
+{# armory #}
 {% if view.armory %}
     {% include "faction/armory/index.html" %}
+    {% include "faction/tutorials/armory.html" %}
 {% endif %}
 {% if view.armoryList %}
     {% include "faction/armory/news.html" %}
 {% endif %}
 
+{# big brother #}
 {% if view.bb %}
     {% include "faction/bigbrother/index.html" %}
+    {% include "faction/tutorials/bigbrother.html" %}
 {% endif %}
 
+{# territories #}
 {% if view.territories %}
     {% include "faction/territories/index.html" %}
+    {% include "faction/tutorials/territories.html" %}
 {% endif %}
 
+{# respect simulator #}
 {% if view.simulator %}
     {% include "faction/simulator/index.html" %}
     {% include "faction/tutorials/simulator.html" %}
 {% endif %}
 
+{# organized crimes #}
 {% if view.oc %}
     {% include "faction/oc/index.html" %}
+    {% include "faction/tutorials/oc.html" %}
 {% endif %}
