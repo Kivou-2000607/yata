@@ -22,27 +22,6 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
-{# <script> #}
-
-{# $(function () { #}
-    {# $("#modify-date-end").datetimepicker({ #}
-        {# step: 15, #}
-        {# onChangeDateTime:function(dp,$input){ #}
-            {# var d = new Date($input.val()); #}
-            {# var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()); #}
-            {# var reportId = $("input#revive-report-id").attr("data-val"); #}
-            {# $( "#content-update" ).load( "/faction/revives/" + reportId, { #}
-                {# end: dUTC/1000, modifyEnd: 1, #}
-                {# csrfmiddlewaretoken: getCookie("csrftoken") #}
-            {# },afterLoad); #}
-            {# $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract '); #}
-        {# }, #}
-    {# }); #}
-{# }); #}
-
-{# </script> #}
-
 <h2 class="title"><i class="fas fa-notes-medical fa-icon-inline"></i>{{faction.name}}'s revives report [{{report.pk}}]
     {% if not share %}
       {%include "faction/revives/filter-buttons.html"%}
@@ -67,9 +46,9 @@ This file is part of yata.
                 <td><b>Report status:</b> {% include "faction/revives/status.html"%}</td>
             </tr>
             <tr>
-                <td><b>Made: </b> {{report.revivesMadeSuccess|intcomma}} / {{report.revivesMade|intcomma}}</td>
-                <td><b>Received: </b> {{report.revivesReceivedSuccess|intcomma}} / {{report.revivesReceived|intcomma}}</td>
-                <td><b>Total: </b> {{report.revivesReceivedSuccess|add:report.revivesMadeSuccess|intcomma}} / {{report.revivesReceived|add:report.revivesMade|intcomma}}</td>
+                <td><b>Total | Success | Fail: </b> {{report.revivesReceived|add:report.revivesMade|intcomma}} | {{report.revivesReceivedSuccess|add:report.revivesMadeSuccess|intcomma}} | {{report.revivesReceived|add:report.revivesMade|sub:report.revivesReceivedSuccess|sub:report.revivesMadeSuccess|intcomma}}</td>
+                <td><b>Made: </b> {{report.revivesMade|intcomma}} | {{report.revivesMadeSuccess|intcomma}} | {{report.revivesMade|sub:report.revivesMadeSuccess|intcomma}}</td>
+                <td><b>Received: </b> {{report.revivesReceived|intcomma}} | {{report.revivesReceivedSuccess|intcomma}} | {{report.revivesReceived|sub:report.revivesReceivedSuccess|intcomma}}</td>
             </tr>
         </tbody>
     </table>
