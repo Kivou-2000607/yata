@@ -35,8 +35,8 @@ class Command(BaseCommand):
                 print(f"[CRON {logdate()}] faction {faction}: check keys")
                 faction.checkKeys()
                 if faction.nKeys > 0:
-                    print(f"[CRON {logdate()}] faction {faction}: update logs")
-                    faction.updateLog()
+                    # print(f"[CRON {logdate()}] faction {faction}: update logs")
+                    # faction.updateLog()
                     print(f"[CRON {logdate()}] faction {faction}: update upgrades")
                     faction.updateUpgrades()
                     print(f"[CRON {logdate()}] faction {faction}: update crimes")
