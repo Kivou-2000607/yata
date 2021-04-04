@@ -3069,7 +3069,7 @@ class RevivesReport(models.Model):
                 n[1] = n[1] + hospitalized
                 n[2] = n[2] + online
                 n[3] = n[3] + both
-                m = [f_set[revive.reviver_faction][f'{k}Success'] for k in revives_count_types]
+                m = [p_set[revive.reviver_id][f'{k}Success'] for k in revives_count_types]
                 m[0] = m[0] + (1 * int(success))
                 m[1] = m[1] + (hospitalized * int(success))
                 m[2] = m[2] + (online * int(success))
@@ -3093,7 +3093,7 @@ class RevivesReport(models.Model):
                 n[5] = n[5] + hospitalized
                 n[6] = n[6] + online
                 n[7] = n[7] + both
-                m = [f_set[revive.target_faction][f'{k}Success'] for k in revives_count_types]
+                m = [p_set[revive.reviver_id][f'{k}Success'] for k in revives_count_types]
                 m[4] = m[4] + (1 * int(success))
                 m[5] = m[5] + (hospitalized * int(success))
                 m[6] = m[6] + (online * int(success))
