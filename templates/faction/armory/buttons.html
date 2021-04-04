@@ -1,0 +1,38 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<form class="inlinefrom">{% csrf_token %}
+    <a class="faction-armory-reports-see" data-val="{{report.pk}}" href="{% url 'faction:armory' report.pk %}"><i class="fas fa-eye" title="See report"></i></a>
+    {% if player.factionAA %}
+    <a class="faction-armory-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
+    {% endif %}
+    {% if report.live %}
+        {% if report.computing %}
+            <i class="fas fa-microphone-alt valid" title="This is a live report"></i>
+        {% else %}
+            <i class="fas fa-microphone-alt-slash neutral" title="This is a live report"></i>
+        {% endif %}
+    {% endif %}
+    {% include "faction/armory/status.html" %}
+</form>

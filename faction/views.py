@@ -2270,6 +2270,13 @@ def revivesReport(request, reportId, share=False):
                     report.save()
                     report.fillReport()
 
+                elif type in ["chance"]:
+                    chance = str(request.POST.get("value"))
+                    if chance.isdigit():
+                        report.chance_filter = int(chance)
+                        report.save()
+                        report.fillReport()
+
             e = report.getFilterExt()
 
             o_pl = int(request.GET.get('o_pl', 1)) if int(request.GET.get('o_pl', 1)) else int(request.POST.get('o_pl', 1))
@@ -2328,9 +2335,9 @@ def revivesReport(request, reportId, share=False):
             report.save()
 
             if report.player_filter:
-                revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
+                revivesFilter = (Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)) & Q(chance__gte=report.chance_filter)
             else:
-                revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+                revivesFilter = (Q(reviver_faction__in=factions) | Q(target_faction__in=factions)) & Q(chance__gte=report.chance_filter)
 
             if not report.include_failed:
                 revivesFilter = revivesFilter & Q(result=True)
@@ -2436,9 +2443,9 @@ def revivesList(request, reportId):
             factions = json.loads(report.factions)
 
             if report.player_filter:
-                revivesFilter = Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)
+                revivesFilter = (Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)) & Q(chance__gte=report.chance_filter)
             else:
-                revivesFilter = Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+                revivesFilter = (Q(reviver_faction__in=factions) | Q(target_faction__in=factions)) & Q(chance__gte=report.chance_filter)
 
             if not report.include_failed:
                 revivesFilter = revivesFilter & Q(result=True)
@@ -2474,216 +2481,209 @@ def revivesList(request, reportId):
 
 # SECTION: armory
 def armory(request):
-    from bazaar.models import BazaarData
-
     try:
-        ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
 
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
-            faction = Faction.objects.filter(tId=player.factionId).first()
             if faction is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 context = {'player': player, selectError: "Faction not found in the database."}
                 return render(request, page, context)
 
-            # update and get news
-            if settings.DEBUG or tsnow() - faction.armoryUpda > 60 * 15:
-                print("update armory")
-                state, message = faction.updateLog()
+            reports = ArmoryReport.objects.all()
+
+            context = {'player': player, 'reports': reports, 'factioncat': True, 'faction': faction, 'view': {'armory': True}}
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def armoryReport(request, reportId, share=False):
+    try:
+        if request.session.get('player') or share == "share":
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            if share == "share":
+                # if shared report
+                player = False
+                report = AttacksReport.objects.filter(shareId=reportId).first()
+                if report is None:
+                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
+                faction = report.faction
+
             else:
-                message = False
-                state = False
-            news = faction.news_set.order_by("-timestamp").all()
+                player = getPlayer(request.session["player"].get("tId"))
+                factionId = player.factionId
 
-            # get all members for news
-            members = sorted(set(news.values_list('member', flat=True)))
+                # get faction
+                faction = Faction.objects.filter(tId=factionId).first()
+                if faction is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Click on chain report again please."}
+                    return render(request, page, context)
 
-            if request.POST.get("type") == "filter":
-                faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
-                faction.save()
-            elif request.POST.get("resetFilters", False):
-                faction.armoryNewsFilter = ""
-                faction.save()
+                # get breakdown
+                if not reportId.isdigit():
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                    return render(request, page, context)
 
-            if faction.armoryNewsFilter:
-                news = news.filter(member=faction.armoryNewsFilter)
+                report = faction.attacksreport_set.filter(pk=reportId).first()
+                if report is None:
+                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                    context = dict({"player": player,
+                                    selectError: "Report {} not found.".format(reportId),
+                                    'factioncat': True,
+                                    'faction': faction,
+                                    'report': False})  # views
+                    return render(request, page, context)
 
-            # return empty armory
-            if not len(news):
-                context = {'player': player, 'factioncat': True, 'faction': faction, 'view': {'armory': True}}
-                if message:
-                    sub = "Sub" if request.method == 'POST' else ""
-                    context["errorMessage" + sub] = "Empty armory"
+            o_fa = int(request.GET.get('o_fa', 0))
+            orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
+            order_fa = orders[o_fa]
+
+            if request.GET.get('p_fa') is not None or request.GET.get('o_fa') is not None:
+                if order_fa:
+                    paginator = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
+                else:
+                    paginator = Paginator(report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                p_fa = request.GET.get('p_fa')
+                factions = paginator.get_page(p_fa)
+                page = "faction/attacks/factions.html"
+                context = {"player": player, "faction": faction, "report": report, "factions": factions, "o_fa": o_fa}
                 return render(request, page, context)
 
-            # get start/end ts
-            start = news.last().timestamp
-            end = news.first().timestamp
+            o_pl = int(request.GET.get('o_pl', 0))
+            orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
+            order_pl = orders[o_pl]
 
-            # filter start/end if asked
-            tss = int(request.POST.get("start", 0))
-            if tss:
-                tss = min(int(request.POST.get("start", 0)), end)
-                print("filter tss {}".format(timestampToDate(tss)))
-                news = news.filter(timestamp__gt=tss - 1)
-            tse = int(request.POST.get("end", 0))
-            if tse:
-                tse = max(int(request.POST.get("end", 0)), start)
-                print("filter tse {}".format(timestampToDate(tse)))
-                news = news.filter(timestamp__lt=tse + 1)
-
-            # get filtered start/end
-            fstart = news.last().timestamp if news.last() is not None else tsnow()
-            fend = news.first().timestamp if news.first() is not None else tsnow()
-
-            # record all timestamps
-            timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
-
-            armory = dict({})
-            timestamps["nObjects"] = 0
-            for new in news.filter(type="armorynews"):
-                k = new.tId
-                ns = new.news.split(" ")
-                btype = "?"
-                if 'used' in ns:
-                    member = ns[0]
-                    if ns[6] in ["points"]:
-                        # refill
-                        item = ns[6].title()
-                        n = 25
-                    else:
-                        splt = " ".join(ns[6:-1]).split(":")
-                        if len(splt) > 1:
-                            btype = splt[-1].strip()
-                        item = splt[0].strip()
-                        # item = " ".join(ns[6:-1]).strip()
-                        n = 1
-
-                    timestamps["nObjects"] += n
-                    if item in armory:
-                        if member in armory[item]:
-                            armory[item][member][0] += n
-                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
-                            if btype not in btypes:
-                                btypes.append(btype)
-                                armory[item][member][3] = ", ".join(btypes)
-                        else:
-                            armory[item][member] = [n, 0, 0, btype]
-                    else:
-                        # new item and new member [taken, given, filled]
-                        # print(btype)
-                        armory[item] = {member: [n, 0, 0, btype]}
-
-                elif 'deposited' in ns:
-                    member = ns[0]
-                    # print(ns)
-                    n = int(ns[2].replace(",", "").replace("$", ""))
-                    timestamps["nObjects"] += n
-                    if ns[-1] in ["points"]:
-                        # moved to funds now
-                        item = ns[-1].title()
-                        print(ns)
-                    else:
-                        splt = " ".join(ns[4:]).split(":")
-                        if len(splt) > 1:
-                            btype = splt[-1].strip()
-                        item = splt[0].strip()
-                        # item = " ".join(ns[4:]).strip()
-                    if item in armory:
-                        if member in armory[item]:
-                            armory[item][member][1] += n
-                            btypes = [t for t in armory[item][member][3].split(", ") if t not in ["?"]]
-                            if btype not in btypes:
-                                btypes.append(btype)
-                                armory[item][member][3] = ", ".join(btypes)
-                        else:
-                            armory[item][member] = [0, n, 0, btype]
-                    else:
-                        # new item and new member [taken, given]
-                        armory[item] = {member: [0, n, 0, btype]}
-
-                # elif 'gave' in ns:
-                #     print(ns)
-
-                elif 'filled' in ns:
-                    # print(ns)
-                    member = ns[0]
-                    item = "Blood Bag"
-                    timestamps["nObjects"] += 1
-                    if item in armory:
-                        if member in armory[item]:
-                            armory[item][member][2] += 1
-                        else:
-                            armory[item][member] = [0, 0, 1, btype]
-                    else:
-                        # new item and new member [taken, given, filled]
-                        armory[item] = {member: [0, 0, 1, btype]}
-
-            for new in news.filter(type="fundsnews"):
-                k = new.tId
-                ns = new.news.split(" ")
-                if len(ns) == 3 or len(ns) == 4:
-                    item = "Funds" if ns[2][0] == "$" else "Points"
-                elif len(ns) == 7:
-                    item = "Funds" if ns[3][0] == "$" else "Points"
+            if request.GET.get('p_pl') is not None or request.GET.get('o_pl') is not None:
+                if order_pl:
+                    paginator = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl), 10)
                 else:
-                    continue
-                member = ns[0]
-                if item not in armory:
-                    # was given, deposited, dummy, dummy
-                    armory[item] = {member: [0, 0, 0, ""]}
-                if member not in armory[item]:
-                    armory[item][member] = [0, 0, 0, ""]
+                    paginator = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+                p_pl = request.GET.get('p_pl')
+                players = paginator.get_page(p_pl)
+                page = "faction/attacks/players.html"
+                context = {"player": player, "faction": faction, "report": report, "players": players, "o_pl": o_pl}
+                return render(request, page, context)
 
-                if ns[1] == "was":
-                    armory[item][member][0] += int(ns[3].replace("$", "").replace(",", "").replace(".", ""))
-                elif ns[1] == "deposited":
-                    armory[item][member][1] += int(ns[2].replace("$", "").replace(",", "").replace(".", ""))
+            # if modify end date
+            if 'modifyEnd' in request.POST:
 
-            armoryType = {t: dict({}) for t in ITEM_TYPE}
-            armoryType["Vault"] = dict({})
+                if not player.factionAA:
+                    return returnError(type=403, msg="You need AA rights.")
 
-            for k, v in armory.items():
-                for t, i in ITEM_TYPE.items():
-                    # if k.split(" : ")[0] in i:
-                    if k in i:
-                        armoryType[t][k] = v
-                        break
-                if k in ["Points"]:
-                    armoryType["Vault"][k] = v
+                tse = int(request.POST.get("end", 0))
+                if report.start < tse:
+                    report.end = tse
+                    report.live = False
+                    report.computing = True
+                    report.assignCrontab()
+                    report.attackreport_set.filter(timestamp_ended__gt=tse).delete()
+                    report.last = min(report.end, report.last)
+                    report.state = 0
+                    report.save()
 
-                if k in ["Funds"]:
-                    armoryType["Vault"][k] = v
+            # from when reports were filled by the user
+            # if 'update' in request.POST:
+            #
+            #     if not player.factionAA:
+            #         return returnError(type=403, msg="You need AA rights.")
+            #
+            #     report.fillReport()
 
-            if player.factionAA:
-                logsAll = faction.log_set.order_by("timestamp").all()
-                logtmp = dict({})
-                r = 0
-                m = 0
-                for log in logsAll:
-                    logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
-                    m = (log.money - log.donationsmoney)
-                    r = log.respect
+            factions = json.loads(report.factions)
 
-                logsAll = faction.log_set.order_by("-timestamp").all()
-                for log in logsAll:
-                    log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
-                    log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
-                logs = Paginator(logsAll, 7).get_page(1)
+            # if click on toggle
+            p_fa = False
+            if request.POST.get("type") == "faction_filter":
+                try:
+                    f = int(request.POST["factionId"])
+                    if f in factions:
+                        factions.remove(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(show=False)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(show=False)
+                    else:
+                        factions.append(f)
+                        report.attacksfaction_set.filter(faction_id=f).update(show=True)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(show=True)
+                    report.factions = json.dumps(factions)
+                    report.save()
+                    p_fa = request.POST["page"]
+                except BaseException as e:
+                    print("Error toggle faction {}".format(e))
+
+            report.player_filter = 0
+            report.save()
+            attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
+            attacks_set = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+            paginator = Paginator(attacks_set, 25)
+            p_at = request.GET.get('p_at')
+            attacks = paginator.get_page(p_at)
+
+            attackers = dict({})
+            defenders = dict({})
+            for r in attacks_set:
+                attackers[r.attacker_id] = r.attacker_name
+                defenders[r.defender_id] = r.defender_name
+            attackers = sorted(attackers.items(), key=lambda x: x[1].lower())
+            defenders = sorted(defenders.items(), key=lambda x: x[1].lower())
+
+            if order_fa:
+                factions = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
             else:
-                logsAll = []
-                logs = []
+                factions = Paginator(report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            p_fa = request.GET.get('p_fa') if not p_fa else p_fa
+            factions = factions.get_page(p_fa)
 
-            news = Paginator(news, 25).get_page(1)
+            if order_pl:
+                players = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl), 10)
+            else:
+                players = Paginator(report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"), 10)
+            p_pl = request.GET.get('p_pl')
+            players = players.get_page(p_pl)
 
-            context = {'player': player, 'news': news, 'logs': logs, 'logsAll': logsAll, 'members': members, 'factioncat': True, 'faction': faction, "timestamps": timestamps, "armory": armoryType, 'view': {'armory': True}}
-            if message:
-                err = "validMessage" if state else "errorMessage"
-                sub = "Sub" if request.method == 'POST' else ""
-                context[err + sub] = message
+            # context
+            report.status = REPORT_ATTACKS_STATUS[report.state]
+            # get reports
+            reports = faction.attacksreport_set.order_by('-end')
+            for _ in reports:
+                _.status = REPORT_ATTACKS_STATUS[_.state]
+
+            if share == "share":
+                context = dict({"skipheader": True,
+                                'share': True,
+                                'faction': faction,
+                                'factions': factions,
+                                'players': players,
+                                'report': report,
+                                'o_pl': o_pl,
+                                'o_fa': o_fa,
+                                'view': {'attacksReport': True}})  # views
+            else:
+                context = dict({"player": player,
+                                'factioncat': True,
+                                'faction': faction,
+                                'factions': factions,
+                                'players': players,
+                                'members': members,
+                                'report': report,
+                                'reports': reports,
+                                'attacks': attacks,
+                                'attackers': attackers,
+                                'defenders': defenders,
+                                'o_pl': o_pl,
+                                'o_fa': o_fa,
+                                'view': {'attacksReport': True}})  # views
+
             return render(request, page, context)
 
         else:

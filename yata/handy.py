@@ -160,18 +160,18 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     from player.functions import updatePlayer
 
     # get cache
-    player_cache = cache.get(f'player_{tId}')
-    print(f"[getPlayer] cached {player_cache}")
+    player = cache.get(f'player_{tId}')
+    print(f"[getPlayer] cached {player}")
 
     # if player in cache and no update force return cache directly
-    if player_cache is not None and not forceUpdate:
-        return player_cache
+    if player is not None and not forceUpdate:
+        return player
 
     # skip update
     if skipUpdate:
         # set cache
         player = Player.objects.filter(tId=tId).first()
-        player_cache = cache.set(f'player_{tId}', player, 3600)
+        cache.set(f'player_{tId}', player, 3600)
         return player
 
     player, _ = Player.objects.get_or_create(tId=tId)
@@ -184,9 +184,25 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     player.save()
 
     # set cache
-    player_cache = cache.set(f'player_{tId}', player, 3600)
+    cache.set(f'player_{tId}', player, 3600)
 
     return player
+
+
+def getFaction(tId):
+    from faction.models import Faction
+
+    # get cache
+    faction = cache.get(f'faction_{tId}')
+    print(f"[getFaction] cached {faction}")
+
+    if faction is None:
+        # set cache
+        faction = Faction.objects.filter(tId=tId).first()
+        cache.set(f'faction_{tId}', faction, 3600)
+
+    print(faction)
+    return faction
 
 
 def getFool(tId):

@@ -38,6 +38,7 @@ from yata.handy import *
 from yata.bulkManager import *
 from player.models import Key
 from player.models import Player
+from bazaar.models import BazaarData
 from faction.functions import *
 from faction.storage import OverwriteStorage
 
@@ -77,7 +78,8 @@ CHAIN_ATTACKS_STATUS = {
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry (looked 1h after end) [stop]"}
+    -6: "No new entry (looked 1h after end) [stop]"
+}
 
 REPORT_ATTACKS_STATUS = {
     3: "Normal [continue]",
@@ -104,6 +106,16 @@ REPORT_REVIVES_STATUS = {
     -5: "Empty payload [stop]",
     -6: "No new entry [continue]",
     -7: "Run for more than a week [stop]"}
+
+REPORTS_STATUS = {
+    # init
+    0: "No reports",
+    1: "Waiting for first call",
+
+    # errors
+    -1: "Run for too long [stop]"
+
+}
 
 BB_BRIDGE = {
     "criminaloffences": "Offences",
@@ -2728,7 +2740,8 @@ class RevivesReport(models.Model):
     revivesMadeSuccess = models.IntegerField(default=0)
     revivesReceived = models.IntegerField(default=0)
     revivesReceivedSuccess = models.IntegerField(default=0)
-    include_failed = models.BooleanField(default=False)
+    include_failed = models.BooleanField(default=True)
+    chance_filter = models.IntegerField(default=0)
 
     # share ID
     shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
@@ -2974,7 +2987,7 @@ class RevivesReport(models.Model):
 
     def fillReport(self):
         print(f"[YATA {datestr()}] {self} fill report")
-        allRevives = self.revive_set.all()
+        allRevives = self.revive_set.filter(chance__gte=self.chance_filter)
 
         tmp = allRevives.filter(reviver_faction=self.faction.tId)
         self.revivesMade = tmp.count()
@@ -3001,6 +3014,7 @@ class RevivesReport(models.Model):
             online = 1 if revive.target_last_action_status in ["Online"] else 0
             hospitalized = 1 if revive.target_hospital_reason.split(" ")[0] in ["Hospitalized"] else 0
             both = 1 if (hospitalized and online) else 0
+            success = revive.result
 
             # handle reviver faction
             if revive.reviver_faction in f_set:
@@ -3009,11 +3023,21 @@ class RevivesReport(models.Model):
                 n[1] = n[1] + hospitalized
                 n[2] = n[2] + online
                 n[3] = n[3] + both
+                m = [f_set[revive.reviver_faction][f'{k}Success'] for k in revives_count_types]
+                m[0] = m[0] + (1 * int(success))
+                m[1] = m[1] + (hospitalized * int(success))
+                m[2] = m[2] + (online * int(success))
+                m[3] = m[3] + (both * int(success))
             else:
                 n = [1, hospitalized, online, both, 0, 0, 0, 0]
-            f_set[revive.reviver_faction] = {"faction_id": revive.reviver_faction, "faction_name": revive.reviver_factionname,
-                                             "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                                             "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
+                m = [1 * int(success), hospitalized * int(success), online * int(success), both * int(success), 0, 0, 0, 0]
+            f_set[revive.reviver_faction] = {
+                "faction_id": revive.reviver_faction, "faction_name": revive.reviver_factionname,
+                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7],
+            }
 
             # handle target faction
             if revive.target_faction in f_set:
@@ -3022,11 +3046,21 @@ class RevivesReport(models.Model):
                 n[5] = n[5] + hospitalized
                 n[6] = n[6] + online
                 n[7] = n[7] + both
+                m = [f_set[revive.target_faction][f'{k}Success'] for k in revives_count_types]
+                m[4] = m[4] + (1 * int(success))
+                m[5] = m[5] + (hospitalized * int(success))
+                m[6] = m[6] + (online * int(success))
+                m[7] = m[7] + (both * int(success))
             else:
                 n = [0, 0, 0, 0, 1, hospitalized, online, both]
-            f_set[revive.target_faction] = {"faction_id": revive.target_faction, "faction_name": revive.target_factionname,
-                                            "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                                            "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
+                m = [0, 0, 0, 0, 1 * int(success), hospitalized * int(success), online * int(success), both * int(success)]
+            f_set[revive.target_faction] = {
+                "faction_id": revive.target_faction, "faction_name": revive.target_factionname,
+                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7],
+            }
 
             # handle reviver player
             if revive.reviver_id in p_set:
@@ -3035,12 +3069,22 @@ class RevivesReport(models.Model):
                 n[1] = n[1] + hospitalized
                 n[2] = n[2] + online
                 n[3] = n[3] + both
+                m = [f_set[revive.reviver_faction][f'{k}Success'] for k in revives_count_types]
+                m[0] = m[0] + (1 * int(success))
+                m[1] = m[1] + (hospitalized * int(success))
+                m[2] = m[2] + (online * int(success))
+                m[3] = m[3] + (both * int(success))
             else:
                 n = [1, hospitalized, online, both, 0, 0, 0, 0]
-            p_set[revive.reviver_id] = {"player_id": revive.reviver_id, "player_name": revive.reviver_name,
-                                        "player_faction_id": revive.reviver_faction, "player_faction_name": revive.reviver_factionname,
-                                        "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                                        "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
+                m = [1 * int(success), hospitalized * int(success), online * int(success), both * int(success), 0, 0, 0, 0]
+            p_set[revive.reviver_id] = {
+                "player_id": revive.reviver_id, "player_name": revive.reviver_name,
+                "player_faction_id": revive.reviver_faction, "player_faction_name": revive.reviver_factionname,
+                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7]
+            }
 
             # handle defender player
             if revive.target_id in p_set:
@@ -3049,12 +3093,22 @@ class RevivesReport(models.Model):
                 n[5] = n[5] + hospitalized
                 n[6] = n[6] + online
                 n[7] = n[7] + both
+                m = [f_set[revive.target_faction][f'{k}Success'] for k in revives_count_types]
+                m[4] = m[4] + (1 * int(success))
+                m[5] = m[5] + (hospitalized * int(success))
+                m[6] = m[6] + (online * int(success))
+                m[7] = m[7] + (both * int(success))
             else:
                 n = [0, 0, 0, 0, 1, hospitalized, online, both]
-            p_set[revive.target_id] = {"player_id": revive.target_id, "player_name": revive.target_name,
-                                       "player_faction_id": revive.target_faction, "player_faction_name": revive.target_factionname,
-                                       "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                                       "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7]}
+                m = [0, 0, 0, 0, 1 * int(success), hospitalized * int(success), online * int(success), both * int(success)]
+            p_set[revive.target_id] = {
+                "player_id": revive.target_id, "player_name": revive.target_name,
+                "player_faction_id": revive.target_faction, "player_faction_name": revive.target_factionname,
+                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
+                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7]
+            }
 
         print(f"[YATA {datestr()}] {self} update factions")
         batch = RevivesFaction.objects.bulk_operation()
@@ -3096,6 +3150,16 @@ class RevivesFaction(models.Model):
     revivesReceivedO = models.IntegerField(default=0)
     revivesReceivedB = models.IntegerField(default=0)
 
+    revivesMadeSuccess = models.IntegerField(default=0)
+    revivesReceivedSuccess = models.IntegerField(default=0)
+
+    revivesMadeHSuccess = models.IntegerField(default=0)
+    revivesMadeOSuccess = models.IntegerField(default=0)
+    revivesMadeBSuccess = models.IntegerField(default=0)
+    revivesReceivedHSuccess = models.IntegerField(default=0)
+    revivesReceivedOSuccess = models.IntegerField(default=0)
+    revivesReceivedBSuccess = models.IntegerField(default=0)
+
     show = models.BooleanField(default=False)
 
     # bulk manager
@@ -3106,23 +3170,23 @@ class RevivesFaction(models.Model):
 
     def revivesMadeDisp(self):
         if self.report.filter == 1:
-            return self.revivesMadeH
+            return f'{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}'
         elif self.report.filter == 10:
-            return self.revivesMadeO
+            return f'{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}'
         elif self.report.filter == 11:
-            return self.revivesMadeB
+            return f'{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}'
         else:
-            return self.revivesMade
+            return f'{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}'
 
     def revivesReceivedDisp(self):
         if self.report.filter == 1:
-            return self.revivesReceivedH
+            return f'{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}'
         elif self.report.filter == 10:
-            return self.revivesReceivedO
+            return f'{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}'
         elif self.report.filter == 11:
-            return self.revivesReceivedB
+            return f'{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}'
         else:
-            return self.revivesReceived
+            return f'{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}'
 
 
 class RevivesPlayer(models.Model):
@@ -3143,6 +3207,16 @@ class RevivesPlayer(models.Model):
     revivesReceivedO = models.IntegerField(default=0)
     revivesReceivedB = models.IntegerField(default=0)
 
+    revivesMadeSuccess = models.IntegerField(default=0)
+    revivesReceivedSuccess = models.IntegerField(default=0)
+
+    revivesMadeHSuccess = models.IntegerField(default=0)
+    revivesMadeOSuccess = models.IntegerField(default=0)
+    revivesMadeBSuccess = models.IntegerField(default=0)
+    revivesReceivedHSuccess = models.IntegerField(default=0)
+    revivesReceivedOSuccess = models.IntegerField(default=0)
+    revivesReceivedBSuccess = models.IntegerField(default=0)
+
     show = models.BooleanField(default=False)
 
     # bulk manager
@@ -3153,23 +3227,23 @@ class RevivesPlayer(models.Model):
 
     def revivesMadeDisp(self):
         if self.report.filter == 1:
-            return self.revivesMadeH
+            return f'{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}'
         elif self.report.filter == 10:
-            return self.revivesMadeO
+            return f'{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}'
         elif self.report.filter == 11:
-            return self.revivesMadeB
+            return f'{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}'
         else:
-            return self.revivesMade
+            return f'{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}'
 
     def revivesReceivedDisp(self):
         if self.report.filter == 1:
-            return self.revivesReceivedH
+            return f'{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}'
         elif self.report.filter == 10:
-            return self.revivesReceivedO
+            return f'{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}'
         elif self.report.filter == 11:
-            return self.revivesReceivedB
+            return f'{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}'
         else:
-            return self.revivesReceived
+            return f'{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}'
 
 
 class Revive(models.Model):
@@ -3221,6 +3295,291 @@ class News(models.Model):
         self.member = self.getMember()
         self.save()
         return self.member
+
+
+# Armory Report
+class ArmoryReport(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=0)
+    last = models.IntegerField(default=0)
+    live = models.BooleanField(default=True)
+
+    # information for computing
+    computing = models.BooleanField(default=True)
+    state = models.IntegerField(default=0)
+    state_string = models.CharField(default="No reports", max_length=32)
+    crontab = models.IntegerField(default=0)
+    update = models.IntegerField(default=0)
+
+    # report
+    report = models.TextField(default="{}")
+    news_ids = models.TextField(default="[]")
+    n_news = models.IntegerField(default=0)
+
+    def __str__(self):
+        return format_html(f"{self.faction} armory report [{self.pk}]")
+
+    def progress(self):
+        end = self.end if self.end else tsnow()
+        last = self.last if self.last else self.start
+        total = max(end - self.start, 1)
+        elaps = last - self.start
+        return int((100 * elaps) // float(total))
+
+    def elapsed(self):
+        last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
+        end = "{:.1f} days".format((self.end - self.start) / (60 * 60 * 24)) if self.end else "-"
+        return "{} / {}".format(last, end)
+
+    def updateReport(self):
+
+        # set end of live report to now
+        self.end = tsnow() if self.live else self.end
+        self.last = max(self.last, self.start)
+
+        # set shorcuts variables
+        faction = self.faction
+        tss = self.start
+        tse = self.end
+        tsl = self.last
+
+        print(f"{self} live {self.live}")
+        print(f"{self} start {timestampToDate(tss)} ({tss})")
+        print(f"{self} last  {timestampToDate(tsl)} ({tsl})")
+        print(f"{self} end   {timestampToDate(tse)} ({tse})")
+
+        # add + 10 s to the endTS
+        tse += 10
+
+        # get current report and faction keys
+        report = json.loads(self.report)
+        news_ids = json.loads(self.news_ids)
+
+        keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
+        nKeys = len(keys)
+
+        if not keys:
+            print("{} no key".format(self))
+            self.computing = False
+            self.crontab = 0
+            self.state = -1
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.save()
+            return -1
+
+        # loop over keys to get the news
+        api_news = {}
+        for i, key in enumerate(keys):
+            print(f"{self} Key #{i}: {key}")
+
+            # prevent cache response
+            delay = tsnow() - self.update
+            delay = min(tsnow() - faction.lastRevivesPulled, delay)
+            if delay < 32:
+                sleeptime = 32 - delay
+                print(f"{self} last update {delay}s ago, waiting {sleeptime} for cache...")
+                time.sleep(sleeptime)
+
+            # make call
+            selection = f"armorynews,timestamp&from={tsl}&to={tse}"
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
+            key.reason = "Pull armory for report"
+            key.lastPulled = tsnow()
+            key.save()
+
+            # in case there is an API error
+            if "apiError" in req:
+                print('{} api key error: {}'.format(self, req['apiError']))
+                if req['apiErrorCode'] in API_CODE_DELETE:
+                    print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
+                    faction.delKey(key=key)
+                    self.state = -2
+                    self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                    self.save()
+                    return -2
+                self.state = -3
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.save()
+                return -3
+
+            # try to catch cache response
+            tornTS = int(req["timestamp"])
+            nowTS = tsnow()
+            cache = abs(nowTS - tornTS)
+            print("{} cache = {}s".format(self, cache))
+            # in case cache
+            if cache > CACHE_RESPONSE:
+                print('{} probably cached response... (blank turn)'.format(self))
+                self.state = -4
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.save()
+                return -4
+
+            print("check if list")
+
+            # add news to global dictionnary
+            new_entries = 0
+            for id, r in req["armorynews"].items():
+                if r["timestamp"] > tse:
+                    print(f"{self}\t news {id} ignored because too recent")
+                elif r["timestamp"] < tss:
+                    print(f"{self}\t news {id} ignored because too old")
+                elif id in news_ids:
+                    print(f"{self}\t news {id} ignored because already reported")
+                else:
+                    api_news[id] = r
+                    news_ids.append(id)
+                    new_entries += 1
+                    tsl = max(tsl, r["timestamp"])
+
+            print(f'{self}\t adding {new_entries} news')
+            print(f'{self}\t last time {timestampToDate(tsl)} ({tsl})')
+            if not new_entries:
+                print(f'{self}\t escape api key loop because no new news')
+                break
+
+        # update general information
+        self.update = tsnow()
+        self.last = tsl
+        self.news_ids = json.dumps(news_ids)
+        self.n_news = len(news_ids)
+        faction.lastAttacksPulled = self.update
+        faction.save()
+
+        # debug
+        # json.dump(api_news, open('api_news.json', 'w'))
+        # json.dump(news_ids, open('news_ids.json', 'w'))
+        # api_news = json.load(open('api_news.json', 'r'))
+        # news_ids = json.load(open('news_ids.json', 'r'))
+
+        print(f"{self} {len(api_news)} news from the API for a total of {len(news_ids)}")
+
+        ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
+        TRANSACTIONS_HANDLED = ["used", "deposited", "filled"]
+        TRANSACTIONS_IGNORED = ["loaned", "returned"]
+        # update report
+        for news in api_news.values():
+            news_raw = news["news"]
+            news_timestamp = news["timestamp"]
+
+            # get member name and ID
+            m = re.search('XID=(\d)+', news_raw)
+            member_id = m[0].split("=")[1]
+            member_id = m[0].split("=")[1]
+            m = re.search(f'XID={member_id}">(\w)+', news_raw)
+            member_name = m[0].split(">")[1]
+
+            # get item
+            news_info = news_raw.split("</a>")[1].replace("items.", "").split()
+            transaction_type = news_info.pop(0)  # used / deposit / filled
+
+            # ignoe loaned
+            if transaction_type in TRANSACTIONS_IGNORED:
+                continue
+
+            if transaction_type not in TRANSACTIONS_HANDLED:
+                print(f'{self} WARNING news transaction not handeled: {news_raw}')
+                continue
+
+            if news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card
+                transaction_number = int(news_info[0])
+                item = " ".join(news_info[2:])
+            elif news_info[0] == "one":  # case: one of the faction's Bottle of Beer
+                transaction_number = 1
+                item = " ".join(news_info[4:])
+
+            # merge blood bags
+            if item == "Empty Blood Bag" and transaction_type == "filled":
+                item = "Blood Bag"
+            elif item[:9] == "Blood Bag":
+                item = "Blood Bag"
+
+            # get item type
+            item_type = ITEM_TYPE.get(item, "Unkown")
+
+            # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
+
+            if item_type == "Unkown":
+                print(f'{self} news transaction not handeled: {news_raw}')
+
+            # fill report
+            if item_type not in report:
+                report[item_type] = {}
+
+            if item not in report[item_type]:
+                report[item_type][item] = {}
+
+            if member_id not in report[item_type][item]:
+                report[item_type][item][member_id] = {k: 0 for k in TRANSACTIONS_HANDLED}
+                report[item_type][item][member_id]["name"] = member_name
+                report[item_type][item][member_id]["last"] = news_timestamp
+                report[item_type][item][member_id]["first"] = news_timestamp
+
+            report[item_type][item][member_id][transaction_type] += transaction_number
+            report[item_type][item][member_id]["last"] = max(report[item_type][item][member_id]["last"], news_timestamp)
+            report[item_type][item][member_id]["first"] = min(report[item_type][item][member_id]["first"], news_timestamp)
+
+        # save report
+        self.report = json.dumps(report)
+        # for item_type, items in report.items():
+        #     print(item_type)
+        #     for item, members in items.items():
+        #         print(f'\t{item}')
+        #         for member_id, transaction in members.items():
+        #             print(f'\t\t{member_id:>9}: {transaction}')
+
+        # in case empty payload
+        # if not len(api_news):
+        #     print(f'{self} empty payload [stop]')
+        #     self.computing = False
+        #     self.crontab = 0
+        #     self.state = -5
+        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+        #     self.save()
+        #     return -5
+
+        # if not new_entries and len(api_news) > 1:
+        #     print(f"{self} no new entry with cache = {cache} [continue]")
+        #     self.state = -6
+        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+        #     self.save()
+        #     return -6
+
+        # check if not running for too long
+        print(HISTORY_TIMES.get(faction.armoryHist))
+        if self.last - self.start > (HISTORY_TIMES.get(faction.armoryHist)):
+            print(f"{self} running for too long [stop]")
+            self.computing = False
+            self.crontab = 0
+            self.live = False
+            self.state = -7
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.save()
+            return -7
+
+        if len(api_news) < MINIMAL_API_ATTACKS_STOP and not self.live:
+            print(f"{self} no api entry for non live chain [stop]")
+            self.computing = False
+            self.crontab = 0
+            self.state = 1
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.last = self.end
+            self.save()
+            return 1
+
+        if len(api_news) < 2 and self.live:
+            print(f"{self} no api entry for live chain [continue]")
+            self.state = 2
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.end = self.last
+            self.save()
+            return 2
+
+        self.state = 3
+        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+        self.save()
+        return 3
 
 
 class Log(models.Model):

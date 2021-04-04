@@ -38,6 +38,7 @@ class Command(BaseCommand):
         points = apiCall("market", "", "pointsmarket", randomKey(), sub="pointsmarket", verbose=False)
         items = apiCall("torn", "", "items,timestamp", randomKey(), sub="items", verbose=False)
 
+        typeItem = dict({})
         itemType = dict({})
 
         if items is None:
@@ -60,11 +61,12 @@ class Command(BaseCommand):
                 print(f'[CRON {logdate()}] Update {k} {v["name"]}')
                 type = v["type"]
                 name = v["name"].split(":")[0].strip()
-                if type in itemType:
-                    if name not in itemType[type]:
-                        itemType[type].append(name)
+                if type in typeItem:
+                    if name not in typeItem[type]:
+                        typeItem[type].append(name)
                 else:
-                    itemType[type] = [name]
+                    typeItem[type] = [name]
+                itemType[name] = type
                 req = Item.objects.filter(tId=int(k))
                 if len(req) == 0:
                     item = Item.create(k, v)
@@ -90,6 +92,7 @@ class Command(BaseCommand):
             item.marketdata_set.all().delete()
 
         bd = BazaarData.objects.first()
+        bd.typeItem = json.dumps(typeItem)
         bd.itemType = json.dumps(itemType)
         bd.save()
 

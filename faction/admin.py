@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from faction.models import *
 from yata.handy import timestampToDate
+from django_json_widget.widgets import JSONEditorWidget
 
 
 class EventAdmin(admin.TabularInline):
@@ -162,6 +163,20 @@ class RevivesReportAdmin(admin.ModelAdmin):
         return REPORT_REVIVES_STATUS.get(instance.state, "?")
 
 
+class ArmoryReportAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': JSONEditorWidget},
+    }
+
+    list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
+    search_fields = ('pk', 'faction__name')
+    list_filter = ('computing', 'live', 'state', 'crontab')
+    # actions = [reset_report]
+
+    def status(self, instance):
+        return REPORTS_STATUS.get(instance.state, "?")
+
+
 class WallAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('yata/css/admin.css',)}
@@ -218,7 +233,8 @@ admin.site.register(Crimes, CrimesAdmin)
 admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
 # admin.site.register(Log, LogAdmin)
-admin.site.register(News, NewsAdmin)
+# admin.site.register(News, NewsAdmin)
+admin.site.register(ArmoryReport, ArmoryReportAdmin)
 admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Wall, WallAdmin)

@@ -40,12 +40,14 @@ ul ul li { list-style-type: disclosure-closed; }
 
 a.form-inline, form.form-inline { display: inline!important; }
 
-h2 a { color: #FFF!important; font-weight: bold; text-decoration: none;}
+h2 a,
+h2 span { color: #FFF!important; font-weight: bold; text-decoration: none;}
+h2 span:hover,
 h2 a:focus,
 h2 a:hover,
 h2 a:checked,
 h2 a:enabled,
-h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none;}
+h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer;}
 
 div#content {
     padding-top: 0px;

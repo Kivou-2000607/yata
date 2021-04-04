@@ -282,6 +282,7 @@ class MarketData(models.Model):
 class BazaarData(models.Model):
     nItems = models.IntegerField(default=10)
     lastScanTS = models.IntegerField(default=0)
+    typeItem = models.TextField(default="{}")
     itemType = models.TextField(default="{}")
     pointsValue = models.IntegerField(default=0)
     clientsStats = models.TextField(default="{}")

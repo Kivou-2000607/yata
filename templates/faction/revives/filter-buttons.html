@@ -12,3 +12,5 @@
     <span id="faction-revives-report-hospit" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>Only hospitalized</a></span>
 {% endif %}
 <span id="faction-revives-report-failed" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-toggle-{% if report.include_failed %}on{% else %}off{% endif %} fa-icon-inline"></i>Include failed</a></span>
+
+<span class="flush-right"><i class="fas fa-dice fa-icon-inline"></i>Threshold chance<input id="faction-revives-report-chance" data-val="{{report.pk}}" value="{{report.chance_filter}}" >%</span>

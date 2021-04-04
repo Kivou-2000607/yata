@@ -19,224 +19,143 @@ This file is part of yata.
 
 {% load humanize %}
 {% load mathfilters %}
+{% load static %}
 {% load app_filters %}
+<div class="module rounded error">
+<p>The armory section will be closed until the release of our new armory report system. It should be released next Tuesday after the API update.</p>
+</div>
+
+{% comment %}
 
 <script>
-$( function() {
-  $( "#date-range" ).slider({
-    range: true,
-    min: {{timestamps.start}},
-    max: {{timestamps.end}},
-    values: [ {{timestamps.fstart}}, {{timestamps.fend}} ],
-    slide: function( event, ui ) {
-      s = new Date(ui.values[ 0 ]*1000).toUTCString().replace("GMT", "");
-      e = new Date(ui.values[ 1 ]*1000).toUTCString().replace("GMT", "");
-      $( "#date-value" ).html( "<th>from: " + s + "</th><th>to: " + e + "</th>");
-    },
-    change: function( event, ui ) {
-        $( "#content-update" ).load( "/faction/armory/", {
-            start: ui.values[ 0 ],
-            end: ui.values[ 1 ],
-            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-        });
-        $("#content-update h2").addClass("grey");
-        $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
-    }
-  });
-  s = new Date($( "#date-range" ).slider( "values", 0 )*1000).toUTCString().replace("GMT", "");
-  e = new Date($( "#date-range" ).slider( "values", 1 )*1000).toUTCString().replace("GMT", "");
-  $( "#date-value" ).html( '<th id="pick-time-start">from: ' + s + '</th><th id="pick-time-end">to: ' + e + '</th>');
-});
-
-$(function () {
-    $("#pick-time-start").datetimepicker({
-        step: 15,
-        onChangeDateTime:function(dp,$input){
-            var d = new Date($input.val());
-            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
-            $( "#content-update" ).load( "/faction/armory/", {
-                start: dUTC/1000,
-                end: $( "#date-range" ).slider( "option", "values" )[1],
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
-        },
-    });
-    $("#pick-time-end").datetimepicker({
-        step: 15,
-        onChangeDateTime:function(dp,$input){
-            var d = new Date($input.val());
-            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
-            $( "#content-update" ).load( "/faction/armory/", {
-                start: $( "#date-range" ).slider( "option", "values" )[0],
-                end: dUTC/1000,
-                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-            });
-            $("#content-update h2").addClass("grey");
-            $("#content-update h2").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Update armory content')
-        },
-    });
-});
-
 $(document).ready(function() {
-    $.tablesorter.addParser({
-        // set a unique id
-        id: 'dataVal',
-        // check if cell value has a numerical value
-        is: function(s, table, cell, $cell) {
-            return !isNaN($cell.attr("data-val"));
-        },
-        // format data for normalization
-        format: function(s, table, cell, cellIndex) {
-            return parseInt($(cell).attr("data-val"));
-        },
-        // set type, either numeric or text
-        type: 'numeric'
+    $("#faction-armory-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+
+    $(function () {
+        $("#date-start").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-start").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-start").html(s);
+
+                $("#date-start").removeClass("error").addClass("valid");
+                $("#date-live").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!end) {
+                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date (or leave blank for live)');
+                    $("#create-report-armory").hide()
+                } else if(end < start) {
+                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#create-report-armory").hide()
+                } else {
+                    $("#date-end").removeClass("error").addClass("valid");
+                    $("#create-report-armory").show()
+                }
+
+                // if $("#date-start").html {
+                //     console.log()
+                // }
+            },
+        });
     });
 
-    // $(".faction-networth").tablesorter({headers: { 0: { sorter: 'dataVal' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
-    $(".faction-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
-});
 
+    $(function () {
+        $("#date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-end").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                $("#date-end").html(s);
+                $("#date-end").removeClass("error").addClass("valid");
+                $("#date-live").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!start) {
+                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date');
+                    $("#create-report-armory").hide()
+                } else if(end < start) {
+                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#create-report-armory").hide()
+                } else {
+                    $("#date-start").removeClass("error").addClass("valid");
+                    $("#create-report-armory").show()
+                }
+            },
+        });
+    });
+})
 </script>
 
 
-<h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>Armory breakdown</h2>
-<div class="module chain-armory">
-    {% if armory|length %}
-        <table class="center faction-armory-filter">
-            <thead>
-                <tr id="date-value"></tr>
-                <tr>
-                    <th colspan="2"><div id="date-range" style="margin: 10px;"></div></th>
-                </tr>
-                {% if faction.armoryNewsFilter %}
-                  <tr>
-                    <th colspan="2" class="warning">
-                      You have one filter on {{faction.armoryNewsFilter}} [<a id="faction-armory-reset-filters" href="{% url 'faction:armory' %}">Remove</a>]
-                    </th>
-                  </tr>
-                {% endif %}
-            </thead>
-        </table>
+{% if false %}
+<h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>{{faction.name|safe}}'s armory reports</h2>
+<div class="module">
+    {% if reports|length %}
+    <table id="faction-armory-report" class="tablesorter center-large trshadow faction-armory-report">
+        <thead>
+            <tr>
+                <th>Report [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>News</th>
+                <th>Report</th>
+        </thead>
+        <tbody>
+        {% for report in reports %}
+        <tr class="faction-armory-report">
+            <td class="a">Report [{{report.pk}}]</td>
+            <td class="b">{{report.start|ts2date}}</td>
+            {% if report.end %}
+                <td class="b">{{report.end|ts2date}}</td>
+                <td class="b">{{report.end|sub:report.start|ts2time}}</td>
+            {% else %}
+                <td class="b">-</td>
+                <td class="b">-</td>
+            {% endif %}
+            <td class="c"><b>{{report.n_news}}</b></td>
 
-        {% for type, items in armory.items %}
-        {% if items|length %}
-        <h1 class="faction-armory-type">{{type}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
-        <div class="faction-armory-type">
-            {% for tItem, members in items.items %}
-                <table class="center faction-armory-toggle-view">
-                    <tr>
-                        <td class="a">{{tItem}} (x{{members|length}})</td>
-                        <td class="b"><i class="fas fa-caret-right"></td>
-                    </tr>
-                </table>
-                <table class="center trshadow faction-armory-breakdown" style="margin-bottom: 10px;">
-                    <thead>
-                        <tr>
-                            {% if tItem == "Blood Bag" %}
-                                <th>Member</th>
-                                <th>Type</th>
-                                <th>Taken</th>
-                                <th>Gave</th>
-                                <th>Diff</th>
-                                <th>Filled</th>
-                                <th>Diff</th>
-                                <th>Total</th>
-                                <th>Diff</th>
-                            {% else %}
-                                <th>Member</th>
-                                <th>Taken</th>
-                                <th>Gave</th>
-                                <th>Diff</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for k, v in members.items %}
-                            <tr>
-                                {% if tItem == "Blood Bag" %}
-                                    <td class="c">{{k}}</td>
-                                    <td class="d">{{v.3}}</td>
-                                    <td class="d">{{v.0|format:"{:,.0f}"}}</td>
-                                    <td class="d">{{v.1|format:"{:,.0f}"}}</td>
-                                    <td class="d {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
-                                    <td class="d">{{v.2|format:"{:+,.0f}"}}</td>
-                                    <td class="d {% if v.2 < v.0 %}error{% elif v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.2|sub:v.0|format:"{:+,.0f}"}}</td>
-                                    <td class="d">{{v.1|add:v.2|format:"{:+,.0f}"}}</td>
-                                    <td class="d {% if v.1|add:v.2 < v.0 %}error{% elif v.1|add:v.2 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|add:v.2|sub:v.0|format:"{:+,.0f}"}}</td>
-                                {% else %}
-                                    <td class="a">{{k}}</td>
-                                    <td class="b">{{v.0|format:"{:,.0f}"}}</td>
-                                    <td class="b">{{v.1|format:"{:,.0f}"}}</td>
-                                    <td class="b {% if v.1 < v.0 %}error{% elif v.1 > v.0 %}valid{% else %}neutral{% endif %}">{{v.1|sub:v.0|format:"{:+,.0f}"}}</td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
-        </div>
-        {% endif %}
+            <td class="d buttons">
+                {% include "faction/armory/buttons.html" %}
+            </td>
+        </tr>
+
         {% endfor %}
-        <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
-    {% else %}
-        <p class="error">Nothing between these dates. Either they are too close to eachother or the armory database is empty. In this case you need a AA member to fill it.</p>
+        </tbody>
+    </table>
+    {% else%}
+        <p class="error">No reports recorded. Ask a AA members of your faction.</p>
     {% endif %}
 </div>
 
-<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>List of news</h2>
-<div class="module">
 
-  <div class="pagination-list">
-    {% include "faction/armory/news.html"%}
-  </div>
-
+{% if player.factionAA %}
+<div class="module rounded">
+    <p>To create a new armory report select a starting date and either an ending date or make it live.</p>
+    <form>
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Starting date</b>:
+            <input id="ts-start" type="hidden" value="0">
+            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date</span>
+        </p>
+        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Ending date</b>:
+            <input id="ts-end" type="hidden" value="0">
+            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date</span>
+        </p>
+        <p><b><i class="fas fa-microphone-alt fa-icon-inline"></i>Make it live</b>:
+            <input id="ts-live" type="hidden" value="0">
+            <input id="date-live" type="checkbox">
+        </p>
+        <p id="create-report-armory" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Start</p>
+    </form>
 </div>
-
-{% if logs|length %}
-<script>
-    google.charts.load('current', {'packages':['annotationchart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-            ['Time', 'Faction Money', 'Respect'],
-            {% for log in logsAll %}
-                [new Date({{log.timestamp|mul:1000}}), {{log.money|sub:log.donationsmoney}}, {{log.respect}}],
-            {% endfor %}
-        ]);
-
-
-        var options = {
-            displayZoomButtons: false,
-            displayAnnotations: true,
-            displayExactValues: false,
-            numberFormats: "###,###",
-            scaleColumns: [0, 1],
-            scaleType: "allmaximized",
-            scaleFormat: 'short',
-        };
-
-        var chart = new google.visualization.AnnotationChart(document.getElementById('networth-graph'));
-        chart.draw(data, options);
-
-    }
-</script>
-
-<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Networth and respect growth</h2>
-<div class="module">
-    <div id="networth-graph"></div>
-
-    <hr class="sep">
-
-    <div class="pagination-list">
-      {% include "faction/armory/logs.html"%}
-    </div>
-
-
-    <p class="update-info">Last update: {{faction.armoryUpda|ts2date}}</p>
-</div>
-
 {% endif %}
+{% endcomment %}
