@@ -2557,7 +2557,7 @@ def armory(request):
                 ArmoryReport.objects.filter(pk=request.POST.get("reportId")).first().delete()
                 return render(request, page)
 
-            reports = ArmoryReport.objects.all()
+            reports = faction.armoryreport_set.all()
 
             context = {'player': player, 'reports': reports, 'factioncat': True, 'faction': faction, 'view': {'armory': True}}
             if message:
@@ -2576,41 +2576,33 @@ def armoryReport(request, reportId, share=False):
         if request.session.get('player') or share == "share":
             page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
 
-            if share == "share":
-                # if shared report
-                player = False
-                report = ArmoryReport.objects.filter(shareId=reportId).first()
-                if report is None:
-                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
-                faction = report.faction
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
 
-            else:
-                player = getPlayer(request.session["player"].get("tId"))
-                faction = getFaction(player.factionId)
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found. It might come from a API issue. Check again later."}
+                return render(request, page, context)
 
-                if faction is None:
-                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context = {'player': player, selectError: "Faction not found. It might come from a API issue. Check again later."}
-                    return render(request, page, context)
+            # get breakdown
+            if not reportId.isdigit():
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                return render(request, page, context)
 
-                # get breakdown
-                if not reportId.isdigit():
-                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context = dict({"player": player, selectError: "Wrong report ID: {}.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
-                    return render(request, page, context)
+            report = faction.armoryreport_set.filter(pk=reportId).first()
+            print(reportId)
+            if report is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = dict({"player": player, selectError: "Report {} not found.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
+                return render(request, page, context)
 
-                report = faction.armoryreport_set.filter(pk=reportId).first()
-                if report is None:
-                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context = dict({"player": player, selectError: "Report {} not found.".format(reportId), 'factioncat': True, 'faction': faction, 'report': False})  # views
-                    return render(request, page, context)
-
-                # for item_type, items in armory.items():
-                #     print(item_type)
-                #     for item, members in items.items():
-                #         print(f'\t{item}')
-                #         for member_id, transaction in members.items():
-                #             print(f'\t\t{member_id:>9}: {transaction}')
+            # for item_type, items in armory.items():
+            #     print(item_type)
+            #     for item, members in items.items():
+            #         print(f'\t{item}')
+            #         for member_id, transaction in members.items():
+            #             print(f'\t\t{member_id:>9}: {transaction}')
 
             context = dict({"player": player, 'faction': faction, 'report': report, 'factioncat': True, 'view': {'armoryReport': True}})  # views
             return render(request, page, context)
