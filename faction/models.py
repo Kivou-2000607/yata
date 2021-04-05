@@ -23,6 +23,8 @@ from django.forms.models import model_to_dict
 from django.utils.html import format_html
 from django.core.exceptions import MultipleObjectsReturned
 from django.conf import settings
+from django.core.paginator import Paginator
+
 from numpy.core.numeric import normalize_axis_tuple
 from rest_framework import serializers
 from yata.BulkManager2 import BulkManager
@@ -199,11 +201,6 @@ class Faction(models.Model):
     membersUpda = models.IntegerField(default=0)
     memberStatus = models.TextField(default="{}")  # dump all members status
     memberStatusUpda = models.IntegerField(default=0)
-
-    # armory / networth
-    armoryUpda = models.IntegerField(default=0)
-    armoryNewsFilter = models.CharField(default="", max_length=32, blank=True)
-    # armoryOld = models.IntegerField(default=8035200)
 
     # crimes
     crimesUpda = models.IntegerField(default=0)
@@ -526,13 +523,12 @@ class Faction(models.Model):
         # clean revives reports
         old = tsnow() - self.getHist("revives")
         self.revivesreport_set.filter(start__lt=old).delete()
+        # clean armory reports
+        old = tsnow() - self.getHist("armory")
+        self.armoryreport_set.filter(start__lt=old).delete()
         # clean crimes reports
         old = tsnow() - self.getHist("crimes")
         self.crimes_set.filter(initiated=True, time_completed__lt=old).delete()
-        # clean news
-        old = tsnow() - self.getHist("armory")
-        self.news_set.filter(timestamp__lt=old).delete()
-        self.log_set.filter(timestamp__lt=old).delete()
 
     def manageKey(self, player):
         key = player.key_set.first()
@@ -774,6 +770,25 @@ class Faction(models.Model):
 
         return json.loads(self.memberStatus)
 
+    def getLogs(self, page=1, n_logs=7):
+        logsAll = self.log_set.order_by("timestamp").all()
+        logtmp = dict({})
+        r = 0
+        m = 0
+        for log in logsAll:
+            logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
+            m = (log.money - log.donationsmoney)
+            r = log.respect
+
+        logsAll = logsAll.order_by("-timestamp").all()
+        for log in logsAll:
+            log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
+            log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
+        logs = Paginator(logsAll, n_logs).get_page(page)
+
+        return logs, logsAll
+
+
     def updateLog(self):
 
         # get key
@@ -785,11 +800,11 @@ class Faction(models.Model):
             return False, "No keys to update the armory."
 
         # api call
-        selection = 'armorynewsfull,fundsnewsfull,stats,donations,currency,basic,timestamp'
+        selection = 'stats,donations,currency,basic,timestamp'
         factionInfo = apiCall('faction', self.tId, selection, key.value, verbose=False)
         if 'apiError' in factionInfo:
-            msg = "Update news ({})".format(factionInfo["apiErrorString"])
-            if factionInfo['apiErrorCode'] in [1, 2, 7, 10]:
+            msg = "Update logs ({})".format(factionInfo["apiErrorString"])
+            if factionInfo['apiErrorCode'] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
@@ -797,12 +812,12 @@ class Faction(models.Model):
                 key.lastPulled = factionInfo.get("timestamp", 0)
                 key.save()
                 print("{} {}".format(self, msg))
-            return False, "API error {}, armory not updated.".format(factionInfo["apiErrorString"])
+            return False, "API error {}, logs not updated.".format(factionInfo["apiErrorString"])
 
         now = factionInfo.get("timestamp", 0)
 
         # update key
-        key.reason = "Update armory"
+        key.reason = "Update logs"
         key.lastPulled = now
         key.save()
 
@@ -810,45 +825,6 @@ class Faction(models.Model):
         self.maxmembers = max(self.maxmembers, len(factionInfo["members"]))
         self.daysold = factionInfo["age"]
         self.respect = factionInfo["respect"]
-
-        # create/delete news
-        old = now - self.getHist("armory")
-
-        news = self.news_set.all()
-        news.filter(timestamp__lt=old).delete()
-        # bulk_mgr = BulkCreateManager(chunk_size=20)
-        batch = News.objects.bulk_operation()
-
-        # get last armory ts
-        q = news.filter(type="armorynews").order_by("timestamp").last()
-        last_armory = 0 if q is None else q.timestamp
-        # get last fund ts
-        q = news.filter(type="fundsnews").order_by("timestamp").last()
-        last_fund = 0 if q is None else q.timestamp
-
-        for news_type in ["armorynews", "fundsnews"]:
-            if isinstance(factionInfo.get(news_type), list):
-                continue
-            for k, v in factionInfo.get(news_type, dict({})).items():
-                news_count = news.filter(tId=k).count()
-
-                if news_count == 1:
-                    continue
-                elif news_count > 1:
-                    news.filter(tId=k).delete()
-
-                if (v["timestamp"] > old) and ((news_type == "armorynews" and v["timestamp"] > last_armory) or (news_type == "fundsnews" and v["timestamp"] > last_fund)):
-                    v["news"] = cleanhtml(v["news"])[:512]
-                    v["member"] = v["news"].split(" ")[0]
-                    # bulk_mgr.add(News(faction=self, member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type))
-                    batch.update_or_create(faction_id=int(self.id), member=v["member"], news=v["news"], tId=k, timestamp=v["timestamp"], type=news_type)
-
-        # bulk_mgr.done()
-        if batch.count():
-            batch.run()
-
-        # delete old logs
-        self.log_set.filter(timestamp__lt=old).delete()
 
         # add daily log
         day = now - now % (3600 * 24)
@@ -868,9 +844,8 @@ class Faction(models.Model):
         log = self.log_set.update_or_create(timestampday=day, defaults=logdict)
 
         # update faction
-        self.armoryUpda = now
         self.save()
-        return True, "Armory updated"
+        return True, "Logs updated"
 
     def addContribution(self, stat):
 
@@ -3276,33 +3251,6 @@ class Revive(models.Model):
         return "{} -> {}".format(self.reviver_factionname, self.target_factionname)
 
 
-# Armory
-class News(models.Model):
-    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
-    type = models.CharField(default="typenews", max_length=16)
-    # tId = models.IntegerField(default=0)
-    tId = models.CharField(default="a", max_length=32)
-    timestamp = models.IntegerField(default=0)
-    news = models.CharField(default="news", max_length=512)
-    member = models.CharField(default="?", max_length=32)
-
-    objects = BulkManager()
-
-    def __str__(self):
-        return format_html("{} {} [{}]".format(self.faction, self.type, self.tId))
-
-    def typeReadable(self):
-        return self.type[:-4].capitalize()
-
-    def getMember(self):
-        return self.news.split(" ")[0]
-
-    def setMember(self):
-        self.member = self.getMember()
-        self.save()
-        return self.member
-
-
 # Armory Report
 class ArmoryReport(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -3410,7 +3358,7 @@ class ArmoryReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = f"armorynews,timestamp&from={tsl}&to={tse}"
+            selection = f"armorynews,fundnews,timestamp&from={tsl}&to={tse}"
             req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull armory for report"
             key.lastPulled = tsnow()
@@ -3446,8 +3394,6 @@ class ArmoryReport(models.Model):
                 self.save()
                 print(f"{self} {self.state_string}")
                 return -4
-
-            print("check if list")
 
             # add news to global dictionnary
             new_entries = 0

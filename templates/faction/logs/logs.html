@@ -1,0 +1,71 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<table class="center-medium trshadow faction-networth">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Vault</th>
+        <th>Deposit</th>
+        <th>Faction Money</th>
+        <th>Money gain</th>
+        <th>Respect</th>
+        <th>Respect gain</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td class="a" data-val="{{log.timestamp}}">{{log.timestamp|ts2date:"%Y/%m/%d"}}</td>
+            <td class="b">${{log.money|intcomma}}</td>
+            <td class="b">${{log.donationsmoney|intcomma}}</td>
+            <td class="b">${{log.money|sub:log.donationsmoney|intcomma}}</td>
+            <td class="b">{{log.deltaMoney|signColor|intcomma}}</td>
+            <td class="b">{{log.respect|intcomma}}</td>
+            <td class="b">{{log.deltaRespect|signColor|intcomma}}</td>
+        </tr>
+        {% endfor %}
+
+        <tr><td colspan="7">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if logs.has_previous %}
+                        <a class="page-link" href="{% url 'faction:logsList' %}?page=1">&laquo; first</a>
+                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ logs.number }}/{{ logs.paginator.num_pages }}
+                    </span>
+
+                    {% if logs.has_next %}
+                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.next_page_number }}">next</a>
+                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </td></tr>
+
+
+    </tbody>
+</table>

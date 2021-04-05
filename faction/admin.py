@@ -185,12 +185,6 @@ class WallAdmin(admin.ModelAdmin):
     search_fields = ('attackerFactionName', 'defenderFactionName', 'tId')
 
 
-class NewsAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'news', 'timestamp']
-    list_filter = ('type', )
-    search_fields = ('faction__name', 'type')
-
-
 class LogAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'timestampday', 'timestamp']
     search_fields = ('faction__name', 'type')
@@ -233,7 +227,6 @@ admin.site.register(Crimes, CrimesAdmin)
 admin.site.register(FactionData, FactionDataAdmin)
 admin.site.register(Contributors, ContributorsAdmin)
 # admin.site.register(Log, LogAdmin)
-# admin.site.register(News, NewsAdmin)
 admin.site.register(ArmoryReport, ArmoryReportAdmin)
 admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)

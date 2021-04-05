@@ -74,3 +74,46 @@ This file is part of yata.
     {% include "faction/targets/index.html" %}
 
 </div>
+
+{% if logs|length %}
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Faction Money', 'Respect'],
+            {% for log in logsAll %}
+                [new Date({{log.timestamp|mul:1000}}), {{log.money|sub:log.donationsmoney}}, {{log.respect}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('networth-graph'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Networth and respect growth</h2>
+<div class="module">
+    <div id="networth-graph"></div>
+
+    <hr class="sep">
+
+    <div class="pagination-list">
+      {% include "faction/logs/logs.html"%}
+    </div>
+</div>
+
+{% endif %}

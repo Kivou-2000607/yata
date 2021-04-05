@@ -92,7 +92,14 @@ def index(request):
             revivesreports = faction.revivesreport_set.filter(computing=True).order_by('-start')
             events = faction.event_set.order_by('timestamp')
 
-            context = {'player': player, 'faction': faction, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'events': events, 'factioncat': True, 'view': {'index': True}}
+            # get logs
+            if player.factionAA:
+                logs, logsAll = faction.getLogs()
+            else:
+                logsAll = []
+                logs = []
+
+            context = {'player': player, 'faction': faction, 'logs': logs, 'logsAll': logsAll, 'targets': targets, 'chainsreports': chainsreports, 'attacksreports': attacksreports, 'revivesreports': revivesreports, 'events': events, 'factioncat': True, 'view': {'index': True}}
             if request.session.get('json-output'):
                 del context['player']
                 context = json_context(context)
@@ -102,6 +109,30 @@ def index(request):
 
         else:
             # return redirect('/faction/territories/')
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def logsList(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found in the database."}
+                return render(request, 'yata/error.html', context)
+
+            if not player.factionAA:
+                return render(request, 'faction/logs/logs.html', {'logs': []})
+
+            logs, _ = faction.getLogs(page=request.GET.get("page", 1))
+
+            return render(request, 'faction/logs/logs.html', {'logs': logs})
+
+        else:
             return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:
@@ -2583,96 +2614,6 @@ def armoryReport(request, reportId, share=False):
 
             context = dict({"player": player, 'faction': faction, 'report': report, 'factioncat': True, 'view': {'armoryReport': True}})  # views
             return render(request, page, context)
-
-        else:
-            return returnError(type=403, msg="You might want to log in.")
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
-def armoryNews(request):
-    try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
-            faction = Faction.objects.filter(tId=player.factionId).first()
-            if faction is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found in the database."}
-                return render(request, 'yata/error.html', context)
-            news = faction.news_set.order_by("-timestamp").all()
-
-            # get all members for news
-            members = sorted(set(news.values_list('member', flat=True)))
-
-            if request.POST.get("type") == "filter":
-                faction.armoryNewsFilter = "" if faction.armoryNewsFilter else request.POST.get("member", "")
-                faction.save()
-
-            if faction.armoryNewsFilter:
-                news = news.filter(member=faction.armoryNewsFilter)
-
-            # get start/end ts
-            start = news.last().timestamp
-            end = news.first().timestamp
-
-            # filter start/end if asked
-            tss = request.POST.get("start", request.GET.get("tss"))
-            if tss is not None and tss.isdigit():
-                news = news.filter(timestamp__gt=int(tss) - 1)
-            tse = request.POST.get("end", request.GET.get("tse"))
-            if tse is not None and tse.isdigit():
-                news = news.filter(timestamp__lt=int(tse) + 1)
-
-            fstart = news.last().timestamp
-            fend = news.first().timestamp
-
-            timestamps = {"start": start, "end": end, "fstart": fstart, "fend": fend, "size": len(news)}
-
-            news = Paginator(news, 25).get_page(request.GET.get('page'))
-            return render(request, 'faction/armory/news.html', {'faction': faction, 'members': members, 'news': news, 'timestamps': timestamps})
-
-        else:
-            return returnError(type=403, msg="You might want to log in.")
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
-def armoryLogs(request):
-    try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
-            faction = Faction.objects.filter(tId=player.factionId).first()
-            if faction is None:
-                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                context = {'player': player, selectError: "Faction not found in the database."}
-                return render(request, 'yata/error.html', context)
-
-            if not player.factionAA:
-                return render(request, 'faction/armory/logs.html', {'logs': []})
-
-            logs = faction.log_set.order_by("timestamp").all()
-            logtmp = dict({})
-            r = 0
-            m = 0
-            for log in logs:
-                logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
-                m = (log.money - log.donationsmoney)
-                r = log.respect
-
-            logs = faction.log_set.order_by("-timestamp").all()
-            for log in logs:
-                log.deltaMoney = logtmp[log.timestamp]["deltaMoney"]
-                log.deltaRespect = logtmp[log.timestamp]["deltaRespect"]
-
-            logs = Paginator(logs, 7).get_page(request.GET.get('page'))
-
-            return render(request, 'faction/armory/logs.html', {'logs': logs})
 
         else:
             return returnError(type=403, msg="You might want to log in.")
