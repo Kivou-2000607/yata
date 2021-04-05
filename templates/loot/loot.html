@@ -30,9 +30,9 @@ This file is part of yata.
                 <img class="profile" src='{% url_img_npc npc.tId %}'>
                 <div>
                     {% if npc.currentLevel.lvl %}
-                      {% player_link npc.tId  npc.name "attack" %}
+                      {% player_link npc.tId  npc.name "attack" True %}
                     {% else %}
-                      {% player_link npc.tId  npc.name %}
+                      {% player_link npc.tId  npc.name "profile" True %}
                     {% endif %}
                     {% if npc.currentLevel.lvl %}
                         <div class="hospitalized valid">Loot level {{npc.currentLevel.lvl|lootLevel}}</div>

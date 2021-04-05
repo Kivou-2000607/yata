@@ -25,7 +25,7 @@ This file is part of yata.
 <form class="inlinefrom">{% csrf_token %}
     <a class="faction-armory-reports-see" data-val="{{report.pk}}" href="{% url 'faction:armory' report.pk %}"><i class="fas fa-eye" title="See report"></i></a>
     {% if player.factionAA %}
-    <a class="faction-armory-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
+      <a class="faction-armory-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
     {% endif %}
     {% if report.live %}
         {% if report.computing %}

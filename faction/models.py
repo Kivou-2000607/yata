@@ -109,11 +109,17 @@ REPORT_REVIVES_STATUS = {
 
 REPORTS_STATUS = {
     # init
-    0: "No reports",
-    1: "Waiting for first call",
+    0: "Waiting for first call [starting]",
+    1: "Report computed [stop]",
+    2: "Live report up to date [continue]",
+    3: "Report being computed [continue]",
 
     # errors
-    -1: "Run for too long [stop]"
+    -1: "ERROR: No keys found [stop]",
+    -2: "ERROR: Fatal API error on faction key (key deleted) [continue]",
+    -3: "ERROR: API error on faction key [continue]",
+    -4: "WARNING: Received cache from torn API [continue]",
+    -5: "ERROR: Running for too long [stop]"
 
 }
 
@@ -3308,7 +3314,7 @@ class ArmoryReport(models.Model):
     # information for computing
     computing = models.BooleanField(default=True)
     state = models.IntegerField(default=0)
-    state_string = models.CharField(default="No reports", max_length=32)
+    state_string = models.CharField(default="No reports", max_length=128)
     crontab = models.IntegerField(default=0)
     update = models.IntegerField(default=0)
 
@@ -3331,6 +3337,28 @@ class ArmoryReport(models.Model):
         last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
         end = "{:.1f} days".format((self.end - self.start) / (60 * 60 * 24)) if self.end else "-"
         return "{} / {}".format(last, end)
+
+    def assignCrontab(self):
+        # check if already in a crontab
+        report = self.faction.armoryreport_set.filter(computing=True).only("crontab").first()
+        if report is None or report.crontab not in getCrontabs():
+            cn = {c: len(ArmoryReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+            self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
+        elif report is not None:
+            self.crontab = report.crontab
+        self.save()
+        return self.crontab
+
+    def displayCrontab(self):
+        if self.crontab > 0:
+            return "#{}".format(self.crontab)
+        elif self.crontab == 0:
+            return "No crontab assigned"
+        else:
+            return "Special crontab you lucky bastard..."
+
+    def getReport(self):
+        return json.loads(self.report)
 
     def updateReport(self):
 
@@ -3360,12 +3388,12 @@ class ArmoryReport(models.Model):
         nKeys = len(keys)
 
         if not keys:
-            print("{} no key".format(self))
             self.computing = False
             self.crontab = 0
             self.state = -1
             self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
             self.save()
+            print(f"{self} {self.state_string}")
             return -1
 
         # loop over keys to get the news
@@ -3383,7 +3411,7 @@ class ArmoryReport(models.Model):
 
             # make call
             selection = f"armorynews,timestamp&from={tsl}&to={tse}"
-            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull armory for report"
             key.lastPulled = tsnow()
             key.save()
@@ -3397,10 +3425,12 @@ class ArmoryReport(models.Model):
                     self.state = -2
                     self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
                     self.save()
+                    print(f"{self} {self.state_string}")
                     return -2
                 self.state = -3
                 self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
                 self.save()
+                print(f"{self} {self.state_string}")
                 return -3
 
             # try to catch cache response
@@ -3408,12 +3438,13 @@ class ArmoryReport(models.Model):
             nowTS = tsnow()
             cache = abs(nowTS - tornTS)
             print("{} cache = {}s".format(self, cache))
+
             # in case cache
             if cache > CACHE_RESPONSE:
-                print('{} probably cached response... (blank turn)'.format(self))
                 self.state = -4
                 self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
                 self.save()
+                print(f"{self} {self.state_string}")
                 return -4
 
             print("check if list")
@@ -3432,6 +3463,8 @@ class ArmoryReport(models.Model):
                     news_ids.append(id)
                     new_entries += 1
                     tsl = max(tsl, r["timestamp"])
+                    # print(f'{self}\t news {id} new entry {timestampToDate(r["timestamp"])}')
+
 
             print(f'{self}\t adding {new_entries} news')
             print(f'{self}\t last time {timestampToDate(tsl)} ({tsl})')
@@ -3456,33 +3489,43 @@ class ArmoryReport(models.Model):
         print(f"{self} {len(api_news)} news from the API for a total of {len(news_ids)}")
 
         ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
-        TRANSACTIONS_HANDLED = ["used", "deposited", "filled"]
-        TRANSACTIONS_IGNORED = ["loaned", "returned"]
+        TRANSACTIONS_HANDLED = ["used", "deposited", "filled", "gave"]
+        CONVERT_TRANSACTIONS = {
+            "used": "took",
+            "deposited": "gave",
+            "filled": "filled",
+            "gave": "gave"
+        }
+        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved"]
         # update report
         for news in api_news.values():
-            news_raw = news["news"]
+            news_string = news["news"]
             news_timestamp = news["timestamp"]
 
-            # get member name and ID
-            m = re.search('XID=(\d)+', news_raw)
+            # get member ID
+            m = re.search('XID=(\d)+', news_string)
             member_id = m[0].split("=")[1]
             member_id = m[0].split("=")[1]
-            m = re.search(f'XID={member_id}">(\w)+', news_raw)
+            m = re.search(f'XID={member_id}"?>([A-Za-z0-9-_])+', news_string)
             member_name = m[0].split(">")[1]
 
-            # get item
-            news_info = news_raw.split("</a>")[1].replace("items.", "").split()
+            # get all info and clean html
+            news_info = [cleanhtml(_) for _ in news_string.split("</a>")[1].replace("items.", "").split()]
             transaction_type = news_info.pop(0)  # used / deposit / filled
+
+            if transaction_type in ["gave"]:
+                print(format_html(news_string), news_info)
 
             # ignoe loaned
             if transaction_type in TRANSACTIONS_IGNORED:
                 continue
 
             if transaction_type not in TRANSACTIONS_HANDLED:
-                print(f'{self} WARNING news transaction not handeled: {news_raw}')
+                print(f'{self} WARNING news transaction not handeled: {news_string}')
                 continue
 
-            if news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card
+
+            if news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card or gace
                 transaction_number = int(news_info[0])
                 item = " ".join(news_info[2:])
             elif news_info[0] == "one":  # case: one of the faction's Bottle of Beer
@@ -3494,14 +3537,20 @@ class ArmoryReport(models.Model):
                 item = "Blood Bag"
             elif item[:9] == "Blood Bag":
                 item = "Blood Bag"
+            elif item == "the faction's points to refill their energy.":
+                item = "point"
 
             # get item type
             item_type = ITEM_TYPE.get(item, "Unkown")
 
+            if item == "point":
+                item_type = "Points"
+
             # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
 
             if item_type == "Unkown":
-                print(f'{self} news transaction not handeled: {news_raw}')
+                print(f'{self} item type not known: {news_string} {item}')
+                continue
 
             # fill report
             if item_type not in report:
@@ -3511,12 +3560,12 @@ class ArmoryReport(models.Model):
                 report[item_type][item] = {}
 
             if member_id not in report[item_type][item]:
-                report[item_type][item][member_id] = {k: 0 for k in TRANSACTIONS_HANDLED}
+                report[item_type][item][member_id] = {CONVERT_TRANSACTIONS[k]: 0 for k in TRANSACTIONS_HANDLED}
                 report[item_type][item][member_id]["name"] = member_name
                 report[item_type][item][member_id]["last"] = news_timestamp
                 report[item_type][item][member_id]["first"] = news_timestamp
 
-            report[item_type][item][member_id][transaction_type] += transaction_number
+            report[item_type][item][member_id][CONVERT_TRANSACTIONS[transaction_type]] += transaction_number
             report[item_type][item][member_id]["last"] = max(report[item_type][item][member_id]["last"], news_timestamp)
             report[item_type][item][member_id]["first"] = min(report[item_type][item][member_id]["first"], news_timestamp)
 
@@ -3529,55 +3578,42 @@ class ArmoryReport(models.Model):
         #         for member_id, transaction in members.items():
         #             print(f'\t\t{member_id:>9}: {transaction}')
 
-        # in case empty payload
-        # if not len(api_news):
-        #     print(f'{self} empty payload [stop]')
-        #     self.computing = False
-        #     self.crontab = 0
-        #     self.state = -5
-        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
-        #     self.save()
-        #     return -5
-
-        # if not new_entries and len(api_news) > 1:
-        #     print(f"{self} no new entry with cache = {cache} [continue]")
-        #     self.state = -6
-        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
-        #     self.save()
-        #     return -6
 
         # check if not running for too long
-        print(HISTORY_TIMES.get(faction.armoryHist))
         if self.last - self.start > (HISTORY_TIMES.get(faction.armoryHist)):
-            print(f"{self} running for too long [stop]")
             self.computing = False
             self.crontab = 0
             self.live = False
-            self.state = -7
+            self.state = -5
             self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
             self.save()
-            return -7
+            print(f"{self} {self.state_string}")
+            return -5
 
-        if len(api_news) < MINIMAL_API_ATTACKS_STOP and not self.live:
-            print(f"{self} no api entry for non live chain [stop]")
-            self.computing = False
-            self.crontab = 0
-            self.state = 1
-            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
-            self.last = self.end
-            self.save()
-            return 1
-
-        if len(api_news) < 2 and self.live:
-            print(f"{self} no api entry for live chain [continue]")
-            self.state = 2
-            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
-            self.end = self.last
-            self.save()
-            return 2
+        # no new news
+        if not len(api_news):
+            if self.live:
+                print(f"{self} no api entry for live chain [continue]")
+                self.state = 2
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.end = self.last
+                self.save()
+                print(f"{self} {self.state_string}")
+                return 2
+            else:
+                print(f"{self} no api entry for non live report [stop]")
+                self.computing = False
+                self.crontab = 0
+                self.state = 1
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.last = self.end
+                self.save()
+                print(f"{self} {self.state_string}")
+                return 1
 
         self.state = 3
         self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+        print(f"{self} {self.state_string}")
         self.save()
         return 3
 

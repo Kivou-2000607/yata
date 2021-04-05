@@ -1,0 +1,128 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<script>
+  $(document).ready(function() {
+      $.tablesorter.addParser({
+          // set a unique id
+          id: 'dataVal',
+          // check if cell value has a numerical value
+          is: function(s, table, cell, $cell) {
+              return !isNaN($cell.attr("data-val"));
+          },
+          // format data for normalization
+          format: function(s, table, cell, cellIndex) {
+              return parseInt($(cell).attr("data-val"));
+          },
+          // set type, either numeric or text
+          type: 'numeric'
+      });
+
+      // $(".faction-networth").tablesorter({headers: { 0: { sorter: 'dataVal' }}, cssAsc: 'up', cssDesc: 'down', sortList: [[0,1]]});
+      $(".faction-armory-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+  });
+</script>
+
+<h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>{{faction.name}}'s armory report [{{report.pk}}]</h2>
+<div class="module">
+    {% if report.n_news %}
+        <table class="tablesorter center trshadow contract-summary">
+            <thead>
+                <tr><th colspan="2" class="buttons">Report summary
+                </th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Number of news: </b> {{report.n_news}}</td>
+                <td><b>Report status:</b> {% include "faction/armory/status.html"%}</td>
+              </tr>
+              <tr>
+                  <td><b>From: </b> {{report.start|ts2date}}</td>
+                  <td><b>To: </b> {{report.end|ts2date}}</td>
+              </tr>
+            </tbody>
+        </table>
+
+        {% for type, items in report.getReport.items %}
+        {% if items|length %}
+        <h1 class="faction-armory-type">{{type}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+        <div class="faction-armory-type">
+            {% for tItem, members in items.items %}
+                <table class="center faction-armory-toggle-view">
+                    <tr>
+                        <td class="a">{{tItem}} (x{{members|length}})</td>
+                        <td class="b"><i class="fas fa-caret-right"></td>
+                    </tr>
+                </table>
+                <table class="center trshadow faction-armory-breakdown" style="margin-bottom: 10px;">
+                    <thead>
+                        <tr>
+                            {% if tItem == "Blood Bag" %}
+                                <th>Member</th>
+                                <th>Filled</th>
+                                <th>Gave</th>
+                                <th>Took</th>
+                                <th>Diff</th>
+                                <th>First</th>
+                                <th>Last</th>
+                            {% else %}
+                                <th>Member</th>
+                                <th>Gave</th>
+                                <th>Took</th>
+                                <th>Diff</th>
+                                <th>First</th>
+                                <th>Last</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for k, v in members.items %}
+                            <tr>
+                                {% if tItem == "Blood Bag" %}
+                                    <td class="ba">{% player_link k v.name short=True %}</td>
+                                    <td class="bb">{{v.filled|format:"{:,.0f}"}}</td>
+                                    <td class="bb">{{v.gave|format:"{:,.0f}"}}</td>
+                                    <td class="bb">{{v.took|format:"{:,.0f}"}}</td>
+                                    <td class="bb {% if v.gave|add:v.filled < v.took %}error{% elif v.gave|add:v.filled > v.took %}valid{% else %}neutral{% endif %}">{{v.gave|add:v.filled|sub:v.took|format:"{:+,.0f}"}}</td>
+                                    <td class="bc" data-val="{{v.first}}">{{v.first|ts2date}}</td>
+                                    <td class="bc" data-val="{{v.last}}">{{v.last|ts2date}}</td>
+                                {% else %}
+                                    <td class="aa">{% player_link k v.name short=True %}</td>
+                                    <td class="ab">{{v.gave|format:"{:,.0f}"}}</td>
+                                    <td class="ab">{{v.took|format:"{:,.0f}"}}</td>
+                                    <td class="ab {% if v.gave < v.took %}error{% elif v.gave > v.took %}valid{% else %}neutral{% endif %}">{{v.gave|sub:v.took|format:"{:+,.0f}"}}</td>
+                                    <td class="ac" data-val="{{v.first}}">{{v.first|ts2date}}</td>
+                                    <td class="ac" data-val="{{v.last}}">{{v.last|ts2date}}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    {% else %}
+        <p class="error">No news found for this report.</p>
+    {% endif %}
+</div>

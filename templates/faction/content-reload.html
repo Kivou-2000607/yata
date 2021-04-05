@@ -110,11 +110,17 @@ This file is part of yata.
 
 {# armory #}
 {% if view.armory %}
+    <script>
+        $(function () {
+            $('input').val(0);
+            $('input').prop('checked', false);
+        });
+    </script>
     {% include "faction/armory/index.html" %}
     {% include "faction/tutorials/armory.html" %}
 {% endif %}
-{% if view.armoryList %}
-    {% include "faction/armory/news.html" %}
+{% if view.armoryReport %}
+    {% include "faction/armory/report.html" %}
 {% endif %}
 
 {# big brother #}

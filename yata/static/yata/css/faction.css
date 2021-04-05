@@ -145,31 +145,6 @@ input#faction-revives-report-chance {
     text-decoration: none;
 }
 
-select.faction-armory-header-filter,
-select.faction-attack-header-filter,
-select.faction-revive-header-filter {
-  padding: 0;
-  margin: 0;
-  margin-top: -3px;
-  cursor: pointer;
-  overflow: hidden;
-  font-weight: bold;
-  height: 12px;
-  line-height: 1;
-  /* width: 10px; */
-  text-align: center;
-  border-width: 0px;
-
-  -moz-appearance:none; /* Firefox */
-  -webkit-appearance:none; /* Safari and Chrome */
-  appearance:none;
-  color: #666;
-  background: #f6f6f6;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
 /* filter players */
 i.filter-player { color: #555; opacity: 0.0; cursor: pointer; }
 tr:hover > td > form > i.filter-player { opacity: 0.5; }
@@ -178,22 +153,32 @@ i.filter-player:hover { opacity: 1.0!important; }
 i.filter-player-activated { color: #0B8E14; cursor: pointer; }
 i.filter-player-activated:hover { color: #CC3434; }
 
+
+/* a bbb c d */
+table.faction-armory-report td.a { width: 10%; text-align: left; }
+table.faction-armory-report td.b { width: 20%; text-align: center; }
+table.faction-armory-report td.c { width: 10%; text-align: center; }
+table.faction-armory-report td.d { width: 20%; text-align: left; }
+
 table.faction-armory-toggle-view tr { cursor: pointer; }
 table.faction-armory-toggle-view td.a { width: 95%; text-align: left; font-weight: bold; cursor: pointer; }  /* x1 */
 table.faction-armory-toggle-view td.b { width: 5%; text-align: center; cursor: pointer; }  /* x1 */
 
 table.faction-armory-breakdown { display: none; }
-table.faction-armory-breakdown td.a { width: 40%; text-align: left; }  /* x1 */
-table.faction-armory-breakdown td.b { width: 20%; text-align: center; }  /* x3 */
-table.faction-armory-breakdown td.c { width: 20%; text-align: left; }  /* x1 */
-table.faction-armory-breakdown td.d { width: 10%; text-align: center; }  /* x8 */
+
+/* a bbb cc */
+table.faction-armory-breakdown td.aa { width: 25%; text-align: left; }
+table.faction-armory-breakdown td.ab { width: 10%; text-align: center; }
+table.faction-armory-breakdown td.ac { width: 22.5%; text-align: center; }
+
+/* a bbbb cc */
+table.faction-armory-breakdown td.ba { width: 23%; text-align: left; }
+table.faction-armory-breakdown td.bb { width: 8%; text-align: center; }
+table.faction-armory-breakdown td.bc { width: 22.5%; text-align: center; }
+
 h1.faction-armory-type { cursor: pointer;}
 div.faction-armory-type {display: none;}
 
-table.faction-armory-news-list td.a { width: 10%; text-align: left; font-weight: bold}
-table.faction-armory-news-list td.b { width: 20%; text-align: left; }
-table.faction-armory-news-list td.c { width: 50%; text-align: left; }
-table.faction-armory-news-list td.d { width: 20%; text-align: center; }
 
 table.faction-networth td.a { width: 10%; text-align: center; }  /* x1 */
 table.faction-networth td.b { width: 15%; text-align: right; }  /* x6 */

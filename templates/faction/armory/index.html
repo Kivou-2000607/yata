@@ -21,11 +21,7 @@ This file is part of yata.
 {% load mathfilters %}
 {% load static %}
 {% load app_filters %}
-<div class="module rounded error">
-<p>The armory section will be closed until the release of our new armory report system. It should be released next Tuesday after the API update.</p>
-</div>
 
-{% comment %}
 
 <script>
 $(document).ready(function() {
@@ -56,10 +52,6 @@ $(document).ready(function() {
                     $("#date-end").removeClass("error").addClass("valid");
                     $("#create-report-armory").show()
                 }
-
-                // if $("#date-start").html {
-                //     console.log()
-                // }
             },
         });
     });
@@ -96,7 +88,6 @@ $(document).ready(function() {
 </script>
 
 
-{% if false %}
 <h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>{{faction.name|safe}}'s armory reports</h2>
 <div class="module">
     {% if reports|length %}
@@ -158,4 +149,3 @@ $(document).ready(function() {
     </form>
 </div>
 {% endif %}
-{% endcomment %}

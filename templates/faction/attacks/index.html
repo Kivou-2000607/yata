@@ -53,6 +53,7 @@ $(document).ready(function() {
                     $("#create-report").show()
                 }
 
+                console.log("change start")
                 // if $("#date-start").html {
                 //     console.log()
                 // }
@@ -72,6 +73,7 @@ $(document).ready(function() {
                 $("#date-end").html(s);
                 $("#date-end").removeClass("error").addClass("valid");
                 $("#date-live").prop('checked', false);
+                console.log("change end")
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
