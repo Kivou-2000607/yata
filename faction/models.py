@@ -3489,14 +3489,13 @@ class ArmoryReport(models.Model):
         print(f"{self} {len(api_news)} news from the API for a total of {len(news_ids)}")
 
         ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
-        TRANSACTIONS_HANDLED = ["used", "deposited", "filled", "gave"]
+        TRANSACTIONS_HANDLED = ["used", "deposited", "filled"]
         CONVERT_TRANSACTIONS = {
             "used": "took",
             "deposited": "gave",
             "filled": "filled",
-            "gave": "gave"
         }
-        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved"]
+        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved", "gave"]
         # update report
         for news in api_news.values():
             news_string = news["news"]
@@ -3513,8 +3512,8 @@ class ArmoryReport(models.Model):
             news_info = [cleanhtml(_) for _ in news_string.split("</a>")[1].replace("items.", "").split()]
             transaction_type = news_info.pop(0)  # used / deposit / filled
 
-            if transaction_type in ["gave"]:
-                print(format_html(news_string), news_info)
+            # if transaction_type in ["gave"]:
+            #     print(format_html(news_string))
 
             # ignoe loaned
             if transaction_type in TRANSACTIONS_IGNORED:
@@ -3550,7 +3549,7 @@ class ArmoryReport(models.Model):
 
             if item_type == "Unkown":
                 print(f'{self} item type not known: {news_string} {item}')
-                continue
+                # continue
 
             # fill report
             if item_type not in report:
