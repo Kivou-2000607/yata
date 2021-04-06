@@ -3383,8 +3383,8 @@ class ArmoryReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = f"armorynews,fundnews,timestamp&from={tsl}&to={tse}"
-            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+            selection = f"armorynews,timestamp&from={tsl}&to={tse}"
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull armory for report"
             key.lastPulled = tsnow()
             key.save()
