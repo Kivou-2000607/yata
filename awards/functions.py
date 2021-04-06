@@ -1987,6 +1987,31 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
+                elif int(k) in [544, 548, 545, 1007]:
+                    # "544": { "name": "City Slicker",  "description": "Make a profit of $10,000,000 in a single Stock Market sale",
+                    # "548": { "name": "Tendies",       "description": "Make a profit of $100,000,000 in a single Stock Market sale",
+                    # "545": { "name": "Diamond Hands", "description": "Make a profit of $1,000,000,000 in a single Stock Market sale",
+                    # "1007": { "name": "Stonks", "description": "Make a loss of $100,000,000 in a single Stock Market sale",
+                    type = "Stocks"
+                    vp["category"] = category
+                    vp["subcategory"] = type
+                    vp["goal"] = 1
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [1005, 1006]:
+                    # "1005": { "name": "Bullish", "description": "Achieve $1,000,000,000 in total profits in the stock market",
+                    # "1006": { "name": "Bearish", "description": "Achieve $1,000,000,000 in total losses in the stock market",
+                    type = "Stocks"
+                    vp["category"] = category
+                    vp["subcategory"] = type
+                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", "").replace("$", ""))
+                    key = "stock" + v["description"].split(" ")[4]
+                    vp["current"] = userInfo.get("personalstats", dict({})).get(key, 0)
+                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    awards[type]["h_" + k] = vp
+
                 elif int(k) in [869]:
             		# "869": { "name": "Monopoly", "description": "Own every stock benefit at the same time", "type": 14,
                     type = "Stocks"

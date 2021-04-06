@@ -468,6 +468,12 @@ d = {
     523: 899062871,  # Devout
     522: 768442023,  # Sacrificial
     869: 798918905,  # Monopoly
+    1005: 0,  # Bullish
+    1006: 0,  # Bearish
+    1007: 659787334,  # Stonks
+    544: 177427194,  # City Slicker
+    545: 0,  # Diamond Hands
+    548: 0,  # Tendies
 
     # 15
     367: 474813486,  # Clotted
