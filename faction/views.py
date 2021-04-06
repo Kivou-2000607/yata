@@ -3065,14 +3065,13 @@ def oc(request):
     try:
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
+            faction = getFaction(player.factionId)
 
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
-            faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
+                return render(request, 'yata/error.html', {'errorMessage': f'Faction {player.factionId} not found in the database.'})
 
             crimes, error, message = faction.updateCrimes()
 
@@ -3155,7 +3154,7 @@ def oc(request):
             if message:
                 sub = "Sub" if request.method == 'POST' else ""
                 if error:
-                    context["errorMessage" + sub] = "Crimes: API error {apiErrorString}, crimes list not updated".format(**message)
+                    context["errorMessage" + sub] = f"Crimes: API error {message}, crimes list not updated"
                 else:
                     context["validMessage" + sub] = "Crimes list has been updated. {created} created, {updated} updated, {deleted} deleted, {ready} ready.".format(**message)
 

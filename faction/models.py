@@ -304,10 +304,25 @@ class Faction(models.Model):
 
         # api call and update key
         key = self.getKey()
-        crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes", verbose=False)
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return self.crimes_set.all(), True, "No keys to update faction upgrades"
 
+        crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes", verbose=False)
         if 'apiError' in crimesAPI:
-            return self.crimes_set.all(), True, crimesAPI
+            msg = f'Update faction upgrades ({crimesAPI["apiErrorString"]})'
+            if crimesAPI['apiErrorCode'] in API_CODE_DELETE:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+                return self.crimes_set.all(), True, msg
+            else:
+                key.reason = msg
+                key.lastPulled = crimesAPI.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            return self.crimes_set.all(), True, msg
 
         key.lastPulled = tsnow()
         key.reason = "Update crimes list"
@@ -574,7 +589,7 @@ class Faction(models.Model):
 
             if 'apiError' in req:
                 code = req['apiErrorCode']
-                if code in [1, 2, 10]:
+                if code in API_CODE_DELETE:
                     # delete key
                     print("{} delete {} (API error {})".format(self, key, code))
                     key.delete()
@@ -788,7 +803,6 @@ class Faction(models.Model):
 
         return logs, logsAll
 
-
     def updateLog(self):
 
         # get key
@@ -922,7 +936,7 @@ class Faction(models.Model):
         facInfo = apiCall('faction', self.tId, "basic,upgrades", key.value, verbose=False)
         if 'apiError' in facInfo:
             msg = "Update faction upgrades ({})".format(facInfo["apiErrorString"])
-            if facInfo['apiErrorCode'] in [1, 2, 7, 10]:
+            if facInfo['apiErrorCode'] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:

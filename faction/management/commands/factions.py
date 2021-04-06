@@ -21,7 +21,6 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from faction.models import Faction
-from yata.handy import apiCall
 from yata.handy import logdate
 
 class Command(BaseCommand):
@@ -30,21 +29,23 @@ class Command(BaseCommand):
         for faction in Faction.objects.filter(nKeys__gt=0):
             print(f"[CRON {logdate()}] faction {faction}")
             try:
-                print(f"[CRON {logdate()}] faction {faction}: clean history")
+                # print(f"[CRON {logdate()}] faction {faction}: clean history")
                 faction.cleanHistory()
-                print(f"[CRON {logdate()}] faction {faction}: check keys")
+                # print(f"[CRON {logdate()}] faction {faction}: check keys")
                 faction.checkKeys()
-                if faction.nKeys > 0:
-                    print(f"[CRON {logdate()}] faction {faction}: update logs")
+                if faction.nKeys:
+                    # print(f"[CRON {logdate()}] faction {faction}: update logs")
                     faction.updateLog()
-                    print(f"[CRON {logdate()}] faction {faction}: update upgrades")
+                if faction.nKeys:
+                    # print(f"[CRON {logdate()}] faction {faction}: update upgrades")
                     faction.updateUpgrades()
-                    print(f"[CRON {logdate()}] faction {faction}: update crimes")
+                if faction.nKeys:
+                    # print(f"[CRON {logdate()}] faction {faction}: update crimes")
                     faction.updateCrimes()
                     # faction.resetSimuUpgrades(update=True)
                     # faction.getFactionTree()
-                else:
-                    print(f"[CRON {logdate()}] faction {faction}: no more keys")
+                # if not faction.nKeys:
+                #     print(f"[CRON {logdate()}] faction {faction}: no more keys")
             except BaseException as e:
                 print(f"[CRON {logdate()}] {e}")
 
