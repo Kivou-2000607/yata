@@ -35,6 +35,7 @@ import re
 import random
 import os
 from decouple import config
+import hashlib
 
 from yata.handy import *
 from yata.bulkManager import *
@@ -299,8 +300,8 @@ class Faction(models.Model):
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
         # don't update if less than 1 hour ago and force is False
-        if not force and (now - self.crimesUpda) < 3600:
-            return self.crimes_set.all(), False, False
+        # if not force and (now - self.crimesUpda) < 3600:
+        #     return self.crimes_set.all(), False, False
 
         # api call and update key
         key = self.getKey()
@@ -348,13 +349,16 @@ class Faction(models.Model):
         main_ranking = self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
+        batch = Crimes.objects.bulk_operation()
         for k, v in crimesAPI:
 
             # ignore old crimes
             if v["initiated"] and v["time_completed"] < old:
                 # if in the DB but not initated change it to initated so that it's deleted after the loop
                 # it can happen if crimes haven't been update for a while
-                self.crimes_set.filter(tId=k).update(initiated=True)
+                v = {"initiated": True}
+                batch.update_or_create(tId=k, faction_id=self.pk, defaults=v)
+                # self.crimes_set.filter(tId=k).update(initiated=True)
                 continue
 
             # define if ready
@@ -378,14 +382,21 @@ class Faction(models.Model):
             if crimeDB is None:
                 n["created"] += 1
                 v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
-                c = self.crimes_set.create(tId=k, **v)
-                c.team_id = c.get_team_id()
-                c.save()
+                h = hash(tuple(sorted(v["participants"])))
+                v["team_id"] = int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
+                # c = self.crimes_set.create(tId=k, **v)
+                # c.team_id = c.get_team_id()
+                # c.save()
 
             elif not crimeDB.initiated:
                 n["updated"] += 1
                 del v["participants"]
-                self.crimes_set.filter(tId=k).update(**v)
+                # self.crimes_set.filter(tId=k).update(**v)
+
+            batch.update_or_create(tId=k, faction_id=self.pk, defaults=v)
+
+        if batch.count():
+            batch.run()
 
         # delete old initiated crimes
         nDeleted, _ = crimesDB.filter(initiated=True, time_completed__lt=old).delete()
@@ -3937,6 +3948,8 @@ class Crimes(models.Model):
     participants = models.CharField(default="[]", max_length=256)
     team_id = models.IntegerField(default=0)
     ready = models.BooleanField(default=0)
+
+    objects = BulkManager()
 
     def __str__(self):
         return format_html("{} {} [{}]".format(self.faction, self.crime_name, self.tId))
