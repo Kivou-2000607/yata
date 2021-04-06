@@ -36,15 +36,15 @@ class Command(BaseCommand):
                 if faction.nKeys:
                     # print(f"[CRON {logdate()}] faction {faction}: update logs")
                     faction.updateLog()
-                if faction.nKeys:
-                    # print(f"[CRON {logdate()}] faction {faction}: update upgrades")
-                    faction.updateUpgrades()
-                if faction.nKeys:
+
                     # print(f"[CRON {logdate()}] faction {faction}: update crimes")
                     faction.updateCrimes()
+
+                    # print(f"[CRON {logdate()}] faction {faction}: update upgrades")
+                    # faction.updateUpgrades()
                     # faction.resetSimuUpgrades(update=True)
                     # faction.getFactionTree()
-                # if not faction.nKeys:
+                # else:
                 #     print(f"[CRON {logdate()}] faction {faction}: no more keys")
             except BaseException as e:
                 print(f"[CRON {logdate()}] {e}")
