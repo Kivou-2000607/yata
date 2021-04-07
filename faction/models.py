@@ -379,19 +379,15 @@ class Faction(models.Model):
             crimeDB = crimesDB.filter(tId=int(k)).first()
 
             # create new or update non initiated
+            v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
             if crimeDB is None:
                 n["created"] += 1
-                v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
                 h = hash(tuple(sorted(v["participants"])))
                 v["team_id"] = int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
-                # c = self.crimes_set.create(tId=k, **v)
-                # c.team_id = c.get_team_id()
-                # c.save()
 
             elif not crimeDB.initiated:
                 n["updated"] += 1
                 del v["participants"]
-                # self.crimes_set.filter(tId=k).update(**v)
 
             batch.update_or_create(tId=k, faction_id=self.pk, defaults=v)
 
@@ -3969,6 +3965,7 @@ class Crimes(models.Model):
             return member.name, self.planned_by
 
     def get_participants(self):
+        print(self)
         participants = []
         for id in json.loads(self.participants):
             member = self.faction.member_set.filter(tId=int(id)).first()
