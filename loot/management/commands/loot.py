@@ -22,6 +22,7 @@ from django.core.management.base import BaseCommand
 from loot.models import NPC
 from yata.handy import logdate
 from yata.handy import clear_cf_cache
+from django.core.cache import cache
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -35,6 +36,8 @@ class Command(BaseCommand):
             print(f"[CRON {logdate()}] update {npc}")
             npc.update()
 
+        print(f"[CRON {logdate()}] clear ctx processor cache")
+        cache.delete("context_processor_loot")
         if options.get("clear_cache", False):
             r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
             print(f"[CRON {logdate()}] clear cloudflare cache:")

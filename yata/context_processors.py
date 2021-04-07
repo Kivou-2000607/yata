@@ -41,12 +41,14 @@ def nextLoot(request):
     try:
         nl = cache.get("context_processor_loot")
         if nl is None:
-            print("[context_processor] cache loot")
+            print("[context_processor] loot (compute)")
             to_late = tsnow() - (15 + 210) * 60
             next = NPC.objects.filter(show=True).filter(hospitalTS__gt=to_late).order_by('hospitalTS').first()
             nl =  ["All level V", 0, 0] if next is None else [next.name, next.tId, max(next.lootTimings(lvl=4)["ts"], 0)]
             cache.set("context_processor_loot", nl, 3600)
-
+        else:
+            print("[context_processor] loot (cache)")
+            
         return {"nextLoot": nl}
     except BaseException:
         return {"nextLoot": ["Error", 0, 0]}
