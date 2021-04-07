@@ -356,7 +356,7 @@ class Faction(models.Model):
             if v["initiated"] and v["time_completed"] < old:
                 # if in the DB but not initated change it to initated so that it's deleted after the loop
                 # it can happen if crimes haven't been update for a while
-                v = {"initiated": True}
+                v["initiated"] = True
                 batch.update_or_create(tId=k, faction_id=self.pk, defaults=v)
                 # self.crimes_set.filter(tId=k).update(initiated=True)
                 continue
