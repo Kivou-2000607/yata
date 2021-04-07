@@ -3965,7 +3965,6 @@ class Crimes(models.Model):
             return member.name, self.planned_by
 
     def get_participants(self):
-        print(self)
         participants = []
         for id in json.loads(self.participants):
             member = self.faction.member_set.filter(tId=int(id)).first()
