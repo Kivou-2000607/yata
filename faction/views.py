@@ -37,6 +37,7 @@ import json
 import csv
 import math
 import sys
+import magic
 
 from yata.handy import *
 from faction.models import *
@@ -3380,9 +3381,11 @@ def spiesImport(request):
 
             file = request.FILES["file"]
 
-            valid_content_type = ['text/csv', 'application/json']
-            if file.content_type not in valid_content_type:
-                request.session['message'] = ('errorMessageSub', f'Unvalid content type {file.content_type}. Valid content type are: {", ".join(valid_content_type)}.')
+            # get meme type
+            content_type = magic.from_buffer(file.read(2048), mime=True)
+            valid_content_type = ['text/csv', 'application/csv', 'application/json']
+            if content_type not in valid_content_type:
+                request.session['message'] = ('errorMessageSub', f'Unvalid content type {content_type}. Valid content type are: {", ".join(valid_content_type)}.')
                 return redirect('faction:spies')
 
             if file.size > 5000000:
@@ -3390,7 +3393,7 @@ def spiesImport(request):
                 return redirect('faction:spies')
 
             new_spies = {}
-            if file.content_type == 'text/csv':
+            if content_type in ['text/csv', 'application/csv']:
                 try:
                     # import from torn stats
                     csvfile = file.read().decode("utf-8")

@@ -25,9 +25,10 @@ Pillow>=8.1.0
 numpy>=1.18.5
 scipy
 
-cloudscraper>=1.2.34
+#cloudscraper>=1.2.34
 python-decouple>=3.3
 schedule>=0.6.0
+python-magic>=0.4.22
 
 # memcache and ratemimit
 python-memcached>=1.59
