@@ -44,3 +44,6 @@ whitenoise>=5.2.0
 
 #sentry
 sentry-sdk
+
+#others
+kxcdpass
