@@ -107,19 +107,13 @@ $(document).on('change', '.spy-database-import', e=>{
 
 });
 
-
-
-
-// const file = document.querySelector('#file');
-// file.addEventListener('change', (e) => {
-//   console.log("coucou")
-//   // Get the selected file
-//   const [file] = e.target.files;
-//   // Get the file name and size
-//   const { name: fileName, size } = file;
-//   // Convert size in bytes to kilo bytes
-//   const fileSize = (size / 1000).toFixed(2);
-//   // Set the text content
-//   const fileNameAndSize = `${fileName} - ${fileSize}KB`;
-//   document.querySelector('.file-name').textContent = fileNameAndSize;
-// });
+// refresh spy extra info from list by clicking on the row
+$(document).on('click', '.spy-list-refresh', e=>{
+    e.preventDefault();
+    $(e.currentTarget).load( "/faction/spies/", {
+        target_id: $(e.currentTarget).attr("data-tid"),
+        pk: $(e.currentTarget).attr("data-val"),
+        action: "refresh-target-data",
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<td colspan="8" style="text-align: center;">' + spinner + '</td>');
+});

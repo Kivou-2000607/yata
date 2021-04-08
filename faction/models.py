@@ -3996,6 +3996,7 @@ class SpyDatabase(models.Model):
     name = models.CharField(default="My spy database", max_length=64)
     secret = models.CharField(default="x", max_length=16)
     n_spies = models.IntegerField(default=0)
+    update = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.name} [{self.pk}]'
@@ -4053,22 +4054,16 @@ class SpyDatabase(models.Model):
 
 
         spy["update"] = max([spy[f'{k}_timestamp'] for k in bs_keys])
-
         return spy
 
 
     def updateSpies(self, payload=None):
 
         # get old spies
-        print(f'{self} get old spies')
         all_spies = self.get_spies(cc=True)
-        print(f'{self} get old spies ({len(all_spies)})')
 
-        print(f'{self} get api spies')
         new_spies = {}
-
         if payload is None:
-            print(f'{self} API')
             # get all factions
             for faction in self.factions.all():
                 print(f'{self} {faction}')
@@ -4113,14 +4108,13 @@ class SpyDatabase(models.Model):
                     }
                     new_spies[v["target"]] = self.optimize_spies(tmp, spy_2=new_spies.get(v["target"], False))
 
-                print(f'{self} API ({len(new_spies)})')
+            print(f'{self} Spies from API: {len(new_spies)}')
 
         else:
-            print(f'update spies: with payload')
             new_spies = {}
             for target_id, spy in payload.items():
                 new_spies[target_id] = self.optimize_spies(spy, spy_2=new_spies.get(target_id, False))
-            print(f'update spies: with payload ({len(new_spies)})')
+            print(f'{self} Spies from imports: {len(new_spies)}')
 
 
         # compare old and new
@@ -4131,18 +4125,17 @@ class SpyDatabase(models.Model):
 
             # if not in databse -> update_or_create
             if not old_spy or new_spy != old_spy:
-                print(old_spy)
-                print(new_spy)
                 batch.update_or_create(database_id=self.pk, target_id=target_id, defaults=opt_spy)
 
             # add to all spies for cache
             all_spies[target_id] = opt_spy
 
-        print(f"update spies: batch size = {batch.count()}")
+        print(f'{self} batch size: {batch.count()}')
         if batch.count():
             batch.run()
 
         self.n_spies = len(all_spies)
+        self.update = int(time.time())
         self.save()
 
         # set new cache
@@ -4170,7 +4163,7 @@ class SpyDatabase(models.Model):
                     "target_name": spy.target_name,
                     "target_faction_name": spy.target_faction_name,
                     "target_faction_id": spy.target_faction_id,
-                    "update": spy.target_faction_id
+                    "update": spy.update
                 }
             cache.set(f"spy-{self.secret}", all_spies, 3600)
         else:

@@ -3267,8 +3267,7 @@ def spies(request, secret=False, export=False):
                         response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.json'
                         return response
 
-            database = False
-
+            db = False
             if request.POST.get("action") == "create-database":  # create database
                 db = SpyDatabase.objects.create()
                 db.change_name()
@@ -3279,7 +3278,7 @@ def spies(request, secret=False, export=False):
                 db.updateSpies()
 
             elif request.POST.get("action") == "view-database":  # view database
-                database = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
 
             elif request.POST.get("action") == "update-database":  # update database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
@@ -3301,6 +3300,30 @@ def spies(request, secret=False, export=False):
                 db.save()
                 context = {'player': player, 'faction': faction, 'database': db}
                 return render(request, 'faction/spies/db-line.html', context)
+
+            elif request.POST.get("action") == "refresh-target-data":  # refresh target data
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                spy = db.spy_set.filter(target_id=request.POST.get("target_id")).first()
+                try:
+                    req = apiCall("user", request.POST.get("target_id"), "profile", player.getKey(), verbose=False)
+                    if "apiError" in req:
+                        return render(request, 'faction/spies/table-line.html', {"error_inline": f'API error: {req["apiError"]}'})
+
+                    spy.target_name = req["name"]
+                    spy.target_faction_id = req["faction"]["faction_id"]
+                    spy.target_faction_name = req["faction"]["faction_name"]
+                    spy.save()
+                    all_spies = cache.get(f"spy-{db.secret}")
+                    all_spies[spy.target_id]["target_name"] = spy.target_name
+                    all_spies[spy.target_id]["target_faction_id"] = spy.target_faction_id
+                    all_spies[spy.target_id]["target_faction_name"] = spy.target_faction_name
+                    cache.set(f"spy-{db.secret}", all_spies, 3600)
+
+                except BaseException as e:
+                    return render(request, 'faction/spies/table-line.html', {"error_inline": f'Server Error: {e}'})
+
+                context = {"target_id": request.POST.get("target_id"), "spy": spy}
+                return render(request, 'faction/spies/table-line.html', context)
 
             elif request.POST.get("action") == "change-name":  # change database name
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
@@ -3338,8 +3361,8 @@ def spies(request, secret=False, export=False):
             if message:
                 context[message[0]] = message[1]
 
-            if database:
-                context['database'] = database
+            if db:
+                context['database'] = db
 
             if 'message' in request.session:
                 context[request.session['message'][0]] = request.session['message'][1]
@@ -3367,7 +3390,6 @@ def spiesImport(request):
                 request.session['message'] = ('errorMessageSub', f'Faction not found in the database.')
                 return redirect('faction:spies')
 
-            print(request.POST.get("db-pk"))
             # get database
             db = SpyDatabase.objects.filter(pk=request.POST.get("db-pk")).first()
             if db is None:
