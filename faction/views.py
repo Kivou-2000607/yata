@@ -3395,52 +3395,52 @@ def spiesImport(request):
             new_spies = {}
             if content_type in ['text/csv', 'application/csv']:
                 try:
-                    # import from torn stats
-                    csvfile = file.read().decode("utf-8")
-                    for i, row in enumerate(csvfile.split("\n")):
 
+                    header = True
+                    for row in file:
                         # skip header
-                        if not i:
+                        if header:
+                            header = False
                             continue
 
-                        # try torn stats style
-                        splt = [_.strip('"') for _ in row.split("\",\"")]
-                        if len(splt) == 11:
-                            target_id = int(splt[1].split("[")[1].replace("]", ""))
-                            ts = int(time.mktime(datetime.datetime.strptime(splt[10], "%d/%m/%y").timetuple()))
+
+                        splt1 = [_.strip('"') for _ in row.rstrip().decode().split("\",\"")]  # try torn stats style
+                        splt2 = row.decode().split(",")  # try yata style
+                        if len(splt1) == 11:
+                            target_id = int(splt1[1].split("[")[1].replace("]", ""))
+                            ts = int(time.mktime(datetime.datetime.strptime(splt1[10], "%d/%m/%y").timetuple()))
                             new_spies[target_id] = {}
                             for j, k in enumerate(["strength", "defense", "speed", "dexterity", "total"]):
-                                stat = int(splt[4 + j].replace(",", ""))
+                                stat = int(splt1[4 + j].replace(",", ""))
                                 stat = stat if stat else -1
                                 timestamp = ts if stat + 1 else 0
                                 new_spies[target_id][k] = stat
                                 new_spies[target_id][f'{k}_timestamp'] = timestamp
 
-                            new_spies[target_id]["target_faction_name"] = splt[3].replace("None", "Faction") if splt[3] else "Faction"
+                            new_spies[target_id]["target_faction_name"] = splt1[3].replace("None", "Faction") if splt1[3] else "Faction"
                             new_spies[target_id]["target_faction_id"] = 0
-                            new_spies[target_id]["target_name"] = splt[1].split()[0]
+                            new_spies[target_id]["target_name"] = splt1[1].split()[0]
 
-                        # try yata style
-                        splt = row.split(",")
-                        if len(splt) == 14:
-                            new_spies[int(splt[0])] = {
-                                "target_id": int(splt[0]),
-                                "target_name": splt[1],
-                                "target_faction_name": splt[2],
-                                "target_faction_id": int(splt[3]),
-                                "strength": int(splt[4]),
-                                "speed": int(splt[5]),
-                                "defense": int(splt[6]),
-                                "dexterity": int(splt[7]),
-                                "total": int(splt[8]),
-                                "strength_timestamp": int(splt[9]),
-                                "speed_timestamp": int(splt[10]),
-                                "defense_timestamp": int(splt[11]),
-                                "dexterity_timestamp": int(splt[12]),
-                                "total_timestamp": int(splt[13]),
+
+                        elif len(splt2) == 14:
+                            new_spies[int(splt2[0])] = {
+                                "target_id": int(splt2[0]),
+                                "target_name": splt2[1],
+                                "target_faction_name": splt2[2],
+                                "target_faction_id": int(splt2[3]),
+                                "strength": int(splt2[4]),
+                                "speed": int(splt2[5]),
+                                "defense": int(splt2[6]),
+                                "dexterity": int(splt2[7]),
+                                "total": int(splt2[8]),
+                                "strength_timestamp": int(splt2[9]),
+                                "speed_timestamp": int(splt2[10]),
+                                "defense_timestamp": int(splt2[11]),
+                                "dexterity_timestamp": int(splt2[12]),
+                                "total_timestamp": int(splt2[13]),
                             }
                         else:
-                            print(f"spies csv reader invalide columns {len(splt)}")
+                            print(f"spies csv reader invalide columns {len(splt1)} {len(splt2)}")
                             continue
 
 
