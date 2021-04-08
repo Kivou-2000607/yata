@@ -117,3 +117,26 @@ $(document).on('click', '.spy-list-refresh', e=>{
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<td colspan="8" style="text-align: center;">' + spinner + '</td>');
 });
+
+
+// refresh spies from list by clicking on title refresh button
+$(document).on('click', '#spies-refresh', function(e){
+    e.preventDefault();
+    var i = 1;
+    $("#spy-database").find('tr.spy-list-refresh').each(function() {
+        var wait = i*500 + parseInt(i/10)*3000;
+        var reload = $(this);
+        (function(index) {
+            setTimeout(function() {
+                reload.load( "/faction/spies/", {
+                    target_id: reload.attr("data-tid"),
+                    pk: reload.attr("data-val"),
+                    action: "refresh-target-data",
+                    csrfmiddlewaretoken: getCookie("csrftoken")
+                });
+                reload.html('<td colspan="8" style="text-align: center;">'+spinner+'</td>');
+             }, wait);
+        })(i);
+        i++;
+    });
+});
