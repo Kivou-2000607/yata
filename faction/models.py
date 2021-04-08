@@ -24,6 +24,7 @@ from django.utils.html import format_html
 from django.core.exceptions import MultipleObjectsReturned
 from django.conf import settings
 from django.core.paginator import Paginator
+from django.core.cache import cache
 
 from numpy.core.numeric import normalize_axis_tuple
 from rest_framework import serializers
@@ -218,6 +219,7 @@ class Faction(models.Model):
 
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
+
 
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
@@ -3985,3 +3987,224 @@ class Crimes(models.Model):
         import hashlib
         h = hash(tuple(sorted([p[0] for p in self.get_participants()])))
         return int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
+
+
+# Spy database
+class SpyDatabase(models.Model):
+    master_id = models.IntegerField(default=0)
+    factions = models.ManyToManyField(Faction)
+    name = models.CharField(default="My spy database", max_length=64)
+    secret = models.CharField(default="x", max_length=16)
+    n_spies = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.name} [{self.pk}]'
+
+    def change_name(self):
+        from xkcdpass import xkcd_password as xp
+        wordfile = xp.locate_wordfile()
+        words = xp.generate_wordlist(wordfile=wordfile, min_length=3, max_length=6)
+        self.name = xp.generate_xkcdpassword(words, acrostic="torn")
+        self.save()
+
+    def change_secret(self):
+        from xkcdpass import xkcd_password as xp
+        self.secret = randomSlug(length=16)
+        self.save()
+
+    def optimize_spies(self, spy_1, spy_2=False):
+        bs_keys = ["strength", "speed", "defense", "dexterity", "total"]
+
+        # get most recent out of 2 spies
+        if spy_2:
+            spy = {}
+            for k in bs_keys:
+                spy[k] = max(spy_1[k], spy_2[k])
+                spy[f'{k}_timestamp'] = max(spy_1[f'{k}_timestamp'], spy_2[f'{k}_timestamp'])
+        else:
+            spy = spy_1
+
+        # Check if only one is missing
+        missing_stats = [k for k in bs_keys if spy[k] == -1]
+        if len(missing_stats) == 1:
+            miss = missing_stats[0]
+            sum_stats = sum([spy[k] for k in bs_keys]) + 1  # add one to account for the missing one (-1)
+            spy[miss] = sum_stats if miss == "total" else 2 * spy["total"] - sum_stats
+
+        # TODO: more fancy checks based in timestamps
+
+
+        # Add faction and name
+        for k, d in [("target_name", "Player"), ("target_faction_name", "Faction"), ("target_faction_id", 0)]:
+            if spy_2:  # in case of both
+                if spy_1.get(k, d) != d and spy_2.get(k, d) != d:  # priority to spy_1
+                    spy[k] = spy_1.get(k, d)
+                elif spy_1.get(k, d) != d:  # only spy_1
+                    spy[k] = spy_1.get(k, d)
+                elif spy_2.get(k, d) != d:  # only spy_2
+                    spy[k] = spy_2.get(k, d)
+                else:  # none
+                    spy[k] = d
+            else:  # if only spy_1 get spy1 or default
+                spy[k] = spy_1.get(k, d)
+
+            # in case of empty entry put default
+            spy[k] = spy[k] if spy[k] else d
+
+
+        spy["update"] = max([spy[f'{k}_timestamp'] for k in bs_keys])
+
+        return spy
+
+
+    def updateSpies(self, payload=None):
+
+        # get old spies
+        print(f'{self} get old spies')
+        all_spies = self.get_spies(cc=True)
+        print(f'{self} get old spies ({len(all_spies)})')
+
+        print(f'{self} get api spies')
+        new_spies = {}
+
+        if payload is None:
+            print(f'{self} API')
+            # get all factions
+            for faction in self.factions.all():
+                print(f'{self} {faction}')
+                key = faction.getKey()
+                if key is None:
+                    continue
+
+                req = apiCall("faction", faction.tId, "reports", key.value, verbose=True)
+                key.reason = "Update spies"
+                key.lastPulled = tsnow()
+                key.save()
+
+                if "apiError" in req:
+                    print(f'{self} {req["apiError"]}'.format(self, req['apiError']))
+                    if req['apiErrorCode'] in API_CODE_DELETE:
+                        faction.delKey(key=key)
+                    continue
+
+                for v in req["reports"]:
+
+                    # ignore non stats reports
+                    if v["type"] != "stats":
+                        continue
+
+                    # refactor dictionnary
+                    strength = v["report"].get("strength", -1)
+                    speed = v["report"].get("speed", -1)
+                    defense = v["report"].get("defense", -1)
+                    dexterity = v["report"].get("dexterity", -1)
+                    total = v["report"].get("total", -1)
+                    tmp = {
+                        "strength": strength,
+                        "speed": speed,
+                        "defense": defense,
+                        "dexterity": dexterity,
+                        "total": total,
+                        "strength_timestamp": v["timestamp"] if strength + 1 else 0,
+                        "speed_timestamp": v["timestamp"] if speed + 1 else 0,
+                        "defense_timestamp": v["timestamp"] if defense + 1 else 0,
+                        "dexterity_timestamp": v["timestamp"] if dexterity + 1 else 0,
+                        "total_timestamp": v["timestamp"] if total + 1 else 0,
+                    }
+                    new_spies[v["target"]] = self.optimize_spies(tmp, spy_2=new_spies.get(v["target"], False))
+
+                print(f'{self} API ({len(new_spies)})')
+
+        else:
+            print(f'update spies: with payload')
+            new_spies = {}
+            for target_id, spy in payload.items():
+                new_spies[target_id] = self.optimize_spies(spy, spy_2=new_spies.get(target_id, False))
+            print(f'update spies: with payload ({len(new_spies)})')
+
+
+        # compare old and new
+        batch = Spy.objects.bulk_operation()
+        for target_id, new_spy in new_spies.items():
+            old_spy = all_spies.get(target_id, False)
+            opt_spy = self.optimize_spies(new_spy, old_spy)
+
+            # if not in databse -> update_or_create
+            if not old_spy or new_spy != old_spy:
+                print(old_spy)
+                print(new_spy)
+                batch.update_or_create(database_id=self.pk, target_id=target_id, defaults=opt_spy)
+
+            # add to all spies for cache
+            all_spies[target_id] = opt_spy
+
+        print(f"update spies: batch size = {batch.count()}")
+        if batch.count():
+            batch.run()
+
+        self.n_spies = len(all_spies)
+        self.save()
+
+        # set new cache
+        cache.set(f"spy-{self.secret}", all_spies, 3600)
+
+        return all_spies
+
+    def get_spies(self, cc=False):
+        all_spies = cache.get(f"spy-{self.secret}")
+        if all_spies is None or cc:
+            print(f"{self} get db spies")
+            all_spies = {}
+            for spy in self.spy_set.all():
+                all_spies[spy.target_id] = {
+                    "strength": spy.strength,
+                    "speed": spy.speed,
+                    "defense": spy.defense,
+                    "dexterity": spy.dexterity,
+                    "total": spy.total,
+                    "strength_timestamp": spy.strength_timestamp,
+                    "speed_timestamp": spy.speed_timestamp,
+                    "defense_timestamp": spy.defense_timestamp,
+                    "dexterity_timestamp": spy.dexterity_timestamp,
+                    "total_timestamp": spy.total_timestamp,
+                    "target_name": spy.target_name,
+                    "target_faction_name": spy.target_faction_name,
+                    "target_faction_id": spy.target_faction_id,
+                    "update": spy.target_faction_id
+                }
+            cache.set(f"spy-{self.secret}", all_spies, 3600)
+        else:
+            print(f"{self} get cached spies")
+
+        return all_spies
+
+
+
+# Spies
+class Spy(models.Model):
+    database = models.ForeignKey(SpyDatabase, on_delete=models.CASCADE)
+
+    # direct report data
+    target_id = models.IntegerField(default=0, db_index=True)
+    strength = models.BigIntegerField(default=0)
+    speed = models.BigIntegerField(default=0)
+    defense = models.BigIntegerField(default=0)
+    dexterity = models.BigIntegerField(default=0)
+    total = models.BigIntegerField(default=0)
+    strength_timestamp = models.IntegerField(default=0)
+    speed_timestamp = models.IntegerField(default=0)
+    defense_timestamp = models.IntegerField(default=0)
+    dexterity_timestamp = models.IntegerField(default=0)
+    total_timestamp = models.IntegerField(default=0)
+    update = models.IntegerField(default=0)
+
+    # extra report data
+    target_name = models.CharField(default="Player", max_length=32)
+    target_faction_name = models.CharField(default="Faction", max_length=64)
+    target_faction_id = models.IntegerField(default=0)
+
+    # bulk manager
+    objects = BulkManager()
+
+    def __str__(self):
+        return f'Spy {self.target_name} [{self.target_id}]'

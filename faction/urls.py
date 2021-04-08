@@ -70,6 +70,12 @@ urlpatterns = [
     re_path(r'^oc/$', views.oc, name='oc'),
     re_path(r'^ocList/$', views.ocList, name='ocList'),
 
+    # SECTION: oc
+    re_path(r'^spies/$', views.spies, name='spies'),
+    re_path(r'^spies/import/$', views.spiesImport, name='spiesImport'),
+    re_path(r'^spies/(?P<secret>\w+)/$', views.spies, name='spiesSecret'),
+    re_path(r'^spies/(?P<secret>\w+)/(?P<export>\w+)/$', views.spies, name='spiesExport'),
+
     # SECTION: fight club
     re_path(r'^fightclub/$', views.fightclub, name='fightclub'),
 

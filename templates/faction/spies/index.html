@@ -1,0 +1,62 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load static %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Spy databases</h2>
+<div class="module">
+  {% if databases|length %}
+    <p>You have <b>{{databases|length}}</b> database{{databases|length|pluralize}}</p>
+    <table id="spy-databases" class="tablesorter center-medium trshadow spy-databases">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Factions</th>
+            <th>Spies</th>
+            <th>Master</th>
+            <th>Secret</th>
+            <th>Buttons</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for database in databases %}
+          <tr>
+            {% include "faction/spies/db-line.html" %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  {% else %}
+    <p>Your faction has no databases.</p>
+  {% endif %}
+      <div style="width: 100%; margin-top: 10px; text-align: center;">
+        <a id="spy-database-create" href=""><i class="fas fa-plus-square fa-icon-inline"></i>Create a new database</a>
+        <span style="margin-left:20px;"></span>
+        <i class="fas fa-users fa-icon-inline"></i>Join an existing one: <input class="spy-database-join" placeholder="Copy paste secret here"></form>
+      </div>
+</div>
+
+
+{% if database %}
+  {% include "faction/spies/table.html" %}
+{% endif %}

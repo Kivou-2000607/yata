@@ -221,7 +221,19 @@ class CrimesAdmin(admin.ModelAdmin):
     list_filter = ('faction__name', 'initiated', 'success', 'ready')
 
 
+class SpyAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'database']
+    search_fields = ('target_id', 'target_faction_name', )
+
+
+class SpyDatabaseAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'secret']
+    search_fields = ('factions', )
+
+
 admin.site.register(Crimes, CrimesAdmin)
+admin.site.register(SpyDatabase, SpyDatabaseAdmin)
+admin.site.register(Spy, SpyAdmin)
 # admin.site.register(Upgrade, UpgradeAdmin)
 # admin.site.register(FactionTree, FactionTreeAdmin)
 admin.site.register(FactionData, FactionDataAdmin)

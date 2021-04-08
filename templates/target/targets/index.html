@@ -104,13 +104,13 @@ This file is part of yata.
         {% if apiErrorAdd %}<span class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{ apiErrorAdd }}</span>{% endif %}
     </form>
     <form method="post" action="{% url 'target:targetsList' %}" style="margin:10px;">
-        <i class="fas fa-upload fa-icon-inline"></i>Export your target list:
+        <i class="fas fa-export-file fa-icon-inline"></i>Export your target list:
         {% csrf_token %}
         <input type="hidden" name="action_type" value="export">
         <input type="submit" value="Export JSON">
     </form>
     <form method="post" action="{% url 'target:targetsList' %}" style="margin:10px;" enctype="multipart/form-data">
-        <i class="fas fa-download fa-icon-inline"></i>Import your target list <i class="fas fa-question-circle" title="Only import files you exported here"></i>:
+        <i class="fas fa-import-file fa-icon-inline"></i>Import your target list <i class="fas fa-question-circle" title="Only import files you exported here"></i>:
         {% csrf_token %}
         <input type="hidden" name="action_type" value="import">
         <input type="submit" value="Import JSON">

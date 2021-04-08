@@ -23,18 +23,20 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http import StreamingHttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils.html import format_html
 from django.template import loader
 from django.views.decorators.cache import cache_page
 from django.db.models.functions import Lower
-
+from django.core.cache import cache
 import html
 import os
 import json
 import csv
 import math
+import sys
 
 from yata.handy import *
 from faction.models import *
@@ -3206,6 +3208,254 @@ def ocList(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
+# SECTION: spies
+def spies(request, secret=False, export=False):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            message = False
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                context = {'player': player, selectError: "Faction not found in the database."}
+                return render(request, page, context)
+
+            # export
+            if secret and export:  # export database
+                if export == 'csv':
+                    db = SpyDatabase.objects.filter(secret=secret).first()
+                    print(secret)
+                    print(db)
+
+                    class Echo:
+                        def write(self, value):
+                            return value
+
+                    # headers
+                    spies_keys = [ "target_name", "target_faction_name", "target_faction_id", "strength", "speed", "defense", "dexterity", "total", "strength_timestamp", "speed_timestamp", "defense_timestamp", "dexterity_timestamp", "total_timestamp" ]
+                    row = ["target_id"]
+                    for k in spies_keys:
+                        row.append(k)
+                    rows = [row]
+
+                    # rows
+                    for target_id, spy in db.get_spies().items():
+                        row = [str(target_id)]
+                        for k in spies_keys:
+                            row.append(str(spy[k]))
+                        rows.append(row)
+
+                    pseudo_buffer = Echo()
+                    writer = csv.writer(pseudo_buffer)
+                    response = StreamingHttpResponse((writer.writerow(row) for row in rows), content_type="text/csv")
+                    response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.csv'
+                    return response
+
+                else:
+                    db = SpyDatabase.objects.filter(secret=secret).first()
+                    if db is not None and faction.tId == db.master_id:
+                        payload = {"spies": db.get_spies()}
+                        response = JsonResponse(payload)
+                        response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.json'
+                        return response
+
+            database = False
+
+            if request.POST.get("action") == "create-database":  # create database
+                db = SpyDatabase.objects.create()
+                db.change_name()
+                db.change_secret()
+                db.master_id = faction.tId
+                db.save()
+                db.factions.add(faction)
+                db.updateSpies()
+
+            elif request.POST.get("action") == "view-database":  # view database
+                database = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+
+            elif request.POST.get("action") == "update-database":  # update database
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None and faction.tId == db.master_id:
+                    db.updateSpies()
+
+            elif request.POST.get("action") == "kick-faction":  # change database secret
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None and faction.tId == db.master_id:
+                    fa = db.factions.filter(tId=request.POST.get("faction_id")).first()
+                    if fa is not None:
+                        db.factions.remove(fa)
+                return render(request, page)
+
+            elif request.POST.get("action") == "change-secret":  # kick from database
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None:
+                    db.change_secret()
+                db.save()
+                context = {'player': player, 'faction': faction, 'database': db}
+                return render(request, 'faction/spies/db-line.html', context)
+
+            elif request.POST.get("action") == "change-name":  # change database name
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None:
+                    db.change_name()
+                db.save()
+                context = {'player': player, 'faction': faction, 'database': db}
+                return render(request, 'faction/spies/db-line.html', context)
+
+            elif request.POST.get("action") == "join-database":  # joining database
+                db = SpyDatabase.objects.filter(secret=request.POST.get("secret")).first()
+                if db is None:
+                    message = ["errorMessageSub", f'Secret <tt>{request.POST.get("secret")}</tt> not found in the database']
+                else:
+                    db.factions.add(faction)
+                    db.updateSpies()
+                    message = ["validMessageSub", f"You joined the database {db.name}, congratz."]
+
+            elif request.POST.get("action") == "delete-database":  # delete database
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None and db.master_id == faction.tId:
+                    db.delete()
+                return render(request, page)
+
+            elif request.POST.get("action") == "leave-database":  # leave database
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None and db.master_id != faction.tId:
+                    db.factions.remove(faction)
+                return render(request, page)
+
+            # get databases
+            databases = faction.spydatabase_set.all()
+
+            context = {'player': player, 'databases': databases, 'factioncat': True, 'faction': faction, 'view': {'spies': True}}
+            if message:
+                context[message[0]] = message[1]
+
+            if database:
+                context['database'] = database
+
+            if 'message' in request.session:
+                context[request.session['message'][0]] = request.session['message'][1]
+                del request.session['message']
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def spiesImport(request):
+    try:
+        if request.session.get('player') and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+
+            if not player.factionAA:
+                request.session['message'] = ('errorMessageSub', f'You need AA perm.')
+                return redirect('faction:spies')
+
+            if faction is None:
+                request.session['message'] = ('errorMessageSub', f'Faction not found in the database.')
+                return redirect('faction:spies')
+
+            print(request.POST.get("db-pk"))
+            # get database
+            db = SpyDatabase.objects.filter(pk=request.POST.get("db-pk")).first()
+            if db is None:
+                request.session['message'] = ('errorMessageSub', f'Spy database id {request.POST.get("db-pk")} not found.')
+                return redirect('faction:spies')
+
+            # get file
+            if not len(request.FILES) or "file" not in request.FILES:
+                request.session['message'] = ('errorMessageSub', f'No files found.')
+                return redirect('faction:spies')
+
+            file = request.FILES["file"]
+
+            valid_content_type = ['text/csv', 'application/json']
+            if file.content_type not in valid_content_type:
+                request.session['message'] = ('errorMessageSub', f'Unvalid content type {file.content_type}. Valid content type are: {", ".join(valid_content_type)}.')
+                return redirect('faction:spies')
+
+            if file.size > 5000000:
+                request.session['message'] = ('errorMessageSub', f'File size too large ({file.size:,d} B). Should be lower than 5 MiB.')
+                return redirect('faction:spies')
+
+            new_spies = {}
+            if file.content_type == 'text/csv':
+                try:
+                    # import from torn stats
+                    csvfile = file.read().decode("utf-8")
+                    for i, row in enumerate(csvfile.split("\n")):
+
+                        # skip header
+                        if not i:
+                            continue
+
+                        # try torn stats style
+                        splt = [_.strip('"') for _ in row.split("\",\"")]
+                        if len(splt) == 11:
+                            target_id = int(splt[1].split("[")[1].replace("]", ""))
+                            ts = int(time.mktime(datetime.datetime.strptime(splt[10], "%d/%m/%y").timetuple()))
+                            new_spies[target_id] = {}
+                            for j, k in enumerate(["strength", "defense", "speed", "dexterity", "total"]):
+                                stat = int(splt[4 + j].replace(",", ""))
+                                stat = stat if stat else -1
+                                timestamp = ts if stat + 1 else 0
+                                new_spies[target_id][k] = stat
+                                new_spies[target_id][f'{k}_timestamp'] = timestamp
+
+                            new_spies[target_id]["target_faction_name"] = splt[3].replace("None", "Faction") if splt[3] else "Faction"
+                            new_spies[target_id]["target_faction_id"] = 0
+                            new_spies[target_id]["target_name"] = splt[1].split()[0]
+
+                        # try yata style
+                        splt = row.split(",")
+                        if len(splt) == 14:
+                            new_spies[int(splt[0])] = {
+                                "target_id": int(splt[0]),
+                                "target_name": splt[1],
+                                "target_faction_name": splt[2],
+                                "target_faction_id": int(splt[3]),
+                                "strength": int(splt[4]),
+                                "speed": int(splt[5]),
+                                "defense": int(splt[6]),
+                                "dexterity": int(splt[7]),
+                                "total": int(splt[8]),
+                                "strength_timestamp": int(splt[9]),
+                                "speed_timestamp": int(splt[10]),
+                                "defense_timestamp": int(splt[11]),
+                                "dexterity_timestamp": int(splt[12]),
+                                "total_timestamp": int(splt[13]),
+                            }
+                        else:
+                            print(f"spies csv reader invalide columns {len(splt)}")
+                            continue
+
+
+                except BaseException as e:
+                    request.session['message'] = ('errorMessageSub', f'Error while importing csv file: {e}. Make sure it follows Torn Stats ')
+                    return redirect('faction:spies')
+
+            db.updateSpies(payload=new_spies)
+
+            request.session['message'] = ('validMessageSub', f'{len(new_spies)} spies imported')
+            return redirect('faction:spies')
+
+        else:
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
 def fightclub(request):
     try:

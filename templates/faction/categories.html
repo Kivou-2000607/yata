@@ -45,7 +45,8 @@ This file is part of yata.
         </td>
         {% if player.factionAA %}
             <td><a href="{% url 'faction:oc' %}"><i class="fas fa-fingerprint fa-icon-inline"></i>Organized crimes</a></td>
-            <td style="opacity: 0.5"><a href="{% url 'faction:fightclub' %}"><i class="fas fa-lock fa-icon-inline"></i>Locked</a></td>
+            <td><a href="{% url 'faction:spies' %}"><i class="fas fa-user-shield fa-icon-inline"></i>Spies</a></td>
+            {# <td style="opacity: 0.5"><a href="{% url 'faction:fightclub' %}"><i class="fas fa-lock fa-icon-inline"></i>Locked</a></td> #}
         {% endif %}
     </tr>
     </tbody>

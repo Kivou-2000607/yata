@@ -472,3 +472,88 @@ table.faction-crimes-list-past td.d { width: 15%; text-align: center; }
 table.faction-crimes-list-past td.e { width: 10%; text-align: right; }
 table.faction-crimes-list-past td.f { width: 7.5%; text-align: right; }
 /* table.faction-crimes-list-past td.g { text-align: center; } */
+
+
+/* a b ccc d e */
+table.spy-databases td.a { width: 10%; text-align: center; }
+table.spy-databases td.b { width: 20%; text-align: left; }
+table.spy-databases td.c { width: 10%; text-align: center; }
+table.spy-databases td.d { width: 20%; text-align: center; }
+table.spy-databases td.e { width: 20%; text-align: left; }
+
+/* a b ccccc d e */
+table.spy-database td.a { width: 15%; text-align: left; }
+table.spy-database td.b { width: 15%; text-align: left; }
+table.spy-database td.c { width: 10%; text-align: right; }
+table.spy-database td.d { width: 15%; text-align: center; }
+table.spy-database td.e { width: 5%; text-align: center; }
+
+span.spies-faction {
+    cursor: default;
+    border: solid 1px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 10px;
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+span.spies-faction.kickable:hover {
+    /* color: #eee!important; */
+    border-color: #CC3434;
+    color: #CC3434!important;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    /* border-radius: 10px; */
+    transition: all 0.4s ease 0s;
+    cursor: pointer;
+}
+span.spies-faction.kickable:hover:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f506";
+  margin-left: 5px;
+}
+
+
+input.spy-database-import {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+}
+
+label.spy-database-import:before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f56f";
+  margin-right: 5px;
+  color: #447e9b;
+}
+
+label.spy-database-import:hover:before {
+  color: #036;
+  cursor: pointer;
+}
+
+form.inlinefrom input[type="submit"].spy-database-submit {
+  border: none;
+  background-image:none;
+  background-color:transparent;
+  box-shadow: none;
+  /* font-weight: normal; */
+  height: 12px;
+  line-height: 12px;
+  font-size: 12px;
+  padding: 0px 2px;
+  margin: 0px;
+  color: #447e9b;
+  font-style: italic;
+}
+
+form.inlinefrom input[type="submit"].spy-database-submit:hover {
+  color: #036;
+  cursor: pointer;
+}
