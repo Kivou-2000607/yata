@@ -204,22 +204,22 @@ sou: South Africa</code></pre>
   <li><b>URL</b> <tt>/api/v1/spy/&lt;target_id&gt;?key=&lt;api_key&gt;</tt></li>
   <li><b>Payload</b>
     <pre><code classe="json">Object {
-"&lt;target_id&gt;": Object {
-    "strength": Number,  // -1 if unkown
-    "speed": Number,  // -1 if unkown
-    "defense": Number,  // -1 if unkown
-    "dexterity": Number,  // -1 if unkown
-    "total": Number,  // -1 if unkown
-    "strength_timestamp": Number,  // 0 if unkown
-    "speed_timestamp": Number,  // 0 if unkown
-    "defense_timestamp": Number,  // 0 if unkown
-    "dexterity_timestamp": Number,  // 0 if unkown
-    "total_timestamp": Number,  // 0 if unkown
-    "update": Number,  // max of all timestamps
-    "target_name": String,  // Player if unkown
-    "target_faction_name": String,  // 0 if unkown or not in a faction
-    "target_faction_id": Number,  // None if unkown or not in a faction
-},
+  "&lt;target_id&gt;": Object {
+      "strength": Number,  // -1 if unkown
+      "speed": Number,  // -1 if unkown
+      "defense": Number,  // -1 if unkown
+      "dexterity": Number,  // -1 if unkown
+      "total": Number,  // -1 if unkown
+      "strength_timestamp": Number,  // 0 if unkown
+      "speed_timestamp": Number,  // 0 if unkown
+      "defense_timestamp": Number,  // 0 if unkown
+      "dexterity_timestamp": Number,  // 0 if unkown
+      "total_timestamp": Number,  // 0 if unkown
+      "update": Number,  // max of all timestamps
+      "target_name": String,  // Player if unkown
+      "target_faction_name": String,  // 0 if unkown or not in a faction
+      "target_faction_id": Number,  // None if unkown or not in a faction
+  },
 }</code></pre>
   </li>
   <li><b>Note</b> It looks for the spy report over all databases of your faction and takes the most recent data
