@@ -1288,6 +1288,20 @@ class Faction(models.Model):
 
         return tree, respect
 
+    def getSpies(self):
+        from faction.functions import optimize_spies
+
+        all_spies = cache.get(f"spy-faction-{self.tId}")
+        print(f'[getSpies] faction cache: {"no" if all_spies is None else "yes"}')
+        if all_spies is None:
+            all_spies = {}
+            for database in self.spydatabase_set.all():
+                for target_id, spy in database.getSpies().items():
+                    all_spies[target_id] = optimize_spies(spy, all_spies[target_id]) if target_id in all_spies else spy
+            cache.set(f"spy-faction-{self.tId}", all_spies, 3600)
+
+        return all_spies
+
     def json(self):
         from faction.serializer import FactionSerializer
         return FactionSerializer(self).data
@@ -4013,54 +4027,12 @@ class SpyDatabase(models.Model):
         self.secret = randomSlug(length=16)
         self.save()
 
-    def optimize_spies(self, spy_1, spy_2=False):
-        bs_keys = ["strength", "speed", "defense", "dexterity", "total"]
-
-        # get most recent out of 2 spies
-        if spy_2:
-            spy = {}
-            for k in bs_keys:
-                spy[k] = max(spy_1[k], spy_2[k])
-                spy[f'{k}_timestamp'] = max(spy_1[f'{k}_timestamp'], spy_2[f'{k}_timestamp'])
-        else:
-            spy = spy_1
-
-        # Check if only one is missing
-        missing_stats = [k for k in bs_keys if spy[k] == -1]
-        if len(missing_stats) == 1:
-            miss = missing_stats[0]
-            sum_stats = sum([spy[k] for k in bs_keys]) + 1  # add one to account for the missing one (-1)
-            spy[miss] = sum_stats if miss == "total" else 2 * spy["total"] - sum_stats
-
-        # TODO: more fancy checks based in timestamps
-
-
-        # Add faction and name
-        for k, d in [("target_name", "Player"), ("target_faction_name", "Faction"), ("target_faction_id", 0)]:
-            if spy_2:  # in case of both
-                if spy_1.get(k, d) != d and spy_2.get(k, d) != d:  # priority to spy_1
-                    spy[k] = spy_1.get(k, d)
-                elif spy_1.get(k, d) != d:  # only spy_1
-                    spy[k] = spy_1.get(k, d)
-                elif spy_2.get(k, d) != d:  # only spy_2
-                    spy[k] = spy_2.get(k, d)
-                else:  # none
-                    spy[k] = d
-            else:  # if only spy_1 get spy1 or default
-                spy[k] = spy_1.get(k, d)
-
-            # in case of empty entry put default
-            spy[k] = spy[k] if spy[k] else d
-
-
-        spy["update"] = max([spy[f'{k}_timestamp'] for k in bs_keys])
-        return spy
-
 
     def updateSpies(self, payload=None):
+        from faction.functions import optimize_spies
 
         # get old spies
-        all_spies = self.get_spies(cc=True)
+        all_spies = self.getSpies(cc=True)
 
         new_spies = {}
         if payload is None:
@@ -4106,14 +4078,14 @@ class SpyDatabase(models.Model):
                         "dexterity_timestamp": v["timestamp"] if dexterity + 1 else 0,
                         "total_timestamp": v["timestamp"] if total + 1 else 0,
                     }
-                    new_spies[v["target"]] = self.optimize_spies(tmp, spy_2=new_spies.get(v["target"], False))
+                    new_spies[v["target"]] = optimize_spies(tmp, spy_2=new_spies.get(v["target"], False))
 
             print(f'{self} Spies from API: {len(new_spies)}')
 
         else:
             new_spies = {}
             for target_id, spy in payload.items():
-                new_spies[target_id] = self.optimize_spies(spy, spy_2=new_spies.get(target_id, False))
+                new_spies[target_id] = optimize_spies(spy, spy_2=new_spies.get(target_id, False))
             print(f'{self} Spies from imports: {len(new_spies)}')
 
 
@@ -4121,7 +4093,7 @@ class SpyDatabase(models.Model):
         batch = Spy.objects.bulk_operation()
         for target_id, new_spy in new_spies.items():
             old_spy = all_spies.get(target_id, False)
-            opt_spy = self.optimize_spies(new_spy, old_spy)
+            opt_spy = optimize_spies(new_spy, old_spy)
 
             # if not in databse -> update_or_create
             if not old_spy or new_spy != old_spy:
@@ -4139,35 +4111,20 @@ class SpyDatabase(models.Model):
         self.save()
 
         # set new cache
-        cache.set(f"spy-{self.secret}", all_spies, 3600)
+        cache.set(f"spy-db-{self.secret}", all_spies, 3600)
 
         return all_spies
 
-    def get_spies(self, cc=False):
-        all_spies = cache.get(f"spy-{self.secret}")
+    def getSpies(self, cc=False):
+        all_spies = cache.get(f"spy-db-{self.secret}")
         if all_spies is None or cc:
-            print(f"{self} get db spies")
+            print(f'[getSpies] database cached: no')
             all_spies = {}
             for spy in self.spy_set.all():
-                all_spies[spy.target_id] = {
-                    "strength": spy.strength,
-                    "speed": spy.speed,
-                    "defense": spy.defense,
-                    "dexterity": spy.dexterity,
-                    "total": spy.total,
-                    "strength_timestamp": spy.strength_timestamp,
-                    "speed_timestamp": spy.speed_timestamp,
-                    "defense_timestamp": spy.defense_timestamp,
-                    "dexterity_timestamp": spy.dexterity_timestamp,
-                    "total_timestamp": spy.total_timestamp,
-                    "target_name": spy.target_name,
-                    "target_faction_name": spy.target_faction_name,
-                    "target_faction_id": spy.target_faction_id,
-                    "update": spy.update
-                }
-            cache.set(f"spy-{self.secret}", all_spies, 3600)
+                all_spies[spy.target_id] = spy.dictionnary()
+            cache.set(f"spy-db-{self.secret}", all_spies, 3600)
         else:
-            print(f"{self} get cached spies")
+            print(f'[getSpies] database cached: yes')
 
         return all_spies
 
@@ -4201,3 +4158,23 @@ class Spy(models.Model):
 
     def __str__(self):
         return f'Spy {self.target_name} [{self.target_id}]'
+
+
+    def dictionnary(self):
+        v = {
+            "strength": self.strength,
+            "speed": self.speed,
+            "defense": self.defense,
+            "dexterity": self.dexterity,
+            "total": self.total,
+            "strength_timestamp": self.strength_timestamp,
+            "speed_timestamp": self.speed_timestamp,
+            "defense_timestamp": self.defense_timestamp,
+            "dexterity_timestamp": self.dexterity_timestamp,
+            "total_timestamp": self.total_timestamp,
+            "update": self.update,
+            "target_name": self.target_name,
+            "target_faction_name": self.target_faction_name,
+            "target_faction_id": self.target_faction_id
+        }
+        return v

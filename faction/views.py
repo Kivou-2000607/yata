@@ -3309,15 +3309,18 @@ def spies(request, secret=False, export=False):
                     if "apiError" in req:
                         return render(request, 'faction/spies/table-line.html', {"error_inline": f'API error: {req["apiError"]}'})
 
+                    # update db
                     spy.target_name = req["name"]
                     spy.target_faction_id = req["faction"]["faction_id"]
                     spy.target_faction_name = req["faction"]["faction_name"]
                     spy.save()
-                    all_spies = cache.get(f"spy-{db.secret}")
+
+                    # refresh cache
+                    all_spies = cache.get(f"spy-db-{db.secret}")
                     all_spies[spy.target_id]["target_name"] = spy.target_name
                     all_spies[spy.target_id]["target_faction_id"] = spy.target_faction_id
                     all_spies[spy.target_id]["target_faction_name"] = spy.target_faction_name
-                    cache.set(f"spy-{db.secret}", all_spies, 3600)
+                    cache.set(f"spy-db-{db.secret}", all_spies, 3600)
 
                 except BaseException as e:
                     return render(request, 'faction/spies/table-line.html', {"error_inline": f'Server Error: {e}'})

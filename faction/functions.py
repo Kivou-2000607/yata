@@ -58,6 +58,48 @@ def getCrontabs():
     return crontabs if len(crontabs) else [1]
 
 
+def optimize_spies(spy_1, spy_2=False):
+    bs_keys = ["strength", "speed", "defense", "dexterity", "total"]
+
+    # get most recent out of 2 spies
+    if spy_2:
+        spy = {}
+        for k in bs_keys:
+            spy[k] = max(spy_1[k], spy_2[k])
+            spy[f'{k}_timestamp'] = max(spy_1[f'{k}_timestamp'], spy_2[f'{k}_timestamp'])
+    else:
+        spy = spy_1
+
+    # Check if only one is missing
+    missing_stats = [k for k in bs_keys if spy[k] == -1]
+    if len(missing_stats) == 1:
+        miss = missing_stats[0]
+        sum_stats = sum([spy[k] for k in bs_keys]) + 1  # add one to account for the missing one (-1)
+        spy[miss] = sum_stats if miss == "total" else 2 * spy["total"] - sum_stats
+
+    # TODO: more fancy checks based in timestamps
+
+
+    # Add faction and name
+    for k, d in [("target_name", "Player"), ("target_faction_name", "Faction"), ("target_faction_id", 0)]:
+        if spy_2:  # in case of both
+            if spy_1.get(k, d) != d and spy_2.get(k, d) != d:  # priority to spy_1
+                spy[k] = spy_1.get(k, d)
+            elif spy_1.get(k, d) != d:  # only spy_1
+                spy[k] = spy_1.get(k, d)
+            elif spy_2.get(k, d) != d:  # only spy_2
+                spy[k] = spy_2.get(k, d)
+            else:  # none
+                spy[k] = d
+        else:  # if only spy_1 get spy1 or default
+            spy[k] = spy_1.get(k, d)
+
+        # in case of empty entry put default
+        spy[k] = spy[k] if spy[k] else d
+
+
+    spy["update"] = max([spy[f'{k}_timestamp'] for k in bs_keys])
+    return spy
 
 
 # def updateFactionTree(faction, key=None, force=False, reset=False):

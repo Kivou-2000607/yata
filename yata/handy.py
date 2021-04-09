@@ -160,8 +160,8 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     from player.functions import updatePlayer
 
     # get cache
-    player = cache.get(f'player_{tId}')
-    print(f"[getPlayer] cached {player}")
+    player = cache.get(f'player-by-id-{tId}')
+    print(f'[getPlayer] cached: {"yes" if player else "no"}')
 
     # if player in cache and no update force return cache directly
     if player is not None and not forceUpdate:
@@ -171,7 +171,7 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     if skipUpdate:
         # set cache
         player = Player.objects.filter(tId=tId).first()
-        cache.set(f'player_{tId}', player, 3600)
+        cache.set(f'player-by-id-{tId}', player, 3600)
         return player
 
     player, _ = Player.objects.get_or_create(tId=tId)
@@ -184,7 +184,25 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     player.save()
 
     # set cache
-    cache.set(f'player_{tId}', player, 3600)
+    cache.set(f'player-by-id-{tId}', player, 3600)
+
+    return player
+
+
+def getPlayerBykey(api_key):
+    from player.models import Key
+
+    # get cache
+    player = cache.get(f'player_by_key_{api_key}')
+    print(f'[getPlayerBykey] cached: {"yes" if player else "no"}')
+
+    if player is None:
+        # set cache
+        key = Key.objects.filter(value=api_key).first()
+        player = None if key is None else key.player
+
+        cache.set(f'player_by_key_{api_key}', player, 3600)
+        pass
 
     return player
 
@@ -193,15 +211,14 @@ def getFaction(tId):
     from faction.models import Faction
 
     # get cache
-    faction = cache.get(f'faction_{tId}')
-    print(f"[getFaction] cached {faction}")
+    faction = cache.get(f'faction_by_id_{tId}')
+    print(f'[getFaction] cached: {"yes" if faction else "no"}')
 
     if faction is None:
         # set cache
         faction = Faction.objects.filter(tId=tId).first()
-        cache.set(f'faction_{tId}', faction, 3600)
+        cache.set(f'faction_by_id_{tId}', faction, 3600)
 
-    print(faction)
     return faction
 
 

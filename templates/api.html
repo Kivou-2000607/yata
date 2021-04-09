@@ -195,6 +195,79 @@ sou: South Africa</code></pre>
 
   </div>
 
+  <h1 id="spies" class="module-doc">Spies&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+  <div class="module-doc">
+<h2 class="command-doc">Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+
+<ul>
+  <li><b>URL</b> <tt>/api/v1/spy/&lt;target_id&gt;?key=&lt;api_key&gt;</tt></li>
+  <li><b>Payload</b>
+    <pre><code classe="json">Object {
+"&lt;target_id&gt;": Object {
+    "strength": Number,  // -1 if unkown
+    "speed": Number,  // -1 if unkown
+    "defense": Number,  // -1 if unkown
+    "dexterity": Number,  // -1 if unkown
+    "total": Number,  // -1 if unkown
+    "strength_timestamp": Number,  // 0 if unkown
+    "speed_timestamp": Number,  // 0 if unkown
+    "defense_timestamp": Number,  // 0 if unkown
+    "dexterity_timestamp": Number,  // 0 if unkown
+    "total_timestamp": Number,  // 0 if unkown
+    "update": Number,  // max of all timestamps
+    "target_name": String,  // Player if unkown
+    "target_faction_name": String,  // 0 if unkown or not in a faction
+    "target_faction_id": Number,  // None if unkown or not in a faction
+},
+}</code></pre>
+  </li>
+  <li><b>Note</b> It looks for the spy report over all databases of your faction and takes the most recent data
+  <li><b>Cache</b> There is a one hour cache on these requests
+    <li><b>Example</b> with the target in the databases
+      <pre><code class="js">{
+    "1028023": {
+        "strength": -1,
+        "speed": 722850271,
+        "defense": 2000500039,
+        "dexterity": -1,
+        "total": 3592482327,
+        "strength_timestamp": 1617964190,
+        "speed_timestamp": 1617964190,
+        "defense_timestamp": 1617964190,
+        "dexterity_timestamp": 1617964190,
+        "total_timestamp": 1617964190,
+        "update": 1617964190,
+        "target_name": "DUDE",
+        "target_faction_name": "MMCP",
+        "target_faction_id": 8422,
+    }
+}</code></pre>
+    <li><b>Example</b> with the target not in the databases
+      <pre><code class="js">{
+    "1": { null }
+}</code></pre>
+</div>
+<h2 class="command-doc">Spies [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="command-doc">
+
+<ul>
+  <li><b>URL</b> <a href="{% url "api:getSpies" %}?key=&lt;api_key&gt;" target="_blank">{% url "api:getSpies" %}?key=&lt;api_key&gt;</a></li>
+  <li><b>Payload</b>
+    <pre><code classe="json">Object {
+  "&lt;target_id&gt;": Object { ... // same data as a single spy },
+  "&lt;target_id&gt;": Object { ... // same data as a single spy },
+  "&lt;target_id&gt;": Object { ... // same data as a single spy },
+  ...
+}</code></pre>
+  </li>
+  <li><b>Cache</b> There is a one hour cache on these requests
+  <li><b>Rate limit</b> There is an IP based rate limit of 1 call / hours.</li>
+</div>
+
+</div>
+
+
     <h1 id="errors" class="module-doc">Errors format&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
     <div class="module-doc">
     <p>

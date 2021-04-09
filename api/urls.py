@@ -5,6 +5,7 @@ from .views import loot
 from .views import stocks
 from .views import travel
 from .views import targets
+from .views import spies
 from .views import faction
 from .views import auth
 from .views import setup
@@ -27,6 +28,10 @@ urlpatterns = [
     # targets
     re_path(r'^v1/targets/export/$', targets.exportTargets, name="exportTargets"),
     re_path(r'^v1/targets/import/$', targets.importTargets, name="importTargets"),
+
+    # spies
+    re_path(r'^v1/spies/$', spies.getSpies, name="getSpies"),
+    re_path(r'^v1/spy/(?P<target_id>[0-9]*)/$', spies.getSpy, name="getSpy"),
 
     # faction
     re_path(r'^v1/faction/crimes/export/$', faction.getCrimes, name="getCrimes"),

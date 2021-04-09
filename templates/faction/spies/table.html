@@ -74,7 +74,7 @@ This file is part of yata.
           </tr>
         </thead>
         <tbody>
-          {% for target_id, spy in database.get_spies.items %}
+          {% for target_id, spy in database.getSpies.items %}
           <tr class="spy-list-refresh" data-tid="{{target_id}}" data-val="{{database.pk}}">
             {% include "faction/spies/table-line.html" %}
           </tr>
