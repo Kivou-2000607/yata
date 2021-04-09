@@ -40,7 +40,7 @@ def getSpy(request, target_id):
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
-            return JsonResponse({"error": {"code": 1, "error": f"Invalid API key"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": f"Invalid API key"}}, status=400)
 
         # get user
         player = getPlayerBykey(key)
@@ -49,10 +49,10 @@ def getSpy(request, target_id):
 
         faction = getFaction(player.factionId)
         if faction is None:
-            return JsonResponse({"error": {"code": 3, "error": "Faction not found"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": "Faction not found"}}, status=400)
         spies = faction.getSpies()
 
-        return JsonResponse({str(target_id): spies.get(int(target_id))}, status=200)
+        return JsonResponse({"spies": {str(target_id): spies.get(int(target_id))}}, status=200)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
@@ -65,7 +65,7 @@ def getSpies(request):
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
-            return JsonResponse({"error": {"code": 1, "error": f"Invalid API key"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": f"Invalid API key"}}, status=400)
 
         # get user
         player = getPlayerBykey(key)
@@ -74,10 +74,10 @@ def getSpies(request):
 
         faction = getFaction(player.factionId)
         if faction is None:
-            return JsonResponse({"error": {"code": 3, "error": "Faction not found"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": "Faction not found"}}, status=400)
         spies = faction.getSpies()
 
-        return JsonResponse(spies, status=200)
+        return JsonResponse({"spies": spies}, status=200)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)

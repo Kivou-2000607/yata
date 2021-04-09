@@ -1293,10 +1293,10 @@ class Faction(models.Model):
 
         all_spies = cache.get(f"spy-faction-{self.tId}")
         print(f'[getSpies] faction cache: {"no" if all_spies is None else "yes"}')
-        if all_spies is None:
+        if all_spies is None or settings.DEBUG:
             all_spies = {}
             for database in self.spydatabase_set.all():
-                for target_id, spy in database.getSpies().items():
+                for target_id, spy in database.getSpies(cc=True).items():
                     all_spies[target_id] = optimize_spies(spy, all_spies[target_id]) if target_id in all_spies else spy
             cache.set(f"spy-faction-{self.tId}", all_spies, 3600)
 
@@ -4117,7 +4117,7 @@ class SpyDatabase(models.Model):
 
     def getSpies(self, cc=False):
         all_spies = cache.get(f"spy-db-{self.secret}")
-        if all_spies is None or cc:
+        if all_spies is None or cc or settings.DEBUG:
             print(f'[getSpies] database cached: no')
             all_spies = {}
             for spy in self.spy_set.all():

@@ -3247,7 +3247,7 @@ def spies(request, secret=False, export=False):
                     rows = [row]
 
                     # rows
-                    for target_id, spy in db.get_spies().items():
+                    for target_id, spy in db.getSpies().items():
                         row = [str(target_id)]
                         for k in spies_keys:
                             row.append(str(spy[k]))
@@ -3262,7 +3262,7 @@ def spies(request, secret=False, export=False):
                 else:
                     db = SpyDatabase.objects.filter(secret=secret).first()
                     if db is not None and faction.tId == db.master_id:
-                        payload = {"spies": db.get_spies()}
+                        payload = {"spies": db.getSpies()}
                         response = JsonResponse(payload)
                         response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.json'
                         return response
