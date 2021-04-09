@@ -38,6 +38,7 @@ import csv
 import math
 import sys
 import magic
+import textwrap
 
 from yata.handy import *
 from faction.models import *
@@ -3293,11 +3294,27 @@ def spies(request, secret=False, export=False):
                         db.factions.remove(fa)
                 return render(request, page)
 
+            elif request.POST.get("action") == "change-name":  # change database name
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None:
+                    db.change_name()
+                    db.save()
+                context = {'player': player, 'faction': faction, 'database': db}
+                return render(request, 'faction/spies/db-line.html', context)
+
+            elif request.POST.get("action") == "toggle-api":  # toggle api usage
+                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if db is not None:
+                    db.use_api = not db.use_api
+                    db.save()
+                context = {'player': player, 'faction': faction, 'database': db}
+                return render(request, 'faction/spies/db-line.html', context)
+
             elif request.POST.get("action") == "change-secret":  # kick from database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
                 if db is not None:
                     db.change_secret()
-                db.save()
+                    db.save()
                 context = {'player': player, 'faction': faction, 'database': db}
                 return render(request, 'faction/spies/db-line.html', context)
 
@@ -3327,14 +3344,6 @@ def spies(request, secret=False, export=False):
 
                 context = {"target_id": request.POST.get("target_id"), "spy": spy}
                 return render(request, 'faction/spies/table-line.html', context)
-
-            elif request.POST.get("action") == "change-name":  # change database name
-                db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
-                if db is not None:
-                    db.change_name()
-                db.save()
-                context = {'player': player, 'faction': faction, 'database': db}
-                return render(request, 'faction/spies/db-line.html', context)
 
             elif request.POST.get("action") == "join-database":  # joining database
                 db = SpyDatabase.objects.filter(secret=request.POST.get("secret")).first()
@@ -3370,6 +3379,10 @@ def spies(request, secret=False, export=False):
             if 'message' in request.session:
                 context[request.session['message'][0]] = request.session['message'][1]
                 del request.session['message']
+            if 'db-pk' in request.session:
+                print("db in sessions")
+                context['database'] = databases.filter(pk=request.session['db-pk']).first()
+                del request.session['db-pk']
             return render(request, page, context)
 
         else:
@@ -3399,83 +3412,144 @@ def spiesImport(request):
                 request.session['message'] = ('errorMessageSub', f'Spy database id {request.POST.get("db-pk")} not found.')
                 return redirect('faction:spies')
 
-            # get file
-            if not len(request.FILES) or "file" not in request.FILES:
-                request.session['message'] = ('errorMessageSub', f'No files found.')
-                return redirect('faction:spies')
-
-            file = request.FILES["file"]
-
-            # get meme type
-            content_type = magic.from_buffer(file.read(2048), mime=True)
-            valid_content_type = ['text/csv', 'application/csv', 'application/json']
-            if content_type not in valid_content_type:
-                request.session['message'] = ('errorMessageSub', f'Unvalid content type {content_type}. Valid content type are: {", ".join(valid_content_type)}.')
-                return redirect('faction:spies')
-
-            if file.size > 5000000:
-                request.session['message'] = ('errorMessageSub', f'File size too large ({file.size:,d} B). Should be lower than 5 MiB.')
-                return redirect('faction:spies')
-
+            # if copy paste
             new_spies = {}
-            if content_type in ['text/csv', 'application/csv']:
+            if request.POST.get("action") == "paste-spy":  # paste spy
+                spy = {
+                    "strength": -1,
+                    "speed": -1,
+                    "defense": -1,
+                    "dexterity": -1,
+                    "total": -1,
+                    "strength_timestamp": 0,
+                    "speed_timestamp": 0,
+                    "defense_timestamp": 0,
+                    "dexterity_timestamp": 0,
+                    "total_timestamp": 0,
+                    "update": 0,
+                    "target_name": "Player",
+                    "target_faction_name": "Faction",
+                    "target_faction_id": 0
+                }
+
                 try:
+                    ts = int(time.mktime(datetime.datetime.strptime(request.POST.get("date", "70/1/1"), "%y/%m/%d").timetuple()))
+                    line_parsed = 0
+                    for row_i, line in enumerate(request.POST.get("spy", "").split("\n")):
+                        splt = line.rstrip().replace(" ", "").split(":")
 
-                    header = True
-                    for row in file:
-                        # skip header
-                        if header:
-                            header = False
-                            continue
+                        if len(splt) == 2:
+                            key = splt[0].lower()
+                            value = splt[1]
+                            if key == "name":  # get names and target id
+                                target_id = value.split("[")[1].replace("]", "")
+                                spy["target_name"] = value.split("[")[0]
+                                line_parsed += 1
+                            elif key in ["strength", "speed", "dexterity", "defense", "total"]:
+                                integer = value.replace(",", "").strip()
+                                spy[key] = int(integer) if integer.isdigit() else -1
+                                spy[f'{key}_timestamp'] = ts
+                                line_parsed += 1
 
-
-                        splt1 = [_.strip('"') for _ in row.rstrip().decode().split("\",\"")]  # try torn stats style
-                        splt2 = row.decode().split(",")  # try yata style
-                        if len(splt1) == 11:
-                            target_id = int(splt1[1].split("[")[1].replace("]", ""))
-                            ts = int(time.mktime(datetime.datetime.strptime(splt1[10], "%d/%m/%y").timetuple()))
-                            new_spies[target_id] = {}
-                            for j, k in enumerate(["strength", "defense", "speed", "dexterity", "total"]):
-                                stat = int(splt1[4 + j].replace(",", ""))
-                                stat = stat if stat else -1
-                                timestamp = ts if stat + 1 else 0
-                                new_spies[target_id][k] = stat
-                                new_spies[target_id][f'{k}_timestamp'] = timestamp
-
-                            new_spies[target_id]["target_faction_name"] = splt1[3].replace("None", "Faction") if splt1[3] else "Faction"
-                            new_spies[target_id]["target_faction_id"] = 0
-                            new_spies[target_id]["target_name"] = splt1[1].split()[0]
-
-
-                        elif len(splt2) == 14:
-                            new_spies[int(splt2[0])] = {
-                                "target_id": int(splt2[0]),
-                                "target_name": splt2[1],
-                                "target_faction_name": splt2[2],
-                                "target_faction_id": int(splt2[3]),
-                                "strength": int(splt2[4]),
-                                "speed": int(splt2[5]),
-                                "defense": int(splt2[6]),
-                                "dexterity": int(splt2[7]),
-                                "total": int(splt2[8]),
-                                "strength_timestamp": int(splt2[9]),
-                                "speed_timestamp": int(splt2[10]),
-                                "defense_timestamp": int(splt2[11]),
-                                "dexterity_timestamp": int(splt2[12]),
-                                "total_timestamp": int(splt2[13]),
-                            }
-                        else:
-                            print(f"spies csv reader invalide columns {len(splt1)} {len(splt2)}")
-                            continue
-
-
+                    if line_parsed >1:
+                        new_spies = {target_id: spy}
+                        message_content = f'Spy imported: {line_parsed} lines parsed'
+                    else:
+                        message_content = f'Spy not imported: {line_parsed} line{"" if line_parsed else "s"} parsed'
                 except BaseException as e:
-                    request.session['message'] = ('errorMessageSub', f'Error while importing csv file: {e}. Make sure it follows Torn Stats ')
+                    request.session['message'] = ('errorMessageSub', f'Error while parsing text line {row_i + 1}: {e}')
                     return redirect('faction:spies')
 
-            db.updateSpies(payload=new_spies)
+            else: # get file
 
-            request.session['message'] = ('validMessageSub', f'{len(new_spies)} spies imported')
+                # init
+                row_failed = []
+                target_id = 0
+
+                if not len(request.FILES) or "file" not in request.FILES:
+                    request.session['message'] = ('errorMessageSub', f'No files found.')
+                    return redirect('faction:spies')
+
+                file = request.FILES["file"]
+
+                # get meme type
+                content_type = magic.from_buffer(file.read(2048), mime=True)
+                valid_content_type = ['text/csv', 'text/plain', 'application/csv', 'application/json']
+                if content_type not in valid_content_type:
+                    request.session['message'] = ('errorMessageSub', f'Unvalid content type {content_type}. Valid content type are: {", ".join(valid_content_type)}.')
+                    return redirect('faction:spies')
+
+                if file.size > 5000000:
+                    request.session['message'] = ('errorMessageSub', f'File size too large ({file.size:,d} B). Should be lower than 5 MiB.')
+                    return redirect('faction:spies')
+
+                if content_type in ['text/csv', 'text/plain', 'application/csv']:
+                    try:
+
+                        header = True
+                        for row_i, row in enumerate(file):
+                            # skip header
+                            if header:
+                                header = False
+                                continue
+
+                            try:
+                                splt1 = [_.strip('"').replace(" ", "") for _ in row.rstrip().decode().split("\",\"")]  # try torn stats style
+                                splt2 = row.decode().split(",")  # try yata style
+                                if len(splt1) == 11:
+                                    target_id = int(splt1[1].split("[")[1].replace("]", ""))
+                                    ts = int(time.mktime(datetime.datetime.strptime(splt1[10], "%d/%m/%y").timetuple()))
+                                    new_spies[target_id] = {}
+                                    for j, k in enumerate(["strength", "defense", "speed", "dexterity", "total"]):
+                                        stat = int(splt1[4 + j].replace(",", ""))
+                                        stat = stat if stat else -1
+                                        timestamp = ts if stat + 1 else 0
+                                        new_spies[target_id][k] = stat
+                                        new_spies[target_id][f'{k}_timestamp'] = timestamp
+
+                                    new_spies[target_id]["target_faction_name"] = splt1[3].replace("None", "Faction") if splt1[3] else "Faction"
+                                    new_spies[target_id]["target_faction_id"] = 0
+                                    new_spies[target_id]["target_name"] = splt1[1].split("[")[0]
+
+                                elif len(splt2) == 14:
+                                    target_id = int(splt2[0])
+                                    new_spies[target_id] = {
+                                        "target_name": splt2[1],
+                                        "target_faction_name": splt2[2],
+                                        "target_faction_id": int(splt2[3]),
+                                        "strength": int(splt2[4]),
+                                        "speed": int(splt2[5]),
+                                        "defense": int(splt2[6]),
+                                        "dexterity": int(splt2[7]),
+                                        "total": int(splt2[8]),
+                                        "strength_timestamp": int(splt2[9]),
+                                        "speed_timestamp": int(splt2[10]),
+                                        "defense_timestamp": int(splt2[11]),
+                                        "dexterity_timestamp": int(splt2[12]),
+                                        "total_timestamp": int(splt2[13]),
+                                    }
+                                else:
+                                    row_failed.append(f'row #{row_i + 1}')
+                                    continue
+
+                            except BaseException as e:
+                                row_failed.append(f'row #{row_i + 1}')
+                                if target_id in new_spies:
+                                    del new_spies[target_id]
+
+                    except BaseException as e:
+                        request.session['message'] = ('errorMessageSub', f'Error while importing csv file: {e}.')
+                        return redirect('faction:spies')
+
+                message_content = f'{len(new_spies)} {"spy" if len(new_spies) == 1 else "spies"} read'
+                if len(row_failed):
+                    fails_string = textwrap.shorten(", ".join(row_failed), width=64, placeholder='...')
+                    message_content += f' - <span class="warning" style="cursor: help;" title="{fails_string}">{len(row_failed)} rows failed</span>'
+
+
+            db.updateSpies(payload=new_spies)
+            request.session['message'] = ('validMessageSub' if len(new_spies) else 'errorMessageSub', message_content)
+            request.session['db-pk'] = db.pk
             return redirect('faction:spies')
 
         else:

@@ -533,7 +533,8 @@ img.donations-button-inline {
   border-radius: 14px;
 }
 
-.fa-icon-inline { margin-right: 8px; }
+.fa-icon-inline { width: 25px; text-align: left;}
+.fa-icon-button { width: 25px; text-align: center;}
 i.fa-icon-dropdown { margin-left: 15px; }
 
 /* Style The Dropdown Button */

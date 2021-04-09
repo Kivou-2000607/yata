@@ -22,6 +22,10 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+<div id="spy-paste">
+  {% include "faction/spies/paste.html" %}
+</div>
+
 <h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Spy databases</h2>
 <div class="module">
   {% if databases|length %}
@@ -34,6 +38,7 @@ This file is part of yata.
             <th>Factions</th>
             <th>Spies</th>
             <th>Master</th>
+            <th>Use API</th>
             <th>Secret</th>
             <th>Buttons</th>
           </tr>

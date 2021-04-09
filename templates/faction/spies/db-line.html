@@ -27,5 +27,6 @@ This file is part of yata.
 <td class="c">{{database.factions.all|length}}</td>
 <td class="c">{{database.n_spies}}</td>
 <td class="c">{% if database.master_id == faction.tId %}<span class="valid">Yes</span>{% else %}<span class="error">No</span>{% endif %}</td>
+<td class="c">{% if database.use_api %}<span class="valid">Yes</span>{% else %}<span class="error">No</span>{% endif %}</td>
 <td class="d" title="Give this secret to your allies so that they can join this database... But keep it secret right?" style="cursor: help;"><tt>{{database.secret}}</tt></td>
 <td class="e">{% include "faction/spies/db-buttons.html" %}</td>

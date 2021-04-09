@@ -4011,6 +4011,7 @@ class SpyDatabase(models.Model):
     secret = models.CharField(default="x", max_length=16)
     n_spies = models.IntegerField(default=0)
     update = models.IntegerField(default=0)
+    use_api = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name} [{self.pk}]'
@@ -4035,7 +4036,8 @@ class SpyDatabase(models.Model):
         all_spies = self.getSpies(cc=True)
 
         new_spies = {}
-        if payload is None:
+        if payload is None and self.use_api:
+
             # get all factions
             for faction in self.factions.all():
                 print(f'{self} {faction}')
@@ -4082,7 +4084,7 @@ class SpyDatabase(models.Model):
 
             print(f'{self} Spies from API: {len(new_spies)}')
 
-        else:
+        elif payload is not None:
             new_spies = {}
             for target_id, spy in payload.items():
                 new_spies[target_id] = optimize_spies(spy, spy_2=new_spies.get(target_id, False))

@@ -21,24 +21,46 @@ This file is part of yata.
 {% load mathfilters %}
 {% load static %}
 {% load app_filters %}
-<form class="inlinefrom" method="post" action="{% url 'faction:spiesImport' %}" enctype="multipart/form-data" style="width: 100%">
+<form class="inlinefrom" method="post" action="{% url 'faction:spiesImport' %}" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <a class="spy-database-view" data-val="{{database.pk}}" href=""><i class="fas fa-eye fa-icon-inline" title="View database"></i></a>
-    <a href="{% url 'faction:spiesExport' database.secret 'csv' %}" target="_blank"><i class="fas fa-file-csv fa-icon-inline" title="Export database in CSV"></i></a>
-    <a href="{% url 'faction:spiesExport' database.secret 'json' %}" target="_blank"><i class="fas fa-file-code fa-icon-inline" title="Export database in JSON"></i></a>
-    <input id="file-{{database.pk}}" type="file" data-val="{{database.pk}}" class="spy-database-import" name="file"><label for="file-{{database.pk}}" class="spy-database-import" title="Import spies into the database&#13;- csv files with Torn Stats format&#13;- json file with YATA format"></label>
-    <input type="hidden" name="db-pk" value="{{database.pk}}">
-    <input id="spy-database-submit-{{database.pk}}" class="spy-database-submit" type="submit" value="Import!" style="display: none; text-align: center;">
+    <a class="spy-database-view" data-val="{{database.pk}}" href=""><i class="fas fa-eye fa-icon-button" title="View database"></i></a>
+    <a class="spy-database-update" data-val="{{database.pk}}" href=""><i class="fas fa-sync-alt fa-icon-button" title="Update database"></i></a>
+    {% if database.master_id == faction.tId %}
+      <a class="spy-database-api" data-val="{{database.pk}}" href=""><i class="fas fa-toggle-{%if database.use_api%}on{%else%}off{%endif%} fa-icon-button" title="Use Torn API"></i></a>
+    {% else %}
+      <i class="fas fa-toggle-{%if database.use_api%}on{%else%}off{%endif%} fa-icon-button neutral" title="Use Torn API"></i>
+    {% endif %}
+
+    <span class="fa-icon-button" style="margin: 0 5px;">-</span>
+
+    <a href="{% url 'faction:spiesExport' database.secret 'csv' %}" target="_blank"><i class="fas fa-file-csv fa-icon-button" title="Export database in CSV"></i></a>
+    <a href="{% url 'faction:spiesExport' database.secret 'json' %}" target="_blank"><i class="fas fa-file-code fa-icon-button" title="Export database in JSON"></i></a>
+
     <div style="margin:5px"></div>
 
     {% if database.master_id == faction.tId %}
-      <a class="spy-database-update" data-val="{{database.pk}}" href=""><i class="fas fa-sync-alt fa-icon-inline" title="Update database"></i></a>
-      <a class="spy-database-secret" data-val="{{database.pk}}" href=""><i class="fas fa-key fa-icon-inline" title="Change secret"></i></a>
-      <a class="spy-database-name" data-val="{{database.pk}}" href=""><i class="fas fa-signature fa-icon-inline" title="Change name"></i></a>
-      <a class="spy-database-delete" data-val="{{database.pk}}" href=""><i class="fas fa-trash-alt fa-icon-inline error" title="Delete database"></i></a>
+
+      <a class="spy-database-secret" data-val="{{database.pk}}" href=""><i class="fas fa-key fa-icon-button" title="Change secret"></i></a>
+      <a class="spy-database-name" data-val="{{database.pk}}" href=""><i class="fas fa-signature fa-icon-button" title="Change name"></i></a>
+      <a class="spy-database-delete" data-val="{{database.pk}}" href=""><i class="fas fa-trash-alt fa-icon-button error" title="Delete database"></i></a>
+
     {% else %}
-      <a class="spy-database-leave" data-val="{{database.pk}}" href=""><i class="fas fa-user-slash fa-icon-inline" title="Leave database"></i></a>
+
+      <i class="fas fa-key fa-icon-button neutral" title="Change secret"></i>
+      <i class="fas fa-signature fa-icon-button neutral" title="Change name"></i>
+      <a class="spy-database-leave error" data-val="{{database.pk}}" href=""><i class="fas fa-user-slash fa-icon-button" title="Leave database"></i></a>
+
     {% endif %}
-    {#  #}
+
+    <span class="fa-icon-button" style="margin: 0 5px;">-</span>
+
+    <a class="spy-list-show-paste" data-dbn="{{database.name}}" data-val="{{database.pk}}" href=""><i class="fas fa-clipboard fa-icon-button" title="Paste spies to the database"></i></a>
+    <label for="file-{{database.pk}}" class="spy-database-import fa-icon-button" style="display: inline-block;" title="Import spies into the database&#13;- csv files with Torn Stats or YATA format&#13;- json file with YATA format"></label>
+    <br>
+    <input id="file-{{database.pk}}" type="file" data-val="{{database.pk}}" class="spy-database-import" style="margin-top: 5px;" name="file">
+    <input type="hidden" name="db-pk" value="{{database.pk}}">
+    <input id="spy-database-submit-{{database.pk}}" class="spy-database-submit" type="submit" value="Import!" style="display: none; text-align: center;">
+
+
 </form>
