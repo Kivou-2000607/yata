@@ -3494,7 +3494,9 @@ def spiesImport(request):
                                 continue
 
                             try:
-                                splt1 = [_.strip('"').replace(" ", "") for _ in row.rstrip().decode().split("\",\"")]  # try torn stats style
+                                splt1 = [_.strip("\"").strip("\'").replace(" ", "") for _ in row.rstrip().decode().split("\",\"")]  # try torn stats style
+                                if len(splt1) == 1:
+                                    splt1 = [_.strip("\"").strip("\'").replace(" ", "") for _ in row.rstrip().decode().split(",")]  # try torn stats style
                                 splt2 = row.decode().split(",")  # try yata style
                                 if len(splt1) == 11:
                                     target_id = int(splt1[1].split("[")[1].replace("]", ""))

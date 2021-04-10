@@ -3957,7 +3957,7 @@ class Crimes(models.Model):
     success = models.BooleanField(default=0)
 
     # custom
-    participants = models.CharField(default="[]", max_length=256)
+    participants = models.CharField(default="[]", max_length=512)
     team_id = models.IntegerField(default=0)
     ready = models.BooleanField(default=0)
 
