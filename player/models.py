@@ -18,10 +18,11 @@ This file is part of yata.
 """
 
 from django.db import models
-from django.utils import timezone
+from django.core.cache import cache
 
 import json
 import numpy
+import time
 
 from yata.handy import apiCall
 from yata.handy import tsnow
@@ -110,6 +111,12 @@ class Player(models.Model):
     # botPerm = models.BooleanField(default=False)
     activateNotifications = models.BooleanField(default=False)
     notifications = models.TextField(default="{}")
+
+    def save(self, *args, **kwargs):
+        # add to cache
+        cache.set(f'player-by-id-{self.tId}', self, 3600)
+        super(Player, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
@@ -373,7 +380,7 @@ class PlayerData(models.Model):
         self.nInval = len(players.filter(validKey=False))
         self.nPrune = len(players.filter(validKey=False).exclude(active=True))
 
-        t = int(timezone.now().timestamp())
+        t = int(time.time())
         self.nHour = len(players.filter(lastActionTS__gte=(t - (3600))))
         self.nDay = len(players.filter(lastActionTS__gte=(t - (24 * 3600))))
         self.nMonth = len(players.filter(lastActionTS__gte=(t - (31 * 24 * 3600))))

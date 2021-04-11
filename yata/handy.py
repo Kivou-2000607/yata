@@ -162,6 +162,9 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
     # get cache
     player = cache.get(f'player-by-id-{tId}')
     print(f'[getPlayer] cached: {"yes" if player else "no"}')
+    if player is None:
+        player = Player.objects.filter(tId=tId).first()
+        cache.set(f'player-by-id-{tId}', player, 3600)
 
     # if player in cache and no update force return cache directly
     if player is not None and not forceUpdate:
@@ -169,9 +172,6 @@ def getPlayer(tId, skipUpdate=False, forceUpdate=False):
 
     # skip update
     if skipUpdate:
-        # set cache
-        player = Player.objects.filter(tId=tId).first()
-        cache.set(f'player-by-id-{tId}', player, 3600)
         return player
 
     player, _ = Player.objects.get_or_create(tId=tId)
