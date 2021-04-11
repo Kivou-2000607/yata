@@ -1244,8 +1244,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("medicalitemsused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "Using 1h cooldown blood bags"
+                    # vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
+                    # vp["comment"] = "Using 1h cooldown blood bags"
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [1]:
@@ -1460,8 +1460,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("medicalitemsused", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "Using 1h cooldown blood bags"
+                    # vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
+                    # vp["comment"] = "Using 1h cooldown blood bags"
                     awards[type]["m_" + k] = vp
 
     elif category == "travel":
