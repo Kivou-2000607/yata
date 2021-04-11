@@ -473,7 +473,7 @@ d = {
     1007: 659787334,  # Stonks
     544: 177427194,  # City Slicker
     545: 0,  # Diamond Hands
-    548: 0,  # Tendies
+    548: 727291710,  # Tendies
 
     # 15
     367: 474813486,  # Clotted
