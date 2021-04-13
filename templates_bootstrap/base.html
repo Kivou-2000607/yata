@@ -17,7 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
+<!doctype html>
 {% load static %}
 {% load i18n %}
 {% load humanize %}
@@ -30,6 +30,7 @@ This file is part of yata.
     <!-- meta  -->
     <meta charset="UTF-8">
     <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- load fontawesome -->
     <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
@@ -43,7 +44,6 @@ This file is part of yata.
     <link rel="stylesheet" type="text/css" href='{% static "thirdparty/jquery-ui-1.12.1/jquery-ui.min.css" %}'>
 
     <!-- bootstrap -->
-    <script src='{% static "thirdparty/bootstrap-5.0.0-beta3-dist/js/bootstrap.bundle.js" %}'></script>
     <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap-5.0.0-beta3-dist/css/bootstrap.min.css" %}'>
 
     <!-- tooltips  -->
@@ -80,5 +80,8 @@ This file is part of yata.
   {% include "yata/section-message.html" %}
 
   {% block content %}{% endblock %}
+
+  <script src='{% static "thirdparty/bootstrap-5.0.0-beta3-dist/js/bootstrap.bundle.js" %}'></script>
+
 </body>
 </html>
