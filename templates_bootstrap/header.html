@@ -142,7 +142,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
           </ul>
 
             {# login #}
-            <form class="d-flex">
+            <form class="d-flex">{% csrf_token %}
               <input id='yata-login-key' placeholder="API key" type="text" class="form-control me-2" required>
               <button id='yata-login-submit' type="submit" class="btn btn-outline-primary">
                   Login
