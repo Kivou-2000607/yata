@@ -1,0 +1,72 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+{% load app_filters %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- Current language: {{ LANGUAGE_CODE }} -->
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+
+    <!-- load fontawesome -->
+    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
+    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
+
+    <!-- favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+    <!-- meta  -->
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <meta charset="UTF-8">
+    {% block meta %}{% endblock %}
+
+    <title>{% block title%}{% endblock%}</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <div id="yata-login">
+                <div class="module citymap">
+
+                  <table class="http-status">
+                  <tr>
+                    <td class="a">
+                      <a class="yata-logo-full" href="{% url 'index' %}" title="Home" ><img src="/media/svg/yata.full.svg" alt="YATA" width="100%"/></a>
+                    </td>
+                    <td class="b">
+                        <h2 class="error">{% block header%}{% endblock%}</h2>
+                        {% block text %}{% endblock %}
+                    </td>
+                  </tr>
+                  </table>
+                </div>
+            </div>
+        </div> <!--end of content-->
+    </div> <!--end of container-->
+</body>
+</html>

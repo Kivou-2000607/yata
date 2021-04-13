@@ -110,16 +110,17 @@ $(document).on('click', 'h2.title.toggle-display', function(e){
     var h = $(this);
     // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
     if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
-        var i = h.find("i.fa-caret-right");
+        // var i = h.find("i.fa-caret-right");
+        var i = h.find("div.toggle-rotate").find("svg");
         // var div = h.closest(".catch-me").children("div");
         var div = h.next("div");
         if(div.css("display") == "none") {
-            h.removeClass("rounded");
+            h.removeClass("rounded").removeClass("mb-3");
             i.addClass("fa-rotate-90");
         }
         div.slideToggle("fast", function(){
             if(div.css("display") == "none") {
-                h.addClass("rounded");
+                h.addClass("rounded").addClass("mb-3");
                 i.removeClass("fa-rotate-90");
             }
         });

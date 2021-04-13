@@ -85,10 +85,10 @@ def login(request):
                 if 'apiError' in user:
                     print('[view.yata.login] API error: {}'.format(user))
                     context = user
-                    return render(request, 'yata/login.html', context)
+                    return render(request, 'header.html', context)
             except BaseException as e:
                 context = {'apiError': e}
-                return render(request, 'yata/login.html', context)
+                return render(request, 'header.html', context)
 
             # create/update player in the database
             player = Player.objects.filter(tId=user.get('player_id')).first()
@@ -111,18 +111,10 @@ def login(request):
 
             print('[view.yata.login] create session')
             request.session['player'] = {'tId': player.tId, 'name': str(player)}
-
-            check = json.loads(p.get('check'))
-            if check:
-                print('[view.yata.login] set session to expirate in 1 month')
-                # request.session.set_expiry(31536000)  # 1 year
-                request.session.set_expiry(2592000)  # 1 month
-            else:
-                print('[view.yata.login] set session to expirate when browser closes')
-                request.session.set_expiry(0)  # logout when close browser
+            request.session.set_expiry(7776000)  # 3 months
 
             context = {"player": player, "new_player": new_player}
-            return render(request, 'yata/login.html', context)
+            return render(request, 'header.html', context)
 
         # if not post
         else:
@@ -131,7 +123,7 @@ def login(request):
 
     except Exception as e:
         context = {'apiError': e}
-        return render(request, 'yata/login.html', context)
+        return render(request, 'header.html', context)
 
 
 def logout(request):

@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'mathfilters',
     'django_json_widget',
     'redisboard',
-    'rest_framework'
+    'rest_framework',
+    'fontawesome-free'
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,7 @@ if DEBUG:
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [os.path.join(BASE_DIR, 'templates')],
+            'DIRS': [os.path.join(BASE_DIR, 'templates_bootstrap')],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -104,7 +105,7 @@ else:
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [os.path.join(BASE_DIR, 'templates')],
+            'DIRS': [os.path.join(BASE_DIR, 'templates_bootstrap')],
             'OPTIONS': {
                 'context_processors': [
                     'django.template.context_processors.debug',

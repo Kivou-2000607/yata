@@ -1,0 +1,40 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if apiError %}
+    <div class="module error">
+        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiError|safe}}</span>
+    </div>
+{% endif %}
+
+{% if errorMessage %}
+    <div class="module error">
+        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{errorMessage|safe}}</span>
+    </div>
+{% endif %}
+
+{% if validMessage %}
+    <div class="module valid">
+        <span><i class="fas fa-check fa-icon-inline"></i>{{validMessage|safe}}</span>
+    </div>
+{% endif %}
+
+{% if inlineError %}
+    <span class="error" title="{{inlineError}}"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{inlineError|safe}}</span>
+{% endif %}

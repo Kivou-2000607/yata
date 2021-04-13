@@ -1,0 +1,163 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with yata. If not, see <https: //www.gnu.org/licenses />.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<script>
+
+  // WARNING: IT IS NOT TOLERATED TO MODIFY THIS JAVASCRIPT
+  // as it will remove the warning when users enter their API key on non official instances of YATA.
+  // Changing it will be seen as making your instance of YATA look official and thus raise suspicions.
+  $(document).on('input', '#yata-login-key', function(e){
+      if (window.location.host != "yata.yt") {
+        alert("This is not the official YATA website which is hosted on https://yata.yt.\nMake sure you know who's hosting it and that they have no malicious intents.")
+      }
+  });
+
+</script>
+
+<header class="px-5">
+  <div class="module mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" title="Home">
+          {% include "svg/yata.full.svg" %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="nav">
+
+            {# home #}
+            <li class="nav-item">
+              <div class="nav-link">
+                  {% if player.tId > 0 %}
+                    <a class="valid" href="{% url 'player:index' %}" title="Faction"><b><i class="fas fa-home"></i>&nbsp;Home</b></a>
+                    <span>{{player.name}}</span>
+                  {% else %}
+                    <span class="neutral" title="Home"><b><i class="fas fa-home"></i>&nbsp;Home</b></span>
+                    <span>closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# bazaar #}
+            <li class="nav-item">
+              <div class="nav-link">
+                  <a href="{% url 'bazaar:index' %}" title="Bazaar"><b><i class="fas fa-store"></i>&nbsp;Bazaar</b></a>
+                  <span>
+                    {% if player.tId > 0 %}{% if player.bazaarInfo == "N/A" %}&empty;{% else %}{{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}{% endif %}
+                    {% else %}limited{% endif %}
+                  </span>
+              </div>
+            </li>
+
+            {# company #}
+            <li class="nav-item">
+              <div class="nav-link">
+                  <a href="{% url 'company:index' %}" title="Company"><b><i class="fas fa-building"></i>&nbsp;Company</b></a>
+                  <span>
+                    {% if player.companyId %}{{player.companyNa|safe}}{% if player.companyDi%} [Dir]{% endif %}
+                    {% else %}limited{% endif %}
+                  </span>
+              </div>
+            </li>
+
+            {# faction #}
+            <li class="nav-item">
+              <div class="nav-link">
+                  {% if player.tId > 0 %}
+                    <a href="{% url 'faction:index' %}" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a>
+                    <span>{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% endif %}</span>
+                  {% else %}
+                    <span class="neutral" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></span>
+                    <span>closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# targets #}
+            <li class="nav-item">
+              <div class="nav-link">
+                  {% if player.tId > 0 %}
+                    <a href="{% url 'target:index' %}" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></a>
+                    <span>{% if player.targetInfo == "N/A" %}&empty;{% else %}{{player.targetInfo}} target{{player.targetInfo|pluralize}}{% endif %}</span>
+                  {% else %}
+                    <span class="neutral" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></span>
+                    <span>closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# awards #}
+            <li class="nav-item">
+              <div class="nav-link">
+                <a href="{% url 'awards:index' %}" title="Awards"><b><i class="fas fa-medal"></i>&nbsp;Awards</b></a>
+                <span>
+                  {% if player.tId > 0 %}{% if player.awardsInfo == "N/A" %}&empty;{% else %}{{player.awardsInfo|floatformat:2}}%{% endif %}
+                  {% else %}limited{% endif %}
+                </span>
+              </div>
+            </li>
+
+            {# loot #}
+            <li class="nav-item">
+              <div class="nav-link">
+                <a href="{% url 'loot:index' %}" title="Loot"><b><i class="fas fa-user-secret"></i>&nbsp;Loot</b></a>
+                <span>
+                  {% if nextLoot.1 %}<span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}" data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                  {% else %}<span>{{nextLoot.0}}</span>{% endif %}
+                </span>
+              </div>
+            </li>
+
+            {% if player.tId %}
+              {# logout #}
+              <li class="nav-item ">
+                <div class="nav-link error">
+                  <a id="yata-logout-submit" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></a>
+                </div>
+              </li>
+            {% else  %}
+
+          </ul>
+
+            {# login #}
+            <form class="d-flex">
+              <input id='yata-login-key' placeholder="API key" type="text" class="form-control me-2" required>
+              <button id='yata-login-submit' type="submit" class="btn btn-outline-primary">
+                  Login
+              </button>
+            </form>
+          {% endif %}
+
+        </div>
+      </div>
+    </nav>
+
+    {% if apiError %}
+      <div class="d-flex justify-content-center error">
+        <span class="mb-2"><i class="fas fa-skull-crossbones"></i>&nbsp;{{ apiError }}</span>
+      </div>
+    {% endif %}
+  </div>
+</header>

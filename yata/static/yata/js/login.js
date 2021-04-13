@@ -1,12 +1,14 @@
 $(document).on('click', '#yata-login-submit', function(e){
     e.preventDefault();
-    var reload = $("#yata-login");
-    $( "#yata-login" ).load( "/login", {
+    $("#header").load( "/login", {
         key: $("#yata-login-key").val(),
-        check: $("#yata-login-remember").is(':checked'),
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken:  getCookie("csrftoken"),
     });
-    reload.find("td.d").html('<span class="login-message"><i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Connecting to API (1 API call)</span>');
+    $(this).html(spinner);
+});
+
+$(document).on('click', '#yata-logout-submit', function(e){
+    $(this).html(spinner);
 });
 
 $(document).on('click', '#yata-delete-submit', function(e){
@@ -15,7 +17,3 @@ $(document).on('click', '#yata-delete-submit', function(e){
         e.preventDefault();
     }
 });
-
-// $(document).ready(function(){
-//     $("#badges").load("badges");
-// });

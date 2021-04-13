@@ -48,3 +48,4 @@ sentry-sdk
 
 #others
 xkcdpass
+fontawesome-free
