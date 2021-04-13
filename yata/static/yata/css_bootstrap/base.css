@@ -5,19 +5,31 @@ html, body{
   font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif!important;
 }
 
+@media (min-width: 992px) {
+  html, body{
+    /* min-height: 100%; */
+    background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
+    font-size: 12px;
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif!important;
+  }
+}
+
 .table {
     table-layout: fixed;
     word-wrap: break-word;
+    font-size: 90%;
 }
 .table th {
   line-height: normal;
-  /* font-size: 12px; */
-  /* font-weight: bold; */
+  font-size: 80%;
+  font-weight: bolder;
   text-transform: uppercase;
   background: #f6f6f6;
-  color: #666;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  color: #888;
+  text-align: center!important;
+}
+.table thead {
+  border-bottom: 1px solid #ccc;
 }
 
 a, form, span { white-space:nowrap }
