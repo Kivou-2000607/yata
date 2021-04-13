@@ -1,16 +1,37 @@
+@font-face {
+    font-family: "Roboto";
+    src: url("/static/fonts/roboto/Roboto-Regular.ttf");
+}
+@font-face {
+    font-family: "Roboto";
+    src: url("/static/fonts/roboto/Roboto-Bold.ttf");
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Roboto";
+    src: url("/static/fonts/roboto/Roboto-Italic.ttf");
+    font-style: italic;
+}
+@font-face {
+    font-family: "Roboto";
+    src: url("/static/fonts/roboto/Roboto-BoldItalic.ttf");
+    font-weight: bold;
+    font-style: italic;
+}
+
 html, body{
   /* min-height: 100%; */
   background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
   font-size: 100%;
-  font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif!important;
+  font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
 }
 
 @media (min-width: 992px) {
   html, body{
     /* min-height: 100%; */
     background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
-    font-size: 12px;
-    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif!important;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
   }
 }
 

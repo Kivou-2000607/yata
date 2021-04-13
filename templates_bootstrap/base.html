@@ -35,8 +35,6 @@ This file is part of yata.
     <!-- load fontawesome -->
     <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
     <link href="{% static 'fontawesome_free/css/all.min.css' %}" rel="stylesheet" type="text/css">
-    {# <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles --> #}
-    {# <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"> #}
 
     <!-- jquery -->
     <script src='{% static "thirdparty/js/jquery-3.4.1.min.js" %}'></script>
@@ -53,7 +51,7 @@ This file is part of yata.
     <script src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
 
     <!-- google charts -->
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
 
     <!-- yata main js -->
     <script src='{% static "yata/js/yata.js" %}'></script>
