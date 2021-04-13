@@ -1,7 +1,7 @@
 html, body{
-  min-height: 100%;
+  /* min-height: 100%; */
   background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
-  font-size: 14px;
+  font-size: 100%;
   font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif!important;
 }
 
@@ -11,7 +11,7 @@ html, body{
 }
 .table th {
   line-height: normal;
-  font-size: 12px;
+  /* font-size: 12px; */
   /* font-weight: bold; */
   text-transform: uppercase;
   background: #f6f6f6;
@@ -42,7 +42,6 @@ hr.sep {
     background-color: #CCC;
 }
 
-h2.rounded, div.rounded { border-radius: 6px; }
 h2 a,
 h2 span { color: #FFF!important; font-weight: bold; text-decoration: none;}
 h2 span:hover,
@@ -52,31 +51,20 @@ h2 a:checked,
 h2 a:enabled,
 h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer;}
 
-div.module h1 {margin: 15px 10px; height: auto; font-weight: 300; font-size: 20px; color: #666;}
-div.module h2 {margin: 10px 10px; height: auto; font-weight: 600; font-size: 15px; color: #666;}
-div.module h2 {padding: 0; background: 0000;}
-div.module h3 {font-weight: 900; font-size: 14px; color: #666; text-transform: uppercase; }
+div.module h1 {font-size: 120%; color: #666; text-transform: uppercase;}
+div.module h2 {font-size: 115%; color: #666; text-transform: uppercase;}
+/* div.module h2 {padding: 0; background: 0000;} */
+div.module h3 {font-size: 110%; color: #666; text-transform: uppercase; }
 
 h2.title {
     background: #ccc url("/static/images/section_title_black_bg.png") left top repeat;
-    /* color: #ccc; */
-    /* cursor: pointer; */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.65);
-    padding-left: 10px;
-    height: 30px;
-    line-height: 30px;
     color: #FFF;
     font-weight: normal;
     letter-spacing: 1px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
+    font-size: 115%;
     vertical-align: baseline;
-    padding-left: 10px;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 6px 6px 0 0;
+    margin: 0;
 }
 h2.toggle-display { cursor: pointer; }
 h3.toggle-display { cursor: pointer; }
@@ -115,6 +103,7 @@ img.rounded-icon {
   -webkit-transition: transform 0.5s linear, border-radius 0.5s linear;
   transition: transform 0.5s linear, border-radius 0.5s linear;
 }
+img.rounded-icon:active,
 img.rounded-icon:hover {
     border-radius: 0px;
     border-radius: 0px;
