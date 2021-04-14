@@ -132,6 +132,7 @@ a.navbar-brand:hover {
 }
 
 img.rounded-icon {
+  max-width: 100px;
   border-radius: 100%;
   -webkit-transition: transform 0.5s linear, border-radius 0.5s linear;
   transition: transform 0.5s linear, border-radius 0.5s linear;
@@ -151,6 +152,24 @@ div.citymap {
   background-position: right top, right bottom;
   background-size: cover;
 }
+
+pre {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-left: 3px solid #f36d33;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    font-size: 12px;
+    /* line-height: 1.6; */
+    margin-bottom: 1.6em;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1em 1.5em;
+    display: block;
+    word-wrap: break-word;
+}
+
 
 /* img.io-shield { position: relative; max-width: 100%; box-shadow: 0px  0px  1px  1px #aaa!important; } */
 img.io-shield:hover { box-shadow: 2px  2px  2px  2px #aaa!important; }

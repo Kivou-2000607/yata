@@ -21,18 +21,6 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
 {% load humanize %}
 {% load app_filters %}
 
-<script>
-
-  // WARNING: IT IS NOT TOLERATED TO MODIFY THIS JAVASCRIPT
-  // as it will remove the warning when users enter their API key on non official instances of YATA.
-  // Changing it will be seen as making your instance of YATA look official and thus raise suspicions.
-  $(document).on('input', '#yata-login-key', function(e){
-      if (window.location.host != "yata.yt") {
-        alert("This is not the official YATA website which is hosted on https://yata.yt.\nMake sure you know who's hosting it and that they have no malicious intents.")
-      }
-  });
-
-</script>
 
 <header class="px-md-5">
   <div class="module mb-3">

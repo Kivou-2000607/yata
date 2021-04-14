@@ -18,8 +18,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% block title %}YATA - Error 404{% endblock %}
-{% block header %}<i class="fas fa-question-circle fa-icon-inline"></i>Error 404: Not Found{% endblock %}
+{% block title %}| Error 404{% endblock %}
 {% block text %}
-  <p class="neutral">{{exception}}</p>
+<div>
+  <p class="warning"><i class="fas fa-question-circle"></i>&nbsp;Error 404: Not Found</p>
+  <p>This is not normal, if the error hasn't been reported yet you can open a ticket on the <a href='{% url "discord" %}' target="_blank">discord server</a>.</p>
+    {% if exception %}
+      <p class="neutral">{{exception}}</p>
+    {% else %}
+      <p>You seems to be lost...</p>
+    {% endif %}
+</div>
 {% endblock %}

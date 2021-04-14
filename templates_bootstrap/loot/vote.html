@@ -1,6 +1,5 @@
-{% extends 'base-error.html' %}
 {% comment %}
-Copyright 2020 kivou.2000607@gmail.com
+Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -18,15 +17,5 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% block title %}| Error 500{% endblock %}
-{% block text %}
-<div>
-  <p class="error"><i class="fas fa-bomb"></i>&nbsp;Error 500: Server Error</p>
-  <p>This is not normal, if the error hasn't been reported yet you can open a ticket on the <a href='{% url "discord" %}' target="_blank">discord server</a>.</p>
-    {% if exception %}
-      <pre>{{exception}}</pre>
-    {% else %}
-      <pre>No proper error messages have been found because YATA has been coded with the feet.</pre>
-    {% endif %}
-</div>
-{% endblock %}
+<i class='{% if player.tId|stringformat:"i" in sa.get_users %}valid fas{% else %}far{% endif %} fa-thumbs-up'></i>
+<span style="cursor: help;" title="{% for k, v in sa.get_users.items %}- {{v}}&#013;{% endfor %}">({{sa.vote}})</span>

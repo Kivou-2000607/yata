@@ -90,10 +90,10 @@ const getCookie = (s)=>{
 
 
 // header navigation
-$(document).on('click', 'a[class^="yata-link"]', function(e){
+$(document).on('click', 'div.nav-link a', e => {
     $("#content-update h2").addClass("grey");
     $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+$(this).attr("title"))
-    $(this).html(spinner);
+    $(e.currentTarget).html(spinner);
 });
 
 // pagination nav

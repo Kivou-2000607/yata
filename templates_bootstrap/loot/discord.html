@@ -1,6 +1,5 @@
-{% extends 'base-error.html' %}
 {% comment %}
-Copyright 2020 kivou.2000607@gmail.com
+Copyright 2019 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -18,15 +17,19 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% block title %}| Error 500{% endblock %}
-{% block text %}
-<div>
-  <p class="error"><i class="fas fa-bomb"></i>&nbsp;Error 500: Server Error</p>
-  <p>This is not normal, if the error hasn't been reported yet you can open a ticket on the <a href='{% url "discord" %}' target="_blank">discord server</a>.</p>
-    {% if exception %}
-      <pre>{{exception}}</pre>
-    {% else %}
-      <pre>No proper error messages have been found because YATA has been coded with the feet.</pre>
-    {% endif %}
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+<h2 class="title rounded-top p-2"><i class="fas fa-code"></i>&nbsp;Discord bot and loot API</h2>
+<div class="container-fluid p-3 pb-1 module">
+    <ul>
+        <li>
+            There is a bot on the <a href='{% url "discord" %}' target="_blank">YATA discord</a> server that gives notifications when NPC are about to get looted.<br>
+        </li>
+        <li>
+            Read <a href='{% url "api:documentation" %}#loot' target="_blank">the API documentation</a> if you want build a tool for NPC alerts.
+        </li>
+    </ul>
 </div>
-{% endblock %}
