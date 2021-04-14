@@ -33,7 +33,8 @@ This file is part of yata.
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- load fontawesome -->
-    <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
+    {# <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles --> #}
+    {# <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script> #}
     <link href="{% static 'fontawesome_free/css/all.min.css' %}" rel="stylesheet" type="text/css">
 
     <!-- jquery -->
@@ -51,7 +52,7 @@ This file is part of yata.
     <script src={% static "thirdparty/js/jquery.tablesorter.js" %}></script>
 
     <!-- google charts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!-- yata main js -->
     <script src='{% static "yata/js/yata.js" %}'></script>

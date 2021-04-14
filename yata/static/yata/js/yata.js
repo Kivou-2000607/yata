@@ -122,11 +122,23 @@ const getCookie = (s)=>{
 
 
 // header navigation
-$(document).on('click', 'div.nav-link a', e => {
+$(document).on('click', 'div.yt-main-link a', e => {
     $("#content-update h2").addClass("grey");
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+$(this).attr("title"))
-    $(e.currentTarget).html(spinner);
+    $("#content-update h2").html(spinner+'&nbsp;Loading '+$(e.currentTarget).attr("title"))
+    $(e.currentTarget).find("i").replaceWith(spinner);
 });
+
+// sub header navigation
+$(document).on('click', 'div.yt-cat-link', e=>{
+    e.preventDefault();
+    var link = $(e.currentTarget).children("a")
+    $( "#content-update" ).load( link.attr("href"), {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }, nav(link.attr("href")));
+    $("#content-update h2").addClass("grey").html(spinner+'&nbsp;Loading '+link.attr("title"))
+    $("div.error").hide();
+});
+
 
 // pagination nav
 $(document).on('click', 'a.page-link', function(e){
@@ -143,7 +155,7 @@ $(document).on('click', 'h2.title.toggle-display', function(e){
     // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
     if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
         // var i = h.find("i.fa-caret-right");
-        var i = h.find("div.toggle-rotate").find("svg");
+        var i = h.find("div.toggle-rotate").find("i");
         // var div = h.closest(".catch-me").children("div");
         var div = h.next("div");
         if(div.css("display") == "none") {

@@ -17,19 +17,14 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% load mathfilters %}
-{% load humanize %}
-{% load static %}
-{% load app_filters %}
+<div class="container-flex px-md-5">
+  {% if apiErrorSub %}
+      {% include "yata/error.html" with apiError=apiErrorSub %}
+  {% endif %}
 
-<h2 class="title rounded-top p-2"><i class="fas fa-code"></i>&nbsp;Discord bot and loot API</h2>
-<div class="container-fluid p-3 pb-1 mb-3 module">
-    <ul>
-        <li>
-            There is a bot on the <a href='{% url "discord" %}' target="_blank">YATA discord</a> server that gives notifications when NPC are about to get looted.<br>
-        </li>
-        <li>
-            Read <a href='{% url "api:documentation" %}#loot' target="_blank">the API documentation</a> if you want build a tool for NPC alerts.
-        </li>
-    </ul>
+  {% if view.hof %}
+      {% include "awards/hof.html" %}
+  {% elif view.awards %}
+      {% include "awards/list.html" %}
+  {% endif %}
 </div>

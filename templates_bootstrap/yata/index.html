@@ -140,7 +140,7 @@ This file is part of yata.
 </div>
 
 <div class="catch-me">
-    <h2 class="title grey toggle-display rounded-top rounded p-2 mb-3">
+    <h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
         <div class="d-flex justify-content-between">
           <div class="px-2"><i class="fas fa-code"></i>&nbsp;Contributors</div>
           <div class="px-3 toggle-rotate"><i class="fas fa-caret-right"></i></div>
@@ -162,7 +162,7 @@ This file is part of yata.
 </div>
 {% if allDonations|length %}
     <div class="catch-me">
-      <h2 class="title grey toggle-display rounded-top rounded p-2 mb-3">
+      <h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
           <div class="d-flex justify-content-between">
             <div class="px-2"><i class="fas fa-gift"></i>&nbsp;Donations</div>
             <div class="px-3 toggle-rotate"><i class="fas fa-caret-right"></i></div>
@@ -183,10 +183,10 @@ This file is part of yata.
           <tbody>
             {% for donation in allDonations %}
               <tr>
-                <td class="a align-middle">{{donation.split.sender}}</td>
-                <td class="b align-middle">{{donation.split.gift}}</td>
-                <td class="c align-middle">{{donation.split.message}}</td>
-                <td class="d align-middle">{{donation.split.date}}</td>
+                <td class="text-center">{{donation.split.sender}}</td>
+                <td class="text-center">{{donation.split.gift}}</td>
+                <td class="align-start">{{donation.split.message}}</td>
+                <td class="align-center">{{donation.split.date}}</td>
               </tr>
             {% endfor %}
           </tbody>

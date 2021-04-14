@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'django_json_widget',
     'redisboard',
     'rest_framework',
-    'fontawesome-free'
 ]
 
 MIDDLEWARE = [

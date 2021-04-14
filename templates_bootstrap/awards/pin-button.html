@@ -1,5 +1,5 @@
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -17,6 +17,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<div class="container-flex px-md-5">
-  {% include "loot/loot.html" %}
-</div>
+<!-- toggle -->
+{% if player.tId == -1 %}
+    <i class="fas fa-thumbtack" title="You need to login to pin awards" style="opacity: 0.3"></i>
+{% else %}
+    <form style="display: inline;">{% csrf_token %}
+       {% if awardId in pinnedAwards %}
+           <a href=""><i class="fas fa-thumbtack neutral pinned awards-toggle-pin" title="Remove target" data-val="{{awardId}}"></i></a>
+       {% else %}
+            <a href=""><i class="fas fa-thumbtack neutral awards-toggle-pin" title="Add target" style="opacity: 0.3" data-val="{{awardId}}"></i></a>
+       {% endif %}
+    </form>
+{% endif %}

@@ -21,7 +21,8 @@ $(document).on('click', '#toggle-awards-done', function(e){
     });
 });
 
-$(document).on('click', 'span[id^="award-category-"]', function(e){
+//
+$(document).on('click', 'div[id^="award-category-"]', function(e){
     e.preventDefault();
     // *********************** //
     // HANDLE CATEGORY BUTTONS //
