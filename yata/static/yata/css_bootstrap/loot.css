@@ -1,6 +1,7 @@
 div.loot-card {
     /* font-size: 12px!important; */
-    width: 400px;
+    max-width: 400px;
+    min-width: 360px;
     border: 1px solid #ccc;
     border-radius: 1%;
     background-color: #fafafaaa;
@@ -20,7 +21,6 @@ img.npc-profile-picture {
   width: 100%;
   border-radius: 5%;
 }
-
 
 .overdue {
     opacity: 0.4;

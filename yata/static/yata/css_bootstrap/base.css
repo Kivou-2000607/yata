@@ -116,16 +116,22 @@ button[type=submit].error:hover { color: #FFF; background-color: #A02525 }
   font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f007";
 }
 
-.error *, .error { color: #CC3434!important; font-weight: bold; }
-.warning *, .warning { color: #FF8C00!important; font-weight: bold; }
-.neutral *, .neutral { color: #666!important; font-weight: bold; }
-.valid *, .valid { color: #0B8E14!important; font-weight: bold; }
+.error *, .error { color: #CC3434!important; }
+.warning *, .warning { color: #FF8C00!important; }
+.neutral *, .neutral { color: #666!important; }
+.valid *, .valid { color: #0B8E14!important; }
 .error:hover, .error:active, .error:focus,
 .error:hover *, .error:active *, .error:focus * { color: #A02525!important; }
 .neutral:hover, .neutral:active, .neutral:focus ,
 .neutral:hover *, .neutral:active *, .neutral:focus * { color: #444!important; }
 .valid:hover, .valid:active, .valid:focus ,
 .valid:hover *, .valid:active *, .valid:focus * { color: #005E00!important; }
+
+div.error, div.valid, div.neutral,
+p.error, p.valid, p.neutral {
+  font-weight: bold;
+}
+
 
 a.navbar-brand:hover {
     filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
