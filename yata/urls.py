@@ -42,7 +42,7 @@ urlpatterns = [
     # re_path(r'^chain/', include('chain.urls')),
     re_path(r'^awards/', include('awards.urls')),
     re_path(r'^target/', include('target.urls')),
-    re_path(r'^stock/', include('stock.urls')),
+    # re_path(r'^stock/', include('stock.urls')),
     re_path(r'^loot/', include('loot.urls')),
     re_path(r'^bot/', include('bot.urls')),
     re_path(r'^faction/', include('faction.urls')),

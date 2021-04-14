@@ -76,7 +76,6 @@ def createAwardsSummary(awards):
 
 def createAwards(tornAwards, userInfo, category, pinned=False):
     from itertools import chain
-    from stock.models import Stock
 
     # needed in most cases
     honors_awarded = [int(k) for k in userInfo.get("honors_awarded", [])]
@@ -2013,12 +2012,13 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [869]:
+                    from stocks.models import ALL_STOCKS
             		# "869": { "name": "Monopoly", "description": "Own every stock benefit at the same time", "type": 14,
                     type = "Stocks"
                     vp["category"] = category
                     vp["subcategory"] = type
 
-                    allStocks = {s.tAcronym: [s.tName, s.tRequirement, s.tCurrentPrice] for s in Stock.objects.filter(tId__gt=0)}
+                    allStocks = {s["acronym"]: [s["name"], s["benefit"]["requirement"], s["current_price"]] for s in ALL_STOCKS}
                     holdStock = [b.split("(")[1].replace(")", "").strip() for b in userInfo.get("stock_perks", [])]
                     lst = []
                     totalMoney = 0

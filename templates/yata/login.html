@@ -103,22 +103,6 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
                     {% endif %}
                 </span>
                 </div>
-                {# stocks #}
-                <div>
-                <a href="{% url 'stock:index' %}" class="yata-link-stock" title="Stocks">
-                    <b><i class="fas fa-chart-line fa-icon-inline"></i>Stocks</b></a><br>
-                <span>
-                    {% if player.tId > 0 %}
-                    {% if player.stocksInfo == "N/A" %}
-                    &empty;
-                    {% else %}
-                    {{player.stocksInfo}} block{{player.stocksInfo|pluralize}}
-                    {% endif %}
-                    {% else %}
-                    limited
-                    {% endif %}
-                </span>
-                </div>
                 {# company #}
                 <div>
                 <a href="{% url 'company:index' %}" class="yata-link-company" title="Company">

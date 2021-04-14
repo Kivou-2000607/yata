@@ -21,29 +21,29 @@ from django.http import JsonResponse
 
 import json
 
-from stock.models import Stock
-from yata.handy import tsnow
-
-def alerts(request):
-    try:
-        stocks = Stock.objects.all()
-        payload = dict({})
-        for stock in stocks:
-            triggers = json.loads(stock.triggers)
-            # if triggers:
-            #     ts = tsnow()
-            #     periodS = 3600 * 24 * 14
-            #     graph = []
-            #     for h in stock.history_set.filter(timestamp__gte=(ts - periodS)).order_by('timestamp'):
-            #         graph.append([h.timestamp, h.tCurrentPrice])
-
-            payload[str(stock.tId)] = {"alerts": triggers, "price": stock.tCurrentPrice, "shares": stock.tAvailableShares}
-
-            # debug
-            if request.GET.get("debug", False):
-                payload["42"] = {"alerts": {"below": True, "enough": True, "forecast": True}, "price": 42, "shares": 10}
-
-        return JsonResponse(payload, status=200)
-
-    except BaseException as e:
-        return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
+# from stock.models import Stock
+# from yata.handy import tsnow
+#
+# def alerts(request):
+#     try:
+#         stocks = Stock.objects.all()
+#         payload = dict({})
+#         for stock in stocks:
+#             triggers = json.loads(stock.triggers)
+#             # if triggers:
+#             #     ts = tsnow()
+#             #     periodS = 3600 * 24 * 14
+#             #     graph = []
+#             #     for h in stock.history_set.filter(timestamp__gte=(ts - periodS)).order_by('timestamp'):
+#             #         graph.append([h.timestamp, h.tCurrentPrice])
+#
+#             payload[str(stock.tId)] = {"alerts": triggers, "price": stock.tCurrentPrice, "shares": stock.tAvailableShares}
+#
+#             # debug
+#             if request.GET.get("debug", False):
+#                 payload["42"] = {"alerts": {"below": True, "enough": True, "forecast": True}, "price": 42, "shares": 10}
+#
+#         return JsonResponse(payload, status=200)
+#
+#     except BaseException as e:
+#         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
