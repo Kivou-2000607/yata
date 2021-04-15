@@ -1,0 +1,55 @@
+{# h2 simple #}
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
+    <div class="col text-end">
+        <a id="toggle-awards-done" class="flush-right" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
+    </div>
+</h2>
+
+{# h2 with buttons #}
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
+    <div class="col text-end">
+        <a id="toggle-awards-done" class="flush-right" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
+    </div>
+</h2>
+
+{# h2 toggle view #}
+<h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
+    <div class="d-flex justify-content-between">
+      <div><i class="fas fa-gift"></i>&nbsp;Donations</div>
+      <div class="toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+
+
+{# module #}
+<div class="container-fluid p-md-3 px-0 mb-3 module">
+
+</div>
+
+
+{# responsive table #}
+<style>
+  table.awards-hof { min-width: 700px; width: 50%; margin: auto;}
+  table.awards-hof th.a { width: 10%; }
+  table.awards-hof th.b { width: 25%; }  /* x2 */
+  table.awards-hof th.c { width: 20%; } /* x2 */
+</style>
+<div class="table-responsive">
+<table id="awards-list" class="table table-hover table-striped table-borderless tablesorter awards-list">
+  <thead>
+      <tr>
+          <th class="a">Category</th>
+      <tr>
+  </thead>
+  <body>
+    <tr>
+      <td class="text-center"></td>
+      <td class="text-end"></td>
+      <td class="text-start"></td>
+    </tr>
+  </body>
+</table>

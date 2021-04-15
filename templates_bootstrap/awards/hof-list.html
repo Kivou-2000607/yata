@@ -23,7 +23,6 @@ This file is part of yata.
 {% load app_filters %}
 
 <div class="table-responsive">
-
 <table id="awards-hof" class="table table-striped table-hover table-borderless awards-hof">
     <thead>
       <tr>
@@ -49,8 +48,8 @@ This file is part of yata.
             <div class="pagination d-block">
                 <span class="step-links">
                     {% if hof.has_previous %}
-                        <a class="page-link" href="{% url 'awards:hofList' %}?p_hof=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'awards:hofList' %}?p_hof={{ hof.previous_page_number }}">previous</a>
+                        <a class="yt-page-link rounded first" href="{% url 'awards:hofList' %}?p_hof=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'awards:hofList' %}?p_hof={{ hof.previous_page_number }}"></a>
                     {% endif %}
 
                     <span class="current">
@@ -58,8 +57,8 @@ This file is part of yata.
                     </span>
 
                     {% if hof.has_next %}
-                        <a class="page-link" href="{% url 'awards:hofList' %}?p_hof={{ hof.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'awards:hofList' %}?p_hof={{ hof.paginator.num_pages }}">last &raquo;</a>
+                        <a class="yt-page-link rounded next" href="{% url 'awards:hofList' %}?p_hof={{ hof.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'awards:hofList' %}?p_hof={{ hof.paginator.num_pages }}"></a>
                     {% endif %}
                 </span>
             </div>

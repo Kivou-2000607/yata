@@ -22,23 +22,6 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-{% if player.tId == 2419808 %}
-<script>
-    // Just to see where it goes...
-    // https://www.torn.com/forums.php#/p=threads&f=61&t=16156664
-    $(document).ready(function() {
-        var table = $("#awards-list");
-        var tbody = table.children("tbody");
-        tbody.children("tr.award-todo").each(function( id, tr ) {
-            var goal = parseInt($(tr.children[5]).children("span").text().replace(",", "").replace("$", ""));
-            var state = Math.floor(Math.random() * (goal - 1))
-            var acheive = Math.floor( 100 * state /  (1.0 * goal) );
-            $(tr.children[4]).html('<span rel="tooltip" title="Current: '+state+'">'+state+'</span>');
-            $(tr.children[6]).html('<span rel="tooltip" title="Achieved: '+acheive+'%">'+acheive+'%</span>');
-        });
-    });
-</script>
-{% endif %}
 
 <script src='{% static "thirdparty/js/tooltip.js" %}'></script>
 
@@ -52,8 +35,6 @@ This file is part of yata.
                   7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                   9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
-                cssAsc: 'up',
-                cssDesc: 'down',
                 sortList: [[0,0], [4,1], [5,0]]
             });
 
@@ -124,9 +105,9 @@ This file is part of yata.
 </div>
 
 <h2 class="title rounded-top py-2 px-3">
-  <div class="d-flex justify-content-between">
-    <div><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
-    <div>
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
+    <div class="col text-end">
         <a id="toggle-awards-done" class="flush-right" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
     </div>
 </h2>
@@ -135,19 +116,15 @@ This file is part of yata.
 <!-- summary for a categories -->
 
 {% if awardsSummary %}
-<nav class="navbar mb-3">
-  <div class="container-fluid mx-md-5">
-    <ul class="nav nav-justified">
-      {% for awardType, awards in awardsSummary.items %}
-        <li class="nav-item {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
-          <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
-            <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
-          </div>
-        </li>
-       {% endfor %}
-     </ul>
-  </div>
-</nav>
+  <ul class="nav justify-content-center mx-md-5 mb-3">
+    {% for awardType, awards in awardsSummary.items %}
+      <li class="nav-item {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
+        <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
+          <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
+        </div>
+      </li>
+     {% endfor %}
+   </ul>
 {% endif %}
 
 <!-- list -->
@@ -162,10 +139,10 @@ This file is part of yata.
             <th class="d">Description</th>
             <th class="e">State</th>
             <th class="e">Goal</th>
-            <th class="f">Achieve</th>
+            <th class="f">Ach.</th>
             <th class="g">Days left</th>
-            <th class="i">i</th>
-            <th class="i">p</th>
+            <th class="i">&nbsp;</th>
+            <th class="i">&nbsp;</th>
         </tr>
     </thead>
     <tbody>

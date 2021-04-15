@@ -63,17 +63,6 @@ $(document).on('click', 'div[id^="award-category-"]', function(e){
     allAwardsContainer.find(selector).show('fast', function() {});
 });
 
-$(document).on('click', 'table.awards-categories td', function(e){
-    e.preventDefault();
-    $( "#content-update" ).load( "/awards/"+$(this).children("a").attr("href").split("/")[2]+"/", {
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    }, nav("/awards/"+$(this).children("a").attr("href").split("/")[2]));
-    $("#content-update h2").addClass("grey");
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading awards')
-    $("div.error").hide();
-});
-
-
 // toggle pin
 $(document).on('click', '.awards-toggle-pin', function(e){
     e.preventDefault();
@@ -105,7 +94,7 @@ $(document).on('click', '.awards-toggle-pin', function(e){
                 }).html(spinner);
             }).promise().done(
                 function() {
-                    $(".awards-pinned").each(function() { $(this).html('<div style="height: '+$(this).css("height")+';">'+spinner+'</div>') }).promise().done(
+                    $(".awards-pinned-spin").each(function() { $(this).html('<div style="height: '+$(this).css("height")+';">'+spinner+'</div>') }).promise().done(
                         function() { $("#awards-show-pinned").load( "/awards/pinned/", {csrfmiddlewaretoken: getCookie("csrftoken")}); })
                     })
             });

@@ -35,24 +35,6 @@ html, body{
   }
 }
 
-.table {
-    table-layout: fixed;
-    word-wrap: break-word;
-    font-size: 90%;
-}
-.table th {
-  line-height: normal;
-  font-size: 80%;
-  font-weight: bolder;
-  text-transform: uppercase;
-  background: #f6f6f6;
-  color: #888;
-  text-align: center!important;
-}
-.table thead {
-  border-bottom: 1px solid #ccc;
-}
-
 a, form, span, li { white-space:nowrap }
 
 
@@ -78,7 +60,7 @@ hr.sep {
 }
 
 h2 a,
-h2 span { color: #FFF!important; font-weight: bold; text-decoration: none;}
+h2 * { color: #FFF!important; font-weight: bold; text-decoration: none; white-space: nowrap }
 h2 span:hover,
 h2 a:focus,
 h2 a:hover,
@@ -180,14 +162,48 @@ pre {
 }
 
 
+a.yt-page-link { padding: 1%; }
+a.yt-page-link:hover { background-color: #f4f4f4; }
+a.yt-page-link.first::before { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f100"; }
+a.yt-page-link.previous::before { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f104"; }
+a.yt-page-link.next::after { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f105"; }
+a.yt-page-link.last::after { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f101"; }
+
+
 /* img.io-shield { position: relative; max-width: 100%; box-shadow: 0px  0px  1px  1px #aaa!important; } */
 img.io-shield:hover { box-shadow: 2px  2px  2px  2px #aaa!important; }
 
-table { min-width: 1200px; }
+table { min-width: 1200px; margin: auto; }
+
+table.donations { min-width: 700px; width: 80%; margin: auto;}
 table.donations th.a { width: 15%; }
 table.donations th.b { width: 20%; }
 table.donations th.c { width: 50%; }
 table.donations th.d { width: 15%; }
+
+
+table.tablesorter div.tablesorter-header-inner { position: relative; }
+table.tablesorter th { cursor: context-menu; text-align: justify!important; }
+.tablesorter-headerAsc > div.tablesorter-header-inner::after { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f0dd"; position: absolute; right: 0; }
+.tablesorter-headerDesc > div.tablesorter-header-inner::after { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f0de"; position: absolute; right: 0; }
+.tablesorter-headerUnSorted > div.tablesorter-header-inner::after { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f0dc"; position: absolute; right: 0; }
+
+.table {
+    table-layout: fixed;
+    word-wrap: break-word;
+    font-size: 90%;
+}
+.table th {
+  line-height: normal;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  background-color: #f6f6f6;
+  color: #888;
+}
+.table thead {
+  border-bottom: 1px solid #ccc;
+}
 
 .update-info {
     margin-top: 10px!important;

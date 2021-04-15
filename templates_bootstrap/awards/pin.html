@@ -35,6 +35,7 @@ This file is part of yata.
 
                 {# name #}
                 <div class="col-12 p-2">
+                  <div class="awards-pinned-spin">
                 {% if award.awardType == "Honor" %}
                   {% if award.img == "0" %}
                     <div class="award-default-pinned">
@@ -47,6 +48,7 @@ This file is part of yata.
                 {% else %}
                     <img src="{% url_img_medal award.img %}" class="medals pinned-image">
                 {% endif %}
+                </div>
                 </div>
 
                 <div class="col-12 p-2">

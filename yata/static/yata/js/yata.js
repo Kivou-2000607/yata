@@ -141,11 +141,11 @@ $(document).on('click', 'div.yt-cat-link', e=>{
 
 
 // pagination nav
-$(document).on('click', 'a.page-link', function(e){
+$(document).on('click', 'a.yt-page-link', function(e){
     e.preventDefault();
     var reload = $(e.currentTarget).closest("div.pagination-list");
     reload.load( $(e.currentTarget).attr("href"), function() {});
-    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+    $(e.currentTarget).closest("table").find("tr").html('<td colspan="*" class="text-center">'+spinner+'</td>');
 });
 
 // show/hide module
