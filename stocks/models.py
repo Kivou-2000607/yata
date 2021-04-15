@@ -26,6 +26,10 @@ class Stock(models.Model):
     current_price = models.FloatField(default=0.0)
     previous_price = models.FloatField(default=0.0)
 
+    # global
+    market_cap = models.BigIntegerField(default=0)
+    total_shares = models.BigIntegerField(default=0)
+
     # benefit
     requirement = models.IntegerField(default=0)
     description = models.CharField(default="-", max_length=256)
@@ -40,6 +44,8 @@ class History(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     timestamp = models.IntegerField(default=0, db_index=True)
     current_price = models.FloatField(default=0.0)
+    market_cap = models.BigIntegerField(default=0)
+    total_shares = models.BigIntegerField(default=0)
 
     # BulkManager
     objects = BulkManager()

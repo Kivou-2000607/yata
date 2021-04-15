@@ -60,7 +60,7 @@ class Command(BaseCommand):
         # get all stocks and history
         stocks = Stock.objects.all()
         history = History.objects.filter(timestamp__gt=periods["w"])
-        for api_stock in api_stocks.get("stocks"):
+        for api_stock in api_stocks.get("stocks").values():
             acronym = api_stock["acronym"]
             stock = stocks.filter(acronym=acronym).first()
 
@@ -70,6 +70,8 @@ class Command(BaseCommand):
                 "current_price": api_stock["current_price"],
                 "requirement": api_stock["benefit"]["requirement"],
                 "description": api_stock["benefit"]["description"],
+                "market_cap": api_stock["market_cap"],
+                "total_shares": api_stock["total_shares"],
                 "timestamp": timestamp
             }
 
@@ -83,8 +85,8 @@ class Command(BaseCommand):
                 try:
                     # compute tendencies
                     a, b = lin_reg(history.filter(stock__acronym=acronym, timestamp__gt=p))
-                    defaults[f'tendancy_{k}_a'] = a
-                    defaults[f'tendancy_{k}_b'] = b
+                    defaults[f'tendancy_{k}_a'] = 0 if numpy.isnan(a) else a
+                    defaults[f'tendancy_{k}_b'] = 0 if numpy.isnan(b) else b
 
                 except BaseException as e:
                     print(f'[CRON {logdate()}] Error in linear reg: {e}')

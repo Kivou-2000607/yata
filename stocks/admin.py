@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-from datetime import datetime
-
 from .models import Stock
 from .models import History
 
