@@ -60,18 +60,19 @@ class Command(BaseCommand):
         # get all stocks and history
         stocks = Stock.objects.all()
         history = History.objects.filter(timestamp__gt=periods["w"])
-        for api_stock in api_stocks.get("stocks").values():
+        for stock_id, api_stock in api_stocks.get("stocks").items():
             acronym = api_stock["acronym"]
             stock = stocks.filter(acronym=acronym).first()
 
             # init defaults
             defaults = {
+                "torn_id": stock_id,
                 "name": api_stock["name"],
                 "current_price": api_stock["current_price"],
-                "requirement": api_stock["benefit"]["requirement"],
-                "description": api_stock["benefit"]["description"],
                 "market_cap": api_stock["market_cap"],
                 "total_shares": api_stock["total_shares"],
+                "requirement": api_stock["benefit"]["requirement"],
+                "description": api_stock["benefit"]["description"],
                 "timestamp": timestamp
             }
 
@@ -93,7 +94,14 @@ class Command(BaseCommand):
                     pass
 
             batch_stocks.update_or_create(acronym=acronym, defaults=defaults)
-            batch_history.update_or_create(stock_id=stock.pk, timestamp=timestamp, defaults={"current_price": api_stock["current_price"]})
+
+            # record history
+            defaults = {
+                "current_price": api_stock["current_price"],
+                "market_cap": api_stock["market_cap"],
+                "total_shares": api_stock["total_shares"],
+            }
+            batch_history.update_or_create(stock_id=stock.pk, timestamp=timestamp, defaults=defaults)
 
         if batch_stocks.count():
             batch_stocks.run()
