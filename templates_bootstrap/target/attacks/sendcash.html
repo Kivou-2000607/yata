@@ -17,12 +17,10 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load app_filters %}
+{% load mathfilters %}
 
-{% if view.hof %}
-    {% include "awards/hof.html" %}
-{% elif view.awards %}
-    {% include "awards/index.html" %}
+<!-- toggle -->
+{% if v.1 < v.2 %}
+    <a href="https://www.torn.com/sendcash.php#/XID={{k}}&losses={{v.2|sub:v.1}}" target="_blank"><i class="fas fa-dollar-sign" title="Send cash"></i></a>
 {% endif %}

@@ -35,7 +35,7 @@ html, body{
   }
 }
 
-a, form, span, li { white-space:nowrap }
+a, form, span, h2 { white-space:nowrap }
 
 
 nav.module,
@@ -59,8 +59,7 @@ hr.sep {
     background-color: #CCC;
 }
 
-h2 a,
-h2 * { color: #FFF!important; font-weight: bold; text-decoration: none; white-space: nowrap }
+h2, h2 * { color: #FFF!important; font-weight: bold; text-decoration: none; white-space: nowrap }
 h2 span:hover,
 h2 a:focus,
 h2 a:hover,
@@ -72,6 +71,7 @@ div.module h1 {font-size: 120%; color: #666; text-transform: uppercase;}
 div.module h2 {font-size: 115%; color: #666; text-transform: uppercase;}
 /* div.module h2 {padding: 0; background: 0000;} */
 div.module h3 {font-size: 110%; color: #666; text-transform: uppercase; }
+div.module h4 {font-size: 100%; color: #666; text-transform: uppercase; }
 
 h2.title {
     background: #ccc url("/static/images/section_title_black_bg.png") left top repeat;
@@ -93,9 +93,9 @@ h2.green { background: #ccc url("/static/images/section_title_green_bg.png") lef
 a, a:link, a:visited { text-decoration: none; color: #447e9b; }
 a:active, a:hover { color: #036; }
 button[type=submit] { color: #447e9b; border-color:#447e9b }
-button[type=submit]:hover { color: #FFF; background-color: #447e9b; border: 1px solid #447e9b; }
+button[type=submit]:hover { color: #FFF!important; background-color: #447e9b; border: 1px solid #447e9b; }
 button[type=submit].error { color: #CC3434; border-color:#CC3434 }
-button[type=submit].error:hover { color: #FFF; background-color: #A02525 }
+button[type=submit].error:hover { color: #FFF!important; background-color: #A02525 }
 .spin::before {
   font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f007";
 }
@@ -111,14 +111,14 @@ button[type=submit].error:hover { color: #FFF; background-color: #A02525 }
 .valid:hover, .valid:active, .valid:focus ,
 .valid:hover *, .valid:active *, .valid:focus * { color: #005E00!important; }
 
-div.error, div.valid, div.neutral,
-p.error, p.valid, p.neutral {
+div.error, div.warning, div.valid, div.neutral,
+p.error, p.warning, p.valid, p.neutral {
   font-weight: bold;
 }
 
 
-a.navbar-brand:hover {
-    filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+a:hover {
+  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
 }
 /* div.nav-link.active { border: 1px solid #447e9b; background-color: #fff0!important; margin: -1px; padding: -1px; } */
 
@@ -162,7 +162,7 @@ pre {
 }
 
 
-a.yt-page-link { padding: 1%; }
+a.yt-page-link { padding: 5px; margin: 0 0.5%; }
 a.yt-page-link:hover { background-color: #f4f4f4; }
 a.yt-page-link.first::before { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f100"; }
 a.yt-page-link.previous::before { font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f104"; }
@@ -173,8 +173,8 @@ a.yt-page-link.last::after { font-family: "Font Awesome 5 Free"; font-weight: 90
 /* img.io-shield { position: relative; max-width: 100%; box-shadow: 0px  0px  1px  1px #aaa!important; } */
 img.io-shield:hover { box-shadow: 2px  2px  2px  2px #aaa!important; }
 
-table { min-width: 1200px; margin: auto; }
-
+table.table { min-width: 1200px; margin: auto; font-size: 12px!important; }
+.table td { vertical-align: middle; }
 table.donations { min-width: 700px; width: 80%; margin: auto;}
 table.donations th.a { width: 15%; }
 table.donations th.b { width: 20%; }
@@ -210,4 +210,126 @@ table.tablesorter th { cursor: context-menu; text-align: justify!important; }
     text-align: right;
     color: #888;
     font-style: italic;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.yt-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.yt-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  /* min-width: 160px; */
+  white-space: nowrap;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Dropdown Dark */
+.yt-dropdown-title {
+  background-color: #333;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the yt-dropdown */
+.yt-dropdown-content a {
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+/* Span inside the yt-dropdown */
+.yt-dropdown-content span {
+  /* color: black; */
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Show the yt-dropdown menu on hover */
+.yt-dropdown:hover .yt-dropdown-content {
+    display: block;
+}
+
+
+.player-status-red { color: #CC3434; }
+.player-status-green { color: #0B8E14; }
+.player-status-blue { color: #447e9b; }
+i.online-status-Offline {color: #666}
+i.online-status-Online {color: #0B8E14}
+i.online-status-Idle {color: #FF8C00}
+.old-refresh { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
+
+
+div.overlay{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+
+div.modal-center {
+    width: 300px;
+    max-height: 80%;
+    line-height: 20px;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    /* margin-top: -100px; */
+    margin-left: -150px;
+    border-radius: 5px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.modal-center > div.module {
+    margin-bottom: 0px;
+}
+
+div.modal-center-large {
+    width: 80%;
+    max-height: 80%;
+    line-height: 20px;
+    position: fixed;
+    top: 10%;
+    left: 20%;
+    /* margin-top: -100px; */
+    margin-left: -150px;
+    border-radius: 5px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.modal-center-large > div.module {
+    margin-bottom: 0px;
+}
+
+
+div.modal-topright {
+    max-width: 65%;
+    /* max-height: 67.6px; */
+    line-height: 20px;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    background-color: #f1c40f;
+    border-radius: 0px 0px 0px 5px;
+    padding: 10px;
+    /* text-align: center; */
+    z-index: 11; /* 1px higher than the overlay layer */
+    overflow-x: hidden;
+    overflow-y: hidden;
 }

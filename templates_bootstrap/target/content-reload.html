@@ -21,8 +21,17 @@ This file is part of yata.
     {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
 
-{% if view.hof %}
-    {% include "awards/hof.html" %}
-{% elif view.awards %}
-    {% include "awards/index.html" %}
+{% if view.targets %}
+    {% include "target/targets/index.html" %}
 {% endif %}
+{% if view.attacks %}
+    {% include "target/attacks/index.html" %}
+{% endif %}
+{% if view.revives %}
+    {% include "target/revives/index.html" %}
+{% endif %}
+{% if view.dogtags %}
+    {% include "target/dogtags/index.html" %}
+{% endif %}
+
+{% include "target/tutorial.html" %}

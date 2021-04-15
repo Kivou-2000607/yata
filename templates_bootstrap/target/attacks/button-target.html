@@ -17,12 +17,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load app_filters %}
 
-{% if view.hof %}
-    {% include "awards/hof.html" %}
-{% elif view.awards %}
-    {% include "awards/index.html" %}
-{% endif %}
+<!-- toggle -->
+<form style="display: inline;">{% csrf_token %}
+    <a class="attack-list-target" href="{% url 'target:target' %}">
+       {% if v.targetId in targets %}
+           <i class="fas fa-crosshairs valid" title="Remove target"></i>
+       {% else %}
+            <i class="fas fa-crosshairs error" title="Add target"></i>
+       {% endif %}
+    </a>
+</form>

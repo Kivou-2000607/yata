@@ -1,0 +1,180 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+
+
+<script>
+
+        $(document).ready(function() {
+            $("#target-targets").tablesorter({
+                textExtraction: {
+                  0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  11: function(node, table, cellIndex) {
+                      let a = $(node).attr("data-col")>0?$(node).attr("data-col"):4;
+                      let b = $(node).find("input.target-list-note").val()?$(node).find("input.target-list-note").val():"zzzz";
+                      // console.log($(node).attr("data-col") + $(node).find("input.target-list-note").val() + "->" + a + "-" + b);
+                      return a + "-" + b; },
+                  12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+                cssAsc: 'up',
+                cssDesc: 'down',
+                sortList: [[6,1],[3,1],[2,0]]
+            });
+        });
+</script>
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="clearfix">
+    <div class="float-start"><i class="fas fa-crosshairs"></i>&nbsp;List of targets</div>
+    <div class="float-end">
+      <a id="target-refresh" href="" data-val="0"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
+    </div>
+    <div class="float-end me-2">
+      <span>{% include "target/targets/colors.html" %}</span>
+    </div>
+</h2>
+
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+{% if targets %}
+<div class="table-responsive">
+  <table id="target-targets" class="table table-hover table-striped table-borderless tablesorter target-targets">
+        <thead>
+            <tr>
+                <th class="a" title="Last attack elapsed time">Last attack</th>
+                <th class="a" title="Last attack result">Result</th>
+                <th class="b" title="Name of the target">Name</th>
+                <th class="c" title="Level of the target">lvl</th>
+                <th class="c" title="Online status"><i class="fas fa-circle"></i></th>
+                <th class="d" title="Last action of the target">Last action</th>
+                <th class="e" title="Fair fight bonus of the last attack">FF</th>
+                <th class="e" title="Flat respect (fair fight) x (base respect) = (fair fight) x 0.25(ln(level) + 1)">FR</th>
+                <th class="f" title="Life of the target">Life</th>
+                <th class="g" title="Status of the target">Status</th>
+                <th class="h" title="Time since last update">Update</th>
+                <th class="i" title="Notes about the target">Notes</th>
+                <th class="j" title="Attack target">A</th>
+                <th class="j" title="Delete target">D</th>
+                <th class="j" title="Faction target">F</th>
+        </thead>
+        <tbody>
+        {% for targetId, target in targets.items %}
+            <tr id="target-list-refresh-{{targetId}}" data-val="{{targetId}}">
+                {% include "target/targets/line.html" %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+
+  <p class="warning">You don't have any target saved. Look at your last attacks to start building your target list.</p>
+
+{% endif %}
+    <hr class="sep">
+
+    <div class="container p-2 m-3">
+
+
+      {# add target #}
+      <form class="my-2" method="post">{% csrf_token %}
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="target-add-id" class="col-form-label"><i class="fas fa-plus-circle"></i>&nbsp;Enter the ID of the target you want to add</label>
+          </div>
+          <div class="col-auto">
+            <input id="target-add-id" placeholder="Torn ID" type=text class="form-control" aria-describedby="target-add-error">
+          </div>
+          <div class="col-auto">
+            <button id="target-add-submit" type="submit" class="btn btn-outline">Add target</button>
+          </div>
+          {% if addError %}
+            <div class="col-auto">
+              <span id="target-add-error" class="form-text">
+                <div class="error"><i class="fas fa-skull-crossbones"></i>&nbsp; {{ addError }}</div>
+              </span>
+            </div>
+          {% endif %}
+        </div>
+      </form>
+
+      {# export file #}
+      <form class="my-2" method="post" action="{% url 'target:targetsList' %}">{% csrf_token %}
+        <input type="hidden" name="action_type" value="export">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="target-export" class="col-form-label"><i class="fas fa-file-export"></i>&nbsp;Export your target list</label>
+          </div>
+          <div class="col-auto">
+            <button id="target-export" type="submit" class="btn btn-outline">&nbsp;Export JSON</button>
+          </div>
+        </div>
+      </form>
+
+      {# import file #}
+      <form class="my-2" method="post" action="{% url 'target:targetsList' %}" enctype="multipart/form-data">{% csrf_token %}
+        <input type="hidden" name="action_type" value="import">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="target-import" class="col-form-label"><i class="fas fa-file-import"></i>&nbsp;Import your target list</label>
+          </div>
+
+          <div class="col-auto">
+            <button id="target-import" type="submit" class="btn btn-outline" aria-describedby="target-import-error">Import JSON</button>
+          </div>
+
+          <div class="col-auto">
+            <input type="file" name="json_file" class="form-control-file" aria-describedby="target-import-help">
+          </div>
+          <div class="col-auto">
+            <span id="target-import-help" class="form-text">
+              <i class="fas fa-question-circle" title="Only import files you exported here"></i>
+            </span>
+          </div>
+        </div>
+      </form>
+
+
+      <form class="my-2" method="post" action="{% url 'target:targetsList' %}" onsubmit="return confirm('Are you sure you want to delete your list?');">{% csrf_token %}
+        <input type="hidden" name="action_type" value="delete">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <label for="target-delete" class="col-form-label"><i class="fas fa-trash-alt"></i>&nbsp;Delete your target list</label>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-outline error">&nbsp;Delete list</button>
+          </div>
+
+          <div class="col-auto">
+            <input id="target-delete" type="submit" value="Delete List">
+          </div>
+        </div>
+      </form>
+    </div>
+
+  <hr class="sep">
+  <p class="mb-0" >Chaining on your phone? Try <a href="https://www.torn.com/forums.php#/p=threads&f=67&t=16163503" target="_blank">Torn PDA</a> from {{"Manuito"|playerURL:2225097|safe}}, you can automatically sync all your targets with YATA.</p>
+</div>

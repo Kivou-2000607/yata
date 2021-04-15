@@ -18,23 +18,23 @@ This file is part of yata.
 {% endcomment %}
 
 {% if apiError %}
-    <div class="module error">
-        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiError|safe}}</span>
+    <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+        <p class="error mb-0"><i class="fas fa-skull-crossbones"></i>&nbsp;{{apiError|safe}}</p>
     </div>
 {% endif %}
 
 {% if errorMessage %}
-    <div class="module error">
-        <span><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{errorMessage|safe}}</span>
+    <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+        <p class="error mb-0"><i class="fas fa-skull-crossbones"></i>&nbsp;{{errorMessage|safe}}</p>
     </div>
 {% endif %}
 
 {% if validMessage %}
-    <div class="module valid">
-        <span><i class="fas fa-check fa-icon-inline"></i>{{validMessage|safe}}</span>
+    <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+        <p class="valid mb-0"><i class="fas fa-check"></i>&nbsp;{{validMessage|safe}}</p>
     </div>
 {% endif %}
 
 {% if inlineError %}
-    <span class="error" title="{{inlineError}}"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{inlineError|safe}}</span>
+    <span class="error" title="{{inlineError}}"><i class="fas fa-skull-crossbones"></i>&nbsp;{{inlineError|safe}}</p>
 {% endif %}

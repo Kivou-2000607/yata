@@ -8,7 +8,6 @@ urlpatterns = [
 
     re_path(r'^attacks/$', views.attacks, name='attacks'),
     re_path(r'^attacks/losses/$', views.losses, name='losses'),
-    re_path(r'^attacks/breakdown/$', views.attacksBreakdown, name='attacksBreakdown'),
     re_path(r'^attack/$', views.attack, name='attack'),
 
     re_path(r'^targets/$', views.targets, name='targets'),
@@ -18,7 +17,6 @@ urlpatterns = [
     re_path(r'^target/$', views.target, name='target'),
 
     re_path(r'^revives/$', views.revives, name='revives'),
-    re_path(r'^revives/breakdown/$', views.revivesBreakdown, name='revivesBreakdown'),
     re_path(r'^revive/$', views.revive, name='revive'),
 
     re_path(r'^dogtags/$', views.dogtags, name='dogtags'),

@@ -17,14 +17,26 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-{% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.analytics %}
-{% include "yata/analytics.html" %}
-{% elif view.prune %}
-{% include "yata/prune.html" %}
+
+{% if player.factionAA %}
+
+  <form style="display: inline;">{% csrf_token %}
+    {% if targetId in factionTargets %}
+      <a id="target-list-faction-{{targetId}}" class="target-list-faction" href=""><i class="fas fa-fist-raised" title="Faction target"></i></a>
+    {% else %}
+      <a id="target-list-faction-{{targetId}}" class="target-list-faction" style="opacity: 0.5" href=""><i class="fas fa-fist-raised" title="Faction target"></i></a>
+    {% endif %}
+  </form>
+
 {% else %}
-{% include "yata/index.html" %}
+
+  {% if targetId in factionTargets %}
+    <i class="fas fa-fist-raised" title="Faction target"></i>
+  {% else %}
+    <i class="fas fa-fist-raised" title="Faction target" style="opacity: 0.5"></i>
+  {% endif %}
+
 {% endif %}

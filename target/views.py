@@ -69,10 +69,44 @@ def attacks(request):
             error, attacks = updateAttacks(player, full=full)
             targets = getTargets(player)
 
+            # get breakdown
+            breakdownType = dict({})
+            breakdownPlayer = dict({})
+            for attack in attacks.all():
+                i = 0 if attack.attacker else 1
+
+                target_id = attack.defender_id if attack.attacker else attack.attacker_id
+                target_name = attack.defender_name if attack.attacker else attack.attacker_name
+
+                if attack.result not in breakdownType:
+                    breakdownType[attack.result] = [0, 0]
+                if target_id not in breakdownPlayer:
+                    breakdownPlayer[target_id] = [0, 0, target_name]
+
+                breakdownType[attack.result][i] += 1
+                breakdownPlayer[target_id][i] += 1
+
+            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
+            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
+
+            # sluts
+            losses = player.attack_set.filter(result="Lost").exclude(attacker_id=player.tId)
+
+            sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
+            for i in sluts:
+                a = losses.order_by("timestamp_ended").filter(attacker_id=i)
+                if len(a):
+                    # name, paid, total
+                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all()), a.first().timestamp_ended, a.first().code]
+
+            # sort sluts
+            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][3]))
+
+            # paginator
             paginator = Paginator(attacks, 25)
             attacks = paginator.get_page(request.GET.get('p_at'))
 
-            context = {"player": player, "targetcat": True, "attacks": attacks, "targets": targets, "view": {"attacks": True}}
+            context = {"player": player, "targetcat": True, "attacks": attacks, "sluts": sluts, "breakdownType": breakdownType, "breakdownPlayer": breakdownPlayer, "targets": targets, "view": {"attacks": True}}
             context["apiErrorSub"] = error["apiError"] if error else False
 
             page = 'target/content-reload.html'if request.method == "POST" else 'target.html'
@@ -116,41 +150,6 @@ def losses(request):
 
             context = {"player": player, "sluts": sluts}
             return render(request, 'target/attacks/losses.html', context)
-
-        else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
-def attacksBreakdown(request):
-    try:
-        if request.session.get('player') and request.method == "POST":
-            player = getPlayer(request.session["player"].get("tId"))
-
-            breakdownType = dict({})
-            breakdownPlayer = dict({})
-            for attack in player.attack_set.all():
-                i = 0 if attack.attacker else 1
-
-                target_id = attack.defender_id if attack.attacker else attack.attacker_id
-                target_name = attack.defender_name if attack.attacker else attack.attacker_name
-
-                if attack.result not in breakdownType:
-                    breakdownType[attack.result] = [0, 0]
-                if target_id not in breakdownPlayer:
-                    breakdownPlayer[target_id] = [0, 0, target_name]
-
-                breakdownType[attack.result][i] += 1
-                breakdownPlayer[target_id][i] += 1
-
-            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
-            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
-
-            context = {"player": player, "breakdownType": breakdownType, "breakdownPlayer": breakdownPlayer}
-            return render(request, 'target/attacks/breakdown.html', context)
 
         else:
             message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
@@ -263,14 +262,15 @@ def targetsList(request):
                                 "note": str(v["note"])[:128]}
 
                             player.targetinfo_set.get_or_create(target_id=k, defaults=defaults)
+
                     except BaseException as e:
                         message = "Error in the json file: {}".format(e)
-                        return returnError(type=403, msg=message)
+                        return returnError(type=404, msg=message)
 
                 else:
                     targets = getTargets(player)
                     message = "Wrong file format. Require: application/json. Give: {}".format(file.content_type)
-                    return returnError(type=403, msg=message)
+                    return returnError(type=404, msg=message)
 
             return redirect('/target/')
 
@@ -331,14 +331,21 @@ def target(request):
 
                 # add by Id target
                 if request.POST["type"] == "addById":
-                    target_id = int(request.POST["targetId"])
-                    targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
-                    targetInfo.getTarget(update=True)
-                    faction = Faction.objects.filter(tId=player.factionId).first()
-                    factionTargets = [] if faction is None else faction.getTargetsId()
+                    try:
+                        target_id = int(request.POST["targetId"])
+                        targetInfo, _ = player.targetinfo_set.get_or_create(target_id=target_id)
+                        targetInfo.getTarget(update=True)
 
-                    targets = getTargets(player)
-                    context = {"player": player, "targets": targets, "factionTargets": factionTargets, "targetId": target_id, "ts": tsnow()}
+                        faction = getFaction(player.factionId)
+                        factionTargets = [] if faction is None else faction.getTargetsId()
+                        targets = getTargets(player)
+                        context = {"player": player, "targets": targets, "factionTargets": factionTargets, "targetId": target_id, "ts": tsnow()}
+
+                    except BaseException as e:
+                        faction = getFaction(player.factionId)
+                        factionTargets = [] if faction is None else faction.getTargetsId()
+                        targets = getTargets(player)
+                        context = {"player": player, "targets": targets, "factionTargets": factionTargets, "addError": e, "ts": tsnow()}
 
                     return render(request, 'target/targets/index.html', context)
 
@@ -374,9 +381,37 @@ def revives(request):
 
             error, revives = updateRevives(player)
 
+            # breakdown
+            breakdownType = dict({})
+            breakdownStatus = dict({})
+            breakdownPlayer = dict({})
+            for r in player.revive_set.all():
+                outgoing = r.reviver_id == player.tId
+                i = 0 if outgoing else 1
+                target_id = r.target_id if outgoing else r.reviver_id
+                target_name = r.target_name if outgoing else r.reviver_name
+
+                if r.target_hospital_reason not in breakdownType:
+                    breakdownType[r.target_hospital_reason] = [0, 0]
+
+                if r.target_last_action_status not in breakdownStatus:
+                    breakdownStatus[r.target_last_action_status] = [0, 0]
+
+                if target_id not in breakdownPlayer:
+                    breakdownPlayer[target_id] = [0, 0, target_name]
+
+                breakdownType[r.target_hospital_reason][i] += 1
+                breakdownStatus[r.target_last_action_status][i] += 1
+                breakdownPlayer[target_id][i] += 1
+
+            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
+            breakdownStatus = sorted(breakdownStatus.items(), key=lambda x: x[0])
+            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
+
+
             revives = Paginator(revives, 25).get_page(request.GET.get('p_re'))
 
-            context = {"player": player, "targetcat": True, "revives": revives, "view": {"revives": True}}
+            context = {"player": player, "targetcat": True, "revives": revives, "breakdownPlayer": breakdownPlayer, "breakdownType": breakdownType, "breakdownStatus": breakdownStatus, "view": {"revives": True}}
             context["apiErrorSub"] = error["apiError"] if error else False
 
             page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
@@ -410,49 +445,6 @@ def revive(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
-
-def revivesBreakdown(request):
-    try:
-        if request.session.get('player') and request.method == "POST":
-            player = getPlayer(request.session["player"].get("tId"))
-
-            breakdownType = dict({})
-            breakdownStatus = dict({})
-            breakdownPlayer = dict({})
-            for r in player.revive_set.all():
-                outgoing = r.reviver_id == player.tId
-                i = 0 if outgoing else 1
-                target_id = r.target_id if outgoing else r.reviver_id
-                target_name = r.target_name if outgoing else r.reviver_name
-
-                if r.target_hospital_reason not in breakdownType:
-                    breakdownType[r.target_hospital_reason] = [0, 0]
-
-                if r.target_last_action_status not in breakdownStatus:
-                    breakdownStatus[r.target_last_action_status] = [0, 0]
-
-                if target_id not in breakdownPlayer:
-                    breakdownPlayer[target_id] = [0, 0, target_name]
-
-                breakdownType[r.target_hospital_reason][i] += 1
-                breakdownStatus[r.target_last_action_status][i] += 1
-                breakdownPlayer[target_id][i] += 1
-
-            breakdownType = sorted(breakdownType.items(), key=lambda x: x[0])
-            breakdownStatus = sorted(breakdownStatus.items(), key=lambda x: x[0])
-            breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
-
-            context = {"player": player, "breakdownType": breakdownType, "breakdownStatus": breakdownStatus, "breakdownPlayer": breakdownPlayer}
-            return render(request, 'target/revives/breakdown.html', context)
-
-        else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
 
 @csrf_exempt
 def targetImport(request):

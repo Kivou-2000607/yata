@@ -17,12 +17,15 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
-
-{% if view.hof %}
-    {% include "awards/hof.html" %}
-{% elif view.awards %}
-    {% include "awards/index.html" %}
-{% endif %}
+<!-- toggle -->
+<form style="display: inline;">{% csrf_token %}
+    <a id="revives-list-toggle-{{revive.tId}}" href="{% url 'target:revive' %}">
+       {% if revive.paid %}
+           <i class="fas fa-toggle-on" title="Click if revive not paid for"></i>
+           <input class="paid" type="hidden" value="1">
+       {% else %}
+           <i class="fas fa-toggle-off" title="Click if revive paid for"></i>
+           <input class="paid" type="hidden" value="0">
+       {% endif %}
+    </a>
+</form>

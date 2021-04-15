@@ -1,0 +1,36 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<div class="yt-dropdown">
+  <a id="target-list-refresh-color" style="cursor: pointer;" title="Change color" data-val="0">
+    <i class="fas fa-palette" style="cursor: pointer;"></i>
+  </a>
+   Select colors
+  <div class="yt-dropdown-content yt-dropdown-title p-2">
+    <span><i id="target-list-refresh-color-0" data-val="0" class="far fa-check-square p-2">&nbsp;Black</i></span>
+    <span><i id="target-list-refresh-color-1" data-val="1" class="far fa-check-square p-2">&nbsp;Green</i></span>
+    <span><i id="target-list-refresh-color-2" data-val="2" class="far fa-check-square p-2">&nbsp;Orange</i></span>
+    <span><i id="target-list-refresh-color-3" data-val="3" class="far fa-check-square p-2">&nbsp;Red</i></span>
+  </div>
+</div>

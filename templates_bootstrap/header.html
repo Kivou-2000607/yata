@@ -147,34 +147,24 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
     {% endif %}
 
     {% if playercat %}
-        <hr class="sep">
         {% include "player/categories.html" %}
     {% elif awardscat %}
-        {# <hr class="sep"> #}
         {% include "awards/categories.html" %}
     {% elif targetcat %}
-        <hr class="sep">
         {% include "target/categories.html" %}
     {% elif compcat %}
-        <hr class="sep">
         {% include "company/categories.html" %}
     {% elif factioncat and player.tId > 0 %}
-        <hr class="sep">
         {% include "faction/categories.html" %}
     {% elif bazaarcat %}
-        <hr class="sep">
         {% include "bazaar/categories.html" %}
     {% elif chaincat and player.tId > 0 %}
-        <hr class="sep">
         {% include "chain/categories.html" %}
     {% elif bazaarcat %}
-        {# <hr class="sep"> #}
         {% include "bazaar/categories.html" %}
     {% elif stockcat %}
-        <hr class="sep">
         {% include "stock/categories.html" %}
     {% elif botcat %}
-        <hr class="sep">
         {% include "bot/categories.html" %}
     {% endif %}
 

@@ -19,8 +19,7 @@ This file is part of yata.
 
 {% load app_filters %}
 
-
-<div class="clearfix p-3 mb-3 module rounded citymap">
+<div class="clearfix p-md-3 p-1 mb-3 module rounded citymap">
     <img class="bd-placeholder-img col-md-1 float-md-end mb-3 ms-md-3 d-none d-md-block rounded-icon" src="/media/yata.png" alt="YATA" width="100%" />
 
     <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
@@ -185,8 +184,8 @@ This file is part of yata.
               <tr>
                 <td class="text-center">{{donation.split.sender}}</td>
                 <td class="text-center">{{donation.split.gift}}</td>
-                <td class="align-start">{{donation.split.message}}</td>
-                <td class="align-center">{{donation.split.date}}</td>
+                <td class="text-start">{{donation.split.message}}</td>
+                <td class="text-center">{{donation.split.date}}</td>
               </tr>
             {% endfor %}
           </tbody>
