@@ -1,0 +1,354 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% if company %}
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Weekly Customer', 'Weekly Income', 'Weekly Profit'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.weekly_customers}}, {{d.weekly_income}}, {{d.weekly_profit}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            // displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [[0], [1, 2]],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-weekly'));
+        // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
+        chart.draw(data, options);
+    });
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Daily Customer', 'Daily Income', 'Daily Profit'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.daily_customers}}, {{d.daily_income}}, {{d.daily_profit}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            // displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [[0], [1, 2]],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-daily'));
+        // chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
+        chart.draw(data, options);
+    });
+</script>
+
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(()=>{
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Total effectiveness', 'Popularity', 'Efficiency', 'Environment'],
+            {% for d in company_data %}
+                [new Date({{d.id_ts|sub:86400|mul:1000}}), {{d.effectiveness_total}}, {{d.popularity}}, {{d.efficiency}}, {{d.environment}}],
+            {% endfor %}
+        ]);
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, [1, 2, 3]],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+            thickness: 1.5,
+            fill: 10,
+            dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('company-data-effectiveness'));
+        chart.draw(data, options);
+    });
+</script>
+
+<script>
+  google.charts.load('current', {'packages':['annotationchart']});
+  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}));
+
+  function drawChart(employees_graph) {
+    //Set Visualizer (dt)
+    const dt = new google.visualization.DataTable();
+
+    //Map Header (dt.addColumn)
+    dt.addColumn('date', 'Date');
+    employees_graph.header
+      .forEach(col=>dt.addColumn('number', col[1]));
+
+    //Map Row (dt.addRow)
+    employees_graph.data
+      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:undefined)])
+      .forEach(row=>dt.addRow(row));
+
+    const options = {
+      displayZoomButtons: false,
+      displayAnnotations: true,
+      displayExactValues: false,
+      numberFormats: "###,###",
+      // scaleColumns: [0, 1],  // we want only one scale
+      scaleType: "allmaximized",
+      scaleFormat: 'short',
+      dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
+    };
+
+    const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-employees'));
+    chart.draw(dt, options);
+
+    //Add onclick for chart
+    google.visualization.events.addListener(chart,'select',()=>{
+      //Get Selected Row
+      let row = chart.getSelection()[0].row;
+      //Get Timestamp
+      let timestamp = employees_graph.data[row][0];
+      console.log(chart.getSelection())
+      $( "#company-employees-details" )
+        //Throbber
+        .html(`<div class="container"><div class="overlay close"></div><div class="modal-center-large"><h2 class="title">Loading...</h2><div style="text-align:center" class="module"><img src="/static/images/crimes2.gif"/></div></div></div>`)
+        //Load Data
+        .load( "/company/supervise/", {
+          type: "show-details",
+          timestamp: timestamp,
+          csrfmiddlewaretoken: getCookie("csrftoken")
+        },()=>chart.setSelection()); //Disable selection
+    });
+
+    //Repeatable Actions
+    const toDataColumnsAction = e=>$(e).parent().data('val');
+    const onEyeAction = (i,e)=>$(e).toggleClass(eyeToggle).closest("tr").toggleClass("hideChart");
+    const eyeToggle = ['fa-eye','fa-eye-slash'];
+
+    //Table Setup hook into chart
+    const tieTable = function() {
+      //Individual Eye-cons
+      $("#company-details-employees tbody tr td.toggle-chart").click(function(e){
+        const tr = $(this).parent("tr").toggleClass("hideChart");
+        const eye = $(this).find("i.far");
+        eye.toggleClass(eyeToggle);
+        let index = toDataColumnsAction(eye);
+        if (eye.hasClass("fa-eye-slash"))
+          chart.hideDataColumns(index);
+        else
+          chart.showDataColumns(index);
+        if (
+          ($("#chartHider i.far").hasClass("fa-eye-slash") && $('#company-details-employees tbody .fa-eye-slash').length===0)
+          || ($("#chartHider i.far").hasClass("fa-eye") && $('#company-details-employees tbody .fa-eye').length===0)
+        )
+          $("#chartHider i.far").toggleClass(eyeToggle);
+      }).dblclick(function(e){
+        let focus = $(this).find('i.far');
+        let target = $('#company-details-employees tbody tr td.toggle-chart');
+        chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
+        chart.showDataColumns(focus.each(onEyeAction).get().map(toDataColumnsAction));
+      });
+
+      //Header Eye-con
+      $("#chartHider").click(function(){
+        let focus = $(this).find('i.far');
+        focus.toggleClass(eyeToggle);
+        let target = $('#company-details-employees tbody tr td.toggle-chart');
+        if (focus.hasClass("fa-eye"))
+          chart.showDataColumns(target.find('i.fa-eye-slash').each(onEyeAction).get().map(toDataColumnsAction));
+        else
+          chart.hideDataColumns(target.find('i.fa-eye').each(onEyeAction).get().map(toDataColumnsAction));
+      });
+    }
+    tieTable();//Init
+
+    //Hook table after re-sim
+    $(document).ajaxComplete((e,x,s)=>{
+      if (s.url==="/company/supervise/" && s.data.includes('type=employees-simu'))
+        tieTable();
+    });
+  }
+</script>
+
+{% if not company.director_yata %}
+<div class="module rounded warning">
+  <p>Your director is not on YATA. Data will only be partially updated.</p>
+</div>
+{% endif %}
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-building"></i>&nbsp;{{company.name|safe}}</div>
+    <div class="col text-end">
+      <a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>&nbsp;Update data</a>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+  <table class="table table-hover table-borderless tablesorter company-overview">
+    <tbody>
+      <tr>
+        <td><b>Name:</b> {{company.html_link}}</td>
+        <td><b>Type:</b> {{company.company_description.name}}</td>
+        <td><b>Rating:</b> {{company.rating|compstars}}</td>
+      </tr>
+      <tr>
+        <td><b>Director:</b> {{company.director_name|playerURL:company.director|safe}}</td>
+        <td><b>Employees:</b> {{company.employees_hired}} / {{company.employees_capacity}}</td>
+        <td><b>Days old:</b> {{company.days_old|intcomma}}</td>
+      </tr>
+      <tr>
+        <td><b>Popularity:</b> {{company.popularity|compPopColor}}</td>
+        <td><b>Efficiency:</b> {{company.efficiency|compPopColor}}</td>
+        <td><b>Environment:</b> {{company.environment|compPopColor}}</td>
+      </tr>
+      <tr>
+        <td><b>Daily customers:</b> {{company.daily_customers|intcomma}}
+            <span title="Comparison to last week on the same day">({{company.daily_customers|sub:company.lastw_customers|signColor0}})</span>
+          </td>
+        <td><b>Daily income:</b> ${{company.daily_income|intcomma}}
+            <span title="Comparison to last week on the same day">({{company.daily_income|sub:company.lastw_income|signColor0}})</span>
+          </td>
+        <td><b>Daily profit:</b> {{company.daily_profit|signColor0}}
+            <span title="Comparison to last week on the same day">({{company.daily_profit|sub:company.lastw_profit|signColor0}})</span>
+          </td>
+      </tr>
+      <tr>
+        <td><b>Weekly customers:</b> {{company.weekly_customers|intcomma}}</td>
+        <td><b>Weekly income:</b> ${{company.weekly_income|intcomma}}</td>
+        <td><b>Weekly profit:</b> {{company.weekly_profit|signColor0}}</td>
+      </tr>
+      <tr>
+
+      <td><b>Effectiveness:</b> <span class="valid">{{company.effectiveness_total}}</span></td>
+      <td><b>Positive:</b>
+        <span class="valid" style="cursor: help" title="working stats">{{company.effectiveness_working_stats}}</span> +
+        <span class="valid" style="cursor: help" title="settled in">{{company.effectiveness_settled_in}}</span> +
+        <span class="valid" style="cursor: help" title="director education">{{company.effectiveness_director_education}}</span> +
+        <span class="valid" style="cursor: help" title="merits">{{company.effectiveness_merits}}</span> +
+        <span class="valid" style="cursor: help" title="management">{{company.effectiveness_management}}</span> +
+        <span class="valid" style="cursor: help" title="book bonus">{{company.effectiveness_book_bonus}}</span>
+      </td>
+      <td><b>Negative:</b>
+        <span class="error" style="cursor: help" title="addiction">{{company.effectiveness_addiction|mul:-1}}</span> +
+        <span class="error" style="cursor: help" title="inactivity">{{company.effectiveness_inactivity|mul:-1}}</span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+
+<div class="table-responsive">
+  <table class="table table-hover table-borderless tablesorter">
+    <tbody>
+      <tr><td id="company-data-weekly"></td></tr>
+      <tr><td id="company-data-daily"></td></tr>
+      <tr><td id="company-data-effectiveness"></td></tr>
+    </tbody>
+  </table>
+</div>
+
+  <p class="update-info mb-0">Last update: {{company.timestamp|ts2date}}</p>
+</div>
+
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-user-tie"></i>&nbsp;Employees</div>
+    <div class="col text-end">
+      <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div id="company-reload-employees">
+      {% include "company/supervise/employees.html" %}
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless tablesorter">
+      <tbody>
+        <tr><td id="company-data-employees"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+{% if company_data|length %}
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-list"></i>&nbsp;Company records</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="pagination-list">
+      {% include "company/supervise/logs.html" %}
+  </div>
+</div>
+
+{% endif %}
+
+{% if company_stock|length %}
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-parachute-box"></i>&nbsp;Stock records</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="pagination-list">
+      {% include "company/supervise/stock.html" %}
+  </div>
+</div>
+
+{% endif %}
+
+{% else %}
+<div class="container-fluid rounded p-md-3 p-1 mb-3 module">
+  {% if player.companyId %}
+    <p class="warning mb-0">Your director is not registered in YATA.</p>
+  {% else %}
+    <p class="warning mb-0">You're not working in a company.</p>
+  {% endif %}
+</div>
+{% endif %}

@@ -51,7 +51,6 @@ table.company-stocks td.e { width: 5%; text-align: center; }  /* x3 */
 table.company-stocks td.f { width: 10%; text-align: right; }  /* x4 */
 
 
-
 select.company-employee-position-form {
   cursor: pointer;
   border:none;

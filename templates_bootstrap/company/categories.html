@@ -1,5 +1,5 @@
 {% comment %}
-Copyright 2019 kivou.2000607@gmail.com
+Copyright 2020 kivou.2000607@gmail.com
 
 This file is part of yata.
 
@@ -17,6 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+
 <nav class="navbar navbar-expand-md navbar-light">
   <div class="container-fluid">
     <a class="navbar-brand" style="opacity: 0;">
@@ -30,17 +31,16 @@ This file is part of yata.
       <ul class="nav">
         <li class="nav-item">
           <div class="nav-link yt-cat-link">
-            <a href="{% url 'target:targets' %}" title="target targets"><i class="fas fa-crosshairs"></i>&nbsp;Targets</a>
+            {% if player.companyId %}
+              <a href="{% url 'company:supervise' %}" title="company supervise"><i class="fas fa-user-tie"></i>&nbsp;Supervise</a>
+            {% else %}
+              <span class="neutral"><i class="fas fa-user-tie"></i>&nbsp;Supervise</span>
+            {% endif %}
           </div>
         </li>
         <li class="nav-item">
           <div class="nav-link yt-cat-link">
-            <a href="{% url 'target:attacks' %}" title="target attacks"><i class="fas fa-user-shield"></i>&nbsp;Attacks</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <div class="nav-link yt-cat-link">
-            <a href="{% url 'target:revives' %}" title="target revives"><i class="fas fa-heartbeat"></i>&nbsp;Revives</a>
+            <a href="{% url 'company:browse' %}" title="company browse"><i class="fas fa-list-ol"></i>&nbsp;Browse</a>
           </div>
         </li>
       </ul>

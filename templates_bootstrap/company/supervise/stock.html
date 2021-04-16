@@ -1,0 +1,83 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<div class="table-responsive">
+<table class="table table-hover table-striped table-borderless company-stocks">
+    <thead>
+        <tr>
+            <th class="a">Date</th>
+            <th class="b">Type</th>
+            <th class="c">Emp.</th>
+            <th class="d">Positions</th>
+            <th class="e">Cost</th>
+            <th class="e">RRP</th>
+            <th class="e">Price</th>
+            <th class="f">Sold</th>
+            <th class="f">Worth</th>
+            <th class="f">Stock</th>
+            <th class="f">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in company_stock_p %}
+        <tr class="company-logs" data-val="{{d.timestamp}}">
+            <td class="text-center" title="{{d.timestamp|ts2date}}">{% ifchanged %}{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}{% endifchanged%}</td>
+            <td class="text-start">{{d.name}}</td>
+            <td class="text-center">{{d.display_pos.2}}</td>
+            <td class="text-start" title="{{d.display_pos.0}}">{% if d.display_pos.1 %}<span class="neutral">{{d.display_pos.1}}</span>{% else %}{{d.display_pos.0}}{% endif %}</td>
+            <td class="text-center">${{d.cost|intcomma}}</td>
+            <td class="text-center">${{d.rrp|intcomma}}</td>
+            <td class="text-center">${{d.price|intcomma}}</td>
+            <td class="text-end">{{d.sold_amount|intcomma}} <span title="Comparison to the day before">({{d.delta_sold_amount|signColor0}})</span></td>
+            <td class="text-end">${{d.sold_worth|intcomma}} <span title="Comparison to the day before">({{d.delta_sold_worth|signColor0}})</span></td>
+            <td class="text-end">{{d.in_stock|intcomma}} <span title="Comparison to the day before">({{d.delta_in_stock|signColor0}})</span></td>
+            <td class="text-end">{{d.created|intcomma}} <span title="Comparison to the day before">({{d.delta_created|signColor0}})</span></td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td colspan="13" class="text-center">
+            <div class="pagination d-block">
+                <span class="step-links">
+                    {% if company_stock_p.has_previous %}
+                        <a class="yt-page-link rounded first" href="{% url 'company:supervise' %}?page_s=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.previous_page_number }}"></a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ company_stock_p.number }}/{{ company_stock_p.paginator.num_pages }}
+                    </span>
+
+                    {% if company_stock_p.has_next %}
+                        <a class="yt-page-link rounded next" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'company:supervise' %}?page_s={{ company_stock_p.paginator.num_pages }}"></a>
+                    {% endif %}
+                </span>
+            </div>
+          </td>
+        </tr>
+
+
+    </tbody>
+</table>
+</div>
