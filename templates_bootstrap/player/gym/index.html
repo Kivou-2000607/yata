@@ -1,0 +1,42 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+{% if apiErrorSub %}
+    <p class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorSub}}</p>
+{% else %}
+
+<p class="mb-0">Will be released after crimes 2.0</p>
+
+<!-- <h3>Settings</h3> -->
+
+<!-- <form action="{% url 'player:gym' %}" method="post"> -->
+    <!-- {% csrf_token %} -->
+    <!-- {{ form }} -->
+    <!-- <input type="submit" value="Train"> -->
+<!-- </form> -->
+
+
+
+{% endif %}

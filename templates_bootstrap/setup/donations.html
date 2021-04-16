@@ -125,10 +125,10 @@ This file is part of yata.
 <div class="container-fluid p-md-3 p-1 mb-3 module">
   <div class="donations-buttons-container">
     <div title="Money on the PayPal account (update: {{paypal_balance.timestamp|ts2date}} TCT)" class="donations-balances">
-      <i class="fab fa-paypal fa-icon-inline"></i><span class="{% if paypal_balance.balance > 0 %}valid{% else %}error{% endif %}">{{paypal_balance.balance}} {{paypal_balance.currency}}</span>
+      <i class="fab fa-paypal"></i>&nbsp<span class="{% if paypal_balance.balance > 0 %}valid{% else %}error{% endif %}"><b>{{paypal_balance.balance}} {{paypal_balance.currency}}</b></span>
     </div>
     <div title="Money on the the host account (update: {{droplet_balance.timestamp|ts2date}} TCT)" class="donations-balances">
-      <i class="fab fa-digital-ocean fa-icon-inline"></i><span class="{% if droplet_balance.account_balance > 0 %}valid{% else %}error{% endif %}">{{droplet_balance.account_balance}} {{droplet_balance.currency}}</span>
+      <i class="fab fa-digital-ocean"></i>&nbsp<span class="{% if droplet_balance.account_balance > 0 %}valid{% else %}error{% endif %}"><b>{{droplet_balance.account_balance}} {{droplet_balance.currency}}</b></span>
     </div>
   </div>
 

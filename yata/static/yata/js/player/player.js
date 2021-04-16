@@ -1,15 +1,3 @@
-$(document).on('click', 'table.player-categories td', function(e){
-    e.preventDefault();
-    var l = $(this).children("a").attr("href").split("/")[2];
-    $( "#content-update" ).load( "/player/"+l+"/", {
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    }, nav("/player/"+l));
-    $("#content-update h2").addClass("grey");
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+l)
-    $("div.error").hide();
-});
-
-
 $( document ).on('click', '.merits-button', e => {
     e.preventDefault;
 
