@@ -5,12 +5,8 @@
     <link rel="stylesheet" type="text/css" href={% static "yata/css/setup.css" %} />
 {% endblock%}
 
-{% block title%}
-    | Home
-{% endblock %}
-
 {% block content %}
-  <div id="content-update" class="container-flex px-md-5">
+  <div id="content-update">
     {% include "yata/content-reload.html" %}
   </div>
 {% endblock %}

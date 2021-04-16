@@ -41,7 +41,7 @@ def prune(request):
             nPlayers = PlayerData.objects.first()
 
             context = {"player": player, "nTotal": nPlayers.nTotal, "nInact": nPlayers.nInact, "nValid": nPlayers.nValid, "nInval": nPlayers.nInval, "nPrune": nPlayers.nPrune, "view": {"prune": True}}
-            return render(request, "yata.html", context)
+            return render(request, "setup.html", context)
         else:
             return returnError(type=403, msg="You might want to log in.")
 

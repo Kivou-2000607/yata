@@ -17,9 +17,10 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 */
 
-table.awards-hof { min-width: 500px; width: 50%; margin: auto;}
-table.players-users-summary th.a { width: 40%;}
-table.players-users-summary th.b { width: 30%;}
+table.players-users-summary { min-width: 500px; width: 50%; margin: auto;}
+table.players-users-summary td.a { width: 40%; }
+table.players-users-summary td.b { width: 30%; }
+
 
 div.donations-buttons-container {
   position: relative;

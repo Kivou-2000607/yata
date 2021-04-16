@@ -72,13 +72,17 @@ This file is part of yata.
 </head>
 
 <body>
-  <div id="header">
-    {% include "header.html" %}
+  <div class="container-flex px-md-5">
+
+    <div id="header">
+      {% include "header.html" %}
+    </div>
+
+    {% include "yata/section-message.html" %}
+
+    {% block content %}{% endblock %}
+
   </div>
-
-  {% include "yata/section-message.html" %}
-
-  {% block content %}{% endblock %}
 
   <script src='{% static "thirdparty/bootstrap-5.0.0-beta3-dist/js/bootstrap.bundle.js" %}'></script>
 

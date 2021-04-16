@@ -22,7 +22,64 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
 {% load app_filters %}
 
 
-<header class="px-md-5">
+{% if new_player or seen_message %}
+  <script type="text/javascript">
+      $('#modal-new-player').modal('show');
+  </script>
+
+  <!-- Modal breakdown -->
+  <div class="modal fade" id="modal-new-player" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header p-0">
+          <h2 class="title rounded-top py-2 px-3" style="width: 100%">
+            <div class="row justify-content-between">
+              <div class="col">Welcome to YATA {{player.name}}</div>
+            </div>
+          </h2>
+        </div>
+        <div class="modal-body p-1 p-md-3 module">
+          <p>
+              I'm glad you're here and I hope you'll enjoy the features YATA provides.
+              If you find a bug or enconter a weird behavior, if you have a question or a suggestion,
+              please <a href="{% url 'discord' %}" target="_blank">join the discord server</a>.
+              <br>
+              <br>
+
+              Kivou
+          </p>
+
+          <hr class="sep">
+
+          <h3 class="warning">Information</h3>
+          <p>All members of your faction will see:</p>
+          <ul>
+              <li>your energy</li>
+              <li>your NNB</li>
+          </ul>
+          <p>All members with <b>AA perm</b><sup>*</sup> will also see</p>
+          <ul>
+              <li>your battle stats</li>
+          </ul>
+          <p>If you want to hide them you can go to the <a href="{% url 'faction:members' %}" target="_blank">members
+                  page</a> to toggle it off.</p>
+          <hr class="sep">
+          <p class="mb-0"><sup>*</sup> <i>AA perm means API Access permission. It's a TORN permission that leaders can give to
+                  their members.</i></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-outline valid" data-bs-dismiss="modal">Sounds good to me</button>
+          <a id="yata-delete-submit" href="{% url 'delete' %}">
+            <button type="submit" class="btn btn-outline error">Delete my account already</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+<header>
   <div class="module mb-3">
     <nav class="navbar navbar-expand-md navbar-light">
       <div class="container-fluid">
@@ -124,9 +181,9 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             <form class="d-flex">{% csrf_token %}
             {% if player.tId > 0 %}
               {# logout #}
-                <div class="nav-link yt-main-link error">
-                  <a id="yata-logout-submit" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></a>
-                </div>
+                {# <div class="nav-link yt-main-link error"> #}
+                  {# <a id="yata-logout-submit" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></a> #}
+                {# </div> #}
             {% else  %}
             {# login #}
               <input id='yata-login-key' placeholder="API key" type="text" class="form-control me-2" required>
