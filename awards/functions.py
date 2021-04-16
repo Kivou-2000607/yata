@@ -2018,7 +2018,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["category"] = category
                     vp["subcategory"] = type
 
-                    allStocks = {s["acronym"]: [s["name"], s["benefit"]["requirement"], s["current_price"]] for s in ALL_STOCKS}
+                    allStocks = {s["acronym"]: [s["name"], s["benefit"]["requirement"], s["current_price"]] for s in ALL_STOCKS.values()}
                     holdStock = [b.split("(")[1].replace(")", "").strip() for b in userInfo.get("stock_perks", [])]
                     lst = []
                     totalMoney = 0
