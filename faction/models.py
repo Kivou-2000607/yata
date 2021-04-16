@@ -4062,6 +4062,10 @@ class SpyDatabase(models.Model):
                     if v["type"] != "stats":
                         continue
 
+                    # ignore empty reports
+                    if v["report"] is None:
+                        continue
+
                     # refactor dictionnary
                     strength = v["report"].get("strength", -1)
                     speed = v["report"].get("speed", -1)
