@@ -1,14 +1,14 @@
 // show/hide details item
 $(document).on('click', '.details-item', function(e){
     e.preventDefault();
-    var tId = $(this).attr("href").split("/").pop();
+    var tId = $(this).attr("data-val");
     $( "#bazaar-modal" ).load( "/bazaar/details/"+tId, {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
 });
 $(document).on('click', '.prices-item', function(e){
     e.preventDefault();
-    var tId = $(this).attr("href").split("/").pop();
+    var tId = $(this).attr("data-val");
     $( "#bazaar-modal" ).load( "/bazaar/prices/"+tId, {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });

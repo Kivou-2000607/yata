@@ -102,7 +102,7 @@ span.italic { font-style: italic; }
 span.bold { font-weight: bold; }
 span.t-gray-9 { color: #999; }
 span.t-green { color: #0B8E14; }
-
+span.open-modal {cursor: help;}
 
 li.bazaar-toggle-filters{ cursor: pointer; }
 img.flag{ margin-right: 10px; }
@@ -111,7 +111,7 @@ img.flag-gs{ margin-right: 10px; filter: grayscale(0.8); }
 
 table.bazaar-abroad-stocks { min-width: 1000px; width: 100%; margin: auto; }
 table.bazaar-abroad-stocks td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
-table.bazaar-abroad-stocks tr { cursor: pointer; }
+table.bazaar-abroad-stocks tr { cursor: help; }
 table.bazaar-abroad-stocks th.a { width:11%; }
 table.bazaar-abroad-stocks th.b { width:15%; }
 table.bazaar-abroad-stocks th.c { width:10%; }

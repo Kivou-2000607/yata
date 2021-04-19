@@ -64,7 +64,7 @@ This file is part of yata.
     <tr>
         <th colspan="2">
             <div class="item-name">
-                <a href="{% url 'bazaar:details' item.tId %}" class="details-item" title="{{item.tName}}">{{item.tName}}</a>
+                <span data-val="{{item.tId}}" class="details-item open-modal" title="{{item.tName}}">{{item.tName}}</span>
             </div>
         </th>
     </tr>
@@ -92,11 +92,11 @@ This file is part of yata.
     </tr>
     {% if item.weekTendencyB %}
       <tr class="prices-tendency">
-        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">{{item.weekTendency|priceTendencyShort|safe}} / {{item.monthTendency|priceTendencyShort|safe}}</a></th>
+        <th colspan="2"><span  data-val="{{item.tId}}" class="prices-item open-modal" title="Prices tendency over a week / a month">{{item.weekTendency|priceTendencyShort|safe}} / {{item.monthTendency|priceTendencyShort|safe}}</span></th>
       </tr>
     {% else %}
       <tr class="prices-tendency">
-        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">No data</a></th>
+        <th colspan="2"><span  data-val="{{item.tId}}" class="prices-item open-modal" title="Prices tendency over a week / a month">No data</span></th>
       </tr>
     {% endif %}
 </thead>
