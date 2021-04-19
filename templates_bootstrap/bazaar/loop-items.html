@@ -17,14 +17,14 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-{% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load humanize %}
+{% load mathfilters %}
 
-{% if view.analytics %}
-  {% include "yata/analytics.html" %}
-{% elif view.prune %}
-  {% include "yata/prune.html" %}
-{% else %}
-  {% include "yata/index.html" %}
-{% endif %}
+
+{% for item in items %}
+    <table id="item-sell-table-{{item.tId}}" class="table item-sell-table">
+        {% include "bazaar/item.html" with item=item%}
+    </table>
+{% empty %}
+    <p>No item here.</p>
+{% endfor %}

@@ -1,0 +1,46 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load app_filters %}
+
+{% for k, v in sets.items %}
+  <div class="catch-me">
+    <h2 class="title rounded-top py-2 px-3 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">
+      <div class="row justify-content-between align-items-center">
+        <div class="col ps-0"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}}</div>
+        <div class="col">
+          {% if v.market_value%}<i>market: ${{v.market_value|intcomma}}</i> <i>points: ${{v.points_value|intcomma}}</i> <i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i>{%endif%}
+        </div>
+        <div class="col text-end">
+          {% if view.refreshType and player.tId > 0 %}
+            <a href="bazaar/updateType/{{v.type}}" class="update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
+          {% endif %}
+        </div>
+        {% if view.hideType %}
+          <div class="col-1 text-end toggle-rotate"><i class="fas fa-caret-right"></i></div>
+        {% endif %}
+    </h2>
+
+    <div id="loop-over-item-sell-table-{{v.type}}" class="container-fluid p-2 mb-3 module" {% if view.hideType %}style="display: none;"{% endif %}>
+        {% include "bazaar/loop-items.html" with itemType=k items=v.items %}
+    </div>
+      {# {% if view.hideType %}<br>{% endif %} #}
+  </div>
+{% endfor %}

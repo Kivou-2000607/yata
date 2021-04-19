@@ -1,0 +1,125 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<thead>
+    <tr>
+        <th colspan="2">
+            <div class="item-image">
+                {% if player.tId == -1 %}
+                    <button class="thumbnail btn mt-2" title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
+                {% else %}
+                    <form method="post">{% csrf_token %}
+                        {% if apiErrorSub %}
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button class="thumbnail btn mt-2" title="{{apiErrorSub}}"><i class="fas fa-skull-crossbones error"></i></button></a>
+                        {% else %}
+                            <a href="{% url 'bazaar:update' item.tId %}" class="update-item"><button class="thumbnail btn mt-2" title="{{item.tName}}"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button></a>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        </th>
+    </tr>
+
+    {% if view.timer %}
+    <tr>
+        <th colspan="2" >
+            <form method="post">{% csrf_token %}
+                <a href="{% url 'bazaar:delete' item.tId %}" class="update-timer delete-item">
+                    {% now "U" as ts %}
+                    {% with seconds=ts|sub:item.lastUpdateTS%}
+                        {% if seconds > 599 %}
+                            > 10 mins
+                        {% else %}
+                            {{seconds|ts2time}}
+                        {% endif %}
+                    {% endwith %}
+                </a>
+            </form>
+        </th>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <th colspan="2">
+            <div class="item-name">
+                <a href="{% url 'bazaar:details' item.tId %}" class="details-item" title="{{item.tName}}">{{item.tName}}</a>
+            </div>
+        </th>
+    </tr>
+
+    {% if player.tId > 0 %}
+    <tr>
+        <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'>
+            <form method="post">{% csrf_token %}
+                <a class="toggle-item" href="{% url 'bazaar:toggle' item.tId %}" class="toggle-item"> stock: {{item.stock}}&nbsp;&nbsp;
+                {% if item.tId|stringformat:"i" in list %}
+                    <i class="fas fa-toggle-on"></i>
+                {% else %}
+                    <i class="fas fa-toggle-off"></i>
+                {% endif %}
+                </a>
+            </form>
+        </th>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <th colspan="2">
+            <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
+        </th>
+    </tr>
+    {% if item.weekTendencyB %}
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">{{item.weekTendency|priceTendencyShort|safe}} / {{item.monthTendency|priceTendencyShort|safe}}</a></th>
+      </tr>
+    {% else %}
+      <tr class="prices-tendency">
+        <th colspan="2"><a href="{% url 'bazaar:prices' item.tId %}" class="prices-item" title="Prices tendency over a week / a month">No data</a></th>
+      </tr>
+    {% endif %}
+</thead>
+
+<tbody>
+    {% for data in item.get_bazaar %}
+        {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ignore ggt "   title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="ignore gt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="ignore llt"    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="ignore lt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% else %}                                             <tr class="ignore eq "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% endif %}
+        {% else %}
+            {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="ggt "   title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="gt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="llt"    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="lt "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% else %}                                             <tr class="eq "    title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% endif %}
+        {% endif %}
+        <td class="A">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="B">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+        </tr>
+    {% endfor %}
+
+</tbody>

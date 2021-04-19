@@ -1,29 +1,15 @@
-// nav link
-$(document).on('click', 'table.bazaar-categories td', function(e){
-    e.preventDefault();
-    var l = $(this).children("a").attr("href").split("/")[2];
-    $( "#content-update" ).load( "/bazaar/"+l+"/", {
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    }, nav("/bazaar/"+l+"/"));
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+l)
-    $("#content-update h2").addClass("grey");
-    $("div.error").hide();
-});
-
-
-
 // show/hide details item
 $(document).on('click', '.details-item', function(e){
     e.preventDefault();
     var tId = $(this).attr("href").split("/").pop();
-    $( "#details-item" ).load( "/bazaar/details/"+tId, {
+    $( "#bazaar-modal" ).load( "/bazaar/details/"+tId, {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
 });
 $(document).on('click', '.prices-item', function(e){
     e.preventDefault();
     var tId = $(this).attr("href").split("/").pop();
-    $( "#prices-item" ).load( "/bazaar/prices/"+tId, {
+    $( "#bazaar-modal" ).load( "/bazaar/prices/"+tId, {
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
 });
@@ -31,7 +17,7 @@ $(document).on('click', 'tr.abroad-item-stocks > td:not(.dont-touch-me)', functi
     e.preventDefault();
     var item_id = $(this).parent("tr").attr("data-ite");
     var country_key = $(this).parent("tr").attr("data-cou");
-    $( "#prices-item" ).load( "/bazaar/abroad/stocks/", {
+    $( "#bazaar-modal" ).load( "/bazaar/abroad/stocks/", {
         item_id: item_id, country_key: country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
 });
@@ -58,6 +44,7 @@ $(document).on('click', '.update-item', function(e){
 // update type
 $(document).on('click', '.update-type', function(e){
     e.preventDefault();
+    console.log("coucou")
     var tType = $(this).attr("href").split("/").pop();
     var i = 1;
     $("#loop-over-item-sell-table-"+tType).find('table[id^="item-sell-table-"]').each(function() {
@@ -152,7 +139,7 @@ $(document).on('click', 'h3.toggle-display', function(e){
 
 
 // toggle abroad filters
-$(document).on('click', "td.bazaar-toggle-filters", function(e){
+$(document).on('click', "li.bazaar-toggle-filters", function(e){
     e.preventDefault();
     var td = $(this);
     var filter = td.attr("data-fil");

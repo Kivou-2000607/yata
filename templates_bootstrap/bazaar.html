@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "yata/css_bootstrap/bazaar.css" %} />
+{% endblock%}
+
+{% block title%}
+    - Bazaar
+{% endblock %}
+
+{% block jquery %}
+<script src='{% static "yata/js/bazaar/bazaar.js" %}'></script>
+
+{% endblock %}
+
+{% block content %}
+    <div id="bazaar-modal"></div>
+
+    <div id="content-update">
+        {% include "bazaar/content-reload.html" %}
+    </div>
+
+
+{% endblock %}

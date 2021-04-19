@@ -18,13 +18,21 @@ This file is part of yata.
 {% endcomment %}
 
 {% if apiErrorSub %}
-{% include "yata/error.html" with apiError=apiErrorSub %}
+    {% include "yata/error.html" with apiError=apiErrorSub %}
 {% endif %}
 
-{% if view.analytics %}
-  {% include "yata/analytics.html" %}
-{% elif view.prune %}
-  {% include "yata/prune.html" %}
-{% else %}
-  {% include "yata/index.html" %}
+{% if view.loopType %}
+    {% include "bazaar/loop-types.html" %}
 {% endif %}
+
+{% if view.loopSets %}
+    {% include "bazaar/loop-sets.html" %}
+{% endif %}
+
+{% if view.abroad %}
+    {% include "bazaar/abroad/index.html" %}
+{% endif %}
+
+
+
+{% include "bazaar/tutorial.html" %}

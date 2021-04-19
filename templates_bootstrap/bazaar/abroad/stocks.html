@@ -17,14 +17,20 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-{% include "yata/error.html" with apiError=apiErrorSub %}
-{% endif %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
 
-{% if view.analytics %}
-  {% include "yata/analytics.html" %}
-{% elif view.prune %}
-  {% include "yata/prune.html" %}
-{% else %}
-  {% include "yata/index.html" %}
-{% endif %}
+
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-chart-line"></i>&nbsp;Stocks</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div id="bazaar-abroad-stocks-reload">
+        {% include "bazaar/abroad/list.html" %}
+    </div>
+    <hr class="sep">
+</div>
