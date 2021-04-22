@@ -136,12 +136,12 @@ div.item-table table td { border-top: 1px solid #ddda; }
 div.item-table table td.a { width: 35%; cursor: default; }
 div.item-table table td.b { width: 65%; cursor: default; }
 
-div.item-table table .llt { background:#d9ead3; }
-div.item-table table .lt  { background:#b6d7a8; }
-div.item-table table .eq  { background:#9fc5e8; }
-div.item-table table .gt  { background:#f9cb9c; }
-div.item-table table .ggt { background:#fce5cd; }
-div.item-table table tr.llt { animation: blinker 1s linear infinite; }
+table .llt { background:#d9ead3; }
+table .lt  { background:#b6d7a8; }
+table .eq  { background:#9fc5e8; }
+table .gt  { background:#f9cb9c; }
+table .ggt { background:#fce5cd; }
+table tr.llt { animation: blinker 1s linear infinite; }
 @keyframes blinker {  50% { opacity: 0.5; } }
 div.item-table table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
 div.item-table table tr.show-more {
