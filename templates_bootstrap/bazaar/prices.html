@@ -80,14 +80,10 @@ This file is part of yata.
       </div>
       <div class="modal-body p-0">
         <div class="container-fluid p-md-3 p-1 mb-0 module">
-          <div class="row">
-            <div class="col">
+          <div class="clearfix">
+              <img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large col-md-4 float-md-end mb-3 ms-md-3" />
               <p>Tendency per week over last week: <span>{{item.weekTendency|priceTendency|safe}}</span></p>
               <p>Tendency per week over last month: <span>{{item.monthTendency|priceTendency|safe}}</span></p>
-            </div>
-            <div class="col-4 text-end">
-              <button class="thumbnail btn mt-2"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
-            </div>
           </div>
 
             {% if graphLength == 0 %}

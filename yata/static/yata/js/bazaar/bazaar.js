@@ -34,6 +34,13 @@ $(document).on('click', '.item-table-header:not(.no-click)', e=>{
     }
 });
 
+// show more
+$(document).on('click', 'tr.show-more', e=>{
+    e.preventDefault();
+    $(e.currentTarget).removeClass("d-table-row").hide();
+    $(e.currentTarget).siblings().removeClass("d-none");
+});
+
 // update type
 $(document).on('click', 'span.update-type', e=>{
     e.preventDefault();

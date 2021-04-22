@@ -25,9 +25,17 @@ This file is part of yata.
     <h2 class="title rounded-top py-2 px-3 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">
       <div class="row justify-content-between align-items-center">
         <div class="col ps-0"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}}</div>
-        <div class="col">
-          {% if v.market_value%}<i>market: ${{v.market_value|intcomma}}</i> <i>points: ${{v.points_value|intcomma}}</i> <i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i>{%endif%}
-        </div>
+        {% if v.market_value%}
+          <div class="col">
+            <i>market: ${{v.market_value|intcomma}}</i>
+          </div>
+          <div class="col">
+            <i>points: ${{v.points_value|intcomma}}</i>
+          </div>
+          <div class="col">
+            <i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i>
+          </div>
+        {% endif %}
         <div class="col text-end">
           {% if view.refreshType and player.tId > 0 %}
             <span class="update-type" data-val="{{v.type}}"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</span>

@@ -97,12 +97,9 @@ table.item-sell-table td.B { width:60%; cursor: default;} */
 
 /* ITEM TABLE */
 div.item-table {
-  width: 30%;
+  width: 150px;
   border: 1px solid #ddda;
   border-radius: 10px 10px 0 0;
-}
-@media (min-width: 768px) {
-  div.item-table { width: 150px; }
 }
 
 div.item-table-header {
@@ -147,6 +144,20 @@ div.item-table table .ggt { background:#fce5cd; }
 div.item-table table tr.llt { animation: blinker 1s linear infinite; }
 @keyframes blinker {  50% { opacity: 0.5; } }
 div.item-table table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
+div.item-table table tr.show-more {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 250%;
+  color:#666;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+div.item-table table tr.show-more:hover {
+  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+}
 table.item-sell-table.scale { width: 250px;}
 table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: default;}
 
