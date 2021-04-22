@@ -21,10 +21,14 @@ This file is part of yata.
 {% load mathfilters %}
 
 
-{% for item in items %}
-    <table id="item-sell-table-{{item.tId}}" class="table item-sell-table">
-        {% include "bazaar/item.html" with item=item%}
-    </table>
-{% empty %}
-    <p>No item here.</p>
-{% endfor %}
+<div class="container">
+  <div class="row row-cols-auto justify-content-center">
+  {% for item in items %}
+    <div class="col item-table p-0 mx-1 mb-2" data-iid="{{item.tId}}">
+      {% include "bazaar/item.html" with item=item%}
+    </div>
+  {% empty %}
+      <div class="col error">No item here.</div>
+  {% endfor %}
+  </div>
+</div>

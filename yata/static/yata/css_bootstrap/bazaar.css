@@ -17,19 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 */
 
-div.thumbnail > img {
-    display: inline;
-    background:#ccc url("/static/images/bg_hospital.jpg") left top repeat;
-}
 
-/* a.update-type {
-    color: #FFF;
-}
-a.update-type:hover {
-    color: #DDD;
-    text-shadow: #FC0 1px 0 5px;
-} */
-
+/*
 table.item-sell-table  {
     display: inline-table;
     width:120px!important;
@@ -38,14 +27,21 @@ table.item-sell-table  {
 }
 
 table.item-sell-table img { width:100%; cursor:pointer; }
-button.thumbnail { width:100px; height: 49px;}
 table.item-sell-table a:hover { text-decoration: underline; }
 
 table.item-sell-table th {
     text-align: center;
-    height:15px;
-    line-height: 15px;
+    height:30px;
+    line-height: 30px;
     padding: 5px;
+    vertical-align: middle;
+    width: 120px;
+}
+
+@media (min-width: 768px) {
+  table.item-sell-table th {
+    line-height: 15px;
+  }
 }
 
 table.item-sell-table div.item-image {
@@ -54,24 +50,25 @@ table.item-sell-table div.item-image {
     height:60px;
 }
 
-table.item-sell-table div.item-name {
+table.item-sell-table span.details-item {
     overflow: hidden;
     text-overflow: ellipsis;
     height:15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: inline-block;
+    width: 120px;
 }
-table.item-sell-table div.item-name > a { cursor: help; }
-table.item-sell-table a.prices-item { cursor: help; }
+table.item-sell-table th a.item-name { cursor: pointer; }
+table.item-sell-table th a.prices-item { cursor: pointer; }
 table.item-sell-table th a { color: #666; }
 table.item-sell-table th.item-stock { cursor: default; }
 table.item-sell-table tr.prices-tendency > th { padding-left: 2px; padding-right: 2px;}
 
 table.item-sell-table th.lack       { background:#f4cccc!important; }
-table.item-sell-table th.lack:hover { background:#ea9999!important; }
+table.item-sell-table th.lack:hover { background:#ea9999!important; } */
 
-/* overflow: hidden;
-text-overflow: ellipsis; */
-
-
+/*
 table.item-sell-table td {
     padding:2px;
     overflow: hidden;
@@ -95,20 +92,75 @@ table.item-sell-table.scale { width: 250px;}
 table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: default;}
 
 table.item-sell-table td.A { width:40%; cursor: default; }
-table.item-sell-table td.B { width:60%; cursor: default;}
+table.item-sell-table td.B { width:60%; cursor: default;} */
+
+
+/* ITEM TABLE */
+div.item-table {
+  width: 30%;
+  border: 1px solid #ddda;
+  border-radius: 10px 10px 0 0;
+}
+@media (min-width: 768px) {
+  div.item-table { width: 150px; }
+}
+
+div.item-table-header {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 250%;
+  color:#666;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+div.item-table-header:hover {
+  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+}
+
+div.item-table-header * {
+  color:#666;
+}
+@media (min-width: 768px) {
+  div.item-table-header {
+    line-height: 200%;
+  }
+}
+button.thumbnail {
+  width: 60%;
+  min-width: 120px;
+  height: 49px;
+  border: 1px solid #888;
+}
+div.item-table table { min-width: 120px; }
+div.item-table table td { border-top: 1px solid #ddda; }
+div.item-table table td.a { width: 35%; cursor: default; }
+div.item-table table td.b { width: 65%; cursor: default; }
+
+div.item-table table .llt { background:#d9ead3; }
+div.item-table table .lt  { background:#b6d7a8; }
+div.item-table table .eq  { background:#9fc5e8; }
+div.item-table table .gt  { background:#f9cb9c; }
+div.item-table table .ggt { background:#fce5cd; }
+div.item-table table tr.llt { animation: blinker 1s linear infinite; }
+@keyframes blinker {  50% { opacity: 0.5; } }
+div.item-table table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
+table.item-sell-table.scale { width: 250px;}
+table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: default;}
 
 /* for torn style in items description */
 span.italic { font-style: italic; }
 span.bold { font-weight: bold; }
 span.t-gray-9 { color: #999; }
 span.t-green { color: #0B8E14; }
-span.open-modal {cursor: help;}
 
 li.bazaar-toggle-filters{ cursor: pointer; }
 img.flag{ margin-right: 10px; }
 img.flag-gs{ margin-right: 10px; filter: grayscale(0.8); }
 
-
+/* foreign stocks */
 table.bazaar-abroad-stocks { min-width: 1000px; width: 100%; margin: auto; }
 table.bazaar-abroad-stocks td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
 table.bazaar-abroad-stocks tr { cursor: help; }
@@ -135,7 +187,6 @@ div.abroad-soft {
     -webkit-box-shadow: inset 0 0 5px #888;
     box-shadow: inner 0 0 5px #888;
     border-radius: 4px;
-
 }
 div.abroad-soft:hover {
     -moz-box-shadow: inset 0 0 7px #444;

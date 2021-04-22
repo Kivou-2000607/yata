@@ -38,13 +38,19 @@ This file is part of yata.
         </h2>
       </div>
       <div class="modal-body p-0">
-        <div class="container-fluid p-md-3 p-1 mb-3 module">
-          <center><button class="thumbnail btn mt-2"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button></center>
-          <h3>{{item.tName}} ({{item.tType}})</h3>
-          <h3>Market value: ${{item.tMarketValue|intcomma}}</h3>
-          <h3>Sell Price: ${{item.tSellPrice|intcomma}}</h3>
-          <h3>Buy Price: ${{item.tBuyPrice|intcomma}}</h3>
-          <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
+        <div class="container-fluid p-md-3 p-1 mb-0 module">
+          <div class="row">
+            <div class="col">
+              <h3>{{item.tName}} ({{item.tType}})</h3>
+              <h3>Market value: ${{item.tMarketValue|intcomma}}</h3>
+              <h3>Sell Price: ${{item.tSellPrice|intcomma}}</h3>
+              <h3>Buy Price: ${{item.tBuyPrice|intcomma}}</h3>
+              <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
+            </div>
+            <div class="col-4 text-end">
+              <button class="thumbnail btn mt-2"><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
+            </div>
+          </div>
           <h3>Description:</h3>
           <p>{{item.tDescription|safe}}</p>
           {% if item.tEffect|string2List|length %}

@@ -30,7 +30,7 @@ This file is part of yata.
         </div>
         <div class="col text-end">
           {% if view.refreshType and player.tId > 0 %}
-            <a href="bazaar/updateType/{{v.type}}" class="update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
+            <span class="update-type" data-val="{{v.type}}"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</span>
           {% endif %}
         </div>
         {% if view.hideType %}

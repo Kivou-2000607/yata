@@ -47,7 +47,7 @@ h2 a:focus,
 h2 a:hover,
 h2 a:checked,
 h2 a:enabled,
-h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer;}
+h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer; }
 
 div#content {
     padding-top: 0px;

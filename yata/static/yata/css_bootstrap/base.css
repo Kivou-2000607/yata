@@ -26,7 +26,7 @@ html, body{
   font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   html, body{
     /* min-height: 100%; */
     background:#ccc url("/static/images/bg_regular.jpg") left top repeat;
@@ -119,9 +119,7 @@ p.error, p.warning, p.valid, p.neutral {
 }
 
 
-a:hover {
-  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
-}
+nav a:hover { filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5)); }
 /* div.nav-link.active { border: 1px solid #447e9b; background-color: #fff0!important; margin: -1px; padding: -1px; } */
 
 img.rounded-icon {
