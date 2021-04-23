@@ -17,72 +17,70 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<div class="catch-me">
-  <h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
-      <div class="d-flex justify-content-between">
-        <div><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
-        <div class="toggle-rotate"><i class="fas fa-caret-right"></i></div>
-      </div>
-  </h2>
-  <div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
-    <h3>Target list</h3>
-        <p>Here you find a list of your saved targets.</p>
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+  <h3>Target list</h3>
+      <p>Here you find a list of your saved targets.</p>
 
-        <h4>Description of headings</h4>
-        <ul>
-            <li>Last Attack - When you last performed a successful attack against the player</li>
-            <li>Result - Attacked, Mugged, Hospitalized</li>
-            <li>Name - Hyperlink to their torn profile</li>
-            <li>Level - Current level</li>
-            <li>Last Action - The time since their last action</li>
-            <li>Fair Fight - The <a href="https://wiki.torn.com/wiki/Chaining_2.0#Fair_fights">fair fight bonus</a> you received on your last successful attack (or 1 if no successful attack recorded)</li>
-            <li>Flat Respect - Their <a href="https://wiki.torn.com/wiki/Chaining_2.0#Base_respect">base level respect</a> multiplied by the Fair Fight bonus</li>
-            <li>Life - Current life</li>
-            <li>Status - Their current status and remaining time (if hospitalized)</li>
-            <li>Update - Time since the last update (refresh) was performed</li>
-            <li>Notes - Allows you to enter custom notes for the target</li>
-            <li>Attack - Direct link to their attack loader</li>
-            <li>Delete - Link to remove them from your target list</li>
-        </ul>
+      <h4>Description of headings</h4>
+      <ul>
+          <li>Last Attack - When you last performed a successful attack against the player</li>
+          <li>Result - Attacked, Mugged, Hospitalized</li>
+          <li>Name - Hyperlink to their torn profile</li>
+          <li>Level - Current level</li>
+          <li>Last Action - The time since their last action</li>
+          <li>Fair Fight - The <a href="https://wiki.torn.com/wiki/Chaining_2.0#Fair_fights">fair fight bonus</a> you received on your last successful attack (or 1 if no successful attack recorded)</li>
+          <li>Flat Respect - Their <a href="https://wiki.torn.com/wiki/Chaining_2.0#Base_respect">base level respect</a> multiplied by the Fair Fight bonus</li>
+          <li>Life - Current life</li>
+          <li>Status - Their current status and remaining time (if hospitalized)</li>
+          <li>Update - Time since the last update (refresh) was performed</li>
+          <li>Notes - Allows you to enter custom notes for the target</li>
+          <li>Attack - Direct link to their attack loader</li>
+          <li>Delete - Link to remove them from your target list</li>
+      </ul>
 
-        <h4>Building your list</h4>
-        <p>There are two ways to add targets:</p>
-        <ol>
-            <li>Enter a Torn ID and click "Add" at the bottom of the list</li>
-            <li>Click "<a href="https://yata.yt/target/attacks/">Attacks</a>" to bring up your list of recent attcks. Find a target and click on the "save" slider. You can sort this attacks list by clicking on any of the headings.</li>
-        </ol>
+      <h4>Building your list</h4>
+      <p>There are two ways to add targets:</p>
+      <ol>
+          <li>Enter a Torn ID and click "Add" at the bottom of the list</li>
+          <li>Click "<a href="https://yata.yt/target/attacks/">Attacks</a>" to bring up your list of recent attcks. Find a target and click on the "save" slider. You can sort this attacks list by clicking on any of the headings.</li>
+      </ol>
 
-        <h4>How to use this list</h4>
-        <p>Once you have your list built, it will show all targets either in black or gray text. Black text means the target status has been recently updated. After 2 hours, the text will be gray meaning you should refresh the target to get an accurate status.</p>
-        <p>To refresh the status of the targets, you can either:</p>
-        <ul>
-            <li>Click anywhere on the target except a hyperlink/icon to refresh a single target</li>
-            <li>Click "Refresh All" to refresh all of your targets</li>
-        </ul>
-        <p>From your list, you can either click on the user's name to bring up their profile or you can go directly to their attack loader by clicking the crosshairs. If the crosshairs (<i class='fas fa-crosshairs'></i>) are <a href="" class="error">red</a>, they are likely ready to be attacked. If the crossharis are <a href=""><b>blue</b></a>, they are likely unable to be attacked. If the target’s status and update  is flashing red, they are likely out of the hospital based on the time elapsed since the last update.</span></span></p>
-
+      <h4>How to use this list</h4>
+      <p>Once you have your list built, it will show all targets either in black or gray text. Black text means the target status has been recently updated. After 2 hours, the text will be gray meaning you should refresh the target to get an accurate status.</p>
+      <p>To refresh the status of the targets, you can either:</p>
+      <ul>
+          <li>Click anywhere on the target except a hyperlink/icon to refresh a single target</li>
+          <li>Click "Refresh All" to refresh all of your targets</li>
+      </ul>
+      <p>From your list, you can either click on the user's name to bring up their profile or you can go directly to their attack loader by clicking the crosshairs. If the crosshairs (<i class='fas fa-crosshairs'></i>) are <a href="" class="error">red</a>, they are likely ready to be attacked. If the crossharis are <a href=""><b>blue</b></a>, they are likely unable to be attacked. If the target’s status and update  is flashing red, they are likely out of the hospital based on the time elapsed since the last update.</span></span></p>
 
 
-        <h4>Daystar's tips for chaining</h3>
-        <ul>
-            <li>Sort your list by flat respect</li>
-            <li>Add notes that are useful.  For example – mitigated, high strength, etc. </li>
-            <li>Keep at least 40 targets in your list.  That way, you can start with a full stack and run through your list.  By the time you are ready for a refill/Xanax, your first targets should be coming out of the hospital (assuming you left them)</li>
-            <li>Keep some weaker targets for when you are on Xanax Cooldown or need to save your Med Cooldown</li>
-        </ul>
 
-    <h3>Attack list</h3>
-    <p>Here you find the last 100 attacks you made and received.</p>
+      <h4>Daystar's tips for chaining</h3>
+      <ul>
+          <li>Sort your list by flat respect</li>
+          <li>Add notes that are useful.  For example – mitigated, high strength, etc. </li>
+          <li>Keep at least 40 targets in your list.  That way, you can start with a full stack and run through your list.  By the time you are ready for a refill/Xanax, your first targets should be coming out of the hospital (assuming you left them)</li>
+          <li>Keep some weaker targets for when you are on Xanax Cooldown or need to save your Med Cooldown</li>
+      </ul>
 
-    <h3>Revives list</h3>
-    <p>Here you find all the revives you made the last 31 days. Each refresh of this page will load the last 100 revives from the API. To be sure to not miss a revive come here at least every 100 revives.<br/>You can manually mark them as paid or not.</p>
+  <h3>Attack list</h3>
+  <p>Here you find the last 100 attacks you made and received.</p>
+
+  <h3>Revives list</h3>
+  <p>Here you find all the revives you made the last 31 days. Each refresh of this page will load the last 100 revives from the API. To be sure to not miss a revive come here at least every 100 revives.<br/>You can manually mark them as paid or not.</p>
 
 
-    <h3>FAQ</h3>
-    <ul class="mb-0">
-        <li><i>The "Last attack", "Result", "Fair fight" and "Flat Respect" of my target is not updating:</i> make sure you visit the <a href="https://yata.yt/target/attacks/">Attacks</a> page before. That's when target's information related to you are updated.</li>
-        <li><i>The "Level" is wrong on the Attacks page:</i> it is calculated based on the base respect, so it happens because of rounding errors. It will be the good one on the Targets page</li>
-    </ul>
+  <h3>FAQ</h3>
+  <ul class="mb-0">
+      <li><i>The "Last attack", "Result", "Fair fight" and "Flat Respect" of my target is not updating:</i> make sure you visit the <a href="https://yata.yt/target/attacks/">Attacks</a> page before. That's when target's information related to you are updated.</li>
+      <li><i>The "Level" is wrong on the Attacks page:</i> it is calculated based on the base respect, so it happens because of rounding errors. It will be the good one on the Targets page</li>
+  </ul>
 
-  </div>
 </div>

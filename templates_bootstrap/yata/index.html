@@ -87,14 +87,14 @@ This file is part of yata.
         </div>
         <div class="w-100 mb-2"></div>
 
-        <div class="col"><hr class="sep"></div>
-        <div class="w-100 mb-2"></div>
+        {# <div class="col"><hr class="sep"></div> #}
+        {# <div class="w-100 mb-2"></div> #}
 
         {# bot #}
         <div class="col"><a href="{% url 'bot:index' %}"><b><i class="fab fa-discord"></i>&nbsp;Bot</b></a></div>
         <div class="w-100"></div>
         <div class="col">
-          Documentation and settings of the YATA Discord bot.
+          Documentation and settings of the YATA discord bot.
         </div>
         <div class="w-100 mb-2"></div>
 
@@ -136,59 +136,55 @@ This file is part of yata.
     </div>
 </div>
 
-<div class="catch-me">
-    <h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <div><i class="fas fa-code"></i>&nbsp;Contributors</div>
-          <div class="toggle-rotate"><i class="fas fa-caret-right"></i></div>
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Contributors</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-3 mb-3 module" style="display: none;">
+  <h3><i class="fab fa-python"></i>&nbsp;Developer</h3>
+    <p>{% player_link "2000607" "Kivou" %}</p>
+  <h3><i class="fas fa-server"></i>&nbsp;Server admin</h3>
+    <p>{% player_link "47662" "Decap" %}</p>
+  <h3><i class="fab fa-discord"></i>&nbsp;Discord staff</h3>
+    <p>{% player_link "2363978" "SVD_NL" %}, {% player_link "672082" "Isca" %}, {% player_link "2255595" "Redxjak" %}, {% player_link "1160609" "Tipsy" %}</p>
+  <h3><i class="fab fa-js-square"></i>&nbsp;Javascript and userscripts</h3>
+    <p>{% player_link "1934501" "Helcostr" %}, {% player_link "2111649" "Pyrit" %}</p>
+
+  <p class="mb-0">If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a>.</p>
+</div>
+
+{% if allDonations|length %}
+    <h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+        <div class="d-flex flex-wrap align-items-center">
+          <div class="px-2 me-auto"><i class="fas fa-gift"></i>&nbsp;Donations</div>
+          <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
         </div>
     </h2>
-    <div class="container-fluid p-3 mb-3 module" style="display: none;">
-      <h3><i class="fab fa-python"></i>&nbsp;Developer</h3>
-        <p>{% player_link "2000607" "Kivou" %}</p>
-      <h3><i class="fas fa-server"></i>&nbsp;Server admin</h3>
-        <p>{% player_link "47662" "Decap" %}</p>
-      <h3><i class="fab fa-discord"></i>&nbsp;Discord staff</h3>
-        <p>{% player_link "2363978" "SVD_NL" %}, {% player_link "672082" "Isca" %}, {% player_link "2255595" "Redxjak" %}, {% player_link "1160609" "Tipsy" %}</p>
-      <h3><i class="fab fa-js-square"></i>&nbsp;Javascript and userscripts</h3>
-        <p>{% player_link "1934501" "Helcostr" %}, {% player_link "2111649" "Pyrit" %}</p>
+    <div class="container-fluid p-2 mb-3 module" style="display: none;">
+      <div class="table-responsive">
 
-      <p class="mb-0">I also want to say thank you to the whole developer community with which I have fruitful discussions on a regular basis.
-        If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a>.</p>
-    </div>
-</div>
-{% if allDonations|length %}
-    <div class="catch-me">
-      <h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
-          <div class="d-flex justify-content-between">
-            <div><i class="fas fa-gift"></i>&nbsp;Donations</div>
-            <div class="toggle-rotate"><i class="fas fa-caret-right"></i></div>
-          </div>
-      </h2>
-      <div class="container-fluid p-2 mb-3 module" style="display: none;">
-        <div class="table-responsive">
-
-        <table class="table table-striped table-hover table-borderless donations">
-          <thead>
+      <table class="table table-striped table-hover table-borderless donations">
+        <thead>
+          <tr>
+            <th class="d">Date</th>
+            <th class="a">Sender</th>
+            <th class="b">Gift</th>
+            <th class="c">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for donation in allDonations %}
             <tr>
-              <th class="d">Date</th>
-              <th class="a">Sender</th>
-              <th class="b">Gift</th>
-              <th class="c">Message</th>
+              <td class="text-center">{{donation.split.date}}</td>
+              <td class="text-start">{{donation.split.sender}}</td>
+              <td class="text-start">{{donation.split.gift}}</td>
+              <td class="text-start">{{donation.split.message}}</td>
             </tr>
-          </thead>
-          <tbody>
-            {% for donation in allDonations %}
-              <tr>
-                <td class="text-center">{{donation.split.date}}</td>
-                <td class="text-start">{{donation.split.sender}}</td>
-                <td class="text-start">{{donation.split.gift}}</td>
-                <td class="text-start">{{donation.split.message}}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      </div>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 {% endif %}

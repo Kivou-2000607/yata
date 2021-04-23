@@ -1,37 +1,37 @@
-{# h2 simple #}
-<h2 class="title rounded-top py-2 px-3">
-  <div class="row justify-content-between">
-    <div class="col"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-medal"></i>&nbsp;TITLE</div>
+      <div class="px-2">
+        BUTTON
+      </div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+{# h2 show/hide #}
+<h2 class="title grey rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Contributors</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+{# h2 tutorial #}
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+{# h2 modal #}
+<h2 class="title rounded-top py-2 px-2" style="width: 100%">
+  <div class="d-flex align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;Losses</div>
+    <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
   </div>
 </h2>
-
-{# h2 with buttons #}
-<h2 class="title rounded-top py-2 px-3">
-  <div class="row justify-content-between">
-    <div class="col"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
-    <div class="col text-end">
-        <a id="toggle-awards-done" class="flush-right" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
-    </div>
-</h2>
-<h2 class="title rounded-top py-2 px-3">
-  <div class="clearfix">
-    <div class="float-start"><i class="fas fa-crosshairs"></i>&nbsp;List of targets</div>
-    <div class="float-end">
-      <a id="target-refresh" href="" data-val="0"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
-    </div>
-    <div class="float-end me-2">
-      <span>{% include "target/targets/colors.html" %}</span>
-    </div>
-</h2>
-
-{# h2 toggle view #}
-<h2 class="title grey toggle-display rounded-top rounded py-2 px-3 mb-3">
-    <div class="d-flex justify-content-between">
-      <div><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
-      <div class="toggle-rotate"><i class="fas fa-caret-right"></i></div>
-    </div>
-</h2>
-
 
 {# module #}
 <div class="container-fluid p-md-3 p-1 mb-3 module">
@@ -62,26 +62,3 @@
     </tr>
   </body>
 </table>
-
-{# category #}
-<nav class="navbar navbar-expand-md navbar-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/" title="Home">
-      {# {% include "svg/yata.full.svg" %} #}
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span id="collapse-section-name>">Categories</span>
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="subNavbarSupportedContent">
-      <ul class="nav">
-        <li class="nav-item">
-          <div class="nav-link yt-cat-link">
-            <a href="{% url 'awards:list' type="crimes" %}" title="crimes awards"><i class="fas fa-fingerprint"></i>&nbsp;Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
-          </div>
-        </li>
-
-      </ul>
-    </div>
-  </div>
-</nav>

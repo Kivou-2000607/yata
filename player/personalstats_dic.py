@@ -33,12 +33,17 @@ d = {
     "networthloan": {"category": "money", "sub": "networth", "type": "money", "name": "loan"},
     "networthunpaidfees": {"category": "money", "sub": "networth", "type": "money", "name": "unpaid fees"},
     "networthpiggybank": {"category": "money", "sub": "networth", "type": "money", "name": "piggy bank"},
+    "networthitemmarket": {"category": "money", "sub": "networth", "type": "money", "name": "item market"},
     "moneyinvested": {"category": "money", "sub": "default", "type": "money", "name": "money invested"},
     "investedprofit": {"category": "money", "sub": "default", "type": "money", "name": "invested profits"},
-    "stockpayouts": {"category": "money", "sub": "default", "type": "integer", "name": "stock payouts"},
+    "stockpayouts": {"category": "money", "sub": "stocks", "type": "integer", "name": "stock payouts"},
+    "stockprofits": {"category": "money", "sub": "stocks", "type": "money", "name": "stock profits"},
+    "stocklosses": {"category": "money", "sub": "stocks", "type": "money", "name": "stock losses"},
+    "stockfees": {"category": "money", "sub": "stocks", "type": "money", "name": "stock fees"},
 
     # attacks
     "elo": {"category": "attacks", "sub": "default", "type": "integer", "name": "elo"},
+    "itemslooted": {"category": "attacks", "sub": "default", "type": "integer", "name": "items looted"},
     "attackcriticalhits": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "critical"},
     "attackhits": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "hits"},
     "attackmisses": {"category": "attacks", "sub": "Hits", "type": "integer", "name": "misses"},
@@ -79,6 +84,11 @@ d = {
     "slahits": {"category": "attacks", "sub": "final hits", "type": "integer", "name": "slashing weapons"},
     "h2hhits": {"category": "attacks", "sub": "final hits", "type": "integer", "name": "hand to hand"},
     "machits": {"category": "attacks", "sub": "final hits", "type": "integer", "name": "machine guns"},
+    "strength": {"category": "attacks", "sub": "battle stats", "type": "integer", "name": "strength"},
+    "defense": {"category": "attacks", "sub": "battle stats", "type": "integer", "name": "defense"},
+    "speed": {"category": "attacks", "sub": "battle stats", "type": "integer", "name": "speed"},
+    "dexterity": {"category": "attacks", "sub": "battle stats", "type": "integer", "name": "dexterity"},
+    "totalstats": {"category": "attacks", "sub": "battle stats", "type": "integer", "name": "total"},
 
     # bounties
     "bountiesplaced": {"category": "bounties", "sub": "default", "type": "integer", "name": "placed"},
@@ -162,8 +172,9 @@ d = {
     "refills": {"category": "refill", "sub": "default", "type": "integer", "name": "energy"},
 
     # faction
+    "territorytime": {"category": "faction", "sub": "territories", "type": "time", "name": "territory time"},
+    "territoryjoins": {"category": "faction", "sub": "territories", "type": "integer", "name": "territory joins"},
     "organisedcrimes": {"category": "faction", "sub": "default", "type": "integer", "name": "organised crimes"},
-    "territorytime": {"category": "faction", "sub": "default", "type": "time", "name": "territory time"},
     "respectforfaction": {"category": "faction", "sub": "default", "type": "integer", "name": "respect earned"},
     "retals": {"category": "faction", "sub": "default", "type": "integer", "name": "retals made"},
 
@@ -172,6 +183,7 @@ d = {
     "raceswon": {"category": "racing", "sub": "default", "type": "integer", "name": "races won"},
     "racesentered": {"category": "racing", "sub": "default", "type": "integer", "name": "races entered"},
     "racingskill": {"category": "racing", "sub": "default", "type": "float", "name": "racing skill"},
+    "networthenlistedcars": {"category": "racing", "sub": "default", "type": "money", "name": "networth enlisted cars"},
 
     # item
     "consumablesused": {"category": "item used", "sub": "default", "type": "integer", "name": "consumable"},
@@ -184,6 +196,7 @@ d = {
 
     # misc
     "awards": {"category": "misc", "sub": "default", "type": "integer", "name": "awards"},
+    "reviveskill": {"category": "misc", "sub": "default", "type": "integer", "name": "revive skill"},
     "virusescoded": {"category": "misc", "sub": "default", "type": "integer", "name": "viruses coded"},
     "itemsdumped": {"category": "misc", "sub": "city", "type": "integer", "name": "items dumped"},
     "dumpsearches": {"category": "misc", "sub": "city", "type": "integer", "name": "dump searches"},
@@ -196,6 +209,10 @@ d = {
     "arrestsmade": {"category": "misc", "sub": "default", "type": "integer", "name": "arrests made"},
     "trainsreceived": {"category": "misc", "sub": "work", "type": "integer", "name": "trains received"},
     "jobpointsused": {"category": "misc", "sub": "work", "type": "integer", "name": "job points used"},
+    "manuallabor": {"category": "misc", "sub": "work", "type": "integer", "name": "manual labor"},
+    "intelligence": {"category": "misc", "sub": "work", "type": "integer", "name": "intelligence"},
+    "endurance": {"category": "misc", "sub": "work", "type": "integer", "name": "endurance"},
+    "totalworkingstats": {"category": "misc", "sub": "work", "type": "integer", "name": "total working stats"},
 
 
 }

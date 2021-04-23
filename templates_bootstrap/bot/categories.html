@@ -1,0 +1,53 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+
+<nav class="navbar navbar-expand-md navbar-light py-0">
+  <div class="container-fluid">
+    <button class="navbar-toggler ms-auto mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span id="collapse-section-name>">Categories</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="subNavbarSupportedContent">
+      <ul class="nav">
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:welcome' %}" title="bot welcome"><i class="fas fa-robot"></i>&nbsp;YATA bot</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:documentation' %}" title="bot documentation"><i class="fas fa-book-reader"></i>&nbsp;Documentation</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:host' %}" title="bot host"><i class="fas fa-laptop"></i>&nbsp;Host the bot</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:dashboard' %}" title="bot dashboard"><i class="fas fa-tachometer-alt"></i>&nbsp;Dashboard</a>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,60 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+
+<div class="container-fluid p-md-3 p-1 mb-3 rounded module">
+    <div class="clearfix">
+      <img class="bd-placeholder-img col-md-2 float-md-end mb-3 ms-md-3 rounded" src="/media/misc/bot_verified.png" alt="YATA" width="100%" />
+
+    <p><b>The YATA bot is a discord made for Torn</b>.<br/>It has a set of commands made to facilitate you Torn life while keeping you server secure.</p>
+    <p>Currently it has 9 modules:</p>
+    <ul>
+        <li>Verify</li>
+        <li>Loot</li>
+        <li>Chain</li>
+        <li>Rackets</li>
+        <li>Wars</li>
+        <li>Stocks</li>
+        <li>Revive</li>
+        <li>Crimes</li>
+        <li>Torn API</li>
+    </ul>
+    </div>
+    <p class="mb-0">For more details, check out <a href="{% url 'bot:documentation' %}">the documentation</a>. You want to know more? <a href="https://discord.gg/tZaYpbG" target="_blank">Join the YATA server</a> and <b>kindly</b> ask <tt>@Staff</tt> for more information. You want to host the bot on your server? Follow <a href="{% url 'bot:host'%}">these steps</a>.</p>
+</div>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code-branch"></i>&nbsp;Open source</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <p>The <a href="https://github.com/Kivou-2000607/yata-bot" target="_blank">source code</a> of the YATA bot is currently developed and maintained by {{"Kivou"|playerURL:"2000607"|safe}}. Because it is open source, you can encounter different versions controled by different users.</p>
+
+    <h3><i class="fas fa-check"></i>&nbsp; Official YATA bot</h3>
+    <p>The official YATA bot runs on a single server controled by {{"Kivou"|playerURL:"2000607"|safe}} and is hosted on multiple discord servers owned by different users. It uses both Torn API and YATA database.</p>
+    <ul>
+        <li>It is the only one that have access to the YATA database</li>
+        <li>It is the only one vouched for by {{"Kivou"|playerURL:"2000607"|safe}}</li>
+    </ul>
+    <p>You can check if you're dealing with the official bot by checking the list of servers hosting the bot below <b>and</b> by checking that the bot ID is <tt>623862007434706986</tt> (<a href="https://support.discordapp.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-" target="_blank">how to look at discord ID</a>).<br>There should be a little tick on the bot badge.</p>
+    <h3><i class="fas fa-code-branch"></i>&nbsp; Unofficial YATA bots</h3>
+    <p class="mb-0">There is no control whatsoever on the different versions of the bot. Some might be better, some might be worse, some might be malicious... The only thing known is that they don't have access to the YATA database (and will never have).</p>
+</div>

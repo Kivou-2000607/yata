@@ -36,7 +36,7 @@ html, body{
 }
 
 a, form, span, h2 { white-space:nowrap }
-
+li {list-style-type: disclosure-closed;}
 
 nav.module,
 div.module {
@@ -275,3 +275,8 @@ span.nice-button {
   display: inline-block;
   text-transform: uppercase;
 }
+
+h3.module-doc { cursor: pointer; }
+div.module-doc { display: none;}
+h4.command-doc { cursor: pointer; margin-left: 5%; }
+div.command-doc { display: none; margin-left: 5%; }

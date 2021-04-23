@@ -316,7 +316,7 @@ class Player(models.Model):
         personnalstats = dict({})
 
         for k, v in req.items():
-            s = personalstats_dic.get(k, {"category": "Unkown", "sub": "default", "type": "integer", "name": k})
+            s = personalstats_dic.get(k, {"category": "New entries", "sub": "default", "type": "integer", "name": k})
             if s["category"] not in personnalstats:
                 personnalstats[s["category"]] = [[], dict({})]
             if s["sub"] == "default":

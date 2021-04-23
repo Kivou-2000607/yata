@@ -44,17 +44,17 @@ This file is part of yata.
         });
 </script>
 
-<h2 class="title rounded-top py-2 px-3">
-  <div class="clearfix">
-    <div class="float-start"><i class="fas fa-crosshairs"></i>&nbsp;List of targets</div>
-    <div class="float-end">
-      <a id="target-refresh" href="" data-val="0"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
-    </div>
-    <div class="float-end me-2">
-      <span>{% include "target/targets/colors.html" %}</span>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-crosshairs"></i>&nbsp;List of targets</div>
+      <div class="px-2">
+        <a id="target-refresh" href="" data-val="0"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a>
+      </div>
+      <div class="px-2">
+        <span>{% include "target/targets/filters.html" %}</span>
+      </div>
     </div>
 </h2>
-
 
 <div class="container-fluid p-md-3 p-1 mb-3 module">
 

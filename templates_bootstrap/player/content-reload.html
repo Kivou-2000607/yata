@@ -24,28 +24,28 @@ This file is part of yata.
 
 
 {% if view.merits %}
-  <h2 class="title rounded-top py-2 px-3">
-    <div class="row justify-content-between">
-      <div class="col"><i class="fas fa-medal"></i>&nbsp;Merits simulator</div>
-    </div>
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-medal"></i>&nbsp;Merits simulator</div>
+      </div>
   </h2>
   <div id="player-merits" class="container-fluid p-md-3 p-1 mb-3 module">
     {% include "player/merits/index.html" %}
   </div>
 {% elif view.stats %}
-  <h2 class="title rounded-top py-2 px-3">
-    <div class="row justify-content-between">
-      <div class="col"><i class="fas fa-chart-line"></i>&nbsp;Personal stats</div>
-    </div>
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-chart-line"></i>&nbsp;Personal stats</div>
+      </div>
   </h2>
   <div id="player-stats" class="container-fluid p-md-3 p-1 mb-3 module">
     {% include "player/stats/index.html" %}
   </div>
 {% elif view.gym %}
-  <h2 class="title rounded-top py-2 px-3">
-    <div class="row justify-content-between">
-      <div class="col"><i class="fas fa-dumbbell"></i>&nbsp;Gym simulator</div>
-    </div>
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-dumbbell"></i>&nbsp;Gym simulator</div>
+      </div>
   </h2>
   <div id="player-gym" class="container-fluid p-md-3 p-1 mb-3 module">
     {% include "player/gym/index.html" %}

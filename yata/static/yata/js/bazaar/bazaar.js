@@ -17,7 +17,6 @@ $(document).on('click', '.item-table-header:not(.no-click)', e=>{
     const action = $(e.currentTarget).attr('data-act');
     const item_table = $(e.currentTarget).parents('.item-table');
     const item_id = $(item_table).attr('data-iid');
-    console.log(action, item_id);
 
     if( action == "update" ) {
       $(item_table).load( "/bazaar/update/"+item_id, { csrfmiddlewaretoken: getCookie("csrftoken"), });
@@ -46,17 +45,14 @@ $(document).on('click', 'span.update-type', e=>{
     e.preventDefault();
     const type = $(e.currentTarget).attr("data-val");
     let i = 1;
-    console.log(type)
     $("#loop-over-item-sell-table-"+type).find('div.item-table').each(function() {
         let item_table = $(this)
         let item_id = $(this).attr("data-iid");
         let wait = i*500 + parseInt(i/10)*3000;
-        // console.log(item_id, $(this));
         (function(index) {
             setTimeout(function() {
                 $(item_table).load( "/bazaar/update/"+item_id, { csrfmiddlewaretoken:  getCookie("csrftoken"), });
                 $(item_table).find("button").html('<i class="fas fa-spinner fa-pulse"></i>');
-                console.log($(item_table).find("button"));
              }, wait);
         })(i);
         i++;

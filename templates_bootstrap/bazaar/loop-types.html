@@ -22,16 +22,16 @@ This file is part of yata.
 {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
 <div class="catch-me">
 
-  <h2 class="title rounded-top py-2 px-3 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">
-    <div class="row justify-content-between align-items-center">
-      <div class="col ps-0"><img src="{% url_img_item v.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}}</div>
-      <div class="col text-end">
+  <h2 class="title rounded-top pe-2 py-2 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><img src="{% url_img_item v.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}}</div>
+      <div class="px-2 no-click">
         {% if view.refreshType and player.tId > 0 %}
-          <span class="update-type" data-val="{{k}}"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</span>
+          <span class="update-type" data-val="{{k}}"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline">&nbsp;Refresh all</span></span>
         {% endif %}
       </div>
       {% if view.hideType %}
-        <div class="col-1 text-end toggle-rotate"><i class="fas fa-caret-right"></i></div>
+        <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
       {% endif %}
   </h2>
 

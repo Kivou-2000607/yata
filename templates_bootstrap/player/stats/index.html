@@ -28,37 +28,36 @@ This file is part of yata.
 {% else %}
 
 {% for cat, defsub in personalstats.items %}
-    <h3 class="player-personalstats-header">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
-    <div class="player-personalstats-category">
-        <table class="table table-hover table-sm table-borderless personalstats mb-2">
-          <tbody>
+    <h3 class="module-doc">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+    <div class="module-doc">
+      <ul>
 
         {% for s in defsub.0 %}
             {% if s.2 == "money" %}
-            <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">${{s.1|intcomma}}</td></tr>
+            <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
             {% elif s.2 == "time" %}
-            <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">{{s.1|intdiv:86400|intcomma}} days</td></tr>
+            <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
             {% else %}
-            <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">{{s.1|intcomma}}</td></tr>
+            <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
             {% endif %}
         {% endfor %}
-      </tbody>
+      </ul>
     </table>
 
         {% for subcat, stats in defsub.1.items %}
-            <h4 class="player-personalstats-header">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-            <div class="player-personalstats-sub-category">
-                <table class="table table-hover table-borderless personalstats mb-2">
+            <h4 class="command-doc">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+            <div class="command-doc" style="margin-left: 10%">
+              <ul>
                 {% for s in stats %}
                     {% if s.2 == "money" %}
-                        <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">${{s.1|intcomma}}</td></tr>
+                        <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
                         {% elif s.2 == "time" %}
-                        <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">{{s.1|intdiv:86400|intcomma}} days</td></tr>
+                        <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
                         {% else %}
-                        <tr class=""><td class="text-start">{{s.0|capfirst}}</td><td class="text-end">{{s.1|intcomma}}</td></tr>
+                        <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
                     {% endif %}
                 {% endfor %}
-            </table>
+              </ul>
             </div>
         {% endfor %}
     </div>

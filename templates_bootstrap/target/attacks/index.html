@@ -25,10 +25,10 @@ This file is part of yata.
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header p-0">
-        <h2 class="title rounded-top py-2 px-3" style="width: 100%">
-          <div class="row justify-content-between">
-            <div class="col"><i class="fas fa-user-shield"></i>&nbsp;Breakdown</div>
-            <div class="col text-end"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;Breakdown</div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
           </div>
         </h2>
       </div>
@@ -44,10 +44,10 @@ This file is part of yata.
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header p-0">
-        <h2 class="title rounded-top py-2 px-3" style="width: 100%">
-          <div class="row justify-content-between">
-            <div class="col"><i class="fas fa-user-shield"></i>&nbsp;Losses</div>
-            <div class="col text-end"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;Losses</div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
           </div>
         </h2>
       </div>
@@ -58,20 +58,20 @@ This file is part of yata.
   </div>
 </div>
 
-<h2 class="title rounded-top py-2 px-3">
-  <div class="clearfix">
-    <div class="float-start"><i class="fas fa-user-shield"></i>&nbsp;List of recent attacks</div>
-    <div class="float-end">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#breakdown"><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a>
-    </div>
-    <div class="float-end me-2">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#losses"><i class="fas fa-dollar-sign"></i>&nbsp;Losses</a>
-    </div>
-    <div class="float-end me-2">
-      <span class="flush-right"><a href="?full=true"><i class="fas fa-angle-double-down"></i>&nbsp;Last 1k</a></span>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;List of recent attacks</div>
+      <div class="px-2">
+        <span class="flush-right"><a href="?full=true"><i class="fas fa-angle-double-down"></i>&nbsp;Last 1k</a></span>
+      </div>
+      <div class="px-2">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#losses"><i class="fas fa-dollar-sign"></i>&nbsp;Losses</a>
+      </div>
+      <div class="px-2">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#breakdown"><i class="fas fa-list-ul"></i>&nbsp;Breakdown</a>
+      </div>
     </div>
 </h2>
-
 <div class="container-fluid p-md-3 p-1 mb-3 module">
 {% if attacks %}
     <div class="pagination-list">
