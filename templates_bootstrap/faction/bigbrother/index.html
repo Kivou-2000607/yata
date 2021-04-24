@@ -1,0 +1,79 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<h2 class="title"><i class="fas fa-eye fa-icon-inline"></i>Big brother</h2>
+<div class="module">
+    <div id="faction-big-brother-table">
+        {% include "faction/bigbrother/table.html" %}
+    </div>
+</div>
+
+<h2 class="title"><i class="fas fa-project-diagram fa-icon-inline"></i>List of challenges</h2>
+<div class="module">
+    {% if statsList|length %}
+        <table class="center trshadow faction-bb-challenges">
+          <tbody>
+            {% for statType, timestamps in statsList.items %}
+              {% for name, ts in timestamps %}
+                {% ifchanged %}
+                <tr id="faction-bb-challenges-toggle-{{statType}}" style="cursor: pointer;">
+                    <td class="aa"><b>{{name}}</b>&nbsp;&nbsp;<i class="fas fa-caret-right" style="margin-left:20px"></i></td>
+                    <td class="b"></td>
+                    <td class="c"></td>
+                </tr>
+                {% endifchanged %}
+                <tr class="faction-bb-challenges-catch-{{statType}}" style="display: none;">
+                  <td class="ab"><i>{{name}}</i></td>
+                  <td class="b">{{ts|ts2date}}</td>
+                  {% if player.factionAA %}
+                    <td class="c"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
+                {% else %}
+                    <td class="c"><i class="fas fa-trash-alt neutral" title="You need AA perm to delete a challenge"></i></td>
+                {% endif %}
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+    <p class="error">No challenges recorded. Ask a AA member of your faction.</p>
+    {% endif %}
+</div>
+
+{%if player.factionAA%}
+    <div class="module rounded">
+        <form class="inline">
+        Add a new challenge:&nbsp;&nbsp;
+          <select class="faction-bb-enter-challenge">
+            <option selected disabled hidden>Select a challenge</option>
+            {% for k, v in bridge.items %}
+            	{%if k != "allgyms" %}
+                    <Option Value="{{k}}">{{v}}</option>
+            	{%endif%}
+            {% endfor %}
+          </select>
+      </form>
+    </div>
+{%endif%}

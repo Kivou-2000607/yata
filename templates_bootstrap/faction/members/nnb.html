@@ -1,0 +1,49 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+
+{% if errorMessage %}
+    <span class="error" title="{{errorMessage}}">{{errorMessage}}</span>
+{% else %}
+
+
+{% if member.tId == player.tId %}
+    <span style="cursor: pointer;">
+    {% if member.shareN %}
+        <span class="neutral faction-member-shareN" title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes&#10;Click to stop sharing your nerve bar.">
+            {{member.nnb}} | {{member.arson|intcomma}}
+        </span>
+    {% else %}
+        <span class="valid faction-member-shareN" title="Start sharing your nerve bar with your factionmates. You will be able to stop sharing whenever you want by clicking your nerve bar.">
+            <i class="fas fa-user-plus"></i>
+        </span>
+    {% endif %}
+    </span>
+{% else %}
+    {% if member.shareN == -1 %}
+        <span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
+    {% elif member.shareN == 0 %}
+        <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
+    {% elif member.shareN == 1 %}
+        <span title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes">{{member.nnb}} | {{member.arson|intcomma}}</span>
+    {% endif %}
+{% endif %}
+
+
+{% endif %}

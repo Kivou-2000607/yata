@@ -98,10 +98,10 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   {% if player.tId > 0 %}
                     <a class="valid" href="{% url 'player:index' %}" title="Faction"><b><i class="fas fa-home"></i>&nbsp;Home</b></a>
-                    <span class="d-none d-md-inline">{{player.name}}</span>
+                    <span class="d-none d-md-block">{{player.name}}</span>
                   {% else %}
                     <span class="neutral" title="Home"><b><i class="fas fa-home"></i>&nbsp;Home</b></span>
-                    <span class="d-none d-md-inline">closed</span>
+                    <span class="d-none d-md-block">closed</span>
                   {% endif %}
               </div>
             </li>
@@ -110,7 +110,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             <li class="nav-item">
               <div class="nav-link yt-main-link">
                   <a href="{% url 'bazaar:index' %}" title="Bazaar"><b><i class="fas fa-store"></i>&nbsp;Bazaar</b></a>
-                  <span class="d-none d-md-inline">
+                  <span class="d-none d-md-block">
                     {% if player.tId > 0 %}{% if player.bazaarInfo == "N/A" %}&empty;{% else %}{{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}{% endif %}
                     {% else %}limited{% endif %}
                   </span>
@@ -121,8 +121,8 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             <li class="nav-item">
               <div class="nav-link yt-main-link">
                   <a href="{% url 'company:index' %}" title="Company"><b><i class="fas fa-building"></i>&nbsp;Company</b></a>
-                  <span class="d-none d-md-inline">
-                    {% if player.companyId %}{{player.companyNa|safe}}{% if player.companyDi%} [Dir]{% endif %}
+                  <span class="d-none d-md-block">
+                    {% if player.companyId %}{%if player.companyDi%}<sup>*</sup>{% endif %}{{player.companyNa|safe}}
                     {% else %}limited{% endif %}
                   </span>
               </div>
@@ -133,10 +133,10 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   {% if player.tId > 0 %}
                     <a href="{% url 'faction:index' %}" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a>
-                    <span class="d-none d-md-inline">{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% endif %}</span>
+                    <span class="d-none d-md-block">{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% endif %}</span>
                   {% else %}
                     <span class="neutral" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></span>
-                    <span class="d-none d-md-inline">closed</span>
+                    <span class="d-none d-md-block">closed</span>
                   {% endif %}
               </div>
             </li>
@@ -146,10 +146,10 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   {% if player.tId > 0 %}
                     <a href="{% url 'target:index' %}" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></a>
-                    <span class="d-none d-md-inline">{% if player.targetInfo == "N/A" %}&empty;{% else %}{{player.targetInfo}} target{{player.targetInfo|pluralize}}{% endif %}</span>
+                    <span class="d-none d-md-block">{% if player.targetInfo == "N/A" %}&empty;{% else %}{{player.targetInfo}} target{{player.targetInfo|pluralize}}{% endif %}</span>
                   {% else %}
                     <span class="neutral" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></span>
-                    <span class="d-none d-md-inline">closed</span>
+                    <span class="d-none d-md-block">closed</span>
                   {% endif %}
               </div>
             </li>
@@ -158,7 +158,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             <li class="nav-item">
               <div class="nav-link yt-main-link">
                 <a href="{% url 'awards:index' %}" title="Awards"><b><i class="fas fa-medal"></i>&nbsp;Awards</b></a>
-                <span class="d-none d-md-inline">
+                <span class="d-none d-md-block">
                   {% if player.tId > 0 %}{% if player.awardsInfo == "N/A" %}&empty;{% else %}{{player.awardsInfo|floatformat:2}}%{% endif %}
                   {% else %}limited{% endif %}
                 </span>
@@ -169,7 +169,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             <li class="nav-item">
               <div class="nav-link yt-main-link">
                 <a href="{% url 'loot:index' %}" title="Loot"><b><i class="fas fa-user-secret"></i>&nbsp;Loot</b></a>
-                <span class="d-none d-md-inline">
+                <span class="d-none d-md-block">
                   {% if nextLoot.1 %}<span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}" data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
                   {% else %}<span>{{nextLoot.0}}</span>{% endif %}
                 </span>
@@ -184,11 +184,11 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
             </li>
 
             {# API #}
-            <li class="nav-item">
-              <div class="nav-link yt-main-link">
-                <a href="{% url 'api:index' %}" title="API documentation"><b><i class="fas fa-code"></i>&nbsp;API</b></a>
-              </div>
-            </li>
+            {# <li class="nav-item"> #}
+              {# <div class="nav-link yt-main-link"> #}
+                {# <a href="{% url 'api:index' %}" title="API documentation"><b><i class="fas fa-code"></i>&nbsp;API</b></a> #}
+              {# </div> #}
+            {# </li> #}
 
           </ul>
 

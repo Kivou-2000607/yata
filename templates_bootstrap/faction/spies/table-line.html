@@ -1,0 +1,34 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load humanize %}
+
+{% if error_inline %}
+  <td colspan="8" class="error" style="text-align: center;">{{error_inline}}</td>
+{% else %}
+  <td class="a">{% player_link target_id spy.target_name %}</td>
+  <td class="b">{% faction_link spy.target_faction_id spy.target_faction_name %}</td>
+  <td class="c" data-val="{{spy.strength}}" title="Update: {{spy.strength_timestamp|ts2date}}">{% if spy.strength > 0 %}{{spy.strength|intcomma}}{% else %}?{% endif %}</td>
+  <td class="c" data-val="{{spy.defense}}" title="Update: {{spy.defense_timestamp|ts2date}}">{% if spy.defense > 0 %}{{spy.defense|intcomma}}{% else %}?{% endif %}</td>
+  <td class="c" data-val="{{spy.speed}}" title="Update: {{spy.speed_timestamp|ts2date}}">{% if spy.speed > 0 %}{{spy.speed|intcomma}}{% else %}?{% endif %}</td>
+  <td class="c" data-val="{{spy.dexterity}}" title="Update: {{spy.dexterity_timestamp|ts2date}}">{% if spy.dexterity > 0 %}{{spy.dexterity|intcomma}}{% else %}?{% endif %}</td>
+  <td class="c" data-val="{{spy.total}}" title="Update: {{spy.total_timestamp|ts2date}}">{% if spy.total > 0 %}{{spy.total|intcomma}}{% else %}?{% endif %}</td>
+  <td class="d" data-val="{{spy.update}}">{{spy.update|ts2date}}</td>
+{% endif %}

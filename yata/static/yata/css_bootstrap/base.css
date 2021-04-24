@@ -35,9 +35,12 @@ html, body{
   }
 }
 
-a, form, span, h2 { white-space:nowrap }
+/* a, form, span, h2 { white-space:nowrap } */
 li { list-style-type: disclosure-closed; }
 nav li { list-style-type: none!important; }
+a, a * { color: #447e9b!important; text-decoration: none; }
+a:hover, a:active, a:focus,
+a:hover *, a:active *, a:focus * { color: #036!important; }
 
 nav.module,
 div.module {
@@ -45,10 +48,21 @@ div.module {
   border-radius:0 0 6px 6px;
   background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
 }
-.nav-link { cursor: pointer; }
+.nav-link { white-space:nowrap; cursor: pointer; }
 li.nav-item span {
   color: #666;
   font-style: italic;
+  white-space:nowrap;
+}
+li.nav-item {
+  /* min-width: 33%; */
+  overflow: hidden;
+  list-style-type: none;
+}
+@media (min-width: 768px) {
+  li.nav-item { width: 150px; }
+  li.nav-item.medium { width: 170px; }
+  li.nav-item.large { width: 190px; }
 }
 
 hr.sep {
@@ -103,16 +117,16 @@ button[type=submit].valid:hover { color: #FFF!important; background-color: #005E
   font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f007";
 }
 
-.error *, .error { color: #CC3434!important; }
-.warning *, .warning { color: #FF8C00!important; }
-.neutral *, .neutral { color: #666!important; }
-.valid *, .valid { color: #0B8E14!important; }
+.error *, .error { color: #CC3434; }
+.warning *, .warning { color: #FF8C00; }
+.neutral *, .neutral { color: #666; }
+.valid *, .valid { color: #0B8E14; }
 .error:hover, .error:active, .error:focus,
-.error:hover *, .error:active *, .error:focus * { color: #A02525!important; }
+.error:hover *, .error:active *, .error:focus * { color: #A02525; }
 .neutral:hover, .neutral:active, .neutral:focus ,
-.neutral:hover *, .neutral:active *, .neutral:focus * { color: #444!important; }
+.neutral:hover *, .neutral:active *, .neutral:focus * { color: #444; }
 .valid:hover, .valid:active, .valid:focus ,
-.valid:hover *, .valid:active *, .valid:focus * { color: #005E00!important; }
+.valid:hover *, .valid:active *, .valid:focus * { color: #005E00; }
 
 div.error, div.warning, div.valid, div.neutral,
 p.error, p.warning, p.valid, p.neutral {

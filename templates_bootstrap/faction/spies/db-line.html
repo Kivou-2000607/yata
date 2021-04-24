@@ -1,0 +1,32 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load static %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<td class="a"><tt>#{{database.pk}}</tt></td>
+<td class="b">{{database.name}}</td>
+<td class="c">{{database.factions.all|length}}</td>
+<td class="c">{{database.n_spies}}</td>
+<td class="c">{% if database.master_id == faction.tId %}<span class="valid">Yes</span>{% else %}<span class="error">No</span>{% endif %}</td>
+<td class="c">{% if database.use_api %}<span class="valid">Yes</span>{% else %}<span class="error">No</span>{% endif %}</td>
+<td class="d" title="Give this secret to your allies so that they can join this database... But keep it secret right?" style="cursor: help;"><tt>{{database.secret}}</tt></td>
+<td class="e">{% include "faction/spies/db-buttons.html" %}</td>

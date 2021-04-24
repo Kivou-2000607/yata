@@ -1,0 +1,101 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-breakdown-crimes").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0]]
+        });
+    });
+</script>
+
+{% if crimesDB|length %}
+<table id="faction-crimes-breakdown-crimes" class="center-large trshadow faction-crimes-breakdown">
+    <thead>
+        <tr>
+            <th colspan="4">Crimes</th>
+            <th colspan="2">Time</th>
+            <th colspan="3">Money</th>
+            <th colspan="3">Respect</th>
+        </tr>
+        <tr>
+
+            <th>Name</th>
+            <th>Success</th>
+            <th>Made</th>
+            <th>%</th>
+
+            <th title="Cummulative time for all participants">Total</th>
+            <th>Per crime</th>
+
+            <th>Total</th>
+            {# <th>Per crime</th> #}
+            {# <th>Per day</th> #}
+            <th title="Money per participants days per crimes">Effectiveness</th>
+            <th title="Ratio between effectiveness and maximal effectiveness">Efficiency</th>
+
+            <th>Total</th>
+            {# <th>Per crime</th> #}
+            {# <th>Per day</th> #}
+            <th title="Respect per participants days per crimes">Effectiveness</th>
+            <th title="Ratio between effectiveness and maximal effectiveness">Efficiency</th>
+
+    </thead>
+    <tbody>
+    {% for k, v in crimesDB %}
+        <tr class="hover">
+            <td class="a" data-val="{{k}}">{{v.name}}
+                {% include "faction/oc/filter.html" with type="crime_id" id=k %}
+            </td>
+            <td class="b">{{v.crimes.1}}</td>
+            <td class="b">{{v.crimes.0}}</td>
+            <td class="b">{{v.crimes.2}}%</td>
+
+            <td class="c" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DHM"}}</td>
+            <td class="c" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DHM"}}</td>
+
+            <td class="d" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
+            <td class="d" title="Max effectiveness = ${{v.money.4|intcomma}}" data-val="{{v.money.3}}">${{v.money.3|intcomma}}</td>
+            <td class="f" title="${{v.money.3|intcomma}} / ${{v.money.4|intcomma}}" data-val="{{v.money.5}}%">{{v.money.5}}%</td>
+
+            <td class="e">{{v.respect.0|intcomma}}</td>
+            <td class="e" title="Max effectiveness = {{v.respect.4|intcomma}}">{{v.respect.3|intcomma|floatformat:2}}</td>
+            <td class="f" title="{{v.respect.3|intcomma|floatformat:2}} / {{v.respect.4|intcomma|floatformat:2}}" data-val="{{v.respect.5}}">{{v.respect.5}}%</td>
+        </tr>
+
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="error">No crimes found.</p>
+{% endif %}

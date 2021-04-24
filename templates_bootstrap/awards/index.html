@@ -119,7 +119,7 @@ This file is part of yata.
 {% if awardsSummary %}
   <ul class="nav justify-content-center mx-md-5 mb-3">
     {% for awardType, awards in awardsSummary.items %}
-      <li class="nav-item {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
+      <li class="nav-item large {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
         <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
           <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
         </div>
@@ -209,8 +209,8 @@ This file is part of yata.
 
 <div class="table-responsive">
 <table class="table table-hover table-borderless awards-list">
-    <tr><td><div id="chart"></div></td></tr>
-    <tr><td><div id="chart2"></div></td></tr>
+    <tr><td id="chart"></td></tr>
+    <tr><td id="chart2"></td></tr>
 </table>
 </div>
 

@@ -1,20 +1,3 @@
-// update history on load
-const afterLoad = (r,s,x) =>{
-    console.log(x);
-    window.history.pushState(null, document.title, x.url);
-};
-
-// nav links
-$(document).on('click', 'table.faction-categories td', e=>{
-    e.preventDefault();
-    var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
-    $( "#content-update" ).load( "/faction/"+l+"/", {
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    }, nav("/faction/"+l+"/"));
-    $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Loading '+l)
-    $("div.error").hide();
-});
-
 // countdown
 window.setInterval(function(){
     $(".event-countdown").each(function() {

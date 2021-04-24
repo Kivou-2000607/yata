@@ -1,0 +1,53 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<div id="spy-paste-container" class="container" style="display: none;">
+{# <div id="spy-paste-container" class="container"> #}
+    <div class="overlay close"></div>
+    <div class="modal-center">
+      <h2 class="title"><i class="fas fa-clipboard fa-icon-inline"></i><span id="spy-paste-title"></span></h2>
+      <div class="module" style="text-align: center;">
+        <h1>Paste Spy reports</h1>
+        <hr class="sep">
+        <form method="post" action="{% url 'faction:spiesImport' %}">
+          {% csrf_token %}
+          <h3>Date</h3>
+          <p>
+            Enter the date of the report with the <tt>yy/mm/dd</tt> format.
+          </p>
+          <input id="spy-paste-date" name="date" type="text" required style="width: 100px; text-align: center;"><br>
+          <h3>Spy</h3>
+          <p>
+            Copy paste a single spy from the game with at least the information you see below.
+            Additional lines will be ignore.
+          </p>
+          <textarea id="spy-paste-text" placeholder="Name: DUDE [1028023]
+Strength: N/A
+Speed: 722,850,271
+Dexterity: N/A
+Defense: 2,000,500,039
+Total: 3,592,482,327" required style="width: 200px; height: 300px;" name="spy"></textarea>
+        <hr class="sep">
+        <input id="spy-paste-db" name="db-pk" type="hidden">
+        <input name="action" value="paste-spy" type="hidden">
+        <input type="submit" value="Import!">
+        </form>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load app_filters %}
+{% load humanize %}
+
+
+<script>
+
+        $(document).ready(function() {
+            $("#spy-database").tablesorter({
+                textExtraction: {
+                  2: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+                cssAsc: 'up', cssDesc: 'down', sortList: [[6,1]]
+            });
+        });
+</script>
+
+
+
+<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Spy database [{{database.pk}}]: {{database.name}}
+  <form class="form-inline flush-right"><a id="spies-refresh" class="flush-right" href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Refresh Names</a></form>
+</h2>
+<div class="module">
+  <div style="margin: 0px 10px;">
+    <form>
+      {% for dbfac in database.factions.all %}
+      {% if database.master_id == dbfac.tId %}
+      <span class="spies-faction valid master" title="Master faction">{{dbfac}}</span>
+      {% else %}
+      {% if database.master_id == faction.tId %}
+      <span class="spy-database-join-kick spies-faction neutral kickable" data-val="{{database.pk}}" data-fac="{{dbfac.tId}}" title="Kick faction from database">{{dbfac}}</span>
+      {% else %}
+      <span class="spies-faction neutral">{{dbfac}}</span>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+    </form>
+  </div>
+
+    <table id="spy-database" class="tablesorter center-large trshadow spy-database">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Faction</th>
+            <th>Strength</th>
+            <th>Defense</th>
+            <th>Speed</th>
+            <th>Dexterity</th>
+            <th>Total</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for target_id, spy in database.getSpies.items %}
+          <tr class="spy-list-refresh" data-tid="{{target_id}}" data-val="{{database.pk}}">
+            {% include "faction/spies/table-line.html" %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="update-info">Last API update the list: {{database.update|ts2date}}</p>
+</div>

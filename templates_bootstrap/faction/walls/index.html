@@ -1,0 +1,156 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#faction-walls").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              2: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-fac"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-fac"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[5,0]]
+        });
+
+        $(".faction-walls-breakdown").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2, 1]]});
+    });
+
+</script>
+
+<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s walls</h2>
+<div class="module">
+    {% if walls|length %}
+    <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">
+        <thead>
+            <tr>
+                <th>Wall [ID]</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Attackers</th>
+                <th>Defenders</th>
+                <th>Territory</th>
+                <th>Result</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for wall in walls %}
+        <tr>
+            {% if wall %}
+              <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+              <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
+              <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
+              <td class="c" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
+              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
+              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
+              <td class="e" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
+              <td class="e" ><span class="{{wall.result}}">{{wall.result}}</span></td>
+              <td class="e buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
+                {% include "faction/walls/buttons.html" %}
+              </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="error">No wall recorded. Only AA members can add walls with the script below.</p>
+    {% endif %}
+</div>
+
+{% for fac, TotalPlayers in summary.items %}
+<div class="catch-me">
+
+<h2 class="title toggle-display rounded">Walls breakdown for <b class='{% if fac == faction.fullname %}valid{% else %}error{% endif %}'>{{fac}}</b>: {{TotalPlayers.Total.0|intcomma}} points, {{TotalPlayers.Total.1}} joins and {{TotalPlayers.Total.2}} clears&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<div class="module" style="display: none;">
+    <table class="tablesorter center trshadow faction-walls-breakdown">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Lvl</th>
+                <th>Points</th>
+                <th>Joins</th>
+                <th>Clears</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for XID, player in TotalPlayers.Players.items %}
+            <tr>
+                <td class="a">{{player.P.1|playerURL:XID|safe}}</td>
+                <td class="b">{{player.P.2}}</td>
+                <td class="c">{{player.A.0|add:player.D.0|intcomma}}</td>
+                <td class="d">{{player.A.1|add:player.D.1}}</td>
+                <td class="d">{{player.A.2|add:player.D.2}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <table class="tablesorter center trshadow faction-walls-breakdown">
+        <tbody>
+            <td class="a"></td>
+            <td class="b"><b>Total</b></td>
+            <td class="c"><b>{{TotalPlayers.Total.0|intcomma}}</b></td>
+            <td class="d"><b>{{TotalPlayers.Total.1}}</b></td>
+            <td class="d"><b>{{TotalPlayers.Total.2}}</b></td>
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+{% endfor %}
+
+<h2 class="title"><i class="fas fa-code fa-icon-inline"></i>Userscript</h2>
+<div class="module">
+<p>In order to add a wall report, install this <a href="{% url_userscript 'walls' %}" target="_blank"> userscript</a> and go to the an ingame report page.</p>
+</div>
+
+<div class="module rounded">
+    {% if wallHistory|length %}
+    <p>List of your previous walls</p>
+    <ul>
+        {% for factionId, factionDic in wallHistory %}
+            <li>{{factionDic.name|factionURL:factionId|safe}}</li>
+            <ul>
+                {% for wall in factionDic.walls %}
+                    <li>
+                        <a href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Wall [{{wall.1}}]</a> of {{wall.2|ts2date}}:
+                        {% if wall.3 is None %}
+                            <a class="error"href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Not imported</a>
+                        {% else %}
+                            <span class="valid">Imported</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>

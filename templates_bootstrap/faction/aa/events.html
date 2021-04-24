@@ -1,0 +1,78 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+{% load static %}
+{% static "" as baseUrl %}
+
+<script>
+$(function () {
+    $("#event-date").datetimepicker({
+        step: 15,
+        onChangeDateTime:function(dp,$input){
+            var d = new Date($input.val());
+            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+            $("#event-ts").val(dUTC/1000);
+            var s = new Date(dUTC).toUTCString().replace("GMT", "");
+            $("#event-date").html(s);
+            $("#faction-event-create").show();
+        },
+    });
+});
+
+</script>
+
+<h3>Your events</h3>
+<table class="center">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+        <tr>
+            <td>{{event.timestamp|ts2date}}</td>
+            <td>{{event.title}}</td>
+            <td><form>{% csrf_token %}<a class="faction-event-delete" href="" data-val="{{event.pk}}"><i class="fas fa-trash-alt"></i></a></form></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Create new event</h3>
+<p><form>{% csrf_token %}
+    <p><b>Title</b><br/><input id="event-title" type="text"></p>
+    <p><b>Description</b><br><input id="event-description" type="text"></p>
+    <p><b>Date</b>:&nbsp;&nbsp;
+        <input id="event-ts" type="hidden" value="0">
+        <span id="event-date" style="cursor: pointer;"><i class="far fa-calendar-alt"></i></span>
+    </p>
+    <p><b>Stack countdown</b>:&nbsp;&nbsp;
+        <input id="event-stack" type="checkbox">
+    </p>
+    <p><b>Reset branches countdown</b>:&nbsp;&nbsp;
+        <input id="event-reset" type="checkbox">
+    </p>
+    <p><input id="faction-event-create" type="submit" value="Add event" style="display: none;"></p>
+</form>
+</p>

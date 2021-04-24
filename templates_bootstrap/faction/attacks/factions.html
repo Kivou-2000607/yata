@@ -1,0 +1,74 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<table class="tablesorter center-full-half trshadow faction-attacks-report-factions">
+    <thead>
+            <tr><th colspan="6">Factions</th></tr>
+          <tr>
+            <th>Faction</th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=1">Attacks<br/>won</th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=2">Attacks<br/>made</th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=3">Defends<br/>won</th>
+            <th><a style="margin: 0px;" class="page-link" href="?o_fa=4">Attacks<br/>received</th>
+            <th>Filter<br/><i style="cursor: help;" class="fas fa-question-circle" title="Click on the filters to select factions"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for f in factions %}
+    <tr>
+        {%if f.faction_id == -1%}
+            <td class="a">Stealth</td>
+        {%else%}
+            <td class="a">{{f.faction_name|factionURL:f.faction_id|safe}}</td>
+        {%endif%}
+        <td class="b">{{f.hits}}</td>
+        <td class="b">{{f.attacks}}</td>
+        <td class="b">{{f.defends}}</td>
+        <td class="b">{{f.attacked}}</td>
+        <td class="c">{% include "faction/attacks/toggle.html" with page=factions.number%}</td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan="6">
+        <div class="pagination" style="margin:0;">
+            <span class="step-links">
+                {% if factions.has_previous %}
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa=1">&laquo; first</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    {{ factions.number }}/{{ factions.paginator.num_pages }}
+                </span>
+
+                {% if factions.has_next %}
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}">next</a>
+                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+        </td>
+    </tr>
+    </tbody>
+</table>

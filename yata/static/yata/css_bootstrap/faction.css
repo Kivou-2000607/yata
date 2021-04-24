@@ -1,0 +1,70 @@
+/* targets */
+table.target-targets { min-width: 600px; width: 70%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
+table.target-targets th.a { width: 20%; text-align: left; }
+table.target-targets th.b { width: 10%; text-align: center; }
+table.target-targets th.c { width: 5%; text-align: center; }
+table.target-targets th.d { width: 15%; text-align: left; }
+table.target-targets th.e { width: 15%; text-align: center; }
+table.target-targets th.f { width: 20%; text-align: left; }
+table.target-targets th.g { width: 10%; text-align: center; }
+table.target-targets th.h { width: 5%; text-align: center; }
+div.life-bar {
+    background-color: lightgray;
+    border-radius: 4px;
+    width: 100%;
+    height: 14px;
+    display: inline-block;
+}
+
+div.life-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background-color: rgb(150,150,150);
+  box-shadow:
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  line-height:14px;
+  font-weight: bold;
+  background-color: #7d93c4;
+}
+
+
+@-webkit-keyframes need-refresh {
+  0% { background-color: #ff00001e; }
+  50% { background-color: inherit; }
+  100% { background-color: #ff00001e; }
+}
+@-moz-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@-o-keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+@keyframes need-refresh {
+    0% { background-color: #ff00001e; }
+    50% { background-color: inherit; }
+    100% { background-color: #ff00001e; }
+}
+.need-refresh {
+  -webkit-animation: need-refresh 2s infinite; /* Safari 4+ */
+  -moz-animation:    need-refresh 2s infinite; /* Fx 5+ */
+  -o-animation:      need-refresh 2s infinite; /* Opera 12+ */
+  animation:         need-refresh 2s infinite; /* IE 10+ */
+}
+
+
+/* logs */
+table.networth-graph { width: 90%; }
+table.faction-networth { min-width: 800px; width: 70%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
+table.faction-networth th.a { width: 10%; }  /* x1 */
+table.faction-networth th.b { width: 15%; }  /* x6 */
+table.faction-networth tr.today       { background:#d9ead3; }
+table.faction-networth tr.today:hover { background:#b6d7a8; }
