@@ -36,7 +36,8 @@ html, body{
 }
 
 a, form, span, h2 { white-space:nowrap }
-li {list-style-type: disclosure-closed;}
+li { list-style-type: disclosure-closed; }
+nav li { list-style-type: none!important; }
 
 nav.module,
 div.module {
@@ -280,3 +281,4 @@ h3.module-doc { cursor: pointer; }
 div.module-doc { display: none;}
 h4.command-doc { cursor: pointer; margin-left: 5%; }
 div.command-doc { display: none; margin-left: 5%; }
+.hidden {display: none;}

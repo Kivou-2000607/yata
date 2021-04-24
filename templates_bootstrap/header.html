@@ -211,7 +211,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
       </div>
     </nav>
 
-    {% if apiError %}
+    {% if apiError and login %}
       <div class="d-flex justify-content-center error">
         <span class="mb-2"><i class="fas fa-skull-crossbones"></i>&nbsp;{{ apiError }}</span>
       </div>

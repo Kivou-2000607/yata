@@ -32,11 +32,11 @@ This file is part of yata.
     </div>
 </div>
 {% if v.selected|length %}
+  <div class="overflow-scroll">
     <div class="dashboard-settings dashboard-command-result mb-3">
     <ul>
         {% for faction_id, role in v.selected.items %}
-        <li>Faction [{{faction_id}}]
-        </li>
+        <li>Faction [{{faction_id}}]</li>
         <ul>
           {% for discord_id, discord_name in role.items %}
           <li>
@@ -62,9 +62,11 @@ This file is part of yata.
                   {% endfor %}
                   <br>
                   <div class="to-hide{% if not view.ux == position_name %} hidden{% endif %}">
-                  {% for discord_id, discord_name in server.get_roles.items %}
-                    <span class="dashboard-option-span {% if discord_id not in position_roles %}un{% endif %}selected" title="{{discord_id}}" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-sub="{{position_name}}" data-val="{{discord_id}}" data-ux="{{position_name}}">@{{discord_name|safe}} </span>
-                  {% endfor %}
+                    <div class="d-flex flex-wrap">
+                      {% for discord_id, discord_name in server.get_roles.items %}
+                      <span class="mx-1 dashboard-option-span {% if discord_id not in position_roles %}un{% endif %}selected" title="{{discord_id}}" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-sub="{{position_name}}" data-val="{{discord_id}}" data-ux="{{position_name}}">@{{discord_name|safe}} </span>
+                      {% endfor %}
+                    </div>
                   </div>
                 </li>
               {% endfor %}
@@ -76,6 +78,8 @@ This file is part of yata.
         {% endfor %}
     </ul>
 </div>
+
+  </div>
 {% else %}
-    <tt class="dashboard-settings neutral" title="{% if v.mandatory %}You need to select at least one {{v.type}}{% endif %}">None</tt>
+    <p class="dashboard-command-result"><tt class="dashboard-settings neutral" title="{% if v.mandatory %}You need to select at least one {{v.type}}{% endif %}">None</tt></p>
 {% endif %}

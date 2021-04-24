@@ -130,10 +130,8 @@ span.dashboard-button.neutral {
     /* text-decoration: line-through; */
     opacity: 0.2;
 }
-div.dashboard-command-result,
-p.dashboard-command-result {
-  margin-left: 5%;
-}
+div.dashboard-command-result { margin-left: 5%; min-width: 500px; }
+p.dashboard-command-result { margin-left: 5%; }
 
 table.dashboard-revive-servers { min-width: 1000px; width: 80%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
 /* bca ddddd */

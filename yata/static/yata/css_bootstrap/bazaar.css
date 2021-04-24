@@ -144,6 +144,7 @@ table .ggt { background:#fce5cd; }
 table tr.llt { animation: blinker 1s linear infinite; }
 @keyframes blinker {  50% { opacity: 0.5; } }
 div.item-table table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
+div.item-table table tr.show-less,
 div.item-table table tr.show-more {
   overflow: hidden;
   white-space: nowrap;

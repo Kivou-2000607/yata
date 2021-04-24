@@ -33,11 +33,19 @@ $(document).on('click', '.item-table-header:not(.no-click)', e=>{
     }
 });
 
-// show more
+// show more/less
 $(document).on('click', 'tr.show-more', e=>{
     e.preventDefault();
     $(e.currentTarget).removeClass("d-table-row").hide();
     $(e.currentTarget).siblings().removeClass("d-none");
+    $(e.currentTarget).siblings(".show-less").addClass("d-table-row").show();
+});
+// show more/less
+$(document).on('click', 'tr.show-less', e=>{
+    e.preventDefault();
+    $(e.currentTarget).removeClass("d-table-row").hide();
+    $(e.currentTarget).siblings().not(".keep-showing").not(".show-more").addClass("d-none");
+    $(e.currentTarget).siblings(".show-more").addClass("d-table-row").show();
 });
 
 // update type

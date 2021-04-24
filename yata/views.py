@@ -113,7 +113,7 @@ def login(request):
             request.session['player'] = {'tId': player.tId, 'name': str(player)}
             request.session.set_expiry(7776000)  # 3 months
 
-            context = {"player": player, "new_player": new_player}
+            context = {"player": player, "new_player": new_player, 'login': True}
             return render(request, 'header.html', context)
 
         # if not post

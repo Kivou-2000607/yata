@@ -18,7 +18,9 @@ This file is part of yata.
 {% endcomment %}
 
 {% if apiErrorSub %}
-{% include "yata/error.html" with apiError=apiErrorSub %}
+  {% include "yata/error.html" with apiError=apiErrorSub %}
+{% elif apiError %}
+  {% include "yata/error.html" %}
 {% endif %}
 
 {% if view.analytics %}
