@@ -68,3 +68,16 @@ table.faction-networth th.a { width: 10%; }  /* x1 */
 table.faction-networth th.b { width: 15%; }  /* x6 */
 table.faction-networth tr.today       { background:#d9ead3; }
 table.faction-networth tr.today:hover { background:#b6d7a8; }
+
+/* events */
+div.faction-event {
+  border: 1px solid #ccc;
+  background-color: #fafafaaa;
+  min-width: 25%;
+}
+
+div.event-description {
+  font-style: italic;
+  color: #666;
+  white-space: nowrap;
+}

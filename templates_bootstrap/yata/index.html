@@ -110,11 +110,11 @@ This file is part of yata.
           <div class="col"><hr class="sep"></div>
           <div class="w-100 mb-2"></div>
 
-          <div class="col error"><a id="yata-logout-submit" href="{% url 'logout' %}"><b><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></b></div>
+          <div class="col error"><a id="yata-logout-submit" href="{% url 'logout' %}" class="error"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></div>
           <div class="w-100 mb-2"></div>
-          <div class="col error"><a id="yata-delete-submit" href="{% url 'delete' %}"><b><i class="fas fa-user-slash"></i>&nbsp;Delete account</a></b></div>
+          <div class="col error"><a id="yata-delete-submit" href="{% url 'delete' %}" class="error"><i class="fas fa-user-slash"></i>&nbsp;Delete account</a></div>
           <div class="w-100 mb-2"></div>
-          <div class="col error"><a href="{% url 'setup:prune' %}"><i class="fas fa-eraser"></i>&nbsp;Pruning</a></div>
+          <div class="col error"><a href="{% url 'setup:prune' %}" class="error"><i class="fas fa-eraser"></i>&nbsp;Pruning</a></div>
           <div class="w-100"></div>
           <div class="col">
             After a month without using YATA you are considered as <b>inactive</b>. If you are inactive and don't have a valid API key (because of a reset), your account and data will be deleted.          </div>

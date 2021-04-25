@@ -29,7 +29,7 @@ This file is part of yata.
 <div class="container-fluid p-md-3 p-1 mb-3 module">
     <h3>Faction Events</h3>
     {% if events|length %}
-    <div class="faction-event-container">
+    <div class="d-flex flex-wrap justify-content-center">
         {% for event in events %}
             {% include "faction/events/index.html" %}
         {% endfor %}

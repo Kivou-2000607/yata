@@ -23,25 +23,51 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<div class="faction-event">
-    <span class="event-title">{{event.title}}</span>
-    {% if event.timestamp %}
-        <span class="event-date">{{event.timestamp|ts2date:"%Y/%m/%d"}}<br/>{{event.timestamp|ts2date:"%H:%M"}} TCT</span>
-    {% endif %}
-    {% if event.description %}
-        <p class="event-description">{{event.description|trURL}}</p>
-    {% endif %}
-    <span class="event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-clock fa-pulse"></i></span>
+<div class="m-2 m-md-4 p-2 p-md-4 rounded faction-event overflow-scroll">
+
+  <div class="row justify-content-between">
+    <div class="col">
+      <h4>{{event.title}}</h4>
+      {% if event.description %}
+      <div class="event-description">{{event.description|trURL}}</div>
+      {% endif %}
+    </div>
+    <div class="col text-end">
+      {% if event.timestamp %}
+        <div>{{event.timestamp|ts2date:"%Y/%m/%d"}} {{event.timestamp|ts2date:"%H:%M"}}</div>
+      {% endif %}
+    </div>
+  </div>
+
+    <div class="row">
+      <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></div>
+    </div>
     {% if event.stack and event.timestamp %}
         <hr class="sep">
-        <span class="event-stack">Stacking</span>
-        <span class="event-stack-date">{{event.timestamp|sub:100800|ts2date:"%Y/%m/%d %H:%M"}} TCT</span>
-        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-clock fa-pulse"></i></span>
+        <div class="row justify-content-between">
+          <div class="col col-md-4">
+            <h4>Stacking</h4>
+          </div>
+          <div class="col text-end">
+            <div>{{event.timestamp|sub:100800|ts2date:"%m/%d %H:%M"}}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-spinner fa-pulse"></i></div>
+        </div>
     {% endif %}
     {% if event.reset and event.timestamp %}
         <hr class="sep">
-        <span class="event-stack">Reset branch</span>
-        <span class="event-stack-date">{{event.timestamp|sub:360000|ts2date:"%Y/%m/%d %H:%M"}} TCT</span>
-        <span class="event-countdown event-stack-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-clock fa-pulse"></i></span>
+        <div class="row justify-content-between">
+          <div class="col">
+            <h4>Reset branch</h4>
+          </div>
+          <div class="col text-end">
+            <div>{{event.timestamp|sub:360000|ts2date:"%m/%d %H:%M"}}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-spinner fa-pulse"></i></div>
+        </div>
     {% endif %}
 </div>
