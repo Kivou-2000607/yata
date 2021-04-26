@@ -3409,11 +3409,13 @@ class ArmoryReport(models.Model):
                     faction.delKey(key=key)
                     self.state = -2
                     self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                    self.update = tsnow()
                     self.save()
                     print(f"{self} {self.state_string}")
                     return -2
                 self.state = -3
                 self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.update = tsnow()
                 self.save()
                 print(f"{self} {self.state_string}")
                 return -3
@@ -3428,6 +3430,7 @@ class ArmoryReport(models.Model):
             if cache > CACHE_RESPONSE:
                 self.state = -4
                 self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.update = tsnow()
                 self.save()
                 print(f"{self} {self.state_string}")
                 return -4
