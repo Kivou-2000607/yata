@@ -3516,6 +3516,9 @@ class ArmoryReport(models.Model):
             elif news_info[0] == "one":  # case: one of the faction's Bottle of Beer
                 transaction_number = 1
                 item = " ".join(news_info[4:])
+            else:
+                print(f'{self} WARNING news item not known: {news_string}')
+                continue
 
             # merge blood bags
             if item == "Empty Blood Bag" and transaction_type == "filled":
