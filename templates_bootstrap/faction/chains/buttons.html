@@ -21,47 +21,62 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-{% if player.factionAA %}
-    {% if chain.report %}
-        <form>{% csrf_token %}
+<div class="d-flex flex-wrap">
+  {% if player.factionAA %}
+        {% if chain.report %}
+          <div class="me-2">
             <a class="faction-chains-see" href="{% url "faction:report" chain.tId %}" data-val="{{chain.tId}}"><i class="fas fa-eye" title="See report"></i></a>
-            {% if not chain.live %}
+          </div>
+          {% if not chain.live %}
+            <div class="me-2">
               {% if chain.computing %}<a class="faction-chains-cooldown" href="" data-val="{{chain.tId}}">{% endif %}
-                  {% if chain.cooldown %}
-                      <i class="fas fa-hourglass-end valid" title="Remove cooldown"></i>
-                  {% else %}
-                      <i class="fas fa-hourglass-half {% if chain.computing %}error{% endif %}" style="opacity: 0.5" title="Add cooldown"></i>
-                  {% endif %}
+              {% if chain.cooldown %}
+                <i class="fas fa-hourglass-end valid" title="Remove cooldown"></i>
+              {% else %}
+                <i class="fas fa-hourglass-half {% if chain.computing %}error{% endif %}" style="opacity: 0.5" title="Add cooldown"></i>
+              {% endif %}
               {% if chain.computing %}</a>{% endif %}
-            {% endif %}
+            </div>
+          {% endif %}
+          <div class="me-2">
             <a class="faction-chains-combine" href="" data-val="{{chain.tId}}">
-                {% if chain.combine %}
-                    <i class="fas fa-toggle-on" title="Remove from combined report"></i>
-                {% else %}
-                    <i class="fas fa-toggle-off" title="Add to combined report"></i>
-                {% endif %}
+              {% if chain.combine %}
+              <i class="fas fa-toggle-on" title="Remove from combined report"></i>
+              {% else %}
+              <i class="fas fa-toggle-off" title="Add to combined report"></i>
+              {% endif %}
             </a>
+          </div>
+          <div class="me-2">
             <a class="faction-chains-delete" href="" data-val="{{chain.tId}}"><i class="fas fa-trash-alt" title="Delete report"></i></a>
-        </form>
-        {% include "faction/chains/status.html" %}
-    {% else %}
-        <form>{% csrf_token %}
-            <a class="faction-chains-create" href="" data-val="{{chain.tId}}"><i class="fas fa-plus-square" title="Create report"></i></a>
-        </form>
-    {% endif %}
-{% else %}
-    {% if chain.report %}
-        <form>{% csrf_token %}
-            <a class="faction-chains-see" href='{% url "faction:report" chain.tId %}' data-val="{{chain.tId}}"><i class="fas fa-eye" title="See report"></i></a>
-        </form>
-        {% if chain.combine %}
-            <i class="fas fa-toggle-on" title="Remove from combined report"></i>
+          </div>
+          <div class="me-2">
+            {% include "faction/chains/status.html" %}
+          </div>
         {% else %}
-            <i class="fas fa-toggle-off" title="Add to combined report"></i>
+          <div class="me-2">
+            <a class="faction-chains-create" href="" data-val="{{chain.tId}}"><i class="fas fa-plus-square" title="Create report"></i></a>
+          </div>
         {% endif %}
-        {% include "faction/chains/status.html" %}
-    {% else %}
-        <i class="fas fa-times-circle error" style="opacity: 0.5" title="No reports"></i>
-    {% endif %}
-{% endif %}
-{# {% url 'faction:createReport' %} #}
+  {% else %}
+      {% if chain.report %}
+        <div class="me-2">
+          <a class="faction-chains-see" href='{% url "faction:report" chain.tId %}' data-val="{{chain.tId}}"><i class="fas fa-eye" title="See report"></i></a>
+        </div>
+        <div class="me-2">
+          {% if chain.combine %}
+              <i class="fas fa-toggle-on" title="Remove from combined report"></i>
+          {% else %}
+              <i class="fas fa-toggle-off" title="Add to combined report"></i>
+          {% endif %}
+        </div>
+        <div class="me-2">
+          {% include "faction/chains/status.html" %}
+        </div>
+      {% else %}
+        <div class="me-2">
+          <i class="fas fa-times-circle error" style="opacity: 0.5" title="No reports"></i>
+        </div>
+      {% endif %}
+  {% endif %}
+</div>

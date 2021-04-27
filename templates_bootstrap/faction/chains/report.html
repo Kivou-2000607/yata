@@ -24,33 +24,77 @@ This file is part of yata.
 
 {% if counts|length %}
 
-
-    {% if chain.live %}
-        <h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name}}'s live chain report (last update: {{chain.end|ts2date}})</h2>
-    {% else %}
-        <h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name}}'s chain report [{{chain.tId}}]<span class="flush-right">Last update: {{chain.update|ts2date}}</span></h2>
-    {% endif %}
-
-    <div class="module">
-        {% include "faction/chains/report-table.html" %}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-link"></i>&nbsp;{{faction.name}}'s {% if chain.live %}live chain{%else%}chain report [{{chain.tId}}]{%endif%}</div>
+      {% if not share and player.factionAA %}
+        <div class="px-2">
+          <a href="{% url 'faction:reportExport' chain.tId 0 %}" target="_blank"><i class="fas fa-file-export"></i>&nbsp;Export Counts</a>
+        </div>
+        <div class="px-2">
+          {% include 'faction/chains/share.html' %}
+        </div>
+      {% endif %}
     </div>
+</h2>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+  {% if chain.tId or chain.live %}
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless chain-summary">
+        <tbody>
+            <tr>
+                <td><b>Start:</b> {{chain.start|ts2date}}</td>
+                <td><b>End:</b> {{chain.end|ts2date}}</td>
+                <td class="overflow-hidden"><b>Chain time:</b> {{chain.end|sub:chain.start|ts2time}}</td>
+                <td><b class="me-1">Report status:</b>{% include "faction/chains/status.html" %}</td>
+            </tr>
+            {% if chain.live %}
+                <tr>
+                    <td colspan="2">With the current hit rate, next bonus will be on {{graph.info.ETALast}}</td>
+                    <td colspan="2">With the global hit rate, next bonus will be on {{graph.info.ETA}}</td>
+                </tr>
+            {% endif %}
+            {% if chain.attacks > 0 %}
+                <tr>
+                    <td title='Hits / Attacks: {{chain.chain}} / {{chain.attacks}} ({{chain.chain|div:chain.attacks|mul:"100"|floatformat:0}}%)'><b>Hits:</b> {{chain.chain}} ({{chain.chain|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
+                    <td title="Respect / attacks: {{chain.respect|div:chain.attacks|floatformat:2}}"><b>Respect:</b> {{chain.respect|floatformat:0|intcomma}} ({{chain.respect|div:chain.attacks|floatformat:2}})</td>
+                    <td title='Hits / Attacks: {{chain.current}} / {{chain.attacks}} ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)'><b>Hits CD:</b> {{chain.current}} ({{chain.current|div:chain.attacks|mul:"100"|floatformat:0}}%)</td>
+                    <td title="Respect / attacks: {{chain.respectComputed|div:chain.attacks|floatformat:2}}"><b>Respect CD:</b> {{chain.respectComputed|floatformat:0|intcomma}} ({{chain.respectComputed|div:chain.attacks|floatformat:2}})</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+  </div>
+  <div class="d-flex flex-wrap justify-content-center mt-2">
+    {% for b in bonus %}
+      <div class="m-1 m-md-2 p-1 p-md-2 rounded text-center faction-bonus">
+        <h3>Bonus #{{b.hit}}</h3>{{b.name|playerURL:b.tId|safe}}{% if b.targetId %}<br>on {{b.targetName|playerURL:b.targetId|safe}}{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+    {% include "faction/chains/report-table.html" %}
 
 {% else %}
-
+  <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
     {% if chain.report %}
         {% if chain.computing %}
-            <div class="module rounded warning">
+            <p class="warning mb-0">
                 Incoming report... It will be automatically updated in a couple of minutes.
-            </div>
+            </p>
         {% else %}
-            <div class="module rounded error">
+            <p class="error mb-0">
                 Report not computing... This is not normal. Try to delete and recreate it in the chain list.
-            </div>
+            </p>
         {% endif %}
     {% else%}
-        <div class="module rounded error">
+        <p class="error mb-0">
             Report of chain {{chain.tId}} not found.
-        </div>
+        </p>
     {% endif %}
-
+  </div>
 {% endif  %}

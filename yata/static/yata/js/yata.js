@@ -103,6 +103,7 @@ function fancyTimeFormat(time)
 }
 
 const nav = (url) =>{
+     console.log("nav" + url);
      window.history.pushState(null, document.title, url);
 };
 

@@ -22,40 +22,42 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
-<table class="tablesorter center-full-half trshadow faction-attacks-report-factions">
+<div class="table-responsive">
+<h3>Factions</h3>
+<table class="table table-hover table-striped table-borderless faction-attacks-report-factions">
     <thead>
-            <tr><th colspan="6">Factions</th></tr>
-          <tr>
-            <th>Faction</th>
-            <th><a style="margin: 0px;" class="page-link" href="?o_fa=1">Attacks<br/>won</th>
-            <th><a style="margin: 0px;" class="page-link" href="?o_fa=2">Attacks<br/>made</th>
-            <th><a style="margin: 0px;" class="page-link" href="?o_fa=3">Defends<br/>won</th>
-            <th><a style="margin: 0px;" class="page-link" href="?o_fa=4">Attacks<br/>received</th>
-            <th>Filter<br/><i style="cursor: help;" class="fas fa-question-circle" title="Click on the filters to select factions"></i></th>
-        </tr>
+      <tr>
+        <th class="a">Faction</th>
+        <th class="b" title="Attack won"><a class="yt-page-link" href="?o_fa=1">Att. won</th>
+        <th class="b" title="Attack made"><a class="yt-page-link" href="?o_fa=2">Att. made</th>
+        <th class="b" title="Defends won"><a class="yt-page-link" href="?o_fa=3">Def. won</th>
+        <th class="b" title="Attack received"><a class="yt-page-link" href="?o_fa=4">Att. rec.</th>
+        <th class="c">Filter<i style="cursor: help;" class="fas fa-question-circle ms-1" title="Click on the filters to select factions"></i></th>
+      </tr>
     </thead>
     <tbody>
     {% for f in factions %}
     <tr>
         {%if f.faction_id == -1%}
-            <td class="a">Stealth</td>
+            <td class="text-start overflow-hidden">Stealth</td>
         {%else%}
-            <td class="a">{{f.faction_name|factionURL:f.faction_id|safe}}</td>
+            <td class="text-start overflow-hidden">{% faction_link f.faction_id f.faction_name short=True %}</td>
         {%endif%}
-        <td class="b">{{f.hits}}</td>
-        <td class="b">{{f.attacks}}</td>
-        <td class="b">{{f.defends}}</td>
-        <td class="b">{{f.attacked}}</td>
-        <td class="c">{% include "faction/attacks/toggle.html" with page=factions.number%}</td>
+        <td class="text-center">{{f.hits}}</td>
+        <td class="text-center">{{f.attacks}}</td>
+        <td class="text-center">{{f.defends}}</td>
+        <td class="text-center">{{f.attacked}}</td>
+        <td class="text-center">{% include "faction/attacks/toggle.html" with page=factions.number%}</td>
     </tr>
     {% endfor %}
-    <tr><td colspan="6">
-        <div class="pagination" style="margin:0;">
+
+    <tr>
+      <td colspan="6" class="text-center">
+        <div class="pagination d-block">
             <span class="step-links">
                 {% if factions.has_previous %}
-                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa=1">&laquo; first</a>
-                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}">previous</a>
+                    <a class="yt-page-link rounded first" href="?o_fa={{o_fa}}&p_fa=1"></a>
+                    <a class="yt-page-link rounded previous" href="?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}"></a>
                 {% endif %}
 
                 <span class="current">
@@ -63,12 +65,14 @@ This file is part of yata.
                 </span>
 
                 {% if factions.has_next %}
-                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}">next</a>
-                    <a class="page-link" href="?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}">last &raquo;</a>
+                    <a class="yt-page-link rounded next" href="?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}"></a>
+                    <a class="yt-page-link rounded last" href="?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}"></a>
                 {% endif %}
             </span>
         </div>
-        </td>
+      </td>
     </tr>
+
     </tbody>
 </table>
+</div>

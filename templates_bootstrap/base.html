@@ -73,12 +73,17 @@ This file is part of yata.
 
 <body>
   <div class="container-flex px-md-5">
+    {% if not share %}
+      <div id="header">
+        {% include "header.html" %}
+      </div>
 
-    <div id="header">
-      {% include "header.html" %}
+      {% include "yata/section-message.html" %}
+  {% else %}
+    <div class="mb-3">
+
     </div>
-
-    {% include "yata/section-message.html" %}
+  {% endif %}
 
     {% block content %}{% endblock %}
 

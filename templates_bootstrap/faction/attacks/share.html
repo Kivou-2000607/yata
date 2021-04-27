@@ -22,7 +22,7 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if report.shareId %}
-    <a id="faction-attacks-report-share" data-val="{{report.pk}}" href=""><i class="fas fa-toggle-on" title="Stop sharing report"></i></a> <a href='{% url "attacksReport" "share" report.shareId %}' target="_blank"><i class="fas fa-share-alt" title="Shared link"></i></a>
+    <a id="faction-attacks-report-share" data-val="{{report.pk}}" href=""><i class="fas fa-toggle-on" title="Stop sharing report"></i>&nbsp;Unshare</a>&nbsp;<a href='{% url "attacksReport" "share" report.shareId %}' target="_blank"><i class="fas fa-share-alt" title="Shared link"></i></a>
 {% else %}
-    <a id="faction-attacks-report-share" data-val="{{report.pk}}" href=""><i class="fas fa-toggle-off" title="Share report"></i></a><i class="fas fa-share-alt" style="opacity: 0.2" title="Shared link"></i>
+    <a id="faction-attacks-report-share" data-val="{{report.pk}}" href=""><i class="fas fa-toggle-off" title="Share report"></i>&nbsp;Share</a>
 {% endif %}

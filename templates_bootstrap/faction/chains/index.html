@@ -49,58 +49,65 @@ This file is part of yata.
     });
 </script>
 
-<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s chains
-    <span class="flush-right">
-      <a id="faction-chains-combine-add-all" href=""><i class="fas fa-toggle-on fa-icon-inline" title="Add all reports to the combined report"></i></a>
-      <a id="faction-chains-combine-rem-all" href=""><i class="fas fa-toggle-off fa-icon-inline" title="Remove all reports to the combined report"></i></a>
-    </span>
-    <form class="flush-right form-inline">
-      <a id="faction-chain-combined" href=""><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a>
-    </form>
-  </h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-link"></i>&nbsp;{{faction.name|safe}}'s chains</div>
+      <div class="px-2">
+        <a id="faction-chain-combined" href="#"><i class="fas fa-layer-group"></i>&nbsp;Combined reports (<span id="n-combined">{{combined}}</span>)</a>
+      </div>
+      <div class="px-2">
+        <a id="faction-chains-combine-add-all" href=""><i class="fas fa-toggle-on fa-icon-inline" title="Add all reports to the combined report"></i></a>
+      </div>
+      <div class="px-2">
+        <a id="faction-chains-combine-rem-all" href=""><i class="fas fa-toggle-off fa-icon-inline" title="Remove all reports to the combined report"></i></a>
+      </div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     {% if chains|length %}
-    <table id="faction-chains" class="tablesorter center-large trshadow faction-chains">
-        <thead>
-            <tr>
-                <th>Chain [ID]</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Duration</th>
-                <th>Hits</th>
-                <th>Respect</th>
-                <th>Respect / hit</th>
-                <th>Report</th>
-        </thead>
-        <tbody>
-        {% for chain in chains %}
-        <tr {% if chain.live %}class="live"{% endif %}>
-            {% if chain.live %}
-                <td class="a"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
-                <td class="b">{{chain.start|ts2date}}</td>
-                <td class="b">-</td>
-            {% else %}
-                <td class="a"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
-                <td class="b">{{chain.start|ts2date}}</td>
-                <td class="b">{{chain.end|ts2date}}</td>
-            {% endif %}
+    <div class="table-responsive">
+      <table id="faction-chains" class="table table-hover table-striped table-borderless tablesorter faction-chains">
+          <thead>
+              <tr>
+                  <th class="a">Chain [ID]</th>
+                  <th class="b">Start</th>
+                  <th class="b">End</th>
+                  <th class="c">Duration</th>
+                  <th class="d">Hits</th>
+                  <th class="d">Respect</th>
+                  <th class="d">Respect / hit</th>
+                  <th class="e">Report</th>
+          </thead>
+          <tbody>
+          {% for chain in chains %}
+          <tr {% if chain.live %}class="live"{% endif %}>
+              {% if chain.live %}
+                  <td class="text-start"><a href="https://www.torn.com/factions.php?step=your#/war/chain" target="_blank">Live chain</a></td>
+                  <td class="text-center">{{chain.start|ts2date}}</td>
+                  <td class="text-center">-</td>
+              {% else %}
+                  <td class="text-start"><a href="https://www.torn.com/war.php?step=chainreport&chainID={{chain.tId}}" target="_blank">Chain [{{chain.tId}}]</a></td>
+                  <td class="text-center">{{chain.start|ts2date}}</td>
+                  <td class="text-center">{{chain.end|ts2date}}</td>
+              {% endif %}
 
-            <td class="c">{{chain.end|sub:chain.start|ts2time}}</td>
-            <td class="d"><b>{{chain.chain}}</b></td>
-            <td class="d"><b>{{chain.respect|floatformat:2}}</b></td>
-            {% if chain.chain %}
-                <td class="d" ><b>{{chain.respect|div:chain.chain|floatformat:2}}</b></td>
-            {% else %}
-                <td class="d" ><b>-</b></td>
-            {% endif %}
-            <td class="e buttons">
-                {% include "faction/chains/buttons.html" %}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <p class="update-info">Last update of the list: {{faction.chainsUpda|ts2date}}</p>
+              <td class="text-end">{{chain.end|sub:chain.start|ts2time}}</td>
+              <td class="text-center"><b>{{chain.chain}}</b></td>
+              <td class="text-center"><b>{{chain.respect|floatformat:2}}</b></td>
+              {% if chain.chain %}
+                  <td class="text-center" ><b>{{chain.respect|div:chain.chain|floatformat:2}}</b></td>
+              {% else %}
+                  <td class="text-center" ><b>-</b></td>
+              {% endif %}
+              <td class="text-start buttons">
+                  {% include "faction/chains/buttons.html" %}
+              </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    <p class="update-info mb-0">Last update of the list: {{faction.chainsUpda|ts2date}}</p>
     {% else%}
         <p class="error">No list recorded. Ask a AA member of your faction.</p>
     {% endif %}

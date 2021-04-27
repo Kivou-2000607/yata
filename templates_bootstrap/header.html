@@ -122,7 +122,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   <a href="{% url 'company:index' %}" title="Company"><b><i class="fas fa-building"></i>&nbsp;Company</b></a>
                   <span class="d-none d-md-block">
-                    {% if player.companyId %}{%if player.companyDi%}<sup>*</sup>{% endif %}{{player.companyNa|safe}}
+                    {% if player.companyId %}{{player.companyNa|safe}}{%if player.companyDi%}<sup class="ms-1">DIR</sup>{% endif %}
                     {% else %}limited{% endif %}
                   </span>
               </div>
@@ -133,7 +133,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   {% if player.tId > 0 %}
                     <a href="{% url 'faction:index' %}" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a>
-                    <span class="d-none d-md-block">{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% endif %}</span>
+                    <span class="d-none d-md-block">{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% if player.factionAA %}<sup class="ms-1">AA</sup>{%endif%}{% endif %}</span>
                   {% else %}
                     <span class="neutral" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></span>
                     <span class="d-none d-md-block">closed</span>

@@ -38,8 +38,8 @@ html, body{
 /* a, form, span, h2 { white-space:nowrap } */
 li { list-style-type: disclosure-closed; }
 nav li { list-style-type: none!important; }
-a { color: #447e9b!important; text-decoration: none; }
-a:hover, a:active, a:focus { color: #036!important; }
+a { color: #447e9b; text-decoration: none; }
+a:hover, a:active, a:focus { color: #036; }
 
 nav.module,
 div.module {
@@ -201,7 +201,7 @@ table.tablesorter th { cursor: context-menu; text-align: justify!important; }
 
 .table {
     table-layout: fixed;
-    word-wrap: break-word;
+    /* word-wrap: break-word; */
     font-size: 90%;
 }
 .table th {
@@ -292,3 +292,17 @@ div.module-doc { display: none;}
 h4.command-doc { cursor: pointer; margin-left: 5%; }
 div.command-doc { display: none; margin-left: 5%; }
 .hidden {display: none;}
+
+select.header-filter {
+  border:none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -ms-appearance: none; /* get rid of default appearance for IE8, 9 and 10*/
+  line-height: normal;
+  font-weight: bolder;
+  text-transform: uppercase;
+  background-color: #f6f6f6;
+  color: #888;
+  cursor: pointer;
+}

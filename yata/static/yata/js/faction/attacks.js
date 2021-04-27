@@ -1,32 +1,33 @@
-$(document).on('change', '#date-live', e=>{
+$(document).on('change', '#date-live-attacks', e=>{
     e.preventDefault();
     var start = parseInt($("#ts-start").val());
     var end = parseInt($("#ts-end").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").addClass("valid").removeClass("error").html("Will be constantly updated");
+        $("#date-end").addClass("valid").removeClass("error").html('<b><i class="far fa-calendar-alt"></i>&nbsp;Ending date</b>');
         if(start) {
-            $("#create-report").show();
+            $("#create-report-attacks").show();
         } else {
-            $("#create-report").hide();
+            $("#create-report-attacks").hide();
         }
     } else {
-        $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
-        $("#create-report").hide();
+        $("#date-end").removeClass("valid").addClass("error").html('<b><i class="far fa-calendar-alt"></i>&nbsp;Ending date</b>');
+        $("#create-report-attacks").hide();
     }
 });
 
 // create report
-$(document).on('click', '#create-report', e=>{
+$(document).on('click', '#create-report-attacks', e=>{
     e.preventDefault();
     var start = parseInt($("#ts-start").val());
     var end = parseInt($("#ts-end").val());
-    if($("#date-live").prop('checked')) {
+    if($("#date-live-attacks").prop('checked')) {
         var live = 1;
         var end = 0;
     } else {
         var live = 0
     }
+    $(e.currentTarget).html(spinner);
     $( "#content-update" ).load( "/faction/attacks/", {
         start: start, end: end, live: live, type: "new",
         csrfmiddlewaretoken: getCookie("csrftoken")
@@ -92,7 +93,7 @@ $(document).on('click', 'a#faction-attacks-report-members', e=>{
 // });
 
 // player filter
-$(document).on('click', 'form.attacks > i.filter-player,form.attacks > i.filter-player-activated', e=>{
+$(document).on('click', 'div.attacks-inline-filters > i.filter-player,form.attacks > i.filter-player-activated', e=>{
     e.preventDefault();
     var splt = $(e.currentTarget).attr("data-val").split("-")
     var reportId = splt[0];

@@ -1,3 +1,5 @@
+/* MAIN PAGE */
+
 /* targets */
 table.target-targets { min-width: 600px; width: 70%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
 table.target-targets th.a { width: 20%; text-align: left; }
@@ -81,3 +83,70 @@ div.event-description {
   color: #666;
   white-space: nowrap;
 }
+
+
+/* CHAINS */
+
+/* table.faction-chains { min-width: 800px; width: 100%; margin: auto;} */
+table.faction-chains th.a { width: 10%; }
+table.faction-chains th.b { width: 15%; } /* x2 */
+table.faction-chains th.c { width: 17%; }
+table.faction-chains th.d { width: 10%; } /* x3 */
+table.faction-chains th.e { width: 12%; }
+/* table.faction-chains td.e a { display: inline; } */
+/* table.faction-chains td.e form { display: inline; } */
+table.faction-chains tr.live       { background:#d9ead3; }
+table.faction-chains tr.live:hover { background:#b6d7a8; }
+table.chain-summary { min-width: 700px; width: 70%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip; }
+
+div.faction-bonus {
+  border: 1px solid #ccc;
+  background-color: #fafafaaa;
+  min-width: 10%;
+}
+
+table.faction-report th.a { width: 4%; }
+table.faction-report th.b { width: 15%; }
+table.faction-report th.c { width: 9%; }
+table.faction-report tr.zero-hits       { background:#f4cccc; display: none;}
+table.faction-report tr.zero-hits:hover { background:#ea9999; }
+tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
+
+table.faction-jsummary { min-width: 700px; width: 60%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
+table.faction-jbonus { min-width: 700px; width: 60%; margin: auto; overflow: hidden; }
+table.faction-jbonus th.a { width: 25%; text-align: left; }
+table.faction-jbonus th.b { width: 17.5%; text-align: left; }
+table.faction-jbonus th.c { width: 10%; text-align: center; }  /* x3 */
+table.faction-jbonus th.d { width: 17.5%; text-align: right; }
+table.faction-jbonus th.e { width: 10%; text-align: center; }
+
+
+/* ATTACKS */
+table.faction-attacks-report td.a { width: 10%; text-align: left; }
+table.faction-attacks-report td.b { width: 15%; text-align: center; } /* 3 */
+table.faction-attacks-report td.c { width: 15%; text-align: center; } /* 2 */
+table.faction-attacks-report td.d { width: 15%; text-align: left; }
+
+table.attacks-summary { min-width: 700px; width: 70%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-attacks-report-factions { min-width: 500px; width: 100%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
+table.faction-attacks-report-factions th.a { width: 30%; }
+table.faction-attacks-report-factions th.b { width: 15%; }
+table.faction-attacks-report-factions th.c { width: 10%; }
+table.faction-attacks-report-players { min-width: 500px; width: 100%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
+table.faction-attacks-report-players th.a { width: 30%; }
+table.faction-attacks-report-players th.b { width: 15%; }
+table.faction-attacks-report-players th.c { width: 10%; }
+table.faction-attacks-members-breakdown th.a { width: 16%; }
+table.faction-attacks-members-breakdown th.b { width: 6%; }
+
+table.faction-attacks-list th.a { width: 15%; }
+table.faction-attacks-list th.b { width: 15%; }
+table.faction-attacks-list th.c { width: 10%; }
+table.faction-attacks-list th.d { width: 5%; }
+
+i.filter-player { color: #555; opacity: 0.0; cursor: pointer; }
+tr:hover > td > form > i.filter-player { opacity: 0.5; }
+tr:hover > td > span > a > i.filter-player { opacity: 0.5; }
+i.filter-player:hover { opacity: 1.0!important; }
+i.filter-player-activated { color: #0B8E14; cursor: pointer; }
+i.filter-player-activated:hover { color: #CC3434; }

@@ -85,9 +85,10 @@ def login(request):
                 if 'apiError' in user:
                     print('[view.yata.login] API error: {}'.format(user))
                     context = user
+                    context['login'] = True
                     return render(request, 'header.html', context)
             except BaseException as e:
-                context = {'apiError': e}
+                context = {'apiError': e, 'login': True}
                 return render(request, 'header.html', context)
 
             # create/update player in the database
