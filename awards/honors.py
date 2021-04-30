@@ -472,7 +472,7 @@ d = {
     1006: 496524062,  # Bearish
     1007: 659787334,  # Stonks
     544: 177427194,  # City Slicker
-    545: 0,  # Diamond Hands
+    545: 455773716,  # Diamond Hands
     548: 727291710,  # Tendies
 
     # 15
