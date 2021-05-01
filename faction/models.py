@@ -271,7 +271,7 @@ class Faction(models.Model):
         if key is None:
             return {}, False
         else:
-            news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
+            news = apiCall("faction", "", "mainnews", key=key.value, sub="mainnews")
 
         if 'apiError' in news:
             return news, False

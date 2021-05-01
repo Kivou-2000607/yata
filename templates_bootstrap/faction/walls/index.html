@@ -43,36 +43,41 @@ This file is part of yata.
 
 </script>
 
-<h2 class="title"><i class="fas fa-link fa-icon-inline"></i>{{faction.name|safe}}'s walls</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-shield-alt"></i>&nbsp;{{faction.name|safe}}'s walls</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     {% if walls|length %}
-    <table id="faction-walls" class="tablesorter center-large trshadow faction-walls">
+    <div class="table-responsive">
+    <table id="faction-walls" class="table table-hover table-striped table-borderless tablesorter faction-walls">
         <thead>
             <tr>
-                <th>Wall [ID]</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Duration</th>
-                <th>Attackers</th>
-                <th>Defenders</th>
-                <th>Territory</th>
-                <th>Result</th>
-                <th></th>
+                <th class="a">Wall [ID]</th>
+                <th class="b">Start</th>
+                <th class="b">End</th>
+                <th class="c">Duration</th>
+                <th class="d">Attackers</th>
+                <th class="d">Defenders</th>
+                <th class="e">Territory</th>
+                <th class="e">Result</th>
+                <th class="e">&nbsp;</th>
             </tr>
         </thead>
         <tbody>
         {% for wall in walls %}
         <tr>
             {% if wall %}
-              <td class="a" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
-              <td class="b" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
-              <td class="b" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
-              <td class="c" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
-              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
-              <td class="d" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
-              <td class="e" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
-              <td class="e" ><span class="{{wall.result}}">{{wall.result}}</span></td>
-              <td class="e buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
+              <td class="text-start" data-val="{{wall.tId}}"><a href="https://www.torn.com/war.php?step=warreport&warID={{wall.tId}}" target="_blank">Wall [{{wall.tId}}]</a></td>
+              <td class="text-center" data-val="{{wall.tss}}">{{wall.tss|ts2date}}</td>
+              <td class="text-center" data-val="{{wall.tse}}">{{wall.tse|ts2date}}</td>
+              <td class="text-end" data-val="{{wall.tse|sub:wall.tss}}">{{wall.tse|sub:wall.tss|ts2time}}</td>
+              <td class="text-start" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.attackerFactionName|factionURL:wall.attackerFactionId|safe}}</td>
+              <td class="text-start" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">{{wall.defenderFactionName|factionURL:wall.defenderFactionId|safe}}</td>
+              <td class="text-center" ><a href="https://www.torn.com/city.php#terrName={{wall.territory}}" target="_blank">{{wall.territory}}</a></td>
+              <td class="text-center {{wall.result}}" >{{wall.result}}</td>
+              <td class="text-center buttons" data-val="{{wall.tId}}" data-fac="{% if wall.attackerFactionId == faction.tId %}{{wall.defenderFactionId}}{%else%}{{wall.attackerFactionId}}{%endif%}">
                 {% include "faction/walls/buttons.html" %}
               </td>
             {% endif %}
@@ -80,77 +85,86 @@ This file is part of yata.
         {% endfor %}
         </tbody>
     </table>
+  </div>
     {% else %}
-        <p class="error">No wall recorded. Only AA members can add walls with the script below.</p>
+        <p class="error mb-0">No wall recorded. Only AA members can add walls with the script below.</p>
     {% endif %}
 </div>
 
 {% for fac, TotalPlayers in summary.items %}
-<div class="catch-me">
+  <h2 class="title rounded-top px-2 py-2 toggle-display rounded mb-3">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2"><b class='{% if fac == faction.fullname %}valid{% else %}error{% endif %}'>{{fac}}</b></div>
+        <div class="px-2">{{TotalPlayers.Total.0|intcomma}} points</div>
+        <div class="px-2">{{TotalPlayers.Total.1}} joins</div>
+        <div class="px-2 me-auto">{{TotalPlayers.Total.2}} clears</div>
+        <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+      </div>
+  </h2>
+  <div class="container-fluid p-md-3 p-1 mb-3 module"  style="display: none;">
 
-<h2 class="title toggle-display rounded">Walls breakdown for <b class='{% if fac == faction.fullname %}valid{% else %}error{% endif %}'>{{fac}}</b>: {{TotalPlayers.Total.0|intcomma}} points, {{TotalPlayers.Total.1}} joins and {{TotalPlayers.Total.2}} clears&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-<div class="module" style="display: none;">
-    <table class="tablesorter center trshadow faction-walls-breakdown">
-        <thead>
-            <tr>
-                <th>Player</th>
-                <th>Lvl</th>
-                <th>Points</th>
-                <th>Joins</th>
-                <th>Clears</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for XID, player in TotalPlayers.Players.items %}
-            <tr>
-                <td class="a">{{player.P.1|playerURL:XID|safe}}</td>
-                <td class="b">{{player.P.2}}</td>
-                <td class="c">{{player.A.0|add:player.D.0|intcomma}}</td>
-                <td class="d">{{player.A.1|add:player.D.1}}</td>
-                <td class="d">{{player.A.2|add:player.D.2}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <table class="tablesorter center trshadow faction-walls-breakdown">
-        <tbody>
-            <td class="a"></td>
-            <td class="b"><b>Total</b></td>
-            <td class="c"><b>{{TotalPlayers.Total.0|intcomma}}</b></td>
-            <td class="d"><b>{{TotalPlayers.Total.1}}</b></td>
-            <td class="d"><b>{{TotalPlayers.Total.2}}</b></td>
-        </tbody>
-    </table>
-</div>
-
-</div>
-
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-borderless tablesorter faction-walls-breakdown">
+          <thead>
+              <tr>
+                  <th class="a">Player</th>
+                  <th class="b">Lvl</th>
+                  <th class="c">Points</th>
+                  <th class="d">Joins</th>
+                  <th class="d">Clears</th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for XID, player in TotalPlayers.Players.items %}
+              <tr>
+                  <td class="text-start">{{player.P.1|playerURL:XID|safe}}</td>
+                  <td class="text-center">{{player.P.2}}</td>
+                  <td class="text-end">{{player.A.0|add:player.D.0|intcomma}}</td>
+                  <td class="text-center">{{player.A.1|add:player.D.1}}</td>
+                  <td class="text-center">{{player.A.2|add:player.D.2}}</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+    </div>
+      <table class="tablesorter center trshadow faction-walls-breakdown">
+          <tbody>
+              <td class="a"></td>
+              <td class="b"><b>Total</b></td>
+              <td class="c"><b>{{TotalPlayers.Total.0|intcomma}}</b></td>
+              <td class="d"><b>{{TotalPlayers.Total.1}}</b></td>
+              <td class="d"><b>{{TotalPlayers.Total.2}}</b></td>
+          </tbody>
+      </table>
+  </div>
 {% endfor %}
 
-<h2 class="title"><i class="fas fa-code fa-icon-inline"></i>Userscript</h2>
-<div class="module">
-<p>In order to add a wall report, install this <a href="{% url_userscript 'walls' %}" target="_blank"> userscript</a> and go to the an ingame report page.</p>
-</div>
 
-<div class="module rounded">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Import walls</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <p>In order to add a wall report, install this <a href="{% url_userscript 'walls' %}" target="_blank"> userscript</a> and go to the an ingame report page.</p>
     {% if wallHistory|length %}
-    <p>List of your previous walls</p>
-    <ul>
-        {% for factionId, factionDic in wallHistory %}
-            <li>{{factionDic.name|factionURL:factionId|safe}}</li>
-            <ul>
-                {% for wall in factionDic.walls %}
-                    <li>
-                        <a href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Wall [{{wall.1}}]</a> of {{wall.2|ts2date}}:
-                        {% if wall.3 is None %}
-                            <a class="error"href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Not imported</a>
-                        {% else %}
-                            <span class="valid">Imported</span>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
-    </ul>
+    <h3>Previous walls</h3>
+    {% for factionId, factionDic in wallHistory %}
+      <h3 class="module-doc">{{factionDic.name}} [{{factionId}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+      <div class="module-doc">
+        <ul>
+            {% for wall in factionDic.walls %}
+                <li>
+                    <a href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Wall [{{wall.1}}]</a> of {{wall.2|ts2date}}:
+                    {% if wall.3 is None %}
+                        <a class="error"href="https://www.torn.com/war.php?step=warreport&warID={{wall.1}}" target="_blank">Not imported</a>
+                    {% else %}
+                        <span class="valid">Imported</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
     {% endif %}
 </div>

@@ -27,7 +27,17 @@ This file is part of yata.
 </div>
 {% endif %}
 
-<h2 class="title"><i class="fas fa-project-diagram fa-icon-inline"></i>Respect Simulator<span id="faction-tree-reset" class="flush-right"><a href=""><i class="fas fa-toilet-paper fa-icon-inline"></i>Reset simulation</a></span><span id="faction-tree-refresh" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Refresh faction upgrades</a></span></h2>
-<div id="faction-upgrade-tree" class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-project-diagram"></i>&nbsp;Respect Simulator</div>
+      <div class="px-2">
+        <span id="faction-tree-reset"><a href="#"><i class="fas fa-toilet-paper"></i>&nbsp;Reset simulation</a></span>
+      </div>
+      <div class="px-2">
+        <span id="faction-tree-refresh"><a href="#"><i class="fas fa-sync-alt"></i>&nbsp;Refresh faction upgrades</a></span>
+      </div>
+    </div>
+</h2>
+<div id="faction-upgrade-tree" class="container-fluid p-md-3 p-1 mb-3 module">
     {% include "faction/simulator/table.html" %}
 </div>

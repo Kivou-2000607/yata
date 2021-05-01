@@ -150,3 +150,71 @@ tr:hover > td > span > a > i.filter-player { opacity: 0.5; }
 i.filter-player:hover { opacity: 1.0!important; }
 i.filter-player-activated { color: #0B8E14; cursor: pointer; }
 i.filter-player-activated:hover { color: #CC3434; }
+
+/* WALLS */
+table.faction-walls th.a { width: 10%;} /* x1 */
+table.faction-walls th.b { width: 11%; } /* x2 */
+table.faction-walls th.c { width: 13%; } /* x1 */
+table.faction-walls th.d { width: 13%; } /* x2 */
+table.faction-walls th.e { width: 8%;} /* x3 */
+table.faction-walls td.Timeout { color: #CC3434 } /* x3 */
+table.faction-walls td.Truce { color: #0B8E14 } /* x3 */
+
+table.faction-walls-breakdown { min-width: 400px; width: 60%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-walls-breakdown th.a { width: 30%; }
+table.faction-walls-breakdown th.b { width: 10%; }
+table.faction-walls-breakdown th.c { width: 20%; }
+table.faction-walls-breakdown th.d { width: 20%; }
+
+table.faction-simulator-faction-wise { min-width: 600px; width: 70%; margin: auto; }
+table.faction-simulator-faction-wise { background: #ccc url(/static/images/bg_hospital.90146c289455.jpg) left top repeat }
+table.faction-simulator-branch-wise { min-width: 600px; width: 70%; margin: auto; }
+table.faction-simulator-branch-wise th.a { width: 10%; }  /* x1 */
+table.faction-simulator-branch-wise th.b { width: 10%; } /* x6 */
+table.faction-simulator-branch-wise th.c { width: 6%; }  /* x5 */
+table.faction-simulator-branch-wise tr.max-order { text-decoration: line-through; opacity: 0.5; font-style: oblique; }  /* x5 */
+
+table.faction-simulator { min-width: 600px; width: 70%; margin: auto; }
+table.faction-simulator td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+
+table.faction-simulator tr.order-1 { background-color: #447e9b11}
+table.faction-simulator tr.order-2 { background-color: #447e9b22}
+table.faction-simulator tr.order-3 { background-color: #447e9b33}
+table.faction-simulator tr.order-4 { background-color: #447e9b44}
+table.faction-simulator tr.order-5 { background-color: #447e9b55}
+table.faction-simulator tr.order-6 { background-color: #447e9b66}
+table.faction-simulator tr.order-7 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
+table.faction-simulator tr.order-8 { text-decoration: line-through; opacity: 0.5; font-style: oblique; }
+table.faction-simulator tr.order-core { background-color: #0001}
+table.faction-simulator td.show-upgrade-details { cursor: help; height: 30px;}
+select.faction-upgrade-tree {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    overflow: hidden;
+    /* -webkit-appearance: none; */
+    font-weight: bold;
+    /* height: 16px; */
+    width: 20px;
+    text-align: center;
+    /* margin-top: 2px;
+    margin-left: 5px; */
+    border-width: 0px;
+    background: #00000000;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+}
+
+table.faction-simulator th.a { width: 12%; text-align: left; }  /* x1 */
+table.faction-simulator th.b { width: 16%; text-align: left; } /* x1 */
+table.faction-simulator th.c { width: 7%; text-align: center; }  /* x6 */
+table.faction-simulator th.d { width: 10%; text-align: right; }  /* x3 */
+
+table.faction-simulator-details { width: 100%; }  /* x1 */
+table.faction-simulator-details td.a { width: 15%; text-align: left; }  /* x1 */
+table.faction-simulator-details td.b { width: 40%; text-align: left; } /* x1 */
+table.faction-simulator-details td.c { width: 35%; text-align: left; }  /* x1 */
+table.faction-simulator-details td.d { width: 10%; text-align: right; }  /* x1 */
+
+tr.upgrade-details {cursor: pointer; display: none;  padding: 0; background-color: #eeee; color: #555}

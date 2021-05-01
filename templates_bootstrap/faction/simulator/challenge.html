@@ -22,7 +22,7 @@ This file is part of yata.
 {% load app_filters %}
 
 <td colspan="11">
-<table class="center-full faction-simulator-details">
+<table class="faction-simulator-details">
     {% for challenge in challenges %}
     <tr title="{% if challenge.progress.0 > 0 %}{{challenge.name}}: {{challenge.progress.0|intcomma}} / {{challenge.progress.1|intcomma}} ({{challenge.progress.0|div:challenge.progress.1|mul:100|floatformat:0|intcomma}}%){% endif %}">
         <td class="a">{{challenge.name}}</td>
