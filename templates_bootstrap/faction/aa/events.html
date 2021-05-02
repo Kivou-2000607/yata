@@ -40,39 +40,70 @@ $(function () {
 </script>
 
 <h3>Your events</h3>
-<table class="center">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Title</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for event in events %}
-        <tr>
-            <td>{{event.timestamp|ts2date}}</td>
-            <td>{{event.title}}</td>
-            <td><form>{% csrf_token %}<a class="faction-event-delete" href="" data-val="{{event.pk}}"><i class="fas fa-trash-alt"></i></a></form></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% if events|length %}
+<div class="table-responsive mb-2">
+  <table class="table table-hover table-striped table-borderless faction-events">
+      <thead>
+          <tr>
+              <th class="a">Date</th>
+              <th class="b">Title</th>
+              <th class="c">Del.</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for event in events %}
+          <tr>
+              <td class="text-center">{{event.timestamp|ts2date}}</td>
+              <td class="text-left">{{event.title}}</td>
+              <td class="text-center"><a class="faction-event-delete" href="" data-val="{{event.pk}}"><i class="fas fa-trash-alt"></i></a></td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="warning">No events recorded.</p>
+{% endif %}
 
 <h3>Create new event</h3>
-<p><form>{% csrf_token %}
-    <p><b>Title</b><br/><input id="event-title" type="text"></p>
-    <p><b>Description</b><br><input id="event-description" type="text"></p>
-    <p><b>Date</b>:&nbsp;&nbsp;
-        <input id="event-ts" type="hidden" value="0">
-        <span id="event-date" style="cursor: pointer;"><i class="far fa-calendar-alt"></i></span>
-    </p>
-    <p><b>Stack countdown</b>:&nbsp;&nbsp;
-        <input id="event-stack" type="checkbox">
-    </p>
-    <p><b>Reset branches countdown</b>:&nbsp;&nbsp;
-        <input id="event-reset" type="checkbox">
-    </p>
-    <p><input id="faction-event-create" type="submit" value="Add event" style="display: none;"></p>
-</form>
-</p>
+<div class="row mb-0">
+  <input id="event-ts" type="hidden" value="0">
+
+  <div class="col-auto m-2 align-self-center">
+    <div class="input-group">
+      <label for="event-title" class="input-group-text">Title</label>
+      <input id="event-title" type="text" class="form-control">
+    </div>
+  </div>
+  <div class="col-auto m-2 align-self-center">
+    <div class="input-group">
+      <label for="event-description" class="input-group-text">Description</label>
+      <input id="event-description" type="text" class="form-control">
+    </div>
+  </div>
+  <div class="col-auto m-2 align-self-center">
+    <div class="input-group">
+      <label for="event-date" class="input-group-text"><i class="far fa-calendar-alt"></i>&nbsp;Date</label>
+      <input id="event-date" style="cursor: pointer;" type="text" class="form-control">
+    </div>
+  </div>
+  <div class="col-auto m-2 align-self-center">
+     <div class="input-group">
+       <span class="input-group-text">Stacking countdown</span>
+       <div class="input-group-text">
+         <input id="event-stack" type="checkbox" class="form-check-input">
+       </div>
+    </div>
+  </div>
+  <div class="col-auto m-2 align-self-center">
+     <div class="input-group">
+       <span class="input-group-text">Reset branches countdown</span>
+       <div class="input-group-text">
+         <input id="event-reset" type="checkbox" class="form-check-input">
+       </div>
+    </div>
+  </div>
+  <div class="col-auto m-2 align-self-center">
+    <button id="faction-event-create" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Add event</button>
+  </div>
+</div>

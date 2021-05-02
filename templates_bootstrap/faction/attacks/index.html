@@ -26,6 +26,8 @@ This file is part of yata.
 <script>
 $(document).ready(function() {
     $("#faction-attacks-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    $("#date-start").val('');
+    $("#date-end").val('');
 
     $(function () {
         $("#date-start").datetimepicker({
@@ -35,21 +37,21 @@ $(document).ready(function() {
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
                 $("#ts-start").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-start").html('<b>' + s + '</b>');
+                // $("#date-start").html('<b>' + s + '</b>');
 
-                $("#date-start").removeClass("error").addClass("valid");
+                $("#date-start").siblings("label").removeClass("error").addClass("valid");
                 $("#date-live-attacks").prop('checked', false);
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!end) {
-                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#date-end").siblings("label").removeClass("valid").addClass("error");
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
-                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#date-end").siblings("label").removeClass("valid").addClass("error");
                     $("#create-report-attacks").hide()
                 } else {
-                    $("#date-end").removeClass("error").addClass("valid");
+                    $("#date-end").siblings("label").removeClass("error").addClass("valid");
                     $("#create-report-attacks").show()
                 }
 
@@ -70,21 +72,21 @@ $(document).ready(function() {
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
                 $("#ts-end").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-end").html('<b>' + s + '</b>');
-                $("#date-end").removeClass("error").addClass("valid");
+                // $("#date-end").html('<b>' + s + '</b>');
+                $("#date-end").siblings("label").removeClass("error").addClass("valid");
                 $("#date-live-attacks").prop('checked', false);
                 console.log("change end")
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!start) {
-                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#date-start").siblings("label").removeClass("valid").addClass("error");
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
-                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#date-start").siblings("label").removeClass("valid").addClass("error");
                     $("#create-report-attacks").hide()
                 } else {
-                    $("#date-start").removeClass("error").addClass("valid");
+                    $("#date-start").siblings("label").removeClass("error").addClass("valid");
                     $("#create-report-attacks").show()
                 }
             },
@@ -150,21 +152,28 @@ $(document).ready(function() {
       <input id="ts-start" type="hidden" value="0">
       <input id="ts-end" type="hidden" value="0">
       <input id="ts-live" type="hidden" value="0">
-      <div class="col-auto">
-        <span id="date-start" style="cursor: pointer;"><b><i class="far fa-calendar-alt"></i>&nbsp;Starting date</b></span>
+
+      <div class="col-auto m-2 align-self-center">
+        <div class="input-group">
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt"></i>&nbsp;Start</label>
+          <input id="date-start" type="text" class="form-control">
+        </div>
       </div>
-      <div class="col-auto">
-        <span id="date-end" style="cursor: pointer;"><b><i class="far fa-calendar-alt"></i>&nbsp;Ending date</b></span>
+      <div class="col-auto m-2 align-self-center">
+        <div class="input-group">
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt"></i>&nbsp;End</label>
+          <input id="date-end" type="text" class="form-control">
+        </div>
       </div>
-      <div class="col-auto">
-        <b><i class="fas fa-microphone-alt"></i>&nbsp;Live</b>
+      <div class="col-auto m-2 align-self-center">
+         <div class="input-group">
+           <span class="input-group-text"><i class="fas fa-microphone-alt"></i>&nbsp;Live</span>
+           <div class="input-group-text">
+             <input id="date-live-attacks" type="checkbox" class="form-check-input">
+           </div>
+        </div>
       </div>
-      <div class="col-auto">
-        <input id="date-live-attacks" type="checkbox">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-auto">
+      <div class="col-auto m-2 align-self-center">
         <button id="create-report-attacks" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
       </div>
     </div>

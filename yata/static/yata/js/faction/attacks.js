@@ -4,14 +4,16 @@ $(document).on('change', '#date-live-attacks', e=>{
     var end = parseInt($("#ts-end").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").addClass("valid").removeClass("error").html('<b><i class="far fa-calendar-alt"></i>&nbsp;Ending date</b>');
+        $("#date-end").siblings("label").addClass("valid").removeClass("error");
+        $("#date-end").val("");
         if(start) {
             $("#create-report-attacks").show();
         } else {
             $("#create-report-attacks").hide();
         }
     } else {
-        $("#date-end").removeClass("valid").addClass("error").html('<b><i class="far fa-calendar-alt"></i>&nbsp;Ending date</b>');
+        $("#date-end").siblings("label").removeClass("valid").addClass("error");
+        $("#date-end").val("");
         $("#create-report-attacks").hide();
     }
 });

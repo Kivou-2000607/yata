@@ -18,19 +18,22 @@ This file is part of yata.
 {% endcomment %}
 {% load humanize %}
 
-<form id="faction-aa-change-threshold">{% csrf_token %}
-    <p>The chains in the list are chains larger than <b {% if onChange %}class="valid"{% endif %}>{{faction.hitsThreshold|intcomma}}</b> Hits. You can change this threshold here:
-        <select>
-            <option value="{{faction.hitsThreshold}}" selected="selected">{{faction.hitsThreshold|intcomma}}</option>
-            <option disabled="disabled">---</option>
-            {% for b in bonus %}
-                {% if b != faction.hitsThreshold %}
-                    <option value="{{b}}">{{b|intcomma}}</option>
-                {% endif %}
-            {% endfor%}
-        </select>
-        {% if onChange and previousThreshold < faction.hitsThreshold %}
-            <span class="warning"><i class="fas fa-exclamation-circle"></i>  You moved the threshold from {{previousThreshold|intcomma}} to {{faction.hitsThreshold|intcomma}}. All chain reports between these values will be deleted.</span>
-        {% endif %}
-    </p>
-</form>
+<p>The chains in the list are chains larger than <b {% if onChange %}class="valid"{% endif %}>{{faction.hitsThreshold|intcomma}}</b> Hits.</p>
+{% if onChange and previousThreshold < faction.hitsThreshold %}
+  <p class="warning"><i class="fas fa-exclamation-circle"></i>&nbsp;You moved the threshold from {{previousThreshold|intcomma}} to {{faction.hitsThreshold|intcomma}}. All chain reports between these values will be deleted.</p>
+{% endif %}
+
+<div class="col-md-4">  
+  <div class="input-group">
+    <label class="input-group-text" for="faction-aa-change-threshold">Change threshold</label>
+    <select class="form-select" id="faction-aa-change-threshold">
+        <option value="{{faction.hitsThreshold}}" selected="selected">{{faction.hitsThreshold|intcomma}}</option>
+        <option disabled="disabled">---</option>
+        {% for b in bonus %}
+            {% if b != faction.hitsThreshold %}
+                <option value="{{b}}">{{b|intcomma}}</option>
+            {% endif %}
+        {% endfor%}
+    </select>
+  </div>
+</div>

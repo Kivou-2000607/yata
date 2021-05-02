@@ -20,20 +20,15 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-<form>{% csrf_token %}
-    {% if key.useFact %}
-        <span class="fa-stack fa-1x">
-            <i class="fas fa-key fa-stack-1x valid"></i>
-            {# <i class="fas fa-circle fa-stack-2x valid"></i> #}
-        </span>
-        {# <i class="fas fa-check valid"></i> #}
-    {% else %}
-        <span class="fa-stack fa-1x">
-            <i class="fas fa-key fa-stack-1x"></i>
-            <i class="fas fa-ban fa-stack-2x error"></i>
-        </span>
-        {# <i class="fas fa-times error"></i> #}
-    {% endif %}
+<div class="d-flex flex-wrap">
+    <div class="me-2">
+      {% if key.useFact %}
+        <i class="fas fa-key valid"></i>
+      {% else %}
+        <i class="fas fa-ban error"></i>
+      {% endif %}
+    </div>
+    <div class="me-2 align-middle">
     {% if key.player.tId == player.tId %}
             <a class="faction-aa-toggle-key" href="{% url 'faction:configurationsKey' %}">
                {% if key.useFact %}
@@ -43,4 +38,5 @@ This file is part of yata.
                {% endif %}
             </a>
    {% endif %}
-</form>
+  </div>
+</div>

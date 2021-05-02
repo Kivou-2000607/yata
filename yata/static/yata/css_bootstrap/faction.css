@@ -165,6 +165,11 @@ table.faction-walls-breakdown th.a { width: 30%; }
 table.faction-walls-breakdown th.b { width: 10%; }
 table.faction-walls-breakdown th.c { width: 20%; }
 table.faction-walls-breakdown th.d { width: 20%; }
+table.faction-walls-breakdown-total { min-width: 400px; width: 60%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip; table-layout: fixed; }
+table.faction-walls-breakdown-total td.a { width: 30%; }
+table.faction-walls-breakdown-total td.b { width: 10%; }
+table.faction-walls-breakdown-total td.c { width: 20%; }
+table.faction-walls-breakdown-total td.d { width: 20%; }
 
 table.faction-simulator-faction-wise { min-width: 600px; width: 70%; margin: auto; }
 table.faction-simulator-faction-wise { background: #ccc url(/static/images/bg_hospital.90146c289455.jpg) left top repeat }
@@ -211,10 +216,22 @@ table.faction-simulator th.b { width: 16%; text-align: left; } /* x1 */
 table.faction-simulator th.c { width: 7%; text-align: center; }  /* x6 */
 table.faction-simulator th.d { width: 10%; text-align: right; }  /* x3 */
 
-table.faction-simulator-details { width: 100%; }  /* x1 */
+table.faction-simulator-details { min-width: 600px; table-layout: fixed; }  /* x1 */
+table.faction-simulator-details td { overflow: hidden; white-space: nowrap; text-overflow: clip;  }  /* x1 */
 table.faction-simulator-details td.a { width: 15%; text-align: left; }  /* x1 */
 table.faction-simulator-details td.b { width: 40%; text-align: left; } /* x1 */
 table.faction-simulator-details td.c { width: 35%; text-align: left; }  /* x1 */
 table.faction-simulator-details td.d { width: 10%; text-align: right; }  /* x1 */
 
 tr.upgrade-details {cursor: pointer; display: none;  padding: 0; background-color: #eeee; color: #555}
+
+
+/* configuration */
+table.faction-aa-keys { min-width: 500px; width: 50%; margin: auto; }
+table.faction-aa-keys th.a { width: 30%; } /* x2 */
+table.faction-aa-keys th.b { width: 15%; }  /* x1 */
+table.faction-aa-keys th.c { width: 25%; }  /* x1 */
+table.faction-events { min-width: 500px; width: 50%; margin: auto; }
+table.faction-events th.a { width: 30%; } /* x2 */
+table.faction-events th.b { width: 60%; } /* x2 */
+table.faction-events th.c { width: 10%; } /* x2 */
