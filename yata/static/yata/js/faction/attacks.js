@@ -4,8 +4,6 @@ $(document).on('change', '#date-live-attacks', e=>{
     var end = parseInt($("#ts-end").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        // $("#date-end").addClass("is-valid").removeClass("is-invalid");
-        // $("#date-end").val("");
         $("#date-end").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
         if(start) {
             $("#create-report-attacks").show();
@@ -14,8 +12,6 @@ $(document).on('change', '#date-live-attacks', e=>{
         }
     } else {
         $("#date-end").addClass("is-invalid").attr("disabled", false).focus();
-        // $("#date-end").removeClass("is-valid").addClass("is-invalid");
-        // $("#date-end").val("");
         $("#create-report-attacks").hide();
     }
 });
@@ -97,7 +93,7 @@ $(document).on('click', 'a#faction-attacks-report-members', e=>{
 // });
 
 // player filter
-$(document).on('click', 'div.attacks-inline-filters > i.filter-player,form.attacks > i.filter-player-activated', e=>{
+$(document).on('click', 'table.faction-attacks-list i.filter-player,table.faction-attacks-list i.filter-player-activated', e=>{
     e.preventDefault();
     var splt = $(e.currentTarget).attr("data-val").split("-")
     var reportId = splt[0];

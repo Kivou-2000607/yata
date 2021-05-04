@@ -26,8 +26,12 @@ This file is part of yata.
 <script>
 $(document).ready(function() {
     $("#faction-attacks-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
-    $("#date-start").val('');
-    $("#date-end").val('');
+    $("#date-start").val("");
+    $("#date-end").val("");
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    });
 
     $(function () {
         $("#date-start").datetimepicker({
@@ -140,7 +144,7 @@ $(document).ready(function() {
 {% if player.factionAA %}
   <hr class="sep">
 
-    <h3>Create new attack reports</h3>
+    <h3>Create new attacks reports</h3>
     <p><i>Select a starting date and either an ending date or make it live.</i></p>
     <div class="row">
       <input id="ts-start" type="hidden" value="0">

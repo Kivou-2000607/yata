@@ -40,42 +40,38 @@ This file is part of yata.
     <tbody>
     {% for v in attacks %}
       <tr>
-          <td class="text-start">{{v.timestamp_started|ts2date}}</td>
+          <td class="text-center">{{v.timestamp_started|ts2date}}</td>
           {%if v.attacker_id == 0 or v.attacker_id == 1%}
               <td class="text-start">Stealth</td>
               <td class="text-start">Stealth</td>
           {%else%}
               <td class="text-start">
                 <div class="d-flex">
-                  <div class="me-auto">
-                    {% player_link v.attacker_id v.attacker_name %}
-                  </div>
-                  <div class="attacks-inline-filters">
-                    {% if tId == report.player_filter %}
-                      <i class="fas fa-filter filter-player-activated px-2" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
+                  <div class="me-2">
+                    {% if v.attacker_id == report.player_filter %}
+                        <i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
                     {% else %}
-                      <i class="fas fa-filter filter-player px-2" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
+                        <i class="fas fa-filter filter-player" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
                     {% endif %}
                   </div>
+                  <div>{% player_link v.attacker_id v.attacker_name %}</div>
                 </div>
               </td>
-              <td class="text-start">{{v.attacker_factionname|factionURLShort:v.attacker_faction|safe}}</td>
+              <td class="text-start">{% faction_link v.attacker_faction v.attacker_factionname %}</td>
           {%endif%}
           <td class="text-start">
             <div class="d-flex">
-              <div class="me-auto">
-                {% player_link v.defender_id v.defender_name %}
-              </div>
-              <div class="attacks-inline-filters">
-                {% if tId == report.player_filter %}
-                  <i class="fas fa-filter filter-player-activated px-2" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.defender_id}}"></i>
+              <div class="me-2">
+                {% if v.defender_id == report.player_filter %}
+                    <i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.defender_id}}"></i>
                 {% else %}
-                  <i class="fas fa-filter filter-player px-2" data-val="{{report.pk}}-{{v.defender_id}}"></i>
+                    <i class="fas fa-filter filter-player" data-val="{{report.pk}}-{{v.defender_id}}"></i>
                 {% endif %}
               </div>
+              <div>{% player_link v.defender_id v.defender_name %}</div>
             </div>
           </td>
-          <td class="text-start">{{v.defender_factionname|factionURLShort:v.defender_faction|safe}}</td>
+          <td class="text-start">{% faction_link v.defender_faction v.defender_factionname %}</td>
           <td class="text-center">{{v.result}}</td>
           <td class="text-center">{%if v.chain %}{{v.chain}}{%endif%}</td>
           {% if v.code == "0" %}

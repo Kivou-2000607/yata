@@ -40,16 +40,14 @@ $(document).on('click', '#faction-attacks-report-share', e=>{
     e.preventDefault();
     var span = $(e.currentTarget).closest("div")
     var reportId = $(e.currentTarget).attr("data-val");
-    console.log(reportId);
     span.load( "/faction/attacks/manage/", {
         type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
 });
 $(document).on('click', '#faction-revives-report-share', e=>{
     e.preventDefault();
-    var span = $(e.currentTarget).closest("span")
+    var span = $(e.currentTarget).closest("div")
     var reportId = $(e.currentTarget).attr("data-val");
-    console.log(reportId);
     span.load( "/faction/revives/manage/", {
         type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
     }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');

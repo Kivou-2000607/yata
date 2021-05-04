@@ -22,31 +22,6 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
-<script>
-// $(document).ready(function() {
-//     $(".faction-attacks-report-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1], [5,1], [3,1], [4,1]]});
-//     $(".faction-attacks-report-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
-// });
-
-$(function () {
-    $("#modify-date-end").datetimepicker({
-        step: 15,
-        onChangeDateTime:function(dp,$input){
-            var d = new Date($input.val());
-            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-            var reportId = $("input#attacks-report-id").attr("data-val");
-            $( "#content-update" ).load( "/faction/attacks/" + reportId, {
-                end: dUTC/1000, modifyEnd: 1,
-                csrfmiddlewaretoken: getCookie("csrftoken")
-            },afterLoad);
-            $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract ');
-        },
-    });
-});
-
-</script>
-
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
       <div class="px-2 me-auto"><i class="fas fa-skull"></i>&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]</div>
@@ -83,6 +58,7 @@ $(function () {
         </tbody>
     </table>
   </div>
+
     {% if factions|length %}
       <div class="row">
         <div class="col col-md-6 pagination-list">
@@ -92,7 +68,6 @@ $(function () {
             {% include "faction/attacks/players.html"%}
         </div>
       </div>
-        <hr class="sep" style="opacity: 0">
     {% else %}
         <p class="warning mb-0">Report is being computed.</p>
     {% endif %}

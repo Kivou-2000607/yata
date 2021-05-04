@@ -22,17 +22,25 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-<form class="inlinefrom">{% csrf_token %}
+<div class="d-flex flex-wrap">
+  <div class="me-2">
     <a class="faction-revives-reports-see" data-val="{{report.pk}}" href="{% url 'faction:revives' report.pk %}"><i class="fas fa-eye" title="See report"></i></a>
+  </div>
     {% if player.factionAA %}
-    <a class="faction-revives-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
+    <div class="me-2">
+      <a class="faction-revives-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
+    </div>
     {% endif %}
     {% if report.live %}
+      <div class="me-2">
         {% if report.computing %}
             <i class="fas fa-microphone-alt valid" title="This is a live report"></i>
         {% else %}
             <i class="fas fa-microphone-alt-slash neutral" title="This is a live report"></i>
         {% endif %}
+      </div>
     {% endif %}
-    {% include "faction/revives/status.html" %}
-</form>
+    <div class="me-2">
+      {% include "faction/revives/status.html" %}
+    </div>
+</div>

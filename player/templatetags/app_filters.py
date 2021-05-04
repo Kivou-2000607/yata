@@ -666,7 +666,8 @@ def player_link(player_id, player_name="Player", page=None, short=False):
 
 @register.simple_tag(name='faction_link')
 def faction_link(faction_id, faction_name="Faction", short=False):
-    print(faction_id, faction_name)
+    if not faction_id:
+        return "-"
     if short:
         return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name}</a>')
     else:
