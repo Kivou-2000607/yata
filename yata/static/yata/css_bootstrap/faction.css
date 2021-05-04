@@ -313,3 +313,16 @@ span.spies-faction.kickable:hover:after {
   content: "\f506";
   margin-left: 5px;
 }
+
+/* members */
+table.faction-members { min-width: 1000px; width: 100%; margin: auto; }
+table.faction-members td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-members th.a { width: 5%; text-align: center;} /* x1 */
+table.faction-members th.b { width: 10%; text-align: left} /* x1 */
+table.faction-members th.c { width: 9%; text-align: right; cursor: pointer;} /* x1 */
+table.faction-members th.d { width: 15%; text-align: left;} /* x1 */
+table.faction-members th.e { width: 7%; text-align: center; cursor: pointer;}  /* x2 */
+table.faction-members th.f { width: 10%; text-align: right; cursor: default;} /* x2 */
+table.faction-members th.g { width: 10%; text-align: right; cursor: default;} /* x1 */
+table.faction-members th.h { width: 7%; text-align: center; cursor: default;} /* x1 */
+/* table.faction-members td.z { text-align: center; opacity: 0.3} */

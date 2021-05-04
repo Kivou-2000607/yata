@@ -50,24 +50,24 @@ This file is part of yata.
     </div>
 </h2>
 <div class="container-fluid p-md-3 p-1 mb-3 module">
-  <h3 class="module-doc">Controls&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
-  <div class="spy-database-controls module-doc">
+  <h3>Controls</h3>
+  <div class="spy-database-controls">
     {% include "faction/spies/controls.html" %}
   </div>
 
-  <h3 class="module-doc">Factions&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
-  <div class="module-doc mb-2">
+  <h3>Factions</h3>
+  <div class="mb-2">
     <div class="d-flex flex-wrap">
       {% for dbfac in database.factions.all %}
-      {% if database.master_id == dbfac.tId %}
-      <span class="spies-faction rounded p-2 m-2 valid master" title="Master faction">{{dbfac}}</span>
-      {% else %}
-      {% if database.master_id == faction.tId %}
-      <span class="spy-database-join-kick spies-faction rounded p-2 m-2 neutral kickable" data-val="{{database.pk}}" data-fac="{{dbfac.tId}}" title="Kick faction from database">{{dbfac}}</span>
-      {% else %}
-      <span class="spies-faction rounded p-2 m-2 neutral">{{dbfac}}</span>
-      {% endif %}
-      {% endif %}
+        {% if database.master_id == dbfac.tId %}
+          <span class="spies-faction rounded p-2 m-2 valid master" title="Master faction">{{dbfac}}</span>
+        {% else %}
+          {% if database.master_id == faction.tId %}
+            <span class="spy-database-join-kick spies-faction rounded p-2 m-2 neutral kickable" data-val="{{database.pk}}" data-fac="{{dbfac.tId}}" title="Kick faction from database">{{dbfac}}</span>
+          {% else %}
+            <span class="spies-faction rounded p-2 m-2 neutral">{{dbfac}}</span>
+          {% endif %}
+        {% endif %}
       {% endfor %}
     </div>
   </div>

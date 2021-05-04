@@ -423,7 +423,7 @@ class Faction(models.Model):
 
         # get previous main ranking
         previous_ranking = json.loads(self.crimesRank)
-        previous_ranking = []
+        # previous_ranking = []
 
         # remove old players from previous ranking
         to_delete = []
@@ -646,13 +646,12 @@ class Faction(models.Model):
         if 'apiError' in membersAPI:
             return membersAPI
 
-        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction', 'crimesRank',
+        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction',
                                         'shareE', 'energy', 'energyRefillUsed', 'revive', 'drugCD',
                                         'shareS', 'dexterity', 'speed', 'strength', 'defense',
                                         'shareN', 'nnb', 'arson', 'singleHitHonors'], chunk_size=100)
 
         membersDB = self.member_set.all()
-        crimesRank = json.loads(self.crimesRank)
         for m in membersAPI:
             memberDB = membersDB.filter(tId=m).first()
 
@@ -661,10 +660,6 @@ class Faction(models.Model):
                 # update basics
                 memberDB.name = membersAPI[m]['name']
                 memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-                try:
-                    memberDB.crimesRank = crimesRank.index(memberDB.tId) + 1
-                except BaseException:
-                    memberDB.crimesRank = 100
 
                 # update status
                 memberDB.updateStatus(**membersAPI[m]['status'])
@@ -687,7 +682,6 @@ class Faction(models.Model):
                     memberDB.nnb = 0
                     memberDB.arson = 0
                     memberDB.singleHitHonors = 0
-                    memberDB.crimesRank = 100
 
                 else:
                     # pass from -1 to 1 in case
@@ -731,7 +725,6 @@ class Faction(models.Model):
                 memberTmp.speed = 0
                 memberTmp.defense = 0
                 memberTmp.singleHitHonors = 0
-                memberTmp.crimesRank = 100
 
                 if skip_manager:
                     memberTmp.save()
@@ -744,7 +737,7 @@ class Faction(models.Model):
                     # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
                     player = Player.objects.filter(tId=m).first()
                     memberNew = self.member_set.create(
-                        tId=m, name=membersAPI[m]['name'], crimesRank=100,
+                        tId=m, name=membersAPI[m]['name'],
                         lastAction=membersAPI[m]['last_action']['relative'],
                         lastActionTS=membersAPI[m]['last_action']['timestamp'],
                         daysInFaction=membersAPI[m]['days_in_faction'],

@@ -39,13 +39,11 @@ This file is part of yata.
       <span class="input-group-text">Database master faction</span>
       <span class="input-group-text {% if database.master_id == faction.tId %}valid{% else %}error{% endif %}">{{database.get_master_name}} [{{database.master_id}}]</span>
       {# delete or leave #}
-      <button type="submit" class="btn btn-outline error">
-        {% if database.master_id == faction.tId %}
-          <a class="spy-database-delete" data-val="{{database.pk}}" href=""><i class="fas fa-trash-alt error" title="Delete database"></i></a>
-        {% else %}
-          <a class="spy-database-leave error" data-val="{{database.pk}}" href=""><i class="fas fa-user-slash" title="Leave database"></i></a>
-        {% endif %}
-      </button>
+      {% if database.master_id == faction.tId %}
+        <button type="submit" class="btn btn-outline error spy-database-delete" data-val="{{database.pk}}" title="Delete database"><i class="fas fa-trash-alt"></i></button>
+      {% else %}
+        <button type="submit" class="btn btn-outline error spy-database-leave" data-val="{{database.pk}}" title="Leave database"><i class="fas fa-user-slash"></i></button>
+      {% endif %}
     </div>
   </div>
 
@@ -55,9 +53,7 @@ This file is part of yata.
       <span class="input-group-text">Database name</span>
       <span class="input-group-text">{{database.name}}</span>
       {% if database.master_id == faction.tId %}
-        <button type="submit" class="btn btn-outline">
-          <a class="spy-database-name" data-val="{{database.pk}}" href=""><i class="fas fa-sync-alt" title="Change name"></i></a>
-        </button>
+        <button type="submit" class="btn btn-outline spy-database-name" data-val="{{database.pk}}" title="Change name"><i class="fas fa-sync-alt"></i></button>
       {% endif %}
     </div>
   </div>
@@ -76,9 +72,7 @@ This file is part of yata.
       <span class="input-group-text">Secret</span>
       <span class="input-group-text"><tt>{{database.secret}}</tt></span>
       {% if database.master_id == faction.tId %}
-        <button type="submit" class="btn btn-outline">
-          <a class="spy-database-secret" data-val="{{database.pk}}" href=""><i class="fas fa-sync-alt" title="Change secret"></i></a>
-        </button>
+        <button type="submit" class="btn btn-outline spy-database-secret" data-val="{{database.pk}}" title="Change secret"><i class="fas fa-sync-alt"></i></button>
       {% endif %}
       <button id="copy-secret"  type="submit" class="btn btn-outline" data-val="{{database.secret}}" style="cursor: copy;" data-bs-toggle="popover" data-bs-content="Secret copied to clipboard" data-bs-placement="bottom" data-bs-trigger="focus">
         <i class="fas fa-clipboard" title="copy to clipboard"></i>
@@ -91,9 +85,7 @@ This file is part of yata.
     <div class="input-group">
       <span class="input-group-text">Spies</span>
       <span class="input-group-text">{{database.n_spies}}</span>
-      <button type="submit" class="btn btn-outline">
-        <a class="spy-database-update" data-val="{{database.pk}}" href=""><i class="fas fa-sync-alt" title="Update database"></i></a>
-      </button>
+      <button type="submit" class="btn btn-outline spy-database-update" data-val="{{database.pk}}" title="Update database"><i class="fas fa-sync-alt"></i></button>
     </div>
   </div>
 
@@ -103,9 +95,7 @@ This file is part of yata.
       <span class="input-group-text">Use API data</span>
       <span class="input-group-text">{% if database.use_api %}<span class="valid">yes</span>{% else %}<span class="error">no</span>{% endif %}</span>
       {% if database.master_id == faction.tId %}
-        <button type="submit" class="btn btn-outline">
-          <a class="spy-database-api" data-val="{{database.pk}}" href=""><i class="fas fa-toggle-{%if database.use_api%}on{%else%}off{%endif%}" title="Use Torn API"></i></a>
-        </button>
+        <button type="submit" class="btn btn-outline spy-database-api" data-val="{{database.pk}}" title="Use Torn API"><i class="fas fa-toggle-{%if database.use_api%}on{%else%}off{%endif%}"></i></button>
       {% endif %}
     </div>
   </div>
@@ -117,9 +107,7 @@ This file is part of yata.
       <input type="hidden" name="db-pk" value="{{database.pk}}">
       <input type="file" name="file" data-val="{{database.pk}}" class="form-control" required>
       <button type="submit" class="btn btn-outline">Upload</button>
-      <button type="submit" class="btn btn-outline">
-        <a class="spy-list-show-paste" data-dbn="{{database.name}}" data-val="{{database.pk}}" href=""><i class="fas fa-clipboard fa-icon-button" title="Paste spies to the database"></i></a>
-      </button>
+      <button type="submit" class="btn btn-outline spy-list-show-paste" data-dbn="{{database.name}}" data-val="{{database.pk}}" title="Paste spies to the database"><i class="fas fa-clipboard fa-icon-button"></i></button>
     </div>
   </form>
 

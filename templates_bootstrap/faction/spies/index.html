@@ -50,9 +50,9 @@ This file is part of yata.
         <div class="input-group">
           <span class="input-group-text"><tt>#{{database.pk}}</tt></span>
           <span class="input-group-text">{{database.name}}</span>
-          <span class="input-group-text" title="{{database.factions.all|length}} factions" style="cursor: help;">{{database.factions.all|length}}</span>
-          <span class="input-group-text" title="{{database.n_spies}} spies" style="cursor: help;">{{database.n_spies}}</span>
-          <button type="submit" class="btn btn-outline"><a class="spy-database-view" data-val="{{database.pk}}" href=""><i class="fas fa-eye fa-icon-button" title="View database"></i></a></button>
+          {# <span class="input-group-text" data-bs-toggle="tooltip" title="{{database.factions.all|length}} factions" style="cursor: help;">{{database.factions.all|length}}</span> #}
+          {# <span class="input-group-text" data-bs-toggle="tooltip" title="{{database.n_spies}} spies" style="cursor: help;">{{database.n_spies}}</span> #}
+          <button type="submit" class="btn btn-outline spy-database-view" data-val="{{database.pk}}"><i class="fas fa-eye"></i></button>
         </div>
       </div>
 
@@ -60,14 +60,14 @@ This file is part of yata.
     <div class="col-md-auto my-2">
       <div class="input-group">
         <span class="input-group-text">Create a new database</span>
-        <button type="submit" class="btn btn-outline"><a id="spy-database-create" href=""><i class="fas fa-plus-square"></i></a></button>
+        <button id="spy-database-create" type="submit" class="btn btn-outline"><i class="fas fa-plus-square"></i></button>
       </div>
     </div>
     <div class="col-md-auto my-2">
       <div class="input-group">
         <label for="spy-database-join" class="input-group-text">Join an existing database</label>
         <input id="spy-database-join" class="form-control spy-database-join" placeholder="Copy paste secret here">
-        <span class="input-group-text" title="You need a database's secret from another faction" style="cursor: help;"><i class="fas fa-question-circle"></i></span>
+        <span class="input-group-text neutral" data-bs-toggle="tooltip" title="You need a database's secret from another faction" style="cursor: help;"><i class="fas fa-question-circle"></i></span>
       </div>
     </div>
   </div>
@@ -111,7 +111,7 @@ This file is part of yata.
               Dexterity: N/A
               Defense: 2,000,500,039
               Total: 3,592,482,327" required class="form-control" name="spy" style="min-height: 160px;"></textarea>
-              <span class="input-group-text" data-bs-toggle="tooltip" title="Copy paste a single spy from the game with at least the information you see below. Additional lines will be ignore."><i class="fas fa-question-circle"></i></span>
+              <span class="input-group-text neutral" data-bs-toggle="tooltip" title="Copy paste a single spy from the game with at least the information you see below. Additional lines will be ignore."><i class="fas fa-question-circle"></i></span>
             </div>
             <button type="submit" class="btn btn-outline">Import</button>
           </form>
