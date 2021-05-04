@@ -12,5 +12,4 @@ $(document).on('click', 'a.filter-player', e=>{
 $(document).on('click', 'span.show-team', e=>{
     e.preventDefault();
     $('#faction-crimes-team-'+$(e.currentTarget).attr("data-val")).modal('show');
-    console.log($('#faction-crimes-team-'+$(e.currentTarget).attr("data-val")))
-  });
+});

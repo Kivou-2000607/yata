@@ -4,28 +4,44 @@
 {% load static %}
 {% load app_filters %}
 
-<table class="tooltip">
-    <head>
-        <tr>
-            <th colspan="2">Statistics over {{contributors|length}} members</th>
-        </tr>
-    </head>
-    <body>
-        <tr>
-            <td class="title">Total</td>
-            <td class="value">{{s.0|floatformat:0|intcomma}}</td>
-        </tr>
-        <tr>
-            <td class="title">Mean</td>
-            <td class="value">{{s.1|floatformat:1|intcomma}}</td>
-        </tr>
-        <tr>
-            <td class="title">Standard deviation</td>
-            <td class="value">{{s.2|floatformat:1|intcomma}}</td>
-        </tr>
-        <tr>
-            <td class="title">Coefficient of variation</td>
-            <td class="value">{{s.3|floatformat:2}}</td>
-        </tr>
-    </body>
-</table>
+
+<div id="faction-bb-statistics-{{key}}" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto">Statistics over {{contributors|length}} members</div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+          </div>
+        </h2>
+      </div>
+      <div class="modal-body p-0">
+        <div class="container p-md-3 p-1 mb-0 module">
+
+          <table class="table table-hover table-striped table-borderless tablesorter faction-bb-stats">
+              <tbody>
+                  <tr>
+                      <td class="text-start">Total</td>
+                      <td class="text-end">{{s.0|floatformat:0|intcomma}}</td>
+                  </tr>
+                  <tr>
+                      <td class="text-start">Mean</td>
+                      <td class="text-end">{{s.1|floatformat:1|intcomma}}</td>
+                  </tr>
+                  <tr>
+                      <td class="text-start">Standard deviation</td>
+                      <td class="text-end">{{s.2|floatformat:1|intcomma}}</td>
+                  </tr>
+                  <tr>
+                      <td class="text-start">Coefficient of variation</td>
+                      <td class="text-end">{{s.3|floatformat:2}}</td>
+                  </tr>
+              </tbody>
+            </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

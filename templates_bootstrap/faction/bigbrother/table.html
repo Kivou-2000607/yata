@@ -21,79 +21,88 @@
             type: 'numeric'
         });
 
-        $("#faction-bb-comparison").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [2,1]]});
+        $("#faction-bb-comparison").tablesorter({sortList: [[4,1], [2,1]]});
+
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+        $('[data-bs-toggle="tooltip"]').tooltip({sanitize: false}).tooltip('show')
     });
 </script>
 
-<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
-
 {% if statsList|length %}
-<table id="faction-bb-comparison" class="center faction-bb-comparison">
-    <thead>
-        <tr>
-          <th colspan="5">
-            {# title of the challenge #}
-            {% if comparison %}
-              {{comparison.3}} between
-            {% endif %}
+<div class="d-flex flex-wrap mb-2">
+  <div class="input-group">
+    {% if comparison %}
+      <span class="input-group-text"><b>{{comparison.3}}</b></span>
+    {% else %}
+      <span class="input-group-text">Select a challenge</span>
+    {% endif %}
 
-            {# first select #}
-            <select class="faction-bb-stats-list">
-              <option selected disabled hidden>Select a challenge and a date</option>
-              {% for statType, timestamps in statsList.items %}
-              <option disabled><i>{{timestamps.0.0}}</i></option>
-              {% for name, ts in timestamps %}
-              {% if ts == comparison.1 and statType == comparison.0 %}
-              <option value="{{statType}}-{{ts}}" selected>{{ts|ts2date}}</option>
-              {% else %}
-              <option value="{{statType}}-{{ts}}">{{ts|ts2date}}</option>
-              {% endif %}
-              {% endfor %}
-              {% endfor %}
-            </select>
+    {# first select #}
+    <select class="faction-bb-stats-list form-select">
+      <option selected disabled hidden>-</option>
+      {% for statType, timestamps in statsList.items %}
+      <option disabled><i>{{timestamps.0.0}}</i></option>
+      {% for name, ts in timestamps %}
+      {% if ts == comparison.1 and statType == comparison.0 %}
+      <option value="{{statType}}-{{ts}}" selected>{{ts|ts2date}}</option>
+      {% else %}
+      <option value="{{statType}}-{{ts}}">{{ts|ts2date}}</option>
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
+    </select>
 
-            {# second select #}
-            {% if comparison %}
-              <span style="margin: 5px;">and</span>
-              <select class="faction-bb-stats-list">
-                  <option selected disabled hidden><i>Select a second date</i></option>
-                  {% for statType, timestamps in statsList.items %}
-                      {% if statType == comparison.0 %}
-                          <option disabled><i>{{timestamps.0.0}}</i></option>
-                          {% for name, ts in timestamps %}
-                              {% if ts <= comparison.1 %}
-                                  <option value="{{statType}}-{{comparison.1}}-{{ts}}" disabled><b>{{ts|ts2date}}</option>
-                              {% elif ts == comparison.2 %}
-                                  <option value="{{statType}}-{{comparison.1}}-{{ts}}" selected><b>{{ts|ts2date}}</option>
-                              {% else %}
-                                  <option value="{{statType}}-{{comparison.1}}-{{ts}}"><b>{{ts|ts2date}}</option>
-                              {% endif %}
-                          {% endfor %}
+    {# second select #}
+    {% if comparison %}
+    <span class="input-group-text"><i class="fas fa-long-arrow-alt-right"></i></span>
+      <select class="faction-bb-stats-list form-select">
+          <option selected disabled hidden><i>-</i></option>
+          {% for statType, timestamps in statsList.items %}
+              {% if statType == comparison.0 %}
+                  <option disabled><i>{{timestamps.0.0}}</i></option>
+                  {% for name, ts in timestamps %}
+                      {% if ts <= comparison.1 %}
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" disabled><b>{{ts|ts2date}}</option>
+                      {% elif ts == comparison.2 %}
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" selected><b>{{ts|ts2date}}</option>
+                      {% else %}
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}"><b>{{ts|ts2date}}</option>
                       {% endif %}
                   {% endfor %}
-              </select>
-            {% endif %}
-            {% if comparison.2 > 0 %}
-              <span style="margin: 5px;">(duration: {{comparison.2|sub:comparison.1|ts2time}})</span>
-            {% endif %}
-            </th>
-        </tr>
+              {% endif %}
+          {% endfor %}
+      </select>
+    {% endif %}
+    {% if comparison.2 > 0 %}
+      <span class="input-group-text">{{comparison.2|sub:comparison.1|ts2time}}</span>
+    {% endif %}
+
+  </div>
+</div>
+
+<div class="table-responsive">
+<table id="faction-bb-comparison" class="table table-hover table-striped table-borderless tablesorter faction-bb-comparison">
+    <thead>
         {% if comparison %}
         <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>
+            <th class="a">Rank</th>
+            <th class="b">Name</th>
+            <th class="c">
                 On {{comparison.1|ts2date}}&nbsp;&nbsp;
-                <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.0%}'></i>
+                <i class="fas fa-question-circle show-stats" style="cursor: help;" data-val="0"></i>
             </th>
             {% if comparison.2 > 0 %}
-                <th>
+                <th class="c">
                     On {{comparison.2|ts2date}}&nbsp;&nbsp;
-                    <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.1%}'></i>
+                    <i class="fas fa-question-circle show-stats" style="cursor: help;" data-val="1" %}></i>
                 </th>
-                <th>
+                <th class="d">
                     Difference&nbsp;&nbsp;
-                    <i rel="tooltip" class="fas fa-question-circle" style="cursor: help;" title='{% include "faction/bigbrother/statistics.html" with s=statistics.2%}'></i>
+                    <i class="fas fa-question-circle show-stats" style="cursor: help;" data-val="2" %}></i>
                 </th>
             {% else %}
                 <th colspan="2">select a second stat</th>
@@ -106,15 +115,15 @@
         {% for id, v in contributors %}
         {% if v.1 and v.2 or not comparison.2 %}
         <tr {% if not v.3 %}class="kicked-members"{% endif %}>
-            <td class="a"><tt>#{{forloop.counter}}</tt></td>
-            <td class="b">{{v.0|playerURL:id|safe}}</td>
-            <td class="c">{{v.1|intcomma}}</td>
+            <td class="text-center"><tt>#{{forloop.counter}}</tt></td>
+            <td class="text-start">{{v.0|playerURL:id|safe}}</td>
+            <td class="text-end">{{v.1|intcomma}}</td>
             {% if comparison.2 > 0 %}
-                <td class="c">{{v.2|intcomma}}</td>
-                <td class="d">{{v.2|sub:v.1|signColor}}</td>
+                <td class="text-end">{{v.2|intcomma}}</td>
+                <td class="text-end">{{v.2|sub:v.1|signColor}}</td>
             {% else %}
-                <td class="c"></td>
-                <td class="d"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
             {% endif %}
         </tr>
         {% endif %}
@@ -122,7 +131,12 @@
     </tbody>
     {% endif %}
 </table>
+</div>
+
+{% include "faction/bigbrother/statistics.html" with s=statistics.0 key=0%}
+{% include "faction/bigbrother/statistics.html" with s=statistics.1 key=1%}
+{% include "faction/bigbrother/statistics.html" with s=statistics.2 key=2%}
 
 {% else %}
-  <p class="error">You need to add a challenge entry first...</p>
+  <p class="error mb-0">You need to add a challenge entry first...</p>
 {% endif %}
