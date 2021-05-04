@@ -96,75 +96,45 @@ This file is part of yata.
 {% endif %}
     <hr class="sep">
 
-    <div class="container p-2 m-3">
-
+    <div class="row">
 
       {# add target #}
-      <form class="my-2" method="post">{% csrf_token %}
-        <div class="row g-3 align-items-center">
-          <div class="col-auto">
-            <label for="target-add-id" class="col-form-label"><i class="fas fa-plus-circle"></i>&nbsp;Enter the ID of the target you want to add</label>
-          </div>
-          <div class="col-auto">
-            <input id="target-add-id" placeholder="Torn ID" type=text class="form-control" aria-describedby="target-add-error">
-          </div>
-          <div class="col-auto">
-            <button id="target-add-submit" type="submit" class="btn btn-outline">Add target</button>
-          </div>
-          {% if addError %}
-            <div class="col-auto">
-              <span id="target-add-error" class="form-text">
-                <div class="error"><i class="fas fa-skull-crossbones"></i>&nbsp; {{ addError }}</div>
-              </span>
-            </div>
-          {% endif %}
+      <from class="col-auto m-2 align-self-center">
+        <div class="input-group">
+            <label for="target-add-id" class="input-group-text">Add target by torn ID</label>
+            <input id="target-add-id" placeholder="Torn ID" type=text class="form-control {% if addError %}is-invalid{% endif %}" aria-describedby="target-add-error" required>
+            <button id="target-add-submit" type="submit" class="btn btn-outline" aria-describedby="target-add-id"><i class="fas fa-plus-circle"></i></button>
+            {% if addError %}
+              <div id="target-add-id" class="invalid-feedback mx-2"><i class="fas fa-skull-crossbones me-2"></i>{{ addError }}</div>
+            {% endif %}
         </div>
-      </form>
+      </from>
 
       {# export file #}
-      <form class="my-2" method="post" action="{% url 'target:targetsList' %}">{% csrf_token %}
+      <form class="col-auto m-2 align-self-center" method="post" action="{% url 'target:targetsList' %}">{% csrf_token %}
         <input type="hidden" name="action_type" value="export">
-        <div class="row g-3 align-items-center">
-          <div class="col-auto">
-            <label for="target-export" class="col-form-label"><i class="fas fa-file-export"></i>&nbsp;Export your target list</label>
+        <div class="input-group">
+            <label for="target-export" class="input-group-text">Export</label>
+            <button id="target-export" type="submit" class="btn btn-outline"><i class="fas fa-file-export"></i></button>
           </div>
-          <div class="col-auto">
-            <button id="target-export" type="submit" class="btn btn-outline">&nbsp;Export JSON</button>
-          </div>
-        </div>
       </form>
 
       {# import file #}
-      <form class="my-2" method="post" action="{% url 'target:targetsList' %}" enctype="multipart/form-data">{% csrf_token %}
+      <form class="col-auto m-2 align-self-center" method="post" action="{% url 'target:targetsList' %}" enctype="multipart/form-data">{% csrf_token %}
         <input type="hidden" name="action_type" value="import">
-        <div class="row g-3 align-items-center">
-          <div class="col-auto">
-            <label for="target-import" class="col-form-label"><i class="fas fa-file-import"></i>&nbsp;Import your target list</label>
-          </div>
-
-          <div class="col-auto">
-            <span id="target-import-help" class="form-text">Only import files exported here</span>
-          </div>
-          <div class="col-auto">
-            <button id="target-import" type="submit" class="btn btn-outline" aria-describedby="target-import-error">Import JSON</button>
-          </div>
-
-          <div class="col-auto">
-            <input type="file" name="json_file" class="form-control-file" aria-describedby="target-import-help">
-          </div>
+        <div class="input-group">
+            <label for="target-import" class="input-group-text">Import</label>
+            <input type="file" name="json_file" class="form-control" aria-describedby="target-import-help" required>
+            <span class="input-group-text" title="Only import files exported here"><i class="fas fa-question-circle neutral" style="cursor: help;"></i></span>
+            <button id="target-import" type="submit" class="btn btn-outline" aria-describedby="target-import-error"><i class="fas fa-file-import"></i></button>
         </div>
       </form>
 
-
-      <form class="my-2" method="post" action="{% url 'target:targetsList' %}" onsubmit="return confirm('Are you sure you want to delete your list?');">{% csrf_token %}
+      <form class="col-auto m-2 align-self-center" method="post" action="{% url 'target:targetsList' %}" onsubmit="return confirm('Are you sure you want to delete your list?');">{% csrf_token %}
         <input type="hidden" name="action_type" value="delete">
-        <div class="row g-3 align-items-center">
-          <div class="col-auto">
-            <label for="target-delete" class="col-form-label"><i class="fas fa-trash-alt"></i>&nbsp;Delete your target list</label>
-          </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-outline error">&nbsp;Delete list</button>
-          </div>
+        <div class="input-group">
+          <label for="target-delete" class="input-group-text">Delete</label>
+          <button type="submit" class="btn btn-outline error"><i class="fas fa-trash-alt"></i></button>
         </div>
       </form>
     </div>

@@ -39,26 +39,21 @@ $(document).ready(function() {
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
                 // $("#date-start").html('<b>' + s + '</b>');
 
-                $("#date-start").siblings("label").removeClass("error").addClass("valid");
+                $("#date-start").removeClass("is-invalid").addClass("is-valid");
                 $("#date-live-attacks").prop('checked', false);
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!end) {
-                    $("#date-end").siblings("label").removeClass("valid").addClass("error");
+                    $("#date-end").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
-                    $("#date-end").siblings("label").removeClass("valid").addClass("error");
+                    $("#date-end").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-attacks").hide()
                 } else {
-                    $("#date-end").siblings("label").removeClass("error").addClass("valid");
+                    $("#date-end").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-attacks").show()
                 }
-
-                console.log("change start")
-                // if $("#date-start").html {
-                //     console.log()
-                // }
             },
         });
     });
@@ -73,20 +68,19 @@ $(document).ready(function() {
                 $("#ts-end").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
                 // $("#date-end").html('<b>' + s + '</b>');
-                $("#date-end").siblings("label").removeClass("error").addClass("valid");
+                $("#date-end").removeClass("is-invalid").addClass("is-valid");
                 $("#date-live-attacks").prop('checked', false);
-                console.log("change end")
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
                 if(!start) {
-                    $("#date-start").siblings("label").removeClass("valid").addClass("error");
+                    $("#date-start").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
-                    $("#date-start").siblings("label").removeClass("valid").addClass("error");
+                    $("#date-start").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-attacks").hide()
                 } else {
-                    $("#date-start").siblings("label").removeClass("error").addClass("valid");
+                    $("#date-start").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-attacks").show()
                 }
             },
@@ -155,19 +149,19 @@ $(document).ready(function() {
 
       <div class="col-auto m-2 align-self-center">
         <div class="input-group">
-          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt"></i>&nbsp;Start</label>
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>Start</label>
           <input id="date-start" type="text" class="form-control">
         </div>
       </div>
       <div class="col-auto m-2 align-self-center">
         <div class="input-group">
-          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt"></i>&nbsp;End</label>
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>End</label>
           <input id="date-end" type="text" class="form-control">
         </div>
       </div>
       <div class="col-auto m-2 align-self-center">
          <div class="input-group">
-           <span class="input-group-text"><i class="fas fa-microphone-alt"></i>&nbsp;Live</span>
+           <span class="input-group-text"><i class="fas fa-microphone-alt me-2"></i>Live</span>
            <div class="input-group-text">
              <input id="date-live-attacks" type="checkbox" class="form-check-input">
            </div>

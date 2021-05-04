@@ -39,38 +39,53 @@ This file is part of yata.
 </script>
 
 
-
-<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Spy database [{{database.pk}}]: {{database.name}}
-  <form class="form-inline flush-right"><a id="spies-refresh" class="flush-right" href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Refresh Names</a></form>
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2"><i class="fas fa-user-shield"></i>&nbsp;<tt>#{{database.pk}}</tt></div>
+      <div class="px-2 me-auto">{{database.name}}</div>
+      <div class="px-2">
+        <a id="spies-refresh" class="flush-right" href=""><i class="fas fa-sync-alt"></i>&nbsp;Refresh Names</a>
+      </div>
+    </div>
 </h2>
-<div class="module">
-  <div style="margin: 0px 10px;">
-    <form>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <h3 class="module-doc">Controls&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+  <div class="spy-database-controls module-doc">
+    {% include "faction/spies/controls.html" %}
+  </div>
+
+  <h3 class="module-doc">Factions&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+  <div class="module-doc mb-2">
+    <div class="d-flex flex-wrap">
       {% for dbfac in database.factions.all %}
       {% if database.master_id == dbfac.tId %}
-      <span class="spies-faction valid master" title="Master faction">{{dbfac}}</span>
+      <span class="spies-faction rounded p-2 m-2 valid master" title="Master faction">{{dbfac}}</span>
       {% else %}
       {% if database.master_id == faction.tId %}
-      <span class="spy-database-join-kick spies-faction neutral kickable" data-val="{{database.pk}}" data-fac="{{dbfac.tId}}" title="Kick faction from database">{{dbfac}}</span>
+      <span class="spy-database-join-kick spies-faction rounded p-2 m-2 neutral kickable" data-val="{{database.pk}}" data-fac="{{dbfac.tId}}" title="Kick faction from database">{{dbfac}}</span>
       {% else %}
-      <span class="spies-faction neutral">{{dbfac}}</span>
+      <span class="spies-faction rounded p-2 m-2 neutral">{{dbfac}}</span>
       {% endif %}
       {% endif %}
       {% endfor %}
-    </form>
+    </div>
   </div>
 
-    <table id="spy-database" class="tablesorter center-large trshadow spy-database">
+
+  <h3>Spies</h3>
+  <div class="table-responsive">
+    <table id="spy-database" class="table table-hover table-striped table-borderless tablesorter spy-database">
         <thead>
           <tr>
-            <th>Player</th>
-            <th>Faction</th>
-            <th>Strength</th>
-            <th>Defense</th>
-            <th>Speed</th>
-            <th>Dexterity</th>
-            <th>Total</th>
-            <th>Update</th>
+            <th class="a">Player</th>
+            <th class="b">Faction</th>
+            <th class="c">Strength</th>
+            <th class="c">Defense</th>
+            <th class="c">Speed</th>
+            <th class="c">Dexterity</th>
+            <th class="c">Total</th>
+            <th class="d">Update</th>
           </tr>
         </thead>
         <tbody>
@@ -81,5 +96,6 @@ This file is part of yata.
           {% endfor %}
         </tbody>
       </table>
-      <p class="update-info">Last API update the list: {{database.update|ts2date}}</p>
+    </div>
+    <p class="update-info mb-0">Last API update the list: {{database.update|ts2date}}</p>
 </div>

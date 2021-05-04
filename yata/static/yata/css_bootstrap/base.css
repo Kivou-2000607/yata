@@ -38,6 +38,8 @@ html, body{
 /* a, form, span, h2 { white-space:nowrap } */
 li { list-style-type: disclosure-closed; }
 nav li { list-style-type: none!important; }
+ul.dropdown-menu li { list-style-type: none!important; }
+
 a { color: #447e9b; text-decoration: none; }
 a:hover, a:active, a:focus { color: #036; }
 

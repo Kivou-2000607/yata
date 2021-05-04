@@ -3087,14 +3087,9 @@ def oc(request):
 
             # compute breakdown totals
             crimesDB = dict({})
-            teamsDB = dict({})
             for crime in pastCrimes:
                 if crime.crime_id not in crimesDB:
-
                     crimesDB[crime.crime_id] = {"name": crime.crime_name, "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0, 0, 0, 0], "respect": [0, 0, 0, 0, 0, 0]}
-
-                if crime.team_id not in teamsDB:
-                    teamsDB[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0], "active": False}
 
                 crimesDB[crime.crime_id]["crimes"][0] += 1
                 crimesDB[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
@@ -3102,11 +3097,19 @@ def oc(request):
                 crimesDB[crime.crime_id]["respect"][0] += crime.respect_gain
                 crimesDB[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
 
-                teamsDB[crime.team_id]["crimes"][0] += 1
-                teamsDB[crime.team_id]["crimes"][1] += 1 if crime.success else 0
-                teamsDB[crime.team_id]["money"][0] += crime.money_gain
-                teamsDB[crime.team_id]["respect"][0] += crime.respect_gain
-                teamsDB[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+            # create teams
+            teamsDB = dict({})
+            for crime in crimes:
+
+                if crime.team_id not in teamsDB:
+                    teamsDB[crime.team_id] = {"participants": crime.get_participants(), "crimes": [0, 0, 0], "time": [0, 0], "money": [0, 0, 0], "respect": [0, 0, 0], "active": False}
+
+                if crime.initiated:
+                    teamsDB[crime.team_id]["crimes"][0] += 1
+                    teamsDB[crime.team_id]["crimes"][1] += 1 if crime.success else 0
+                    teamsDB[crime.team_id]["money"][0] += crime.money_gain
+                    teamsDB[crime.team_id]["respect"][0] += crime.respect_gain
+                    teamsDB[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
 
             # compute crimesDB averages
             for k, v in crimesDB.items():
@@ -3131,19 +3134,19 @@ def oc(request):
             # compute teamsDB averages
             todel = []
             for k, v in teamsDB.items():
-                v["crimes"][2] = round(100 * (v["crimes"][1] / v["crimes"][0]))
-                v["time"][1] = round(v["time"][0] / float(v["crimes"][0]))
-                v["money"][1] = round(v["money"][0] / float(v["crimes"][0]))
-                v["money"][2] = round(v["money"][0] / float(v["time"][1]) * 24 * 3600)
-                v["respect"][1] = v["respect"][0] / float(v["crimes"][0])
-                v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
+                v["crimes"][2] = round(100 * (v["crimes"][1] / max(v["crimes"][0], 1)))
+                v["time"][1] = round(v["time"][0] / float(max(v["crimes"][0], 1)))
+                v["money"][1] = round(v["money"][0] / float(max(v["crimes"][0], 1)))
+                v["money"][2] = round(v["money"][0] / float(max(v["time"][1], 1)) * 24 * 3600)
+                v["respect"][1] = v["respect"][0] / float(max(v["crimes"][0], 1))
+                v["respect"][2] = v["respect"][0] / float(max(v["time"][1], 1)) * 24 * 3600
                 if v["crimes"][0] == 1:
                     todel.append(k)
                 elif len(currentCrimes.filter(team_id=k)):
                     v["active"] = True
 
-            for k in todel:
-                del teamsDB[k]
+            # for k in todel:
+            #     del teamsDB[k]
 
             # order crimesDB
             crimesDB = sorted(crimesDB.items(), key=lambda x: x[0])
@@ -3192,6 +3195,9 @@ def ocList(request):
             if request.GET.get("p_ccrimes", False):
                 # current crimes
                 crimes = crimes.filter(initiated=False).order_by("time_ready")
+                now = tsnow()
+                for crime in crimes:
+                    crime.progress = math.floor(100 * min((now - crime.time_started) / (crime.time_ready - crime.time_started), 1))
                 crimes = Paginator(crimes, 25).get_page(request.GET.get("p_ccrimes"))
                 context = {'currentCrimes': crimes, "filters": filters, 'getfilters': getfilters, 'reloadTooltips': True}
                 page = "faction/oc/list-current.html"
@@ -3299,7 +3305,7 @@ def spies(request, secret=False, export=False):
                     db.change_name()
                     db.save()
                 context = {'player': player, 'faction': faction, 'database': db}
-                return render(request, 'faction/spies/db-line.html', context)
+                return render(request, 'faction/spies/controls.html', context)
 
             elif request.POST.get("action") == "toggle-api":  # toggle api usage
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
@@ -3307,7 +3313,7 @@ def spies(request, secret=False, export=False):
                     db.use_api = not db.use_api
                     db.save()
                 context = {'player': player, 'faction': faction, 'database': db}
-                return render(request, 'faction/spies/db-line.html', context)
+                return render(request, 'faction/spies/controls.html', context)
 
             elif request.POST.get("action") == "change-secret":  # kick from database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
@@ -3315,7 +3321,7 @@ def spies(request, secret=False, export=False):
                     db.change_secret()
                     db.save()
                 context = {'player': player, 'faction': faction, 'database': db}
-                return render(request, 'faction/spies/db-line.html', context)
+                return render(request, 'faction/spies/controls.html', context)
 
             elif request.POST.get("action") == "refresh-target-data":  # refresh target data
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
@@ -3357,13 +3363,13 @@ def spies(request, secret=False, export=False):
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
                 if db is not None and db.master_id == faction.tId:
                     db.delete()
-                return render(request, page)
+                return render(request, 'faction/spies/controls.html')
 
             elif request.POST.get("action") == "leave-database":  # leave database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
                 if db is not None and db.master_id != faction.tId:
                     db.factions.remove(faction)
-                return render(request, page)
+                return render(request, 'faction/spies/controls.html')
 
             # get databases
             databases = faction.spydatabase_set.all()
@@ -3482,7 +3488,18 @@ def spiesImport(request):
                     request.session['message'] = ('errorMessageSub', f'File size too large ({file.size:,d} B). Should be lower than 5 MiB.')
                     return redirect('faction:spies')
 
-                if content_type in ['text/csv', 'text/plain', 'application/csv']:
+                # try load a json file
+                try:
+                    file.seek(0, 0)
+                    file_read = file.read()
+                    file.seek(0, 0)
+                    for k, v in json.loads(file_read)['spies'].items():
+                        new_spies[int(k)] = v
+
+                except BaseException as e:
+                    pass
+
+                if content_type in ['text/csv', 'text/plain', 'application/csv'] and not len(new_spies):
                     try:
 
                         header = True

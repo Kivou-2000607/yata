@@ -22,6 +22,14 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl)
+    })
+  });
+</script>
 
 <h2 class="title rounded-top px-2 py-2 toggle-display rounded mb-3">
     <div class="d-flex flex-wrap align-items-center">

@@ -24,10 +24,10 @@ $(document).on('click', '.spy-database-delete', e=>{
     e.preventDefault();
     var r = confirm("Are you sure you want to delete this database? All spies will be gone for all factions.");
     if (r == true) {
-      $(e.currentTarget).closest("tr").load( "/faction/spies/", {
+      $(e.currentTarget).closest("div.spy-database-controls").load( "/faction/spies/", {
         action:"delete-database", pk: $(e.currentTarget).attr("data-val"),
         csrfmiddlewaretoken: getCookie("csrftoken")
-      }).remove();
+      });
     }
     $(e.currentTarget).html('<span style="width: 25px; display: inline-block">' + spinner + '</span>');
 });
@@ -35,7 +35,7 @@ $(document).on('click', '.spy-database-delete', e=>{
 // change secret
 $(document).on('click', '.spy-database-secret', e=>{
   e.preventDefault();
-  var td = $(e.currentTarget).parents("tr");
+  var td = $(e.currentTarget).parents("div.spy-database-controls");
   td.load( "/faction/spies/", {
     action: "change-secret", pk: $(e.currentTarget).attr("data-val"),
     csrfmiddlewaretoken: getCookie("csrftoken")
@@ -47,7 +47,7 @@ $(document).on('click', '.spy-database-secret', e=>{
 // change name
 $(document).on('click', '.spy-database-name', e=>{
   e.preventDefault();
-  var tr = $(e.currentTarget).parents("tr");
+  var tr = $(e.currentTarget).parents("div.spy-database-controls");
   tr.load( "/faction/spies/", {
     action: "change-name", pk: $(e.currentTarget).attr("data-val"),
     csrfmiddlewaretoken: getCookie("csrftoken")
@@ -58,7 +58,7 @@ $(document).on('click', '.spy-database-name', e=>{
 // toggle API usage
 $(document).on('click', '.spy-database-api', e=>{
   e.preventDefault();
-  var tr = $(e.currentTarget).parents("tr");
+  var tr = $(e.currentTarget).parents("div.spy-database-controls");
   tr.load( "/faction/spies/", {
     action: "toggle-api", pk: $(e.currentTarget).attr("data-val"),
     csrfmiddlewaretoken: getCookie("csrftoken")
@@ -100,10 +100,11 @@ $(document).on('click', '.spy-database-join-kick', e=>{
 // leave database
 $(document).on('click', '.spy-database-leave', e=>{
     e.preventDefault();
-    $(e.currentTarget).closest("tr").load( "/faction/spies/", {
+    $(e.currentTarget).closest("div.spy-database-controls").load( "/faction/spies/", {
         action:"leave-database", pk: $(e.currentTarget).attr("data-val"),
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).remove();
+    });
+    $(e.currentTarget).html('<span style="width: 25px; display: inline-block">' + spinner + '</span>');
 });
 
 // join database
@@ -119,13 +120,12 @@ $(document).on('focusout', '.spy-database-join', e=>{
   };
 });
 
-// import spies
-$(document).on('change', '.spy-database-import', e=>{
-  e.preventDefault();
-  var file_name = $(e.currentTarget).val().split("\\").slice(-1)[0]
-  $('#spy-database-submit-' + $(e.currentTarget).attr("data-val")).attr("value", "Import " + file_name).attr("title", "Click to import " + file_name).show().addClass("valid");
-
-});
+// // import spies
+// $(document).on('change', '.spy-database-import', e=>{
+//   e.preventDefault();
+//   var file_name = $(e.currentTarget).val().split("\\").slice(-1)[0]
+//   $('#spy-database-submit-' + $(e.currentTarget).attr("data-val")).attr("value", "Import " + file_name).attr("title", "Click to import " + file_name).show().addClass("valid");
+// });
 
 // refresh spy extra info from list by clicking on the row
 $(document).on('click', '.spy-list-refresh', e=>{
@@ -181,4 +181,12 @@ $(document).on('click', '.spy-list-show-paste', e=>{
     $( "#spy-paste-title" ).html(db);
     $( "#spy-paste-date" ).attr("value", today);
     $( "#spy-paste-db" ).attr("value", pk);
+
+    $('#spy-paste-container').modal('show');
+  });
+
+  // clipboard
+  $(document).on('click', '#copy-secret', e=>{
+    var link = String($(e.currentTarget).attr("data-val"));
+    navigator.clipboard.writeText(link);
   });

@@ -4,16 +4,18 @@ $(document).on('change', '#date-live-attacks', e=>{
     var end = parseInt($("#ts-end").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").siblings("label").addClass("valid").removeClass("error");
-        $("#date-end").val("");
+        // $("#date-end").addClass("is-valid").removeClass("is-invalid");
+        // $("#date-end").val("");
+        $("#date-end").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
         if(start) {
             $("#create-report-attacks").show();
         } else {
             $("#create-report-attacks").hide();
         }
     } else {
-        $("#date-end").siblings("label").removeClass("valid").addClass("error");
-        $("#date-end").val("");
+        $("#date-end").addClass("is-invalid").attr("disabled", false).focus();
+        // $("#date-end").removeClass("is-valid").addClass("is-invalid");
+        // $("#date-end").val("");
         $("#create-report-attacks").hide();
     }
 });

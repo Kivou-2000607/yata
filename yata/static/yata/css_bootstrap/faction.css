@@ -144,7 +144,7 @@ table.faction-attacks-list th.b { width: 15%; }
 table.faction-attacks-list th.c { width: 10%; }
 table.faction-attacks-list th.d { width: 5%; }
 
-i.filter-player { color: #555; opacity: 0.0; cursor: pointer; }
+i.filter-player { color: #555; opacity: 0.2; cursor: pointer; }
 tr:hover > td > form > i.filter-player { opacity: 0.5; }
 tr:hover > td > span > a > i.filter-player { opacity: 0.5; }
 i.filter-player:hover { opacity: 1.0!important; }
@@ -235,3 +235,81 @@ table.faction-events { min-width: 500px; width: 50%; margin: auto; }
 table.faction-events th.a { width: 30%; } /* x2 */
 table.faction-events th.b { width: 60%; } /* x2 */
 table.faction-events th.c { width: 10%; } /* x2 */
+
+/* crimes */
+table.faction-crimes-breakdown { min-width: 1000px; width: 100%; margin: auto; }
+table.faction-crimes-breakdown td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-crimes-breakdown th.a { width: 17%; }
+table.faction-crimes-breakdown th.b { width: 7%; }
+table.faction-crimes-breakdown th.c { width: 10%; }
+table.faction-crimes-breakdown th.d { width: 13%; }
+table.faction-crimes-breakdown th.e { width: 6%; }
+table.faction-crimes-breakdown th.f { width: 6%; }
+
+table.faction-crimes-teams { min-width: 1000px; width: 100%; margin: auto; }
+table.faction-crimes-teams td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-crimes-teams th.a { width: 17%; }
+table.faction-crimes-teams th.b { width: 7%; }
+table.faction-crimes-teams th.c { width: 10%; }
+table.faction-crimes-teams th.d { width: 13%; }
+table.faction-crimes-teams th.e { width: 6%; }
+
+table.faction-crimes-team { min-width: 400px; width: 100%; margin: auto; }
+table.faction-crimes-team td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-crimes-team th.a { width: 40%; }
+table.faction-crimes-team th.b { width: 20%; }
+
+table.faction-crimes-list-current { min-width: 1000px; width: 100%; margin: auto; }
+table.faction-crimes-list-current td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-crimes-list-current th.a { width: 13%; text-align: left; font-weight: bold; }
+table.faction-crimes-list-current th.b { width: 20%; text-align: left; }
+table.faction-crimes-list-current th.c { width: 17%; text-align: left; }
+table.faction-crimes-list-current th.d { width: 13%; text-align: center; }
+table.faction-crimes-list-current th.e { width: 14%; text-align: right; }
+table.faction-crimes-list-current th.f { width: 10%; text-align: center; }
+
+table.faction-crimes-list-past { min-width: 1000px; width: 100%; margin: auto; }
+table.faction-crimes-list-past td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.faction-crimes-list-past th.a { width: 5%; text-align: center; }
+table.faction-crimes-list-past th.b { width: 17.5%; text-align: left; }
+table.faction-crimes-list-past th.c { width: 15%; text-align: left; }
+table.faction-crimes-list-past th.d { width: 15%; text-align: center; }
+table.faction-crimes-list-past th.e { width: 10%; text-align: right; }
+table.faction-crimes-list-past th.f { width: 7.5%; text-align: right; }
+
+/* spies */
+table.spy-database { min-width: 1000px; width: 100%; margin: auto; }
+table.spy-database td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+table.spy-database th.a { width: 15%; text-align: left; }
+table.spy-database th.b { width: 15%; text-align: left; }
+table.spy-database th.c { width: 10%; text-align: right; }
+table.spy-database th.d { width: 15%; text-align: center; }
+table.spy-database th.e { width: 5%; text-align: center; }
+span.spies-faction {
+    cursor: default;
+    border: solid 1px;
+    /* border-radius: 5px; */
+    /* padding: 5px 10px; */
+    /* margin: 10px; */
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+span.spies-faction.kickable:hover {
+    /* color: #eee!important; */
+    border-color: #CC3434;
+    color: #CC3434!important;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    box-shadow: 0px 5px 40px -10px rgba(0,0,0,1);
+    /* border-radius: 10px; */
+    transition: all 0.4s ease 0s;
+    cursor: pointer;
+}
+span.spies-faction.kickable:hover:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f506";
+  margin-left: 5px;
+}
