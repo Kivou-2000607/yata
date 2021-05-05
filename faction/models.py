@@ -1605,7 +1605,7 @@ class Chain(models.Model):
 
         # compute last ts
         lastAttack = self.attackchain_set.order_by("-timestamp_ended").first()
-        tsl = self.start if lastAttack is None else lastAttack.timestamp_ended
+        tsl = max(self.start if lastAttack is None else lastAttack.timestamp_ended, self.last)
         self.last = tsl
 
         print("{} live    {}".format(self, self.live))
@@ -2312,7 +2312,7 @@ class AttacksReport(models.Model):
 
         # compute last ts
         lastAttack = self.attackreport_set.order_by("-timestamp_ended").first()
-        tsl = self.start if lastAttack is None else lastAttack.timestamp_ended
+        tsl = max(self.start if lastAttack is None else lastAttack.timestamp_ended, self.last)
         self.last = tsl
 
         print("{} live {}".format(self, self.live))
@@ -2818,7 +2818,7 @@ class RevivesReport(models.Model):
 
         # compute last ts
         lastRevive = self.revive_set.order_by("-timestamp").first()
-        tsl = self.start if lastRevive is None else lastRevive.timestamp
+        tsl = max(self.start if lastRevive is None else lastRevive.timestamp, self.last)
         self.last = tsl
 
         print("{} live {}".format(self, self.live))
