@@ -48,28 +48,11 @@ This file is part of yata.
             <a href="{% url 'faction:revives' %}" title="faction revives"><i class="fas fa-ambulance"></i>&nbsp;Revives</a>
           </div>
         </li>
-      {% if player.factionAA %}
-          <li class="nav-item">
-            <div class="nav-link yt-cat-link">
-              <a href="{% url 'faction:simulator' %}" title="faction simulator"><i class="fas fa-project-diagram"></i>&nbsp;Simulator</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <div class="nav-link yt-cat-link">
-              <a href="{% url 'faction:configurations' %}" title="faction configurations"><i class="fas fa-key"></i>&nbsp;Configurations</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <div class="nav-link yt-cat-link">
-              <a href="{% url 'faction:oc' %}"  title="faction ocs"><i class="fas fa-fingerprint"></i>&nbsp;Organized crimes</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <div class="nav-link yt-cat-link">
-              <a href="{% url 'faction:spies' %}"  title="faction spies"><i class="fas fa-user-shield"></i>&nbsp;Spies</a>
-            </div>
-          </li>
-      {% endif %}
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'faction:armory' %}" title="faction armory"><i class="fas fa-pills"></i>&nbsp;Armory</a>
+          </div>
+        </li>
         <li class="nav-item">
           <div class="nav-link yt-cat-link">
             <a href="{% url 'faction:members' %}" title="faction members"><i class="fas fa-users"></i>&nbsp;Members</a>
@@ -80,16 +63,33 @@ This file is part of yata.
             <a href="{% url 'faction:bigBrother' %}" title="faction big brother"><i class="fas fa-eye"></i>&nbsp;Big Brother</a>
           </div>
         </li>
-        <li class="nav-item">
-          <div class="nav-link yt-cat-link">
-            <a href="{% url 'faction:armory' %}" title="faction armory"><i class="fas fa-pills"></i>&nbsp;Armory</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <div class="nav-link yt-cat-link">
-            <a href="{% url 'faction:territories' %}" title="faction territories"><i class="fas fa-map-marked-alt"></i>&nbsp;Territories</a>
-          </div>
-        </li>
+        {# <li class="nav-item"> #}
+          {# <div class="nav-link yt-cat-link"> #}
+            {# <a href="{% url 'faction:territories' %}" title="faction territories"><i class="fas fa-map-marked-alt"></i>&nbsp;Territories</a> #}
+          {# </div> #}
+        {# </li> #}
+        {% if player.factionAA %}
+            <li class="nav-item">
+              <div class="nav-link yt-cat-link">
+                <a href="{% url 'faction:simulator' %}" title="faction simulator"><i class="fas fa-project-diagram"></i>&nbsp;Simulator</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="nav-link yt-cat-link">
+                <a href="{% url 'faction:oc' %}"  title="faction ocs"><i class="fas fa-fingerprint"></i>&nbsp;Organized crimes</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="nav-link yt-cat-link">
+                <a href="{% url 'faction:spies' %}"  title="faction spies"><i class="fas fa-user-shield"></i>&nbsp;Spies</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="nav-link yt-cat-link">
+                <a href="{% url 'faction:configurations' %}" title="faction configurations"><i class="fas fa-key"></i>&nbsp;Configurations</a>
+              </div>
+            </li>
+        {% endif %}
       </ul>
     </div>
   </div>

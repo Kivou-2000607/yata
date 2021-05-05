@@ -82,10 +82,10 @@ input.target-color-3 {
 }
 
 input.target-list-note {
-    height: 16px;
+    /* height: 16px; */
     width: 80%;
-    margin-top: 2px;
-    margin-left: 5px;
+    /* margin-top: 2px; */
+    /* margin-left: 5px; */
     border-width: 0px;
     border: 0;
     background: #00000000;
