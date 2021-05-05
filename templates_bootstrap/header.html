@@ -1,0 +1,244 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with yata. If not, see <https: //www.gnu.org/licenses />.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+
+{% if new_player or seen_message %}
+  <script type="text/javascript">
+      $('#modal-new-player').modal('show');
+  </script>
+
+  <!-- Modal breakdown -->
+  <div class="modal fade" id="modal-new-player" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header p-0">
+          <h2 class="title rounded-top py-2 px-3" style="width: 100%">
+            <div class="row justify-content-between">
+              <div class="col">Welcome to YATA {{player.name}}</div>
+            </div>
+          </h2>
+        </div>
+        <div class="modal-body p-1 p-md-3 module">
+          <p>
+              I'm glad you're here and I hope you'll enjoy the features YATA provides.
+              If you find a bug or enconter a weird behavior, if you have a question or a suggestion,
+              please <a href="{% url 'discord' %}" target="_blank">join the discord server</a>.
+              <br>
+              <br>
+
+              Kivou
+          </p>
+
+          <hr class="sep">
+
+          <h3 class="warning">Information</h3>
+          <p>All members of your faction will see:</p>
+          <ul>
+              <li>your energy</li>
+              <li>your NNB</li>
+          </ul>
+          <p>All members with <b>AA perm</b><sup>*</sup> will also see</p>
+          <ul>
+              <li>your battle stats</li>
+          </ul>
+          <p>If you want to hide them you can go to the <a href="{% url 'faction:members' %}" target="_blank">members
+                  page</a> to toggle it off.</p>
+          <hr class="sep">
+          <p class="mb-0"><sup>*</sup> <i>AA perm means API Access permission. It's a TORN permission that leaders can give to
+                  their members.</i></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-outline valid" data-bs-dismiss="modal">Sounds good to me</button>
+          <a id="yata-delete-submit" href="{% url 'delete' %}">
+            <button type="submit" class="btn btn-outline error">Delete my account already</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+<header>
+  <div class="module mb-3">
+    <nav class="navbar navbar-expand-md navbar-light py-0">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/" title="Home">
+          {% include "svg/yata.full.svg" %}
+        </a>
+        <button class="navbar-toggler ms-auto my-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span id="collapse-section-name>">Sections</span>
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="nav">
+
+            {# home #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                  {% if player.tId > 0 %}
+                    <a class="valid" href="{% url 'player:index' %}" title="Faction"><b><i class="fas fa-home"></i>&nbsp;Home</b></a>
+                    <span class="d-none d-md-block">{{player.name}}</span>
+                  {% else %}
+                    <span class="neutral" title="Home"><b><i class="fas fa-home"></i>&nbsp;Home</b></span>
+                    <span class="d-none d-md-block">closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# bazaar #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                  <a href="{% url 'bazaar:index' %}" title="Bazaar"><b><i class="fas fa-store"></i>&nbsp;Bazaar</b></a>
+                  <span class="d-none d-md-block">
+                    {% if player.tId > 0 %}{% if player.bazaarInfo == "N/A" %}&empty;{% else %}{{player.bazaarInfo}} item{{player.bazaarInfo|pluralize}}{% endif %}
+                    {% else %}limited{% endif %}
+                  </span>
+              </div>
+            </li>
+
+            {# company #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                  <a href="{% url 'company:index' %}" title="Company"><b><i class="fas fa-building"></i>&nbsp;Company</b></a>
+                  <span class="d-none d-md-block">
+                    {% if player.companyId %}{{player.companyNa|safe}}{%if player.companyDi%}<sup class="ms-1">DIR</sup>{% endif %}
+                    {% else %}limited{% endif %}
+                  </span>
+              </div>
+            </li>
+
+            {# faction #}
+            <li class="nav-item neutral">
+              <div class="nav-link yt-main-link">
+                  {% if player.tId > 0 %}
+                    <a href="{% url 'faction:index' %}" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a>
+                    <span class="d-none d-md-block">{% if player.chainInfo == "N/A" %}&empty;{% else %}{{player.chainInfo|safe}}{% if player.factionAA %}<sup class="ms-1">AA</sup>{%endif%}{% endif %}</span>
+                  {% else %}
+                    <span class="neutral" title="Faction"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></span>
+                    <span class="d-none d-md-block">closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# targets #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                  {% if player.tId > 0 %}
+                    <a href="{% url 'target:index' %}" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></a>
+                    <span class="d-none d-md-block">{% if player.targetInfo == "N/A" %}&empty;{% else %}{{player.targetInfo}} target{{player.targetInfo|pluralize}}{% endif %}</span>
+                  {% else %}
+                    <span class="neutral" title="Targets"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></span>
+                    <span class="d-none d-md-block">closed</span>
+                  {% endif %}
+              </div>
+            </li>
+
+            {# awards #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                <a href="{% url 'awards:index' %}" title="Awards"><b><i class="fas fa-medal"></i>&nbsp;Awards</b></a>
+                <span class="d-none d-md-block">
+                  {% if player.tId > 0 %}{% if player.awardsInfo == "N/A" %}&empty;{% else %}{{player.awardsInfo|floatformat:2}}%{% endif %}
+                  {% else %}limited{% endif %}
+                </span>
+              </div>
+            </li>
+
+            {# loot #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                <a href="{% url 'loot:index' %}" title="Loot"><b><i class="fas fa-user-secret"></i>&nbsp;Loot</b></a>
+                <span class="d-none d-md-block">
+                  {% if nextLoot.1 %}<span id="loot-countdown-header" data-lts="{{nextLoot.2}}" data-nam="{{nextLoot.0}}" data-tId="{{nextLoot.1}}"><i class="fas fa-spinner fa-pulse"></i></span>
+                  {% else %}<span>{{nextLoot.0}}</span>{% endif %}
+                </span>
+              </div>
+            </li>
+
+            {# bot #}
+            <li class="nav-item">
+              <div class="nav-link yt-main-link">
+                <a href="{% url 'bot:index' %}" title="bot documentation"><b><i class="fab fa-discord"></i>&nbsp;Discord bot</b></a>
+              </div>
+            </li>
+
+            {# API #}
+            {# <li class="nav-item"> #}
+              {# <div class="nav-link yt-main-link"> #}
+                {# <a href="{% url 'api:index' %}" title="API documentation"><b><i class="fas fa-code"></i>&nbsp;API</b></a> #}
+              {# </div> #}
+            {# </li> #}
+
+          </ul>
+
+          <form class="d-flex mb-2">{% csrf_token %}
+            {% if player.tId > 0 %}
+              {# logout #}
+                {# <div class="nav-link yt-main-link error"> #}
+                  {# <a id="yata-logout-submit" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></a> #}
+                {# </div> #}
+            {% else  %}
+            {# login #}
+              <input id='yata-login-key' placeholder="API key" type="text" class="form-control me-2" required>
+              <button id='yata-login-submit' type="submit" class="btn btn-outline-primary">
+                  Login
+              </button>
+          {% endif %}
+        </form>
+
+        </div>
+      </div>
+    </nav>
+
+    {% if apiError and login %}
+      <div class="d-flex justify-content-center error">
+        <span class="mb-2"><i class="fas fa-skull-crossbones"></i>&nbsp;{{ apiError }}</span>
+      </div>
+    {% endif %}
+
+    {% if playercat %}
+        {% include "player/categories.html" %}
+    {% elif awardscat %}
+        {% include "awards/categories.html" %}
+    {% elif targetcat %}
+        {% include "target/categories.html" %}
+    {% elif compcat %}
+        {% include "company/categories.html" %}
+    {% elif factioncat and player.tId > 0 %}
+        {% include "faction/categories.html" %}
+    {% elif bazaarcat %}
+        {% include "bazaar/categories.html" %}
+    {% elif chaincat and player.tId > 0 %}
+        {% include "chain/categories.html" %}
+    {% elif bazaarcat %}
+        {% include "bazaar/categories.html" %}
+    {% elif stockcat %}
+        {% include "stock/categories.html" %}
+    {% elif botcat %}
+        {% include "bot/categories.html" %}
+    {% endif %}
+
+
+  </div>
+</header>

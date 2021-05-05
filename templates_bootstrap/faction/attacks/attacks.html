@@ -1,0 +1,111 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<div class="table-responsive">
+<table class="table table-hover table-striped table-borderless faction-attacks-list">
+    <thead>
+        <tr>
+            <th class="a">Start</th>
+            <th class="b">{% include "faction/attacks/attacks-header-filter.html" with type="attackers" %}</th>
+            <th class="b">Faction</th>
+            <th class="b">{% include "faction/attacks/attacks-header-filter.html" with type="defenders" %}</th>
+            <th class="b">Faction</th>
+            <th class="c">Result</th>
+            <th class="d">Chain</th>
+            <th class="d">Log</th>
+          </tr>
+    </thead>
+    <tbody>
+    {% for v in attacks %}
+      <tr>
+          <td class="text-center">{{v.timestamp_started|ts2date}}</td>
+          {%if v.attacker_id == 0 or v.attacker_id == 1%}
+              <td class="text-start">Stealth</td>
+              <td class="text-start">Stealth</td>
+          {%else%}
+              <td class="text-start">
+                <div class="d-flex">
+                  <div class="me-2">
+                    {% if v.attacker_id == report.player_filter %}
+                        <i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
+                    {% else %}
+                        <i class="fas fa-filter filter-player" data-val="{{report.pk}}-{{v.attacker_id}}"></i>
+                    {% endif %}
+                  </div>
+                  <div>{% player_link v.attacker_id v.attacker_name %}</div>
+                </div>
+              </td>
+              <td class="text-start">{% faction_link v.attacker_faction v.attacker_factionname %}</td>
+          {%endif%}
+          <td class="text-start">
+            <div class="d-flex">
+              <div class="me-2">
+                {% if v.defender_id == report.player_filter %}
+                    <i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" data-val="{{report.pk}}-{{v.defender_id}}"></i>
+                {% else %}
+                    <i class="fas fa-filter filter-player" data-val="{{report.pk}}-{{v.defender_id}}"></i>
+                {% endif %}
+              </div>
+              <div>{% player_link v.defender_id v.defender_name %}</div>
+            </div>
+          </td>
+          <td class="text-start">{% faction_link v.defender_faction v.defender_factionname %}</td>
+          <td class="text-center">{{v.result}}</td>
+          <td class="text-center">{%if v.chain %}{{v.chain}}{%endif%}</td>
+          {% if v.code == "0" %}
+            <td class="text-center"><i class="fas fa-eye-slash" title="no log"></td>
+         {% else %}
+            <td class="text-center"><a href="{{v.code|attackLog}}" target="_blank"><i class="fas fa-eye" title="see log"></i></td>
+         {% endif %}
+      </tr>
+    {% endfor %}
+
+
+            <tr>
+              <td colspan="8" class="text-center">
+                <div class="pagination d-block">
+                    <span class="step-links">
+                        {% if attacks.has_previous %}
+                            <a class="yt-page-link rounded first" href="{% url 'faction:attacksList' report.pk %}?p_at=1"></a>
+                            <a class="yt-page-link rounded previous" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.previous_page_number }}"></a>
+                        {% endif %}
+
+                        <span class="current">
+                            {{ attacks.number }}/{{ attacks.paginator.num_pages }}
+                        </span>
+
+                        {% if attacks.has_next %}
+                            <a class="yt-page-link rounded next" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.next_page_number }}"></a>
+                            <a class="yt-page-link rounded last" href="{% url 'faction:attacksList' report.pk %}?p_at={{ attacks.paginator.num_pages }}"></a>
+                        {% endif %}
+                    </span>
+                </div>
+              </td>
+            </tr>
+
+
+    </tbody>
+</table>
+</div>

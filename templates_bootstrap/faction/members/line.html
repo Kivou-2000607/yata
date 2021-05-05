@@ -1,0 +1,59 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load static %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if errorMessage %}
+    <td colspan="15" class="error" style="text-align: center;">{{errorMessage}}</td>
+{% else %}
+    <td class="text-center" title="{{member.lastActionStatus}}" data-val='{% if member.lastActionStatus == "Offline" %}-1{% elif member.lastActionStatus == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{member.lastActionStatus}}"></i></td>
+    <td class="text-start dont-touch-me">{{member.name|playerURL:member.tId|safe}}</td>
+    <td class="text-end" data-val="{{member.lastActionTS}}" title="On {{member.lastActionTS|ts2date}}">{{member.lastAction}}</td>
+    <td class="text-start player-status-{{member.color}}">{{member.description|cleanhtml}}
+        {% if member.details and member.until%}
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}&#10;Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
+        {% elif member.details %}
+            <span class="thelp flush-right" title="{{member.details|cleanhtml}}"><i class="fas fa-question-circle"></i></span>
+        {% elif member.until %}
+            <span class="thelp flush-right" title="Until {{member.until|ts2date}}."><i class="fas fa-question-circle"></i></span>
+        {% endif %}
+    </td>
+    <td class="text-center" title="{{member.daysInFaction|div:365|floatformat:2}} years">{{member.daysInFaction}}</td>
+    <td class="text-center" data-val="{{member.crimesRank}}">
+      #{{member.crimesRank}}
+    </td>
+    {% if member.shareE < 0 %}
+      <td class="text-center" colspan="4"><span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span></td>
+    {% else %}
+      <td class="text-end{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
+        {% include "faction/members/nnb.html"%}
+      </td>
+      <td class="text-center{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareE > 0%}{{member.energy}}{%endif%}">
+          {% include "faction/members/energy.html"%}
+      </td>
+      <td class="text-end{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareS > 0%}{{member.getTotalStats}}{%endif%}">
+          {% include "faction/members/stats.html"%}
+      </td>
+      <td class="text-center" data-val="{{member.singleHitHonors}}">{{member.singleHitHonors|cmg}}</td>
+    {% endif %}
+    <td class="text-center" data-val="{{member.bonusScore}}">{{member.bonusScore|div:100|floatformat:2}}</td>
+{% endif %}

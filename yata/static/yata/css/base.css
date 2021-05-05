@@ -47,7 +47,7 @@ h2 a:focus,
 h2 a:hover,
 h2 a:checked,
 h2 a:enabled,
-h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer;}
+h2 a:active { color: #DDD; text-shadow: #447e9b 1px 0 5px; text-decoration: none; cursor: pointer; }
 
 div#content {
     padding-top: 0px;
@@ -65,7 +65,6 @@ div.module {
 div.module h1 {margin: 15px 10px; height: auto; font-weight: 300; font-size: 20px; color: #666;}
 div.module h2 {margin: 10px 10px; height: auto; font-weight: 600; font-size: 15px; color: #666;}
 div.module h3 {margin: 5px 10px; height: auto; font-weight: 500; font-size: 14px;}
-
 div.module h2 {padding: 0; background: 0000;}
 
 div.module p:last-child {

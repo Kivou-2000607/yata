@@ -1,3 +1,4 @@
+
 // toggle key
 $(document).on('click', '.faction-aa-toggle-key', e=>{
     e.preventDefault();
@@ -10,13 +11,13 @@ $(document).on('click', '.faction-aa-toggle-key', e=>{
 // threshold
 $(document).on('change', '#faction-aa-change-threshold', e=>{
     e.preventDefault();
-    var reload = $(e.currentTarget);
-    var threshold = reload.children("p").children("select").val();
+    var reload = $(e.currentTarget).closest("div.faction-aa-threshold");
+    var threshold = $(e.currentTarget).val();
     reload.load( "/faction/configurations/threshold/", {
         threshold: threshold,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<td colspan="3" style="text-align: center;">'+spinner+'</i></td>');
+    reload.html(spinner);
 });
 
 // poster on/off/hold
@@ -57,9 +58,9 @@ $(document).on('click', 'a.faction-event-delete', e=>{
 });
 
 // events create
-$(document).on('click', 'input#faction-event-create', e=>{
+$(document).on('click', 'button#faction-event-create', e=>{
     e.preventDefault();
-    var form = $(e.currentTarget).closest("form");
+    var form = $(e.currentTarget).closest("div.row");
     var stack = 0;
     if(form.find("#event-stack").prop('checked')) stack = 1
     var reset = 0;
@@ -72,5 +73,13 @@ $(document).on('click', 'input#faction-event-create', e=>{
         stack: stack,
         reset: reset,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html(spinner);
+    });
+    $(e.currentTarget).html(spinner);
+});
+
+
+// clipboard
+$(document).on('click', '#link-poster-clipboard,#link-poster-gym-clipboard', e=>{
+  var link = String($(e.currentTarget).attr("data-val"));
+  navigator.clipboard.writeText(link);
 });

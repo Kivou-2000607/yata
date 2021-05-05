@@ -1,0 +1,179 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<script>
+$(document).ready(function() {
+    $("#faction-attacks-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    $("#date-start").val("");
+    $("#date-end").val("");
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    });
+
+    $(function () {
+        $("#date-start").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-start").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                // $("#date-start").html('<b>' + s + '</b>');
+
+                $("#date-start").removeClass("is-invalid").addClass("is-valid");
+                $("#date-live-attacks").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!end) {
+                    $("#date-end").removeClass("is-valid").addClass("is-invalid");
+                    $("#create-report-attacks").hide()
+                } else if(end < start) {
+                    $("#date-end").removeClass("is-valid").addClass("is-invalid");
+                    $("#create-report-attacks").hide()
+                } else {
+                    $("#date-end").removeClass("is-invalid").addClass("is-valid");
+                    $("#create-report-attacks").show()
+                }
+            },
+        });
+    });
+
+
+    $(function () {
+        $("#date-end").datetimepicker({
+            step: 15,
+            onChangeDateTime:function(dp,$input){
+                var d = new Date($input.val());
+                var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+                $("#ts-end").val(dUTC/1000);
+                var s = new Date(dUTC).toUTCString().replace("GMT", "");
+                // $("#date-end").html('<b>' + s + '</b>');
+                $("#date-end").removeClass("is-invalid").addClass("is-valid");
+                $("#date-live-attacks").prop('checked', false);
+
+                var start = parseInt($("#ts-start").val());
+                var end = parseInt($("#ts-end").val());
+                if(!start) {
+                    $("#date-start").removeClass("is-valid").addClass("is-invalid");
+                    $("#create-report-attacks").hide()
+                } else if(end < start) {
+                    $("#date-start").removeClass("is-valid").addClass("is-invalid");
+                    $("#create-report-attacks").hide()
+                } else {
+                    $("#date-start").removeClass("is-invalid").addClass("is-valid");
+                    $("#create-report-attacks").show()
+                }
+            },
+        });
+    });
+})
+
+</script>
+
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-crosshairs"></i>&nbsp;{{faction.name|safe}}' attacks reports</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    {% if reports|length %}
+    <div class="table-responsive">
+    <table id="faction-attacks-report" class="table table-hover table-striped table-borderless tablesorter faction-attacks-report">
+        <thead>
+            <tr>
+                <th class="a">Report [ID]</th>
+                <th class="b">Start</th>
+                <th class="b">End</th>
+                <th class="b">Duration</th>
+                <th class="c">Attacks</th>
+                <th class="c">Defends</th>
+                <th class="d">Report</th>
+        </thead>
+        <tbody>
+          {% for report in reports %}
+          <tr class="faction-attacks-report">
+              <td class="text-start">Report [{{report.pk}}]</td>
+              <td class="text-center">{{report.start|ts2date}}</td>
+              {% if report.end %}
+                  <td class="text-center">{{report.end|ts2date}}</td>
+                  <td class="text-center">{{report.end|sub:report.start|ts2time}}</td>
+              {% else %}
+                  <td class="text-center">-</td>
+                  <td class="text-center">-</td>
+              {% endif %}
+              <td class="text-center"><b>{{report.attacks}}</b></td>
+              <td class="text-center"><b>{{report.defends}}</b></td>
+
+              <td class="text-start">
+                  {% include "faction/attacks/buttons.html" %}
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+    {% else%}
+        <p class="error">No reports recorded. Ask a AA members of your faction.</p>
+    {% endif %}
+
+{% if player.factionAA %}
+  <hr class="sep">
+
+    <h3>Create new attacks reports</h3>
+    <p><i>Select a starting date and either an ending date or make it live.</i></p>
+    <div class="row">
+      <input id="ts-start" type="hidden" value="0">
+      <input id="ts-end" type="hidden" value="0">
+      <input id="ts-live" type="hidden" value="0">
+
+      <div class="col-auto m-2 align-self-center">
+        <div class="input-group">
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>Start</label>
+          <input id="date-start" type="text" class="form-control">
+        </div>
+      </div>
+      <div class="col-auto m-2 align-self-center">
+        <div class="input-group">
+          <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>End</label>
+          <input id="date-end" type="text" class="form-control">
+        </div>
+      </div>
+      <div class="col-auto m-2 align-self-center">
+         <div class="input-group">
+           <span class="input-group-text"><i class="fas fa-microphone-alt me-2"></i>Live</span>
+           <div class="input-group-text">
+             <input id="date-live-attacks" type="checkbox" class="form-check-input">
+           </div>
+        </div>
+      </div>
+      <div class="col-auto m-2 align-self-center">
+        <button id="create-report-attacks" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
+      </div>
+    </div>
+{% endif %}
+</div>

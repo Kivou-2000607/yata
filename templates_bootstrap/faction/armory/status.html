@@ -1,0 +1,30 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+{% if report.computing %}
+    <span class="warning" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> computing<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-clock"></i> {{report.progress}}%</span>
+{% elif report.progress < 100 %}
+    <span class="error" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> stopped<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-skull-crossbones"></i> {{report.progress}}%</span>
+{% else %}
+    <span class="valid" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> finished<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-check"></i></span>
+{% endif %}

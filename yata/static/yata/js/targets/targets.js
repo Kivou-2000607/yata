@@ -10,7 +10,7 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
         type: "update",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<td colspan="16" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html('<td colspan="15" class="text-center"><i class="fas fa-spinner fa-pulse p-1"></i></td>');
 });
 
 // toggle faction target
@@ -55,7 +55,7 @@ $(document).on('focusout', 'input.target-list-note', function(e){
         type: "note",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
+    reload.html('<i class="fas fa-spinner fa-pulse p-1"></i>');
 });
 
 // change color
@@ -68,7 +68,7 @@ $(document).on('click', 'span.target-list-note-color', function(e){
         type: "note-color",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<i class="fas fa-spinner fa-pulse" style="margin-top: 8px"></i>');
+    reload.html('<i class="fas fa-spinner fa-pulse p-1"></i>');
 });
 
 
@@ -84,7 +84,7 @@ $(document).on('click', '#target-refresh', function(e){
             refresh_colors.push($(this).attr("data-val"));
         }
     });
-    $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {        
+    $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
         // if ((!refresh_color || $(this).find("span.target-color-" + refresh_color).length) && $(this).attr("data-ref") == "1") {
         if (refresh_colors.includes($(this).find("span.target-list-note-color").attr("data-col")) && $(this).attr("data-ref") == "1") {
           var reload = $(this);
@@ -98,7 +98,7 @@ $(document).on('click', '#target-refresh', function(e){
                       csrfmiddlewaretoken: getCookie("csrftoken")
                   });
                   reload.removeClass('old-refresh');
-                  reload.html('<td colspan="16" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+                  reload.html('<td colspan="15" class="text-center"><i class="fas fa-spinner fa-pulse p-1"></i></td>');
                }, wait);
           })(i);
           i++;

@@ -1,0 +1,49 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<p class="catch-me">
+    <ul>
+        <li class="step-1">
+            Step 1: enter a faction ID <input style="margin-left: 20px;" class="faction-add-id" placeholder="Faction ID" type="number">
+        </li>
+        <li class="step-2" style="display: none;">
+            Step 2: select a corresponding role
+            <ul>
+                {% for discord_id, discord_name in server.get_roles.items %}
+                    <li>
+                        <span class="dashboard-option-af unselected" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="verify" data-typ="factions" data-key="{{discord_id}}" data-val="{{discord_name}}" title="{{discord_id}}">
+                            <tt>{{v.prefix}}{{discord_name|safe}}</tt>
+                        </span>
+                        {% for faction_id, roles in v.selected.items %}
+                            {% if discord_id in roles %}
+                                <tt class="dashboard-settings" data-fid="{{faction_id}}">Faction [{{faction_id}}]</tt>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+</p>

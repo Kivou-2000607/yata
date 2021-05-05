@@ -56,20 +56,20 @@ $(document).on('click', 'h1.faction-armory-type', function(e){
 // });
 
 // make live
-$(document).on('change', '#date-live', e=>{
+$(document).on('change', '#date-live-armory', e=>{
     e.preventDefault();
-    var start = parseInt($("#ts-start").val());
-    var end = parseInt($("#ts-end").val());
+    var start = parseInt($("#ts-start-armory").val());
+    var end = parseInt($("#ts-end-armory").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end").addClass("valid").removeClass("error").html("Will be constantly updated");
+        $("#date-end-armory").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
         if(start) {
             $("#create-report-armory").show();
         } else {
             $("#create-report-armory").hide();
         }
     } else {
-        $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+        $("#date-end-armory").addClass("is-invalid").attr("disabled", false).focus();
         $("#create-report-armory").hide();
     }
 });
@@ -77,9 +77,9 @@ $(document).on('change', '#date-live', e=>{
 // create report
 $(document).on('click', '#create-report-armory', e=>{
     e.preventDefault();
-    var start = parseInt($("#ts-start").val());
-    var end = parseInt($("#ts-end").val());
-    if($("#date-live").prop('checked')) {
+    var start = parseInt($("#ts-start-armory").val());
+    var end = parseInt($("#ts-end-armory").val());
+    if($("#date-live-armory").prop('checked')) {
         var live = 1;
         var end = 0;
     } else {

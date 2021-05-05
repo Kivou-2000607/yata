@@ -37,7 +37,7 @@ $(document).on('change', '.faction-bb-enter-challenge', e=>{
 $(document).on('click', '.faction-bb-delete', e=>{
     e.preventDefault();
     var splt = $(e.currentTarget).attr("data-val").split("-");
-    var tr = $(e.currentTarget).parents("tr");
+    var tr = $(e.currentTarget).parents("div.challenge");
 
     tr.load( "/faction/bigbrother/remove/", {
         ts: splt.pop(),
@@ -59,4 +59,9 @@ $(document).on('click', 'tr[id^="faction-bb-challenges-toggle-"]', e=>{
     if(toshow.css("display") == "none") i.removeClass("fa-rotate-90")
     else i.addClass("fa-rotate-90")
 
+});
+
+$(document).on('click', 'i.show-stats', e=>{
+    e.stopPropagation();
+    $('#faction-bb-statistics-'+$(e.currentTarget).attr("data-val")).modal('show');
 });

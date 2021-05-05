@@ -1,0 +1,85 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+
+
+<div class="container loot-card">
+
+  <div class="row">
+    <div class="col-5 p-2 loot-profile">
+      <img class="npc-profile-picture" src='{% url_img_npc npc.tId %}'>
+      <div class="loot-profile-name d-flex justify-content-center my-2">
+        <div class="text-center">
+          {% if npc.currentLevel.lvl %}
+            {% player_link npc.tId  npc.name "attack" False %}
+          {% else %}
+            {% player_link npc.tId  npc.name "profile" False %}
+          {% endif %}
+          {% if npc.currentLevel.lvl %}
+            <div class="valid">Loot level {{npc.currentLevel.lvl|lootLevel}}</div>
+          {% else %}
+            <div class="error">Hospitalized</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="row justify-content-center content-align-center mx-1">
+        <img class="col-4 px-1 {% if npc.currentLevel.lvl < 1 %}overdue{% endif %}" src="/media/loot/loot_lvl_1.svg">
+        <img class="col-4 px-1 {% if npc.currentLevel.lvl < 2 %}overdue{% endif %}" src="/media/loot/loot_lvl_2.svg">
+        <img class="col-4 px-1 {% if npc.currentLevel.lvl < 3 %}overdue{% endif %}" src="/media/loot/loot_lvl_3.svg">
+        <img class="col-4 px-1 {% if npc.currentLevel.lvl < 4 %}overdue{% endif %}" src="/media/loot/loot_lvl_4.svg">
+        <img class="col-4 px-1 {% if npc.currentLevel.lvl < 5 %}overdue{% endif %}" src="/media/loot/loot_lvl_5.svg">
+      </div>
+    </div>
+
+    <div class="col-7 p-2 loot-timings">
+      {% for k, v in npc.lootTimings.items %}
+      {% if forloop.counter0 %}
+        <p class="loot-level{% if v.due < 0 %} overdue{% endif %}">
+        {% if v.due > 0 %}
+        <b>Loot level {{v.lvl|lootLevel}}</b> at {{v.ts|ts2date:"%H:%M:%S"}} TCT<br>
+          <span class="update-timer" data-lts="{{v.ts}}" data-lvl="{{v.lvl}}"><i class="fas fa-spinner fa-pulse"></i></span>
+        {% else %}
+          <b>Loot level {{v.lvl|lootLevel}}</b><br>On {{v.ts|ts2date}} TCT
+        {% endif %}
+      </p>
+      {% endif %}
+      {% endfor %}
+      <p class='loot-level-update'>Last update: {{npc.updateTS|ts2date}} TCT</p>
+    </div>
+  </div>
+
+{% if player.tId > 0 %}
+<div class="col loot-npc-schedule mb-1">
+  <select name="schedule" class="loot-schedule-attack neutral" data-val="{{npc.tId}}">
+    <option value="" disabled selected>Schedule an attack on {{npc.name}}</option>
+    {% for ts, vote_in in npc.scheduleTimings.items %}
+    {% if vote_in.0 %}
+    <option value="" disabled>{{ts|ts2date}} in {{vote_in.1|ts2time}} ({{vote_in.0}} vote{{vote_in.0|pluralize}})</option>
+    {% else %}
+    <option value="{{ts}}">{{ts|ts2date}} in {{vote_in.1|ts2time}}</option>
+    {% endif %}
+    {% endfor %}
+  </select>
+</div>
+{% endif %}
+</div>

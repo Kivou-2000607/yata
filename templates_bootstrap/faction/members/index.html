@@ -1,0 +1,120 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with yata. If not, see
+<https: //www.gnu.org/licenses />.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<div id="reload-member-table">
+    <script>
+        $(document).ready(function () {
+            $("#faction-members").tablesorter({
+                textExtraction: {
+                    0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    2: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    5: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    6: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    7: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    8: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    9: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    10: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                    11: function (node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+
+                cssAsc: 'up', cssDesc: 'down', sortList: [[1, 0]]
+            });
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+              return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+
+    <h2 class="title rounded-top px-2 py-2">
+        <div class="d-flex flex-wrap align-items-center">
+          <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;{{faction.name|safe}}'s members</div>
+          <div class="px-2">
+            <a href="{% url 'faction:membersExport' %}" target="_blank"><i class="fas fa-file-export" title="Export members to CSV"></i>&nbsp;Export members</a>
+          </div>
+          <div class="px-2">
+            <a id="member-refresh" href="" title="Refresh status"><i class="fas fa-sync-alt"></i>&nbsp;Refresh status</a>
+          </div>
+        </div>
+    </h2>
+    <div class="container-fluid p-md-3 p-1 mb-3 module">
+      <div class="table-responsive">
+
+        <table id="faction-members" class="table table-hover table-striped table-borderless tablesorter faction-members">
+            <thead>
+                <tr>
+                    <th class="a" data-bs-toggle="tooltip" title="Online status"><i class="fas fa-circle"></i></th>
+                    <th class="b">Name</th>
+                    <th class="c">Last action</th>
+                    <th class="d">Status</th>
+                    <th class="e" data-bs-toggle="tooltip" title="Days in Faction">DIF</th>
+
+                    <th class="e">CE Rank &nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      data-bs-toggle="tooltip" title="CE ranking is based on NNB, equivalent arsons and the last 250 OC rankings of your members. Global ranking is not part of the API so it can be wrong. The more members you have on YATA the more accurate it is."></i>
+                    </th>
+
+                    <th class="f">NNB | EA &nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      data-bs-toggle="tooltip" title="Natural nerve bar and rough estimation of Equivalent Arsons&#10;&#10;Frauds are assumed arson warehouse&#10;Thefts are assumed steal jackets&#10;Auto theft are assumed steal parked car&#10;2 drug deals remove 1 arson (it corresponds to doing drug crimes at 40NNB)&#10;Computer crimes are assumed steal virus&#10;Murders are assumed Assassinate mob boss&#10;Recent (among the last 250 OC) PH and PA are accounted for&#10;&#10;See TornStats CE predictor for more information"></i>
+                    </th>
+
+                    <th class="f">Energy&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                            data-bs-toggle="tooltip" title="Square checked if refill used"></i>
+                    </th>
+
+                    <th class="g">Stats&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      data-bs-toggle="tooltip" title="Only AA members can see these stats"></i></th>
+
+                    <th class="h">CMG&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      data-bs-toggle="tooltip" title="Carnage (10 respect bonus 10+)&#10;Massacre (100 respect bonus 250+)&#10;Genocide (1000 respect bonus 2500+)"></i></th>
+
+                    <th class="h">Score&nbsp;&nbsp;<i style="cursor: help;" class="fas fa-question-circle"
+                      data-bs-toggle="tooltip" title="Bonus score based on the combined report: Total hit made / respect earn with bonus. Visit the combined report page to update the values."></i></th>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr class="faction-member-refresh" data-val="{{member.tId}}">
+                    {% include "faction/members/line.html" %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      </div>
+        <p class="update-info mb-0">Last update of the list: {{faction.membersUpda|ts2date}}</p>
+        <p class="update-info mb-0">Last update of the members status: {{faction.memberStatusUpda|ts2date}}</p>
+
+    </div>
+</div>
+
+
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Userscript</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <p class="mb-0">Display NNB, rank and EA ingame on the OC page with <a href="https://github.com/TotallyNot/yata-oc/raw/master/yata_oc.user.js" target="_blank">Pyrit [2111649]'s userscripts.</a> It also provides a more accurate CE ranking.</p>
+</div>

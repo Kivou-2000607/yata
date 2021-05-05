@@ -1,0 +1,60 @@
+/*
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+table.players-users-summary { min-width: 500px; width: 50%; margin: auto;}
+table.players-users-summary td.a { width: 40%; }
+table.players-users-summary td.b { width: 30%; }
+
+
+div.donations-buttons-container {
+  position: relative;
+  text-align: center;
+}
+img.donations-qrcode {
+  width: 256px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+}
+img.donations-button {
+  width: 256px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+  cursor: pointer;
+  box-shadow: 0px  0px  1px  1px #aaa!important;
+  border-radius: 40px;
+}
+
+div.donations-balances {
+  width: 256px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+  padding: 10px;
+  font-size: 24px;
+  cursor: help;
+  box-shadow: 0px  0px  1px  1px #aaa!important;
+  border-radius: 40px;
+}
+
+div.donations-balances:hover,
+img.donations-button:hover {
+  box-shadow: 2px  2px  2px  2px #aaa!important;
+}

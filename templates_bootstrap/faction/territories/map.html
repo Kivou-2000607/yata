@@ -1,0 +1,96 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+          {% for t in territories %}
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 6;}', '{{t|tTooltip|safe}}'],
+          {% endfor %}
+          {% for t in rackets %}
+            {% if t.level == 1 %}
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {fill-color: #CC3434; stroke-color: #000; size: 5;}', '{{t|rTooltip|safe}}'],
+            {% else %}
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: star; shape-dent: 0.5; shape-sides: {{t.level}}; fill-color: #CC3434; stroke-color: #000; size: 5;}', '{{t|rTooltip|safe}}'],
+            {% endif %}
+          {% endfor %}
+          {% if player.tId > 0 and summary.n > 0 %}
+            [ {{summary.coordinate_x|mul:1.04}}, {{summary.coordinate_y|mul:1.04}}, 'point {fill-color: #447e9b; stroke-color: #000; size: 5;}', '{{summary|sTooltip|safe}}'],
+          {% endif %}
+        ]);
+
+        // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
+        // var maxV = 1.1 * Math.max(data.getColumnRange(1).max, data.getColumnRange(0).max);
+        var options = {
+          // title: 'Territory and racket map',
+          tooltip: {isHtml: true, position: 'top'},
+          vAxis: {
+              viewWindow:{ max: 0, min: 3790 },
+              baselineColor: 'none',
+              textPosition: 'none',
+              gridlines: { color: 'none' },
+              direction: -1
+          },
+          hAxis: {
+                viewWindow:{ max: 0, min: 6500 },
+                baselineColor: 'none',
+                textPosition: 'none',
+                gridlines: { color: 'none' },
+            },
+          'chartArea': {'width': '100%', 'height': '100%'},
+          'backgroundColor': 'transparent',
+          legend: 'none'
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('map-graph'));
+
+        chart.draw(data, options);
+      }
+
+      // load full map
+      $(document).on('click', '#faction-load-full-map', function(e){
+          e.preventDefault();
+          console.log("coucou");
+          var reload = $('#faction-map');
+          console.log(reload);
+          reload.load( "/faction/territories/fullmap/", {
+              csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+          });
+          $(this).parent("form").html('<i class="fas fa-spinner fa-pulse fa-icon-inline"></i>Loading all territories')
+      });
+
+
+</script>
+
+<div id='map-background' class='map-background'>
+    <div id="map-graph" class='map-graph'></div>
+</div>
+<form style="text-align: center; margin-top: 10px;">{% csrf_token %}
+    <a id="faction-load-full-map" href=""><i class="fas fa-globe-americas fa-icon-inline" title="Load full map fa-icon-inline"></i>Load all territories (can be long).</a>
+</form>

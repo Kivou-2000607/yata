@@ -27,9 +27,8 @@ window.setInterval(function(){
 
 
         if(diff < lvlt) {
-          const html = '<div class="progress-bar" title="'+p+'%"><span style="width: '+p+'%;" class="'+cl+'"></span></div>'
+          const html = '<div class="progress" style="height: 17px;"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="' + p + '" aria-valuemin="0" aria-valuemax="100" style="width: '+ p +'%">' + cd + '</div></div>'
           $(this).html(html);
-          $(this).find("div.progress-bar > span").attr("data-after", cd);
         } else {
           $(this).html(cd);
         }

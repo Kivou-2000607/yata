@@ -1,0 +1,99 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-team").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[3,1], [2,1]]
+        });
+    });
+</script>
+
+{% if teamsDB|length %}
+
+<div class="table-responsive">
+  <table id="faction-crimes-team" class="table table-hover table-striped table-borderless tablesorter faction-crimes-teams">
+      <thead>
+          <tr>
+
+              <th class="a">&nbsp;<br>Team ID</th>
+              {# <th class="b">Success</th> #}
+              <th class="b">&nbsp;<br>Success</th>
+              <th class="b">&nbsp;<br>%</th>
+
+              <th class="c"><i class="far fa-clock me-1"></i><br/>Total</th>
+              <th class="c"><i class="far fa-clock me-1"></i><br/>/ crime</th>
+
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>Total</th>
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>/ crime</th>
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>/ day</th>
+
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>Total</th>
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>/ crime</th>
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>/ day</th>
+
+      </thead>
+      <tbody>
+      {% for k, v in teamsDB %}
+          <tr class="hover">
+              <td class="text-start{% if v.active %} valid{%endif%}" data-val="{{v.participants|length}}">
+                <div class="d-flex">
+                  <div class="me-2">{% include "faction/oc/filter.html" with type="team_id" id=k %}</div>
+                    <span class="show-team" data-val="{{k}}" style="cursor: help;">
+                      <i class="fas fa-users" ></i>&nbsp<tt>{{k}}</tt> #{{v.participants|length}}
+                    </span>
+                </div>
+              </td>
+              <td class="text-end">{{v.crimes.1}} / {{v.crimes.0}}</td>
+              {# <td class="text-start">{{v.crimes.0}}</td> #}
+              <td class="text-center">{{v.crimes.2}}%</td>
+
+              <td class="text-end" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DH"}}</td>
+              <td class="text-end" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DH"}}</td>
+
+              <td class="text-end" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
+              <td class="text-end" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
+              <td class="text-end" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td>
+
+              <td class="text-end">{{v.respect.0|intcomma}}</td>
+              <td class="text-end">{{v.respect.1|intcomma|floatformat:2}}</td>
+              <td class="text-end">{{v.respect.2|intcomma|floatformat:2}}</td>
+          </tr>
+
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% else %}
+<p class="error mb-0">No teams found.</p>
+{% endif %}

@@ -271,7 +271,7 @@ class Faction(models.Model):
         if key is None:
             return {}, False
         else:
-            news = apiCall("faction", "", "mainnewsfull", key=key.value, sub="mainnews")
+            news = apiCall("faction", "", "mainnews", key=key.value, sub="mainnews")
 
         if 'apiError' in news:
             return news, False
@@ -302,7 +302,7 @@ class Faction(models.Model):
         now = int(timezone.now().timestamp())
         old = now - self.getHist("crimes")
         # don't update if less than 1 hour ago and force is False
-        if not force and (now - self.crimesUpda) < 3600:
+        if (not force and (now - self.crimesUpda) < 3600) or not settings.DEBUG:
             return self.crimes_set.all(), False, False
 
         # api call and update key
@@ -343,22 +343,25 @@ class Faction(models.Model):
                 n["deleted"] += 1
                 crime.delete()
 
-        # sort crimes API
+        # sort crimes API (from older to newer)
         crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
 
         # create ranking based on sub ranking
-        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
+        # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
+        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
         main_ranking = self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
         batch = Crimes.objects.bulk_operation()
         for k, v in crimesAPI:
-
             # ignore old crimes
             if v["initiated"] and v["time_completed"] < old:
                 # if in the DB but not initated change it to initated so that it's deleted after the loop
                 # it can happen if crimes haven't been update for a while
                 v["initiated"] = True
+                v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
+                h = hash(tuple(sorted(v["participants"])))
+                v["team_id"] = int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
                 batch.update_or_create(tId=k, faction_id=self.pk, defaults=v)
                 # self.crimes_set.filter(tId=k).update(initiated=True)
                 continue
@@ -380,12 +383,13 @@ class Faction(models.Model):
             # get crimeBD
             crimeDB = crimesDB.filter(tId=int(k)).first()
 
-            # create new or update non initiated
             v["participants"] = json.dumps([int(list(p.keys())[0]) for p in v["participants"]])
+            h = hash(tuple(sorted(v["participants"])))
+            v["team_id"] = int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
+
+            # create new or update non initiated
             if crimeDB is None:
                 n["created"] += 1
-                h = hash(tuple(sorted(v["participants"])))
-                v["team_id"] = int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
 
             elif not crimeDB.initiated:
                 n["updated"] += 1
@@ -405,16 +409,13 @@ class Faction(models.Model):
         # save only participants ids of successful PH and PA
         self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)])
 
-        # for i, sub in enumerate(test):
-        #     print(i, sub)
-
         self.save()
         return self.crimes_set.all(), False, n
 
     def updateRanking(self, sub_ranking):
 
         # get members for ranking
-        faction_members = self.member_set.order_by("-nnb", "-arson").only("tId", "nnb", 'crimesRank')
+        faction_members = self.member_set.order_by("-nnb").only("tId", "nnb", 'crimesRank')
         faction_members_nnb = {m.tId: m.nnb for m in faction_members}
 
         # DEBUG
@@ -422,6 +423,7 @@ class Faction(models.Model):
 
         # get previous main ranking
         previous_ranking = json.loads(self.crimesRank)
+        # previous_ranking = []
 
         # remove old players from previous ranking
         to_delete = []
@@ -473,13 +475,10 @@ class Faction(models.Model):
         # DEBUG
         # main_ranking_before = main_ranking[:]
 
-        # print("rank before:", main_ranking.index(1836309))
+        # print("rank before:", main_ranking.index(2190204))
 
         # loop over the sub rankings
         for team in sub_ranking:
-
-            # if 1836309 in team:
-            #     print(team)
 
             # first loop over participants (member point of view)
             for member in [p for p in team if p in main_ranking]:
@@ -495,6 +494,10 @@ class Faction(models.Model):
                     par_m_rank = main_ranking.index(participant)
                     par_s_rank = team.index(participant)
 
+                    # update main ranking
+                    mem_m_rank = main_ranking.index(member)
+                    mem_s_rank = team.index(member)
+
                     # check if bad ordering
                     if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
 
@@ -507,7 +510,7 @@ class Faction(models.Model):
                         #     # member should be above member
                         #     main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
 
-        # print("rank after:", main_ranking.index(1836309))
+        # print("rank after:", main_ranking.index(2190204))
 
         # cleanup old members
         for rank_id in main_ranking:
@@ -643,13 +646,12 @@ class Faction(models.Model):
         if 'apiError' in membersAPI:
             return membersAPI
 
-        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction', 'crimesRank',
+        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction',
                                         'shareE', 'energy', 'energyRefillUsed', 'revive', 'drugCD',
                                         'shareS', 'dexterity', 'speed', 'strength', 'defense',
                                         'shareN', 'nnb', 'arson', 'singleHitHonors'], chunk_size=100)
 
         membersDB = self.member_set.all()
-        crimesRank = json.loads(self.crimesRank)
         for m in membersAPI:
             memberDB = membersDB.filter(tId=m).first()
 
@@ -658,10 +660,6 @@ class Faction(models.Model):
                 # update basics
                 memberDB.name = membersAPI[m]['name']
                 memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-                try:
-                    memberDB.crimesRank = crimesRank.index(memberDB.tId) + 1
-                except BaseException:
-                    memberDB.crimesRank = 100
 
                 # update status
                 memberDB.updateStatus(**membersAPI[m]['status'])
@@ -684,7 +682,6 @@ class Faction(models.Model):
                     memberDB.nnb = 0
                     memberDB.arson = 0
                     memberDB.singleHitHonors = 0
-                    memberDB.crimesRank = 100
 
                 else:
                     # pass from -1 to 1 in case
@@ -728,7 +725,6 @@ class Faction(models.Model):
                 memberTmp.speed = 0
                 memberTmp.defense = 0
                 memberTmp.singleHitHonors = 0
-                memberTmp.crimesRank = 100
 
                 if skip_manager:
                     memberTmp.save()
@@ -741,7 +737,7 @@ class Faction(models.Model):
                     # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
                     player = Player.objects.filter(tId=m).first()
                     memberNew = self.member_set.create(
-                        tId=m, name=membersAPI[m]['name'], crimesRank=100,
+                        tId=m, name=membersAPI[m]['name'],
                         lastAction=membersAPI[m]['last_action']['relative'],
                         lastActionTS=membersAPI[m]['last_action']['timestamp'],
                         daysInFaction=membersAPI[m]['days_in_faction'],
@@ -4029,11 +4025,13 @@ class SpyDatabase(models.Model):
         self.name = xp.generate_xkcdpassword(words, acrostic="torn")
         self.save()
 
+    def get_master_name(self):
+        return self.factions.filter(tId=self.master_id).first().name
+
     def change_secret(self):
         from xkcdpass import xkcd_password as xp
         self.secret = randomSlug(length=16)
         self.save()
-
 
     def updateSpies(self, payload=None):
         from faction.functions import optimize_spies

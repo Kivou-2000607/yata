@@ -1,0 +1,2 @@
+{% load app_filters %}{% for row in data %}{{ row.0|addslashes }}, {{ row.1|addslashes|safe }}, {{ row.2|addslashes }}, {{ row.3|addslashes }}, {{ row.4|addslashes }}, {{ row.5|addslashes }}, {{ row.6|addslashes }}, {{ row.7|addslashes }}, {{ row.8|addslashes }}, {{ row.9|addslashes }}, {{ row.10|addslashes }}, {{ row.11|addslashes }}, {{ row.12|addslashes }}, {{ row.13|addslashes }}, {{ row.14|addslashes }}, {{ row.15|addslashes }}, {{ row.16|addslashes }}, {{ row.17|addslashes }}, {{ row.18|addslashes }}, {{ row.19|addslashes }}
+{% endfor %}

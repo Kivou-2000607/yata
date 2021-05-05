@@ -665,8 +665,10 @@ def player_link(player_id, player_name="Player", page=None, short=False):
         return format_html(f'<a href="https://www.torn.com/{path}" title="{player_name} [{player_id}]" target="_blank">{player_name} [{player_id}]</a>')
 
 @register.simple_tag(name='faction_link')
-def player_link(faction_id, faction_name="Faction", short=False):
+def faction_link(faction_id, faction_name="Faction", short=False):
+    if not faction_id:
+        return "-"
     if short:
-        return format_html(f'<a href="https://www.torn.com/{path}" title="{player_name} [{player_id}]" target="_blank">{player_name}</a>')
+        return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name}</a>')
     else:
-        return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}#/" title="{faction_name} [{faction_id}]" target="_blank">{faction_name} [{faction_id}]</a>')
+        return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name} [{faction_id}]</a>')

@@ -1,0 +1,73 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+<div class="m-2 m-md-4 p-2 p-md-4 rounded faction-event overflow-scroll">
+
+  <div class="row justify-content-between">
+    <div class="col">
+      <h4>{{event.title}}</h4>
+      {% if event.description %}
+      <div class="event-description">{{event.description|trURL}}</div>
+      {% endif %}
+    </div>
+    <div class="col text-end">
+      {% if event.timestamp %}
+        <div>{{event.timestamp|ts2date:"%Y/%m/%d"}} {{event.timestamp|ts2date:"%H:%M"}}</div>
+      {% endif %}
+    </div>
+  </div>
+
+    <div class="row">
+      <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></div>
+    </div>
+    {% if event.stack and event.timestamp %}
+        <hr class="sep">
+        <div class="row justify-content-between">
+          <div class="col col-md-4">
+            <h4>Stacking</h4>
+          </div>
+          <div class="col text-end">
+            <div>{{event.timestamp|sub:100800|ts2date:"%m/%d %H:%M"}}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-spinner fa-pulse"></i></div>
+        </div>
+    {% endif %}
+    {% if event.reset and event.timestamp %}
+        <hr class="sep">
+        <div class="row justify-content-between">
+          <div class="col">
+            <h4>Reset branch</h4>
+          </div>
+          <div class="col text-end">
+            <div>{{event.timestamp|sub:360000|ts2date:"%m/%d %H:%M"}}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-spinner fa-pulse"></i></div>
+        </div>
+    {% endif %}
+</div>

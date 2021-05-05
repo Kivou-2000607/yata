@@ -1,0 +1,138 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+{% load cache %}
+
+<script>
+    $(document).ready(function() {
+        $("#bazaar-abroad-stocks").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0], [3, 1]]
+        });
+    });
+</script>
+
+<ul class="nav justify-content-center mx-md-5 mb-3">
+  {% for awardType, awards in awardsSummary.items %}
+    <li class="nav-item {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
+      <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
+        <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
+      </div>
+    </li>
+   {% endfor %}
+ </ul>
+
+
+{# {% cache 60 stocks-abroad %} #}
+<ul class="nav justify-content-center mx-md-5 mb">
+        {% for id, country in country_list.items %}
+
+            {% if id == filters.countries %}
+                <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
+                    {% if country.flag %}
+                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag" />
+                    {% else %}
+                        <i class="fas fa-toggle-on"></i>
+                    {% endif %}
+                    {{country.name}}
+                </li>
+            {% else %}
+                <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
+                    {% if country.flag %}
+                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag-gs" />
+                    {% else %}
+                        <i class="fas fa-toggle-off"></i>
+                    {% endif %}
+                    {{country.name}}
+                </li>
+            {% endif %}
+
+        {% endfor %}
+</ul>
+<hr class="sep">
+<ul class="nav justify-content-center mx-md-5 mb-3">
+        {% for id, type in type_list.items %}
+
+            {% if id in filters.types %}
+                <li data-fil="types" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons valid">
+                    <i class="fas fa-toggle-on"></i>&nbsp;{{type.name}}
+                </li>
+            {% else %}
+                <li data-fil="types" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
+                    <i class="fas fa-toggle-off"></i>&nbsp;{{type.name}}
+                </li>
+            {% endif %}
+
+        {% endfor %}
+</ul>
+
+<div class="table-responsive">
+<table id="bazaar-abroad-stocks" class="table table-hover table-striped table-borderless tablesorter bazaar-abroad-stocks">
+    <thead>
+        <tr>
+            <th class="a">Country</th>
+            <th class="b">Item</th>
+            <th class="c">Type</th>
+            <th class="d">Stock</th>
+            <th class="e">Price</th>
+            <th class="f">Profit</th>
+            <th class="g">Profit / hour</th>
+            <th class="h">Weekly tendency</th>
+            <th class="i">Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if stocks|length %}
+            {% for stock in stocks %}
+            <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow abroad-item-stocks">
+                  <td class="text-start" data-val="{{stock.get_country.id}}">
+                  <img src="{% url_img_flag stock.get_country.flag %}" alt="{{stock.get_country.flag}}" class="flag" /> {{stock.country}}
+                </td>
+                <td class="text-start dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}"><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-small" /> {{stock.item.tName}}</td>
+                <td class="text-start">{{stock.item.tType}}</td>
+                <td class="text-center" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>
+                <td class="text-end" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
+                <td class="text-end" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
+                <td class="text-end" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
+                <td class="text-center dont-touch-me" data-val="{{stock.item.weekTendency}}">
+                    <a href="{% url 'bazaar:prices' stock.item.tId %}" class="prices-item" title="Prices tendency over a week / a month">
+                        {{stock.item.weekTendency|priceTendency|safe}}
+                    </a>
+                </td>
+                <td class="text-center" title="Last update on {{stock.timestamp|ts2date}} TCT" data-val="{{stock.timestamp|ts2date}}">{{stock.update|ts2ago}}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <td colspan="9" class="error" style="text-align: center;">No stocks found</td>
+        {% endif %}
+    </tbody>
+</table>
+</div>

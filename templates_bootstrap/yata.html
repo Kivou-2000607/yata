@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css%}
+    <link rel="stylesheet" type="text/css" href={% static "yata/css/setup.css" %} />
+{% endblock%}
+
+{% block content %}
+  <div id="content-update">
+    {% include "yata/content-reload.html" %}
+  </div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+
+<table class="center-medium faction-armory-news-list">
+  <thead>
+      <tr><td colspan="4">
+          <div class="pagination">
+              <span class="step-links">
+                  {% if news.has_previous %}
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">&laquo; first</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">previous</a>
+                  {% endif %}
+
+                  <span class="current">
+                      {{ news.number }}/{{ news.paginator.num_pages }}
+                  </span>
+
+                  {% if news.has_next %}
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">next</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">last &raquo;</a>
+                  {% endif %}
+              </span>
+          </div>
+      </td></tr>
+  <tr>
+    <th>Type</th>
+    <th>{% include "faction/armory/news-header-filter.html" %}</th>
+    <th>News</th>
+    <th>Date</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for news in news %}
+      <tr>
+        <td class="a">{{ news.typeReadable }}</td>
+        <td class="b">{{ news.member }}{% include "faction/armory/news-inline-filter.html" %}</td>
+        {# <td class="b">{{ news.member }}</td> #}
+        <td class="c">{{ news.news }}</td>
+        <td class="d">{{ news.timestamp|ts2date }}</td>
+      </tr>
+  {% endfor %}
+
+  <tr><td colspan="4">
+      <div class="pagination">
+          <span class="step-links">
+              {% if news.has_previous %}
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page=1&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">&laquo; first</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.previous_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">previous</a>
+              {% endif %}
+
+              <span class="current">
+                  {{ news.number }}/{{ news.paginator.num_pages }}
+              </span>
+
+              {% if news.has_next %}
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.next_page_number }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">next</a>
+                  <a class="page-link" href="{% url 'faction:armoryNews' %}?page={{ news.paginator.num_pages }}&tss={{timestamps.fstart}}&tse={{timestamps.fend}}">last &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  </td></tr>
+
+  </tbody>
+</table>

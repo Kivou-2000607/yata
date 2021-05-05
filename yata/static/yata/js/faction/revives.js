@@ -4,14 +4,14 @@ $(document).on('change', '#date-live-revives', e=>{
     var end = parseInt($("#ts-end-revives").val());
     var live = $(e.currentTarget).prop('checked');
     if(live) {
-        $("#date-end-revives").addClass("valid").removeClass("error").html("Will be constantly updated");
+        $("#date-end-revives").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
         if(start) {
             $("#create-report-revives").show();
         } else {
             $("#create-report-revives").hide();
         }
     } else {
-        $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add an ending date (or leave blank for live)');
+        $("#date-end-revives").addClass("is-invalid").attr("disabled", false).focus();
         $("#create-report-revives").hide();
     }
 });
@@ -96,7 +96,7 @@ $(document).on('change', 'input[id^="faction-revives-report-"]', e=>{
     $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
 });
 
-$(document).on('click', 'form.revives > i.filter-player,form.revives > i.filter-player-activated', e=>{
+$(document).on('click', 'table.faction-revives-list i.filter-player,table.faction-revives-list i.filter-player-activated', e=>{
     e.preventDefault();
     var splt = $(e.currentTarget).attr("data-val").split("-")
     var reportId = splt[0];

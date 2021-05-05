@@ -1,19 +1,3 @@
-// update history on load
-const afterLoad = (r,s,x) =>{
-    console.log(x);
-    window.history.pushState(null, document.title, x.url);
-};
-
-// nav links
-$(document).on('click', 'table.faction-categories td', e=>{
-    e.preventDefault();
-    var l = $(e.currentTarget).children("a").attr("href").split("/")[2];
-    $( "#content-update" ).load( "/faction/"+l+"/", {
-        csrfmiddlewaretoken: getCookie("csrftoken")
-    }, nav("/faction/"+l+"/"));
-    $("#content-update h2").addClass("grey").html(spinner+'&nbsp;&nbsp;Loading '+l)
-    $("div.error").hide();
-});
 
 // countdown
 window.setInterval(function(){
@@ -41,3 +25,30 @@ window.setInterval(function(){
 
     });
 }, 1000);
+
+
+// share reports
+$(document).on('click', '#faction-chain-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("div")
+    var chainId = $(e.currentTarget).attr("data-val");
+    span.load( "/faction/chains/manage/", {
+        type: "share", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
+});
+$(document).on('click', '#faction-attacks-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("div")
+    var reportId = $(e.currentTarget).attr("data-val");
+    span.load( "/faction/attacks/manage/", {
+        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+});
+$(document).on('click', '#faction-revives-report-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("div")
+    var reportId = $(e.currentTarget).attr("data-val");
+    span.load( "/faction/revives/manage/", {
+        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+});

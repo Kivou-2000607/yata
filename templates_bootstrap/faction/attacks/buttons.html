@@ -1,0 +1,53 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<div class="d-flex flex-wrap">
+  <div class="me-2">
+    <a class="faction-attacks-reports-see" data-val="{{report.pk}}" href="{% url 'faction:attacks' report.pk %}"><i class="fas fa-eye" title="See report"></i></a>
+  </div>
+  <div class="me-2">
+    {% if player.factionAA %}
+      <a class="faction-attacks-reports-delete" data-val="{{report.pk}}" href=""><i class="fas fa-trash-alt" title="Delete report"></i></a>
+    {% endif %}
+  </div>
+  <div class="me-2">
+    {% if report.wall.first %}
+      <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank"><i class="fas fa-shield-alt valid" title="{{report.wall.first}}"></i></a>
+    {% else %}
+      <i class="fas fa-shield-alt error" style="opacity: 0.5;" title="No wall attached"></i>
+    {% endif %}
+  </div>
+  {% if report.live %}
+    <div class="me-2">
+      {% if report.computing %}
+        <i class="fas fa-microphone-alt valid" title="This is a live report"></i>
+      {% else %}
+        <i class="fas fa-microphone-alt-slash neutral" title="This is a live report"></i>
+      {% endif %}
+    </div>
+  {% endif %}
+  <div class="me-2">
+    {% include "faction/attacks/status.html" %}
+  </div>
+</div>

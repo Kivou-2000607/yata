@@ -1,0 +1,123 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<div class="row">
+
+    {# IMAGE #}
+    <div class="col-12 px-4">
+      <div class="item-table-header my-2" data-act="{% if player.tId == -1 %}{% else %}update{% endif %}">
+        <button class="thumbnail btn" title="{{item.tName}}">
+          {% if apiErrorSub %}
+            <i class="fas fa-skull-crossbones error"></i>
+          {% else %}
+            <img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" />
+          {% endif %}
+        </button>
+      </div>
+    </div>
+
+    {# TIMER #}
+    {% if view.timer %}
+    <div class="col-12 px-4">
+      <div class="item-table-header update-timer" data-act="delete" data-val="{{item.lastUpdateTS}}">
+        <i class="fas fa-spinner fa-pulse"></i>
+      </div>
+    </div>
+    {% endif %}
+
+    {# NAME  #}
+    <div class="col-12 px-4" title="{{item.tName}}">
+      <div class="item-table-header" data-act="details">
+        {{item.tName}}
+      </div>
+    </div>
+
+    {# STOCKS #}
+    {% if player.tId > 0 %}
+    {# <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'> #}
+    <div class="col-12 px-4">
+      <div class="item-table-header" data-act="toggle">
+        stock: {{item.stock}}<i class="fas fa-toggle-{% if item.tId|stringformat:"i" in list %}on{%else%}off{%endif%} ms-2"></i>
+      </div>
+    </div>
+    {% endif %}
+
+    {# PRICE #}
+    <div class="col-12 px-4">
+      <div class="item-table-header no-click">
+        <a href="https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname={{item.tName}}" target="_blank" >${{item.tMarketValue|intcomma}}</a>
+      </div>
+    </div>
+
+    {# TENDENCIES #}
+    {% if item.weekTendencyB %}
+    <div class="col-12 px-4">
+      <div class="item-table-header" data-act="prices">
+        <span  data-val="{{item.tId}}" title="Prices tendency over a week / a month">{{item.weekTendency|priceTendencyShort|safe}} / {{item.monthTendency|priceTendencyShort|safe}}</span></th>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12 px-4">
+      <div class="item-table-header">
+        <span  data-val="{{item.tId}}" title="Prices tendency over a week / a month">No data</span></th>
+      </div>
+    </div>
+    {% endif %}
+  <div class="col-12">
+    <div class="table-responsive">
+      <table class="table table-hover table-borderless table-sm">
+        <tbody>
+          {% for data in item.get_bazaar %}
+            {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
+              {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore ggt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore gt"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore llt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore lt"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% else %}                                             <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore eq"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% endif %}
+            {% else %}
+              {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ggt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row gt"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row llt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% elif data.cost     < item.tMarketValue|mul:0.99 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row lt"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% else %}                                             <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row eq"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+              {% endif %}
+            {% endif %}
+            <td class="a text-end">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="b text-end">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+            </tr>
+            {% if forloop.counter == 2 %}
+              <tr class="d-table-row d-md-none show-more">
+                <td colspan="2"><i class="fas fa-angle-double-down me-1"></i>show more<i class="fas fa-angle-double-down ms-1"></i></td>
+              </tr>
+            {% elif forloop.last %}
+              <tr class="d-table-row d-none show-less">
+                <td colspan="2"><i class="fas fa-angle-double-up me-1"></i>show less<i class="fas fa-angle-double-up ms-1"></i></td>
+              </tr>
+            {%endif%}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

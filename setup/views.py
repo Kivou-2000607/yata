@@ -41,7 +41,7 @@ def prune(request):
             nPlayers = PlayerData.objects.first()
 
             context = {"player": player, "nTotal": nPlayers.nTotal, "nInact": nPlayers.nInact, "nValid": nPlayers.nValid, "nInval": nPlayers.nInval, "nPrune": nPlayers.nPrune, "view": {"prune": True}}
-            return render(request, "yata.html", context)
+            return render(request, "setup.html", context)
         else:
             return returnError(type=403, msg="You might want to log in.")
 
@@ -136,13 +136,17 @@ def donations(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         paypal = PayPal.objects.first()
-        paypal_balance = paypal.get_balance()
+        paypal_balance = paypal.get_balance() if paypal is not None else {"balance": 0}
 
         droplet = Droplet.objects.first()
-        droplet_balance = droplet.get_balance()
-
-        droplet_specs = droplet.dropletspec_set.order_by("timestamp").last()
-        balances = Balance.objects.all()
+        if droplet is not None:
+            droplet_balance = droplet.get_balance()
+            droplet_specs = droplet.dropletspec_set.order_by("timestamp").last()
+            balances = Balance.objects.all()
+        else:
+            droplet_specs = None
+            droplet_balance = {"account_balance": 0}
+            balances = []
 
         paypal_balance["balance"] = float(paypal_balance["balance"])
         droplet_balance["account_balance"] = -float(droplet_balance["account_balance"])

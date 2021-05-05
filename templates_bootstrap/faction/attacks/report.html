@@ -1,0 +1,107 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-skull"></i>&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]</div>
+      {% if not share and player.factionAA %}
+        <div class="px-2">
+          {% include "faction/attacks/export.html" %}
+        </div>
+        <div class="px-2">
+          {% include 'faction/attacks/share.html' %}
+        </div>
+      {% endif %}
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless attacks-summary">
+        {% if report.wall > 0 %}
+          <thead>
+            <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
+          </thead>
+        {% endif %}
+        <tbody>
+            <tr>
+                <td><b>Start:</b> {{report.start|ts2date}}</td>
+                <td><b>End:</b> {{report.end|ts2date}}</td>
+                <td><b class="me-1">Report status:</b> {% include "faction/attacks/status.html"%}</td>
+            </tr>
+            <tr>
+                <td><b>Attacks: </b> {{report.attacks}}</td>
+                <td><b>Defends: </b> {{report.defends}}</td>
+                <td><b>Total: </b> {{attacks|length}}</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+
+    {% if factions|length %}
+      <div class="row">
+        <div class="col col-md-6 pagination-list">
+            {% include "faction/attacks/factions.html"%}
+        </div>
+        <div class="col col-md-6 pagination-list">
+            {% include "faction/attacks/players.html"%}
+        </div>
+      </div>
+    {% else %}
+        <p class="warning mb-0">Report is being computed.</p>
+    {% endif %}
+</div>
+
+{% if not share %}
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;Members breakdown</div>
+      </div>
+  </h2>
+  <div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div class="pagination-list">
+        {% if members %}
+            {% include "faction/attacks/members.html"%}
+        {% else %}
+            <p class="mb-0 text-center">
+              <a id="faction-attacks-report-members" data-val="{{report.pk}}" href="">Compute members breakdown</a>
+              <i style="cursor: help;" class="fas fa-question-circle ms-1" title="Compute members outgoing / incoming attacks breakdown based on the faction filters set above.&#013;If your faction is selected above, you will see members from other factions in the list. For sake of clarity either do not select your faction or select only your faction... Or do wathever you want."></i>
+            </p>
+        {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+{% if attacks %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-list"></i>&nbsp;List of attacks</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="pagination-list">
+    {% include "faction/attacks/attacks.html" %}
+  </div>
+</div>
+{% endif %}

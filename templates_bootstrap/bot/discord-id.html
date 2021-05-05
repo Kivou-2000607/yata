@@ -1,0 +1,30 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<form>{% csrf_token %}
+    <p class="mb-0">Here is your status:
+        {% if player.dId%}
+            <span class="valid">Your discord account <tt>{{player.dId}}</tt> is officially verified by Torn.</span>
+        {% else %}
+            <span class="error">Your discord account is not officialy verified by Torn.&nbsp;&nbsp;<i class="fas fa-question-circle" title="Gog get your discord account verified on the official Torn discord."></i></span>
+        {% endif %}
+        <a id="discord-update-id" href="{% url 'bot:updateId' %}">&nbsp;&nbsp;<i class="fas fa-sync-alt" title="Update discord ID"></i></a>
+        {% if error %}&nbsp;&nbsp;<span class="error">{{error.apiErrorSub}}</span>{% endif %}
+    </p>
+</form>

@@ -1,3 +1,35 @@
+$(document).on('click', '#yata-login-submit', function(e){
+    e.preventDefault();
+
+    // WARNING: IT IS NOT TOLERATED TO MODIFY THIS FUNCTION
+    // as it will remove the warning when users enter their API key on non official instances of YATA.
+    // Changing it will be seen as making your instance of YATA looks official, thus raising suspicions.
+    if (window.location.host != "yata.yt") {
+      var c = confirm("This is not the official YATA website which is hosted on https://yata.yt.\nWhere it is allowed to host instances of YATA on personal servers, make sure you know who's hosting it and that they have no malicious intents.\n\nKivou [2000607]");
+      if (c == false) {
+          return
+      }
+    }
+
+    $("#header").load( "/login", {
+        key: $("#yata-login-key").val(),
+        csrfmiddlewaretoken:  getCookie("csrftoken"),
+    });
+    $(this).html(spinner);
+});
+
+$(document).on('click', '#yata-logout-submit', function(e){
+    $(this).html(spinner);
+});
+
+$(document).on('click', '#yata-delete-submit', function(e){
+    var r = confirm("Are you sure you want to delete your account? All data will be removed from the database.");
+    if (r == false) {
+        e.preventDefault();
+    }
+});
+
+
 const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
 
 function toggle_h(h) {
@@ -5,7 +37,7 @@ function toggle_h(h) {
     var i = h.find("i[class^='fas fa-caret']");
 
     // close all other sections
-    const lookup = h.is("h1") ? ["div.module", "h1.module-doc"] : ["div.module-doc", "h2.command-doc"]
+    const lookup = h.is("h3") ? ["div.module", "h3.module-doc"] : ["div.module-doc", "h4.command-doc"]
     h.closest(lookup[0]).find(lookup[1]).each((i, item) => {
         if(item != h[0]) {
             $(item).next("div").slideUp("fast");
@@ -24,7 +56,7 @@ function toggle_h(h) {
 }
 
 // show/hide command
-$(document).on('click', 'h1.module-doc, h2.command-doc', function(e){
+$(document).on('click', 'h3.module-doc, h4.command-doc', function(e){
     e.preventDefault();
     // get h2 and div
     var h = $(this);
@@ -71,6 +103,7 @@ function fancyTimeFormat(time)
 }
 
 const nav = (url) =>{
+     console.log("nav" + url);
      window.history.pushState(null, document.title, url);
 };
 
@@ -90,36 +123,59 @@ const getCookie = (s)=>{
 
 
 // header navigation
-$(document).on('click', 'a[class^="yata-link"]', function(e){
+$(document).on('click', 'div.yt-main-link a', e => {
     $("#content-update h2").addClass("grey");
-    $("#content-update h2").html(spinner+'&nbsp;&nbsp;Loading '+$(this).attr("title"))
-    $(this).html(spinner);
+    $("#content-update h2").html(spinner+'&nbsp;Loading '+$(e.currentTarget).attr("title"))
+    $(e.currentTarget).find("i").replaceWith(spinner);
 });
 
+// sub header navigation
+$(document).on('click', 'div.yt-cat-link', e=>{
+    e.preventDefault();
+    var link = $(e.currentTarget).children("a")
+    $( "#content-update" ).load( link.attr("href"), {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }, nav(link.attr("href")));
+    $("#content-update h2").addClass("grey").addClass("px-2").html('<div class="ps-2">'+spinner+'&nbsp;Loading '+link.attr("title")+'</div>')
+    $("div.error").hide();
+});
+
+
 // pagination nav
-$(document).on('click', 'a.page-link', function(e){
+$(document).on('click', 'a.yt-page-link', function(e){
     e.preventDefault();
     var reload = $(e.currentTarget).closest("div.pagination-list");
     reload.load( $(e.currentTarget).attr("href"), function() {});
-    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+    $(e.currentTarget).closest("table").find("tr").html('<td colspan="*" class="text-center">'+spinner+'</td>');
+});
+
+// prevent show/hide
+$(document).on('click', 'h2.title.toggle-display div.no-click', function(e){
+  var h = $(this).closest("h2");
+  var div = h.next("div");
+  var i = h.find("div.toggle-rotate").find("i");
+  if(div.css("display") == "none") {
+      h.removeClass("rounded").removeClass("mb-3");
+      i.addClass("fa-rotate-90");
+  } else {
+    e.stopPropagation()
+  }
 });
 
 // show/hide module
 $(document).on('click', 'h2.title.toggle-display', function(e){
     e.preventDefault();
-    var h = $(this);
-    // console.log(!($(e.target).hasClass("update-type") && !h.hasClass("rounded")));
+    var h = $(this).closest("h2");
     if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
-        var i = h.find("i.fa-caret-right");
-        // var div = h.closest(".catch-me").children("div");
+        var i = h.find("div.toggle-rotate").find("i");
         var div = h.next("div");
         if(div.css("display") == "none") {
-            h.removeClass("rounded");
+            h.removeClass("rounded").removeClass("mb-3");
             i.addClass("fa-rotate-90");
         }
         div.slideToggle("fast", function(){
             if(div.css("display") == "none") {
-                h.addClass("rounded");
+                h.addClass("rounded").addClass("mb-3");
                 i.removeClass("fa-rotate-90");
             }
         });

@@ -1,0 +1,99 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $.tablesorter.addParser({
+            // set a unique id
+            id: 'dataVal',
+            // check if cell value has a numerical value
+            is: function(s, table, cell, $cell) {
+                return !isNaN($cell.attr("data-val"));
+            },
+            // format data for normalization
+            format: function(s, table, cell, cellIndex) {
+                return parseInt($(cell).attr("data-val"));
+            },
+            // set type, either numeric or text
+            type: 'numeric'
+        });
+
+        $("#territory-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4, 1], [0,0]]});
+        $("#racket-list").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[7,0]]});
+    });
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['x', 'y', {'type': 'string', 'role': 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+          {% for t in allTerritories %}
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {size: 2; fill-color: #326983;}', '{{t|tTooltip|safe}}'],
+          {% endfor %}
+          {% for t in territories %}
+            [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: square; fill-color: #0B8E14; stroke-color: #000; size: 3;}', '{{t|tTooltip|safe}}'],
+          {% endfor %}
+          {% for t in rackets %}
+            {% if t.level == 1 %}
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {fill-color: #CC3434; size: 2;}', '{{t|rTooltip|safe}}'],
+            {% else %}
+                [ {{t.coordinate_x|mul:1.04}}, {{t.coordinate_y|mul:1.04}}, 'point {shape-type: star; shape-dent: 0.5; shape-sides: {{t.level}}; fill-color: #CC3434; size: 2;}', '{{t|rTooltip|safe}}'],
+            {% endif %}
+          {% endfor %}
+        ]);
+
+        // var minV = 0.9 * Math.min(data.getColumnRange(1).min, data.getColumnRange(0).min);
+        // var maxV = 1.1 * Math.max(data.getColumnRange(1).max, data.getColumnRange(0).max);
+        var options = {
+          // title: 'Territory and racket map',
+          tooltip: {isHtml: true, position: 'top'},
+          vAxis: {
+              viewWindow:{ max: 0, min: 3790 },
+              baselineColor: 'none',
+              textPosition: 'none',
+              gridlines: { color: 'none' },
+              direction: -1
+          },
+          hAxis: {
+                viewWindow:{ max: 0, min: 6500 },
+                baselineColor: 'none',
+                textPosition: 'none',
+                gridlines: { color: 'none' },
+            },
+          'chartArea': {'width': '100%', 'height': '100%'},
+          'backgroundColor': 'transparent',
+          legend: 'none',
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('map-graph'));
+
+        chart.draw(data, options);
+      }
+
+</script>
+
+<div id='map-background' class='map-background x2'>
+    <div id="map-graph" class='map-graph x2'></div>
+</div>

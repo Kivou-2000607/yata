@@ -1,0 +1,66 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+{% if apiErrorSub %}
+    <p class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorSub}}</p>
+{% else %}
+
+{% for cat, defsub in personalstats.items %}
+    <h3 class="module-doc">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+    <div class="module-doc">
+      <ul>
+
+        {% for s in defsub.0 %}
+            {% if s.2 == "money" %}
+            <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
+            {% elif s.2 == "time" %}
+            <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
+            {% else %}
+            <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
+            {% endif %}
+        {% endfor %}
+      </ul>
+    </table>
+
+        {% for subcat, stats in defsub.1.items %}
+            <h4 class="command-doc">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+            <div class="command-doc" style="margin-left: 10%">
+              <ul>
+                {% for s in stats %}
+                    {% if s.2 == "money" %}
+                        <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
+                        {% elif s.2 == "time" %}
+                        <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
+                        {% else %}
+                        <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
+                    {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% endif %}

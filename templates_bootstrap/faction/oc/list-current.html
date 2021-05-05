@@ -1,0 +1,108 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+yata is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+yata is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with yata. If not, see
+<https: //www.gnu.org/licenses />.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% if currentCrimes|length %}
+<div class="table-responsive">
+<table class="table table-hover table-striped table-borderless faction-crimes-list-current">
+    <thead>
+        <tr>
+            <th class="a">Team</th>
+            <th class="b">Crime</th>
+            <th class="c">Planned</th>
+            <th class="d">Started</th>
+            <th class="d">Ready</th>
+            <th class="e">In / Since</th>
+            <th class="f">Progress</th>
+    </thead>
+    <tbody>
+        {% for crime in currentCrimes %}
+        <tr class="hover">
+            <td class="text-start valid" data-val="{{crime.participants|length}}">
+                {% with participants=crime.get_participants %}
+                  <div class="d-flex">
+                    <div class="me-2">{% include "faction/oc/filter.html" with type="team_id" id=crime.team_id %}</div>
+                    <span class="show-team" data-val="{{crime.team_id}}" style="cursor: help;">
+                      <i class="fas fa-users" ></i>&nbsp<tt>{{crime.team_id}}</tt> #{{participants|length}}
+                    </span>
+                  </div>
+                {% endwith %}
+            </td>
+
+            <td class="text-start" data-val="{{crime.tId}}">
+                <div class="d-flex">
+                  <div class="me-2">{% include "faction/oc/filter.html" with type="crime_id" id=crime.crime_id %}</div>
+                  <div>{{crime.crime_name}} [{{crime.tId}}]</div>
+                </div>
+            </td>
+            <td class="text-start">
+              {% with p=crime.get_planned_by %}
+                <div class="d-flex">
+                  <div class="me-2">{% include "faction/oc/filter.html" with type="planned_by" id=p.1 %}</div>
+                  <div>{{p.0|playerURL:p.1|safe}}</div>
+                </div>
+              {% endwith %}
+            </td>
+            <td class="text-center">{{crime.time_started|ts2date}}</td>
+            {% if crime.time_left %}
+              <td class="text-center" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+              <td class="text-end" data-val="{{crime.time_left}}">{{crime.time_left|ts2time}}</td>
+            {% else %}
+              <td class="text-center" data-val="{{crime.time_ready}}">{{crime.time_ready|ts2date}}</td>
+              <td class="text-end" data-val="-{{tsnow|sub:crime.time_ready}}">{{tsnow|sub:crime.time_ready|ts2ago}}</td>
+            {% endif %}
+            <td class="text-center {% if crime.progress == 100 %}valid{% endif %}">{{crime.progress}}%</td>
+
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td colspan="7" class="text-center">
+            <div class="pagination d-block">
+                <span class="step-links">
+                    {% if currentCrimes.has_previous %}
+                        <a class="yt-page-link rounded first" href="{% url 'faction:ocList' %}?p_ccrimes=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.previous_page_number }}"></a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ currentCrimes.number }}/{{ currentCrimes.paginator.num_pages }}
+                    </span>
+
+                    {% if currentCrimes.has_next %}
+                        <a class="yt-page-link rounded next" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'faction:ocList' %}?p_ccrimes={{ currentCrimes.paginator.num_pages }}"></a>
+                    {% endif %}
+                </span>
+            </div>
+          </td>
+        </tr>
+
+    </tbody>
+</table>
+</div>
+
+{% else %}
+<p class="error mb-0">No crimes found.</p>
+{% endif %}

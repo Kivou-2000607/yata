@@ -1,0 +1,67 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-user-secret"></i>&nbsp;List of NPC</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="d-flex justify-content-around flex-wrap p-0">
+    {% for npc in NPCs %}
+    <div class="overflow-auto m-md-2 my-2"> {# this is the flexible element #}
+      {% include "loot/npc.html"%}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if scheduled_attacks|length %}
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-clock"></i>&nbsp;Scheduled attacks</div>
+      </div>
+  </h2>
+  <div class="container-fluid p-md-3 p-1 mb-3 module">
+    <p>Upvote a scheduled attack if you can participate. After <b>25</b> upvotes, the bot will send alerts to all its servers.</p>
+    <ol>
+    {% for sa in scheduled_attacks %}
+      <li>Attack on <b>{{sa.npc.name}}</b> at <b>{{sa.timestamp|ts2date}} TCT</b> scheduled by {{sa.author}}
+
+        <span class="npc-scheduled-vote {% if player.tId > 0 %}npc-scheduled-vote-click{% endif %}" data-npc="{{sa.npc.tId}}" data-ts="{{sa.timestamp}}">
+          {% include "loot/vote.html" %}
+        </li>
+    {% endfor %}
+    </ol>
+  </div>
+{% endif %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Discord bot and loot API</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <p class="mb-0">There is a bot on the <a href='{% url "discord" %}' target="_blank">YATA discord</a> server that gives notifications when NPC are about to get looted.<br/>
+    Read <a href='{% url "api:documentation" %}#loot' target="_blank">the API documentation</a> if you want build a tool for NPC alerts.</p>
+</div>

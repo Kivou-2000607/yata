@@ -1,0 +1,96 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function() {
+        $("#faction-crimes-breakdown-crimes").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[0,0]]
+        });
+    });
+</script>
+
+{% if crimesDB|length %}
+<div class="table-responsive">
+  <table id="faction-crimes-breakdown-crimes" class="table table-hover table-striped table-borderless tablesorter faction-crimes-breakdown">
+      <thead>
+          <tr>
+
+              <th class="a">&nbsp;<br>Name</th>
+              <th class="b">&nbsp;<br>Success</th>
+              {# <th class="b">&nbsp;<br>Made</th> #}
+              <th class="b">&nbsp;<br>%</th>
+
+              <th class="c" title="Cummulative time for all participants"><i class="far fa-clock me-1"></i><br/>Total</th>
+              <th class="c"><i class="far fa-clock me-1"></i><br/>Per crime</th>
+
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>Total</th>
+              <th class="d" title="Money per participants days per crimes"><i class="fas fa-dollar-sign me-1"></i><br/>Effect.</th>
+              <th class="f" title="Ratio between effectiveness and maximal effectiveness"><i class="fas fa-dollar-sign me-1"></i><br/>Effic.</th>
+
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>Total</th>
+              <th class="e" title="Respect per participants days per crimes"><i class="fas fa-fist-raised me-1"></i><br/>Effect.</th>
+              <th class="f" title="Ratio between effectiveness and maximal effectiveness"><i class="fas fa-fist-raised me-1"></i><br/>Effic.</th>
+
+      </thead>
+      <tbody>
+      {% for k, v in crimesDB %}
+          <tr class="hover">
+              <td class="text-start" data-val="{{k}}">
+                <div class="d-flex">
+                  <div class="me-2">{% include "faction/oc/filter.html" with type="crime_id" id=k %}</div>
+                  <div class="">{{v.name}}</div>
+                </div>
+              </td>
+              <td class="text-end">{{v.crimes.1}} / {{v.crimes.0}}</td>
+              {# <td class="text-center">{{v.crimes.0}}</td> #}
+              <td class="text-center">{{v.crimes.2}}%</td>
+
+              <td class="text-end" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DH"}}</td>
+              <td class="text-end" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DH"}}</td>
+
+              <td class="text-end" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
+              <td class="text-end" title="Max effectiveness = ${{v.money.4|intcomma}}" data-val="{{v.money.3}}">${{v.money.3|intcomma}}</td>
+              <td class="text-center" title="${{v.money.3|intcomma}} / ${{v.money.4|intcomma}}" data-val="{{v.money.5}}%">{{v.money.5}}%</td>
+
+              <td class="text-end">{{v.respect.0|intcomma}}</td>
+              <td class="text-end" title="Max effectiveness = {{v.respect.4|intcomma}}">{{v.respect.3|intcomma|floatformat:2}}</td>
+              <td class="text-center" title="{{v.respect.3|intcomma|floatformat:2}} / {{v.respect.4|intcomma|floatformat:2}}" data-val="{{v.respect.5}}">{{v.respect.5}}%</td>
+          </tr>
+
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% else %}
+<p class="error mb-0">No crimes found.</p>
+{% endif %}

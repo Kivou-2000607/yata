@@ -1,0 +1,70 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<div class="table-responsive">
+<h3>Factions</h3>
+<table class="table table-hover table-striped table-borderless faction-revives-report-factions">
+    <thead>
+      <tr>
+        <th class="a">Faction</th>
+        <th class="b"><a class="yt-page-link" href="?o_fa=1">Made (T | S | F)</a></th>
+        <th class="b"><a class="yt-page-link" href="?o_fa=2">Received (T | S | F)</a></th>
+        <th class="c">Filter<i style="cursor: help;" class="fas fa-question-circle ms-1" data-bs-toggle="tooltip" title="Click on the filters to select factions"></i></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for f in factions %}
+    <tr>
+        <td class="text-start">{{f.faction_name|factionURLShort:f.faction_id|safe}}</td>
+        <td class="text-center" title='{% include "faction/revives/factions-tooltip.html" with type=0%}'>{{f.revivesMadeDisp}}</span></td>
+        <td class="text-center" title='{% include "faction/revives/factions-tooltip.html" with type=1%}'>{{f.revivesReceivedDisp}}</td>
+        <td class="text-center">{% include "faction/revives/factions-toggle.html" %}</td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+      <td colspan="4" class="text-center">
+        <div class="pagination d-block">
+            <span class="step-links">
+                {% if factions.has_previous %}
+                    <a class="yt-page-link rounded first" href="?o_fa={{o_fa}}&p_fa=1"></a>
+                    <a class="yt-page-link rounded previous" href="?o_fa={{o_fa}}&p_fa={{ factions.previous_page_number }}"></a>
+                {% endif %}
+
+                <span class="current">
+                    {{ factions.number }}/{{ factions.paginator.num_pages }}
+                </span>
+
+                {% if factions.has_next %}
+                    <a class="yt-page-link rounded next" href="?o_fa={{o_fa}}&p_fa={{ factions.next_page_number }}"></a>
+                    <a class="yt-page-link rounded last" href="?o_fa={{o_fa}}&p_fa={{ factions.paginator.num_pages }}"></a>
+                {% endif %}
+            </span>
+        </div>
+      </td>
+    </tr>
+
+    </tbody>
+</table>
+</div>

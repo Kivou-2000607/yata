@@ -1,0 +1,274 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+
+$(document).ready(function() {
+    $("#faction-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1],[8,1]]});
+
+    $("#faction-report").bind("sortStart",function() {
+        $('[id^="individal-report-"]').remove();
+    });
+});
+
+{% if graph.data|length %}
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+    {% if graph.info.reg|length == 2 %}
+      var data = google.visualization.arrayToDataTable([
+        ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'Current hit rate', 'Global hit rate', 'total hit count'],
+        {% for a,b,c,d in graph.data %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{graph.info.regLast.0|mul:d|add:graph.info.regLast.1}}, {{graph.info.reg.0|mul:d|add:graph.info.reg.1}}, {{c}}],
+         {% endfor %}
+      ]);
+
+      var options = {
+        // bar: {groupWidth: "100%"},
+        legend: {position: 'top', textStyle: {fontSize: 14}},
+        seriesType: 'bars',
+        vAxis: {
+            viewWindowMode:'explicit',
+            viewWindow: {min:0}
+        },
+        series: {
+                  0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                  1: {type: 'line', targetAxisIndex: 1, color: '#cccc00'},
+                  2: {type: 'line', targetAxisIndex: 1, color: '#55cc00'},
+                  3: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                 },
+        'backgroundColor': 'transparent',
+        'chartArea': {'width': '90%', 'height': '70%'},
+      };
+
+      {% else %}
+
+          var data = google.visualization.arrayToDataTable([
+            ['Time', '{{graph.info.binsTime|floatformat:0}} minutes hit count', { role: 'style' }, 'total hit count'],
+            {% for a,b,c,d in graph.data %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {% if b <= graph.info.criticalHits %}'fill-color: #cc0000'{% else %}'fill-color: #787878'{% endif %}, {{c}}],
+             {% endfor %}
+          ]);
+
+
+            var options = {
+              // bar: {groupWidth: "100%"},
+              legend: {position: 'top', textStyle: {fontSize: 14}},
+              seriesType: 'bars',
+              series: {
+                        0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                        1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
+                       },
+              'backgroundColor': 'transparent',
+              'chartArea': {'width': '90%', 'height': '70%'},
+            };
+
+        {% endif %}
+
+          var dataCrit = google.visualization.arrayToDataTable([
+            ['Time', 'Number of hits < 30s', 'Number of hits < 60s', 'Number of hits < 90s'],
+            {% for a,b,c,d in graph.dataCrit %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
+             {% endfor %}
+          ]);
+
+          var dataStat = google.visualization.arrayToDataTable([
+            ['Number of Hits', 'Number of members'],
+            {% for a, b in graph.dataStat %}
+                [{{a}}, {{b}}],
+             {% endfor %}
+          ]);
+
+
+          var optionsCrit = {
+            bar: {groupWidth: "100%"},
+            isStacked: true,
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#cc0000'},
+                      1: {type: 'bar', targetAxisIndex: 0, color: '#FF8C00'},
+                      2: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
+          var optionsStat = {
+            // bar: {groupWidth: "100%"},
+            // isStacked: true,
+            legend: {position: 'top', textStyle: {fontSize: 14}},
+            seriesType: 'bars',
+            series: {
+                      0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                     },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
+
+      // var view = new google.visualization.DataView(data);
+      // view.setColumns([0, 1]);
+
+      var chart = new google.visualization.ComboChart(document.getElementById('histogram'));
+      chart.draw(data, options);
+
+      var chartCrit = new google.visualization.ComboChart(document.getElementById('histogramCrit'));
+      chartCrit.draw(dataCrit, optionsCrit);
+
+      var chartStat = new google.visualization.ComboChart(document.getElementById('histogramStat'));
+      chartStat.draw(dataStat, optionsStat);
+
+    }
+
+{% endif %}
+</script>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-link"></i>&nbsp;Hit count</div>
+      {% if not share and player.factionAA %}
+        <div class="px-2">
+          <a href="#" id="toggle-kicked-members"><i id="kicked-members-icon" class="fas fa-toggle-on"></i> Show players not in faction</a>
+        </div>
+        <div class="px-2">
+          <a href="#" id="toggle-zero-hits"><i id="zero-hits-icon" class="fas fa-toggle-off"></i> Show inactive members</a>
+        </div>
+      {% endif %}
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+{% if counts|length %}
+
+  {% with naturalE=chain.end|sub:chain.start|intdiv:"3000"|add:6 %}
+  <div class="table-responsive">
+    <table id="faction-report" class="table table-hover table-striped table-borderless tablesorter faction-report">
+        <thead>
+            <tr>
+                <th class="a" title="Rank based on the number of hits">Rank</th>
+                <th class="b" title="Torn Name and id and like to the torn profile">Name [id]</th>
+                <th class="c" title="Number of attacks that counted for the chain.">Number<br>of hits</th>
+                <th class="c" title="Total number of attacks including losses, assists, friendly fires...">Number of<br>attacks</th>
+                <th class="c" title="Number of attacks that counted for the war.">Number of<br>war hits</th>
+                {% if chain %}
+                <th class="c" title="Number of hits without counting natural energy: 6 + {{chain.end|sub:chain.start}} / 3000 = {{naturalE}}.">Number of<br>boosted hits</th>
+                {% endif %}
+                <!-- <th class="c" title="Average of fair fight modifier over all hits">modifiers<br>(fair fight)</th>
+                <th class="c" title="Average of war modifier over all hits">modifiers<br>(war)</th>
+                <th class="c" title="Average of retaliation modifier over all hits">modifiers<br>(retaliation)</th>
+                <th class="c" title="Average of groupe attack modifier over all hits">modifiers<br>(groupe attack)</th>
+                <th class="c" title="Average of modifier overseas over all hits">modifiers<br>(overseas)</th> -->
+                <th class="c" title="Average of all modifiers over all hits">modifiers<br>(average)</th>
+                <th class="c" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(average)</th>
+                <th class="c" title="Flat respect: respect counted without the chain mutliplier">flat respect<br>(total)</th>
+                <th class="c" title="Number of hits / Chain hit length">Chain<br>contribution</th>
+                <th class="c" title="Sum over hits of time elapsed since last hit / Chain time length">Chain<br>watcher</th>
+                <th class="c">days in<br>faction</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in counts %}
+                {% if c.daysInFaction > -1 or c.wins > 0 %}
+                <tr id="faction-ireport-{% if c.graph|length %}{{chain.tId}}-{{c.attackerId}}{%else%}combined-{{c.attackerId}}{% endif %}" class="{% if c.daysInFaction < 0 %}kicked-members{% endif %} {% if c.wins < 1 %}zero-hits{% endif %} {% if c.attackerId == player.tId %}my-row{% endif%}" >
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-start dont-touch-me">{{c.name|playerURL:c.attackerId|safe}}</td>
+
+
+                    <td class="text-center">{{c.wins|add:c.bonus}}</td>
+                    <td class="text-center">{{c.hits}}</td>
+                    <td class="text-center">{{c.warhits}}</td>
+                    {% if chain %}
+                    <td class="text-center">{{c.wins|add:c.bonus|sub:naturalE}}</td>
+                    {% endif %}
+
+                    {% if c.wins %}
+                        <!-- <td class="text-center">{{c.fair_fight|div:c.wins|floatformat:2}}</td> -->
+                        <!-- <td class="text-center">{{c.war|div:c.wins|floatformat:2}}</td> -->
+                        <!-- <td class="text-center">{{c.retaliation|div:c.wins|floatformat:2}}</td> -->
+                        <!-- <td class="text-center">{{c.group_attack|div:c.wins|floatformat:2}}</td> -->
+                        <!-- <td class="text-center">{{c.overseas|div:c.wins|floatformat:2}}</td> -->
+                        <td class="text-center">{{c.fair_fight|div:c.wins|mul:c.war|div:c.wins|mul:c.retaliation|div:c.wins|mul:c.group_attack|div:c.wins|mul:c.overseas|div:c.wins|floatformat:2}}</td>
+                    {% else %}
+                        <!-- <td class="text-center">0.00</td>
+                        <td class="text-center">0.00</td>
+                        <td class="text-center">0.00</td>
+                        <td class="text-center">0.00</td> -->
+                        <td class="text-center">0.00</td>
+                    {% endif %}
+                    <!-- <td class="text-center">{{c.fair_fight|floatformat:2}}</td> -->
+                    {% if c.wins %}
+                        <td class="text-center">{{c.respect|div:c.wins|floatformat:2}}</td>
+                    {% else %}
+                        <td class="text-center">0.00</td>
+                    {% endif %}
+
+                <td class="text-center">{{c.respect|floatformat:2}}</td>
+
+                <td class="text-center">
+                    {% if c.chain.current %}
+                        {{c.wins|add:c.bonus|mul:100|div:c.chain.current|floatformat:2}}%
+                    {% elif total.nHits %}
+                        {{c.wins|add:c.bonus|mul:100|div:total.nHits|floatformat:2}}%
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="text-center">{{c.watcher|mul:100|floatformat:2}}%</td>
+
+                {% if c.daysInFaction < 0 %}
+                    <td class="text-center"><i class="fas fa-sign-out-alt" title="not in the faction anymore"></i></td>
+                {% else %}
+                    <td class="text-center">{{c.daysInFaction}}</td>
+                {% endif %}
+
+                </tr>
+                {% endif %}
+                <!-- <tr id="individal-report-{{c.attackerId}}"></tr> -->
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+{% endwith %}
+
+{% if graph.data|length %}
+    <hr class="sep">
+    <div class="table-responsive">
+    <table id="awards-list" class="table table-hover table-borderless tablesorter">
+        <tr><th>Number of hits over time</th></tr>
+        <tr><td><div id="histogram"></div></td></tr>
+        <tr><th>Number of critical hits over time</th></tr>
+        <tr><td><div id="histogramCrit"></div></td></tr>
+        <tr><th>Repartition of hits made by members</th></tr>
+        <tr><td><div id="histogramStat"></div></td></tr>
+    </table>
+  </div>
+{% elif chain.nAttacks %}
+    <hr class="sep">
+    <p class="error">No histogram found. Try to refresh it by clicking on the refresh button <i class="fas fa-sync-alt" title="Refresh report"></i> in the chain list. No need to delete and recreate it.</p>
+{% endif %}
+{% endif %}
+</div>

@@ -100,7 +100,7 @@ def updatePlayer(player, i=None, n=None):
         chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
         if chains.get("chains") is not None:
             player.factionAA = True
-            player.chainInfo = "{} [AA]".format(player.factionNa)
+            player.chainInfo = "{}".format(player.factionNa)
         else:
             player.factionAA = False
             player.chainInfo = "{}".format(player.factionNa)

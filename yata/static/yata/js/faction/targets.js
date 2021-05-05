@@ -10,7 +10,7 @@ $(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)
         type: "update",
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     });
-    reload.html('<td colspan="7" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
 });
 
 // delete target from target list button

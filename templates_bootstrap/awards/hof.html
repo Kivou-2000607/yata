@@ -1,0 +1,148 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+
+<script>
+        $(document).ready(function() {
+            // $("#awards-hof").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[4,1], [3,1]]});
+
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+              var data = google.visualization.arrayToDataTable([
+                ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                {% for h, c, s, im, p, r in graph %}
+                  ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src=\"{% url_img_honor im %}\" atl=\"{{h|safe}}\" height=\"19px;\" /></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                 {% endfor %}
+              ]);
+
+              var options = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                         },
+                bar: {groupWidth: '80%'},
+                hAxis: {  textPosition: 'none', title: "Honors" },
+                vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+              var chart = new google.visualization.ComboChart(document.getElementById('chart'));
+              chart.draw(data, options);
+
+              {% if graph2|length %}
+                var data2 = google.visualization.arrayToDataTable([
+                    ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                    {% for h, c, s, im, p, r in graph2 %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src=\"{% url_img_medal im %}\" atl=\"{{h|safe}}\" height=\"19px;\"></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                    {% endfor %}
+                ]);
+
+                var options2 = {
+                  // bar: {groupWidth: "100%"},
+                  legend: {position: 'none'},
+                  tooltip: {isHtml: true, position: 'top'},
+                  seriesType: 'bars',
+                  series: {
+                            0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                           },
+                  bar: {groupWidth: '70%'},
+                  hAxis: {  textPosition: 'none', title: "Medals" },
+                  vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                  'backgroundColor': 'transparent',
+                  'chartArea': {'width': '90%', 'height': '70%'},
+                };
+
+                var chart2 = new google.visualization.ComboChart(document.getElementById('chart2'));
+                chart2.draw(data2, options2);
+
+            {% endif %}
+
+              var dataHOF = google.visualization.arrayToDataTable([
+                ['Rarity score', 'Number of Players', {role: 'tooltip', 'p': {'html': true}}, 'Cummulative number of players', {role: 'tooltip', 'p': {'html': true}}],
+                {% for x, y, xm, xp, cu in hofGraph %}
+                    [{{x}}, {{y}}, "<h3>#players: {{y|intcomma}}</h3><span>{{xm|floatformat:4}}% < Rarity score < {{xp|floatformat:4}}%</span>", {{cu}}, "<h3>Cummulative #players: {{cu|intcomma}}</h3><span>Rarity score < {{xp|floatformat:4}}%</span>"],
+                 {% endfor %}
+              ]);
+
+              var optionsHOF = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                    0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                    1: {type: 'line', targetAxisIndex: 1, color: '#447e9b'},
+                    },
+                bar: {groupWidth: '80%'},
+                hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log', viewWindow:{ min:0.01} },
+                vAxes: {
+                  0: { format: 'short', title:       "#Players", viewWindow:{ max:1.1 * dataHOF.getColumnRange(1).max, }, },
+                  1: { format: 'short', title: "Cum. #Players", viewWindow:{ max:1.1 * dataHOF.getColumnRange(3).max, }, },
+                 },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '60%'},
+              };
+
+              var viewHOF = new google.visualization.DataView(dataHOF);
+              viewHOF.setColumns([0, 1, 2, 3, 4]);
+
+              var chartHOF = new google.visualization.ComboChart(document.getElementById('chartHOF'));
+
+              chartHOF.draw(viewHOF, optionsHOF);
+            }
+
+        });
+</script>
+
+{% include "awards/pin.html" %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-crown"></i>&nbsp;Hall of fame</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+    <!-- hof -->
+    <div class="pagination-list">
+      {% include "awards/hof-list.html"%}
+    </div>
+
+
+    <div class="table-responsive">
+    <table class="table table-hover table-borderless awards-list">
+        <tr><td id="chart"></td></tr>
+        <tr><td id="chart2"></td></tr>
+    </table>
+    </div>
+
+
+</div>

@@ -1,0 +1,219 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+
+<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
+
+<script>
+        $(document).ready(function() {
+
+            $("#awards-list").tablesorter({
+                textExtraction: {
+                  1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                },
+                sortList: [[0,0], [4,1], [5,0]]
+            });
+
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+              var data = google.visualization.arrayToDataTable([
+                ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                {% for h, c, s, im, p, r in graph %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={% url_img_honor im %} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                 {% endfor %}
+              ]);
+
+              var options = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                         },
+                bar: {groupWidth: '80%'},
+                hAxis: {  textPosition: 'none', title: "Honors" },
+                vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+              var chart = new google.visualization.ComboChart(document.getElementById('chart'));
+              chart.draw(data, options);
+
+            {% if graph2|length %}
+              var data2 = google.visualization.arrayToDataTable([
+                  ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+                  {% for h, c, s, im, p, r in graph2 %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, '<h3><img src="{% url_img_medal im %}" atl={{h|safe}} height=19px;></h3> <span class="{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%'],
+                  {% endfor %}
+              ]);
+
+              var options2 = {
+                // bar: {groupWidth: "100%"},
+                legend: {position: 'none'},
+                tooltip: {isHtml: true, position: 'top'},
+                seriesType: 'bars',
+                series: {
+                          0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
+                         },
+                bar: {groupWidth: '70%'},
+                hAxis: {  textPosition: 'none', title: "Medals" },
+                vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
+                'backgroundColor': 'transparent',
+                'chartArea': {'width': '90%', 'height': '70%'},
+              };
+
+              var chart2 = new google.visualization.ComboChart(document.getElementById('chart2'));
+              chart2.draw(data2, options2);
+
+              {% endif %}
+            }
+
+        });
+
+</script>
+
+<div id="awards-show-pinned">
+    {% include "awards/pin.html" %}
+</div>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-medal"></i>&nbsp;Awards tracker</div>
+      <div class="px-2">
+        <a id="toggle-awards-done" href=""><i id="awards-done-icon" class="fas fa-toggle-off"></i> <span id="toggle-awards-done-txt">Show</span> achieved awards</a>
+      </div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+<!-- summary for a categories -->
+
+{% if awardsSummary %}
+  <ul class="nav justify-content-center mx-md-5 mb-3">
+    {% for awardType, awards in awardsSummary.items %}
+      <li class="nav-item large {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
+        <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
+          <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
+        </div>
+      </li>
+     {% endfor %}
+   </ul>
+{% endif %}
+
+<!-- list -->
+
+<div class="table-responsive">
+<table id="awards-list" class="table table-hover table-borderless awards-list tablesorter">
+    <thead>
+        <tr>
+            <th class="a">Category</th>
+            <th class="b">Name</th>
+            <th class="c">Rarity</th>
+            <th class="d">Description</th>
+            <th class="e">State</th>
+            <th class="e">Goal</th>
+            <th class="f">Ach.</th>
+            <th class="g">Days left</th>
+            <th class="i">&nbsp;</th>
+            <th class="i">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for awardType, awardsList in awards.items %}
+        {% for awardId, award in awardsList.items %}
+            <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
+                <td class=""><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
+                {% if award.awardType == "Honor" %}
+                  <td class="award-todo" data-val="{{award.name}}">
+                      <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">
+                            {% if award.img == "0" %}
+                              <div class="award-default">
+                                <img src="{% url_img_honor award.img %}" class="honors">
+                                <span class="award-default">{{award.name}}</span>
+                              </div>
+                            {% else %}
+                              <img src="{% url_img_honor award.img %}" class="honors">
+                            {% endif %}
+                      </div>
+                  </td>
+                {% else %}
+                    <td class=""><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% url_img_medal award.img %}" class="medals"> &nbsp; {{award.name}}</span></td>
+                {% endif %}
+                <td class="text-center"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %} rel="tooltip">{{award.circulation|intcomma}}</span></td>
+                <td class=""><span title="{{award.description}}" rel="tooltip">{{award.description}}</span></td>
+                <td class="text-end"><span title="Current: {{award.head}}{{award.current|intcomma}}" rel="tooltip">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="text-end"><span title="Goal: {{award.head}}{{award.goal|intcomma}}" rel="tooltip">{{award.head}}{{award.goal|intcomma}}</span></td>
+                {% if award.achieve == 1%}
+                    <td class="text-center award-done" data-val="{{award.awarded_time}}">
+                        <span title="Awarded on {{award.awarded_time|ts2date}}" rel="tooltip">100%</span>
+                    </td>
+                    <td class="text-center" data-val="{{award.awarded_time}}">
+                        <span class="awarded-time" title="Awarded on: {{award.awarded_time|ts2date}}" rel="tooltip">{{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Achieved: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
+                    {% if award.left < 0 %}
+                        <td class="text-center" data-val="1e10">
+                            <span class="thelp" rel="tooltip">&infin;</span>
+                        </td>
+                    {% else %}
+                        <td class="text-center" data-val="{{award.left}}">
+                            {% if award.left %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
+                            {% elif award.comment %}
+                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                {% endif %}
+                <td class="text-center">
+                    <span style="font-weight: bold; float: right">{% if award.next %}<i class="fas fa-trophy"  title='Next crime to do!'></i>{% endif %}{% if award.triple %}&nbsp;<i class="fas fa-hand-spock" title="Triple merit!"></i>{% elif award.double %}&nbsp;<i class="fas fa-hand-peace" title="Double merit!"></i>{% endif %}</span>
+                </td>
+                <td class="text-center" data-val="{% if awardId in pinnedAwards %}1{% else %}0{% endif %}">
+                    {% include "awards/pin-button.html" %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<div class="table-responsive">
+<table class="table table-hover table-borderless awards-list">
+    <tr><td id="chart"></td></tr>
+    <tr><td id="chart2"></td></tr>
+</table>
+</div>
+
+<p class="update-info mb-0">Last update of the list: {{player.awardsUpda|ts2date}}</p>
+
+</div>

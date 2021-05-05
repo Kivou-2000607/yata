@@ -1,0 +1,44 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+{% include "bazaar/abroad/stocks.html" %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;Contribute</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+<p>The database only relies on the users travelling and gathering data of foreign stocks. To contribute and make the database more accurate you can install one of the following scripts made by the community:</p>
+
+<p>List of clients used the last 48 hours:</p>
+<ul>
+    {% for client, v in clients %}
+        <li>{{client}} by {{v.2|playerURL:v.1|safe}}: {{v.0|mul:100|floatformat:0}}%</li>
+    {% endfor %}
+</ul>
+
+<p class="mb-0">If you want to make your own tool please read the <a href="{% url 'api:documentation' %}#travel" target="_blank">API documentation</a>.</p>
+
+</div>

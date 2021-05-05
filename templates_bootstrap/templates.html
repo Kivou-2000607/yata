@@ -1,0 +1,81 @@
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-medal"></i>&nbsp;TITLE</div>
+      <div class="px-2">
+        BUTTON
+      </div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+{# h2 show/hide #}
+<h2 class="title grey rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Contributors</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module"  style="display: none;">
+
+{# h2 tutorial #}
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+
+{# h2 modal #}
+<h2 class="title rounded-top py-2 px-2" style="width: 100%">
+  <div class="d-flex align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;Losses</div>
+    <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+  </div>
+</h2>
+
+{# module #}
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+
+</div>
+
+{# responsive table #}
+<style>
+  table.bazaar-hof { min-width: 1000px; width: 100%; margin: auto; }
+  table.bazaar-hof td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
+  table.awards-hof th.a { width: 10%; }
+  table.awards-hof th.b { width: 25%; }  /* x2 */
+  table.awards-hof th.c { width: 20%; } /* x2 */
+</style>
+<div class="table-responsive">
+<table id="awards-list" class="table table-hover table-striped table-borderless tablesorter awards-list">
+  <thead>
+      <tr>
+          <th class="a">Category</th>
+      <tr>
+  </thead>
+  <body>
+    <tr>
+      <td class="text-center"></td>
+      <td class="text-end"></td>
+      <td class="text-start"></td>
+    </tr>
+  </body>
+</table>
+
+{# show/hide h3/h4 #}
+<h3 class="module-doc">TITLE&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+<div class="module-doc">
+</div>
+
+{# help tooltip #}
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    })
+  });
+</script>
+<span class="input-group-text neutral" data-bs-toggle="tooltip" title="HELP" ><i class="fas fa-question-circle neutral"></i></span>

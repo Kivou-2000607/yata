@@ -1,0 +1,132 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-fist-raised"></i>&nbsp;Your faction</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <h3>Faction Events</h3>
+    {% if events|length %}
+    <div class="d-flex flex-wrap justify-content-center">
+        {% for event in events %}
+            {% include "faction/events/index.html" %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h3>Reports currently being computed</h3>
+    <ul>
+        {% if chainsreports|length %}<li>Chains</li>
+        <ul>
+            {% for report in chainsreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:report" report.tId %}'>Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if attacksreports|length %}<li>Attacks reports</li>
+            <ul>
+            {% for report in attacksreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% else %}
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if revivesreports|length %}<li>Revives reports</li>
+            <ul>
+            {% for report in revivesreports %}
+                {% if report.live %}
+                    <li><a href='{% url "faction:revives" report.pk %}'>Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% else %}
+                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </ul>
+    <h3>Faction target list</h3>
+    {% include "faction/targets/index.html" %}
+
+</div>
+
+{% if logs|length %}
+<script>
+    google.charts.load('current', {'packages':['annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Time', 'Faction Money', 'Respect'],
+            {% for log in logsAll %}
+                [new Date({{log.timestamp|mul:1000}}), {{log.money|sub:log.donationsmoney}}, {{log.respect}}],
+            {% endfor %}
+        ]);
+
+
+        var options = {
+            displayZoomButtons: false,
+            displayAnnotations: true,
+            displayExactValues: false,
+            numberFormats: "###,###",
+            scaleColumns: [0, 1],
+            scaleType: "allmaximized",
+            scaleFormat: 'short',
+        };
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('networth-graph'));
+        chart.draw(data, options);
+
+    }
+</script>
+
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-chart-line"></i>&nbsp;Networth and respect growth</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless tablesorter">
+      <tbody>
+        <tr><td id="networth-graph"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+    <div class="pagination-list">
+      {% include "faction/logs/logs.html"%}
+    </div>
+</div>
+
+{% endif %}

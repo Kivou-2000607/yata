@@ -1,0 +1,75 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load static %}
+{% load app_filters %}
+
+<div class="table-responsive">
+<table id="awards-hof" class="table table-striped table-hover table-borderless awards-hof">
+    <thead>
+      <tr>
+          <th class="a">rank</th>
+          <th class="b">Name</th>
+          <th class="b">Faction</th>
+          <th class="c">Awarded</th>
+          <th class="c">Rarity score</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for k in hof %}
+            <tr {%if k.player.tId == player.tId %}class="its-you"{% endif %}>
+                <td>#{{k.rank}}</td>
+                <td>{{k.player.name|playerURL:k.player.tId|safe}}</td>
+                <td>{{k.player.factionNa|factionURL:k.player.factionId|safe}}</td>
+                <td class="text-center" title="{{k.player.awardsNumb}} / {{nAwards}}" rel="tooltip">{{k.player.awardsNumb|div:nAwards|mul:100|floatformat:2}}%</td>
+                <td class="text-center">{{k.player.awardsScor|div:10000|floatformat:4}}%</td>
+            </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="5" class="text-center">
+            <div class="pagination d-block">
+                <span class="step-links">
+                    {% if hof.has_previous %}
+                        <a class="yt-page-link rounded first" href="{% url 'awards:hofList' %}?p_hof=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'awards:hofList' %}?p_hof={{ hof.previous_page_number }}"></a>
+                    {% endif %}
+
+                    <span class="current">
+                        {{ hof.number }}/{{ hof.paginator.num_pages }}
+                    </span>
+
+                    {% if hof.has_next %}
+                        <a class="yt-page-link rounded next" href="{% url 'awards:hofList' %}?p_hof={{ hof.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'awards:hofList' %}?p_hof={{ hof.paginator.num_pages }}"></a>
+                    {% endif %}
+                </span>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<div class="table-responsive">
+<table class="table table-hover table-borderless awards-list">
+    <tr><td id="chartHOF"></td></tr>
+</table>
+</div>

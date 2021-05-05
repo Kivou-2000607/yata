@@ -1,0 +1,128 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    })
+  });
+</script>
+
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-notes-medical"></i>&nbsp;{{faction.name}}'s revives report [{{report.pk}}]</div>
+        {% if not share and player.factionAA %}
+
+          <div class="px-2">
+            <span><i class="fas fa-dice fa-icon-inline" data-bs-toggle="tooltip" title="Threshold revives based on chance of success (only keeps revives greater than the threshold)."></i>&nbsp;Chance<input id="faction-revives-report-chance" data-val="{{report.pk}}" value="{{report.chance_filter}}" >%</span>
+          </div>
+
+          {% if report.filter == 0 %}
+            <div class="px-2">
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only online</a></span>
+            </div>
+            <div class="px-2">
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+            </div>
+          {% elif report.filter == 10 %}
+            <div class="px-2">
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only online</a></span>
+            </div>
+            <div class="px-2">
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+            </div>
+          {% elif report.filter == 1 %}
+            <div class="px-2">
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only online</a></span>
+            </div>
+            <div class="px-2">
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+            </div>
+          {% elif report.filter == 11 %}
+            <div class="px-2">
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only online</a></span>
+            </div>
+            <div class="px-2">
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+            </div>
+          {% endif %}
+            <div class="px-2">
+              <span id="faction-revives-report-failed" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-{% if report.include_failed %}on{% else %}off{% endif %} fa-icon-inline"></i>&nbsp;Include failed</a></span>
+            </div>
+
+          <div class="px-2">
+            {% include 'faction/revives/share.html' %}
+          </div>
+
+          {% endif %}
+
+      </div>
+  </h2>
+  <div class="container-fluid p-md-3 p-1 mb-3 module">
+
+    <div class="table-responsive">
+      <table class="table table-hover table-borderless revives-summary">
+          <tbody>
+              <tr>
+                  <td><b>Start:</b> {{report.start|ts2date}}</td>
+                  <td><b>End:</b> {{report.end|ts2date}}</td>
+                  <td><b class="me-1">Report status:</b> {% include "faction/revives/status.html"%}</td>
+              </tr>
+              <tr>
+                  <td><b>Total | Success | Fail: </b> {{report.revivesReceived|add:report.revivesMade|intcomma}} | {{report.revivesReceivedSuccess|add:report.revivesMadeSuccess|intcomma}} | {{report.revivesReceived|add:report.revivesMade|sub:report.revivesReceivedSuccess|sub:report.revivesMadeSuccess|intcomma}}</td>
+                  <td><b>Made: </b> {{report.revivesMade|intcomma}} | {{report.revivesMadeSuccess|intcomma}} | {{report.revivesMade|sub:report.revivesMadeSuccess|intcomma}}</td>
+                  <td><b>Received: </b> {{report.revivesReceived|intcomma}} | {{report.revivesReceivedSuccess|intcomma}} | {{report.revivesReceived|sub:report.revivesReceivedSuccess|intcomma}}</td>
+              </tr>
+          </tbody>
+      </table>
+    </div>
+
+    {% if factions|length %}
+    <div class="row">
+      <div class="col col-md-6 pagination-list">
+          {% include "faction/revives/factions.html"%}
+      </div>
+      <div class="col col-md-6 pagination-list">
+          {% include "faction/revives/players.html"%}
+      </div>
+    </div>
+    {% else %}
+        <p class="warning mb-0">Report is being computed.</p>
+    {% endif %}
+</div>
+
+{% if revives %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-list"></i>&nbsp;List of revives</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div class="pagination-list">
+        {% include "faction/revives/revives.html" %}
+    </div>
+</div>
+{% endif %}

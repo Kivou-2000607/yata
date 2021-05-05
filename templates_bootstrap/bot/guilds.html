@@ -1,0 +1,67 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Time', 'Number of servers', {role: 'tooltip', 'p': {'html': true}}],
+        {% for a, b in graphs %}
+            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, "<div style=\"padding: 5px;\"><b>Bot number:</b> {{b}}<br><b>Joined server on</b>: {{a}}</div>"],
+        {% endfor %}
+      ]);
+
+      var options = {
+
+        tooltip: {isHtml: true, position: 'top'},
+        title: 'Number of servers over time',
+        // curveType: 'function',
+        legend: { position: 'none' },
+        backgroundColor: 'transparent',
+        chartArea: {'width': '90%', 'height': '60%'},
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chartGuilds'));
+
+      chart.draw(data, options);
+    }
+</script>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-server"></i>&nbsp;Servers</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div class="pagination-list">
+        {% include "bot/guilds-list.html" %}
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-borderless tablesorter">
+          <tr><td><div id="chartGuilds"></div></td></tr>
+      </table>
+    </div>
+</div>
