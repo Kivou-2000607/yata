@@ -30,7 +30,7 @@ This file is part of yata.
         <div class="px-2 me-auto"><i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i></div>
         <div class="px-2">
           {% if view.refreshType and player.tId > 0 %}
-            <span class="update-type" data-val="{{k}}"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline">&nbsp;Refresh all</span></span>
+            <span class="update-type" data-val="{{v.type}}"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline">&nbsp;Refresh all</span></span>
           {% endif %}
         </div>
     </h2>
