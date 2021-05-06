@@ -23,9 +23,9 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<div class="m-2 m-md-4 p-2 p-md-4 rounded faction-event overflow-scroll">
+<div class="m-2 m-md-4 p-2 p-md-4 rounded faction-event">
 
-  <div class="row justify-content-between">
+  <div class="row mx-0 justify-content-between">
     <div class="col">
       <h4>{{event.title}}</h4>
       {% if event.description %}
@@ -39,12 +39,12 @@ This file is part of yata.
     </div>
   </div>
 
-    <div class="row">
+    <div class="row mx-0">
       <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp}}"><i class="fas fa-spinner fa-pulse"></i></div>
     </div>
     {% if event.stack and event.timestamp %}
         <hr class="sep">
-        <div class="row justify-content-between">
+        <div class="row mx-0 justify-content-between">
           <div class="col col-md-4">
             <h4>Stacking</h4>
           </div>
@@ -52,13 +52,13 @@ This file is part of yata.
             <div>{{event.timestamp|sub:100800|ts2date:"%m/%d %H:%M"}}</div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mx-0">
           <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:100800}}"><i class="fas fa-spinner fa-pulse"></i></div>
         </div>
     {% endif %}
     {% if event.reset and event.timestamp %}
         <hr class="sep">
-        <div class="row justify-content-between">
+        <div class="row mx-0 justify-content-between">
           <div class="col">
             <h4>Reset branch</h4>
           </div>
@@ -66,7 +66,7 @@ This file is part of yata.
             <div>{{event.timestamp|sub:360000|ts2date:"%m/%d %H:%M"}}</div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mx-0">
           <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-spinner fa-pulse"></i></div>
         </div>
     {% endif %}
