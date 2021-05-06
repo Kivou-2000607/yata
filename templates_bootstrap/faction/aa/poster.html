@@ -21,22 +21,14 @@ This file is part of yata.
 {% load app_filters %}
 
 {# load popovers #}
-<script type="text/javascript">
-  $( document ).ready(function() {
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl)
-    })
-  });
-</script>
 
 {% if posterDeleted %}
     <p class="error"><i class="fas fa-trash fa-icon-inline"></i>Your poster has been deleted</p>
 {% endif %}
 
 {% if faction.poster %}
-  <div class="row mb-2">
-    <div class="col-md-auto my-2">
+  <div class="row mx-0 mb-2">
+    <div class="col-md-6 my-2">
       <div class="input-group">
         <div class="input-group-text flex-grow-1 valid" id="link-poster">Upgrades poster is enabled</div>
         <button type="submit" class="btn btn-outline" title="Disable poster">
@@ -45,7 +37,7 @@ This file is part of yata.
       </div>
     </div>
     {% if faction.posterHold %}
-      <div class="col-md-auto my-2">
+      <div class="col-md-6 my-2">
         <div class="input-group">
           <div class="input-group-text flex-grow-1 error" id="link-poster">Automatic update is disabled</div>
           <button type="submit" class="btn btn-outline" title="Enable automatic update">
@@ -54,7 +46,7 @@ This file is part of yata.
         </div>
       </div>
     {% else %}
-      <div class="col-md-auto my-2">
+      <div class="col-md-6 my-2">
         <div class="input-group">
           <div class="input-group-text flex-grow-1 valid" id="link-poster">Automatic update is enabled</div>
           <button type="submit" class="btn btn-outline" title="Disable automatic update">
@@ -65,10 +57,10 @@ This file is part of yata.
     {% endif %}
   </div>
 {% else %}
-  <div class="row">
-    <div class="col-md-auto my-2">
+  <div class="row mx-0">
+    <div class="col-md-6 my-2">
       <div class="input-group">
-        <div class="input-group-text flex-grow-1 error" id="link-poster">Upgrades poster is disabled</div>
+        <div class="input-group-text error" id="link-poster">Upgrades poster is disabled</div>
         <button type="submit" class="btn btn-outline" title="Enabled poster">
           <a id="faction-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
         </button>
@@ -80,8 +72,8 @@ This file is part of yata.
 {% if faction.poster %}
 
 <h3>Links</h3>
-<div class="row mb-2">
-  <div class="col-md-4 my-2">
+<div class="row mx-0 mb-2">
+  <div class="col-md-6 my-2">
     <div class="input-group">
       <span class="input-group-text" id="link-poster">Poster</span>
       <input type="text" class="form-control" placeholder="https://yata.yt{{faction.posterImg.url}}" disabled>
@@ -89,7 +81,7 @@ This file is part of yata.
       <button type="submit" class="btn btn-outline" id="link-poster-clipboard" data-val="https://yata.yt{{faction.posterImg.url}}" data-bs-toggle="popover" data-bs-content="Link copied to clipboard" data-bs-placement="bottom" data-bs-trigger="focus"><i class="fas fa-clipboard" title="copy to clipboard"></i></button>
     </div>
   </div>
-  <div class="col-md-4 my-2">
+  <div class="col-md-6 my-2">
     <div class="input-group">
       <span class="input-group-text" id="link-poster-gym">Gym</span>
       <input type="text" class="form-control" placeholder="https://yata.yt{{faction.posterGymImg.url}}" disabled>
@@ -97,7 +89,7 @@ This file is part of yata.
       <button type="submit" class="btn btn-outline" id="link-poster-gym-clipboard" data-val="https://yata.yt{{faction.posterGymImg.url}}" data-bs-toggle="popover" data-bs-content="Link copied to clipboard" data-bs-placement="bottom" data-bs-trigger="focus"><i class="fas fa-clipboard" title="copy to clipboard"></i></button>
     </div>
   </div>
-  <div class="col-md-4 my-2">
+  <div class="col-md-6 my-2">
     <div class="input-group">
       <span class="input-group-text">Userscript</span>
       <input type="text" class="form-control" placeholder="{% url_userscript "gym" %}" disabled>
@@ -108,8 +100,8 @@ This file is part of yata.
 </div>
 
 <h3>Font color</h3>
-<div class="row mb-2">
-  <div class="col-md-auto my-2 align-self-center">
+<div class="row mx-0 mb-2">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-fontColor-0" class="input-group-text">Red</label>
       <span class="input-group-text flex-grow-1">
@@ -117,7 +109,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-fontColor-1" class="input-group-text">Green</label>
       <span class="input-group-text flex-grow-1">
@@ -125,7 +117,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-fontColor-2" class="input-group-text">Blue</label>
       <span class="input-group-text flex-grow-1">
@@ -133,7 +125,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-fontColor-3" class="input-group-text">Opacity</label>
       <span class="input-group-text flex-grow-1">
@@ -141,7 +133,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-fontColor-4" class="input-group-text">Hexadecimal</label>
       <input id="faction-poster-fontColor-4" class="form-control" type="text" placeholder="#{{posterOpt.fontColor|hexa}}">
@@ -150,8 +142,8 @@ This file is part of yata.
 </div>
 
 <h3>Background color</h3>
-<div class="row mb-2">
-  <div class="col-md-auto my-2 align-self-center">
+<div class="row mx-0 mb-2">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-background-0" class="input-group-text">Red</label>
       <span class="input-group-text flex-grow-1">
@@ -159,7 +151,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-background-1" class="input-group-text">Green</label>
       <span class="input-group-text flex-grow-1">
@@ -167,7 +159,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-background-2" class="input-group-text">Blue</label>
       <span class="input-group-text flex-grow-1">
@@ -175,7 +167,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-background-3" class="input-group-text">Opacity</label>
       <span class="input-group-text flex-grow-1">
@@ -183,7 +175,7 @@ This file is part of yata.
       </span>
     </div>
   </div>
-  <div class="col-md-auto my-2 align-self-center">
+  <div class="col-md-6 my-2 align-self-center">
     <div class="input-group">
       <label for="faction-poster-background-4" class="input-group-text">Hexadecimal</label>
       <input id="faction-poster-background-4" class="form-control" type="text" placeholder="#{{posterOpt.background|hexa}}">
@@ -192,8 +184,8 @@ This file is part of yata.
 </div>
 
 <h3>Icons and font</h3>
-<div class="row mb-2">
-  <div class="col-md-4 my-2">
+<div class="row mx-0 mb-2">
+  <div class="col-md-6 my-2">
     <div class="input-group">
       <label for="faction-poster-iconType-0" class="input-group-text">Icon</label>
       <select id="faction-poster-iconType-0" class="form-select">
@@ -204,7 +196,7 @@ This file is part of yata.
       </select>
     </div>
   </div>
-  <div class="col-md-4 my-2">
+  <div class="col-md-6 my-2">
     <div class="input-group">
       <label for="faction-poster-fontFamily-0" class="input-group-text">Font family</label>
       <select id="faction-poster-fontFamily-0" class="form-select">
@@ -217,8 +209,8 @@ This file is part of yata.
 </div>
 
 <h3>Header and footer</h3>
-<div class="row mb-2">
-  <div class="col-md-8 my-2">
+<div class="row mx-0 mb-2">
+  <div class="col-md-12 my-2">
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <input type="hidden" name="upload_image" value="1">
       <input type="hidden" name="upload_head" value="1">
@@ -229,7 +221,7 @@ This file is part of yata.
       </div>
     </form>
   </div>
-  <div class="col-md-8 my-2">
+  <div class="col-md-12 my-2">
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <input type="hidden" name="upload_image" value="1">
       <input type="hidden" name="upload_tail" value="1">
@@ -242,7 +234,7 @@ This file is part of yata.
   </div>
 </div>
 
-<div class="row justify-content-center">
+<div class="row mx-0 justify-content-center">
   <div class="col-12 col-md-7 my-2 p-2 border rounded">
     <a href="{{faction.posterImg.url}}" target="_blank" atl="faction upgrade tree">
       <img src="{{faction.posterImg.url}}?cache={{random}}" class="w-100">

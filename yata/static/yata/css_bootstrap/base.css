@@ -75,7 +75,11 @@ hr.sep {
     background-color: #CCC;
 }
 
-h2, h2 * { color: #FFF!important; font-weight: bold; text-decoration: none; white-space: nowrap }
+h2, h2 * { color: #FFF!important; font-weight: bold; text-decoration: none; }
+h2 div > div { margin-top: 2px; margin-bottom: 2px;  }
+@media (min-width: 768px) {
+  h2 div > div { margin-top: 0px; margin-bottom: 0px;  }
+}
 h2 span:hover,
 h2 a:focus,
 h2 a:hover,

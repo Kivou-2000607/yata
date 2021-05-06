@@ -77,6 +77,15 @@ $(document).ready(function() {
               // bar: {groupWidth: "100%"},
               legend: {position: 'top', textStyle: {fontSize: 14}},
               seriesType: 'bars',
+              hAxis: {
+                gridlines: {
+                  count: -1,
+                  units: { days: { format: ['MMM dd'] } }
+                },
+                minorGridlines: {
+                  units: { hours: { format: ['HH'] } }
+                }
+              },
               series: {
                         0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
                         1: {type: 'line', targetAxisIndex: 1, color: '#0000cc'},
@@ -107,6 +116,15 @@ $(document).ready(function() {
             isStacked: true,
             legend: {position: 'top', textStyle: {fontSize: 14}},
             seriesType: 'bars',
+            hAxis: {
+              gridlines: {
+                count: -1,
+                units: { days: { format: ['MMM dd'] } }
+              },
+              minorGridlines: {
+                units: { hours: { format: ['HH'] } }
+              }
+            },
             series: {
                       0: {type: 'bar', targetAxisIndex: 0, color: '#cc0000'},
                       1: {type: 'bar', targetAxisIndex: 0, color: '#FF8C00'},

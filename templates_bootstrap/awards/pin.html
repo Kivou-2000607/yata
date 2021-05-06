@@ -22,6 +22,15 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    })
+  });
+</script>
+
 {% if pinnedAwards|length %}
   <h2 class="title green rounded-top py-2 px-3"><i class="fas fa-thumbtack fa-icon-inline"></i>&nbsp;Pinned awards</h2>
     <div class="container-fluid p-md-3 px-0 mb-3 module">
@@ -30,7 +39,7 @@ This file is part of yata.
         {% for awardId, award in pinnedAwards.items %}
           <div class="overflow-auto mx-md-2 my-2">
 
-            <div class="container awards-pinned-card" title="<p><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i></p><p>{{award.comment|safe}}</p>" rel="tooltip">
+            <div class="container awards-pinned-card" title="<div class=text-start><p><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i></p><p>{{award.comment|safe}}</p></div>" data-bs-toggle="tooltip" data-bs-placement="bottom">
               <div class="row align-items-center text-center ">
 
                 {# name #}

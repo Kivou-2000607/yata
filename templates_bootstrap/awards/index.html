@@ -23,8 +23,6 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<script src='{% static "thirdparty/js/tooltip.js" %}'></script>
-
 <script>
         $(document).ready(function() {
 
@@ -36,6 +34,12 @@ This file is part of yata.
                   9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
                 sortList: [[0,0], [4,1], [5,0]]
+            });
+            $( document ).ready(function() {
+              var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+              var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+              })
             });
 
             google.charts.load('current', {'packages':['corechart']});
@@ -150,10 +154,10 @@ This file is part of yata.
     {% for awardType, awardsList in awards.items %}
         {% for awardId, award in awardsList.items %}
             <tr class="award-category-Allawards award-category-{{awardType|cut:" "}} {% if award.achieve == 1 and award.wait != 0 %}award-done{% else %}award-todo{% if award.unreach == 1 %} award-unreach{% endif %}{% endif %} {% if award.awardType == "Honor" %}award-honor{% else %}award-medal{% endif %} {% if award.next %}next{% endif%}">
-                <td class=""><span title="{{awardType}}" rel="tooltip">{{awardType}}</span></td>
+                <td class=""><span title="{{awardType}}">{{awardType}}</span></td>
                 {% if award.awardType == "Honor" %}
                   <td class="award-todo" data-val="{{award.name}}">
-                      <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip">
+                      <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]">
                             {% if award.img == "0" %}
                               <div class="award-default">
                                 <img src="{% url_img_honor award.img %}" class="honors">
@@ -165,31 +169,31 @@ This file is part of yata.
                       </div>
                   </td>
                 {% else %}
-                    <td class=""><span title="{{award.name}} [{{awardId|slice:"2:"}}]" rel="tooltip"><img src="{% url_img_medal award.img %}" class="medals"> &nbsp; {{award.name}}</span></td>
+                    <td class=""><span title="{{award.name}} [{{awardId|slice:"2:"}}]"><img src="{% url_img_medal award.img %}" class="medals"> &nbsp; {{award.name}}</span></td>
                 {% endif %}
-                <td class="text-center"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %} rel="tooltip">{{award.circulation|intcomma}}</span></td>
-                <td class=""><span title="{{award.description}}" rel="tooltip">{{award.description}}</span></td>
-                <td class="text-end"><span title="Current: {{award.head}}{{award.current|intcomma}}" rel="tooltip">{{award.head}}{{award.current|intcomma}}</span></td>
-                <td class="text-end"><span title="Goal: {{award.head}}{{award.goal|intcomma}}" rel="tooltip">{{award.head}}{{award.goal|intcomma}}</span></td>
+                <td class="text-center"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
+                <td class=""><span title="{{award.description}}">{{award.description}}</span></td>
+                <td class="text-end"><span title="Current: {{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="text-end"><span title="Goal: {{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
                 {% if award.achieve == 1%}
                     <td class="text-center award-done" data-val="{{award.awarded_time}}">
-                        <span title="Awarded on {{award.awarded_time|ts2date}}" rel="tooltip">100%</span>
+                        <span title="Awarded on {{award.awarded_time|ts2date}}">100%</span>
                     </td>
                     <td class="text-center" data-val="{{award.awarded_time}}">
-                        <span class="awarded-time" title="Awarded on: {{award.awarded_time|ts2date}}" rel="tooltip">{{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
+                        <span class="awarded-time" title="Awarded on: {{award.awarded_time|ts2date}}">{{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
                     </td>
                 {% else %}
-                    <td class="text-center {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Achieved: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%" rel="tooltip">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
+                    <td class="text-center {% if award.unreach %}neutral{% else %}award-todo{% endif %}" data-val="{{award.achieve}}"><span title="Achieved: {{award.achieve|mul:100|intdiv:1|floatformat:0}}%">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</span></td>
                     {% if award.left < 0 %}
                         <td class="text-center" data-val="1e10">
-                            <span class="thelp" rel="tooltip">&infin;</span>
+                            <span class="thelp" data-bs-toggle="tooltip">&infin;</span>
                         </td>
                     {% else %}
                         <td class="text-center" data-val="{{award.left}}">
                             {% if award.left %}
-                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip">{{award.left|float2IfSmall|safe}}</span>
+                                <span class="thelp" title="<div class=text-start>{{award.comment|safe}}</div>" data-bs-toggle="tooltip">{{award.left|float2IfSmall|safe}}</span>
                             {% elif award.comment %}
-                                <span class="thelp" title="{{award.comment|safe}}" rel="tooltip"><i class="fas fa-question-circle"></i></span>
+                                <span class="thelp" title="<div class=text-start>{{award.comment|safe}}</div>" data-bs-toggle="tooltip"><i class="fas fa-question-circle"></i></span>
                             {% endif %}
                         </td>
                     {% endif %}

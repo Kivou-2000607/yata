@@ -42,7 +42,8 @@ a.form-inline, form.form-inline { display: inline!important; }
 
 h2 a,
 h2 span { color: #FFF!important; font-weight: bold; text-decoration: none;}
-h2 span:hover,
+h2 span { color: #FFF!important; font-weight: bold; text-decoration: none;}
+/* h2 > div > div {white-space: normal;}, */
 h2 a:focus,
 h2 a:hover,
 h2 a:checked,
