@@ -4,6 +4,8 @@ li.award-done:hover { color: #0BaE14; }
 li.award-todo:hover { color: #aE0B14; }
 
 
+table.awards-list { min-width: 1000px; width: 100%; margin: auto; }
+table.awards-list td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
 table.awards-list th.a { width: 10%; }
 table.awards-list th.b { width: 20%; }
 table.awards-list th.c { width: 5%; }
@@ -74,8 +76,8 @@ span.award-default {
 
 div.awards-pinned-card {
     /* font-size: 12px!important; */
-    max-width: 400px;
-    min-width: 360px;
+    width: 300px;
+    /* min-width: 360px; */
     border: 1px solid #ccc;
     border-radius: 1%;
     background-color: #fafafaaa;

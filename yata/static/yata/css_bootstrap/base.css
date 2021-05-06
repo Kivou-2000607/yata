@@ -190,7 +190,7 @@ a.yt-page-link.last::after { font-family: "Font Awesome 5 Free"; font-weight: 90
 /* img.io-shield { position: relative; max-width: 100%; box-shadow: 0px  0px  1px  1px #aaa!important; } */
 img.io-shield:hover { box-shadow: 2px  2px  2px  2px #aaa!important; }
 
-table.table { min-width: 1200px; margin: auto; font-size: 12px!important; }
+table.table { min-width: 1000px; margin: auto; font-size: 12px!important; }
 .table td { vertical-align: middle; }
 table.donations { min-width: 700px; width: 80%; margin: auto;}
 table.donations th.a { width: 15%; }
