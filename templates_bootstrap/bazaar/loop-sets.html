@@ -22,9 +22,9 @@ This file is part of yata.
 
 {% for k, v in sets.items %}
   <div class="catch-me">
-    <h2 class="title rounded-top pe-2 py-2">
+    <h2 class="title rounded-top px-2 py-2">
       <div class="d-flex flex-wrap align-items-center">
-        <div class="px-2"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.items.0.tName}} [{{v.items.0.tId}}]" class="item-small" /> {{k}}</div>
+        <div class="pe-2"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.items.0.tName}} [{{v.items.0.tId}}]" class="item-small" /> {{k}}</div>
         <div class="px-2"><i>market: ${{v.market_value|intcomma}}</i></div>
         <div class="px-2"><i>points: ${{v.points_value|intcomma}}</i></div>
         <div class="px-2 me-auto"><i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i></div>
