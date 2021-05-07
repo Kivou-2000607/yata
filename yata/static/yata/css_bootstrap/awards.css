@@ -1,7 +1,7 @@
-li.award-done { color: #0B8E14; font-weight: bold; }
-li.award-todo { color: #8E0B14; font-weight: bold; }
-li.award-done:hover { color: #0BaE14; }
-li.award-todo:hover { color: #aE0B14; }
+li.award-done { color: #0B8E14!important; font-weight: bold; }
+li.award-todo { color: #8E0B14!important; font-weight: bold; }
+li.award-done:hover { color: #0BaE14!important; }
+li.award-todo:hover { color: #aE0B14!important; }
 
 
 table.awards-list { min-width: 1000px; width: 100%; margin: auto; }
