@@ -209,13 +209,22 @@ window.setInterval(function(){
     });
 }, 1000);
 
+//
+// $(document).on('click', '.overlay.close', function(e){
+//     e.preventDefault();
+//     $(this).parent("div.container").css("display", "none");
+// });
+//
+// $(document).on('click', '.close-button', function(e){
+//     e.preventDefault();
+//     $(this).closest("div.container").css("display", "none");
+// });
+//
 
-$(document).on('click', '.overlay.close', function(e){
-    e.preventDefault();
-    $(this).parent("div.container").css("display", "none");
-});
+// full width
+$(document).on('click', '.yt-full-width', function(e) {
+  e.preventDefault();
+  $("#main-content").css("max-width", "100%");
+  $(this).closest("li").hide();
 
-$(document).on('click', '.close-button', function(e){
-    e.preventDefault();
-    $(this).closest("div.container").css("display", "none");
 });
