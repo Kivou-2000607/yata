@@ -125,8 +125,8 @@ This file is part of yata.
 {% if awardsSummary %}
   <ul class="nav justify-content-center mx-md-5 mb-3">
     {% for awardType, awards in awardsSummary.items %}
-      <li class="nav-item large {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
-        <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
+      <li class="nav-item large">
+        <div id="award-category-{{awardType|cut:" "}}" class="nav-link {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
           <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
         </div>
       </li>
