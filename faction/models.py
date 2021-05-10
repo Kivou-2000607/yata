@@ -1605,16 +1605,16 @@ class Chain(models.Model):
 
         # compute last ts
         lastAttack = self.attackchain_set.order_by("-timestamp_ended").first()
-        tsl = max(self.start if lastAttack is None else lastAttack.timestamp_ended, self.last)
+        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_ended, self.last)
         self.last = tsl
 
         print("{} live    {}".format(self, self.live))
-        print("{} start   {}".format(self, timestampToDate(tss)))
-        print("{} last    {}".format(self, timestampToDate(tsl)))
-        print("{} end     {}".format(self, timestampToDate(tse)))
+        print("{} start   {} {}".format(self, timestampToDate(tss), tss))
+        print("{} last    {} {}".format(self, timestampToDate(tsl), tsl))
+        print("{} end     {} {}".format(self, timestampToDate(tse), tse))
         if self.cooldown:
             tse += self.chain * 10
-            print("{} with cd {}".format(self, timestampToDate(tse)))
+            print("{} end cd   {} {}".format(self, timestampToDate(tse), tse))
         else:
             self.current = min(self.current, self.chain)
 
@@ -1655,7 +1655,7 @@ class Chain(models.Model):
 
             # make call
             selection = "chain,attacks,timestamp&from={}&to={}".format(tsl, tse)
-            req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
+            req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull attacks for chain report"
             key.lastPulled = tsnow()
             key.save()
@@ -1682,6 +1682,7 @@ class Chain(models.Model):
             nowTS = tsnow()
             cache = abs(nowTS - tornTS)
             print("{}\t cache = {}s".format(self, cache))
+            print("{}\t attacks in the API = {}".format(self, len(req["attacks"])))
 
             # in case cache
             if cache > CACHE_RESPONSE:
@@ -2312,7 +2313,7 @@ class AttacksReport(models.Model):
 
         # compute last ts
         lastAttack = self.attackreport_set.order_by("-timestamp_ended").first()
-        tsl = max(self.start if lastAttack is None else lastAttack.timestamp_ended, self.last)
+        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_ended, self.last)
         self.last = tsl
 
         print("{} live {}".format(self, self.live))
@@ -2818,7 +2819,7 @@ class RevivesReport(models.Model):
 
         # compute last ts
         lastRevive = self.revive_set.order_by("-timestamp").first()
-        tsl = max(self.start if lastRevive is None else lastRevive.timestamp, self.last)
+        tsl = self.start if lastRevive is None else max(lastRevive.timestamp, self.last)
         self.last = tsl
 
         print("{} live {}".format(self, self.live))
