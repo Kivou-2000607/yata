@@ -1218,8 +1218,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("personalstats", dict({})).get("bloodwithdrawn", 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(3 * (vp["goal"] - vp["current"]) / 24, 0)
-                    vp["comment"] = "3h cooldown / blood bag filled"
+                    vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
+                    vp["comment"] = "1h cooldown / blood bag filled"
 
                     awards[type]["h_" + k] = vp
 
