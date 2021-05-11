@@ -73,7 +73,6 @@ $(document).on('click', '.faction-revives-report-toggle', e=>{
 // filters
 $(document).on('click', 'span[id^="faction-revives-report-"]', e=>{
     e.preventDefault();
-    console.log(e.currentTarget)
     var reportId = $(e.currentTarget).attr("data-val");
     var type = e.currentTarget.id.split("-").pop();
     $( "#content-update" ).load( "/faction/revives/" + reportId, {

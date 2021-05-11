@@ -2304,6 +2304,11 @@ def revivesReport(request, reportId, share=False):
                     report.save()
                     report.fillReport()
 
+                elif type in ["early"]:
+                    report.include_early = not report.include_early
+                    report.save()
+                    report.fillReport()
+
                 elif type in ["chance"]:
                     chance = str(request.POST.get("value"))
                     if chance.isdigit():

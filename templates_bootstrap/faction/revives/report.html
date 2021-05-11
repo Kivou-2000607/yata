@@ -37,40 +37,43 @@ This file is part of yata.
         {% if not share and player.factionAA %}
 
           <div class="px-2">
-            <span><i class="fas fa-dice fa-icon-inline" data-bs-toggle="tooltip" title="Threshold revives based on chance of success (only keeps revives greater than the threshold)."></i>&nbsp;Chance<input id="faction-revives-report-chance" data-val="{{report.pk}}" value="{{report.chance_filter}}" >%</span>
+            <span><i class="fas fa-dice" data-bs-toggle="tooltip" title="Threshold revives based on chance of success (only keeps revives greater than the threshold)."></i>&nbsp;Chance<input id="faction-revives-report-chance" data-val="{{report.pk}}" value="{{report.chance_filter}}" >%</span>
           </div>
 
           {% if report.filter == 0 %}
             <div class="px-2">
-              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only online</a></span>
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only online</a></span>
             </div>
             <div class="px-2">
-              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only hospitalized</a></span>
             </div>
           {% elif report.filter == 10 %}
             <div class="px-2">
-              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only online</a></span>
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only online</a></span>
             </div>
             <div class="px-2">
-              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only hospitalized</a></span>
             </div>
           {% elif report.filter == 1 %}
             <div class="px-2">
-              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off fa-icon-inline"></i>&nbsp;Only online</a></span>
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-off"></i>&nbsp;Only online</a></span>
             </div>
             <div class="px-2">
-              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only hospitalized</a></span>
             </div>
           {% elif report.filter == 11 %}
             <div class="px-2">
-              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only online</a></span>
+              <span id="faction-revives-report-online" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only online</a></span>
             </div>
             <div class="px-2">
-              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on fa-icon-inline"></i>&nbsp;Only hospitalized</a></span>
+              <span id="faction-revives-report-hospit" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-on"></i>&nbsp;Only hospitalized</a></span>
             </div>
           {% endif %}
             <div class="px-2">
-              <span id="faction-revives-report-failed" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-{% if report.include_failed %}on{% else %}off{% endif %} fa-icon-inline"></i>&nbsp;Include failed</a></span>
+              <span id="faction-revives-report-failed" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-{% if report.include_failed %}on{% else %}off{% endif %}"></i>&nbsp;Include failed</a></span>
+            </div>
+            <div class="px-2">
+              <span id="faction-revives-report-early" data-val="{{report.pk}}"><a href=""><i class="fas fa-toggle-{% if report.include_early %}on{% else %}off{% endif %}"></i>&nbsp;Include early</a></span>
             </div>
 
           <div class="px-2">

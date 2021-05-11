@@ -37,6 +37,7 @@ This file is part of yata.
             <th class="d" title="Hospital reason">Hospital</th>
             <th class="e" title="Online status"><i class="fas fa-circle"></i></th>
             <th class="f" title="Success"><i class="fas fa-check valid"></i></th>
+            <th class="f" title="Early discharge"><i class="fas fa-hospital-user"></i></i></th>
     </thead>
     <tbody>
     {% if revives|length %}
@@ -77,11 +78,16 @@ This file is part of yata.
             {% else %}
               <td class="text-center" title="{{v.result}}" data-val='0'><i class="fas fa-times error"></i></td>
             {% endif %}
+            {% if v.target_early_discharge %}
+              <td class="text-center" title="Early discharge" data-val='1'><i class="fas fa-hospital-user valid"></i></td>
+            {% else %}
+              <td class="text-center" title="No early discharge" data-val='0'><i class="fas fa-procedures error"></i></i></td>
+            {% endif %}
         </tr>
     {% endfor %}
 
     <tr>
-      <td colspan="9" class="text-center">
+      <td colspan="10" class="text-center">
         <div class="pagination d-block">
             <span class="step-links">
                 {% if revives.has_previous %}

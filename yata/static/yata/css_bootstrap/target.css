@@ -38,14 +38,14 @@ table.target-attacks-breakdown-losses th.a { width: 25%; }
 table.target-attacks-breakdown-losses th.b { width: 25%; }
 table.target-attacks-breakdown-losses th.c { width: 10%; }
 
-/* a b c b c d e fff */
-table.target-attacks { min-width: 1000px; width: 70%; margin: auto;}
+/* a bbbb c d eeee */
+table.target-revives { min-width: 1000px; width: 100%; margin: auto;}
 table.target-revives th.a { width: 10%; }
-table.target-revives th.b { width: 12.5%; }
-table.target-revives th.c { width: 16%; }
-table.target-revives th.d { width: 5%; }
-table.target-revives th.e { width: 16%; }
-table.target-revives th.f { width: 4%; }
+table.target-revives th.b { width: 14%; }
+table.target-revives th.c { width: 4%; }
+table.target-revives th.d { width: 14%; }
+table.target-revives th.e { width: 4%; }
+
 table.target-revives tr.fail    { background:#ff00001e; }
 table.target-revives tr.success { background:#d9ead3ee; }
 table.target-revives-breakdown-type { min-width: 300px; width: 100%; margin: auto;}

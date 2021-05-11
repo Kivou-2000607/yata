@@ -2756,6 +2756,7 @@ class RevivesReport(models.Model):
     revivesReceived = models.IntegerField(default=0)
     revivesReceivedSuccess = models.IntegerField(default=0)
     include_failed = models.BooleanField(default=True)
+    include_early = models.BooleanField(default=True)
     chance_filter = models.IntegerField(default=0)
 
     # share ID
@@ -3015,6 +3016,10 @@ class RevivesReport(models.Model):
         print(f'[YATA {datestr()}] {self} include failed: {self.include_failed}')
         if not self.include_failed:
             allRevives = allRevives.exclude(result=False)
+
+        print(f'[YATA {datestr()}] {self} include early: {self.include_early}')
+        if not self.include_early:
+            allRevives = allRevives.exclude(target_early_discharge=True)
 
         print(f"[YATA {datestr()}] {self} made {self.revivesMadeSuccess}/{self.revivesMade}")
         print(f"[YATA {datestr()}] {self} received {self.revivesReceivedSuccess}/{self.revivesReceived}")
@@ -3276,6 +3281,7 @@ class Revive(models.Model):
     target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
     target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
+    target_early_discharge = models.BooleanField(default=False)
     chance = models.IntegerField(default=100)
     result = models.BooleanField(default=True)
 

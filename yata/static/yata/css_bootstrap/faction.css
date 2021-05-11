@@ -375,12 +375,12 @@ table.faction-revives-list tr.fail    { background:#ff00001e; }
 table.faction-revives-list tr.success { background:#d9ead3ee; }
 table.faction-revives-list { min-width: 1000px; width: 100%; margin: auto;  }
 table.faction-revives-list td { overflow: hidden; white-space: nowrap; text-overflow: clip;}
-table.faction-revives-list th.a { width: 12.5%; text-align: center; }
-table.faction-revives-list th.b { width: 15%; text-align: left; }
-table.faction-revives-list th.c { width: 5%; text-align: center; }
-table.faction-revives-list th.d { width: 15%; text-align: left; }
-table.faction-revives-list th.e { width: 5%; text-align: center; }
-table.faction-revives-list th.f { width: 5%; text-align: center; }
+table.faction-revives-list th.a { width: 11%; text-align: center; }
+table.faction-revives-list th.b { width: 14%; text-align: left; }
+table.faction-revives-list th.c { width: 4%; text-align: center; }
+table.faction-revives-list th.d { width: 13%; text-align: left; }
+table.faction-revives-list th.e { width: 4%; text-align: center; }
+table.faction-revives-list th.f { width: 4%; text-align: center; }
 
 /* armory */
 table.faction-armory-report { min-width: 1000px; width: 100%; margin: auto;  }

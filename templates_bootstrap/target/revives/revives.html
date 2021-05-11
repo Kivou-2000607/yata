@@ -26,14 +26,15 @@ This file is part of yata.
         <tr>
             <th class="a">Time</th>
             <th class="b">Reviver</th>
-            <th class="c">Faction</th>
+            <th class="b">Faction</th>
             <th class="b">Target</th>
-            <th class="c">Faction</th>
-            <th class="d">Chance</th>
-            <th class="e" title="Hospital reason">Hospital</th>
-            <th class="f" title="Online status"><i class="fas fa-circle"></i></th>
-            <th class="f" title="Success"><i class="fas fa-check valid"></i></th>
-            <th class="f">Paid</th>
+            <th class="b">Faction</th>
+            <th class="c">Chance</th>
+            <th class="d" title="Hospital reason">Hospital</th>
+            <th class="e" title="Online status"><i class="fas fa-circle"></i></th>
+            <th class="e" title="Success"><i class="fas fa-check valid"></i></th>
+            <th class="e" title="Early discharge"><i class="fas fa-hospital-user"></i></i></th>
+            <th class="e">Paid</th>
     </thead>
     <tbody>
     {% for v in revives %}
@@ -50,6 +51,11 @@ This file is part of yata.
             <td class="text-center" title="{{v.result}}" data-val='1'><i class="fas fa-check valid"></i></td>
           {% else %}
             <td class="text-center" title="{{v.result}}" data-val='0'><i class="fas fa-times error"></i></td>
+          {% endif %}
+          {% if v.target_early_discharge %}
+            <td class="text-center" title="Early discharge" data-val='1'><i class="fas fa-hospital-user valid"></i></td>
+          {% else %}
+            <td class="text-center" title="No early discharge" data-val='0'><i class="fas fa-procedures error"></i></i></td>
           {% endif %}
           <td class="text-center">
               {% include "target/revives/buttons.html" with revive=v %}
