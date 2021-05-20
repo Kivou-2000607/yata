@@ -195,7 +195,7 @@ def attack(request):
                 attack = player.attack_set.filter(tId=attack_id).first
 
             else:
-                returnError(type=403, msg="Unkown request")
+                returnError(type=403, msg="Unknown request")
 
             context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
             return render(request, 'target/attacks/button-target.html', context)

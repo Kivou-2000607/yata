@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='bonus',
             name='targetName',
-            field=models.CharField(default='Unkown', max_length=15),
+            field=models.CharField(default='Unknown', max_length=15),
         ),
         migrations.AddField(
             model_name='bonus',

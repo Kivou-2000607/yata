@@ -141,7 +141,7 @@ def updateRevives(player):
             exists = len(player_revives.filter(tId=int(k)))
             old = v.get("timestamp", 0) < lastMonth
             if not old:
-                revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unkown")
+                revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unknown")
                 revives[k]["target_last_action_timestamp"] = revives[k]["target_last_action"].get("timestamp", 0)
                 del v["target_last_action"]
                 v["result"] = v["result"] == "success"

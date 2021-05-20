@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='revive',
             name='target_hospital_reason',
-            field=models.CharField(blank=True, default='Unkown', max_length=128, null=True),
+            field=models.CharField(blank=True, default='Unknown', max_length=128, null=True),
         ),
     ]

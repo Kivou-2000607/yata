@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('hit', models.IntegerField(default=0)),
                 ('respect', models.FloatField(default=0)),
                 ('targetId', models.IntegerField(default=0)),
-                ('targetName', models.CharField(default='Unkown', max_length=15)),
+                ('targetName', models.CharField(default='Unknown', max_length=15)),
                 ('chain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='faction.Chain')),
             ],
         ),

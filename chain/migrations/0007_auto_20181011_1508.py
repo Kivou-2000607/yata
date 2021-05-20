@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='member',
             name='name',
-            field=models.CharField(default='Unkown', max_length=200),
+            field=models.CharField(default='Unknown', max_length=200),
         ),
     ]

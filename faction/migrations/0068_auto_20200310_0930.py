@@ -13,12 +13,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='revive',
             name='target_hospital_reason',
-            field=models.CharField(default='Unkown', max_length=32),
+            field=models.CharField(default='Unknown', max_length=32),
         ),
         migrations.AddField(
             model_name='revive',
             name='target_online_status',
-            field=models.CharField(default='Unkown', max_length=16),
+            field=models.CharField(default='Unknown', max_length=16),
         ),
         migrations.AddField(
             model_name='revivesfaction',

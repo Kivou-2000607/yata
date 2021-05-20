@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='revive',
             name='target_last_action_status',
-            field=models.CharField(blank=True, default='Unkown', max_length=16, null=True),
+            field=models.CharField(blank=True, default='Unknown', max_length=16, null=True),
         ),
         migrations.AddField(
             model_name='revive',
@@ -27,6 +27,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='revive',
             name='target_hospital_reason',
-            field=models.CharField(blank=True, default='Unkown', max_length=32, null=True),
+            field=models.CharField(blank=True, default='Unknown', max_length=32, null=True),
         ),
     ]

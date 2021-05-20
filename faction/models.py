@@ -2143,7 +2143,7 @@ class Bonus(models.Model):
     hit = models.IntegerField(default=0)
     respect = models.FloatField(default=0)
     targetId = models.IntegerField(default=0)
-    targetName = models.CharField(default="Unkown", max_length=15)
+    targetName = models.CharField(default="Unknown", max_length=15)
 
     def __str__(self):
         return format_html("Bonus for {}".format(self.chain))
@@ -2947,7 +2947,7 @@ class RevivesReport(models.Model):
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
             # flatten last action
-            v["target_last_action_status"] = v["target_last_action"].get("status", "Unkown")
+            v["target_last_action_status"] = v["target_last_action"].get("status", "Unknown")
             v["target_last_action_timestamp"] = v["target_last_action"].get("timestamp", 0)
             del v["target_last_action"]
             # convert restul to bool
@@ -3278,9 +3278,9 @@ class Revive(models.Model):
     target_name = models.CharField(default="target_name", max_length=32)
     target_faction = models.IntegerField(default=0)
     target_factionname = models.CharField(default="target_factionname", null=True, blank=True, max_length=64)
-    target_last_action_status = models.CharField(default="Unkown", null=True, blank=True, max_length=16)
+    target_last_action_status = models.CharField(default="Unknown", null=True, blank=True, max_length=16)
     target_last_action_timestamp = models.IntegerField(default=0)
-    target_hospital_reason = models.CharField(default="Unkown", null=True, blank=True, max_length=128)
+    target_hospital_reason = models.CharField(default="Unknown", null=True, blank=True, max_length=128)
     target_early_discharge = models.BooleanField(default=False)
     chance = models.IntegerField(default=100)
     result = models.BooleanField(default=True)
@@ -3379,7 +3379,7 @@ class ArmoryReport(models.Model):
             self.computing = False
             self.crontab = 0
             self.state = -1
-            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
             self.save()
             print(f"{self} {self.state_string}")
             return -1
@@ -3411,13 +3411,13 @@ class ArmoryReport(models.Model):
                     print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
                     faction.delKey(key=key)
                     self.state = -2
-                    self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                    self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
                     self.update = tsnow()
                     self.save()
                     print(f"{self} {self.state_string}")
                     return -2
                 self.state = -3
-                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
                 self.update = tsnow()
                 self.save()
                 print(f"{self} {self.state_string}")
@@ -3432,7 +3432,7 @@ class ArmoryReport(models.Model):
             # in case cache
             if cache > CACHE_RESPONSE:
                 self.state = -4
-                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
                 self.update = tsnow()
                 self.save()
                 print(f"{self} {self.state_string}")
@@ -3532,14 +3532,14 @@ class ArmoryReport(models.Model):
                 item = "point"
 
             # get item type
-            item_type = ITEM_TYPE.get(item, "Unkown")
+            item_type = ITEM_TYPE.get(item, "Unknown")
 
             if item == "point":
                 item_type = "Points"
 
             # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
 
-            if item_type == "Unkown":
+            if item_type == "Unknown":
                 print(f'{self} item type not known: {news_string} {item}')
                 # continue
 
@@ -3576,7 +3576,7 @@ class ArmoryReport(models.Model):
             self.crontab = 0
             self.live = False
             self.state = -5
-            self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+            self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
             self.save()
             print(f"{self} {self.state_string}")
             return -5
@@ -3586,7 +3586,7 @@ class ArmoryReport(models.Model):
             if self.live:
                 print(f"{self} no api entry for live chain [continue]")
                 self.state = 2
-                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
                 self.end = self.last
                 self.save()
                 print(f"{self} {self.state_string}")
@@ -3596,14 +3596,14 @@ class ArmoryReport(models.Model):
                 self.computing = False
                 self.crontab = 0
                 self.state = 1
-                self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+                self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
                 self.last = self.end
                 self.save()
                 print(f"{self} {self.state_string}")
                 return 1
 
         self.state = 3
-        self.state_string = REPORTS_STATUS.get(self.state, f"Unkown code {self.state}")
+        self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
         print(f"{self} {self.state_string}")
         self.save()
         return 3
