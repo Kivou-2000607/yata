@@ -40,7 +40,7 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:report" report.tId %}'>Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -52,7 +52,7 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:attacks" report.pk %}'>Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
             </ul>
@@ -64,7 +64,7 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:revives" report.pk %}'>Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% else %}
-                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% endif %}
             {% endfor %}
             </ul>
