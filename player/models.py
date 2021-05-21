@@ -326,7 +326,7 @@ class Player(models.Model):
                     personnalstats[s["category"]][1][s["sub"]] = []
                 personnalstats[s["category"]][1][s["sub"]].append([s["name"], v, s["type"]])
 
-            if s["category"] == "Unkown":
+            if s["category"] == "Unknown":
                 print(k, v)
 
         return personnalstats

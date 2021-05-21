@@ -260,7 +260,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
 
 
     if session is not None and session.get('json-output'):
-        return JsonResponse({'error': {'code': 1, 'error': 'Unkown error' if exc is None else str(exc)}}, status=type)
+        return JsonResponse({'error': {'code': 1, 'error': 'Unknown error' if exc is None else str(exc)}}, status=type)
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
