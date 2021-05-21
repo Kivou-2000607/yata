@@ -191,3 +191,9 @@ class Balance(models.Model):
     droplet_month_to_date_usage = models.CharField(default="0", max_length=16)
     droplet_month_to_date_balance = models.CharField(default="0", max_length=16)
     droplet_month_cost = models.CharField(default="0", max_length=16)
+
+
+class ApiCallLog(models.Model):
+    timestamp = models.IntegerField(default=0)
+    url = models.CharField(default="", max_length=256, blank=True)
+    error = models.IntegerField(default=-1)

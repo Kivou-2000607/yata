@@ -56,6 +56,15 @@ class DropletSpecAdmin(admin.ModelAdmin):
 admin.site.register(DropletSpec, DropletSpecAdmin)
 
 
+class ApiCallLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'url', 'error']
+
+    list_filter = ['error']
+    # search_fields = []
+
+admin.site.register(ApiCallLog, ApiCallLogAdmin)
+
+
 class BalanceAdmin(admin.ModelAdmin):
     list_display = ['date', 'droplet_month_cost', 'paypal_balance', 'paypal_currency', 'droplet_account_balance', 'droplet_month_to_date_usage', 'droplet_month_to_date_balance']
 

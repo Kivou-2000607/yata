@@ -61,10 +61,10 @@ def isProxyKey(key):
 
 
 def apiCall(section, id, selections, key, sub=None, verbose=False):
+    from setup.models import ApiCallLog
     import requests
 
     key = str(key)
-    proxy = isProxyKey(key)
     # DEBUG live chain
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
     #     from django.utils import timezone
@@ -85,7 +85,7 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
-    base_url = "https://torn-proxy.com" if proxy else "https://api.torn.com"
+    base_url = "https://api.torn.com"
     url = f'{base_url}/{section}/{id}?selections={selections}&key={key}&comment={config("API_HOST", default="-")}'
 
     if verbose:
@@ -118,9 +118,17 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
                 if sub in rjson:
                     return rjson[sub]
                 else:  # key not found
-                    err = dict({"error": {"code": "", "error": "key not found... something went wrong..."}})
+                    err = dict({"error": {"code": 0, "error": "key not found... something went wrong..."}})
             else:
+
+                if config("API_CALL_LOG", default=False, cast=bool):
+                    ApiCallLog.objects.create(timestamp=tsnow(), error=-1, url=url.replace("&key=" + key, ""))
+
                 return rjson
+
+    if config("API_CALL_LOG", default=False, cast=bool):
+        ApiCallLog.objects.create(timestamp=tsnow(), error=err["error"]["code"], url=url.replace("&key=" + key, ""))
+
     return apiCallError(err)
 
 
