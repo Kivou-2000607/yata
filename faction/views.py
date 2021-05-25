@@ -885,7 +885,7 @@ def report(request, chainId, share=False):
                 # get linear regressions
                 if chain.live:
                     #  y = ax + b (y: hits, x: timestamp)
-                    a, b, _, _, _ = stats.linregress(x[-20:], y[-20:])
+                    a, b, _, _, _ = stats.linregress(x[-2:], y[-2:])
                     print("[view.chain.index] linreg a={} b={}".format(a, b))
                     a = max(a, 0.00001)
                     try:

@@ -90,7 +90,7 @@ def livechain(request):
                 y[i] = cummulativeHits
 
             #  y = ax + b (y: hits, x: timestamp)
-            a, b, _, _, _ = stats.linregress(x[-12:], y[-12:])
+            a, b, _, _, _ = stats.linregress(x[-2:], y[-2:])
             a = max(a, 0.00001)
             try:
                 ETA = int((livechain.getNextBonus() - b) / a)
