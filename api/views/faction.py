@@ -65,7 +65,7 @@ def livechain(request):
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         # get live report
-        livechain = faction.chain_set.filter(tId=0).first()
+        livechain = faction.chain_set.filter(tId=0, report=True).first()
         if livechain is None:
             payload["yata"] = {"error": f"No live report found for faction {factionId} in YATA database"}
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
