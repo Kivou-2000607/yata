@@ -1969,7 +1969,7 @@ class Chain(models.Model):
         # create histogram
         # chain.start = int(attacksForHisto[0])
         # chain.end = int(attacksForHisto[-1])
-        diff = max(int(self.end - self.start), 1)
+        diff = max(int(self.last - self.start), 1)
         binsGapMinutes = 5
         while diff / (binsGapMinutes * 60) > 256:
             binsGapMinutes += 5
@@ -1977,7 +1977,7 @@ class Chain(models.Model):
         bins = [self.start]
         for i in range(256):
             add = bins[i] + (binsGapMinutes * 60)
-            if add > self.end:
+            if add > self.last:
                 break
             bins.append(add)
 

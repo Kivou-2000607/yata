@@ -28,13 +28,102 @@ from ratelimit.core import get_usage, is_ratelimited
 
 # standards
 import json
+import numpy
+from scipy import stats
 
 # yata
 from yata.handy import apiCall
 from yata.handy import tsnow
+from yata.handy import timestampToDate
 from faction.models import Faction
 from faction.models import Wall
 from player.models import Player
+
+
+@cache_page(60)
+def livechain(request):
+    try:
+        # check if API key is valid with api call
+        key = request.GET.get("key", False)
+        if not key:
+            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+
+        call = apiCall('faction', '', 'chain,basic', key=key)
+        if "apiError" in call:
+            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+
+        # create basic payload
+        payload = call["chain"]
+        payload["faction_id"] = call["ID"]
+        payload["faction_name"] = call["name"]
+
+        #  check if can get faction
+        factionId = call.get("ID", 0)
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            payload["yata"] = {"error": f"Can't find faction {factionId} in YATA database"}
+            return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
+
+        # get live report
+        livechain = faction.chain_set.filter(tId=0).first()
+        if livechain is None:
+            payload["yata"] = {"error": f"No live report found for faction {factionId} in YATA database"}
+            return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
+
+        graphs = json.loads(livechain.graphs)
+        graphSplit = graphs.get("hits", "").split(',')
+        graphSplitCrit = graphs.get("crit", "").split(',')
+        graphSplitStat = graphs.get("members", "").split(',')
+        if len(graphSplit) > 1 and len(graphSplitCrit) > 1:
+            # compute average time for one bar
+            bins = (int(graphSplit[-1].split(':')[0]) - int(graphSplit[0].split(':')[0])) / float(60 * (len(graphSplit) - 1))
+            graph = {'hits': [], 'members': [], 'stats': {'bin_size': bins * 60, 'critical_hits_ratio': int(bins) / 5}}
+            cummulativeHits = 0
+            x = numpy.zeros(len(graphSplit))
+            y = numpy.zeros(len(graphSplit))
+            for i, (line, lineCrit) in enumerate(zip(graphSplit, graphSplitCrit)):
+                splt = line.split(':')
+                spltCrit = lineCrit.split(':')
+                cummulativeHits += int(splt[1])
+                graph['hits'].append([int(splt[0]), int(splt[1]), cummulativeHits, int(spltCrit[0]), int(spltCrit[1]), int(spltCrit[2])])
+                x[i] = int(splt[0])
+                y[i] = cummulativeHits
+
+            #  y = ax + b (y: hits, x: timestamp)
+            a, b, _, _, _ = stats.linregress(x[-12:], y[-12:])
+            a = max(a, 0.00001)
+            try:
+                ETA = int((livechain.getNextBonus() - b) / a)
+            except BaseException as e:
+                ETA = "unable to compute EAT ({})".format(e)
+            graph['stats']['current_eta'] = ETA
+            graph['stats']['current_hit_rate'] = a
+            graph['stats']['current_intercept'] = b
+
+            a, b, _, _, _ = stats.linregress(x, y)
+            try:
+                ETA = int((livechain.getNextBonus() - b) / a)
+            except BaseException as e:
+                ETA = "unable to compute EAT ({})".format(e)
+            graph['stats']['global_hit_rate'] = a
+            graph['stats']['global_intercept'] = b
+
+            if len(graphSplitStat) > 1:
+                for line in graphSplitStat:
+                    splt = line.split(':')
+                    graph['members'].append([float(splt[0]), int(splt[1])])
+
+            payload["yata"] = graph
+            payload["yata"]["last"] = livechain.last
+            payload["yata"]["update"] = livechain.update
+
+        else:
+            payload["yata"] = {"error": f"No enough data"}
+
+        return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
+
+    except BaseException as e:
+        return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
 @cache_page(60*10)
