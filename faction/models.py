@@ -1966,17 +1966,32 @@ class Chain(models.Model):
         #     if i not in chainIterator:
         #         print(i, "not in chain")
 
-        # create histogram
-        # chain.start = int(attacksForHisto[0])
-        # chain.end = int(attacksForHisto[-1])
+        # create histogram OLD WAY
+        # diff = max(int(self.last - self.start), 1)
+        # binsGapMinutes = 5
+        # while diff / (binsGapMinutes * 60) > 256:
+        #     binsGapMinutes += 5
+        #
+        # bins = [self.start]
+        # for i in range(256):
+        #     add = bins[i] + (binsGapMinutes * 60)
+        #     if add > self.last:
+        #         break
+        #     bins.append(add)
+        # create histogram OLD WAY
         diff = max(int(self.last - self.start), 1)
-        binsGapMinutes = 5
-        while diff / (binsGapMinutes * 60) > 256:
-            binsGapMinutes += 5
+        if diff < 3600:
+            binsGapMinutes = 5
+        elif diff < 2 * 3600:
+            binsGapMinutes = 10
+        elif diff < 6 * 3600:
+            binsGapMinutes = 30
+        else:
+            binsGapMinutes = 60
 
-        bins = [self.start]
-        for i in range(256):
-            add = bins[i] + (binsGapMinutes * 60)
+        bins = [self.start - self.start % (binsGapMinutes * 60)]
+        while True:
+            add = bins[-1] + (binsGapMinutes * 60)
             if add > self.last:
                 break
             bins.append(add)
