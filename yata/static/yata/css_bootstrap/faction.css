@@ -110,6 +110,9 @@ table.faction-report th.b { width: 15%; }
 table.faction-report th.c { width: 9%; }
 table.faction-report tr.zero-hits       { background:#f4cccc; display: none;}
 table.faction-report tr.zero-hits:hover { background:#ea9999; }
+table.faction-report tr.my-row       { background: #cee8d0; font-weight: bold;}
+table.faction-report tr.my-row:hover { background: #e6f3e7; font-weight: bold;}
+
 tr.kicked-members  { opacity: 0.5; filter:alpha(opacity=50); -moz-opacity:0.5; filter:alpha(opacity=50); }
 
 table.faction-jsummary { min-width: 700px; width: 60%; margin: auto; overflow: hidden; white-space: nowrap; text-overflow: clip;}
