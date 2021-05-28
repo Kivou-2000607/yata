@@ -52,12 +52,19 @@ class Command(BaseCommand):
             position, create = company.position_set.update_or_create(name=k1, defaults=v1)
             print("\t", position, create)
 
+            # add new data
             for k1, v1 in stocks.items():
-                stocks, create = company.stock_set.update_or_create(name=k1, defaults=v1)
-                print("\t", stocks, create)
+                stock, create = company.stock_set.update_or_create(name=k1, defaults=v1)
+                print("\t", stock, create)
             for k1, v1 in specials.items():
                 special, create = company.special_set.update_or_create(name=k1, defaults=v1)
                 print("\t", special, create)
+
+            # remove old data
+            company.special_set.exclude(name__in=specials).delete()
+            company.stock_set.exclude(name__in=stocks).delete()
+            company.position_set.exclude(name__in=positions).delete()
+
 
         # create ABV
         for position in Position.objects.all():
