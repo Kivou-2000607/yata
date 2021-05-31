@@ -61,6 +61,7 @@ class Command(BaseCommand):
                 print("\t", special, create)
 
             # remove old data
+            positions["Unassigned"] = {}
             company.special_set.exclude(name__in=specials).delete()
             company.stock_set.exclude(name__in=stocks).delete()
             company.position_set.exclude(name__in=positions).delete()
