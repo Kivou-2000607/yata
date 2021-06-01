@@ -20,6 +20,6 @@ GM_addStyle (cssTxt);
 const faction_id = ""; // enter your faction ID here
 
 (function() {
-    let html = '<div class="YATA-gym-div"><i class="YATA-gym-icon"></i><img class="YATA-gym-img" src="https://yata.yt/media/posters/' + faction_id + '-gym.png?cache=1" /></div>';
+    let html = '<div class="YATA-gym-div style="text-align:center"><i class="YATA-gym-icon"></i><img class="YATA-gym-img" src="https://yata.yt/media/posters/' + faction_id + '-gym.png?cache=1" /></div>';
     $("#gymroot").append(html);
 })();
