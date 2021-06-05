@@ -67,7 +67,16 @@ def livechain(request):
         # get live report
         livechain = faction.chain_set.filter(tId=0, report=True).first()
         if livechain is None:
-            payload["yata"] = {"error": f"No live report found for faction {factionId} in YATA database"}
+            # create tab
+            livechain.report = True
+            livechain.computing = True
+            livechain.cooldown = False
+            livechain.status = 1
+            livechain.addToEnd = 10
+            livechain.assignCrontab()
+            livechain.save()
+
+            payload["yata"] = {"error": f"Start computing live report for faction {factionId}"}
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         graphs = json.loads(livechain.graphs)
