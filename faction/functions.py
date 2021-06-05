@@ -51,11 +51,11 @@ def getBonusHits(hitNumber, ts):
         return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
 
 
-def getCrontabs():
+def getCrontabs(type):
     from faction.models import FactionData
-    data = FactionData.objects.only("crontabs").first()
-    crontabs = [] if data is None else json.loads(data.crontabs)
-    return crontabs if len(crontabs) else [1]
+    data = FactionData.objects.only(type).first()
+    crontabs = [] if data is None else json.loads(getattr(data, type))
+    return crontabs if len(crontabs) else [0]
 
 
 def optimize_spies(spy_1, spy_2=False):

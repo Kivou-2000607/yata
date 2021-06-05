@@ -1577,8 +1577,9 @@ class Chain(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
-        if chain is None or chain.crontab not in getCrontabs():
-            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+        crontab_type = "crontabs_chain_live" if self.live else "crontabs_chain_report"
+        if chain is None or chain.crontab not in getCrontabs(crontab_type):
+            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif chain is not None:
             self.crontab = chain.crontab
@@ -2306,8 +2307,9 @@ class AttacksReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.attacksreport_set.filter(computing=True).only("crontab").first()
-        if report is None or report.crontab not in getCrontabs():
-            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+        crontab_type = "crontabs_attacks_live" if self.live else "crontabs_attacks_report"
+        if report is None or report.crontab not in getCrontabs(crontab_type):
+            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             self.crontab = report.crontab
@@ -2813,8 +2815,9 @@ class RevivesReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.revivesreport_set.filter(computing=True).only("crontab").first()
-        if report is None or report.crontab not in getCrontabs():
-            cn = {c: len(RevivesReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+        crontab_type = "crontabs_revives_live" if self.live else "crontabs_revives_report"
+        if report is None or report.crontab not in getCrontabs(crontab_type):
+            cn = {c: len(RevivesReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             self.crontab = report.crontab
@@ -3344,8 +3347,9 @@ class ArmoryReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.armoryreport_set.filter(computing=True).only("crontab").first()
-        if report is None or report.crontab not in getCrontabs():
-            cn = {c: len(ArmoryReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs()}
+        crontab_type = "crontabs_armory_live" if self.live else "crontabs_armory_report"
+        if report is None or report.crontab not in getCrontabs(crontab_type):
+            cn = {c: len(ArmoryReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             self.crontab = report.crontab
@@ -3741,6 +3745,14 @@ class Racket(models.Model):
 class FactionData(models.Model):
     territoryUpda = models.IntegerField(default=0)
     crontabs = models.TextField(default="[1,2,3]")
+    crontabs_chain_live = models.TextField(default="[1,2,3,4]")
+    crontabs_chain_report = models.TextField(default="[5]")
+    crontabs_attacks_live = models.TextField(default="[1,2]")
+    crontabs_attacks_report = models.TextField(default="[3]")
+    crontabs_revives_live = models.TextField(default="[1]")
+    crontabs_revives_report = models.TextField(default="[2]")
+    crontabs_armory_live = models.TextField(default="[1]")
+    crontabs_armory_report = models.TextField(default="[2]")
     # upgradeTree = models.TextField(default="{}", null=True, blank=True)
 
     def __str__(self):
