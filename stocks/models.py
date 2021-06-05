@@ -30,6 +30,8 @@ class Stock(models.Model):
     # global
     market_cap = models.BigIntegerField(default=0)
     total_shares = models.BigIntegerField(default=0)
+    previous_market_cap = models.BigIntegerField(default=0)
+    previous_total_shares = models.BigIntegerField(default=0)
 
     # benefit
     requirement = models.IntegerField(default=0)

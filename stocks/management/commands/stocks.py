@@ -79,7 +79,12 @@ class Command(BaseCommand):
             # compute live tendancy and previous price
             previous = history.filter(stock__acronym=acronym, timestamp=timestamp-60).first()
             previous_price = stock.current_price if previous is None else previous.current_price
+            previous_price = stock.current_price if previous is None else previous.current_price
+            previous_market_cap = stock.market_cap if previous is None else previous.market_cap
+            previous_total_shares = stock.total_shares if previous is None else previous.total_shares
             defaults["previous_price"] = previous_price
+            defaults["previous_market_cap"] = previous_market_cap
+            defaults["previous_total_shares"] = previous_total_shares
             defaults["tendancy_l_a"] = (api_stock["current_price"] - previous_price) / 60
 
             for k, p in periods.items():
