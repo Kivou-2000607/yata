@@ -8,6 +8,7 @@ class Stock(models.Model):
     acronym = models.CharField(default="-", max_length=8, db_index=True)
     name = models.CharField(default="-", max_length=64)
 
+    # prices tendencies
     tendancy_l_a = models.FloatField(default=0.0)
     # tendancy_l_b = models.FloatField(default=0.0)
     tendancy_h_a = models.FloatField(default=0.0)
@@ -20,6 +21,20 @@ class Stock(models.Model):
     tendancy_m_b = models.FloatField(default=0.0)
     tendancy_y_a = models.FloatField(default=0.0)
     tendancy_y_b = models.FloatField(default=0.0)
+
+    # market cap tendencies
+    tendancy_l_c = models.FloatField(default=0.0)
+    # tendancy_l_d = models.FloatField(default=0.0)
+    tendancy_h_c = models.FloatField(default=0.0)
+    tendancy_h_d = models.FloatField(default=0.0)
+    tendancy_d_c = models.FloatField(default=0.0)
+    tendancy_d_d = models.FloatField(default=0.0)
+    tendancy_w_c = models.FloatField(default=0.0)
+    tendancy_w_d = models.FloatField(default=0.0)
+    tendancy_m_c = models.FloatField(default=0.0)
+    tendancy_m_d = models.FloatField(default=0.0)
+    tendancy_y_c = models.FloatField(default=0.0)
+    tendancy_y_d = models.FloatField(default=0.0)
 
     timestamp = models.IntegerField(default=0)
 

@@ -31,12 +31,19 @@ from scipy import stats
 
 
 def lin_reg(stocks):
+    # reg for price
     xy = numpy.array([[s.timestamp, s.current_price] for s in stocks])
     slope, intercept, r_value, p_value, std_err = stats.linregress(xy[:, 0], xy[:, 1])
     a = slope * 3600  # $ / s * s / hours
     b = intercept
 
-    return a, b
+    # reg for market cap
+    xy = numpy.array([[s.timestamp, s.market_cap] for s in stocks])
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xy[:, 0], xy[:, 1])
+    c = slope * 3600  # $ / s * s / hours
+    d = intercept
+
+    return a, b, c, d
 
 
 class Command(BaseCommand):
@@ -86,13 +93,16 @@ class Command(BaseCommand):
             defaults["previous_market_cap"] = previous_market_cap
             defaults["previous_total_shares"] = previous_total_shares
             defaults["tendancy_l_a"] = (api_stock["current_price"] - previous_price) / 60
+            defaults["tendancy_l_c"] = (api_stock["market_cap"] - previous_market_cap) / 60
 
             for k, p in periods.items():
                 try:
                     # compute tendencies
-                    a, b = lin_reg(history.filter(stock__acronym=acronym, timestamp__gt=p))
+                    a, b, c, d = lin_reg(history.filter(stock__acronym=acronym, timestamp__gt=p))
                     defaults[f'tendancy_{k}_a'] = 0 if numpy.isnan(a) else a
                     defaults[f'tendancy_{k}_b'] = 0 if numpy.isnan(b) else b
+                    defaults[f'tendancy_{k}_c'] = 0 if numpy.isnan(c) else c
+                    defaults[f'tendancy_{k}_d'] = 0 if numpy.isnan(d) else d
 
                 except BaseException as e:
                     print(f'[CRON {logdate()}] Error in linear reg: {e}')
