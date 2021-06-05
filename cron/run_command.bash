@@ -36,15 +36,38 @@ fi
 
 # lock file
 if [ "$2" == "" ]; then
-  LOCK_FILE="/tmp/$1.lock"
+  LOCK_FILE="/tmp/yata-crons/$1.lock"
 else
-  LOCK_FILE="/tmp/$1-$2.lock"
+  LOCK_FILE="/tmp/yata-crons/$1-$2.lock"
 fi
+
+echo "[BASH $(date -u "+%Y-%m-%d %T")] lockfile: $LOCK_FILE" >> $LOG_FILE 2>&1
+
+# check lockfile
+if [ -f "$LOCK_FILE" ]; then
+    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron locked" >> $LOG_FILE 2>&1
+    echo "" >> $LOG_FILE 2>&1
+    exit
+else
+    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron free" >> $LOG_FILE 2>&1
+    touch $LOCK_FILE
+fi
+
 
 # run command
 source $YATA_VENV_DIR/bin/activate
-flock -n $LOCK_FILE -c "python $YATA_DIR/manage.py $1 $2" >> $LOG_FILE 2>&1
+python $YATA_DIR/manage.py $1 $2 >> $LOG_FILE 2>&1
 # flock -n $LOCK_FILE -c "python $YATA_DIR/manage.py $1 $2"
+
+#rm -fv $LOCK_FILE >> $LOG_FILE
+echo "[BASH $(date -u "+%Y-%m-%d %T")] $(rm -fv $LOCK_FILE)" >> $LOG_FILE 2>&1
+
+# check lockfile
+if [ -f "$LOCK_FILE" ]; then
+    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron still locked" >> $LOG_FILE 2>&1
+else
+    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron freed" >> $LOG_FILE 2>&1
+fi
 
 echo "[BASH $(date -u "+%Y-%m-%d %T")] END" >> $LOG_FILE 2>&1
 echo "" >> $LOG_FILE 2>&1
