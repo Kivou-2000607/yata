@@ -124,6 +124,10 @@ def updatePlayer(player, i=None, n=None):
         if player.companyDi:
             defaults["director"] = player.tId
         company, create = Company.objects.update_or_create(company_description=company_description, tId=player.companyId, defaults=defaults)
+    else:
+        player.companyTy = 0
+        player.companyNa = "-"
+        player.companyDi = False
 
     player.wman = user.get("manual_labor", 0)
     player.wint = user.get("intelligence", 0)
