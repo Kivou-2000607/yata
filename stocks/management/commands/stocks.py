@@ -83,7 +83,7 @@ class Command(BaseCommand):
                 "timestamp": timestamp
             }
 
-            # compute live tendancy and previous price
+            # compute live tendency and previous price
             previous = history.filter(stock__acronym=acronym, timestamp=timestamp-60).first()
             previous_price = stock.current_price if previous is None else previous.current_price
             previous_price = stock.current_price if previous is None else previous.current_price
@@ -92,17 +92,17 @@ class Command(BaseCommand):
             defaults["previous_price"] = previous_price
             defaults["previous_market_cap"] = previous_market_cap
             defaults["previous_total_shares"] = previous_total_shares
-            defaults["tendancy_l_a"] = (api_stock["current_price"] - previous_price) / 60
-            defaults["tendancy_l_c"] = (api_stock["market_cap"] - previous_market_cap) / 60
+            defaults["tendency_l_a"] = (api_stock["current_price"] - previous_price) / 60
+            defaults["tendency_l_c"] = (api_stock["market_cap"] - previous_market_cap) / 60
 
             for k, p in periods.items():
                 try:
                     # compute tendencies
                     a, b, c, d = lin_reg(history.filter(stock__acronym=acronym, timestamp__gt=p))
-                    defaults[f'tendancy_{k}_a'] = 0 if numpy.isnan(a) else a
-                    defaults[f'tendancy_{k}_b'] = 0 if numpy.isnan(b) else b
-                    defaults[f'tendancy_{k}_c'] = 0 if numpy.isnan(c) else c
-                    defaults[f'tendancy_{k}_d'] = 0 if numpy.isnan(d) else d
+                    defaults[f'tendency_{k}_a'] = 0 if numpy.isnan(a) else a
+                    defaults[f'tendency_{k}_b'] = 0 if numpy.isnan(b) else b
+                    defaults[f'tendency_{k}_c'] = 0 if numpy.isnan(c) else c
+                    defaults[f'tendency_{k}_d'] = 0 if numpy.isnan(d) else d
 
                 except BaseException as e:
                     print(f'[CRON {logdate()}] Error in linear reg: {e}')
