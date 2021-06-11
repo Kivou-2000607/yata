@@ -23,6 +23,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 from ratelimit.decorators import ratelimit
 
 import json
@@ -51,6 +52,7 @@ def index(request):
         # update inventory of bazaarJson
         error = False
         if player.tId > 0:
+
             invtmp = apiCall("user", "", "inventory,display,bazaar", key)
             for k, v in invtmp.items():
                 if v is None:
@@ -58,9 +60,9 @@ def index(request):
             if 'apiError' in invtmp:
                 error = invtmp
             else:
-                bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("inventory", dict({}))}
-                bazaarJson["bazaar"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("bazaar", dict({}))}
-                bazaarJson["display"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("display", dict({}))}
+                bazaarJson["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
+                bazaarJson["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
+                bazaarJson["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
                 player.bazaarJson = json.dumps(bazaarJson)
 
         player.save()
@@ -78,9 +80,10 @@ def index(request):
         display = bazaarJson.get("display", dict({}))
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = inventory.get(str(item.tId), 0)
-                item.stockB = bazaar.get(str(item.tId), 0)
-                item.stockD = display.get(str(item.tId), 0)
+                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
@@ -114,9 +117,10 @@ def custom(request):
             bazaar = bazaarJson.get("bazaar", dict({}))
             display = bazaarJson.get("display", dict({}))
             for item in itemsOnMarket:
-                item.stockI = inventory.get(str(item.tId), 0)
-                item.stockB = bazaar.get(str(item.tId), 0)
-                item.stockD = display.get(str(item.tId), 0)
+                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items["Custom"].append(item)
                 # item.save()
@@ -151,9 +155,10 @@ def default(request):
         display = bazaarJson.get("display", dict({}))
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = inventory.get(str(item.tId), 0)
-                item.stockB = bazaar.get(str(item.tId), 0)
-                item.stockD = display.get(str(item.tId), 0)
+                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
@@ -260,9 +265,10 @@ def sets(request):
         point_value = BazaarData.objects.first().pointsValue
         for tType, set in sets.items():
             for item in allItems.filter(tId__in=set.get('ids', [])):
-                item.stockI = inventory.get(str(item.tId), 0)
-                item.stockB = bazaar.get(str(item.tId), 0)
-                item.stockD = display.get(str(item.tId), 0)
+                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 set["items"].append(item)
                 set["market_value"] += set["quantities"][set["ids"].index(item.tId)] * item.tMarketValue
@@ -299,9 +305,10 @@ def all(request):
         display = bazaarJson.get("display", dict({}))
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = inventory.get(str(item.tId), 0)
-                item.stockB = bazaar.get(str(item.tId), 0)
-                item.stockD = display.get(str(item.tId), 0)
+                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
@@ -328,16 +335,18 @@ def top10(request):
         bazaar = bazaarJson.get("bazaar", dict({}))
         display = bazaarJson.get("display", dict({}))
         for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
-            item.stockI = inventory.get(str(item.tId), 0)
-            item.stockB = bazaar.get(str(item.tId), 0)
-            item.stockD = display.get(str(item.tId), 0)
+            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             items["Buy"].append(item)
             # item.save()
         for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
-            item.stockI = inventory.get(str(item.tId), 0)
-            item.stockB = bazaar.get(str(item.tId), 0)
-            item.stockD = display.get(str(item.tId), 0)
+            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             items["Sell"].append(item)
             # item.save()
@@ -410,8 +419,7 @@ def update(request, itemId):
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
             key = player.getKey()
-            bazaarJson = json.loads(player.bazaarJson)
-            playerList = bazaarJson.get("list", [])
+
 
             print('[view.bazaar.updateItem] get item')
             item = Item.objects.filter(tId=itemId).first()
@@ -422,27 +430,36 @@ def update(request, itemId):
             if 'apiError' in baz:
                 error = baz
 
-            # update inventory of bazaarJson
-            error = False
-            invtmp = apiCall("user", "", "inventory,display,bazaar", key)
-            for k, v in invtmp.items():
-                if v is None:
-                    invtmp[k] = dict({})
-            if 'apiError' in invtmp and invtmp["apiErrorCode"] not in [7]:
-                error = {"apiErrorSub": invtmp["apiError"]}
-            else:
-                # modify user
-                bazaarJson["inventory"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("inventory", dict({}))}
-                bazaarJson["bazaar"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("bazaar", dict({}))}
-                bazaarJson["display"] = {str(v["ID"]): v["quantity"] for v in invtmp.get("display", dict({}))}
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), 0)
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), 0)
-                item.stockD = bazaarJson["display"].get(str(item.tId), 0)
-                item.stock = item.stockI + item.stockB + item.stockD
-                # item.save()
+            # update invtmp
+            bazaarJson = cache.get(f"bazaar-inventory-{player.tId}", False)
+            print("1", bazaarJson)
+            if bazaarJson is False:
+                error = False
+                invtmp = apiCall("user", "", "inventory,display,bazaar", key)
+                for k, v in invtmp.items():
+                    if v is None:
+                        invtmp[k] = dict({})
+                if 'apiError' in invtmp and invtmp["apiErrorCode"] not in [7]:
+                    error = {"apiErrorSub": invtmp["apiError"]}
+                else:
+                    # modify user
+                    bazaarJson = {}
+                    bazaarJson["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
+                    bazaarJson["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
+                    bazaarJson["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
+                    # item.save()
 
-            player.bazaarJson = json.dumps(bazaarJson)
-            player.save()
+                    player.bazaarJson = json.dumps(bazaarJson)
+                    player.save()
+                    cache.set(f"bazaar-inventory-{player.tId}", bazaarJson, 60)
+
+            bazaarJson = json.loads(player.bazaarJson)
+            playerList = bazaarJson.get("list", [])
+            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+            item.stock = item.stockI + item.stockB + item.stockD
 
             context = {'player': player, 'list': playerList, 'item': item, "view": {"timer": True}}
             if error:
@@ -493,9 +510,10 @@ def toggle(request, itemId):
             else:
                 playerList.append(itemId)
 
-            item.stockI = bazaarJson.get("inventory", {}).get(str(item.tId), 0)
-            item.stockB = bazaarJson.get("bazaar", {}).get(str(item.tId), 0)
-            item.stockD = bazaarJson.get("display", {}).get(str(item.tId), 0)
+            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
+            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
+            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
+            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
 
             bazaarJson["list"] = playerList
@@ -602,39 +620,41 @@ def abroadStocks(request):
                 context = {'item': None, "graph": []}
                 return render(request, 'bazaar/abroad/graph.html', context)
 
-            # get clients statistics
-            clients = dict({})
-            for stock in stocks:
-                if stock.client == "":
-                    continue
-                if stock.client not in clients:
-                    clients[stock.client] = 0
-                clients[stock.client] += 1
-
-            clients = {c: [i, n] for i, (c, n) in enumerate(sorted(clients.items(), key=lambda x: -x[1]))}
+            # # get clients statistics
+            # clients = dict({})
+            # for stock in stocks:
+            #     if stock.client == "":
+            #         continue
+            #     if stock.client not in clients:
+            #         clients[stock.client] = 0
+            #     clients[stock.client] += 1
+            #
+            # clients = {c: [i, n] for i, (c, n) in enumerate(sorted(clients.items(), key=lambda x: -x[1]))}
 
             # graph = [[timestampToDate(s.timestamp), s.quantity, s.cost, s.client, clients.get(s.client)[0], clients.get(s.client)[1]] for s in stocks]
 
-            # average the prices
-            floatTS = stocks.first().timestamp
-            avg_val = [0, 0, 0]  # ts, quantity, cost
-            n = 0
-            graph = []
-            for s in stocks:
-                n += 1
-                avg_val[0] += s.timestamp
-                avg_val[1] += s.quantity
-                if (floatTS - s.timestamp) > 5 * 60:
-                    floatTS = s.timestamp
-                    line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
-                    graph.append(line)
-                    avg_val = [0, 0, 0]
-                    n = 0
+            # # average the prices
+            # floatTS = stocks.first().timestamp
+            # avg_val = [0, 0, 0]  # ts, quantity, cost
+            # n = 0
+            # graph = []
+            # for s in stocks:
+            #     n += 1
+            #     avg_val[0] += s.timestamp
+            #     avg_val[1] += s.quantity
+            #     if (floatTS - s.timestamp) > 5 * 60:
+            #         floatTS = s.timestamp
+            #         line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+            #         graph.append(line)
+            #         avg_val = [0, 0, 0]
+            #         n = 0
+            #
+            # # record last point
+            # if n > 0:
+            #     line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
+            #     graph.append(line)
 
-            # record last point
-            if n > 0:
-                line = [timestampToDate(avg_val[0] // n), avg_val[1] // n, avg_val[2] // n]
-                graph.append(line)
+            graph = [[timestampToDate(s.timestamp), s.quantity, s.cost] for s in stocks]
 
             stock = stocks.first()
             context = {'stock': stocks.first(),

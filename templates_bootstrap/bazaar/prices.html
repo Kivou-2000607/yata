@@ -83,8 +83,12 @@ This file is part of yata.
         <div class="container-fluid p-md-3 p-1 mb-0 module">
           <div class="clearfix">
               <img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large col-md-4 float-md-end mb-3 ms-md-3" />
-              <p>Tendency per week over last week: <span>{{item.weekTendency|priceTendency|safe}}</span></p>
-              <p>Tendency per week over last month: <span>{{item.monthTendency|priceTendency|safe}}</span></p>
+              <h3>Market value: ${{item.tMarketValue|intcomma}}</h3>
+              <h3>Sell Price: ${{item.tSellPrice|intcomma}}</h3>
+              <h3>Buy Price: ${{item.tBuyPrice|intcomma}}</h3>
+              <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
+              <h3>Tendency per week over last week: <span>{{item.weekTendency|priceTendency|safe}}</span></h3>
+              <h3>Tendency per week over last month: <span>{{item.monthTendency|priceTendency|safe}}</span></h3>
           </div>
 
             {% if graphLength == 0 %}

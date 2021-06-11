@@ -115,9 +115,7 @@ This file is part of yata.
       <div class="modal-header p-0">
         <h2 class="title rounded-top py-2 px-2" style="width: 100%">
           <div class="d-flex flex-wrap align-items-center">
-            <div class="px-2 me-auto">{{item.tName}} [{{item.tId}}]</div>
-            <div class="px-2">Stocks in {{stock.country}}</div>
-            <div class="px-2">{{stock.item.tName}}</div>
+            <div class="px-2 me-auto">{{stock.item.tName}} [{{stock.item.tId}}] - {{stock.country}}</div>
             <div class="px-2">last <span id="n-hours">24</span>h</div>
             <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
           </div>
@@ -127,8 +125,12 @@ This file is part of yata.
         <div class="container-fluid p-md-3 p-1 mb-0 module">
           <div class="clearfix">
             <img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-large col-md-4 float-md-end mb-3 ms-md-3" />
-            <p>Tendency per week over last week: <span>{{stock.item.weekTendency|priceTendency|safe}}</span></p>
-            <p>Tendency per week over last month: <span>{{stock.item.monthTendency|priceTendency|safe}}</span></p>
+            <h3>Market value: ${{stock.item.tMarketValue|intcomma}}</h3>
+            <h3>Sell Price: ${{stock.item.tSellPrice|intcomma}}</h3>
+            <h3>Buy Price: ${{stock.item.tBuyPrice|intcomma}}</h3>
+            <h3>Circulation: {{stock.item.tCirculation|intcomma}}</h3>
+            <h3>Tendency per week over last week: <span>{{stock.item.weekTendency|priceTendency|safe}}</span></h3>
+            <h3>Tendency per week over last month: <span>{{stock.item.monthTendency|priceTendency|safe}}</span></h3>
           </div>
 
             {% if graph|length == 0 %}
@@ -142,7 +144,7 @@ This file is part of yata.
               </table>
               </div>
           {% endif %}
-          <p id="48-hours" class="neutral mb-0" style="cursor: pointer;">See <span id="n-hours-i">48</span> hours</p>
+          <p id="48-hours" class="neutral mb-2" style="cursor: pointer;">See <span id="n-hours-i">48</span> hours</p>
         </div>
       </div>
     </div>

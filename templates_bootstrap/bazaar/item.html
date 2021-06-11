@@ -55,9 +55,8 @@ This file is part of yata.
 
     {# STOCKS #}
     {% if player.tId > 0 %}
-    {# <th class="item-stock {% if not item.stock %}lack{% endif %}" colspan="2" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'> #}
     <div class="col-12 px-4">
-      <div class="item-table-header" data-act="toggle">
+      <div class="item-table-header {% if not item.stock %}lack{% endif %}" data-act="toggle" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'>
         stock: {{item.stock}}<i class="fas fa-toggle-{% if item.tId|stringformat:"i" in list %}on{%else%}off{%endif%} ms-2"></i>
       </div>
     </div>
@@ -89,7 +88,9 @@ This file is part of yata.
       <table class="table table-hover table-borderless table-sm">
         <tbody>
           {% for data in item.get_bazaar %}
-            {% if   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
+            {% if   data.quantity == item.stockB and data.cost == item.stockBP %}
+              <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row bazaar-mine" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
+            {% elif   data.quantity < 5 and item.tType == "Flower" or data.quantity < 5 and item.tType == "Plushie" %}
               {% if data.cost       > item.tMarketValue|mul:1.03 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore ggt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
               {% elif data.cost     > item.tMarketValue|mul:1.01 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore gt"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
               {% elif data.cost     < item.tMarketValue|mul:0.97 %}  <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row ignore llt" title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">

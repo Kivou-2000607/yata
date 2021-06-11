@@ -186,7 +186,6 @@ table.bazaar-abroad-stocks th.g { width:10%; }
 table.bazaar-abroad-stocks th.h { width:15%; }
 table.bazaar-abroad-stocks th.i { width:10%; }
 
-
 div.abroad-soft {
     position: relative;
     display: table;
@@ -236,3 +235,10 @@ img.flag {
 }
 
 table.price-history { min-width: 500px; width: 100%; margin: auto;}
+
+
+div.item-table-header.lack       { background:#f4cccc!important; }
+div.item-table-header.lack:hover { background:#ea9999!important; }
+
+tr.bazaar-mine       { font-weight: bold; background:#d6a0f2!important; }
+tr.bazaar-mine:hover { font-weight: bold; background:#9d45bf!important; }

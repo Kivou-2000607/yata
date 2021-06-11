@@ -1,13 +1,21 @@
-// show/hide details item
-$(document).on('click', 'tr.abroad-item-stocks > td:not(.dont-touch-me)', function(e){
+// show foreign stocks ofr one item
+$(document).on('click', 'tr.abroad-item-stocks > td:not(.items-details)', function(e){
     e.preventDefault();
     var item_id = $(this).parent("tr").attr("data-ite");
     var country_key = $(this).parent("tr").attr("data-cou");
+    console.log("you")
     $( "#bazaar-modal" ).load( "/bazaar/abroad/stocks/", {
         item_id: item_id, country_key: country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
 });
 
+// show foreing stocks item details
+$(document).on('click', 'tr.abroad-item-stocks > td.items-details', function(e){
+    e.preventDefault();
+    var item_id = $(this).parent("tr").attr("data-ite");
+    console.log(item_id)
+    $( "#bazaar-modal" ).load( "/bazaar/prices/"+item_id, { csrfmiddlewaretoken: getCookie("csrftoken"), });
+});
 
 // header click
 $(document).on('click', '.item-table-header:not(.no-click)', e=>{
@@ -17,7 +25,6 @@ $(document).on('click', '.item-table-header:not(.no-click)', e=>{
     const action = $(e.currentTarget).attr('data-act');
     const item_table = $(e.currentTarget).parents('.item-table');
     const item_id = $(item_table).attr('data-iid');
-
     if( action == "update" ) {
       $(item_table).load( "/bazaar/update/"+item_id, { csrfmiddlewaretoken: getCookie("csrftoken"), });
       $(e.currentTarget).find("button").html('<i class="fas fa-spinner fa-pulse"></i>');

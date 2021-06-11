@@ -27,6 +27,6 @@ class Command(BaseCommand):
         print("get logs")
         logs = ApiCallLog.objects.all()
         print("format logs")
-        logs_dict = [[log.timestamp, log.url.split("=")[-1]] for log in logs]
+        logs_dict = [[log.timestamp, log.url.split("=")[-1], log.error] for log in logs]
         print("write logs")
         json.dump(logs_dict, open("./zzz/yata_api_call_logs.json", "w"))

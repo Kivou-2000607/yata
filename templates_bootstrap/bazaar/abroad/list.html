@@ -116,7 +116,7 @@ This file is part of yata.
                   <td class="text-start" data-val="{{stock.get_country.id}}">
                   <img src="{% url_img_flag stock.get_country.flag %}" alt="{{stock.get_country.flag}}" class="flag" /> {{stock.country}}
                 </td>
-                <td class="text-start dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}"><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-small" /> {{stock.item.tName}}</td>
+                <td class="text-start items-details"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}"><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-small" /> {{stock.item.tName}}</td>
                 <td class="text-start">{{stock.item.tType}}</td>
                 <td class="text-center" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>
                 <td class="text-end" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
