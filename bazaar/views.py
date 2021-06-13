@@ -415,9 +415,7 @@ def prices(request, itemId):
 def update(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
-            print('[view.bazaar.updateItem] get player id from session')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
+            player = getPlayer(request.session.get("player", {}).get("tId", -1))
             key = player.getKey()
 
 
@@ -432,7 +430,8 @@ def update(request, itemId):
 
             # update invtmp
             bazaarJson = cache.get(f"bazaar-inventory-{player.tId}", False)
-            print("1", bazaarJson)
+            playerList = bazaarJson.get("list", [])
+
             if bazaarJson is False:
                 error = False
                 invtmp = apiCall("user", "", "inventory,display,bazaar", key)
@@ -443,7 +442,7 @@ def update(request, itemId):
                     error = {"apiErrorSub": invtmp["apiError"]}
                 else:
                     # modify user
-                    bazaarJson = {}
+                    bazaarJson = {"list": playerList}
                     bazaarJson["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
                     bazaarJson["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
                     bazaarJson["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
@@ -499,8 +498,7 @@ def toggle(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
             print('[view.bazaar.updateItem] get player id from session')
-            tId = request.session["player"].get("tId")
-            player = Player.objects.filter(tId=tId).first()
+            player = getPlayer(request.session.get("player", {}).get("tId", -1))
             bazaarJson = json.loads(player.bazaarJson)
             playerList = bazaarJson.get("list", [])
 
@@ -519,6 +517,7 @@ def toggle(request, itemId):
             bazaarJson["list"] = playerList
             player.bazaarJson = json.dumps(bazaarJson)
             player.save()
+            cache.set(f"bazaar-inventory-{player.tId}", bazaarJson, 60)
 
             context = {'player': player, 'item': item, 'list': playerList, "view": {"timer": True}}
             return render(request, "bazaar/item.html", context)
