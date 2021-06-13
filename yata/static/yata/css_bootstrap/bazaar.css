@@ -97,7 +97,7 @@ table.item-sell-table td.B { width:60%; cursor: default;} */
 
 /* ITEM TABLE */
 div.item-table {
-  width: 150px;
+  width: 120px;
   border: 1px solid #ddda;
   border-radius: 10px 10px 0 0;
 }
@@ -127,11 +127,11 @@ div.item-table-header * {
 }
 button.thumbnail {
   width: 60%;
-  min-width: 120px;
+  min-width: 90px;
   height: 49px;
   border: 1px solid #888;
 }
-div.item-table table { min-width: 120px; }
+div.item-table table { min-width: 110px; }
 div.item-table table td { border-top: 1px solid #ddda; }
 div.item-table table td.a { width: 35%; cursor: default; }
 div.item-table table td.b { width: 65%; cursor: default; }
