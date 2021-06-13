@@ -430,7 +430,7 @@ def update(request, itemId):
 
             # update invtmp
             bazaarJson = cache.get(f"bazaar-inventory-{player.tId}", False)
-            playerList = bazaarJson.get("list", [])
+            playerList = bazaarJson.get("list", []) if bazaarJson else []
 
             if bazaarJson is False:
                 error = False
