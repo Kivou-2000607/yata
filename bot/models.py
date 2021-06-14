@@ -195,6 +195,7 @@ class Server(models.Model):
             for_template = {
                 "channels_allowed": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_allowed", {}), "prefix": "#", "title": "Allowed channels for the commands", "help": "Select one or several channels for the chain module commands", "tooltip": "The notifications will be in the same channel you typed !retal.", "mandatory": True},
                 "currents": {"type": "retal", "all": from_db.get("currents", {}), "title": "Current retals tracking", "tooltip": "This is an overview of the current !retal. If for some reason you need it, you can stop them here (don't forget to !sync)", "prefix": "", "help": "List of the current trackings", "mandatory": False},
+                "chains": {"type": "chain", "all": from_db.get("chains", {}), "title": "Current chains tracking", "tooltip": "This is an overview of the current !chain. If for some reason you need it, you can stop them here (don't forget to !sync)", "prefix": "", "help": "List of the current trackings", "mandatory": False},
             }
             return for_template
         else:

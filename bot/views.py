@@ -222,7 +222,7 @@ def dashboardOption(request):
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
                     "oc": ["channels_allowed", "currents", "notifications"],
-                    "chain": ["channels_allowed", "currents"],
+                    "chain": ["channels_allowed", "currents", "chains"],
                     "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
                 }.get(post.get("mod"), [])
 

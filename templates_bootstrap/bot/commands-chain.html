@@ -23,15 +23,8 @@ This file is part of yata.
 
 <h4 class="command-doc privacy-personal-public">Command <tt>!chain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">
-<p>Regularly gives status on the chain and sends a notification to <tt>&lt;@Role&gt;</tt> (if given) when chain is about to timeout (90s). If <tt>&lt;factionID&gt;</tt> is given it watches the chain of the corresponding faction, otherwise it watches the chain of the key author's faction. It will stop watching on chain cooldown or if it catches a <tt>!stopchain</tt>.</p>
-<p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain &lt;factionID&gt;</tt> or <tt>!chain &lt;@Role&gt;</tt> or <tt>!verify &lt;factionID&gt; &lt;@Role&gt;</tt></p>
-</div>
-
-<h4 class="command-doc privacy-none">Command <tt>!stopchain</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>Tells the bot to stop watching a chain.</p>
-<p><b>Syntax:</b> <tt>!stopchain</tt></p>
-<p><b>Warning:</b> This is not a <i>real</i> command in the sense that it does not directly stop the bot. Upon status update, the bot will read previous messages and if it catches a <tt>!stopchain</tt> it will <i>1)</i> stop watching and say so <i>2)</i> delete the <tt>!stopchain</tt> message. Thus it can take up to 90s for the bot to actually stop. If you're watching several chains at the same time the next chain to notify will be stopped (yes it can be a mess quite quickly...).<p>
+<p>Regularly gives status on the author's faction's chain (default = 15 minutes) and sends a notification to <tt>&lt;@Role&gt;</tt> (if given) when chain is about to timeout (default = 90s). It will stop watching on chain cooldown. Type <tt>!retal</tt> a second time will stop the chain watching.</p>
+<p><b>Syntax:</b> <tt>!chain</tt> or <tt>!chain</tt> or <tt>!chain &lt;@Role&gt;</tt> or <tt>!verify &lt;@Role&gt; timeout=&lt;timeout (in seconds)&gt; update=&lt;update (in minutes)&gt;</tt></p>
 </div>
 
 <h4 class="command-doc privacy-personal-private">Command <tt>!retal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
@@ -40,20 +33,6 @@ This file is part of yata.
 <p><b>Syntax:</b> <tt>!retal</tt> or <tt>!retal</tt> <tt>&lt;@Role&gt;</tt></p>
 <p><b>Scope:</b> Anyone with AA permission can use it.</p>
 </div>
-
-{# <h4 class="command-doc privacy-none">Command <tt>!retals</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4> #}
-{# <div class="command-doc"> #}
-{# <p>List all the current retal watchings of the server.</p> #}
-{# <p><b>Syntax:</b> <tt>!retals</tt></p> #}
-{# <p><b>Scope:</b> Admins can use it in <tt>#yata-admin</tt>.</p> #}
-{# </div> #}
-
-{# <h4 class="command-doc privacy-none">Command <tt>!stopretal</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4> #}
-{# <div class="command-doc"> #}
-{# <p>Stops the retal launched by user which Torn ID is &lt;tornID&gt;</tt>.</p> #}
-{# <p><b>Syntax:</b> <tt>!stopretal &lt;tornID&gt;</tt></p> #}
-{# <p><b>Scope:</b> Admins can use it in <tt>#yata-admin</tt>.</p> #}
-{# </div> #}
 
 <h4 class="command-doc privacy-personal-public">Command <tt>!fly</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">

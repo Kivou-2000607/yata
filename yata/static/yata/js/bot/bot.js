@@ -17,3 +17,11 @@ $(document).on('click', "div.api-notifications", function(e){
         csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
     }).html(''+spinner+'');
 });
+
+$(document).ready(function() {
+  var hash = window.top.location.hash.substr(1);
+  if(hash) {
+    var h3 = $("#"+hash);
+    toggle_h(h3);
+  }
+});
