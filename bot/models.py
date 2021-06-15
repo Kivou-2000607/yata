@@ -10,7 +10,7 @@ import json
 from player.models import Player
 from faction.models import Faction
 
-NPCS = [(4, "Duke"), (15, "Leslie"), (10, "Scrooge"), (15, "Leslie"), (17, "Easter Bunny"), (19, "Jimmy"), (20, "Fernando")]
+NPCS = [(4, "Duke"), (10, "Scrooge"), (15, "Leslie"), (17, "Easter Bunny"), (19, "Jimmy"), (20, "Fernando"), (21, "Tiny")]
 
 def check_json(value):
     try:
