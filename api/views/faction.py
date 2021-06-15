@@ -65,10 +65,34 @@ def livechain(request):
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         # get live report
-        livechain = faction.chain_set.filter(tId=0, report=True).first()
+        livechain = faction.chain_set.filter(tId=0).first()
         if livechain is None:
-            # create tab
+            # chain not there (needs API call data)
+            if payload["current"] < 10:
+                pass
+
+            livechain = faction.chain_set.create(
+                    tId=0,
+                    live=True,
+                    chain=payload["current"],
+                    start=payload["start"],
+                    end=tsnow()
+                )
             livechain.report = True
+            livechain.computing = True
+            livechain.cooldown = False
+            livechain.status = 1
+            livechain.addToEnd = 10
+            livechain.assignCrontab()
+            livechain.save()
+
+            payload["yata"] = {"error": f"Start computing live report for faction {factionId}"}
+            return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
+
+        elif not livechain.report:
+            # if chain already there but not started
+            livechain.report = True
+            livechain.live = True
             livechain.computing = True
             livechain.cooldown = False
             livechain.status = 1
