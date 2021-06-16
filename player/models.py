@@ -89,8 +89,7 @@ class Player(models.Model):
 
     # info for target APP
     bazaarInfo = models.CharField(default="N/A", max_length=255)
-    bazaarJson = models.TextField(default="{}")
-    bazaarUpda = models.IntegerField(default=0)
+    bazaarList = models.TextField(default="[]")
 
     # info for awards APP
     # awardsInfo = models.CharField(default="N/A", max_length=255)
@@ -162,6 +161,34 @@ class Player(models.Model):
             return isProxyKey(self.getKey())
         else:
             False
+
+    def getInventory(self, force=False):
+        if self.tId < 0:
+            return {}
+
+        # try to get cache
+        inventory = cache.get(f"bazaar-inventory-{self.tId}", False)
+        if inventory and not force:
+            print("[getInventory] return cached inventory")
+            return inventory
+
+        print("[getInventory] build inventory")
+
+        inventory = {}
+        invtmp = apiCall("user", "", "inventory,display,bazaar", self.getKey())
+        for k, v in invtmp.items():
+            if v is None:
+                invtmp[k] = dict({})
+        if 'apiError' in invtmp:
+            cache.set(f"bazaar-inventory-{self.tId}", inventory, 60)
+            return invtmp
+        else:
+            inventory["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
+            inventory["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
+            inventory["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
+            cache.set(f"bazaar-inventory-{self.tId}", inventory, 60)
+
+        return inventory
 
     def getAwards(self, userInfo=dict({}), force=False):
         from awards.models import AwardsData

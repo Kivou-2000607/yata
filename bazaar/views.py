@@ -44,51 +44,27 @@ def index(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        key = player.getKey()
-        bazaarJson = json.loads(player.bazaarJson)
-        playerList = bazaarJson.get("list", [])
-        player.bazaarInfo = "{}".format(len(playerList))
-
-        # update inventory of bazaarJson
-        error = False
-        if player.tId > 0:
-
-            invtmp = apiCall("user", "", "inventory,display,bazaar", key)
-            for k, v in invtmp.items():
-                if v is None:
-                    invtmp[k] = dict({})
-            if 'apiError' in invtmp:
-                error = invtmp
-            else:
-                bazaarJson["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
-                bazaarJson["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
-                bazaarJson["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
-                player.bazaarJson = json.dumps(bazaarJson)
-
-        player.save()
-
-        print('[view.bazaar.default] get all items on market')
+        # get items
         itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
-        print('[view.bazaar.default] get all tTypes')
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        # print('[view.bazaar.default] {}'.format(tTypes))
-        print('[view.bazaar.default] create output items')
         items = {tType: [] for tType in tTypes}
 
-        inventory = bazaarJson.get("inventory", dict({}))
-        bazaar = bazaarJson.get("bazaar", dict({}))
-        display = bazaarJson.get("display", dict({}))
+        # get/update inventory
+        inventory = player.getInventory()
+        error = inventory if 'apiError' in inventory else False
+
+        # build item list
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+                item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
+        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -105,27 +81,27 @@ def custom(request):
         if request.session.get('player'):
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-            bazaarJson = json.loads(player.bazaarJson)
-            playerList = bazaarJson.get("list", [])
-
-            print('[view.bazaar.default] get all items on player\'s list')
-            itemsOnMarket = Item.objects.filter(tId__in=playerList).order_by('tName')
-            print('[view.bazaar.default] create output items')
+            # get items
+            itemsOnMarket = Item.objects.filter(tId__in=json.loads(player.bazaarList)).order_by('tName')
             items = {"Custom": []}
 
-            inventory = bazaarJson.get("inventory", dict({}))
-            bazaar = bazaarJson.get("bazaar", dict({}))
-            display = bazaarJson.get("display", dict({}))
+            # get/update inventory
+            inventory = player.getInventory()
+            error = inventory if 'apiError' in inventory else False
+
+            # build item list
             for item in itemsOnMarket:
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+                item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items["Custom"].append(item)
                 # item.save()
 
-            context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+            context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+            if error:
+                context.update(error)
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
             return render(request, page, context)
         else:
@@ -139,31 +115,29 @@ def default(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        bazaarJson = json.loads(player.bazaarJson)
-        playerList = bazaarJson.get("list", [])
-
-        print('[view.bazaar.default] get all items on market')
+        # get items
         itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
-        print('[view.bazaar.default] get all tTypes')
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        # print('[view.bazaar.default] {}'.format(tTypes))
-        print('[view.bazaar.default] create output items')
         items = {tType: [] for tType in tTypes}
 
-        inventory = bazaarJson.get("inventory", dict({}))
-        bazaar = bazaarJson.get("bazaar", dict({}))
-        display = bazaarJson.get("display", dict({}))
+        # get/update inventory
+        inventory = player.getInventory()
+        error = inventory if 'apiError' in inventory else False
+
+        # build item list
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+                item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
+        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
+        if error:
+            context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -175,15 +149,9 @@ def sets(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        bazaarJson = json.loads(player.bazaarJson)
-        playerList = bazaarJson.get("list", [])
-
-        print('[view.bazaar.default] get all items on market')
+        # get items
         allItems = Item.objects.all().order_by('tName')
-        print('[view.bazaar.default] get all tTypes')
         tTypes = ["Flower", "Plushie"]
-        # print('[view.bazaar.default] {}'.format(tTypes))
-        print('[view.bazaar.default] create output items')
         sets = {
             "Plushie set": {
                 "ids": [186, 187, 215, 258, 261, 266, 268, 269, 273, 274, 281, 384, 618],
@@ -259,25 +227,30 @@ def sets(request):
             },
         }
 
-        inventory = bazaarJson.get("inventory", dict({}))
-        bazaar = bazaarJson.get("bazaar", dict({}))
-        display = bazaarJson.get("display", dict({}))
+
+        # get/update inventory
+        inventory = player.getInventory()
+        error = inventory if 'apiError' in inventory else False
         point_value = BazaarData.objects.first().pointsValue
+
         for tType, set in sets.items():
             for item in allItems.filter(tId__in=set.get('ids', [])):
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+                item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 set["items"].append(item)
                 set["market_value"] += set["quantities"][set["ids"].index(item.tId)] * item.tMarketValue
+                # item.save()
             set["points_value"] = point_value * set["points"]
             set["benefits"] = set["points_value"] - set["market_value"]
             set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
-            # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
+
+        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
+        if error:
+            context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -289,31 +262,29 @@ def all(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        bazaarJson = json.loads(player.bazaarJson)
-        playerList = bazaarJson.get("list", [])
-
-        print('[view.bazaar.default] get all items on market')
+        # get items
         itemsOnMarket = Item.objects.all().order_by('tName')
-        print('[view.bazaar.default] get all tTypes')
         tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        # print('[view.bazaar.default] {}'.format(tTypes))
-        print('[view.bazaar.default] create output items')
         items = {tType: [] for tType in tTypes}
 
-        inventory = bazaarJson.get("inventory", dict({}))
-        bazaar = bazaarJson.get("bazaar", dict({}))
-        display = bazaarJson.get("display", dict({}))
+        # get/update inventory
+        inventory = player.getInventory()
+        error = inventory if 'apiError' in inventory else False
+
+        # build item list
         for tType in items:
             for item in itemsOnMarket.filter(tType=tType):
-                item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-                item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-                item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-                item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+                item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 items[tType].append(item)
                 # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
+        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
+        if error:
+            context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -325,33 +296,34 @@ def top10(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        bazaarJson = json.loads(player.bazaarJson)
-        playerList = bazaarJson.get("list", [])
-
-        print('[view.bazaar.default] create output items')
+        # get items
         items = {"Sell": [], "Buy": []}
 
-        inventory = bazaarJson.get("inventory", dict({}))
-        bazaar = bazaarJson.get("bazaar", dict({}))
-        display = bazaarJson.get("display", dict({}))
+        # get/update inventory
+        inventory = player.getInventory()
+        error = inventory if 'apiError' in inventory else False
+
+        # build item list
         for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+            item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+            item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+            item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+            item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             items["Buy"].append(item)
             # item.save()
         for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+            item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+            item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+            item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+            item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             items["Sell"].append(item)
             # item.save()
 
-        context = {"player": player, 'list': playerList, "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+        if error:
+            context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
         return render(request, page, context)
 
@@ -418,49 +390,20 @@ def update(request, itemId):
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
             key = player.getKey()
 
-
-            print('[view.bazaar.updateItem] get item')
             item = Item.objects.filter(tId=itemId).first()
-            print('[view.bazaar.updateItem] {}'.format(item))
 
             baz = item.update_bazaar(key=key, n=BazaarData.objects.first().nItems)
-            error = False
-            if 'apiError' in baz:
-                error = baz
+            error = baz if 'apiError' in baz else False
 
-            # update invtmp
-            bazaarJson = cache.get(f"bazaar-inventory-{player.tId}", False)
-            playerList = bazaarJson.get("list", []) if bazaarJson else []
-
-            if bazaarJson is False:
-                error = False
-                invtmp = apiCall("user", "", "inventory,display,bazaar", key)
-                for k, v in invtmp.items():
-                    if v is None:
-                        invtmp[k] = dict({})
-                if 'apiError' in invtmp and invtmp["apiErrorCode"] not in [7]:
-                    error = {"apiErrorSub": invtmp["apiError"]}
-                else:
-                    # modify user
-                    bazaarJson = {"list": playerList}
-                    bazaarJson["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
-                    bazaarJson["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
-                    bazaarJson["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
-                    # item.save()
-
-                    player.bazaarJson = json.dumps(bazaarJson)
-                    player.save()
-                    cache.set(f"bazaar-inventory-{player.tId}", bazaarJson, 60)
-
-            bazaarJson = json.loads(player.bazaarJson)
-            playerList = bazaarJson.get("list", [])
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+            # get/update inventory
+            inventory = player.getInventory()
+            item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+            item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+            item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+            item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
 
-            context = {'player': player, 'list': playerList, 'item': item, "view": {"timer": True}}
+            context = {'player': player, 'list': json.loads(player.bazaarList), 'item': item, "view": {"timer": True}}
             if error:
                 context.update(error)
             return render(request, "bazaar/item.html", context)
@@ -477,7 +420,6 @@ def delete(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
 
-            print('[view.bazaar.deleteItem] delete item')
             item = Item.objects.filter(tId=itemId).first()
             item.lastUpdateTS = 0
             item.marketdata_set.all().delete()
@@ -497,29 +439,27 @@ def delete(request, itemId):
 def toggle(request, itemId):
     try:
         if request.session.get('player') and request.method == "POST":
-            print('[view.bazaar.updateItem] get player id from session')
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
-            bazaarJson = json.loads(player.bazaarJson)
-            playerList = bazaarJson.get("list", [])
+            playerList = json.loads(player.bazaarList)
 
             item = Item.objects.filter(tId=itemId).first()
             if itemId in playerList:
                 playerList.remove(itemId)
             else:
                 playerList.append(itemId)
+            player.bazaarList = json.dumps(playerList)
+            player.bazaarInfo = len(playerList)
+            player.save()
 
-            item.stockI = bazaarJson["inventory"].get(str(item.tId), [0, 0])[0]
-            item.stockB = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[0]
-            item.stockBP = bazaarJson["bazaar"].get(str(item.tId), [0, 0])[1]
-            item.stockD = bazaarJson["display"].get(str(item.tId), [0, 0])[0]
+            # get/update inventory
+            inventory = player.getInventory()
+            item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+            item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+            item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+            item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
 
-            bazaarJson["list"] = playerList
-            player.bazaarJson = json.dumps(bazaarJson)
-            player.save()
-            cache.set(f"bazaar-inventory-{player.tId}", bazaarJson, 60)
-
-            context = {'player': player, 'item': item, 'list': playerList, "view": {"timer": True}}
+            context = {'player': player, 'item': item, 'list': json.loads(player.bazaarList), "view": {"timer": True}}
             return render(request, "bazaar/item.html", context)
 
         else:
