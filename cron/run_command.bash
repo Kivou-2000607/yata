@@ -35,6 +35,7 @@ if [[ "$1" == "chain" || "$1" == "attacks" || "$1" == "revives" ]]; then
 fi
 
 # lock file
+mkdir -p /tmp/yata-crons
 if [ "$2" == "" ]; then
   LOCK_FILE="/tmp/yata-crons/$1.lock"
 else
