@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
         # get all stocks and history
         stocks = Stock.objects.all()
-        for api_stock in api_stocks.get("stocks"):
+        for api_stock_id, api_stock in api_stocks.get("stocks").items():
             acronym = api_stock["acronym"]
 
             # init defaults

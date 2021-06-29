@@ -14,8 +14,8 @@ class StockAdmin(admin.ModelAdmin):
     current_price_format.short_description = 'current price'
 
     def live(self, obj):
-        return f'{obj.tendancy_l_a * 60:,.3f}$'
-    current_price_format.admin_order_field = 'tendancy_l_a'
+        return f'{obj.tendency_l_a * 60:,.3f}$'
+    current_price_format.admin_order_field = 'tendency_l_a'
 
 class HistoryAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'timestamp', 'current_price_format']
