@@ -55,7 +55,13 @@ items_table = {
 @method_decorator(never_ever_cache)
 def exportStocks(request):
     try:
-        print("[api.travel.export] get stocks")
+
+        c = cache.get(f"foreign_stocks_payload", False)
+        if c:
+            #print("[api.travel.export] get stocks (cache)")
+            return JsonResponse(c, status=200)
+
+        print("[api.travel.export] get stocks (db) start")
 
         # if getattr(request, 'limited', False):
         #     return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
@@ -78,6 +84,8 @@ def exportStocks(request):
             "timestamp": tsnow()
         }
 
+        cache.set(f"foreign_stocks_payload", payload, 3600)
+        #print("[api.travel.export] get stocks (db) cache set")
         return JsonResponse(payload, status=200)
 
     except BaseException as e:
@@ -206,9 +214,10 @@ def importStocks(request):
                 item.abroadstocks_set.create(**v)
 
             # clear cloudflare cache
-            # r = clear_cf_cache(["https://yata.yt/api/v1/travel/export/"])
+            # r = clear_cf_cache(["https://yata.yt/api/v1/travel/export/*"])
             # print("[api.travel.import] clear cloudflare cache", r)
-
+            #print("[api.travel.import] clear droplet cache")
+            cache.delete(f"foreign_stocks_payload")
             return JsonResponse({"message": f"The stocks have been updated with {client}"}, status=200)
 
         else:
