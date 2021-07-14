@@ -110,7 +110,7 @@ class Target(models.Model):
 
     # faction
     faction_position = models.CharField(default="faction_position", max_length=32)
-    faction_name = models.CharField(default="faction_name", max_length=32)
+    faction_name = models.CharField(default="faction_name", max_length=64)
     faction_faction_id = models.IntegerField(default=0)
     faction_faction_dif = models.IntegerField(default=0)
 
