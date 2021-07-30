@@ -264,14 +264,12 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
-        return HttpResponseForbidden(render_to_string('403.html', {'exception': msg, 'home': home, 'redirect': msg == "You might want to log in."}))
+        return HttpResponseForbidden(render_to_string('403.html', {'exception': msg, 'home': home, 'redirect': True}))
     if type == 404:
         msg = "Not Found" if msg is None else msg
         return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
     else:
         message = traceback.format_exc().strip()
-        print(exc)
-        print(message)
         if session is not None and session.get("player", False):
             player = getPlayer(session["player"].get("tId"))
         else:
