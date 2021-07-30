@@ -113,7 +113,7 @@
     {% if comparison %}
     <tbody>
         {% for id, v in contributors %}
-        {% if v.1 and v.2 or not comparison.2 %}
+        {% if v.1 or v.2 %}
         <tr {% if not v.3 %}class="kicked-members"{% endif %}>
             <td class="text-center"><tt>#{{forloop.counter}}</tt></td>
             <td class="text-start">{{v.0|playerURL:id|safe}}</td>
