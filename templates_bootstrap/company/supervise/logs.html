@@ -59,27 +59,29 @@ This file is part of yata.
         </tr>
         {% endfor %}
 
-        <tr>
-          <td colspan="13" class="text-center">
-            <div class="pagination d-block">
+        {% if not share %}
+          <tr>
+            <td colspan="13" class="text-center">
+              <div class="pagination d-block">
                 <span class="step-links">
-                    {% if company_data_p.has_previous %}
-                        <a class="yt-page-link rounded first" href="{% url 'company:supervise' %}?page_d=1"></a>
-                        <a class="yt-page-link rounded previous" href="{% url 'company:supervise' %}?page_d={{ company_data_p.previous_page_number }}"></a>
-                    {% endif %}
+                  {% if company_data_p.has_previous %}
+                  <a class="yt-page-link rounded first" href="{% url 'company:supervise' %}?page_d=1"></a>
+                  <a class="yt-page-link rounded previous" href="{% url 'company:supervise' %}?page_d={{ company_data_p.previous_page_number }}"></a>
+                  {% endif %}
 
-                    <span class="current">
-                        {{ company_data_p.number }}/{{ company_data_p.paginator.num_pages }}
-                    </span>
+                  <span class="current">
+                    {{ company_data_p.number }}/{{ company_data_p.paginator.num_pages }}
+                  </span>
 
-                    {% if company_data_p.has_next %}
-                        <a class="yt-page-link rounded next" href="{% url 'company:supervise' %}?page_d={{ company_data_p.next_page_number }}"></a>
-                        <a class="yt-page-link rounded last" href="{% url 'company:supervise' %}?page_d={{ company_data_p.paginator.num_pages }}"></a>
-                    {% endif %}
+                  {% if company_data_p.has_next %}
+                  <a class="yt-page-link rounded next" href="{% url 'company:supervise' %}?page_d={{ company_data_p.next_page_number }}"></a>
+                  <a class="yt-page-link rounded last" href="{% url 'company:supervise' %}?page_d={{ company_data_p.paginator.num_pages }}"></a>
+                  {% endif %}
                 </span>
-            </div>
-          </td>
-        </tr>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
 
     </tbody>
 </table>

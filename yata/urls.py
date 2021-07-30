@@ -29,6 +29,7 @@ from setup import views as setup_views
 from faction.views import report as chainReport
 from faction.views import attacksReport
 from faction.views import revivesReport
+from company.views import supervise
 
 # sentry
 def trigger_error(request):
@@ -70,6 +71,7 @@ urlpatterns = [
     path('<slug:share>/chains/<slug:chainId>/', chainReport, name='chainReport'),
     path('<slug:share>/attacks/<slug:reportId>/', attacksReport, name='attacksReport'),
     path('<slug:share>/revives/<slug:reportId>/', revivesReport, name='revivesReport'),
+    path('share/company/<slug:shareId>/', supervise, name='company'),
 
     #sentry
     path('sentry-debug/', trigger_error),

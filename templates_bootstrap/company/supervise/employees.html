@@ -70,10 +70,16 @@ This file is part of yata.
         <tr data-emp="{{e.tId}}" data-pos="{{e.position}}" class="{% if e.simu %}simu{% endif %}">
           <td data-val="{{e.name|lower}}" class="text-start dont-touch-me">{{e.name|playerURL:e.tId|safe}}</td>
           <td data-val="{{e.position|lower}}" class="text-start">
+            {% if not share %}
               <select class="company-employee-position-form">
                 {% for position in company_positions %}
-                    <option value="{{position.name}}" {% if position.name == e.position %}selected{% endif %}>{{position.name}}</option>
+                <option value="{{position.name}}" {% if position.name == e.position %}selected{% endif %}>{{position.name}}</option>
                 {% endfor %}
+              </select>
+            {% else %}
+            {{e.position}}
+            {% endif %}
+
           </td>
           {# <td data-val="{{e.wage}}" class="text-left">{{e.wage|wage}}</td> #}
           <td data-val="{{e.effectiveness_total}}" class="text-center">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
@@ -106,7 +112,9 @@ This file is part of yata.
     </li>
     {% endfor %}
   </ul>
-  <p><span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span></p>
+  {% if not share %}
+    <p><span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span></p>
+  {% endif %}
   </div>
   <hr class="sep">
 {% endif %}

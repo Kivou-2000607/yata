@@ -90,3 +90,12 @@ $(document).on("click", "#update-data", e => {
     div.html('<div style="text-align: center; height: '+div.css("height")+';">'+spinner+'</div>');
   });
 });
+
+// share company data
+$(document).on('click', '#company-share', e=>{
+    e.preventDefault();
+    var span = $(e.currentTarget).closest("div")
+    span.load( "/company/supervise/manage", {
+        type: "share", csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(spinner);
+});

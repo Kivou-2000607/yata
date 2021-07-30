@@ -111,6 +111,9 @@ class Company(models.Model):
     effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
+    # share ID
+    shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
+
     def __str__(self):
         return f"{mark_safe(self.name)} [{self.tId}]"
 
