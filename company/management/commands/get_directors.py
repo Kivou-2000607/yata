@@ -50,7 +50,7 @@ class Command(BaseCommand):
                         "company_type": company["company"]["company_type"],
                         "rating": company["company"]["rating"],
                         "upgrades": company["company_detailed"]["upgrades"],
-                        "company_bank": company["company_detailed"]["company_bank"],
+                        "company_funds": company["company_detailed"]["company_funds"],
                         "value": company["company_detailed"]["value"],
                     }
                 )

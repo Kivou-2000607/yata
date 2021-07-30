@@ -83,7 +83,7 @@ class Company(models.Model):
     days_old = models.IntegerField(default=0)
 
     # detailed
-    company_bank = models.BigIntegerField(default=0)
+    company_funds = models.BigIntegerField(default=0)
     popularity = models.IntegerField(default=0)
     efficiency = models.IntegerField(default=0)
     environment = models.IntegerField(default=0)
@@ -164,7 +164,7 @@ class Company(models.Model):
             defaults[k] = req.get("company", {}).get(k, 0)
 
         # update detailed
-        for k in ["company_bank", "popularity", "efficiency", "environment", "trains_available", "advertising_budget"]:
+        for k in ["company_funds", "popularity", "efficiency", "environment", "trains_available", "advertising_budget"]:
             defaults[k] = req.get("company_detailed", {}).get(k, 0)
 
         # update detailed upgrades
@@ -218,7 +218,7 @@ class Company(models.Model):
         timestamp = defaults["timestamp"]
         id_ts = (timestamp + 3600 * 6) - (timestamp + 3600 * 6) % (3600 * 24)
         # remove some data from defaults
-        for k in ['company_bank', 'director_yata', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
+        for k in ['company_funds', 'director_yata', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
             del defaults[k]
 
         # remove some data from employees
