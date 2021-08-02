@@ -50,7 +50,7 @@ class BulkManager(BulkUpdateManager):
 
             return len(params)
 
-        def find_from_batch(self, batch_size=5000):
+        def find_from_batch(self, batch_size=2000):
 
             colmap = {f.get_attname_column()[0]: f.get_attname_column()[1].replace("'", "")  # super paranoid escape of col name
                       for f in self.mgr.model._meta.fields
@@ -94,7 +94,7 @@ class BulkManager(BulkUpdateManager):
         def count(self):
             return len(self._queries)
 
-        def run(self, batch_size=5000):
+        def run(self, batch_size=2000):
             if len(self._queries) == 0:
                 raise Exception('Empty batch')
 
@@ -128,7 +128,7 @@ class BulkManager(BulkUpdateManager):
 
                 if matches and operation == 'update':
                     logging.debug('bulk update')
-                    self.mgr.model.objects.bulk_update(matches, batch_size=2000, update_fields=self.fields_to_update())
+                    self.mgr.model.objects.bulk_update(matches, batch_size=batch_size, update_fields=self.fields_to_update())
                 else:
                     logging.debug('not performing update')
 

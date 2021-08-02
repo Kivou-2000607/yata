@@ -3153,14 +3153,14 @@ class RevivesReport(models.Model):
         for k, v in f_set.items():
             batch.update_or_create(report_id=self.id, faction_id=k, defaults=v)
         if batch.count():
-            batch.run()
+            batch.run(batch_size=50)
 
         print(f"[YATA {datestr()}] {self} update players")
         batch = RevivesPlayer.objects.bulk_operation()
         for k, v in p_set.items():
             batch.update_or_create(report_id=self.id, player_id=k, defaults=v)
         if batch.count():
-            batch.run()
+            batch.run(batch_size=50)
 
         # set show/hide
         print(f"[YATA {datestr()}] {self} show hide")
