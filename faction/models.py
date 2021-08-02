@@ -2476,11 +2476,11 @@ class AttacksReport(models.Model):
         print("{} last  {}".format(self, timestampToDate(self.last)))
         print("{} progress ({})%".format(self, self.progress()))
 
-        if not newEntry and len(apiAttacks) > 1:
-            print("{} no new entry with cache = {} [continue]".format(self, cache))
-            self.state = -6
-            self.save()
-            return -6
+        # if not newEntry and len(apiAttacks) > 1:
+        #     print("{} no new entry with cache = {} [continue]".format(self, cache))
+        #     self.state = -6
+        #     self.save()
+        #     return -6
 
         if len(apiAttacks) < MINIMAL_API_ATTACKS_STOP and not self.live:
             print("{} no api entry for non live chain [stop]".format(self))
