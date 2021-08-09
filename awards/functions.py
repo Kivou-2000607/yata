@@ -2012,31 +2012,33 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [869]:
-                    from stocks.models import ALL_STOCKS
+                    # from stocks.models import ALL_STOCKS
             		# "869": { "name": "Monopoly", "description": "Own every stock benefit at the same time", "type": 14,
                     type = "Stocks"
                     vp["category"] = category
                     vp["subcategory"] = type
 
-                    allStocks = {s["acronym"]: [s["name"], s["benefit"]["requirement"], s["current_price"]] for s in ALL_STOCKS.values()}
-                    holdStock = [b.split("(")[1].replace(")", "").strip() for b in userInfo.get("stock_perks", [])]
-                    lst = []
-                    totalMoney = 0
-                    requiredMoney = 0
-                    for stock_id, v in allStocks.items():
-                        cl = "valid" if stock_id in holdStock else "error"
-                        bbPrice = v[1] * v[2]
-                        totalMoney += v[1] * v[2]
-                        if stock_id not in holdStock:
-                            requiredMoney += v[1] * v[2]
+                    # allStocks = {s["acronym"]: [s["name"], s["benefit"]["requirement"], s["current_price"]] for s in ALL_STOCKS.values()}
+                    # holdStock = [b.split("(")[1].replace(")", "").strip() for b in userInfo.get("stock_perks", [])]
+                    # lst = []
+                    # totalMoney = 0
+                    # requiredMoney = 0
+                    # for stock_id, v in allStocks.items():
+                    #     cl = "valid" if stock_id in holdStock else "error"
+                    #     bbPrice = v[1] * v[2]
+                    #     totalMoney += v[1] * v[2]
+                    #     if stock_id not in holdStock:
+                    #         requiredMoney += v[1] * v[2]
+                    #
+                    #     lst.append('<span class={}>{}</span>: ${:,.0f}'.format(cl, stock_id, bbPrice))
+                    # vp["comment"] = "<br>".join(lst)
 
-                        lst.append('<span class={}>{}</span>: ${:,.0f}'.format(cl, stock_id, bbPrice))
-                    vp["comment"] = "<br>".join(lst)
-
-                    vp["goal"] = int(totalMoney)
-                    vp["current"] = int(totalMoney) - int(requiredMoney)
-                    vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["head"] = "$"
+                    # vp["goal"] = int(totalMoney)
+                    # vp["current"] = int(totalMoney) - int(requiredMoney)
+                    # vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["current"]) / float(vp["goal"]))
+                    # vp["head"] = "$"
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    vp["current"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [10]:
