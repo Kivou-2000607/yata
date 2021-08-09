@@ -19,7 +19,7 @@ urlpatterns = [
     re_path(r'^v1/loot/$', loot.loot, name="loot"),
 
     # stocks
-    re_path(r'^v1/stocks/get/$', stocks.getStocks, name="getStocks"),
+    # re_path(r'^v1/stocks/get/$', stocks.getStocks, name="getStocks"),
 
     # travel
     re_path(r'^v1/travel/export/$', travel.exportStocks, name="exportStocks"),
