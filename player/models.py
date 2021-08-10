@@ -330,7 +330,7 @@ class Player(models.Model):
                 b = {"Brawn": "strength", "Protection": "defense", "Evasion": "dexterity", "Sharpness": "speed"}
                 merits[k]["description"] = ["Passive bonus of", [3], ["%"], " in {}.".format(b.get(k))]
             elif k.split(" ")[-1] == "Mastery":
-                merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [3, 0.2], ["%", ""], " respectively."]
+                merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [2.5, 0.2], ["%", ""], " respectively."]
 
         return merits
 
