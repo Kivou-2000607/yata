@@ -22,46 +22,101 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div id="spy-paste">
-  {% include "faction/spies/paste.html" %}
-</div>
+{# load popovers #}
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  });
+</script>
 
-<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Spy databases</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>&nbsp;Spy databases</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module rounded">
   {% if databases|length %}
-    <p>You have <b>{{databases|length}}</b> database{{databases|length|pluralize}}</p>
-    <table id="spy-databases" class="tablesorter center-medium trshadow spy-databases">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Factions</th>
-            <th>Spies</th>
-            <th>Master</th>
-            <th>Use API</th>
-            <th>Secret</th>
-            <th>Buttons</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for database in databases %}
-          <tr>
-            {% include "faction/spies/db-line.html" %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <p>Your faction has <b>{{databases|length}}</b> database{{databases|length|pluralize}}</p>
   {% else %}
     <p>Your faction has no databases.</p>
   {% endif %}
-      <div style="width: 100%; margin-top: 10px; text-align: center;">
-        <a id="spy-database-create" href=""><i class="fas fa-plus-square fa-icon-inline"></i>Create a new database</a>
-        <span style="margin-left:20px;"></span>
-        <i class="fas fa-users fa-icon-inline"></i>Join an existing one: <input class="spy-database-join" placeholder="Copy paste secret here"></form>
-      </div>
-</div>
 
+  <div class="row mx-0 mb-0">
+    {% for database in databases %}
+      <div class="col-12 my-2">
+        <div class="input-group">
+          <span class="input-group-text"><tt>#{{database.pk}}</tt></span>
+          <span class="input-group-text">{{database.name}}</span>
+          {# <span class="input-group-text" data-bs-toggle="tooltip" title="{{database.factions.all|length}} factions" style="cursor: help;">{{database.factions.all|length}}</span> #}
+          {# <span class="input-group-text" data-bs-toggle="tooltip" title="{{database.n_spies}} spies" style="cursor: help;">{{database.n_spies}}</span> #}
+          <button type="submit" class="btn btn-outline spy-database-view" data-val="{{database.pk}}"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+
+    {% endfor %}
+    <div class="col-md-auto my-2">
+      <div class="input-group">
+        <span class="input-group-text">Create a new database</span>
+        <button id="spy-database-create" type="submit" class="btn btn-outline"><i class="fas fa-plus-square"></i></button>
+      </div>
+    </div>
+    <div class="col-md-auto my-2">
+      <div class="input-group">
+        <label for="spy-database-join" class="input-group-text">Join an existing database</label>
+        <input id="spy-database-join" class="form-control spy-database-join" placeholder="Copy paste secret here">
+        <span class="input-group-text neutral" data-bs-toggle="tooltip" title="You need a database's secret from another faction" style="cursor: help;"><i class="fas fa-question-circle"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% if database %}
   {% include "faction/spies/table.html" %}
 {% endif %}
+
+
+<!-- Modal breakdown -->
+<div class="modal fade" id="spy-paste-container" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto"><i class="fas fa-clipboard"></i>&nbsp;<span id="spy-paste-title"></span></div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+          </div>
+        </h2>
+      </div>
+      <div class="modal-body p-0">
+        <div class="container-fluid p-md-3 p-1 mb-0 module">
+          <h3>Paste Spy reports</h3>
+          <form method="post" action="{% url 'faction:spiesImport' %}">
+            {% csrf_token %}
+            <input id="spy-paste-db" name="db-pk" type="hidden">
+            <input name="action" value="paste-spy" type="hidden">
+
+            <div class="input-group mb-2">
+              <span class="input-group-text">Date</span>
+              <input id="spy-paste-date" name="date" type="text" class="form-control" required><br>
+              <span class="input-group-text" data-bs-toggle="tooltip" title="Enter the date of the report with the yy/mm/dd format."><i class="fas fa-question-circle"></i></span>
+            </div>
+            <div class="input-group mb-2">
+              <span class="input-group-text">Spy</span>
+              <textarea id="spy-paste-text" placeholder="Name: DUDE [1028023]
+              Strength: N/A
+              Speed: 722,850,271
+              Dexterity: N/A
+              Defense: 2,000,500,039
+              Total: 3,592,482,327" required class="form-control" name="spy" style="min-height: 160px;"></textarea>
+              <span class="input-group-text neutral" data-bs-toggle="tooltip" title="Copy paste a single spy from the game with at least the information you see below. Additional lines will be ignore."><i class="fas fa-question-circle"></i></span>
+            </div>
+            <button type="submit" class="btn btn-outline">Import</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

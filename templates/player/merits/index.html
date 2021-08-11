@@ -49,7 +49,7 @@ $( document ).ready(function() {
         if (i < 0) { cl = "error" }
         else if (i > 0) { cl = "valid" }
         i = i > 0 ? `+${i}`: i
-        return `<th class="neutral">${a}</th><th class="${cl}">${n}</th><th class="${cl}">${i}</th>`
+        return `<th class="a neutral">merits ${a}</th><th class="b">used <span class="${cl}">${n}</span></th><th class="c">available <span class="${cl}">${i}</span></th>`
 
     }
 
@@ -170,28 +170,21 @@ $( document ).ready(function() {
     <p class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorSub}}</p>
 {% else %}
 
-<table class="center">
-    <thead>
-        <tr>
-            <th>Total merits available</th>
-            <th>Total merits used</th>
-            <th>Merits available</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr id="merit-count" data-ini="{{nMerits}}">
-            <td></td><td></td><td></td>
-        </tr>
-    </tbody>
-</table>
-
-<table class="center-large merits-bar trshadow">
+<div class="table-responsive">
+<table class="table table-hover table-borderless tablesorter merits-bar">
+  <thead>
+    <tr id="merit-count" data-ini="{{nMerits}}">
+      <th class="a">&nbsp;</th>
+      <th class="b">&nbsp;</th>
+      <th class="c">&nbsp;</th>
+    </tr>
+  </thead>
     <tbody>
         {% for k, v in merits.items %}
         <tr>
-            <td class="a">{{k}}</td>
-            <td class="b merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits/bar.html" %}</td>
-            <td class="c description">
+            <td class="text-end">{{k}}</td>
+            <td class="text-center merits-bar" data-mer="{{k}}" data-fix="{{v.fix}}">{% include "player/merits/bar.html" %}</td>
+            <td class="text-start description">
                 {{v.description.0}}
                 {% if v.description.1|length == 1 %}
                     <span class="merit-description-initial {% if v.fix > v.level %}error{% elif v.fix < v.level %} valid{% else %}neutral{% endif %}">
@@ -229,4 +222,5 @@ $( document ).ready(function() {
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endif %}

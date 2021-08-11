@@ -17,16 +17,14 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
-
-{% block title %}YATA - Error 403{% endblock %}
+{% block title %}| Error 403{% endblock %}
 {% if redirect %}
   {% block meta %}<meta http-equiv="refresh" content="5; URL=/" />{% endblock %}
 {% endif %}
-{% block header %}<i class="fas fa-exclamation-triangle fa-icon-inline"></i>Error 403: Permission Denied{% endblock %}
 {% block text %}
-  <p class="neutral">{{exception}}</p>
+  <p class="warning"><i class="fas fa-exclamation-triangle"></i>&nbsp;Error 403: Permission Denied</p>
   {% if redirect %}
-  <p>You will be redirected to the home page...</p>
-  <p><img src="/media/misc/crimes2.gif"</p>
+    <p>You will be redirected to the home page...</p>
+    <p><img src="/media/misc/crimes2.gif"</p>
   {% endif %}
 {% endblock %}

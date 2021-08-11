@@ -25,7 +25,13 @@ This file is part of yata.
 
 <script>
 $(document).ready(function() {
-    $("#faction-revives-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    $("#faction-revives-report").tablesorter({sortList: [[1,1]]});
+    $("#date-start-revives").val("");
+    $("#date-end-revives").val("");
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    });
 
     $(function () {
         $("#date-start-revives").datetimepicker({
@@ -35,27 +41,23 @@ $(document).ready(function() {
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
                 $("#ts-start-revives").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-start-revives").html(s);
+                // $("#date-start-revives").html(s);
 
-                $("#date-start-revives").removeClass("error").addClass("valid");
+                $("#date-start-revives").removeClass("is-invalid").addClass("is-valid");
                 $("#date-live-revives").prop('checked', false);
 
                 var start = parseInt($("#ts-start-revives").val());
                 var end = parseInt($("#ts-end-revives").val());
                 if(!end) {
-                    $("#date-end-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date (or leave blank for live)');
+                    $("#date-end-revives").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-revives").hide()
                 } else if(end < start) {
-                    $("#date-end-revives").removeClass("valid").addClass("error");
+                    $("#date-end-revives").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-revives").hide()
                 } else {
-                    $("#date-end-revives").removeClass("error").addClass("valid");
+                    $("#date-end-revives").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-revives").show()
                 }
-
-                // if $("#date-start-revives").html {
-                //     console.log()
-                // }
             },
         });
     });
@@ -69,20 +71,20 @@ $(document).ready(function() {
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
                 $("#ts-end-revives").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-end-revives").html(s);
-                $("#date-end-revives").removeClass("error").addClass("valid");
+                // $("#date-end-revives").html(s);
+                $("#date-end-revives").removeClass("is-invalid").addClass("is-valid");
                 $("#date-live-revives").prop('checked', false);
 
                 var start = parseInt($("#ts-start-revives").val());
                 var end = parseInt($("#ts-end-revives").val());
                 if(!start) {
-                    $("#date-start-revives").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date');
+                    $("#date-start-revives").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-revives").hide()
                 } else if(end < start) {
-                    $("#date-start-revives").removeClass("valid").addClass("error");
+                    $("#date-start-revives").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-revives").hide()
                 } else {
-                    $("#date-start-revives").removeClass("error").addClass("valid");
+                    $("#date-start-revives").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-revives").show()
                 }
             },
@@ -92,36 +94,41 @@ $(document).ready(function() {
 
 </script>
 
-<h2 class="title"><i class="fas fa-ambulance fa-icon-inline"></i>{{faction.name|safe}}'s revives reports</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-ambulance"></i>&nbsp;{{faction.name|safe}}' revives reports</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     {% if reports|length %}
-    <table id="faction-revives-report" class="tablesorter center-large trshadow faction-revives-report">
+    <div class="table-responsive">
+    <table id="faction-revives-report" class="table table-hover table-striped table-borderless tablesorter faction-revives-report">
         <thead>
             <tr>
-                <th>Report [ID]</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Duration</th>
-                <th>Made</th>
-                <th>Received</th>
-                <th>Report</th>
+                <th class="a">Report [ID]</th>
+                <th class="b">Start</th>
+                <th class="b">End</th>
+                <th class="b">Duration</th>
+                <th class="c">Made</th>
+                <th class="c">Received</th>
+                <th class="d">Report</th>
         </thead>
         <tbody>
         {% for report in reports %}
         <tr class="faction-revives-report">
-            <td class="a">Report [{{report.pk}}]</td>
-            <td class="b">{{report.start|ts2date}}</td>
+            <td class="text-start">Report [{{report.pk}}]</td>
+            <td class="text-center">{{report.start|ts2date}}</td>
             {% if report.end %}
-                <td class="b">{{report.end|ts2date}}</td>
-                <td class="b">{{report.end|sub:report.start|ts2time}}</td>
+                <td class="text-center">{{report.end|ts2date}}</td>
+                <td class="text-end">{{report.end|sub:report.start|ts2time}}</td>
             {% else %}
-                <td class="b">-</td>
-                <td class="b">-</td>
+                <td class="text-center">-</td>
+                <td class="text-end">-</td>
             {% endif %}
-            <td class="c"><b>{{report.revivesMade}}</b></td>
-            <td class="c"><b>{{report.revivesReceived}}</b></td>
+            <td class="text-center"><b>{{report.revivesMade}}</b></td>
+            <td class="text-center"><b>{{report.revivesReceived}}</b></td>
 
-            <td class="d buttons">
+            <td class="text-start">
                 {% include "faction/revives/buttons.html" %}
             </td>
         </tr>
@@ -129,28 +136,44 @@ $(document).ready(function() {
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else%}
-        <p class="error">No reports recorded. Only AA members can add reports.</p>
+        <p class="error mb-0">No reports recorded. Only AA members can add reports.</p>
     {% endif %}
-</div>
 
-{% if player.factionAA %}
-<div class="module rounded">
-    <p>To create a new revive report select a starting date and either an ending date or make it live.</p>
-    <form>
-        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Starting date</b>:
-            <input id="ts-start-revives" type="hidden" value="0">
-            <span id="date-start-revives" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date</span>
-        </p>
-        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Ending date</b>:
-            <input id="ts-end-revives" type="hidden" value="0">
-            <span id="date-end-revives" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date</span>
-        </p>
-        <p><b><i class="fas fa-microphone-alt fa-icon-inline"></i>Make it live</b>:
-            <input id="ts-live-revives" type="hidden" value="0">
-            <input id="date-live-revives" type="checkbox">
-        </p>
-        <p id="create-report-revives" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Start</p>
-    </form>
+    {% if player.factionAA %}
+      <hr class="sep">
+
+        <h3>Create new revives reports</h3>
+        <p><i>Select a starting date and either an ending date or make it live.</i></p>
+        <div class="row mx-0">
+          <input id="ts-start-revives" type="hidden" value="0">
+          <input id="ts-end-revives" type="hidden" value="0">
+          <input id="ts-live-revives" type="hidden" value="0">
+
+          <div class="col-auto m-2 align-self-center">
+            <div class="input-group">
+              <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>Start</label>
+              <input id="date-start-revives" type="text" class="form-control">
+            </div>
+          </div>
+          <div class="col-auto m-2 align-self-center">
+            <div class="input-group">
+              <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>End</label>
+              <input id="date-end-revives" type="text" class="form-control">
+            </div>
+          </div>
+          <div class="col-auto m-2 align-self-center">
+             <div class="input-group">
+               <span class="input-group-text"><i class="fas fa-microphone-alt me-2"></i>Live</span>
+               <div class="input-group-text">
+                 <input id="date-live-revives" type="checkbox" class="form-check-input">
+               </div>
+            </div>
+          </div>
+          <div class="col-auto m-2 align-self-center">
+            <button id="create-report-revives" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
+          </div>
+        </div>
+  {% endif %}
 </div>
-{% endif %}

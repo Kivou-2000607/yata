@@ -21,18 +21,22 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<h2 class="title"><i class="fas fa-fist-raised fa-icon-inline"></i>Your faction</h2>
-<div class="module">
-    <h1>Faction Events</h1>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-fist-raised"></i>&nbsp;Your faction</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <h3>Faction Events</h3>
     {% if events|length %}
-    <div class="faction-event-container">
+    <div class="d-flex flex-wrap justify-content-center">
         {% for event in events %}
             {% include "faction/events/index.html" %}
         {% endfor %}
     </div>
     {% endif %}
 
-    <h1>Reports currently being computed</h1>
+    <h3>Reports currently being computed</h3>
     <ul>
         {% if chainsreports|length %}<li>Chains</li>
         <ul>
@@ -40,7 +44,7 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:report" report.tId %}'>Live chain</a> started on {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.chain|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:report" report.tId %}'>Chain report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.chain|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -52,7 +56,7 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:attacks" report.pk %}'>Live attacks report</a> started on {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% else %}
-                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.attacks|intcomma}} hits)</li>
+                    <li><a href='{% url "faction:attacks" report.pk %}'>Attacks report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.attacks|intcomma}} hits)</li>
                 {% endif %}
             {% endfor %}
             </ul>
@@ -64,13 +68,13 @@ This file is part of yata.
                 {% if report.live %}
                     <li><a href='{% url "faction:revives" report.pk %}'>Live revives report</a> started on {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% else %}
-                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.end|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
+                    <li><a href='{% url "faction:revives" report.pk %}'>Revives report</a> from {{report.start|ts2date}} to {{report.start|ts2date}} ({{report.revivesMade|add:report.revivesReceived|intcomma}} revives)</li>
                 {% endif %}
             {% endfor %}
             </ul>
         {% endif %}
     </ul>
-    <h1>Faction target list</h1>
+    <h3>Faction target list</h3>
     {% include "faction/targets/index.html" %}
 
 </div>
@@ -97,6 +101,7 @@ This file is part of yata.
             scaleColumns: [0, 1],
             scaleType: "allmaximized",
             scaleFormat: 'short',
+            height: 200,
         };
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('networth-graph'));
@@ -105,11 +110,20 @@ This file is part of yata.
     }
 </script>
 
-<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Networth and respect growth</h2>
-<div class="module">
-    <div id="networth-graph"></div>
-
-    <hr class="sep">
+{# h2 buttons #}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-chart-line"></i>&nbsp;Networth and respect growth</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless tablesorter">
+      <tbody>
+        <tr><td id="networth-graph"></td></tr>
+      </tbody>
+    </table>
+  </div>
 
     <div class="pagination-list">
       {% include "faction/logs/logs.html"%}

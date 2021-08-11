@@ -22,58 +22,67 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
-<h2 class="title"><i class="fas fa-eye fa-icon-inline"></i>Big brother</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-eye"></i>&nbsp;Big brother</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     <div id="faction-big-brother-table">
         {% include "faction/bigbrother/table.html" %}
     </div>
 </div>
 
-<h2 class="title"><i class="fas fa-project-diagram fa-icon-inline"></i>List of challenges</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-project-diagram"></i>&nbsp;List of challenges</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     {% if statsList|length %}
-        <table class="center trshadow faction-bb-challenges">
-          <tbody>
-            {% for statType, timestamps in statsList.items %}
-              {% for name, ts in timestamps %}
-                {% ifchanged %}
-                <tr id="faction-bb-challenges-toggle-{{statType}}" style="cursor: pointer;">
-                    <td class="aa"><b>{{name}}</b>&nbsp;&nbsp;<i class="fas fa-caret-right" style="margin-left:20px"></i></td>
-                    <td class="b"></td>
-                    <td class="c"></td>
-                </tr>
-                {% endifchanged %}
-                <tr class="faction-bb-challenges-catch-{{statType}}" style="display: none;">
-                  <td class="ab"><i>{{name}}</i></td>
-                  <td class="b">{{ts|ts2date}}</td>
-                  {% if player.factionAA %}
-                    <td class="c"><a class="faction-bb-delete" href="" data-val="{{statType}}-{{ts}}"><i class="fas fa-trash-alt" title="Delete challenge"></i></a></td>
-                {% else %}
-                    <td class="c"><i class="fas fa-trash-alt neutral" title="You need AA perm to delete a challenge"></i></td>
-                {% endif %}
-                </tr>
-              {% endfor %}
-            {% endfor %}
-          </tbody>
-        </table>
+      {% for statType, timestamps in statsList.items %}
+        {% for name, ts in timestamps %}
+          {% if forloop.first %}
+            <h3 class="module-doc">{{name}} ({{timestamps|length}})&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+            <div class="module-doc">
+              <div class="row mx-0">
+          {% endif %}
+            <div class="col-auto my-2 challenge">
+              <div class="input-group">
+                <span class="input-group-text">{{name}}</span>
+                <span class="input-group-text">{{ts|ts2date}}</span>
+                {% if player.factionAA %}
+                  <button type="submit" class="btn btn-outline faction-bb-delete" data-val="{{statType}}-{{ts}}" title="Delete challenge">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                  {% endif %}
+                </div>
+              </div>
+          {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
     {% else %}
-    <p class="error">No challenges recorded. Ask a AA member of your faction.</p>
+    <p class="error mb-0">No challenges recorded. Ask a AA member of your faction.</p>
     {% endif %}
 </div>
 
 {%if player.factionAA%}
-    <div class="module rounded">
-        <form class="inline">
-        Add a new challenge:&nbsp;&nbsp;
-          <select class="faction-bb-enter-challenge">
+  <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+    <div class="row mx-0">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text">Add a new challenge</span>
+          <select class="faction-bb-enter-challenge form-select">
             <option selected disabled hidden>Select a challenge</option>
             {% for k, v in bridge.items %}
-            	{%if k != "allgyms" %}
-                    <Option Value="{{k}}">{{v}}</option>
-            	{%endif%}
-            {% endfor %}
-          </select>
-      </form>
+            {%if k != "allgyms" %}
+            <Option Value="{{k}}">{{v}}</option>
+              {%endif%}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
 {%endif%}

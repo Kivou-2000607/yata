@@ -18,7 +18,7 @@ This file is part of yata.
 {% endcomment %}
 
 <form>{% csrf_token %}
-    <p>Here is your status:
+    <p class="mb-0">Here is your status:
         {% if player.dId%}
             <span class="valid">Your discord account <tt>{{player.dId}}</tt> is officially verified by Torn.</span>
         {% else %}

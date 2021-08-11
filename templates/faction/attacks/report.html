@@ -22,66 +22,33 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
-
-<script>
-// $(document).ready(function() {
-//     $(".faction-attacks-report-players").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[2,1], [5,1], [3,1], [4,1]]});
-//     $(".faction-attacks-report-factions").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1], [2,1]]});
-// });
-
-$(function () {
-    $("#modify-date-end").datetimepicker({
-        step: 15,
-        onChangeDateTime:function(dp,$input){
-            var d = new Date($input.val());
-            var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-            var reportId = $("input#attacks-report-id").attr("data-val");
-            $( "#content-update" ).load( "/faction/attacks/" + reportId, {
-                end: dUTC/1000, modifyEnd: 1,
-                csrfmiddlewaretoken: getCookie("csrftoken")
-            },afterLoad);
-            $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Modify contract ');
-        },
-    });
-});
-
-</script>
-
-<h2 class="title"><i class="fas fa-skull fa-icon-inline"></i>{{faction.name}}'s attacks report [{{report.pk}}]
-  {# from when reports were filled by the user {% if not share %}<span id="faction-attacks-report-update" data-val="{{report.pk}}" class="flush-right"><a href=""><i class="fas fa-sync-alt fa-icon-inline"></i>Synchronize report</a></span>{% endif %} #}
-</h2>
-<div class="module">
-
-    {% comment %}
-       # from when reports were filled by the user
-      {% if report.fill < report.update and player.factionAA %}
-        <p style="text-align: center; margin-bottom: 10px;"><span class="warning"><i class="fas fa-sync-alt fa-icon-inline"></i>New attacks has been entered in the database since last synchronization.</span><br>
-        Please synchronize your report with the button on the top right of this frame.
-      </p>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-skull"></i>&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]</div>
+      {% if not share and player.factionAA %}
+        <div class="px-2">
+          {% include "faction/attacks/export.html" %}
+        </div>
+        <div class="px-2">
+          {% include 'faction/attacks/share.html' %}
+        </div>
       {% endif %}
-    {% endcomment %}
-    <table class="tablesorter center trshadow contract-summary">
-        <thead>
-            <tr><th colspan="3" class="buttons">Report summary
-                {% if not share and player.factionAA %}
-                    <form class="flush-right">{% csrf_token %}
-                        Share&nbsp;&nbsp;<span>{% include 'faction/attacks/share.html' %}</span>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
 
-                        Export&nbsp;&nbsp;<span>{% include "faction/attacks/export.html" %}</span>
-                    </form>
-
-                {% endif %}
-            </th></tr>
-            {% if report.wall > 0 %}
-                <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
-            {% endif %}
-        </thead>
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless attacks-summary">
+        {% if report.wall > 0 %}
+          <thead>
+            <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
+          </thead>
+        {% endif %}
         <tbody>
             <tr>
-                <td><b>From: </b> {{report.start|ts2date}}</td>
-                <input id="attacks-report-id" type="hidden" data-val="{{report.pk}}" value="{{report.pk}}">
-                <td id="modify-date-end" style="cursor: pointer"><b>To: </b> {{report.end|ts2date}}</td>
-                <td><b>Report status:</b> {% include "faction/attacks/status.html"%}</td>
+                <td><b>Start:</b> {{report.start|ts2date}}</td>
+                <td><b>End:</b> {{report.end|ts2date}}</td>
+                <td><b class="me-1">Report status:</b> {% include "faction/attacks/status.html"%}</td>
             </tr>
             <tr>
                 <td><b>Attacks: </b> {{report.attacks}}</td>
@@ -90,38 +57,51 @@ $(function () {
             </tr>
         </tbody>
     </table>
-    <hr class="sep">
+  </div>
+
     {% if factions|length %}
-        <div class="pagination-list">
+      <div class="row">
+        <div class="col col-md-6 pagination-list">
             {% include "faction/attacks/factions.html"%}
         </div>
-        <div class="pagination-list">
+        <div class="col col-md-6 pagination-list">
             {% include "faction/attacks/players.html"%}
         </div>
-        <hr class="sep" style="opacity: 0">
+      </div>
     {% else %}
-        <p class="warning">No report found. Please click on synchronize report on the top right of this section.</p>
+        <p class="warning mb-0">Report is being computed.</p>
     {% endif %}
 </div>
 
 {% if not share %}
-    <h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Members breakdown</h2>
-    <div class="module">
-        <div class="pagination-list">
-            {% if members %}
-                {% include "faction/attacks/members.html"%}
-            {% else %}
-                <p><a id="faction-attacks-report-members" data-val="{{report.pk}}" href="">Compute members breakdown</a><i style="cursor: help;margin-left: 20px;" class="fas fa-question-circle" title="Compute members outgoing / incoming attacks breakdown based on the faction filters set above.&#013;If your faction is selected above, you will see members from other factions in the list. For sake of clarity either do not select your faction or select only your faction... Or do wathever you want."></i></p>
-            {% endif %}
-        </div>
+  <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;Members breakdown</div>
+      </div>
+  </h2>
+  <div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div class="pagination-list">
+        {% if members %}
+            {% include "faction/attacks/members.html"%}
+        {% else %}
+            <p class="mb-0 text-center">
+              <a id="faction-attacks-report-members" data-val="{{report.pk}}" href="">Compute members breakdown</a>
+              <i style="cursor: help;" class="fas fa-question-circle ms-1" title="Compute members outgoing / incoming attacks breakdown based on the faction filters set above.&#013;If your faction is selected above, you will see members from other factions in the list. For sake of clarity either do not select your faction or select only your faction... Or do wathever you want."></i>
+            </p>
+        {% endif %}
     </div>
+  </div>
 {% endif %}
 
 {% if attacks %}
-    <h2 class="title"><i class="fas fa-list fa-icon-inline"></i>List of attacks</h2>
-    <div class="module">
-      <div class="pagination-list">
-        {% include "faction/attacks/attacks.html" %}
-      </div>
-    </div>
+<h2 class="title rounded-top px-2 py-2">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-list"></i>&nbsp;List of attacks</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="pagination-list">
+    {% include "faction/attacks/attacks.html" %}
+  </div>
+</div>
 {% endif %}

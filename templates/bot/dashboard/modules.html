@@ -120,6 +120,8 @@ This file is part of yata.
             {% for k, v in mod.items %}
                 {% if k == "currents" %}
                     {% include "bot/dashboard/module-currents.html" %}
+                {% elif k == "chains" %}
+                    {% include "bot/dashboard/module-currents.html" %}
                 {% else %}
                     {% include "bot/dashboard/module-dict.html" %}
                 {% endif %}

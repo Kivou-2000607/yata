@@ -17,7 +17,7 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!DOCTYPE html>
+<!doctype html>
 {% load static %}
 {% load i18n %}
 {% load app_filters %}
@@ -27,46 +27,43 @@ This file is part of yata.
 <!-- Current language: {{ LANGUAGE_CODE }} -->
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
+  <!-- meta  -->
+  <meta charset="UTF-8">
+  <meta name="robots" content="NONE,NOARCHIVE" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% block meta%}{% endblock %}
 
-    <!-- load fontawesome -->
-    <link href='{% static "thirdparty/fontawesome-free-5.13.0-web/css/all.css" %}' rel="stylesheet"> <!--load all styles -->
+  <!-- load fontawesome -->
+  <link href="{% static 'thirdparty/fontawesome-free-5.13.0-web/css/all.css' %}" rel="stylesheet" type="text/css">
 
-    <!-- css -->
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/base.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "admin/css/forms.css" %}' />
-    <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
+  <!-- bootstrap -->
+  <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap-5.0.2-dist/css/bootstrap.min.css" %}'>
 
-    <!-- favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <!-- yata main css -->
+  <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
 
-    <!-- meta  -->
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <meta charset="UTF-8">
-    {% block meta %}{% endblock %}
-
-    <title>{% block title%}{% endblock%}</title>
+  <!-- tab -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <title>YATA{% block title%}{% endblock%}</title>
 </head>
 
 <body>
-    <div id="container">
-        <div id="content">
-            <div id="yata-login">
-                <div class="module citymap">
+  <header class="px-md-5">
+    <div class="module mb-3">
+      <div class="d-flex">
+        <div class="m-3">
+          <a class="navbar-brand" href="/" title="Home">
+            {% include "svg/yata.full.svg" %}
+          </a>
+        </div>
+        <div class="m-3">
+          {% block text %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </header>
 
-                  <table class="http-status">
-                  <tr>
-                    <td class="a">
-                      <a class="yata-logo-full" href="{% url 'index' %}" title="Home" ><img src="/media/svg/yata.full.svg" alt="YATA" width="100%"/></a>
-                    </td>
-                    <td class="b">
-                        <h2 class="error">{% block header%}{% endblock%}</h2>
-                        {% block text %}{% endblock %}
-                    </td>
-                  </tr>
-                  </table>
-                </div>
-            </div>
-        </div> <!--end of content-->
-    </div> <!--end of container-->
+  <script src='{% static "thirdparty/bootstrap-5.0.2-dist/js/bootstrap.bundle.js" %}'></script>
+
 </body>
 </html>

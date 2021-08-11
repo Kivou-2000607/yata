@@ -19,6 +19,8 @@ This file is part of yata.
 
 {% if apiErrorSub %}
     {% include "yata/error.html" with apiError=apiErrorSub %}
+{% elif apiError %}
+    {% include "yata/error.html" %}
 {% endif %}
 
 {% if view.targets %}
@@ -33,3 +35,5 @@ This file is part of yata.
 {% if view.dogtags %}
     {% include "target/dogtags/index.html" %}
 {% endif %}
+
+{% include "target/tutorial.html" %}

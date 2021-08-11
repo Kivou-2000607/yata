@@ -39,25 +39,32 @@ This file is part of yata.
 
 
 
-<table id="target-targets" class="tablesorter center-medium trshadow target-targets">
-    <thead>
-        <tr>
-            <th title="Name of the target">Name</th>
-            <th title="Level of the target">Level</th>
-            <th title="Online status"><i class="fas fa-circle"></i></th>
-            <th title="Last action of the target">Last action</th>
-            <th title="Life of the target">Life</th>
-            <th title="Status of the target">Status</th>
-            <th title="Time since last update">Update</th>
-            <th title="Delete"></th>
-    </thead>
-    <tbody>
-    {% for target in targets %}
-        <tr id="target-list-refresh-{{target.target_id}}" data-val="{{target.target_id}}">
-          {# <td>{{target}}</td> #}
-            {% include "faction/targets/line.html" %}
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+
+
+
+
+
+<div class="table-responsive">
+  <table id="target-targets" class="table table-hover table-striped table-borderless tablesorter target-targets">
+      <thead>
+          <tr>
+              <th class="a" title="Name of the target">Name</th>
+              <th class="b" title="Level of the target">Level</th>
+              <th class="c" title="Online status"><i class="fas fa-circle"></i></th>
+              <th class="d" title="Last action of the target">Last action</th>
+              <th class="e" title="Life of the target">Life</th>
+              <th class="f" title="Status of the target">Status</th>
+              <th class="g" title="Time since last update">Update</th>
+              <th class="h" title="Delete">&nbsp;</th>
+      </thead>
+      <tbody>
+      {% for target in targets %}
+          <tr id="target-list-refresh-{{target.target_id}}" data-val="{{target.target_id}}">
+            {# <td>{{target}}</td> #}
+              {% include "faction/targets/line.html" %}
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
 {% endif %}

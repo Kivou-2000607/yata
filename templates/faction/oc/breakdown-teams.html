@@ -23,7 +23,7 @@ This file is part of yata.
 
 <script>
     $(document).ready(function() {
-        $("#faction-crimes-breakdown-team").tablesorter({
+        $("#faction-crimes-team").tablesorter({
             textExtraction: {
               0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
@@ -40,61 +40,60 @@ This file is part of yata.
 </script>
 
 {% if teamsDB|length %}
-<table id="faction-crimes-breakdown-team" class="center-large trshadow faction-crimes-breakdown">
-    <thead>
-        <tr>
-            <th colspan="4">Team</th>
-            <th colspan="2">Time</th>
-            <th colspan="3">Money</th>
-            <th colspan="3">Respect</th>
-        </tr>
-        <tr>
 
-            <th>ID</th>
-            <th>Success</th>
-            <th>Made</th>
-            <th>%</th>
+<div class="table-responsive">
+  <table id="faction-crimes-team" class="table table-hover table-striped table-borderless tablesorter faction-crimes-teams">
+      <thead>
+          <tr>
 
-            <th>Total</th>
-            <th>Per crime</th>
+              <th class="a">&nbsp;<br>Team ID</th>
+              {# <th class="b">Success</th> #}
+              <th class="b">&nbsp;<br>Success</th>
+              <th class="b">&nbsp;<br>%</th>
 
-            <th>Total</th>
-            <th>Per crime</th>
-            <th>Per day</th>
+              <th class="c"><i class="far fa-clock me-1"></i><br/>Total</th>
+              <th class="c"><i class="far fa-clock me-1"></i><br/>/ crime</th>
 
-            <th>Total</th>
-            <th>Per crime</th>
-            <th>Per day</th>
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>Total</th>
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>/ crime</th>
+              <th class="d"><i class="fas fa-dollar-sign me-1"></i><br/>/ day</th>
 
-    </thead>
-    <tbody>
-    {% for k, v in teamsDB %}
-        <tr class="hover">
-            <td class="a{% if v.active %} valid{%endif%}">
-                <span rel="tooltip" style="cursor: help;" data-val="{{v.participants|length}}" title='{% include "faction/oc/participants.html" with participants=v.participants id=k %}'>
-                    <i class="fas fa-users" ></i>&nbsp;&nbsp;<tt>{{k}}</tt> #{{v.participants|length}}
-                </span>
-                {% include "faction/oc/filter.html" with type="team_id" id=k %}
-            </td>
-            <td class="b">{{v.crimes.1}}</td>
-            <td class="b">{{v.crimes.0}}</td>
-            <td class="b">{{v.crimes.2}}%</td>
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>Total</th>
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>/ crime</th>
+              <th class="e"><i class="fas fa-fist-raised me-1"></i><br/>/ day</th>
 
-            <td class="c" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DHM"}}</td>
-            <td class="c" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DHM"}}</td>
+      </thead>
+      <tbody>
+      {% for k, v in teamsDB %}
+          <tr class="hover">
+              <td class="text-start{% if v.active %} valid{%endif%}" data-val="{{v.participants|length}}">
+                <div class="d-flex">
+                  <div class="me-2">{% include "faction/oc/filter.html" with type="team_id" id=k %}</div>
+                    <span class="show-team" data-val="{{k}}" style="cursor: help;">
+                      <i class="fas fa-users" ></i>&nbsp<tt>{{k}}</tt> #{{v.participants|length}}
+                    </span>
+                </div>
+              </td>
+              <td class="text-end">{{v.crimes.1}} / {{v.crimes.0}}</td>
+              {# <td class="text-start">{{v.crimes.0}}</td> #}
+              <td class="text-center">{{v.crimes.2}}%</td>
 
-            <td class="d" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
-            <td class="d" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
-            <td class="d" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td>
+              <td class="text-end" data-val="{{v.time.0}}">{{v.time.0|ts2time:"DH"}}</td>
+              <td class="text-end" data-val="{{v.time.1}}">{{v.time.1|ts2time:"DH"}}</td>
 
-            <td class="e">{{v.respect.0|intcomma}}</td>
-            <td class="e">{{v.respect.1|intcomma|floatformat:2}}</td>
-            <td class="e">{{v.respect.2|intcomma|floatformat:2}}</td>
-        </tr>
+              <td class="text-end" data-val="{{v.money.0}}">${{v.money.0|intcomma}}</td>
+              <td class="text-end" data-val="{{v.money.1}}">${{v.money.1|intcomma}}</td>
+              <td class="text-end" data-val="{{v.money.2}}">${{v.money.2|intcomma}}</td>
 
-    {% endfor %}
-    </tbody>
-</table>
+              <td class="text-end">{{v.respect.0|intcomma}}</td>
+              <td class="text-end">{{v.respect.1|intcomma|floatformat:2}}</td>
+              <td class="text-end">{{v.respect.2|intcomma|floatformat:2}}</td>
+          </tr>
+
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
 {% else %}
-<p class="error">No teams found.</p>
+<p class="error mb-0">No teams found.</p>
 {% endif %}

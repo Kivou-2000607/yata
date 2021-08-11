@@ -21,62 +21,68 @@ This file is part of yata.
 {% load humanize %}
 {% load app_filters %}
 
-<table class="center-large trshadow company-logs">
+<div class="table-responsive">
+<table class="table table-hover table-striped table-borderless company-logs">
     <thead>
         <tr>
-            <th>Date</th>
-            <th>Emp.</th>
-            <th>Adv.</th>
-            <th>Pop.</th>
-            <th>Eff.</th>
-            <th>Env.</th>
-            <th>Eff.</th>
-            <th>D. Customers</th>
-            <th>D. Income</th>
-            <th>D. Profit</th>
-            <th>W. Customers</th>
-            <th>W. Income</th>
-            <th>W. Profit</th>
+            <th class="a">Date</th>
+            <th class="b">Emp.</th>
+            <th class="c">Adv.</th>
+            <th class="d">Pop.</th>
+            <th class="d">Eff.</th>
+            <th class="d">Env.</th>
+            <th class="e">Eff.</th>
+            <th class="f">D. Customers</th>
+            <th class="f">D. Income</th>
+            <th class="f">D. Profit</th>
+            <th class="g">W. Customers</th>
+            <th class="g">W. Income</th>
+            <th class="g">W. Profit</th>
         </tr>
     </thead>
     <tbody>
         {% for d in company_data_p %}
         <tr class="company-logs" data-val="{{d.timestamp}}">
-            <td class="a" title="{{d.timestamp|ts2date}}">{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}</td>
-            <td class="b">{{d.employees_hired}}</td>
-            <td class="c">${{d.advertising_budget|intcomma}}</td>
-            <td class="d">{{d.popularity}}%</td>
-            <td class="d">{{d.efficiency}}%</td>
-            <td class="d">{{d.environment}}%</td>
-            <td class="e">{{d.effectiveness_total}}</td>
-            <td class="f">{{d.daily_customers|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_customers|sub:d.lastw_customers|signColor0}})</span></td>
-            <td class="f">${{d.daily_income|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_income|sub:d.lastw_income|signColor0}})</span></td>
-            <td class="f">{{d.daily_profit|signColor0}} <span title="Comparison to last week on the same day">({{d.daily_profit|sub:d.lastw_profit|signColor0}})</span></td>
-            <td class="g">{{d.weekly_customers|intcomma}}</td>
-            <td class="g">${{d.weekly_income|intcomma}}</td>
-            <td class="g">{{d.weekly_profit|signColor0}}</td>
+            <td class="text-center" title="{{d.timestamp|ts2date}}">{{d.id_ts|sub:86400|ts2date:"%Y/%m/%d"}}</td>
+            <td class="text-center">{{d.employees_hired}}</td>
+            <td class="text-center">${{d.advertising_budget|intcomma}}</td>
+            <td class="text-center">{{d.popularity}}%</td>
+            <td class="text-center">{{d.efficiency}}%</td>
+            <td class="text-center">{{d.environment}}%</td>
+            <td class="text-center">{{d.effectiveness_total}}</td>
+            <td class="text-right">{{d.daily_customers|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_customers|sub:d.lastw_customers|signColor0}})</span></td>
+            <td class="text-right">${{d.daily_income|intcomma}} <span title="Comparison to last week on the same day">({{d.daily_income|sub:d.lastw_income|signColor0}})</span></td>
+            <td class="text-right">{{d.daily_profit|signColor0}} <span title="Comparison to last week on the same day">({{d.daily_profit|sub:d.lastw_profit|signColor0}})</span></td>
+            <td class="text-right">{{d.weekly_customers|intcomma}}</td>
+            <td class="text-right">${{d.weekly_income|intcomma}}</td>
+            <td class="text-right">{{d.weekly_profit|signColor0}}</td>
         </tr>
         {% endfor %}
 
-        <tr><td colspan="13">
-            <div class="pagination">
+        {% if not share %}
+          <tr>
+            <td colspan="13" class="text-center">
+              <div class="pagination d-block">
                 <span class="step-links">
-                    {% if company_data_p.has_previous %}
-                        <a class="page-link" href="{% url 'company:supervise' %}?page_d=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.previous_page_number }}">previous</a>
-                    {% endif %}
+                  {% if company_data_p.has_previous %}
+                  <a class="yt-page-link rounded first" href="{% url 'company:supervise' %}?page_d=1"></a>
+                  <a class="yt-page-link rounded previous" href="{% url 'company:supervise' %}?page_d={{ company_data_p.previous_page_number }}"></a>
+                  {% endif %}
 
-                    <span class="current">
-                        {{ company_data_p.number }}/{{ company_data_p.paginator.num_pages }}
-                    </span>
+                  <span class="current">
+                    {{ company_data_p.number }}/{{ company_data_p.paginator.num_pages }}
+                  </span>
 
-                    {% if company_data_p.has_next %}
-                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'company:supervise' %}?page_d={{ company_data_p.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
+                  {% if company_data_p.has_next %}
+                  <a class="yt-page-link rounded next" href="{% url 'company:supervise' %}?page_d={{ company_data_p.next_page_number }}"></a>
+                  <a class="yt-page-link rounded last" href="{% url 'company:supervise' %}?page_d={{ company_data_p.paginator.num_pages }}"></a>
+                  {% endif %}
                 </span>
-            </div>
-        </td></tr>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
 
     </tbody>
 </table>
+</div>

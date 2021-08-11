@@ -21,64 +21,86 @@ This file is part of yata.
 {% load humanize %}
 {% load static %}
 
-<!-- categories -->
-<form>
-    {% csrf_token %}
-<table class="center-large tdshadow awards-categories">
-    <!-- <thead>
-        <tr>
-             <th colspan="7">
-                Browse through the awards categories
-            </th>
-        </tr>
-    </thead> -->
-    <tbody>
-    <tr>
-        <td>
-            <a href="{% url 'awards:list' type="crimes" %}"><i class="fas fa-fingerprint fa-icon-inline"></i>Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="drugs" %}"><i class="fas fa-cannabis fa-icon-inline"></i>Drugs ({{summaryByType.Drugs.nAwarded}}/{{summaryByType.Drugs.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="attacks" %}"><i class="fas fa-crosshairs fa-icon-inline"></i>Attacks ({{summaryByType.Attacks.nAwarded}}/{{summaryByType.Attacks.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="faction" %}"><i class="fas fa-fist-raised fa-icon-inline"></i>Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="items" %}"><i class="fas fa-toilet-paper fa-icon-inline"></i>Items ({{summaryByType.Items.nAwarded}}/{{summaryByType.Items.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="travel" %}"><i class="fas fa-plane-departure fa-icon-inline"></i>Travel ({{summaryByType.Travel.nAwarded}}/{{summaryByType.Travel.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="work" %}"><i class="fas fa-user-graduate fa-icon-inline"></i>Work ({{summaryByType.Work.nAwarded}}/{{summaryByType.Work.nAwards}})</a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="{% url 'awards:list' type="gym" %}"><i class="fas fa-dumbbell fa-icon-inline"></i>Gym ({{summaryByType.Gym.nAwarded}}/{{summaryByType.Gym.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="money" %}"><i class="fas fa-piggy-bank fa-icon-inline"></i>Money ({{summaryByType.Money.nAwarded}}/{{summaryByType.Money.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="competitions" %}"><i class="fas fa-trophy fa-icon-inline"></i>Competitions ({{summaryByType.Competitions.nAwarded}}/{{summaryByType.Competitions.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="commitment" %}"><i class="fas fa-hourglass-half fa-icon-inline"></i>Commitment ({{summaryByType.Commitment.nAwarded}}/{{summaryByType.Commitment.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="miscellaneous" %}"><i class="fas fa-flag-checkered fa-icon-inline"></i>Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:list' type="all" %}"><i class="fas fa-medal fa-icon-inline"></i>All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
-        </td>
-        <td>
-            <a href="{% url 'awards:hof' %}"><i class="fas fa-crown fa-icon-inline"></i>Hall of Fame</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</form>
+
+<nav class="navbar navbar-expand-md navbar-light py-0">
+  <div class="container-fluid">
+    <button class="navbar-toggler ms-auto mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span id="collapse-section-name>">Categories</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="subNavbarSupportedContent">
+    <ul class="nav">
+      <li class="nav-item medium">
+        <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="crimes" %}" title="crimes awards"><i class="fas fa-fingerprint"></i>&nbsp;Crimes ({{summaryByType.Crimes.nAwarded}}/{{summaryByType.Crimes.nAwards}})</a>
+        </div>
+      </li>
+      <li class="nav-item medium">
+        <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="drugs" %}" title="drugs awards"><i class="fas fa-cannabis"></i>&nbsp;Drugs ({{summaryByType.Drugs.nAwarded}}/{{summaryByType.Drugs.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="attacks" %}" title="attacks awards"><i class="fas fa-crosshairs"></i>&nbsp;Attacks ({{summaryByType.Attacks.nAwarded}}/{{summaryByType.Attacks.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="faction" %}" title="faction awards"><i class="fas fa-fist-raised"></i>&nbsp;Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="items" %}" title="items awards"><i class="fas fa-toilet-paper"></i>&nbsp;Items ({{summaryByType.Items.nAwarded}}/{{summaryByType.Items.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="travel" %}" title="travel awards"><i class="fas fa-plane-departure"></i>&nbsp;Travel ({{summaryByType.Travel.nAwarded}}/{{summaryByType.Travel.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="work" %}" title="work awards"><i class="fas fa-user-graduate"></i>&nbsp;Work ({{summaryByType.Work.nAwarded}}/{{summaryByType.Work.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="gym" %}" title="gym awards"><i class="fas fa-dumbbell"></i>&nbsp;Gym ({{summaryByType.Gym.nAwarded}}/{{summaryByType.Gym.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="money" %}" title="money awards"><i class="fas fa-piggy-bank"></i>&nbsp;Money ({{summaryByType.Money.nAwarded}}/{{summaryByType.Money.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="competitions" %}" title="competitions awards"><i class="fas fa-trophy"></i>&nbsp;Competitions ({{summaryByType.Competitions.nAwarded}}/{{summaryByType.Competitions.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="commitment" %}" title="commitment awards"><i class="fas fa-hourglass-half"></i>&nbsp;Commitment ({{summaryByType.Commitment.nAwarded}}/{{summaryByType.Commitment.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="miscellaneous" %}" title="miscellaneous awards"><i class="fas fa-flag-checkered"></i>&nbsp;Miscellaneous ({{summaryByType.Miscellaneous.nAwarded}}/{{summaryByType.Miscellaneous.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="all" %}" title="all awards"><i class="fas fa-medal"></i>&nbsp;All Awards ({{summaryByType.AllAwards.nAwarded}}/{{summaryByType.AllAwards.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:hof' %}" title="hall of fame"><i class="fas fa-crown"></i>&nbsp;Hall of Fame</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  </div>
+</nav>

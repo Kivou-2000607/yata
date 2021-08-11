@@ -21,13 +21,21 @@ This file is part of yata.
 
 {% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
 <div class="catch-me">
-    <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}"><img src="{% url_img_item v.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
-        {% if view.refreshType and player.tId > 0 %}
-            <form class="form-inline"><a href="bazaar/updateType/{{k}}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
-        {% endif %}
-    </h2>
 
-    <div id="loop-over-item-sell-table-{{k}}" class="module" {% if view.hideType %}style="display: none;"{% endif %}>
+  <h2 class="title rounded-top px-2 py-2 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="pe-2 me-auto"><img src="{% url_img_item v.0.tId %}" alt="{{v.0.tName}} [{{v.0.tId}}]" class="item-small" /> {{k}}</div>
+      <div class="px-2 no-click">
+        {% if view.refreshType and player.tId > 0 %}
+          <span class="update-type" data-val="{{k}}"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline">&nbsp;Refresh all</span></span>
+        {% endif %}
+      </div>
+      {% if view.hideType %}
+        <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+      {% endif %}
+  </h2>
+
+    <div id="loop-over-item-sell-table-{{k}}" class="container-fluid p-2 mb-3 module" {% if view.hideType %}style="display: none;"{% endif %}>
         {% include "bazaar/loop-items.html" with itemType=k items=v %}
     </div>
     {# {% if view.hideType %}<br>{% endif %} #}

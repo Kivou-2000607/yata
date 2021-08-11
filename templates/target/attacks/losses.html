@@ -22,43 +22,40 @@ This file is part of yata.
 
 <script>
         $(document).ready(function() {
-            $("#target-losses").tablesorter({
-                cssAsc: 'up', cssDesc: 'down', sortList: [[5,1], [1,1]]});
+            $("#target-attacks-breakdown-losses").tablesorter({sortList: [[5,1], [1,1]]});
         });
 </script>
 
-<div class="container">
-    <div class="overlay close"></div>
-    <div class="modal-center-large">
-        <h2 class="title">Buying losses</h2>
-        <div class="module">
-            <p><b>Send cash autofill</b>: install this <a href="{% url_userscript 'losses' %}" target="_blank">losses userscript</a> and update your price on the first line.</p>
-            <table id="target-losses" class="center-medium trshadow target-losses">
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Last Attack</th>
-                        <th>Send cash&nbsp;&nbsp;<a id="target-losses-send-all-cash" href='https://www.torn.com/sendcash.php'><i class="fas fa-dollar-sign" title="Send cash to all"></i></a></th>
-                        <th>Mark as paid&nbsp;&nbsp;{% include "target/attacks/markpaid.html" with all="1" %}</th>
-                        <th>Paid</th>
-                        <th>Not paid</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for k, v in sluts%}
-                    <tr class="{% if v.1 < v.2 %}needpay{% endif %}">
-                        <td class="a">{{v.0|playerURL:k|safe}}</td>
-                        <td class="c" data-val="{{v.3}}"><a href="{{v.4|attackLog}}" target="_blank">{{v.3|ts2date}}</a></td>
-                        <td class="b">{% include "target/attacks/sendcash.html" %}</td>
-                        <td class="b">{% include "target/attacks/markpaid.html" %}</td>
-                        <td class="b">{{v.1}}</td>
-                        <td class="b">{{v.2|sub:v.1}}</td>
-                        <td class="b">{{v.2}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <p><b>Send cash autofill</b>: install this <a href="{% url_userscript 'losses' %}" target="_blank">losses userscript</a> and update your price on the first line.</p>
+
+  <div class="table-responsive mb-3">
+
+  <table id="target-attacks-breakdown-losses" class="table table-hover table-striped table-borderless tablesorter target-attacks-breakdown-losses">
+      <thead>
+          <tr>
+              <th class="a">Player</th>
+              <th class="b">Last Attack</th>
+              <th class="c">Send&nbsp;<a id="target-losses-send-all-cash" href='https://www.torn.com/sendcash.php'><i class="fas fa-dollar-sign" title="Send cash to all"></i></a></th>
+              <th class="c">Mark&nbsp;{% include "target/attacks/markpaid.html" with all="1" %}</th>
+              <th class="c">Paid</th>
+              <th class="c">Not paid</th>
+              <th class="c">Total</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for k, v in sluts%}
+          <tr class="{% if v.1 < v.2 %}needpay{% endif %}">
+              <td class="text-start">{{v.0|playerURL:k|safe}}</td>
+              <td class="text-center" data-val="{{v.3}}"><a href="{{v.4|attackLog}}" target="_blank">{{v.3|ts2date}}</a></td>
+              <td class="text-center">{% include "target/attacks/sendcash.html" %}</td>
+              <td class="text-center">{% include "target/attacks/markpaid.html" %}</td>
+              <td class="text-center">{{v.1}}</td>
+              <td class="text-center">{{v.2|sub:v.1}}</td>
+              <td class="text-center">{{v.2}}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  </div>
 </div>

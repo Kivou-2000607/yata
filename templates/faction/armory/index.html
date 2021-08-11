@@ -26,30 +26,36 @@ This file is part of yata.
 <script>
 $(document).ready(function() {
     $("#faction-armory-report").tablesorter({cssAsc: 'up', cssDesc: 'down', sortList: [[1,1]]});
+    $("#date-start-armory").val("");
+    $("#date-end-armory").val("");
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    });
 
     $(function () {
-        $("#date-start").datetimepicker({
+        $("#date-start-armory").datetimepicker({
             step: 15,
             onChangeDateTime:function(dp,$input){
                 var d = new Date($input.val());
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-                $("#ts-start").val(dUTC/1000);
+                $("#ts-start-armory").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-start").html(s);
+                // $("#date-start-armory").html(s);
 
-                $("#date-start").removeClass("error").addClass("valid");
-                $("#date-live").prop('checked', false);
+                $("#date-start-armory").removeClass("is-invalid").addClass("is-valid");
+                $("#date-live-armory").prop('checked', false);
 
-                var start = parseInt($("#ts-start").val());
-                var end = parseInt($("#ts-end").val());
+                var start = parseInt($("#ts-start-armory").val());
+                var end = parseInt($("#ts-end-armory").val());
                 if(!end) {
-                    $("#date-end").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date (or leave blank for live)');
+                    $("#date-end-armory").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-armory").hide()
                 } else if(end < start) {
-                    $("#date-end").removeClass("valid").addClass("error");
+                    $("#date-end-armory").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-armory").hide()
                 } else {
-                    $("#date-end").removeClass("error").addClass("valid");
+                    $("#date-end-armory").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-armory").show()
                 }
             },
@@ -58,27 +64,27 @@ $(document).ready(function() {
 
 
     $(function () {
-        $("#date-end").datetimepicker({
+        $("#date-end-armory").datetimepicker({
             step: 15,
             onChangeDateTime:function(dp,$input){
                 var d = new Date($input.val());
                 var dUTC = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
-                $("#ts-end").val(dUTC/1000);
+                $("#ts-end-armory").val(dUTC/1000);
                 var s = new Date(dUTC).toUTCString().replace("GMT", "");
-                $("#date-end").html(s);
-                $("#date-end").removeClass("error").addClass("valid");
-                $("#date-live").prop('checked', false);
+                // $("#date-end-armory").html(s);
+                $("#date-end-armory").removeClass("is-invalid").addClass("is-valid");
+                $("#date-live-armory").prop('checked', false);
 
-                var start = parseInt($("#ts-start").val());
-                var end = parseInt($("#ts-end").val());
+                var start = parseInt($("#ts-start-armory").val());
+                var end = parseInt($("#ts-end-armory").val());
                 if(!start) {
-                    $("#date-start").removeClass("valid").addClass("error").html('<i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date');
+                    $("#date-start-armory").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-armory").hide()
                 } else if(end < start) {
-                    $("#date-start").removeClass("valid").addClass("error");
+                    $("#date-start-armory").removeClass("is-valid").addClass("is-invalid");
                     $("#create-report-armory").hide()
                 } else {
-                    $("#date-start").removeClass("error").addClass("valid");
+                    $("#date-start-armory").removeClass("is-invalid").addClass("is-valid");
                     $("#create-report-armory").show()
                 }
             },
@@ -88,34 +94,39 @@ $(document).ready(function() {
 </script>
 
 
-<h2 class="title"><i class="fas fa-pills fa-icon-inline"></i>{{faction.name|safe}}'s armory reports</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-pills"></i>&nbsp;{{faction.name|safe}}' armory reports</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     {% if reports|length %}
-    <table id="faction-armory-report" class="tablesorter center-large trshadow faction-armory-report">
+    <div class="table-responsive">
+    <table id="faction-armory-report" class="table table-hover table-striped table-borderless tablesorter faction-armory-report">
         <thead>
             <tr>
-                <th>Report [ID]</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Duration</th>
-                <th>News</th>
-                <th>Report</th>
+                <th class="a">Report [ID]</th>
+                <th class="b">Start</th>
+                <th class="b">End</th>
+                <th class="b">Duration</th>
+                <th class="c">News</th>
+                <th class="d">Report</th>
         </thead>
         <tbody>
         {% for report in reports %}
         <tr class="faction-armory-report">
-            <td class="a">Report [{{report.pk}}]</td>
-            <td class="b">{{report.start|ts2date}}</td>
+            <td class="text-start">Report [{{report.pk}}]</td>
+            <td class="text-center">{{report.start|ts2date}}</td>
             {% if report.end %}
-                <td class="b">{{report.end|ts2date}}</td>
-                <td class="b">{{report.end|sub:report.start|ts2time}}</td>
+                <td class="text-center">{{report.end|ts2date}}</td>
+                <td class="text-center">{{report.end|sub:report.start|ts2time}}</td>
             {% else %}
-                <td class="b">-</td>
-                <td class="b">-</td>
+                <td class="text-center">-</td>
+                <td class="text-center">-</td>
             {% endif %}
-            <td class="c"><b>{{report.n_news}}</b></td>
+            <td class="text-center"><b>{{report.n_news}}</b></td>
 
-            <td class="d buttons">
+            <td class="text-start">
                 {% include "faction/armory/buttons.html" %}
             </td>
         </tr>
@@ -123,29 +134,45 @@ $(document).ready(function() {
         {% endfor %}
         </tbody>
     </table>
+  </div>
     {% else%}
-        <p class="error">No reports recorded. Ask a AA members of your faction.</p>
+        <p class="error mb-0">No reports recorded. Ask a AA members of your faction.</p>
     {% endif %}
-</div>
-
 
 {% if player.factionAA %}
-<div class="module rounded">
-    <p>To create a new armory report select a starting date and either an ending date or make it live.</p>
-    <form>
-        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Starting date</b>:
-            <input id="ts-start" type="hidden" value="0">
-            <span id="date-start" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add a starting date</span>
-        </p>
-        <p><b><i class="far fa-calendar-alt fa-icon-inline"></i>Ending date</b>:
-            <input id="ts-end" type="hidden" value="0">
-            <span id="date-end" style="cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Add an ending date</span>
-        </p>
-        <p><b><i class="fas fa-microphone-alt fa-icon-inline"></i>Make it live</b>:
-            <input id="ts-live" type="hidden" value="0">
-            <input id="date-live" type="checkbox">
-        </p>
-        <p id="create-report-armory" class="valid" style="display: none; cursor: pointer;"><i class="fas fa-plus-circle fa-icon-inline"></i>Start</p>
-    </form>
-</div>
+  <hr class="sep">
+
+
+  <h3>Create new armory reports</h3>
+  <p><i>Select a starting date and either an ending date or make it live.</i></p>
+  <div class="row mx-0">
+    <input id="ts-start-armory" type="hidden" value="0">
+    <input id="ts-end-armory" type="hidden" value="0">
+    <input id="ts-live-armory" type="hidden" value="0">
+
+    <div class="col-auto m-2 align-self-center">
+      <div class="input-group">
+        <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>Start</label>
+        <input id="date-start-armory" type="text" class="form-control">
+      </div>
+    </div>
+    <div class="col-auto m-2 align-self-center">
+      <div class="input-group">
+        <label for="event-title" class="input-group-text"><i class="far fa-calendar-alt me-2"></i>End</label>
+        <input id="date-end-armory" type="text" class="form-control">
+      </div>
+    </div>
+    <div class="col-auto m-2 align-self-center">
+       <div class="input-group">
+         <span class="input-group-text"><i class="fas fa-microphone-alt me-2"></i>Live</span>
+         <div class="input-group-text">
+           <input id="date-live-armory" type="checkbox" class="form-check-input">
+         </div>
+      </div>
+    </div>
+    <div class="col-auto m-2 align-self-center">
+      <button id="create-report-armory" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
+    </div>
+  </div>
 {% endif %}
+</div>

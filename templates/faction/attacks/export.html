@@ -34,9 +34,9 @@ This file is part of yata.
     {# </span> #}
 {# </form> #}
 
-<div class="dropdown">
-  <i class="fas fa-file-export" style="cursor: pointer;"></i>
-  <div class="dropdown-content">
+<div class="yt-dropdown">
+  <i class="fas fa-file-export"></i>&nbsp;Export
+  <div class="yt-dropdown-content yt-dropdown-title p-2">
     <a href="{% url 'faction:attacksExport' report.pk 0 %}" target="_blank">Factions</a>
     <a href="{% url 'faction:attacksExport' report.pk 1 %}" target="_blank">Players</a>
     <a href="{% url 'faction:attacksExport' report.pk 2 %}" target="_blank">Breakdown</a>

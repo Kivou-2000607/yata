@@ -1,19 +1,17 @@
-<form style="display: inline;">
-    {% if type == "defenders" %}
-        <select class="faction-attack-header-filter">
-            <option value="0" selected="selected" disabled>Defenders</option>
-            {% for t in defenders %}
-                <option value="{{report.pk}}-{{t.0}}">{{t.1}} [{{t.0}}]</option>
-            {% endfor %}
-            <option value="{{report.pk}}-{{report.player_filter}}">All</option>
-        </select>
-    {% else %}
-        <select class="faction-attack-header-filter">
-            <option value="0" selected="selected" disabled>Attackers</option>
-            {% for t in attackers %}
+{% if type == "defenders" %}
+    <select class="faction-attack-header-filter header-filter">
+        <option value="0" selected="selected" disabled>Defenders</option>
+        {% for t in defenders %}
             <option value="{{report.pk}}-{{t.0}}">{{t.1}} [{{t.0}}]</option>
-            {% endfor %}
-            <option value="{{report.pk}}-{{report.player_filter}}">All</option>
-        </select>
-    {% endif %}
-</form>
+        {% endfor %}
+        <option value="{{report.pk}}-{{report.player_filter}}">All</option>
+    </select>
+{% else %}
+    <select class="faction-attack-header-filter header-filter">
+        <option value="0" selected="selected" disabled>Attackers</option>
+        {% for t in attackers %}
+        <option value="{{report.pk}}-{{t.0}}">{{t.1}} [{{t.0}}]</option>
+        {% endfor %}
+        <option value="{{report.pk}}-{{report.player_filter}}">All</option>
+    </select>
+{% endif %}

@@ -43,6 +43,7 @@ This file is part of yata.
             scaleFormat: 'short',
             thickness: 1.5,
             fill: 10,
+            height: 200,
             dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
@@ -72,6 +73,7 @@ This file is part of yata.
             scaleFormat: 'short',
             thickness: 1.5,
             fill: 10,
+            height: 200,
             dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
@@ -101,6 +103,7 @@ This file is part of yata.
             scaleFormat: 'short',
             thickness: 1.5,
             fill: 10,
+            height: 200,
             dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
@@ -135,6 +138,7 @@ This file is part of yata.
       // scaleColumns: [0, 1],  // we want only one scale
       scaleType: "allmaximized",
       scaleFormat: 'short',
+      height: 200,
       dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
     };
 
@@ -215,11 +219,24 @@ This file is part of yata.
 </div>
 {% endif %}
 
-<h2 class="title"><i class="fas fa-building fa-icon-inline"></i>{{company.name|safe}}
-  <span class="flush-right"><a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>Update data</a></span>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-building"></i>&nbsp;{{company.name|safe}}</div>
+      {% if not share %}
+        <div class="px-2">
+          <a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>&nbsp;Update data</a>
+        </div>
+      {% endif %}
+      {% if not share and player.companyDi %}
+        <div class="px-2">
+          {% include 'company/supervise/share.html' %}
+        </div>
+      {% endif %}
+    </div>
 </h2>
-<div class="module">
-  <table class="center-medium tdshadow">
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+  <table class="table table-hover table-borderless tablesorter company-overview">
     <tbody>
       <tr>
         <td><b>Name:</b> {{company.html_link}}</td>
@@ -270,27 +287,55 @@ This file is part of yata.
     </tr>
     </tbody>
   </table>
-  <p id="company-data-weekly"></p>
-  <p id="company-data-daily"></p>
-  <p id="company-data-effectiveness"></p>
+  </div>
 
-  <p class="update-info">Last update: {{company.timestamp|ts2date}}</p>
+<div class="table-responsive">
+  <table class="table table-hover table-borderless tablesorter">
+    <tbody>
+      <tr><td id="company-data-weekly"></td></tr>
+      <tr><td id="company-data-daily"></td></tr>
+      <tr><td id="company-data-effectiveness"></td></tr>
+    </tbody>
+  </table>
 </div>
 
-<h2 class="title"><i class="fas fa-user-tie fa-icon-inline"></i>Employees
-  <span class="flush-right"><a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>Reset simulation</a></span>
+  <p class="update-info mb-0">Last update: {{company.timestamp|ts2date}}</p>
+</div>
+
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-user-tie"></i>&nbsp;Employees</div>
+      {% if not share %}
+        <div class="px-2">
+          <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
+        </div>
+      {% endif %}
+    </div>
 </h2>
-<div class="module">
+<div class="container-fluid p-md-3 p-1 mb-3 module">
   <div id="company-reload-employees">
       {% include "company/supervise/employees.html" %}
   </div>
-  <p id="company-data-employees"></p>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-borderless tablesorter">
+      <tbody>
+        <tr><td id="company-data-employees"></td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+
 
 {% if company_data|length %}
 
-<h2 class="title"><i class="fas fa-list fa-icon-inline"></i>Company records</h2>
-<div class="module">
+<h2 class="title rounded-top py-2 px-3">
+  <div class="row justify-content-between">
+    <div class="col"><i class="fas fa-list"></i>&nbsp;Company records</div>
+  </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
   <div class="pagination-list">
       {% include "company/supervise/logs.html" %}
   </div>
@@ -300,8 +345,12 @@ This file is part of yata.
 
 {% if company_stock|length %}
 
-<h2 class="title"><i class="fas fa-parachute-box fa-icon-inline"></i>Stock records</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-parachute-box"></i>&nbsp;Stock records</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
   <div class="pagination-list">
       {% include "company/supervise/stock.html" %}
   </div>
@@ -310,11 +359,11 @@ This file is part of yata.
 {% endif %}
 
 {% else %}
-<div class="module rounded">
+<div class="container-fluid rounded p-md-3 p-1 mb-3 module">
   {% if player.companyId %}
-    <p class="warning">Your director is not registered in YATA.</p>
+    <p class="warning mb-0">Your director is not registered in YATA.</p>
   {% else %}
-    <p class="warning">You're not working in a company.</p>
+    <p class="warning mb-0">You're not working in a company.</p>
   {% endif %}
 </div>
 {% endif %}

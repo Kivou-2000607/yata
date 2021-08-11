@@ -21,103 +21,132 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-{% if graph|length > 0 %}
-<script>
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
 
-    function drawChart() {
-      {% comment %}
-      var data = google.visualization.arrayToDataTable([
-        ['Time', 'Stock',  {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-        {% for a, b, c, d, e, f in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
-            "point {shape-type: {% if e == 0%}polygon{% elif e == 1%}diamond{% elif e == 2%}square{% else %}triangle{% endif %}; fill-color: {% if e == 0%}#0B8E14{% elif e == 1%}#3434CC{% elif e == 2%}#CC3434{% else %}#787878{% endif %}}",
-            "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}<br><b>Client</b>: {{d}} ({{f}} updates)</div>"],
-         {% endfor %}
-      ]);
-      {% endcomment %}
-      var data = google.visualization.arrayToDataTable([
-        ['Time', 'Stock', {role: 'tooltip', 'p': {'html': true}}],
-        {% for a, b, c in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
-            "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}</div>"],
-         {% endfor %}
-      ]);
+<script type="text/javascript">
+    $('#stock-graph').modal('show');
+    $('#stock-graph').on('shown.bs.modal', function () {
+
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+          {% comment %}
+          var data = google.visualization.arrayToDataTable([
+            ['Time', 'Stock',  {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
+            {% for a, b, c, d, e, f in graph %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
+                "point {shape-type: {% if e == 0%}polygon{% elif e == 1%}diamond{% elif e == 2%}square{% else %}triangle{% endif %}; fill-color: {% if e == 0%}#0B8E14{% elif e == 1%}#3434CC{% elif e == 2%}#CC3434{% else %}#787878{% endif %}}",
+                "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}<br><b>Client</b>: {{d}} ({{f}} updates)</div>"],
+             {% endfor %}
+          ]);
+          {% endcomment %}
+          var data = google.visualization.arrayToDataTable([
+            ['Time', 'Stock', {role: 'tooltip', 'p': {'html': true}}],
+            {% for a, b, c in graph %}
+                [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}},
+                "<div style=\"padding: 5px;\"><b>Stocks:</b> {{b|intcomma}}<br><b>Price</b>: ${{c|intcomma}}<br><b>Update:</b> {{a}}</div>"],
+             {% endfor %}
+          ]);
 
 
-      const xm48 = new Date({{x.0|date:"Y"}}, {{x.0|date:"n"|sub:"1"}}, {{x.0|date:"j"}}, {{x.0|date:"G"}}, {{x.0|date:"i"}}, {{x.0|date:"s"}})
-      const xm24 = new Date({{x.1|date:"Y"}}, {{x.1|date:"n"|sub:"1"}}, {{x.1|date:"j"}}, {{x.1|date:"G"}}, {{x.1|date:"i"}}, {{x.1|date:"s"}})
-      const xnow = new Date({{x.2|date:"Y"}}, {{x.2|date:"n"|sub:"1"}}, {{x.2|date:"j"}}, {{x.2|date:"G"}}, {{x.2|date:"i"}}, {{x.2|date:"s"}})
-      var options = {
-        // legend: {position: 'top', textStyle: {fontSize: 14}},
-        legend: {position: 'none', textStyle: {fontSize: 14}},
-        tooltip: {isHtml: true, position: 'top'},
-        seriesType: 'bars',
-        series: {
-                0: {type: 'line', color: "#787878", lineWidth: 2},
-                },
-        hAxis: {
-            format: 'ha',
-            viewWindowMode:'explicit',
-            viewWindow: {
-                min: xm24,
-                max: xnow,
+          const xm48 = new Date({{x.0|date:"Y"}}, {{x.0|date:"n"|sub:"1"}}, {{x.0|date:"j"}}, {{x.0|date:"G"}}, {{x.0|date:"i"}}, {{x.0|date:"s"}})
+          const xm24 = new Date({{x.1|date:"Y"}}, {{x.1|date:"n"|sub:"1"}}, {{x.1|date:"j"}}, {{x.1|date:"G"}}, {{x.1|date:"i"}}, {{x.1|date:"s"}})
+          const xnow = new Date({{x.2|date:"Y"}}, {{x.2|date:"n"|sub:"1"}}, {{x.2|date:"j"}}, {{x.2|date:"G"}}, {{x.2|date:"i"}}, {{x.2|date:"s"}})
+          var options = {
+            // legend: {position: 'top', textStyle: {fontSize: 14}},
+            legend: {position: 'none', textStyle: {fontSize: 14}},
+            tooltip: {isHtml: true, position: 'top'},
+            seriesType: 'bars',
+            height: 200,
+            series: {
+                    0: {type: 'line', color: "#787878", lineWidth: 2},
+                    },
+            hAxis: {
+                format: 'ha',
+                viewWindowMode:'explicit',
+                viewWindow: {
+                    min: xm24,
+                    max: xnow,
+                }
+            },
+            vAxis: {
+                format: 'short',
+                title: 'Stocks',
+                viewWindowMode:'explicit',
+                viewWindow:{ min:0 }
+            },
+            'backgroundColor': 'transparent',
+            'chartArea': {'width': '90%', 'height': '70%'},
+          };
+
+          var view = new google.visualization.DataView(data);
+          view.setColumns([0, 1, 2]);
+
+          var chart = new google.visualization.ComboChart(document.getElementById('stocks-history'));
+          chart.draw(view, options);
+
+          var button = document.getElementById('48-hours');
+
+          button.onclick = function () {
+
+            if( options.hAxis.viewWindow.min === xm48 ) {
+                options.hAxis.viewWindow.min = xm24
+                $("#n-hours-i").html("48");
+                $("#n-hours").html("24");
+            } else {
+                options.hAxis.viewWindow.min = xm48
+                $("#n-hours-i").html("24");
+                $("#n-hours").html("48");
             }
-        },
-        vAxis: {
-            format: 'short',
-            title: 'Stocks',
-            viewWindowMode:'explicit',
-            viewWindow:{ min:0 }
-        },
-        'backgroundColor': 'transparent',
-        'chartArea': {'width': '90%', 'height': '70%'},
-      };
 
-      var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1, 2]);
+            chart.draw(data, options);
+          };
 
-      var chart = new google.visualization.ComboChart(document.getElementById('stocks-history'));
-      chart.draw(view, options);
-
-      var button = document.getElementById('48-hours');
-
-      button.onclick = function () {
-
-        if( options.hAxis.viewWindow.min === xm48 ) {
-            options.hAxis.viewWindow.min = xm24
-            $("#n-hours-i").html("48");
-            $("#n-hours").html("24");
-        } else {
-            options.hAxis.viewWindow.min = xm48
-            $("#n-hours-i").html("24");
-            $("#n-hours").html("48");
         }
 
-        chart.draw(data, options);
-      };
 
-    }
+    });
 </script>
-{% endif %}
 
-<div class="container">
-    <div class="overlay close"></div>
-    <div class="modal-center-large">
-        <h2 class="title">Stocks in {{stock.country}} for {{stock.item}} over the last <span id="n-hours">24</span> hours</h2>
-        <div class="module">
-            <span style="position: absolute; top:40px; right: 10px;"><button><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-large" /></button></span>
-            <p>Tendency per week over last week: {{stock.item.weekTendency|priceTendency|safe}}</p>
-            <p>Tendency per week over last month: {{stock.item.monthTendency|priceTendency|safe}}</p>
-            <!-- <p>Efficiency of the updates (on 5 minutes periods): {{stock.eff|floatformat:2}}%</p> -->
-            <!-- <p>Number of updates: {{stock.n}}</p> -->
+<!-- Modal breakdown -->
+<div class="modal fade" id="stock-graph" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex flex-wrap align-items-center">
+            <div class="px-2 me-auto">{{stock.item.tName}} [{{stock.item.tId}}] - {{stock.country}}</div>
+            <div class="px-2">last <span id="n-hours">24</span>h</div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+          </div>
+        </h2>
+      </div>
+      <div class="modal-body p-0">
+        <div class="container-fluid p-md-3 p-1 mb-0 module">
+          <div class="clearfix">
+            <img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-large col-md-4 float-md-end mb-3 ms-md-3" />
+            <h3>Market value: ${{stock.item.tMarketValue|intcomma}}</h3>
+            <h3>Sell Price: ${{stock.item.tSellPrice|intcomma}}</h3>
+            <h3>Buy Price: ${{stock.item.tBuyPrice|intcomma}}</h3>
+            <h3>Circulation: {{stock.item.tCirculation|intcomma}}</h3>
+            <h3>Tendency per week over last week: <span>{{stock.item.weekTendency|priceTendency|safe}}</span></h3>
+            <h3>Tendency per week over last month: <span>{{stock.item.monthTendency|priceTendency|safe}}</span></h3>
+          </div>
+
             {% if graph|length == 0 %}
-              <p class="warning">No data to plot</p>
-            {% else %}
-              <div id="stocks-history"></div>
-            {% endif %}
-            <p id="48-hours" class="neutral" style="cursor: pointer;">See <span id="n-hours-i">48</span> hours</p>
+                <p class="warning">No data to plot</p>
+              {% elif graphLength == 1 %}
+                <p class="warning">No data to plot</p>
+              {% else %}
+              <div class="table-responsive">
+              <table class="table table-hover table-borderless price-history">
+                  <tr><td><div id="stocks-history"></div></td></tr>
+              </table>
+              </div>
+          {% endif %}
+          <p id="48-hours" class="neutral mb-2" style="cursor: pointer;">See <span id="n-hours-i">48</span> hours</p>
         </div>
+      </div>
     </div>
+  </div>
 </div>

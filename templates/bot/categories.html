@@ -17,29 +17,37 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!-- categories -->
-<form>
-    {% csrf_token %}
-<table class="center tdshadow bot-categories">
-    <tbody>
-    <tr>
-        <td>
-            <a href="{% url 'bot:welcome' %}"><i class="fas fa-robot fa-icon-inline"></i>YATA bot</a>
-        </td>
-        <td>
-            <a href="{% url 'bot:documentation' %}"><i class="fas fa-book-reader fa-icon-inline"></i>Documentation</a>
-        </td>
-        <td>
-            <a href="{% url 'bot:host' %}"><i class="fas fa-laptop fa-icon-inline"></i>Host the bot</a>
-        </td>
-        <td>
-            {% if player.tId > 0 %}
-              <a href="{% url 'bot:dashboard' %}"><i class="fas fa-tachometer-alt fa-icon-inline"></i>Dashboard</a>
-            {% else %}
-              <a class="closed-link"><i class="fas fa-tachometer-alt fa-icon-inline"></i>Dashboard</a>
-            {% endif %}
-        </td>
-    </tr>
-    </tbody>
-</table>
-</form>
+
+<nav class="navbar navbar-expand-md navbar-light py-0">
+  <div class="container-fluid">
+    <button class="navbar-toggler ms-auto mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span id="collapse-section-name>">Categories</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="subNavbarSupportedContent">
+      <ul class="nav">
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:welcome' %}" title="bot welcome"><i class="fas fa-robot"></i>&nbsp;YATA bot</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:documentation' %}" title="bot documentation"><i class="fas fa-book-reader"></i>&nbsp;Documentation</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:host' %}" title="bot host"><i class="fas fa-laptop"></i>&nbsp;Host the bot</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'bot:dashboard' %}" title="bot dashboard"><i class="fas fa-tachometer-alt"></i>&nbsp;Dashboard</a>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>

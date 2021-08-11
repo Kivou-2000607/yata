@@ -40,89 +40,94 @@ This file is part of yata.
     });
 </script>
 
+<ul class="nav justify-content-center mx-md-5 mb-3">
+  {% for awardType, awards in awardsSummary.items %}
+    <li class="nav-item {% if awards.nAwarded == awards.nAwards %}award-done{% else %}award-todo{% endif %}">
+      <div id="award-category-{{awardType|cut:" "}}" class="nav-link">
+        <i class="fas fa-toggle-{%if awardType|cut:" " == "Allawards" %}on{%else%}off{%endif%}"></i>&nbsp;{{awardType}}: {{awards.nAwarded}}/{{awards.nAwards}}
+      </div>
+    </li>
+   {% endfor %}
+ </ul>
+
+
 {# {% cache 60 stocks-abroad %} #}
-<table class="center-large">
+<ul class="nav justify-content-center mx-md-5 mb">
         {% for id, country in country_list.items %}
-        {% if forloop.counter0|divisibleby:6 %}<tr>{% endif %}
 
             {% if id == filters.countries %}
-                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
+                <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
                     {% if country.flag %}
                         <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag" />
                     {% else %}
                         <i class="fas fa-toggle-on"></i>
                     {% endif %}
                     {{country.name}}
-                </td>
+                </li>
             {% else %}
-                <td data-fil="countries" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
+                <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
                     {% if country.flag %}
                         <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag-gs" />
                     {% else %}
                         <i class="fas fa-toggle-off"></i>
                     {% endif %}
                     {{country.name}}
-                </td>
+                </li>
             {% endif %}
 
-        {% if forloop.counter|divisibleby:6 %}</tr>{% elif forloop.last %}</tr>{% endif %}
-
         {% endfor %}
-
-        <tr>
-            <td></td>
+</ul>
+<hr class="sep">
+<ul class="nav justify-content-center mx-md-5 mb-3">
         {% for id, type in type_list.items %}
 
             {% if id in filters.types %}
-                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons valid">
-                    <i class="fas fa-toggle-on"></i>{{type.name}}
-                </td>
+                <li data-fil="types" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons valid">
+                    <i class="fas fa-toggle-on"></i>&nbsp;{{type.name}}
+                </li>
             {% else %}
-                <td data-fil="types" data-key="{{id}}" class="bazaar-toggle-filters tdshadow buttons">
-                    <i class="fas fa-toggle-off"></i>
-                    {{type.name}}
-                </td>
+                <li data-fil="types" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
+                    <i class="fas fa-toggle-off"></i>&nbsp;{{type.name}}
+                </li>
             {% endif %}
 
         {% endfor %}
-        <td></td>
-        <tr>
-</table>
+</ul>
 
-
-<table id="bazaar-abroad-stocks" class="center-large trshadow bazaar-abroad-stocks">
+<div class="table-responsive">
+<table id="bazaar-abroad-stocks" class="table table-hover table-striped table-borderless tablesorter bazaar-abroad-stocks">
     <thead>
         <tr>
-            <th>Country</th>
-            <th>Item</th>
-            <th>Type</th>
-            <th>Stock</th>
-            <th>Price</th>
-            <th>Profit</th>
-            <th>Profit / hour</th>
-            <th>Weekly tendency</th>
-            <th>Update</th>
+            <th class="a">Country</th>
+            <th class="b">Item</th>
+            <th class="c">Type</th>
+            <th class="d">Stock</th>
+            <th class="e">Price</th>
+            <th class="f">Profit</th>
+            <th class="g">Profit / hour</th>
+            <th class="h">Weekly tendency</th>
+            <th class="i">Update</th>
         </tr>
     </thead>
     <tbody>
         {% if stocks|length %}
             {% for stock in stocks %}
             <tr data-cou="{{stock.country_key}}" data-ite="{{stock.item.tId}}" class="trshadow abroad-item-stocks">
-                  <td class="a" data-val="{{stock.get_country.id}}">
+                  <td class="text-start" data-val="{{stock.get_country.id}}">
                   <img src="{% url_img_flag stock.get_country.flag %}" alt="{{stock.get_country.flag}}" class="flag" /> {{stock.country}}
                 </td>
-                <td class="b dont-touch-me"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}"><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-small" /> {{stock.item.tName}}</td>
-                <td class="c">{{stock.item.tType}}</td>
-                <td class="d" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>
-                <td class="e" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
-                <td class="f" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
-                <td class="g" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
-                <td class="h dont-touch-me" data-val="{{stock.item.weekTendency}}">
+                <td class="text-start items-details"><a href="{% url 'bazaar:details' stock.item.tId %}" class="details-item" title="{{stock.item.tName}}"><img src="{% url_img_item stock.item.tId %}" alt="{{stock.item.tName}} [{{stock.item.tId}}]" class="item-small" /> {{stock.item.tName}}</td>
+                <td class="text-start">{{stock.item.tType}}</td>
+                <td class="text-center" data-val="{{stock.quantity}}">{{stock.quantity|intcomma}}</td>
+                <td class="text-end" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
+                <td class="text-end" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
+                <td class="text-end" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
+                <td class="text-center dont-touch-me" data-val="{{stock.item.weekTendency}}">
                     <a href="{% url 'bazaar:prices' stock.item.tId %}" class="prices-item" title="Prices tendency over a week / a month">
                         {{stock.item.weekTendency|priceTendency|safe}}
                     </a>
                 </td>
-                <td class="i" title="Last update on {{stock.timestamp|ts2date}} TCT" data-val="{{stock.timestamp|ts2date}}">{{stock.update|ts2ago}}</td>
+                <td class="text-center" title="Last update on {{stock.timestamp|ts2date}} TCT" data-val="{{stock.timestamp|ts2date}}">{{stock.update|ts2ago}}</td>
             </tr>
             {% endfor %}
         {% else %}
@@ -130,4 +135,4 @@ This file is part of yata.
         {% endif %}
     </tbody>
 </table>
-{# {% endcache %} #}
+</div>

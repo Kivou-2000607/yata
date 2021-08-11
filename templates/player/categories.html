@@ -17,22 +17,30 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!-- categories -->
-<form>
-    {% csrf_token %}
-<table class="center tdshadow player-categories">
-    <tbody>
-    <tr>
-        <td>
-            <a href="{% url 'player:merits' %}"><i class="fas fa-medal fa-icon-inline"></i>Merits simulator</a>
-        </td>
-        <td>
-            <a href="{% url 'player:stats' %}"><i class="fas fa-chart-line fa-icon-inline"></i>Personal stats</a>
-        </td>
-        <td>
-          <a class="closed-link" href="{% url 'player:gym' %}"><i class="fas fa-dumbbell fa-icon-inline"></i>Gym simulator</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</form>
+<nav class="navbar navbar-expand-md navbar-light py-0">
+  <div class="container-fluid">
+    <button class="navbar-toggler ms-auto mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span id="collapse-section-name>">Categories</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="subNavbarSupportedContent">
+      <ul class="nav">
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'player:merits' %}" title="player merits"><i class="fas fa-medal"></i>&nbsp;Merits simulator</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'player:stats' %}" title="player stats"><i class="fas fa-chart-line"></i>&nbsp;Personal stats</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <span title="gym simulator" class="neutral"><i class="fas fa-dumbbell"></i>&nbsp;Gym simulator</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

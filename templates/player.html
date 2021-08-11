@@ -6,17 +6,15 @@
 {% endblock%}
 
 {% block title%}
-    - Player
+    | Player
 {% endblock %}
 
 {% block jquery %}
-<script src='{% static "yata/js/player/player.js" %}'></script>
-
+  <script src='{% static "yata/js/player/player.js" %}'></script>
 {% endblock %}
 
 {% block content %}
-    <div id="content-update">
-        {% include "player/content-reload.html" %}
-    </div>
-
+  <div id="content-update">
+    {% include "player/content-reload.html" %}
+  </div>
 {% endblock %}

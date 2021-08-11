@@ -28,34 +28,36 @@ This file is part of yata.
 {% else %}
 
 {% for cat, defsub in personalstats.items %}
-    <h1 class="player-personalstats-header">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
-    <div class="player-personalstats-category">
-        <table class="player-personalstats">
+    <h3 class="module-doc">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+    <div class="module-doc">
+      <ul>
+
         {% for s in defsub.0 %}
             {% if s.2 == "money" %}
-            <tr><td class="a">{{s.0|capfirst}}</td><td class="b">${{s.1|intcomma}}</td></tr>
+            <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
             {% elif s.2 == "time" %}
-            <tr><td class="a">{{s.0|capfirst}}</td><td class="b">{{s.1|intdiv:86400|intcomma}} days</td></tr>
+            <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
             {% else %}
-            <tr><td class="a">{{s.0|capfirst}}</td><td class="b">{{s.1|intcomma}}</td></tr>
+            <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
             {% endif %}
         {% endfor %}
+      </ul>
     </table>
 
         {% for subcat, stats in defsub.1.items %}
-            <h2 class="player-personalstats-header">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-            <div class="player-personalstats-sub-category">
-                <table class="player-personalstats">
+            <h4 class="command-doc">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+            <div class="command-doc" style="margin-left: 10%">
+              <ul>
                 {% for s in stats %}
                     {% if s.2 == "money" %}
-                        <tr><td class="a">{{s.0|capfirst}}</td><td class="b">${{s.1|intcomma}}</td></tr>
+                        <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
                         {% elif s.2 == "time" %}
-                        <tr><td class="a">{{s.0|capfirst}}</td><td class="b">{{s.1|intdiv:86400|intcomma}} days</td></tr>
+                        <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
                         {% else %}
-                        <tr><td class="a">{{s.0|capfirst}}</td><td class="b">{{s.1|intcomma}}</td></tr>
+                        <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
                     {% endif %}
                 {% endfor %}
-            </table>
+              </ul>
             </div>
         {% endfor %}
     </div>

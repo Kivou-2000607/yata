@@ -45,51 +45,59 @@ This file is part of yata.
 
 </script>
 
-<table id="company-details-employees" class="center-large trshadow company-details-employees">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Position</th>
-      <th title="Total effectiveness">E. TOT</th>
-      <th title="Work stats effectiveness">E. WST</th>
-      <th title="Settled in effectiveness">E. STL</th>
-      <th title="Merits effectiveness">E. MER</th>
-      <th title="Addiction effectiveness">E. ADD</th>
-      <th title="Inactivity effectiveness">E. INA</th>
-      <th>Last action</th>
-      <th>MAN</th>
-      <th>INT</th>
-      <th>END</th>
-      <th id="chartHider" data-sorter="false"><i class="far fa-eye"></i></th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="table-responsive">
+  <table id="company-details-employees" class="table table-hover table-striped table-borderless tablesorter company-details-employees">
+    <thead>
+      <tr>
+        <th class="a">Name</th>
+        <th class="b">Position</th>
+        <th class="c" title="Total effectiveness">E. TOT</th>
+        <th class="d" title="Work stats effectiveness">E. WST</th>
+        <th class="d" title="Settled in effectiveness">E. STL</th>
+        <th class="d" title="Merits effectiveness">E. MER</th>
+        <th class="d" title="Addiction effectiveness">E. ADD</th>
+        <th class="d" title="Inactivity effectiveness">E. INA</th>
+        <th class="e">Last action</th>
+        <th class="f">MAN</th>
+        <th class="f">INT</th>
+        <th class="f">END</th>
+        <th class="g" id="chartHider" data-sorter="false"><i class="far fa-eye"></i></th>
+      </tr>
+    </thead>
+    <tbody>
 
-    {% for e in employees %}
-    <tr data-emp="{{e.tId}}" data-pos="{{e.position}}" class="{% if e.simu %}simu{% endif %}">
-      <td data-val="{{e.name|lower}}" class="a dont-touch-me">{{e.name|playerURL:e.tId|safe}}</td>
-      <td data-val="{{e.position|lower}}" class="b">
-          <select class="company-employee-position-form">
-            {% for position in company_positions %}
+      {% for e in employees %}
+        <tr data-emp="{{e.tId}}" data-pos="{{e.position}}" class="{% if e.simu %}simu{% endif %}">
+          <td data-val="{{e.name|lower}}" class="text-start dont-touch-me">{{e.name|playerURL:e.tId|safe}}</td>
+          <td data-val="{{e.position|lower}}" class="text-start">
+            {% if not share %}
+              <select class="company-employee-position-form">
+                {% for position in company_positions %}
                 <option value="{{position.name}}" {% if position.name == e.position %}selected{% endif %}>{{position.name}}</option>
-            {% endfor %}
-      </td>
-      {# <td data-val="{{e.wage}}" class="a">{{e.wage|wage}}</td> #}
-      <td data-val="{{e.effectiveness_total}}" class="c">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
-      <td data-val="{{e.effectiveness_working_stats}}" class="d">{{e.effectiveness_working_stats|signColor}}</td>
-      <td data-val="{{e.effectiveness_settled_in}}" class="d">{{e.effectiveness_settled_in|signColor}}</td>
-      <td data-val="{{e.effectiveness_merits}}" class="d">{{e.effectiveness_merits|signColor}}</td>
-      <td data-val="{{e.effectiveness_addiction}}" class="d">{{e.effectiveness_addiction|signColor}}</td>
-      <td data-val="{{e.effectiveness_inactivity}}" class="d">{{e.effectiveness_inactivity|signColor}}</td>
-      <td data-val="{{e.last_action_relative}}" class="e{%if e.last_action_relative > 172800%} error{%elif e.last_action_relative > 86400%} warning{%else%} valid{%endif%}">{{e.last_action_relative|ts2ago}}</td>
-      <td data-val="{{e.manual_labor}}" class="f">{{e.manual_labor|workstatsinv:e.man_required}}</td>
-      <td data-val="{{e.intelligence}}" class="f">{{e.intelligence|workstatsinv:e.int_required}}</td>
-      <td data-val="{{e.endurance}}" class="f">{{e.endurance|workstatsinv:e.end_required}}</td>
-      <td data-val="{{forloop.counter0}}" class="g toggle-chart"><i class="far fa-eye"></i></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+                {% endfor %}
+              </select>
+            {% else %}
+            {{e.position}}
+            {% endif %}
+
+          </td>
+          {# <td data-val="{{e.wage}}" class="text-left">{{e.wage|wage}}</td> #}
+          <td data-val="{{e.effectiveness_total}}" class="text-center">{{e.effectiveness_total|effpot:e.effectiveness_potential}}</td>
+          <td data-val="{{e.effectiveness_working_stats}}" class="text-center">{{e.effectiveness_working_stats|signColor}}</td>
+          <td data-val="{{e.effectiveness_settled_in}}" class="text-center">{{e.effectiveness_settled_in|signColor}}</td>
+          <td data-val="{{e.effectiveness_merits}}" class="text-center">{{e.effectiveness_merits|signColor}}</td>
+          <td data-val="{{e.effectiveness_addiction}}" class="text-center">{{e.effectiveness_addiction|signColor}}</td>
+          <td data-val="{{e.effectiveness_inactivity}}" class="text-center">{{e.effectiveness_inactivity|signColor}}</td>
+          <td data-val="{{e.last_action_relative}}" class="text-end{%if e.last_action_relative > 172800%} error{%elif e.last_action_relative > 86400%} warning{%else%} valid{%endif%}">{{e.last_action_relative|ts2ago}}</td>
+          <td data-val="{{e.manual_labor}}" class="text-end">{{e.manual_labor|workstatsinv:e.man_required}}</td>
+          <td data-val="{{e.intelligence}}" class="text-end">{{e.intelligence|workstatsinv:e.int_required}}</td>
+          <td data-val="{{e.endurance}}" class="text-end">{{e.endurance|workstatsinv:e.end_required}}</td>
+          <td data-val="{{forloop.counter0}}" class="text-center toggle-chart"><i class="far fa-eye"></i></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% if company.effectiveness_ws_max and company.effectiveness_ws_err %}
   <hr class="sep">
@@ -104,7 +112,9 @@ This file is part of yata.
     </li>
     {% endfor %}
   </ul>
-  <p><span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span></p>
+  {% if not share %}
+    <p><span id="company-employees-simu-apply" class="neutral" style="cursor: pointer;">Apply this configuration</span></p>
+  {% endif %}
   </div>
   <hr class="sep">
 {% endif %}

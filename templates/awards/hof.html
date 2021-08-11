@@ -48,6 +48,7 @@ This file is part of yata.
                           0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
                          },
                 bar: {groupWidth: '80%'},
+                height: 200,
                 hAxis: {  textPosition: 'none', title: "Honors" },
                 vAxis: { scaleType: 'log', format: 'short', title: "Circulation" },
                 'backgroundColor': 'transparent',
@@ -70,6 +71,7 @@ This file is part of yata.
                   legend: {position: 'none'},
                   tooltip: {isHtml: true, position: 'top'},
                   seriesType: 'bars',
+                  height: 200,
                   series: {
                             0: {type: 'bar', targetAxisIndex: 0, color: '#787878'},
                            },
@@ -102,6 +104,7 @@ This file is part of yata.
                     1: {type: 'line', targetAxisIndex: 1, color: '#447e9b'},
                     },
                 bar: {groupWidth: '80%'},
+                height: 200,
                 hAxis: { format: 'short', title: "Rarity score (%)", scaleType: 'log', viewWindow:{ min:0.01} },
                 vAxes: {
                   0: { format: 'short', title:       "#Players", viewWindow:{ max:1.1 * dataHOF.getColumnRange(1).max, }, },
@@ -124,17 +127,25 @@ This file is part of yata.
 
 {% include "awards/pin.html" %}
 
-<h2 class="title"><i class="fas fa-crown fa-icon-inline"></i>Hall of fame</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-crown"></i>&nbsp;Hall of fame</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
 
     <!-- hof -->
     <div class="pagination-list">
       {% include "awards/hof-list.html"%}
     </div>
-    <table class="center-large">
-        <tr><td><div id="chart"></div></td></tr>
-        <tr><td><div id="chart2"></div></td></tr>
+
+
+    <div class="table-responsive">
+    <table class="table table-hover table-borderless awards-list">
+        <tr><td id="chart"></td></tr>
+        <tr><td id="chart2"></td></tr>
     </table>
+    </div>
 
 
 </div>

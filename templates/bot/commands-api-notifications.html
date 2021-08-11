@@ -19,7 +19,7 @@ This file is part of yata.
 
 
 {% if type in notifications %}
-    <i class="fa fa-toggle-on fa-icon-inline"></i><span class="valid">{{type|title}}</span>
+    <span class="valid"><i class="fa fa-toggle-on "></i>&nbsp;{{type|title}}</span>
 {% else %}
-    <i class="fa fa-toggle-off fa-icon-inline"></i>{{type|title}}
+    <span class="neutral"><i class="fa fa-toggle-off fa-icon-inline"></i>&nbsp;{{type|title}}</span>
 {% endif %}

@@ -6,16 +6,15 @@
 {% endblock%}
 
 {% block title%}
-    - Loot
+    | Loot
 {% endblock %}
 
 {% block jquery %}
-
-<script src='{% static "yata/js/loot/loot.js" %}'></script>
+  <script src='{% static "yata/js/loot/loot.js" %}'></script>
 {% endblock %}
 
 {% block content %}
-    <div id="content-update">
-        {% include "loot/content-reload.html" %}
-    </div>
+  <div id="content-update">
+    {% include "loot/content-reload.html" %}
+  </div>
 {% endblock %}

@@ -22,46 +22,64 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {html: true});
+    })
+  });
+</script>
+
 {% if pinnedAwards|length %}
-    <h2 class="title green"><i class="fas fa-thumbtack fa-icon-inline"></i>Pinned awards</h2>
-    <div class="module">
+  <h2 class="title green rounded-top py-2 px-3"><i class="fas fa-thumbtack fa-icon-inline"></i>&nbsp;Pinned awards</h2>
+    <div class="container-fluid p-md-3 px-0 mb-3 module">
+
+      <div class="d-flex justify-content-around flex-wrap p-0">
         {% for awardId, award in pinnedAwards.items %}
-            <div class="awards-pinned center-full-third" title="<p><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i></p><p>{{award.comment|safe}}</p>" rel="tooltip">
-                <div class="awards-pinned2">
+          <div class="overflow-auto mx-md-2 my-2">
+
+            <div class="container awards-pinned-card" style="cursor: help;" title="<div class=text-start><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i><br><br>{{award.comment|safe}}</div>" data-bs-toggle="tooltip" data-bs-placement="bottom">
+              <div class="row align-items-center text-center ">
 
                 {# name #}
-                <p>
-                {% if award.awardType == "Honor" %}
-                  {% if award.img == "0" %}
-                    <div class="award-default">
-                      <img src="{% url_img_honor award.img %}" class="honors">
-                      <span class="award-default">{{award.name}}</span>
-                    </div>
+                <div class="col-12 p-2">
+                  <div class="awards-pinned-spin">
+                    {% if award.awardType == "Honor" %}
+                      {% if award.img == "0" %}
+                        <div class="award-default-pinned">
+                          <img src="{% url_img_honor award.img %}" class="honors pinned-image">
+                          <span class="award-default">{{award.name}}</span>
+                        </div>
+                      {% else %}
+                        <img src="{% url_img_honor award.img %}" class="honors pinned-image">
+                      {% endif %}
                     {% else %}
-                      <img src="{% url_img_honor award.img %}" class="honors">
+                      <img src="{% url_img_medal award.img %}" class="medals pinned-image">
                     {% endif %}
-                {% else %}
-                    <img src="{% url_img_medal award.img %}" class="medals">
-                {% endif %}
-                </p>
+                  </div>
+                </div>
 
+                <div class="col-12 p-2">
                 {# acheive  #}
-                <p>
                 {% if award.achieve == 1%}
-                    <span class="valid">Awarded on {{award.awarded_time|ts2date:"%Y/%m/%d"}}</span>
+                    <div class="valid">Awarded on {{award.awarded_time|ts2date:"%Y/%m/%d"}}</div>
                 {% else %}
-                    <span class="error">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%
-                        &nbsp;&nbsp;{{award.head}}{{award.current|intcomma}} / {{award.head}}{{award.goal|intcomma}}
-                        {% if award.left %}
-                            &nbsp;&nbsp;{{award.left|float2IfSmall|safe}} days left
-                        {% endif %}
-                    </span>
+                    <div class="d-flex flex-wrap error justify-content-center">
+                      <div class="mx-2">{{award.achieve|mul:100|intdiv:1|floatformat:0}}%</div>
+                      <div class="mx-2">{{award.head}}{{award.current|intcomma}} / {{award.head}}{{award.goal|intcomma}}</div>
+                      {% if award.left %}
+                        <div class="mx-2">{{award.left|float2IfSmall|safe}} days left</div>
+                      {% endif %}
+                    </div>
                 {% endif %}
+              </div>
 
-                </p>
             </div>
             </div>
+
+          </div>
         {% endfor %}
-        <hr style="width: 0px;">
+      </div>
 </div>
 {% endif %}

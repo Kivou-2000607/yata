@@ -17,9 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
+{% if apiError %}
+  {% include "yata/error.html" %}
 {% endif %}
 
-{% include "loot/loot.html" %}
-{% include "loot/discord.html" %}
+{% include "loot/index.html" %}

@@ -24,59 +24,14 @@ This file is part of yata.
 
 {% include "bazaar/abroad/stocks.html" %}
 
-<h2 class="title"><i class="fas fa-users fa-icon-inline"></i>Contribute</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;Contribute</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
 <p>The database only relies on the users travelling and gathering data of foreign stocks. To contribute and make the database more accurate you can install one of the following scripts made by the community:</p>
-<div class="abroad-soft center-full-fourth">
-    <div>
-        <h3>YATA abroad</h3>
-        <p>Userscript by {{"Pyrit"|playerURL:2111649|safe}}<br>
-            Updates stocks<br>
-        <a href="https://raw.githubusercontent.com/TotallyNot/yata-abroad/master/yata_abroad.user.js" target="_blank">Install userscript</a>
-        </p>
-    </div>
-</div>
 
-<div class="abroad-soft center-full-fourth">
-    <div>
-    <h3>Torn PDA</h3>
-    <p>App by {{"Manuito"|playerURL:2225097|safe}}<br>
-        Updates and displays stocks<br>
-    <a href="https://github.com/Manuito83/torn-pda" target="_blank">Github</a> -
-    <a href="https://play.google.com/store/apps/details?id=com.manuito.tornpda" target="_blank">Google Play</a> -
-    <a href="https://apps.apple.com/us/app/torn-pda/id1510138514?l=es&ls=1" target="_blank">App Store</a>
-    </div>
-</div>
-
-
-<div class="abroad-soft center-full-fourth">
-    <div>
-        <h3>TornTools</h3>
-        <p>Extension by {{"Mephiles"|playerURL:2087524|safe}}<br>
-            Updates and displays stocks<br>
-        <a href="https://github.com/Mephiles/torntools_extension" target="_blank">Github</a> -
-        <a href="https://chrome.google.com/webstore/detail/torn-tools/hjpaapdjcgbmeikfnahipphknonhlhib" target="_blank">Chrome</a> -
-        <a href="https://addons.mozilla.org/en-US/firefox/addon/torn-tools/" target="_blank">Firefox</a>
-    </div>
-</div>
-
-{# <hr style="width: 0; padding-top: 10px;"> #}
-
-<div class="abroad-soft center-full-fourth">
-    <div>
-    <h3>Father's Abroad Items Tracker</h3>
-    <p>Userscript by {{"Father"|playerURL:2131687|safe}}<br>
-        Updates and displays stocks<br>
-    <a href="https://raw.githubusercontent.com/sid-the-sloth1/yata-scripts/master/abroad_items.user.js" target="_blank">Install userscript</a>
-    </div>
-</div>
-
-{# <div class="abroad-soft center-full-third"> #}
-    {# <div> #}
-        {# <i class="fas fa-spinner fa-pulse"></i> #}
-    {# </div> #}
-{# </div> #}
-<hr class="sep" style="width: 0;">
 <p>List of clients used the last 48 hours:</p>
 <ul>
     {% for client, v in clients %}
@@ -84,6 +39,6 @@ This file is part of yata.
     {% endfor %}
 </ul>
 
-<p>If you want to make your own tool please read the <a href="{% url 'api:documentation' %}#travel" target="_blank">API documentation</a>.</p>
+<p class="mb-0">If you want to make your own tool please read the <a href="{% url 'api:documentation' %}#travel" target="_blank">API documentation</a>.</p>
 
 </div>

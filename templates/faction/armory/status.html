@@ -22,9 +22,9 @@ This file is part of yata.
 {% load app_filters %}
 
 {% if report.computing %}
-    <span class="warning" style="cursor: help;" title="Report status: computing&#010;Progress: {{report.progress}}%&#010;Crontab: {{report.displayCrontab}}&#010;Last update: {{report.update|ts2date}}&#010;Last status: {{report.state_string}}"><i class="fas fa-clock"></i> {{report.progress}}%</span>
+    <span class="warning" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> computing<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-clock"></i> {{report.progress}}%</span>
 {% elif report.progress < 100 %}
-    <span class="error" style="cursor: help;" title="Report status: stopped&#010;Progress: {{report.progress}}%&#010;Crontab: {{report.displayCrontab}}&#010;Last update: {{report.update|ts2date}}&#010;Last status: {{report.state_string}}"><i class="fas fa-skull-crossbones"></i> {{report.progress}}%</span>
+    <span class="error" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> stopped<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-skull-crossbones"></i> {{report.progress}}%</span>
 {% else %}
-    <span class="valid" style="cursor: help;" title="Report status: finished&#010;Progress: {{report.progress}}%&#010;Crontab: {{report.displayCrontab}}&#010;Last update: {{report.update|ts2date}}&#010;Last status: {{report.state_string}}"><i class="fas fa-check"></i></span>
+    <span class="valid" style="cursor: help;" data-bs-toggle="tooltip" title="<div class='text-start'><b>Report status:</b> finished<br><b>Progress:</b> {{report.progress}}%<br><b>Crontab:</b> {{report.displayCrontab}}<br><b>Last update:</b> {{report.update|ts2date}}<br><b>Last status:</b> {{report.state_string}}</div>"><i class="fas fa-check"></i></span>
 {% endif %}

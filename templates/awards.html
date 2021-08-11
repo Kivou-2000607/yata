@@ -6,22 +6,16 @@
 {% endblock%}
 
 {% block title%}
-    - Awards
+    | Awards
 {% endblock %}
 
 {% block jquery %}
+
 <script src='{% static "yata/js/awards/awards.js" %}'></script>
 {% endblock %}
 
 {% block content %}
-    <div id="content-update">
-        {% include "awards/content-reload.html" %}
-    </div>
-
-    <!-- <div class="catch-me"> -->
-        <!-- <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring fa-icon-inline"></i>Tutorial&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2> -->
-        <!-- <div class="module tutorial" style="display: none;"> -->
-            <!-- {% include "awards/tutorial.html" %} -->
-        <!-- </div> -->
-    <!-- </div> -->
+  <div id="content-update">
+    {% include "awards/content-reload.html" %}
+  </div>
 {% endblock %}

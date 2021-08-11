@@ -20,14 +20,67 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<table id="target-attacks" class="center-medium trshadow target-attacks">
+<div class="table-responsive">
+<table class="table table-hover table-borderless target-attacks">
 <thead>
-    <tr><td colspan="8">
-        <div class="pagination">
+
+    <tr>
+        <th class="a">Time & Log</th>
+        <th class="b">Attacker</th>
+        <th class="b">Defender</th>
+        <th class="c">Result</th>
+        <th class="d">&asymp;Level</th>
+        <th class="d">Flat resp.</th>
+        <th class="d">Fair fight</th>
+        <th class="e">Save</th>
+        <th class="e">Paid</th>
+    </thead>
+    <tbody>
+    {% for v in attacks %}
+    <tr class="{% if v.flat_respect == 0 %}zero-respect{% endif %} {% if v.fair_fight == 3 %}max-fair-fight{% elif v.fair_fight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-tId="{{v.targetId}}" data-aId="{{v.tId}}">
+        <td class="text-center">
+            {% if v.code == "0" %}
+                {{v.timestamp_ended|ts2date}}
+            {% else %}
+                <a href="{{v.code|attackLog}}" target="_blank">{{v.timestamp_ended|ts2date}}</a>
+            {% endif %}
+        </td>
+        <td class="text-left">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
+        <td class="text-left">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
+        <td class="text-left">{{v.result}}</td>
+        {% if v.bonus > 0 %}
+            <td colspan="3" style="text-align: center;">Bonus: {{v.bonus}}</td>
+        {% elif not v.flat_respect %}
+            <td class="text-center">-</td>
+            <td class="text-center">-</td>
+            <td class="text-center">{{v.fair_fight|floatformat:2}}</td>
+        {% elif v.war > 1 %}
+            <td class="text-center">{{v.level|floatformat:0}}</td>
+            <td class="text-center">{{v.base_respect|floatformat:2}}</td>
+            <td class="text-center">War</td>
+        {% else %}
+            <td class="text-center">{{v.level|floatformat:0}}</td>
+            <td class="text-center">{{v.flat_respect|floatformat:2}}</td>
+            <td class="text-center">{{v.fair_fight|floatformat:2}}</td>
+        {% endif %}
+        <td class="text-center" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
+            <div class="catch-buttons-attack-{{v.targetId}}">
+                {% include "target/attacks/button-target.html" %}
+            </div>
+        </td>
+        <td class="text-center" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
+            {% include "target/attacks/button-paid.html" %}
+        </td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+      <td colspan="9" class="text-center">
+        <div class="pagination d-block">
             <span class="step-links">
                 {% if attacks.has_previous %}
-                    <a class="page-link" href="{% url 'target:attacks' %}?p_at=1">&laquo; first</a>
-                    <a class="page-link" href="{% url 'target:attacks' %}?p_at={{ attacks.previous_page_number }}">previous</a>
+                    <a class="yt-page-link rounded first" href="{% url 'target:attacks' %}?p_at=1"></a>
+                    <a class="yt-page-link rounded previous" href="{% url 'target:attacks' %}?p_at={{ attacks.previous_page_number }}"></a>
                 {% endif %}
 
                 <span class="current">
@@ -35,61 +88,13 @@ This file is part of yata.
                 </span>
 
                 {% if attacks.has_next %}
-                    <a class="page-link" href="{% url 'target:attacks' %}?p_at={{ attacks.next_page_number }}">next</a>
-                    <a class="page-link" href="{% url 'target:attacks' %}?p_at={{ attacks.paginator.num_pages }}">last &raquo;</a>
+                    <a class="yt-page-link rounded next" href="{% url 'target:attacks' %}?p_at={{ attacks.next_page_number }}"></a>
+                    <a class="yt-page-link rounded last" href="{% url 'target:attacks' %}?p_at={{ attacks.paginator.num_pages }}"></a>
                 {% endif %}
             </span>
         </div>
-    </td></tr>
-
-    <tr>
-        <th>Time & Log</th>
-        <th>Attacker</th>
-        <th>Defender</th>
-        <th>Result</th>
-        <th>&asymp;Level</th>
-        <th style="text-align: center;">Flat respect</th>
-        <th style="text-align: center;">Fair fight</th>
-        <th style="text-align: center;">Save target</th>
-        <th style="text-align: center;">Paid</th>
-    </thead>
-    <tbody>
-    {% for v in attacks %}
-    <tr class="{% if v.flat_respect == 0 %}zero-respect{% endif %} {% if v.fair_fight == 3 %}max-fair-fight{% elif v.fair_fight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-tId="{{v.targetId}}" data-aId="{{v.tId}}">
-        <td class="a">
-            {% if v.code == "0" %}
-                {{v.timestamp_ended|ts2date}}
-            {% else %}
-                <a href="{{v.code|attackLog}}" target="_blank">{{v.timestamp_ended|ts2date}}</a>
-            {% endif %}
-        </td>
-        <td class="b">{{v.attacker_name|playerURL:v.attacker_id|safe}}</td>
-        <td class="b">{{v.defender_name|playerURL:v.defender_id|safe}}</td>
-        <td class="c">{{v.result}}</td>
-        {% if v.bonus > 0 %}
-            <td colspan="3" style="text-align: center;">Bonus: {{v.bonus}}</td>
-        {% elif not v.flat_respect %}
-            <td class="e">-</td>
-            <td class="d">-</td>
-            <td class="d">{{v.fair_fight|floatformat:2}}</td>
-        {% elif v.war > 1 %}
-            <td class="e">{{v.level|floatformat:0}}</td>
-            <td class="d">{{v.base_respect|floatformat:2}}</td>
-            <td class="d">War</td>
-        {% else %}
-            <td class="e">{{v.level|floatformat:0}}</td>
-            <td class="d">{{v.flat_respect|floatformat:2}}</td>
-            <td class="d">{{v.fair_fight|floatformat:2}}</td>
-        {% endif %}
-        <td class="f" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
-            <div class="catch-buttons-attack-{{v.targetId}}">
-                {% include "target/attacks/button-target.html" %}
-            </div>
-        </td>
-        <td class="f" data-val="{% if v.targetId in targets %}1{%else%}0{% endif %}">
-            {% include "target/attacks/button-paid.html" %}
-        </td>
+      </td>
     </tr>
-    {% endfor %}
     </tbody>
 </table>
+</div>

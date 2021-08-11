@@ -21,66 +21,89 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-{% if graphLength > 1 %}
-<script>
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
 
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([
-        ['Time', 'Market Price', 'Week Tendency: {{item.weekTendencyA|mul:86400|format:"{:+,.0f}"}} $/day', 'Month Tendency: {{item.monthTendencyA|mul:86400|format:"{:+,.0f}"}} $/day'],
-        {% for a, b, c, d in graph %}
-            [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
-         {% endfor %}
-      ]);
+<script type="text/javascript">
+    $('#item-modal').modal('show');
+    $('#item-modal').on('shown.bs.modal', function () {
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
 
-      var options = {
-        legend: {position: 'top', textStyle: {fontSize: 14}},
-        series: {
-                0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
-                1: {type: 'line', color: {%if item.weekTendency >= 0.01%}'#0B8E14'{% elif item.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
-                2: {type: 'line', color: {%if item.monthTendency >= 0.01%}'#0B8E14'{% elif item.monthTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
-                },
-        hAxis: { format: 'M/d/yy' },
-        vAxis: { format: 'short', title: 'Market price' },
-        'backgroundColor': 'transparent',
-        'chartArea': {'width': '90%', 'height': '70%'},
-      };
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Time', 'Market Price', 'Week Tendency: {{item.weekTendencyA|mul:86400|format:"{:+,.0f}"}} $/day', 'Month Tendency: {{item.monthTendencyA|mul:86400|format:"{:+,.0f}"}} $/day'],
+          {% for a, b, c, d in graph %}
+              [new Date({{a|date:"Y"}}, {{a|date:"n"|sub:"1"}}, {{a|date:"j"}}, {{a|date:"G"}}, {{a|date:"i"}}, {{a|date:"s"}}), {{b}}, {{c}}, {{d}}],
+           {% endfor %}
+        ]);
 
-      var view = new google.visualization.DataView(data);
-      columns = [0, 1];
-      {% if item.weekTendencyA or item.weekTendencyB %}
-        columns.push(2);
-      {% endif %}
-      {% if item.monthTendencyA or item.monthTendencyB %}
-        columns.push(3);
-      {% endif %}
-      view.setColumns(columns);
+        var options = {
+          legend: {position: 'top', textStyle: {fontSize: 14}},
+          height: 200,
+          series: {
+                  0: {type: 'line', color: '#787878', pointSize: 5, pointShape: 'circle',   lineWidth: 3},
+                  1: {type: 'line', color: {%if item.weekTendency >= 0.01%}'#0B8E14'{% elif item.weekTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none'},
+                  2: {type: 'line', color: {%if item.monthTendency >= 0.01%}'#0B8E14'{% elif item.monthTendency <= -0.01%}'#CC3434'{% else %}'#447e9b'{% endif %}, pointShape: 'none', lineDashStyle: [5, 5]},
+                  },
+          hAxis: { format: 'M/d/yy' },
+          vAxis: { format: 'short', title: 'Market price' },
+          'backgroundColor': 'transparent',
+          'chartArea': {'width': '90%', 'height': '70%'},
+        };
 
-      var chart = new google.visualization.ComboChart(document.getElementById('price-history'));
+        var view = new google.visualization.DataView(data);
+        columns = [0, 1];
+        {% if item.weekTendencyA or item.weekTendencyB %}
+          columns.push(2);
+        {% endif %}
+        {% if item.monthTendencyA or item.monthTendencyB %}
+          columns.push(3);
+        {% endif %}
+        view.setColumns(columns);
 
-      chart.draw(view, options);
-    }
+        var chart = new google.visualization.ComboChart(document.getElementById('price-history'));
+
+        chart.draw(view, options);
+      }
+    });
 </script>
-{% endif %}
 
-<div class="container">
-    <div class="overlay close"></div>
-    <div class="modal-center-large">
-        <h2 class="title">Last month market price fluctations of item: {{item.tName}} [{{item.tId}}]</h2>
-        <div class="module">
-            <span style="position: absolute; top:40px; right: 10px;">
-              <button><img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large" /></button>
-            </span>
-            <p>Tendency per week over last week: {{item.weekTendency|priceTendency|safe}}</p>
-            <p>Tendency per week over last month: {{item.monthTendency|priceTendency|safe}}</p>
+<!-- Modal breakdown -->
+<div class="modal fade" id="item-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto">{{item.tName}} [{{item.tId}}]</div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+          </div>
+        </h2>
+      </div>
+      <div class="modal-body p-0">
+        <div class="container-fluid p-md-3 p-1 mb-0 module">
+          <div class="clearfix">
+              <img src="{% url_img_item item.tId %}" alt="{{item.tName}} [{{item.tId}}]" class="item-large col-md-4 float-md-end mb-3 ms-md-3" />
+              <h3>Market value: ${{item.tMarketValue|intcomma}}</h3>
+              <h3>Sell Price: ${{item.tSellPrice|intcomma}}</h3>
+              <h3>Buy Price: ${{item.tBuyPrice|intcomma}}</h3>
+              <h3>Circulation: {{item.tCirculation|intcomma}}</h3>
+              <h3>Tendency per week over last week: <span>{{item.weekTendency|priceTendency|safe}}</span></h3>
+              <h3>Tendency per week over last month: <span>{{item.monthTendency|priceTendency|safe}}</span></h3>
+          </div>
+
             {% if graphLength == 0 %}
-              <p class="warning">No relevent data to plot (most probably because the market price is $0)</p>
-            {% elif graphLength == 1 %}
-              <p class="warning">No relevent data to plot (most probably because the market price used to be $0), come back soon.</p>
-            {% else %}
-              <div id="price-history"></div>
-            {% endif %}
+                <p class="warning">No relevent data to plot (most probably because the market price is $0)</p>
+              {% elif graphLength == 1 %}
+                <p class="warning">No relevent data to plot (most probably because the market price used to be $0), come back soon.</p>
+              {% else %}
+              <div class="table-responsive">
+              <table class="table table-hover table-borderless price-history">
+                  <tr><td><div id="price-history"></div></td></tr>
+              </table>
+              </div>
+              {% endif %}
         </div>
+      </div>
     </div>
+  </div>
 </div>

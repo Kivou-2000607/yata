@@ -17,12 +17,20 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+
 <h3>Bazaar overview</h3>
 <p>Click on the item type to show the tables.<br />
 Click on an icon to refresh the bazaar and itemmarket prices of the object (1 API call).<br />
 Click on the refresh buttons on the top right section title to refresh the items information and bazaar prices (1 API call/item). This feature is not available for the full list.<br />
 Each tables contains:
-<ul>
+<ul class="mb-0">
     <li> Row 1: item icon / click to refresh button</li>
     <li> Row 2: time since last update / click to delete bazaar data (because why not?) </li>
     <li> Row 3: item name / click to see its description</li>
@@ -48,3 +56,4 @@ Each tables contains:
         </table>
     </div></li>
 </ul>
+</div>

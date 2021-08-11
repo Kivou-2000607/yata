@@ -21,9 +21,12 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div class="catch-me">
-    <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring fa-icon-inline"></i>Tutorial&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-    <div class="module tutorial" style="display: none;">
-        <p>Incoming tutorial</p>
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
     </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+  <p class="mb-0">Incoming tutorial</p>
 </div>

@@ -22,6 +22,8 @@ This file is part of yata.
 {% endif %}
 {% if errorMessageSub %}
     {% include "yata/error.html" with errorMessage=errorMessageSub %}
+{% elif apiError %}
+    {% include "yata/error.html" %}
 {% endif %}
 {% if validMessageSub %}
     {% include "yata/error.html" with validMessage=validMessageSub %}
@@ -34,3 +36,5 @@ This file is part of yata.
 {% if view.browse %}
     {% include "company/browse/index.html" %}
 {% endif %}
+
+{% include "company/tutorial.html" %}

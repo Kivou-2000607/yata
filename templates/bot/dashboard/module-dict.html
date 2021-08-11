@@ -23,7 +23,7 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<h2 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning" style="margin-right: 10px;">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h2>
+<h4 class="command-doc">{{v.title}}{%if v.mandatory%}<sup class="warning" style="margin-right: 10px;">*</sup>{%endif%}&nbsp;&nbsp;<i class="fas fa-caret-right{%if force_display == k %} fa-rotate-90{%endif%}"></i></h4>
 <div class="command-doc" {%if force_display == k %}style="display: block;"{%endif%}>
     <p>{{v.help|safe}}{% if v.tooltip%} <i style="cursor: help;" class="fas fa-question-circle" title="{{v.tooltip|safe}}"></i>{%endif%}</p>
     <ul><form>
@@ -32,7 +32,7 @@ This file is part of yata.
         {% endfor %}
     </form></ul>
 </div>
-<p>
+<p class="dashboard-command-result">
     {% if v.selected|length %}
         {% for discord_id, discord_name in v.selected.items %}
             <tt class="dashboard-settings dashboard-option-inline {% if discord_id in v.all %}valid"{% else %}warning{% endif %} title="{{discord_id}}">{{v.prefix}}{{discord_name|safe}} </tt>

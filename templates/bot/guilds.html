@@ -42,6 +42,7 @@ This file is part of yata.
         legend: { position: 'none' },
         backgroundColor: 'transparent',
         chartArea: {'width': '90%', 'height': '60%'},
+        height: 200,
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chartGuilds'));
@@ -50,12 +51,18 @@ This file is part of yata.
     }
 </script>
 
-<h2 class="title"><i class="fas fa-server fa-icon-inline"></i>Servers hosting the official YATA bot</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-server"></i>&nbsp;Servers</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     <div class="pagination-list">
         {% include "bot/guilds-list.html" %}
     </div>
-    <table class="center-large">
-        <tr><td><div id="chartGuilds"></div></td></tr>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-borderless tablesorter">
+          <tr><td><div id="chartGuilds"></div></td></tr>
+      </table>
+    </div>
 </div>

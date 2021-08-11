@@ -1,6 +1,3 @@
-<span class="flush-right">
-
-
 {% if type == "team_id" %}
     {% if id|slugify  == filters.team_id|slugify %}
         <a class="filter-player" href="?"><i class="fas fa-filter filter-player-activated" style="opacity: 1.0;"></i></a>
@@ -26,5 +23,3 @@
         <a class="filter-player" href="?{{type}}={{id}}{{getfilters}}"><i class="fas fa-filter filter-player"></i></a>
     {% endif %}
 {% endif %}
-
-</span>

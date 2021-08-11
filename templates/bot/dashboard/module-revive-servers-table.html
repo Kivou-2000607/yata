@@ -25,17 +25,18 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<table class="center-large trshadow dashboard-revive-servers">
+<div class="table-responsive">
+<table class="table table-hover table-striped table-borderless tablesorter dashboard-revive-servers">
     <thead>
         <tr>
-            <th>Server</th>
-            <th>Server ID</th>
-            <th>Admins</th>
-            <th>Public&nbsp;<i class="fas fa-info-circle" title="Public servers allow anyone to send revive calls"></th>
-            <th>Freevive&nbsp;<i class="fas fa-info-circle" title="Freevive servers will receive freerevive calls"></th>
-            <th>Send</th>
-            <th>Receive</th>
-            <th>Blacklist</th>
+            <th class="b">Server ID</th>
+            <th class="c">Admins</th>
+            <th class="a">Server</th>
+            <th class="d">Public&nbsp;<i class="fas fa-info-circle" title="Public servers allow anyone to send revive calls"></th>
+            <th class="d">Freevive&nbsp;<i class="fas fa-info-circle" title="Freevive servers will receive freerevive calls"></th>
+            <th class="d">Send</th>
+            <th class="d">Receive</th>
+            <th class="d">Blacklist</th>
         </tr>
     </thead>
     <tbody>
@@ -45,12 +46,13 @@ This file is part of yata.
         </tr>
         {% endfor %}
 
-        <tr><td colspan="7">
-            <div class="pagination">
+        <tr>
+          <td colspan="8" class="text-center">
+            <div class="pagination d-block">
                 <span class="step-links">
                     {% if config.all.has_previous %}
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.previous_page_number }}">previous</a>
+                        <a class="yt-page-link rounded first" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.previous_page_number }}"></a>
                     {% endif %}
 
                     <span class="current">
@@ -58,12 +60,14 @@ This file is part of yata.
                     </span>
 
                     {% if config.all.has_next %}
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.paginator.num_pages }}">last &raquo;</a>
+                        <a class="yt-page-link rounded next" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'bot:dashboardOption' %}?bid={{server.bot.pk}}&sid={{server.discord_id}}&prs={{ config.all.paginator.num_pages }}"></a>
                     {% endif %}
                 </span>
             </div>
-        </td></tr>
+          </td>
+        </tr>
 
     </tbody>
 </table>
+</div>

@@ -23,30 +23,30 @@ This file is part of yata.
 {% load app_filters %}
 
 
-<td class="a">{{revive_server.server_name}}</td>
-<td class="b"><tt>{{revive_server.server_id}}</tt></td>
-<td class="c">
-    {{revive_server.admins.0.name|playerURL:revive_server.admins.0.torn_id|safe}}
-    {% if revive_server.admins|length > 1 %}
-        &nbsp;&nbsp;<i class="fas fa-info-circle" title="{% for v in revive_server.admins %}{{v.name}} [{{v.torn_id|safe}}]{% if not forloop.last %}&#10;{% endif %}{% endfor %}"></i>
-    {% endif %}
+<td class="text-center"><tt>{{revive_server.server_id}}</tt></td>
+<td class="text-start">
+  {{revive_server.admins.0.name|playerURL:revive_server.admins.0.torn_id|safe}}
+  {% if revive_server.admins|length > 1 %}
+  &nbsp;&nbsp;<i class="fas fa-info-circle" title="{% for v in revive_server.admins %}{{v.name}} [{{v.torn_id|safe}}]{% if not forloop.last %}&#10;{% endif %}{% endfor %}"></i>
+  {% endif %}
 </td>
-<td class="e">
+<td class="text-end">{{revive_server.server_name}}</td>
+<td class="text-center">
     {% if revive_server.public %}
         <i class="fas fa-check valid"></i>
     {% else %}
         <i class="fas fa-times error"></i>
     {% endif %}
 </td>
-<td class="e">
+<td class="text-center">
     {% if revive_server.freevive %}
         <i class="fas fa-check valid"></i>
     {% else %}
         <i class="fas fa-times error"></i>
     {% endif %}
 </td>
-<td class="d">
-    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}" title="{{revive_server}} & {{config}}">
+<td class="text-center">
+    <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="sending" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
         {% if revive_server.server_id in config.sending %}
              <i class="fas fa-toggle-on valid"></i>
         {% else %}
@@ -54,14 +54,14 @@ This file is part of yata.
         {% endif %}
     </span>
 </td>
-<td class="e">
+<td class="text-center">
     {% if server.discord_id|slugify in revive_server.sending %}
         <i class="fas fa-check valid"></i>
     {% else %}
         <i class="fas fa-times error"></i>
     {% endif %}
 </td>
-<td class="d">
+<td class="text-center">
     <span class="dashboard-option-tr" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="revive" data-typ="blacklist" data-key="{{revive_server.server_id}}" data-val="{{revive_server.server_name}}">
         {% if revive_server.server_id in config.blacklist %}
             <i class="fas fa-toggle-on error"></i>

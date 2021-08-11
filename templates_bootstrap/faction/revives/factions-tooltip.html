@@ -1,6 +1,0 @@
-{% load humanize %}Revives {%if type%}received{%else%}made{%endif%} by {{f.faction_name}}
-Hospitalized: {%if type%}{{f.revivesReceivedH|intcomma}}{%else%}{{f.revivesMadeH|intcomma}}{%endif%}
-Online: {%if type%}{{f.revivesReceivedO|intcomma}}{%else%}{{f.revivesMadeO|intcomma}}{%endif%}
-Both: {%if type%}{{f.revivesReceivedB|intcomma}}{%else%}{{f.revivesMadeB|intcomma}}{%endif%}
-
-Total: {%if type%}{{f.revivesReceived|intcomma}}{%else%}{{f.revivesMade|intcomma}}{%endif%}

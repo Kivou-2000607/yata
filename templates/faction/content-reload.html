@@ -23,6 +23,8 @@ This file is part of yata.
 {% endif %}
 {% if errorMessageSub %}
     {% include "yata/error.html" with errorMessage=errorMessageSub %}
+{% elif apiError %}
+    {% include "yata/error.html" %}
 {% endif %}
 {% if validMessageSub %}
     {% include "yata/error.html" with validMessage=validMessageSub %}
@@ -49,7 +51,7 @@ This file is part of yata.
 {# chain reports #}
 {% if view.report %}
     {% include "faction/chains/report.html" %}
-    {% include "faction/tutorials/chains.html" %}
+    {# {% include "faction/tutorials/chains.html" %} #}
 {% endif %}
 {% if view.combined %}
     {% include "faction/chains/combined.html" %}
@@ -121,6 +123,7 @@ This file is part of yata.
 {% endif %}
 {% if view.armoryReport %}
     {% include "faction/armory/report.html" %}
+    {% include "faction/tutorials/armory.html" %}
 {% endif %}
 
 {# big brother #}

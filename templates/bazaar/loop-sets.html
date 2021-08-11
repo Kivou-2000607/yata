@@ -22,17 +22,21 @@ This file is part of yata.
 
 {% for k, v in sets.items %}
   <div class="catch-me">
-      <h2 class="title {% if view.hideType %}toggle-display rounded{% endif %}"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.items.0.tName}} [{{v.items.0.tId}}]" class="item-small" /> {{k}} {% if view.hideType %}&nbsp;&nbsp;<i class="fas fa-caret-right"></i>{% endif%}
-          {% if v.market_value%}<i>market: ${{v.market_value|intcomma}} points: ${{v.points_value|intcomma}} benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i>{%endif%}
+    <h2 class="title rounded-top px-2 py-2">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="pe-2"><img src="{% url_img_item v.items.0.tId %}" alt="{{v.items.0.tName}} [{{v.items.0.tId}}]" class="item-small" /> {{k}}</div>
+        <div class="px-2"><i>market: ${{v.market_value|intcomma}}</i></div>
+        <div class="px-2"><i>points: ${{v.points_value|intcomma}}</i></div>
+        <div class="px-2 me-auto"><i>benefits: {{v.benefits|intcomma}}$ ({{v.benefitsps|floatformat:2}}%)</i></div>
+        <div class="px-2">
           {% if view.refreshType and player.tId > 0 %}
-              <form class="form-inline"><a href="bazaar/updateType/{{v.type}}" class="flush-right update-type"><i class="fas fa-sync-alt"></i>&nbsp;Refresh all</a></form>
+            <span class="update-type" data-val="{{v.type}}"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline">&nbsp;Refresh all</span></span>
           {% endif %}
-      </h2>
-      <div id="loop-over-item-sell-table-{{v.type}}" class="module" {% if view.hideType %}style="display: none;"{% endif %}>
-        {% if v.market_value %}
-        {% endif %}
-          {% include "bazaar/loop-items.html" with itemType=k items=v.items %}
-      </div>
+        </div>
+    </h2>
+    <div id="loop-over-item-sell-table-{{v.type}}" class="container-fluid p-2 mb-3 module" {% if view.hideType %}style="display: none;"{% endif %}>
+        {% include "bazaar/loop-items.html" with itemType=k items=v.items %}
+    </div>
       {# {% if view.hideType %}<br>{% endif %} #}
   </div>
 {% endfor %}

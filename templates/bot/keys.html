@@ -19,9 +19,14 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<h2 class="title"><i class="fas fa-key fa-icon-inline"></i>API keys management</h2>
-<div class="module">
-    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, <span class="warning">a set of master keys are given by the bot admins</span> on setup. These keys are only used for this verification procedure.
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-key"></i>&nbsp;API keys management</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <p>The bot takes the keys it needs from the YATA database. Before pulling a key it systematically check Torn idendity of the concerned discord member. This verification is made by an API call <tt>/user/discord/</tt> checking that Torn and discord identities match. To solve the bootstrap problem, <b class="warning">a set of master keys are given by the bot admins</b> on setup. These keys are only used for this verification procedure.
     Thus, with this system, to be a bot admin you have:</p>
     <ul>
         <li>to be verified on the official discord server</li>
@@ -30,6 +35,6 @@ This file is part of yata.
 
     <p>For some commands, the YATA bot pulls private informations using your key. And some of these commands can be triggered by a tier, displaying private data on potentially public channels. To avoid malicious use of these commands a direct message is sent to you when the data is pulled and displayed.</p>
 
-    <p>If your are a bot admin and you reset your key, you just have to <a href="{%url 'logout'%}" target="_blank">logout</a> and log back into YATA with your new key.</p>
+    <p class="mb-0">If your are a bot admin and you reset your key, you just have to <a href="{%url 'logout'%}" target="_blank">logout</a> and log back into YATA with your new key.</p>
 
 </div>

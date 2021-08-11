@@ -17,19 +17,30 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<!-- categories -->
-<form>
-    {% csrf_token %}
-<table class="center tdshadow company-categories">
-    <tbody>
-    <tr>
-        <td>
-            <a {% if not player.companyId %}class="closed-link"{% endif %} href="{% url 'company:supervise' %}"><i class="fas fa-user-tie fa-icon-inline"></i>Supervise</a>
-        </td>
-        <td>
-            <a href="{% url 'company:browse' %}"><i class="fas fa-list-ol fa-icon-inline"></i>Browse</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</form>
+
+<nav class="navbar navbar-expand-md navbar-light py-0">
+  <div class="container-fluid">
+    <button class="navbar-toggler ms-auto mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#subNavbarSupportedContent" aria-controls="subNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span id="collapse-section-name>">Categories</span>
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="subNavbarSupportedContent">
+      <ul class="nav">
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            {% if player.companyId %}
+              <a href="{% url 'company:supervise' %}" title="company supervise"><i class="fas fa-user-tie"></i>&nbsp;Supervise</a>
+            {% else %}
+              <span class="neutral"><i class="fas fa-user-tie"></i>&nbsp;Supervise</span>
+            {% endif %}
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link yt-cat-link">
+            <a href="{% url 'company:browse' %}" title="company browse"><i class="fas fa-list-ol"></i>&nbsp;Browse</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -19,20 +19,23 @@ This file is part of yata.
 
 {% load app_filters %}
 
-<h2 class="title"><i class="fas fa-laptop fa-icon-inline"></i>Host the YATA bot</h2>
-<div class="module">
-    <span class="inline-logo"><img src="/media/svg/yata.discord.svg" alt="YATA" class="yata-logo-square"/></span>
-    <p><b>You can host the YATA bot on your server</b>.<br/>It's free and it's easy, just follow these steps:</p>
-    <p>
-        <ol>
-            <li>Read <a href="{% url 'bot:documentation' %}">the documentation</a>.</li>
-            <li><a href="https://discord.com/api/oauth2/authorize?client_id=623862007434706986&permissions=8&scope=bot" target="_blank">Invite the bot</a> to your server.</li>
-            <li>Log into YATA and check out below that your discord account is verified by Torn.</li>
-            <li><a href="{% url 'discord' %}" target="_blank">Join the YATA server</a> and open an ticket for a bot setup.<br><i>Give us the name of your server and no PM please.</i></li>
-            <li>Visit <a href="{% url 'bot:dashboard' %}">the dashboard</a> to configure your bot.<br><i>Do an initial <tt>!sync</tt></i> on your server first.</li>
-            <li>Read <a href="{% url 'bot:documentation' %}">the documentation</a>.</li>
-            <li>Enjoy! <i class="far fa-smile-wink"></i></li>
-        </ol>
-
-    </p>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-laptop"></i>&nbsp;Host the YATA bot</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="clearfix">
+    <img class="bd-placeholder-img col-md-2 float-md-end mb-3 ms-md-3 rounded" src="/media/misc/bot_verified.png" alt="YATA" width="100%" />
+      <p><b>You can host the YATA bot on your server</b>.<br/>It's free and it's easy, just follow these steps:</p>
+      <ol class="mb-0">
+          <li>Read <a href="{% url 'bot:documentation' %}">the documentation</a>.</li>
+          <li><a href="https://discord.com/api/oauth2/authorize?client_id=623862007434706986&permissions=8&scope=bot" target="_blank">Invite the bot</a> to your server.</li>
+          <li>Log into YATA and check out below that your discord account is verified by Torn.</li>
+          <li><a href="{% url 'discord' %}" target="_blank">Join the YATA server</a> and open an ticket for a bot setup.<br><i>Give us the name of your server and no PM please.</i></li>
+          <li>Visit <a href="{% url 'bot:dashboard' %}">the dashboard</a> to configure your bot.<br><i>Do an initial <tt>!sync</tt></i> on your server first.</li>
+          <li>Read <a href="{% url 'bot:documentation' %}">the documentation</a>.</li>
+          <li>Enjoy! <i class="far fa-smile-wink"></i></li>
+      </ol>
+  </div>
 </div>

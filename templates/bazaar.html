@@ -15,19 +15,11 @@
 {% endblock %}
 
 {% block content %}
-    <div id="details-item"></div>
-    <div id="prices-item"></div>
-    <div id="stocks-item"></div>
+    <div id="bazaar-modal"></div>
 
     <div id="content-update">
         {% include "bazaar/content-reload.html" %}
     </div>
 
-    <div class="catch-me">
-        <h2 class="title grey toggle-display rounded"><i class="far fa-life-ring fa-icon-inline"></i>Tutorial&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
-        <div class="module tutorial" style="display: none;">
-            {% include "bazaar/tutorial.html" %}
-        </div>
-    </div>
 
 {% endblock %}

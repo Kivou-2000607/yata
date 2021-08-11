@@ -1,16 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block css%}
-    <link rel="stylesheet" type="text/css" href={% static "yata/css/target.css" %} />
-{% endblock%}
-
 {% block title%}
-    - Target
-{% endblock %}
-
-{% block jquery %}
-  <script src='{% static "yata/js/targets/main.js" %}'></script>
+    | API
 {% endblock %}
 
 {% block content %}
@@ -26,11 +18,15 @@
   });
 </script>
 
-  <h2 class="title"><i class="fas fa-code fa-icon-inline"></i>API documentation</h2>
-  <div class="module">
-    <h1 id="loot" class="module-doc">Loot&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;API documentation</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <h3 id="loot" class="module-doc">Loot&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
     <div class="module-doc">
-    <h2 class="command-doc">Loot timings [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h4 class="command-doc">Loot timings [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
     <div class="command-doc">
 
     <ul>
@@ -48,7 +44,7 @@
       </li>
       <li style="text-decoration: line-through;"><b>Rate limit</b> There is an IP based rate limit of 10 calls / hours. It is recommended to store locally the result and update it based on the suggested timestamp to reduce the number of calls.</li>
       <li><b>Cache</b> The response is cached until an <tt>hosp_out</tt> has changed. You can checkout the server response timestamp to see when last update occured.<br>
-        <span class="warning">Make sure to call the exact url <tt>{% url "api:loot" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.
+        <div class="warning">Make sure to call the exact url <tt>{% url "api:loot" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.</div>
       <li><b>Loot levels</b> From the hosp out timestamps one can get the different loot level by adding the following number of seconds:
         <pre><code classe="yaml">level 1: 0
 level 2: 30 * 60
@@ -59,10 +55,10 @@ level 5: 450 * 60</code></pre>
   </div>
   </div>
 
-    <h1 id="travel" class="module-doc">Foreign Stock&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    <h3 id="travel" class="module-doc">Foreign Stock&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
     <div class="module-doc">
 
-    <h2 class="command-doc">Export stocks [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h4 class="command-doc">Export stocks [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
     <div class="command-doc">
     <ul>
       <li><b>URL</b> <a href="{% url "api:exportStocks" %}" target="_blank">{% url "api:exportStocks" %}</a></li>
@@ -82,11 +78,11 @@ level 5: 450 * 60</code></pre>
 }</code></pre>
       </li>
       <li><b>Cache</b> The response is cached until an <tt>{% url "api:importStocks" %}</tt> request is called. You can checkout the server response timestamp to see when last update occured.<br>
-        <span class="warning">Make sure to call the exact url <tt>{% url "api:exportStocks" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.
+        <div class="warning">Make sure to call the exact url <tt>{% url "api:exportStocks" %}</tt> and not some variations of it (with GET parameters) to be sure to have the right cached response.</div>
 
     </ul>
   </div>
-    <h2 class="command-doc">Import stocks [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+    <h4 class="command-doc">Import stocks [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
     <div class="command-doc">
     <ul>
       <li><b>URL</b> <a href="{%url 'api:importStocks' %}">{%url 'api:importStocks' %}</a></li>
@@ -146,10 +142,10 @@ sou: South Africa</code></pre>
     </div>
   </div>
 
-  <h1 id="targets" class="module-doc">Targets&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+  <h3 id="targets" class="module-doc">Targets&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
   <div class="module-doc">
 
-  <h2 class="command-doc">Export targets [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+  <h4 class="command-doc">Export targets [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
   <div class="command-doc">
     <ul>
       <li><b>URL</b> <a href="{% url "api:exportTargets" %}" target="_blank">{% url "api:exportTargets" %}</a></li>
@@ -168,7 +164,7 @@ sou: South Africa</code></pre>
   </div>
 
 
-  <h2 class="command-doc">Import targets [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+  <h4 class="command-doc">Import targets [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
   <div class="command-doc">
     <ul>
       <li><b>URL</b> <a href="{% url "api:importTargets" %}" target="_blank">{% url "api:importTargets" %}</a></li>
@@ -195,9 +191,9 @@ sou: South Africa</code></pre>
 
   </div>
 
-  <h1 id="spies" class="module-doc">Spies&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+  <h3 id="spies" class="module-doc">Spies&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
   <div class="module-doc">
-<h2 class="command-doc">Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h4 class="command-doc">Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">
 
 <ul>
@@ -248,7 +244,7 @@ sou: South Africa</code></pre>
     "1": { null }
 }</code></pre>
 </div>
-<h2 class="command-doc">Spies [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h2>
+<h4 class="command-doc">Spies [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">
 
 <ul>
@@ -268,16 +264,14 @@ sou: South Africa</code></pre>
 </div>
 
 
-    <h1 id="errors" class="module-doc">Errors format&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h1>
+    <h3 id="errors" class="module-doc">Errors format&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
     <div class="module-doc">
-    <p>
-      <ul>
+      <ul class="mb-0">
         <li>Server Errors (status 500): <tt>{'error':{'error': 'Error message', 'code': 1 }}</tt></li>
         <li>User Errors (status 400): <tt>{'error':{'error': 'Error message', 'code': 2 }}</tt></li>
         <li>Rate limit (status 429): <tt>{'error':{'error': 'Rate limit message', 'code': 3 }}</tt></li>
         <li>Torn API error (status 400): <tt>{'error':{'error': 'Torn API error message', 'code': 4 }}</tt></li>
       </ul>
-  </p>
   </div>
   </div>
 

@@ -18,13 +18,15 @@ This file is part of yata.
 {% endcomment %}
 
 {% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
+  {% include "yata/error.html" with apiError=apiErrorSub %}
+{% elif apiError %}
+  {% include "yata/error.html" %}
 {% endif %}
 
 {% if view.analytics %}
-    {% include "yata/analytics.html" %}
+  {% include "yata/analytics.html" %}
 {% elif view.prune %}
-    {% include "yata/prune.html" %}
+  {% include "yata/prune.html" %}
 {% else %}
-    {% include "yata/standard.html" %}
+  {% include "yata/index.html" %}
 {% endif %}

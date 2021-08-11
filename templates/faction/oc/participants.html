@@ -4,26 +4,47 @@
 {% load static %}
 {% load app_filters %}
 
-<table class="tooltip">
-    <head>
-        <tr>
-            <th colspan=4>Team {{id}}</th>
-        </tr>
-        <tr>
-            <th>Participants</th>
-            <th>CE Rank</th>
-            <th>NNB</th>
-            <th>EA</th>
-        </tr>
-    </head>
-    <body>
-        {% for uid, name,nnb,arson,rank in participants %}
-            <tr>
-                <td class="title">{{name}} [{{uid}}]</td>
-                <td class="value">{% if rank %}#{{rank}}{% else %}?{% endif %}</td>
-                <td class="value">{% if nnb %}{{nnb}}{% else %}?{% endif %}</td>
-                <td class="value">{% if arson %}{{arson}}{% else %}?{% endif %}</td>
-            </tr>
-        {% endfor %}
-    </body>
-</table>
+
+
+
+
+<div id="faction-crimes-team-{{id}}" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header p-0">
+        <h2 class="title rounded-top py-2 px-2" style="width: 100%">
+          <div class="d-flex align-items-center">
+            <div class="px-2 me-auto">Team <tt>#{{id}}</tt></div>
+            <div class="px-2"><span><i class="fas fa-window-close" data-bs-dismiss="modal"></i></span></div>
+          </div>
+        </h2>
+      </div>
+      <div class="modal-body p-0">
+        <div class="container-fluid p-md-3 p-1 mb-0 module">
+
+          <table class="table table-hover table-striped table-borderless tablesorter faction-crimes-team">
+              <thead>
+                  <tr>
+                      <th class="a">Participants</th>
+                      <th class="b">CE Rank</th>
+                      <th class="b">NNB</th>
+                      <th class="b">EA</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for uid, name,nnb,arson,rank in participants %}
+                      <tr>
+                          <td class="text-start">{{name}} [{{uid}}]</td>
+                          <td class="text-center">{% if rank %}#{{rank}}{% else %}?{% endif %}</td>
+                          <td class="text-center">{% if nnb %}{{nnb}}{% else %}?{% endif %}</td>
+                          <td class="text-center">{% if arson %}{{arson}}{% else %}?{% endif %}</td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

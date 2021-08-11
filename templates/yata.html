@@ -5,18 +5,8 @@
     <link rel="stylesheet" type="text/css" href={% static "yata/css/setup.css" %} />
 {% endblock%}
 
-{% block title%}
-    - Home
-{% endblock %}
-
-{% block jquery %}
-<script src='{% static "yata/js/login.js" %}'></script>
-
-{% endblock %}
-
 {% block content %}
-    <div id="content-update">
-        {% include "yata/content-reload.html" %}
-    </div>
-
+  <div id="content-update">
+    {% include "yata/content-reload.html" %}
+  </div>
 {% endblock %}

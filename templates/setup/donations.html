@@ -39,6 +39,7 @@ This file is part of yata.
             thickness: 1.5,
             fill: 10,
             min: 0,
+            height: 200,
             dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
@@ -65,6 +66,7 @@ This file is part of yata.
             thickness: 1.5,
             fill: 10,
             min: 0,
+            height: 200,
             dateFormat: {pattern: 'MMMM dd, yyyy', timeZone: 0}
         };
 
@@ -73,18 +75,17 @@ This file is part of yata.
     });
 </script>
 
-
 {% if view.step == "cancel" %}
- <div class="module rounded warning">
-   <p>Your donation has been canceled.</p>
- </div>
+   <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+       <p class="warning mb-0"><i class="fas fa-check"></i>&nbsp;Your donation has been canceled!</p>
+   </div>
 {% elif view.step == "completed" %}
-<div class="module rounded valid">
-  <p>Thank you for your donation, we deeply appreciate it.</p>
-</div>
+  <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
+    <p class="valid mb-0"><i class="fas fa-check"></i>&nbsp;Thank you for your donation, we deeply appreciate it.</p>
+  </div>
 {% endif %}
 
-<div class="module rounded">
+<div class="container-fluid p-md-3 p-1 mb-3 module rounded">
   <p>With the increasing number of users and features of the website and the bot, YATA had to move to a dedicated server in order to run smoothly.
   For this reason we opened a <i>real money</i> donation account in order to pay for the server costs.<br>
   Please keep in mind that <i class="warning">this is not mandatory</i> and <i class="warning">does not unlock some premium features</i>. You should only donate <i class="warning">if you can afford it</i>.</p>
@@ -118,30 +119,41 @@ This file is part of yata.
   </div>
 </div>
 
-<h2 class="title"><i class="fas fa-euro-sign fa-icon-inline"></i>Donations</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-euro-sign"></i>&nbsp;Donations</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
   <div class="donations-buttons-container">
     <div title="Money on the PayPal account (update: {{paypal_balance.timestamp|ts2date}} TCT)" class="donations-balances">
-      <i class="fab fa-paypal fa-icon-inline"></i><span class="{% if paypal_balance.balance > 0 %}valid{% else %}error{% endif %}">{{paypal_balance.balance}} {{paypal_balance.currency}}</span>
+      <i class="fab fa-paypal"></i>&nbsp<span class="{% if paypal_balance.balance > 0 %}valid{% else %}error{% endif %}"><b>{{paypal_balance.balance}} {{paypal_balance.currency}}</b></span>
     </div>
     <div title="Money on the the host account (update: {{droplet_balance.timestamp|ts2date}} TCT)" class="donations-balances">
-      <i class="fab fa-digital-ocean fa-icon-inline"></i><span class="{% if droplet_balance.account_balance > 0 %}valid{% else %}error{% endif %}">{{droplet_balance.account_balance}} {{droplet_balance.currency}}</span>
+      <i class="fab fa-digital-ocean"></i>&nbsp<span class="{% if droplet_balance.account_balance > 0 %}valid{% else %}error{% endif %}"><b>{{droplet_balance.account_balance}} {{droplet_balance.currency}}</b></span>
     </div>
   </div>
 
 
-
-  </p>
-
-  <p id="donations-graph"></p>
-  <p id="host-graph"></p>
+<div class="table-responsive">
+<table id="awards-list" class="table table-hover table-borderless">
+  <tbody>
+    <tr><td id="donations-graph"></td></tr>
+    <tr><td id="host-graph"></td></tr>
+  </tbody>
+</table>
+</div>
 </div>
 
-<h2 class="title"><i class="fas fa-chart-line fa-icon-inline"></i>Specs and prices</h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-chart-line"></i>&nbsp;Specs and prices</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
   {% with droplet_size=droplet_specs.get_size droplet_image=droplet_specs.get_image %}
   <h3>DigitalOcean Droplet <tt>{{droplet_size.slug}}</tt></h3>
-  <ul>
+  <ul class="mb-0">
     <li><b>vCPUs:</b> {{droplet_size.vcpus}}</li>
     <li><b>Memory:</b> {{droplet_size.memory}} MB</li>
     <li><b>Disk:</b> {{droplet_size.disk}} GB</li>

@@ -21,37 +21,39 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<table class="center-medium trshadow faction-networth">
+<div class="table-responsive">
+<table id="awards-list" class="table table-hover table-striped table-borderless tablesorter faction-networth">
     <thead>
     <tr>
-        <th>Date</th>
-        <th>Vault</th>
-        <th>Deposit</th>
-        <th>Faction Money</th>
-        <th>Money gain</th>
-        <th>Respect</th>
-        <th>Respect gain</th>
+        <th class="a">Date</th>
+        <th class="b">Vault</th>
+        <th class="b">Deposit</th>
+        <th class="b">Faction Money</th>
+        <th class="b">Money gain</th>
+        <th class="b">Respect</th>
+        <th class="b">Respect gain</th>
     </tr>
     </thead>
     <tbody>
         {% for log in logs %}
         <tr>
-            <td class="a" data-val="{{log.timestamp}}">{{log.timestamp|ts2date:"%Y/%m/%d"}}</td>
-            <td class="b">${{log.money|intcomma}}</td>
-            <td class="b">${{log.donationsmoney|intcomma}}</td>
-            <td class="b">${{log.money|sub:log.donationsmoney|intcomma}}</td>
-            <td class="b">{{log.deltaMoney|signColor|intcomma}}</td>
-            <td class="b">{{log.respect|intcomma}}</td>
-            <td class="b">{{log.deltaRespect|signColor|intcomma}}</td>
+            <td class="text-center" data-val="{{log.timestamp}}">{{log.timestamp|ts2date:"%Y/%m/%d"}}</td>
+            <td class="text-end">${{log.money|intcomma}}</td>
+            <td class="text-end">${{log.donationsmoney|intcomma}}</td>
+            <td class="text-end">${{log.money|sub:log.donationsmoney|intcomma}}</td>
+            <td class="text-end">{{log.deltaMoney|signColor|intcomma}}</td>
+            <td class="text-end">{{log.respect|intcomma}}</td>
+            <td class="text-end">{{log.deltaRespect|signColor|intcomma}}</td>
         </tr>
         {% endfor %}
 
-        <tr><td colspan="7">
-            <div class="pagination">
+        <tr>
+          <td colspan="7" class="text-center">
+            <div class="pagination d-block">
                 <span class="step-links">
                     {% if logs.has_previous %}
-                        <a class="page-link" href="{% url 'faction:logsList' %}?page=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.previous_page_number }}">previous</a>
+                        <a class="yt-page-link rounded first" href="{% url 'faction:logsList' %}?page=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'faction:logsList' %}?page={{ logs.previous_page_number }}"></a>
                     {% endif %}
 
                     <span class="current">
@@ -59,13 +61,14 @@ This file is part of yata.
                     </span>
 
                     {% if logs.has_next %}
-                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'faction:logsList' %}?page={{ logs.paginator.num_pages }}">last &raquo;</a>
+                        <a class="yt-page-link rounded next" href="{% url 'faction:logsList' %}?page={{ logs.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'faction:logsList' %}?page={{ logs.paginator.num_pages }}"></a>
                     {% endif %}
                 </span>
             </div>
-        </td></tr>
-
+          </td>
+        </tr>
 
     </tbody>
 </table>
+</div>
