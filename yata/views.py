@@ -137,6 +137,20 @@ def logout(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+def update_session(request):
+    if request.method != 'POST':
+        return render(request, 'yata/toggle-colors.html')
+
+    if request.POST.get("key") == "dark":
+        if "dark" not in request.session:
+            request.session['dark'] = True
+        else:
+            request.session['dark'] = not request.session['dark']
+
+        request.session.modified = True
+
+    return render(request, 'yata/toggle-colors.html')
+
 
 def delete(request):
     try:

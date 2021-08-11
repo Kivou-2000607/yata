@@ -57,6 +57,7 @@ urlpatterns = [
     path('login', views.login, name="login"),
     path('logout', views.logout, name="logout"),
     path('delete', views.delete, name="delete"),
+    path('update_session', views.update_session, name="update_session"),
     # path('analytics', views.analytics, name="analytics"),
     # path('tmp/gym', views.gym, name="gym"),
     # path('api/gym', views.gymImport, name="gymImport"),

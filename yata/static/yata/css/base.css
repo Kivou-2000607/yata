@@ -47,7 +47,7 @@ nav.module,
 div.module {
   background-color: #cccccc00;
   border-radius:0 0 6px 6px;
-  background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
+  background: var(--yt-bg-image);
 }
 .nav-link { white-space:nowrap; cursor: pointer; }
 li.nav-item span {

@@ -1,0 +1,24 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% if request.session.dark %}
+  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-dark="1"><i class="fas fa-sun"></i>&nbsp;Light mode</a></div>
+{% else %}
+  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-dark="0"><i class="fas fa-moon"></i>&nbsp;Dark mode</a></div>
+{% endif %}

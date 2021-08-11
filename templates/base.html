@@ -60,6 +60,11 @@ This file is part of yata.
     <script src='{% static "yata/js/yata.js" %}'></script>
 
     <!-- yata main css -->
+    {% if request.session.dark %}
+      <link rel="stylesheet" type="text/css" href='{% static "yata/css/css-vars-dark.css" %}' />
+    {% else %}
+      <link rel="stylesheet" type="text/css" href='{% static "yata/css/css-vars-light.css" %}' />
+    {% endif %}
     <link rel="stylesheet" type="text/css" href='{% static "yata/css/base.css" %}' />
 
     <!-- local css -->

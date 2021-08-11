@@ -29,6 +29,18 @@ $(document).on('click', '#yata-delete-submit', function(e){
     }
 });
 
+$(document).on('click', '#yata-toggle-color-mode', function(e){
+  e.preventDefault();
+
+  $(this).parent("div").parent("div").load( "/update_session", {
+      key: "dark",
+      csrfmiddlewaretoken:  getCookie("csrftoken"),
+  });
+
+  // need to workout how to reload the CSS dynamically knowing that
+  // in production the filename is not known (whitenoise)
+
+});
 
 const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
 

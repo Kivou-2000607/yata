@@ -105,11 +105,15 @@ This file is part of yata.
           Documentation of the YATA API for stocks abroad, loot timings, faction spies and other things.
         </div>
 
+        <div class="w-100 mb-2"></div>
+        <div class="col"><hr class="sep"></div>
+        <div class="w-100 mb-2"></div>
+
+        <div>
+          {% include 'yata/toggle-colors.html' %}
+        </div>
         {% if player %}
           <div class="w-100 mb-2"></div>
-          <div class="col"><hr class="sep"></div>
-          <div class="w-100 mb-2"></div>
-
           <div class="col error"><a id="yata-logout-submit" href="{% url 'logout' %}" class="error"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></div>
           <div class="w-100 mb-2"></div>
           <div class="col error"><a id="yata-delete-submit" href="{% url 'delete' %}" class="error"><i class="fas fa-user-slash"></i>&nbsp;Delete account</a></div>
