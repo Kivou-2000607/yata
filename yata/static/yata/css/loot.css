@@ -1,98 +1,42 @@
-div.loot-npc-container {
-    width: 80%;
-    margin-left: 10%;
-    overflow: hidden; /* add this to contain floated children */
+div.loot-card {
+    /* font-size: 12px!important; */
+    max-width: 400px;
+    min-width: 360px;
+    border: 1px solid #ccc;
+    border-radius: 1%;
+    background-color: #fafafaaa;
 }
 
-div.loot-npc {
-    /* max-width: 48%; */
-    float:left; /* add this */
-    text-align: center;
-    width: 370px;
-    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.2);
-    margin: 10px;
-    border-radius: 4px;
-}
-div.loot-npc:hover {
-    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.5);
+div.loot-profile-name {
+  font-weight: bold;
 }
 
-div.loot-npc-profile {
-    float:left;
-    width: 130px;
-    height: 250px;
-    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.2);
-    margin: 10px;
-    border-radius: 10px;
-}
-div.loot-npc-profile > div {
-    padding: 5px 20px 10px 20px;
-    font-weight: bold;
-    border-radius: 10px;
+div.loot-timings {
+  font-size: 14px!important;
+  /* width: 70%; */
+  /* display: inline; */
 }
 
-div.loot-npc-profile > img.profile {
-    width: 130px;
-    border-radius: 10px;
-}
-
-
-img.loot {
-    height: 30px;
+img.npc-profile-picture {
+  width: 100%;
+  border-radius: 5%;
 }
 
 .overdue {
-    opacity: 0.5;
-}
-
-div.hospitalized {
-    margin-top: 5px;
-    margin-bottom: -15px;
-    height: 30px;
-    vertical-align: middle;
-}
-
-div.loot-npc-content {
-    position: relative;
-    float:right;
-    text-align: left;
-    height: 250px;
-    width: 200px;
-    margin: 10px;
-    /* margin-top: 15px; */
-    /* vertical-align: middle; */
-}
-
-div.miniloot {
-    text-align: center;
-}
-
-div.miniloot > img {
-    width: 25px;
-    /* margin: 2px; */
-}
-
-
-p.loot-level {
-    margin-bottom: 0.4em;
-    /* width: 220px; */
+    opacity: 0.4;
 }
 
 p.loot-level-update {
     /* margin-top: 15px!important; */
-    position: absolute;
-    bottom: 0;
-    right: 0;
     font-size: 10px;
-    margin: 0px;
-    padding: 0px;
     opacity: 0.5;
+    margin-top: 4px;
 }
 
-div.loot-npc-schedule {
-  display: block;
-  width: 345px;
-  margin: 10px;
+div.progress-bar {
+  background-color: #daa520aa;
+  color: #212529;
+  font-size: 14px
 }
 
 select.loot-schedule-attack {
@@ -112,57 +56,4 @@ select.loot-schedule-attack {
 span.npc-scheduled-vote {
   margin-left:10px;
   cursor: pointer;
-}
-
-
-/* progress bar */
-div.progress-bar {
-	height: 18px;  /* Can be anything */
-  float: right;
-  width: 100%;
-	background: #eeee;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-	border-radius: 4px;
-	padding: 2px;
-  margin: 2px;
-}
-
-div.progress-bar > span {
-  display: block;
-  height: 100%;
-  font-size: 15px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  border-radius: 4px;
-  background-color: #daa520aa;
-  position: relative;
-  /* overflow: hidden; */
-}
-/*
-div.progress-bar > span.txt {
-  margin-left: 2px;
-  z-index: 1000!important;
-} */
-
-div.progress-bar > span:after {
-  content: attr(data-after);
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background-image: linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, .2) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, .2) 50%,
-    rgba(255, 255, 255, .2) 75%,
-    transparent 75%,
-    transparent
-  );
-  z-index: 0;
-  background-size: 40px 40px;
-  animation: move 2s linear infinite;
-  border-radius: 4px;
-  /* overflow: hidden; */
 }

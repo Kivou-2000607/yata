@@ -1,45 +1,21 @@
-/*
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-*/
-
-table.player-categories td {
-    text-align: center;
-    /* width: 14.29%; */
-    cursor: pointer;
-    border: 0;
-}
-
-table.players-users-summary td.a { width: 40%; }
-table.players-users-summary td.b { width: 30%; text-align: center;}
-
+table.merits-summary { min-width: 500px; width: 50%; margin: auto;}
+table.merits-summary td { text-align: center; font-weight: bold;}
 
 table.merits-bar td {
     /* overflow-x: scroll; */
-    font-size: 13px;
-    line-height: 16px;
-    padding: 3px;
-    border-bottom: 0px solid #eee;
-    border-bottom: 0px solid #eee;
+    /* font-size: 13px; */
+    line-height: 100%;
+    /* padding: 3px; */
+    /* border-bottom: 0px solid #eee; */
+    /* border-bottom: 0px solid #eee; */
 }
 
-table.merits-bar td.a { width: 25%; text-align: right; }
-table.merits-bar td.b { text-align: center; }
-table.merits-bar td.c { width: 50%; text-align: left; }
+
+table.merits-bar { min-width: 1200px; width: 50%; margin: auto;}
+table.merits-bar th { font-size: 100% }
+table.merits-bar th.a { width: 40%; }
+table.merits-bar th.b { width: 20%; }
+table.merits-bar th.c { width: 40%; }
 
 span.merits-button {
     padding: 0px 10px;
@@ -66,20 +42,6 @@ span.gt-flash { background-color: rgba(68, 126, 155, 0.7); box-shadow: 0 0 2px 2
 span.gt-flash-2 { background-color: rgba(204, 52, 52, 0.8); box-shadow: -5px 0px 4px 4px rgba(204, 52, 52, 0.7); }
 
 
-.player-personalstats-header {
-    cursor: pointer;
-}
-
-table.player-personalstats td {
-    font-size: 14px;
-    line-height: 16px;
-    padding: 3px 10px;
-    border-bottom: 0px solid #eee;
-    border-bottom: 0px solid #eee;
-}
-table.player-personalstats td.a { text-align: left;}
-table.player-personalstats td.b { text-align: right;}
-
 div.player-personalstats-category {
     display: none;
     margin-left: 10px;
@@ -88,3 +50,8 @@ div.player-personalstats-sub-category {
     display: none;
     margin-left: 20px;
 }
+.player-personalstats-header {
+    cursor: pointer;
+}
+
+table.personalstats { min-width: 0px; width: 30%; margin-left: 5%; }
