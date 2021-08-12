@@ -208,7 +208,6 @@ def target(request):
 def configurations(request):
     try:
         if request.session.get('player'):
-            print(request.POST)
 
             # get player
             player = getPlayer(request.session["player"].get("tId"))
@@ -2707,15 +2706,31 @@ def bigBrother(request):
                             if not c[2] - c[1]:
                                 del contributors[memberName]
 
-                        # delete contributors out of faction for ts2
-                        todel = [k for k, v in contributors.items() if (not v[2] or not v[1])]
-                        for tId in todel:
-                            del contributors[tId]
-
                         contributors = sorted(contributors.items(), key=lambda x: x[1][1] - x[1][2])
 
                     else:
                         contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
+
+                # get current faction members
+                faction_members = [str(m.tId) for m in faction.member_set.only("tId").all()]
+                for k in contributors:
+                    in_fac = True if k[0] in faction_members else False
+                    k[1].append(in_fac)
+
+                # delete spurious contributors
+                if tsB > 0:
+                    # if 2 TS asked remove:
+                    # - members that have not contributed (ts1 == ts2)
+                    # - members not part of the faction for second TS (ts2 == 0)
+                    # both condiction can be summed up by ts1 >= ts2
+                    to_del = [c for c in contributors if c[1][1] >= c[1][2]]
+                else:
+                    # if only 1 TS asked remove:
+                    # - members not part of the faction
+                    to_del = [c for c in contributors if not c[1][3]]
+
+                for c in to_del:
+                    contributors.remove(c)
 
                 # [time 1, time 2, diff]
                 total = [0, 0, 0]
@@ -2736,12 +2751,6 @@ def bigBrother(request):
                     std[i] = (mean2[i] - mean[i]**2)**0.5
                     cov = std[i] / mean[i] if mean[i] else 0
                     statistics.append([total[i], mean[i], std[i], cov])
-
-            if contributors:
-                faction_members = [str(m.tId) for m in faction.member_set.only("tId").all()]
-                for k in contributors:
-                    in_fac = True if k[0] in faction_members else False
-                    k[1].append(in_fac)
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'statsList': statsList, 'contributors': contributors, 'comparison': comparison, 'bridge': BB_BRIDGE, 'statistics': statistics, 'view': {'bb': True}}
 

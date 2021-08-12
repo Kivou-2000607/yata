@@ -113,20 +113,18 @@
     {% if comparison %}
     <tbody>
         {% for id, v in contributors %}
-        {% if v.1 or v.2 %}
-        <tr {% if not v.3 %}class="kicked-members"{% endif %}>
-            <td class="text-center"><tt>#{{forloop.counter}}</tt></td>
-            <td class="text-start">{{v.0|playerURL:id|safe}}</td>
-            <td class="text-end">{{v.1|intcomma}}</td>
-            {% if comparison.2 > 0 %}
-                <td class="text-end">{{v.2|intcomma}}</td>
-                <td class="text-end">{{v.2|sub:v.1|signColor}}</td>
-            {% else %}
-                <td class="text-end"></td>
-                <td class="text-end"></td>
-            {% endif %}
-        </tr>
-        {% endif %}
+          <tr {% if not v.3 %}class="kicked-members"{% endif %}>
+              <td class="text-center"><tt>#{{forloop.counter}}</tt></td>
+              <td class="text-start">{{v.0|playerURL:id|safe}}</td>
+              <td class="text-end">{{v.1|intcomma}}</td>
+              {% if comparison.2 > 0 %}
+                  <td class="text-end">{{v.2|intcomma}}</td>
+                  <td class="text-end">{{v.2|sub:v.1|signColor}}</td>
+              {% else %}
+                  <td class="text-end"></td>
+                  <td class="text-end"></td>
+              {% endif %}
+          </tr>
         {% endfor %}
     </tbody>
     {% endif %}
