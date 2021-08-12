@@ -352,7 +352,10 @@ This file is part of yata.
       <div class="px-2 me-auto"><i class="fas fa-user-tie"></i>&nbsp;Employees</div>
       {% if not share %}
         <div class="px-2">
-          <a href="#" id="download_csv" ><i class="fas fa-file-export" title="Export employee data to CSV"></i>&nbsp;Export employees</a> <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
+          <a href="#" id="download_csv" ><i class="fas fa-file-export" title="Export employee data to CSV"></i>&nbsp;Export employees</a>
+        </div>
+        <div class="px-2">
+          <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
         </div>
       {% endif %}
     </div>
