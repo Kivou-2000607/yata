@@ -19,7 +19,7 @@ This file is part of yata.
 {% load static %}
 
 {% if request.session.dark %}
-  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-css-file="{% static "yata/css/css-vars-light.css" %}"><i class="fas fa-sun"></i>&nbsp;Light mode</a></div>
+  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-css-file="{% static "yata/css/css-vars-light.css" %}"><i class="fas fa-sun"></i>&nbsp;Light mode</a> (WIP)</div>
 {% else %}
-  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-css-file="{% static "yata/css/css-vars-dark.css" %}"><i class="fas fa-moon"></i>&nbsp;Dark mode</a></div>
+  <div class="col neutral"><a id="yata-toggle-color-mode" href="#" data-css-file="{% static "yata/css/css-vars-dark.css" %}"><i class="fas fa-moon"></i>&nbsp;Dark mode</a> (WIP)</div>
 {% endif %}
