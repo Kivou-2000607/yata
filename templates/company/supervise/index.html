@@ -144,7 +144,51 @@ This file is part of yata.
 
     const chart = new google.visualization.AnnotationChart(document.getElementById('company-data-employees'));
     chart.draw(dt, options);
+    $('#download_csv').on('click', function () {
+      console.log("sdfsdf");
+    var browserIsIE;
+    var csvColumns;
+    var csvContent;
+    var downloadLink;
+    var fileName;
 
+    // build column headings
+    csvColumns = '';
+    for (var i = 0; i < dt.getNumberOfColumns(); i++) {
+      csvColumns += dt.getColumnLabel(i);
+      if (i < (dt.getNumberOfColumns() - 1)) {
+        csvColumns += ',';
+      }
+    }
+    csvColumns += '\n';
+
+    // build data rows
+    csvContent = csvColumns + google.visualization.dataTableToCsv(dt);
+
+    // download file
+    browserIsIE = false || !!document.documentMode;
+    fileName = 'data.csv';
+    if (browserIsIE) {
+      window.navigator.msSaveBlob(new Blob([csvContent], {type: 'data:text/csv'}), fileName);
+    } else {
+      downloadLink = document.createElement('a');
+      downloadLink.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvContent);
+      downloadLink.download = fileName;
+      raiseEvent(downloadLink, 'click');
+      downloadLink = null;
+    }
+  });
+  function raiseEvent(element, eventType) {
+    var eventRaised;
+    if (document.createEvent) {
+      eventRaised = document.createEvent('MouseEvents');
+      eventRaised.initEvent(eventType, true, false);
+      element.dispatchEvent(eventRaised);
+    } else if (document.createEventObject) {
+      eventRaised = document.createEventObject();
+      element.fireEvent('on' + eventType, eventRaised);
+    }
+  }
     //Add onclick for chart
     google.visualization.events.addListener(chart,'select',()=>{
       //Get Selected Row
@@ -308,7 +352,7 @@ This file is part of yata.
       <div class="px-2 me-auto"><i class="fas fa-user-tie"></i>&nbsp;Employees</div>
       {% if not share %}
         <div class="px-2">
-          <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
+          <a href="#" id="download_csv" ><i class="fas fa-file-export" title="Export employee data to CSV"></i>&nbsp;Export employees</a> <a id="company-employees-reset" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt"></i>&nbsp;Reset simulation</a>
         </div>
       {% endif %}
     </div>
