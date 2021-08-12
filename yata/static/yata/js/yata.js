@@ -37,8 +37,14 @@ $(document).on('click', '#yata-toggle-color-mode', function(e){
       csrfmiddlewaretoken:  getCookie("csrftoken"),
   });
 
-  // need to workout how to reload the CSS dynamically knowing that
-  // in production the filename is not known (whitenoise)
+  // dynamically load dark/light mode upon toggle
+  // (get the filename from data attr because of whitenoise random slug)
+  const css_file = $(this).attr("data-css-file");
+  const fileref = document.createElement("link");
+  fileref.setAttribute("rel", "stylesheet");
+  fileref.setAttribute("type", "text/css");
+  fileref.setAttribute("href", css_file);
+  document.getElementsByTagName("head")[0].appendChild(fileref);
 
 });
 
