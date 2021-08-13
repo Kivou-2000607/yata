@@ -1,5 +1,5 @@
 :root body:not(.dark) {
-    --nav-div-module-background: #ccc url("/static/images/bg_hospital.jpg") left top repeat;
+  --nav-div-module-background: #ccc url(/static/images/bg_hospital.jpg) left top repeat;
 	--nav-div-module-color: initial;
 	--body-color: initial;
 	--body-background: #ccc url(/static/images/bg_regular.jpg) left top repeat;
@@ -25,6 +25,7 @@
 	--error-color: #cc3434;
 	--error-hover-active-focus-color: #a02525;
 	--warning-color: #ff8c00;
+  --warning-hover-active-focus-color: #df7c00;
 	--neutral-color: #666;
 	--neutral-hover-active-focus-color: #444;
 	--valid-color: #0b8e14;

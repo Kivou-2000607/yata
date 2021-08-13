@@ -1,8 +1,8 @@
 :root body.dark {
-    --nav-div-module-background: #666;
+  --nav-div-module-background: #ccc url(/static/images/bg_hospital-dark.jpg) left top repeat;
 	--nav-div-module-color: #fff;
 	--body-color: #fff;
-	--body-background: #333;
+  --body-background: #ccc url(/static/images/bg_regular-dark.jpg) left top repeat;
 	--h1-color: #666;
 	--h2-background: #ccc url(/static/images/section_title_black_bg.png) left top repeat;
 	--h2-and-child-color: #fff;
@@ -13,22 +13,23 @@
 	--h2-green-background: #ccc url(/static/images/section_title_green_bg.png) left top repeat;
 	--h3-color: #f6f6f6;
 	--h4-color: #fff;
-	--a-color: #00aaff;
-	--a-link-visited-color: #00aaff;
-	--a-hover-active-focus-color: #00aaff;
+	--a-color: #33a1d8;
+	--a-link-visited-color: #33a1d8;
+	--a-hover-active-focus-color: #43b1e8;
 	--nav-item-span: #fff;
 	--hr-sep-background-color: #ccc;
 	--button-submit-color: #447e9b;
 	--button-submit-hover-color: #fff;
-	--button-submit-error-color: #cc3434;
+	--button-submit-error-color: #cb5966;
 	--button-submit-valid-color: #0b8e14;
-	--error-color: #ff8492;
-	--error-hover-active-focus-color: #a02525;
-	--warning-color: #ff8c00;
+	--error-color: #cb5966;
+	--error-hover-active-focus-color: #db6976;
+	--warning-color: #df8c00;
+  --warning-hover-active-focus-color: #ff9c10;
 	--neutral-color: #ddd;
-	--neutral-hover-active-focus-color: #444;
-	--valid-color: #00ff27;
-	--valid-hover-active-focus-color: #98ffa9;
+	--neutral-hover-active-focus-color: #eee;
+	--valid-color: #1bd838;
+	--valid-hover-active-focus-color: #2be848;
 	--nav-a-hover-filter: drop-shadow(0px 0px 1px rgba(68,126,155,0.5));
 	--citymap-background: linear-gradient(to left top,#6666,#666F),url(/static/images/citymap.png);
 	--pre-background: #f4f4f4;
@@ -41,10 +42,10 @@
 	--yt-dropdown-content-background-color: #f9f9f9;
 	--yt-dropdown-title-background-color: #333;
 	--player-status-red-color: #ff7070;
-	--player-status-green-color: lime;
-	--player-status-blue-color: #5eb2ff;
+	--player-status-green-color: #1bd838;
+	--player-status-blue-color: #33a1d8;
 	--i-online-status-Offline-color: #666;
-	--i-online-status-Online-color: #0b8e14;
+	--i-online-status-Online-color: #1bd838;
 	--i-online-status-Idle-color: #ff8c00;
 	--select-header-filter-color: #888;
 	--select-header-filter-background-color: #f6f6f6;
@@ -84,7 +85,7 @@
 	--i-filter-player-activated-hover-color: #cc3434;
 	--table-faction-walls-td-Timeout-color: #cc3434;
 	--table-faction-walls-td-Truce-color: #0b8e14;
-	--table-faction-simulator-faction-wise-background: #ccc url(/static/images/bg_hospital.90146c289455.90146c289455.jpg) left top repeat;
+	--table-faction-simulator-faction-wise-background: #ccc url(/static/images/bg_hospital.jpg) left top repeat;
 	--select-faction-upgrade-tree-background: #000;
 	--tr-upgrade-details-background-color: #eeee;
 	--span-spies-faction-kickable-hover-color: #cc3434;
@@ -136,9 +137,9 @@ body.dark table:not(.faction-simulator-faction-wise) {
     color: #fff;
 }
 
-body.dark .error {
+/* body.dark .error {
     text-shadow: #ff0000 0px 0px 1px;
-}
+} */
 
 body.dark table.donations {
     color: #fff;
@@ -155,7 +156,7 @@ body.dark input#yata-login-key::placeholder {
 
 body.dark button#yata-login-submit {
     color: #fff;
-    border-color: #00aaff;
+    border-color: #33a1d8;
 }
 
 body.dark .table-striped > tbody > tr:nth-of-type(even) {
@@ -239,10 +240,10 @@ body.dark i.filter-player {
 }
 
 /* loot */
-body.dark a[href*="www.torn.com/profiles.php"],
+/* body.dark a[href*="www.torn.com/profiles.php"],
 body.dark a[href*="www.torn.com/loader.php?sid="] {
     color: #005fff;
-}
+} */
 
 /* player - merits */
 body.dark table th .valid {
@@ -258,10 +259,10 @@ body.dark span.add {
 }
 
 /* targets - attacks */
-body.dark tr:hover a[href*="www.torn.com/profiles.php"],
+/* body.dark tr:hover a[href*="www.torn.com/profiles.php"],
 body.dark tr:hover a[href*="www.torn.com/loader.php?sid="] {
     color: #005fff;
-}
+} */
 
 /* targets - revives */
 body.dark table.target-revives tr.success {
@@ -271,4 +272,3 @@ body.dark table.target-revives tr.success {
 body.dark .table-hover>tbody>tr.fail:hover {
     background-color: rgba(255, 0, 0, 0.118);
 }
-

@@ -84,7 +84,11 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
     <nav class="navbar navbar-expand-md navbar-light py-0">
       <div class="container-fluid">
         <a class="navbar-brand" href="/" title="Home">
-          {% include "svg/yata.full.svg" %}
+          {% if request.session.dark %}
+            {% include "svg/yata.full-dark.svg" %}
+          {% else %}
+            {% include "svg/yata.full.svg" %}
+          {% endif %}
         </a>
         <button class="navbar-toggler ms-auto my-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span id="collapse-section-name>">Sections</span>

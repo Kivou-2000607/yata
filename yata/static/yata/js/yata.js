@@ -48,6 +48,8 @@ $(document).on('click', '#yata-toggle-color-mode', function(e) {
     href: cssFile
   })[0];
   document.head.appendChild(fileref);
+
+  $(document.body).toggleClass("dark");
 });
 
 const spinner = '<i class="fas fa-spinner fa-pulse"></i>';
