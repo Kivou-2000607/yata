@@ -4,13 +4,13 @@
 	--body-color: #fff;
 	--body-background: #333;
 	--h1-color: #666;
-	--h2-background: #ccc url(/static/images/section_title_black_bg.fe3bc7ef7e12.png) left top repeat;
+	--h2-background: #ccc url(/static/images/section_title_black_bg.png) left top repeat;
 	--h2-and-child-color: #fff;
 	--h2-child-hover-focus-color: #ddd;
 	--h2-child-hover-focus-text-shadow: #447e9b 1px 0 5px;
-	--h2-grey-background: #ccc url(/static/images/section_title_gray_bg.e5adfc835d06.png) left top repeat;
-	--h2-red-background: #ccc url(/static/images/section_title_red_bg.e7865c597143.png) left top repeat;
-	--h2-green-background: #ccc url(/static/images/section_title_green_bg.0f6d34765cd7.png) left top repeat;
+	--h2-grey-background: #ccc url(/static/images/section_title_gray_bg.png) left top repeat;
+	--h2-red-background: #ccc url(/static/images/section_title_red_bg.png) left top repeat;
+	--h2-green-background: #ccc url(/static/images/section_title_green_bg.png) left top repeat;
 	--h3-color: #f6f6f6;
 	--h4-color: #fff;
 	--a-color: #00aaff;
@@ -30,7 +30,7 @@
 	--valid-color: #00ff27;
 	--valid-hover-active-focus-color: #98ffa9;
 	--nav-a-hover-filter: drop-shadow(0px 0px 1px rgba(68,126,155,0.5));
-	--citymap-background: linear-gradient(to left top,#6666,#666F),url(/static/images/citymap.7633ceb6c94c.png);
+	--citymap-background: linear-gradient(to left top,#6666,#666F),url(/static/images/citymap.png);
 	--pre-background: #f4f4f4;
 	--pre-color: #666;
 	--a-yt-page-link-hover-color: #f4f4f4;
