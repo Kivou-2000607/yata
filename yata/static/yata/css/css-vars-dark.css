@@ -15,7 +15,7 @@
 	--h4-color: #fff;
 	--a-color: #00aaff;
 	--a-link-visited-color: #00aaff;
-	--a-hover-active-focus-color: #036;
+	--a-hover-active-focus-color: #00aaff;
 	--nav-item-span: #fff;
 	--hr-sep-background-color: #ccc;
 	--button-submit-color: #447e9b;
@@ -127,6 +127,11 @@
 }
 
 /* for homepage */
+body.dark a:active,
+body.dark a:hover {
+    text-shadow: 0 0 10px #000;
+}
+
 body.dark table:not(.faction-simulator-faction-wise) {
     color: #fff;
 }
