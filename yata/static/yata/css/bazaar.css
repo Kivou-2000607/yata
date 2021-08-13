@@ -17,7 +17,6 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 */
 
-
 /*
 table.item-sell-table  {
     display: inline-table;
@@ -94,151 +93,241 @@ table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: defau
 table.item-sell-table td.A { width:40%; cursor: default; }
 table.item-sell-table td.B { width:60%; cursor: default;} */
 
-
 /* ITEM TABLE */
 div.item-table {
-  width: 120px;
-  border: 1px solid #ddda;
-  border-radius: 10px 10px 0 0;
+	width: 120px;
+	border: 1px solid #ddda;
+	border-radius: 10px 10px 0 0;
 }
 
 div.item-table-header {
-  overflow: hidden;
-  white-space: nowrap;
-  text-align: center;
-  line-height: 250%;
-  color:#666;
-  font-size: 80%;
-  font-weight: bolder;
-  text-transform: uppercase;
-  cursor: pointer;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+	line-height: 250%;
+	color: var(--div-item-table-header-color);
+	font-size: 80%;
+	font-weight: bolder;
+	text-transform: uppercase;
+	cursor: pointer;
 }
 div.item-table-header:hover {
-  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+	filter: drop-shadow(0px 0px 1px var(--div-item-table-header-hover-shadow-color));
 }
 
 div.item-table-header * {
-  color:#666;
+	color: var(--div-item-table-header-any-color);
 }
 @media (min-width: 768px) {
-  div.item-table-header {
-    line-height: 200%;
-  }
+	div.item-table-header {
+		line-height: 200%;
+	}
 }
 button.thumbnail {
-  width: 60%;
-  min-width: 90px;
-  height: 49px;
-  border: 1px solid #888;
+	width: 60%;
+	min-width: 90px;
+	height: 49px;
+	border: 1px solid #888;
 }
-div.item-table table { min-width: 110px; }
-div.item-table table td { border-top: 1px solid #ddda; }
-div.item-table table td.a { width: 35%; cursor: default; }
-div.item-table table td.b { width: 65%; cursor: default; }
+div.item-table table {
+	min-width: 110px;
+}
+div.item-table table td {
+	border-top: 1px solid var(--div-item-table-table-td-border-top-color);
+}
+div.item-table table td.a {
+	width: 35%;
+	cursor: default;
+}
+div.item-table table td.b {
+	width: 65%;
+	cursor: default;
+}
 
-table .llt { background:#d9ead3; }
-table .lt  { background:#b6d7a8; }
-table .eq  { background:#9fc5e8; }
-table .gt  { background:#f9cb9c; }
-table .ggt { background:#fce5cd; }
-table tr.llt { animation: blinker 1s linear infinite; }
-@keyframes blinker {  50% { opacity: 0.5; } }
-div.item-table table tr.ignore    { background:#eeeeee; color:#aaaaaa; }
+table .llt {
+	background: var(--table-llt-background);
+}
+table .lt {
+	background: var(--table-lt-background);
+}
+table .eq {
+	background: var(--table-eq-background);
+}
+table .gt {
+	background: var(--table-gt-background);
+}
+table .ggt {
+	background: var(--table-ggt-background);
+}
+table tr.llt {
+	animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+	50% {
+		opacity: 0.5;
+	}
+}
+div.item-table table tr.ignore {
+	background: var(--div-item-table-table-tr-ignore-background);
+	color: var(--div-item-table-table-tr-ignore-color);
+}
 div.item-table table tr.show-less,
 div.item-table table tr.show-more {
-  overflow: hidden;
-  white-space: nowrap;
-  text-align: center;
-  line-height: 250%;
-  color:#666;
-  font-size: 80%;
-  font-weight: bolder;
-  text-transform: uppercase;
-  cursor: pointer;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+	line-height: 250%;
+	color: var(--div-item-table-table-tr-show-less-show-more-color);
+	font-size: 80%;
+	font-weight: bolder;
+	text-transform: uppercase;
+	cursor: pointer;
 }
 div.item-table table tr.show-more:hover {
-  filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
+	filter: drop-shadow(0px 0px 1px rgba(68, 126, 155, 0.5));
 }
-table.item-sell-table.scale { width: 250px;}
-table.item-sell-table.scale td { text-align: center; padding: 5px; cursor: default;}
+table.item-sell-table.scale {
+	width: 250px;
+}
+table.item-sell-table.scale td {
+	text-align: center;
+	padding: 5px;
+	cursor: default;
+}
 
 /* for torn style in items description */
-span.italic { font-style: italic; }
-span.bold { font-weight: bold; }
-span.t-gray-9 { color: #999; }
-span.t-green { color: #0B8E14; }
+span.italic {
+	font-style: italic;
+}
+span.bold {
+	font-weight: 700;
+}
+span.t-gray-9 {
+	color: #999;
+}
+span.t-green {
+	color: #0b8e14;
+}
 
-li.bazaar-toggle-filters{ cursor: pointer; }
-img.flag{ margin-right: 10px; }
-img.flag-gs{ margin-right: 10px; filter: grayscale(0.8); }
+li.bazaar-toggle-filters {
+	cursor: pointer;
+}
+img.flag {
+	margin-right: 10px;
+}
+img.flag-gs {
+	margin-right: 10px;
+	filter: grayscale(0.8);
+}
 
 /* foreign stocks */
-table.bazaar-abroad-stocks { min-width: 1000px; width: 100%; margin: auto; }
-table.bazaar-abroad-stocks td { overflow: hidden; white-space: nowrap; text-overflow: clip; }
-table.bazaar-abroad-stocks tr { cursor: help; }
-table.bazaar-abroad-stocks th.a { width:11%; }
-table.bazaar-abroad-stocks th.b { width:15%; }
-table.bazaar-abroad-stocks th.c { width:10%; }
-table.bazaar-abroad-stocks th.d { width:6%; }
-table.bazaar-abroad-stocks th.e { width:12%; }
-table.bazaar-abroad-stocks th.f { width:10%; }
-table.bazaar-abroad-stocks th.g { width:10%; }
-table.bazaar-abroad-stocks th.h { width:15%; }
-table.bazaar-abroad-stocks th.i { width:10%; }
+table.bazaar-abroad-stocks {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.bazaar-abroad-stocks td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.bazaar-abroad-stocks tr {
+	cursor: help;
+}
+table.bazaar-abroad-stocks th.a {
+	width: 11%;
+}
+table.bazaar-abroad-stocks th.b {
+	width: 15%;
+}
+table.bazaar-abroad-stocks th.c {
+	width: 10%;
+}
+table.bazaar-abroad-stocks th.d {
+	width: 6%;
+}
+table.bazaar-abroad-stocks th.e {
+	width: 12%;
+}
+table.bazaar-abroad-stocks th.f {
+	width: 10%;
+}
+table.bazaar-abroad-stocks th.g {
+	width: 10%;
+}
+table.bazaar-abroad-stocks th.h {
+	width: 15%;
+}
+table.bazaar-abroad-stocks th.i {
+	width: 10%;
+}
 
 div.abroad-soft {
-    position: relative;
-    display: table;
-    height: 70px;
-    text-align: center;
-    cursor: pointer;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    -moz-box-shadow: inset 0 0 5px #888;
-    -webkit-box-shadow: inset 0 0 5px #888;
-    box-shadow: inner 0 0 5px #888;
-    border-radius: 4px;
+	position: relative;
+	display: table;
+	height: 70px;
+	text-align: center;
+	cursor: pointer;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	-moz-box-shadow: inset 0 0 5px #888;
+	-webkit-box-shadow: inset 0 0 5px #888;
+	box-shadow: inner 0 0 5px #888;
+	border-radius: 4px;
 }
 div.abroad-soft:hover {
-    -moz-box-shadow: inset 0 0 7px #444;
-    -webkit-box-shadow: inset 0 0 7px #444;
-    box-shadow: inner 0 0 7px #444;
+	-moz-box-shadow: inset 0 0 7px #444;
+	-webkit-box-shadow: inset 0 0 7px #444;
+	box-shadow: inner 0 0 7px #444;
 }
 
 div.abroad-soft > div {
-    display: table-cell;
-    vertical-align: middle;
+	display: table-cell;
+	vertical-align: middle;
 }
 
 /* no need for now */
 img.item-large {
-  width: 70px;
-  height: 35px;
-  -webkit-filter: drop-shadow(0px 0px 1px #447e9b);
-  filter: drop-shadow(0px 0px 1px #447e9b);
+	width: 70px;
+	height: 35px;
+	-webkit-filter: drop-shadow(0px 0px 1px #447e9b);
+	filter: drop-shadow(0px 0px 1px #447e9b);
 }
 img.item-small {
-  height: 26px;
-  -webkit-filter: drop-shadow(0px 0px 1px #CCC);
-  filter: drop-shadow(0px 0px 1px #CCC);
+	height: 26px;
+	-webkit-filter: drop-shadow(0px 0px 1px #ccc);
+	filter: drop-shadow(0px 0px 1px #ccc);
 }
 
 img.flag {
-  width: 20px;
+	width: 20px;
 }
 
 .btn:hover,
 .btn:active,
 .btn:focus {
-  border-color: #447e9b;
-  box-shadow: none;
+	border-color: #447e9b;
+	box-shadow: none;
 }
 
-table.price-history { min-width: 500px; width: 100%; margin: auto;}
+table.price-history {
+	min-width: 500px;
+	width: 100%;
+	margin: auto;
+}
 
+div.item-table-header.lack {
+	background: var(--div-item-table-header-lack-background) !important;
+}
+div.item-table-header.lack:hover {
+	background: #ea9999 !important;
+}
 
-div.item-table-header.lack       { background:#f4cccc!important; }
-div.item-table-header.lack:hover { background:#ea9999!important; }
-
-tr.bazaar-mine       { font-weight: bold; background:#d6a0f2!important; }
-tr.bazaar-mine:hover { font-weight: bold; background:#9d45bf!important; }
+tr.bazaar-mine {
+	font-weight: 700;
+	background: #d6a0f2 !important;
+}
+tr.bazaar-mine:hover {
+	font-weight: 700;
+	background: #9d45bf !important;
+}

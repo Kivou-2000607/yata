@@ -61,6 +61,21 @@
 	--span-gt-flash-background-color: rgba(68,126,155,.7);
 	--span-gt-flash-2-background-color: rgba(204,52,52,.8);
 
+	/* for bazaar.css */
+    --div-item-table-header-color: #fff;
+    --div-item-table-header-hover-shadow-color: #00aaff;
+    --div-item-table-header-any-color: #fff;
+    --div-item-table-table-td-border-top-color: #ddda;
+    --table-llt-background: #3c961c;
+    --table-lt-background: #57c329;
+    --table-eq-background: #00aaff;
+    --table-gt-background: #f98a1a;
+    --table-ggt-background: #e27300;
+    --div-item-table-table-tr-ignore-background: #666;
+    --div-item-table-table-tr-ignore-color: #fff;
+    --div-item-table-table-tr-show-less-show-more-color: #fff;
+    --div-item-table-header-lack-background: #b37e7e;
+
 	/* for company.css */
 	--table-company-details-employees-tr-simu-td-select-color: #555;
 	--select-company-employee-position-form-background-color: #fff0;
@@ -271,4 +286,3 @@ body.dark table.target-revives tr.success {
 body.dark .table-hover>tbody>tr.fail:hover {
     background-color: rgba(255, 0, 0, 0.118);
 }
-
