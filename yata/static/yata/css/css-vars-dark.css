@@ -1,3 +1,269 @@
-:root {
-  --yt-bg-image: #ccc url("/static/images/bg_hospital-dark.jpg") left top repeat;
+:root body.dark {
+    --nav-div-module-background: #666;
+	--nav-div-module-color: #fff;
+	--body-color: #fff;
+	--body-background: #333;
+	--h1-color: #666;
+	--h2-background: #ccc url(/static/images/section_title_black_bg.fe3bc7ef7e12.png) left top repeat;
+	--h2-and-child-color: #fff;
+	--h2-child-hover-focus-color: #ddd;
+	--h2-child-hover-focus-text-shadow: #447e9b 1px 0 5px;
+	--h2-grey-background: #ccc url(/static/images/section_title_gray_bg.e5adfc835d06.png) left top repeat;
+	--h2-red-background: #ccc url(/static/images/section_title_red_bg.e7865c597143.png) left top repeat;
+	--h2-green-background: #ccc url(/static/images/section_title_green_bg.0f6d34765cd7.png) left top repeat;
+	--h3-color: #f6f6f6;
+	--h4-color: #fff;
+	--a-color: #00aaff;
+	--a-link-visited-color: #00aaff;
+	--a-hover-active-focus-color: #036;
+	--nav-item-span: #fff;
+	--hr-sep-background-color: #ccc;
+	--button-submit-color: #447e9b;
+	--button-submit-hover-color: #fff;
+	--button-submit-error-color: #cc3434;
+	--button-submit-valid-color: #0b8e14;
+	--error-color: #ff8492;
+	--error-hover-active-focus-color: #a02525;
+	--warning-color: #ff8c00;
+	--neutral-color: #ddd;
+	--neutral-hover-active-focus-color: #444;
+	--valid-color: #00ff27;
+	--valid-hover-active-focus-color: #98ffa9;
+	--nav-a-hover-filter: drop-shadow(0px 0px 1px rgba(68,126,155,0.5));
+	--citymap-background: linear-gradient(to left top,#6666,#666F),url(/static/images/citymap.7633ceb6c94c.png);
+	--pre-background: #f4f4f4;
+	--pre-color: #666;
+	--a-yt-page-link-hover-color: #f4f4f4;
+	--table-th-background-color: #f6f6f6;
+	--table-th-color: #888;
+	--table-thread-border-bottom: 1px solid #666;
+	--update-info-color: #888;
+	--yt-dropdown-content-background-color: #f9f9f9;
+	--yt-dropdown-title-background-color: #333;
+	--player-status-red-color: #ff7070;
+	--player-status-green-color: lime;
+	--player-status-blue-color: #5eb2ff;
+	--i-online-status-Offline-color: #666;
+	--i-online-status-Online-color: #0b8e14;
+	--i-online-status-Idle-color: #ff8c00;
+	--select-header-filter-color: #888;
+	--select-header-filter-background-color: #f6f6f6;
+
+	/* for players.css */
+	--span-le-background-color: rgba(68,126,155,.7);
+	--span-gt-background-color: rgba(52,52,52,.1);
+	--span-fix-background-color: rgba(101,101,101,.7);
+	--span-rem-background-color: rgba(204,52,52,.7);
+	--span-add-background-color: rgba(68,126,155,.5);
+	--span-del-background-color: rgba(11,142,20,.3);
+	--span-le-flash-background-color: rgba(68,126,155,.7);
+	--span-le-flash-2-background-color: rgba(68,126,155,.7);
+	--span-gt-flash-background-color: rgba(68,126,155,.7);
+	--span-gt-flash-2-background-color: rgba(204,52,52,.8);
+
+	/* for company.css */
+	--table-company-details-employees-tr-simu-td-select-color: #555;
+	--select-company-employee-position-form-background-color: #fff0;
+
+	/* for faction.css */
+	--div-life-bar-background-color: #d3d3d3;
+	--div-life-bar-span-background-color: #7d93c4;
+	--table-faction-networth-tr-today-background: #d9ead3;
+	--table-faction-networth-tr-today-hover-background: #b6d7a8;
+	--div-faction-event-background-color: #fafafaaa;
+	--div-event-description-color: #666;
+	--table-faction-chains-tr-live-color: #d9ead3;
+	--table-faction-chains-tr-live-hover-color: #b6d7a8;
+	--div-faction-bonus-background-color: #fafafaaa;
+	--table-faction-report-tr-zero-hits-background: #f4cccc;
+	--table-faction-report-tr-zero-hits-hover-background: #ea9999;
+	--table-faction-report-tr-my-row-background: #cee8d0;
+	--table-faction-report-tr-my-row-hover-background: #e6f3e7;
+	--i-filter-player-color: #555;
+	--i-filter-player-activated-color: #0b8e14;
+	--i-filter-player-activated-hover-color: #cc3434;
+	--table-faction-walls-td-Timeout-color: #cc3434;
+	--table-faction-walls-td-Truce-color: #0b8e14;
+	--table-faction-simulator-faction-wise-background: #ccc url(/static/images/bg_hospital.90146c289455.90146c289455.jpg) left top repeat;
+	--select-faction-upgrade-tree-background: #000;
+	--tr-upgrade-details-background-color: #eeee;
+	--span-spies-faction-kickable-hover-color: #cc3434;
+	--input-faction-revives-report-chance-background: #000;
+	--table-faction-revives-list-tr-fail-background: #ff00001e;
+	--table-faction-revives-list-tr-success-background: #d9ead3ee;
+
+	/* for targets.css */
+	--table-target-targets-td-okay-color: #0b8e14;
+	--table-target-targets-td-not-okay-color: #cc3434;
+	--table-target-targets-i-not-okay-color: #aaa;
+	--table-target-attacks-tr-zero-respect-background: #ff00001e;
+	--table-target-attacks-tr-max-fair-fight-background: #d9ead3ee;
+	--table-target-attacks-tr-good-fair-fight-background: #d9ead3ae;
+	--table-target-attacks-tr-bonus-attack-background: #a8b6d73e;
+	--table-target-attacks-tr-war-attack-background: #ff8c003e;
+	--table-target-revives-tr-fail-background: #ff00001e;
+	--table-target-revives-tr-success: #d9ead3ee;
+	--input-target-list-note-background: inherit;
+
+	/* for awards.css */
+	--div-award-done-color: #0b8e14;
+	--div-award-done-hover-focus-color: #0bae14;
+	--div-award-todo-color: #8e0b14;
+	--div-award-todo-hover-focus-color: #ae0b14;
+	--table-awards-list-tr-award-medal-background: #ffffff22;
+	--table-awards-list-tr-award-honor-background: #cccccc22;
+	--table-awards-list-tr-next-background: #ff00000e;
+	--table-awards-hof-tr-its-you-background: #b6d7a8;
+	--span-award-default-color: #fff;
+	--div-awards-pinned-card-background-color: #fafafaaa;
+	--span-awarded-time-color: #999;
+
+	/* for loot.css */
+	--div-loot-card-background-color: #fafafaaa;
+	--div-loot-card-color: #fafafaaa;
+	--div-progress-bar-background-color: #daa520aa;
+	--div-progress-bar-color: #212529;
+	--select-loot-schedule-attack-background-color: #fff0;
 }
+
+/* for homepage */
+body.dark table:not(.faction-simulator-faction-wise) {
+    color: #fff;
+}
+
+body.dark .error {
+    text-shadow: #ff0000 0px 0px 1px;
+}
+
+body.dark table.donations {
+    color: #fff;
+}
+
+body.dark input#yata-login-key {
+    background-color: #666;
+    color: #fff;
+}
+
+body.dark input#yata-login-key::placeholder {
+    color: #fff;
+}
+
+body.dark button#yata-login-submit {
+    color: #fff;
+    border-color: #00aaff;
+}
+
+body.dark .table-striped > tbody > tr:nth-of-type(even) {
+    color: #bbc;
+}
+
+body.dark .table-striped > tbody > tr:nth-of-type(odd) {
+    color: #e3e3e3;
+}
+
+body.dark .table-hover > tbody > tr:hover {
+    background-color: #c1c1c1;
+    color: #000;
+}
+
+body.dark .table th {
+    background-color: #888;
+    color: #f6f6f6;
+}
+
+/* for awards.css */
+body.dark i.fas.awards-toggle-pin {
+    color: #000 !important;
+}
+
+/* company - supervise */
+body.dark .table tr:hover a,
+body.dark .table tr:hover a:link,
+body.dark .table tr:hover a:visited {
+    color: #0080ff;
+}
+
+body.dark .table tr:hover .valid {
+    text-shadow: 0 0 10px #000;
+}
+
+body.dark i.fas.fa-star {
+    color: #0080ff;
+}
+
+body.dark table tr:hover .error {
+    color: #ff0000 !important;
+}
+
+/* faction - big brother */
+body.dark tr:hover .player-status-red {
+    color: red;
+}
+
+body.dark tr:hover .player-status-green {
+    color: #1cb91c130b;
+}
+
+body.dark tr:hover .player-status-blue {
+    color: #005fff;
+}
+
+body.dark tr:hover .text-start > a {
+    color: #005fff;
+    -webkit-text-stroke: 0.1px #000;
+}
+
+body.dark i.fas.fa-cannabis {
+    color: #fff;
+    opacity: 0.5 !important;
+}
+
+body.dark .input-group > * {
+    color: #fff;
+    background-color: #666;
+}
+
+body.dark option:disabled {
+    color: #ccc;
+}
+
+/* faction - oc */
+body.dark i.filter-player {
+    opacity: 1;
+    color: #444;
+}
+
+/* loot */
+body.dark a[href*="www.torn.com/profiles.php"],
+body.dark a[href*="www.torn.com/loader.php?sid="] {
+    color: #005fff;
+}
+
+/* player - merits */
+body.dark table th .valid {
+    text-shadow: 0 0 10px #fff;
+}
+
+body.dark span.fix:not(.rem) {
+    background-color: #c1c1c1;
+}
+
+body.dark span.add {
+    background-color: rgba(87,171,255,0.8);
+}
+
+/* targets - attacks */
+body.dark tr:hover a[href*="www.torn.com/profiles.php"],
+body.dark tr:hover a[href*="www.torn.com/loader.php?sid="] {
+    color: #005fff;
+}
+
+/* targets - revives */
+body.dark table.target-revives tr.success {
+    background-color: #666;
+}
+
+body.dark .table-hover>tbody>tr.fail:hover {
+    background-color: rgba(255, 0, 0, 0.118);
+}
+
