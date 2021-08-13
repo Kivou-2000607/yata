@@ -247,6 +247,11 @@ button[type="submit"].valid:hover {
 .valid:focus {
 	color: var(--valid-hover-active-focus-color) !important;
 }
+.warning:hover,
+.warning:active,
+.warning:focus {
+	color: var(--warning-hover-active-focus-color) !important;
+}
 
 div.error,
 div.warning,
