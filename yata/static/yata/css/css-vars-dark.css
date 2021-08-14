@@ -143,6 +143,23 @@
 }
 
 /* for homepage */
+body.dark select {
+	color: #fff;
+	background-color: #999;
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggc3Ryb2tlPSIjZmZmIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTIgNWw2IDYgNi02IiBmaWxsPSJub25lIi8+PC9zdmc+);
+	background-repeat: no-repeat;
+    background-position-x: 96%;
+}
+
+body.dark a[href*="www.torn.com/profiles.php"],
+body.dark a[href*="www.torn.com/loader.php?sid="] {
+    color: #669fff;
+}
+
+body.dark .navbar-light .navbar-toggler {
+	color: #fff;
+}
+
 body.dark a:active,
 body.dark a:hover {
     text-shadow: 0 0 10px #000;
