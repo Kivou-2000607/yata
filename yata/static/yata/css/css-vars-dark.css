@@ -2,7 +2,7 @@
   --nav-div-module-background: #ccc url(/static/images/bg_hospital-dark.jpg) left top repeat;
 	--nav-div-module-color: #fff;
 	--body-color: #fff;
-  --body-background: #ccc url(/static/images/bg_regular-dark.jpg) left top repeat;
+	--body-background: #ccc url(/static/images/bg_regular-dark.jpg) left top repeat;
 	--h1-color: #666;
 	--h2-background: #ccc url(/static/images/section_title_black_bg.png) left top repeat;
 	--h2-and-child-color: #fff;
@@ -25,7 +25,7 @@
 	--error-color: #cb5966;
 	--error-hover-active-focus-color: #db6976;
 	--warning-color: #df8c00;
-  --warning-hover-active-focus-color: #ff9c10;
+	--warning-hover-active-focus-color: #ff9c10;
 	--neutral-color: #ddd;
 	--neutral-hover-active-focus-color: #eee;
 	--valid-color: #1bd838;
@@ -135,8 +135,8 @@
 	--span-awarded-time-color: #999;
 
 	/* for loot.css */
-	--div-loot-card-background-color: #fafafaaa;
-	--div-loot-card-color: #fafafaaa;
+	--div-loot-card-background-color: #666;
+	--div-loot-card-color: #fff;
 	--div-progress-bar-background-color: #daa520aa;
 	--div-progress-bar-color: #212529;
 	--select-loot-schedule-attack-background-color: #fff0;
