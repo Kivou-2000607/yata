@@ -4,7 +4,7 @@ $(document).on("click", "#yata-login-submit", (e) => {
 	// WARNING: IT IS NOT TOLERATED TO MODIFY THIS FUNCTION
 	// as it will remove the warning when users enter their API key on non official instances of YATA.
 	// Changing it will be seen as making your instance of YATA looks official, thus raising suspicions.
-	if (window.location.host != "yata.yt") {
+	if (window.location.host !== "yata.yt") {
 		if (
 			confirm(
 				"This is not the official YATA website which is hosted on https://yata.yt.\nWhere it is allowed to host instances of YATA on personal servers, make sure you know who's hosting it and that they have no malicious intents.\n\nKivou [2000607]"
@@ -104,7 +104,7 @@ function fancyCountdown(time) {
 	let ret = "";
 
 	if (days > 0) {
-		ret += "" + days + " day" + (days != 1 ? "s " : " ");
+		ret += "" + days + " day" + (days !== 1 ? "s " : " ");
 	}
 
 	ret += hrs < 10 ? "0" : "";
@@ -219,9 +219,9 @@ $(document).on("click", "h2.title.toggle-display", (e) => {
 });
 
 // refresh loot timer
-const lootTimer = document.querySelector("span#loot-countdown-header");
+let lootTimer = document.querySelector("span#loot-countdown-header");
 window.setInterval(() => {
-	if (!lootTimer) return;
+	if (!lootTimer) lootTimer = document.querySelector("span#loot-countdown-header");
 	const loot = parseInt($.trim(lootTimer.dataset.lts));
 	const name = $.trim(lootTimer.dataset.nam);
 	const tid = $.trim(lootTimer.dataset.tid);
