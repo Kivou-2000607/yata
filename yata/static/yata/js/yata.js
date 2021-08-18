@@ -164,30 +164,30 @@ $(document).on("click", "div.yt-cat-link", (e) => {
 	e.preventDefault();
 	const link = $(e.currentTarget).children("a");
 	$("#content-update").load(
-		link.getAttribute("href"),
+		link.attr("href"),
 		{
 			csrfmiddlewaretoken: getCookie("csrftoken"),
 		},
-		nav(link.getAttribute("href"))
+		nav(link.attr("href"))
 	);
 	$("#content-update h2")
 		.addClass("grey")
 		.addClass("px-2")
-		.html(`<div class="ps-2">${spinner}&nbsp;Loading ${link.getAttribute("title")}</div>`);
+		.html(`<div class="ps-2">${spinner}&nbsp;Loading ${link.attr("title")}</div>`);
 	$("div.error").hide();
 });
 
 // pagination nav
 $(document).on("click", "a.yt-page-link", (e) => {
 	e.preventDefault();
-	const reload = e.currentTarget.closest("div.pagination-list");
+	const reload = $(e.currentTarget.closest("div.pagination-list"));
 	reload.load(e.currentTarget.getAttribute("href"), () => {});
 	$(e.currentTarget).closest("table").find("tr").html(`<td colspan="*" class="text-center">${spinner}</td>`);
 });
 
 // prevent show/hide
 $(document).on("click", "h2.title.toggle-display div.no-click", (e) => {
-	const h = e.target.closest("h2");
+	const h = $(e.target.closest("h2"));
 	const div = h.next("div");
 	const i = h.find("div.toggle-rotate").find("i");
 	if (div.css("display") == "none") {
@@ -201,7 +201,7 @@ $(document).on("click", "h2.title.toggle-display div.no-click", (e) => {
 // show/hide module
 $(document).on("click", "h2.title.toggle-display", (e) => {
 	e.preventDefault();
-	const h = e.target.closest("h2");
+	const h = $(e.target.closest("h2"));
 	if (!($(e.target).hasClass("update-type") && !h.hasClass("rounded"))) {
 		const i = h.find("div.toggle-rotate").find("i");
 		const div = h.next("div");

@@ -1,18 +1,17 @@
 // toggle revive from revives list button
-$(document).on('click', 'a[id^="revives-list-toggle-"]', function(e){
+$(document).on("click", "a[id^='revives-list-toggle-']", (e) => {
     e.preventDefault();
-    var reload = $(this).closest("td");
-    var reviveId = $(this).attr("id").split("-").pop();
-    reload.load( "/target/revive/", {
-        reviveId: reviveId,
+    const reload = e.target.closest("td");
+    reload.load("/target/revive/", {
+        reviveId: e.target.getAttribute("id").split("-").pop(),
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<i class="fas fa-spinner fa-pulse"></i>');
+    }).html(spinner);
 });
 
 // show breakdown
-$(document).on('click', '#targets-revives-breakdown', function(e){
+$(document).on("click", "#targets-revives-breakdown", (e) => {
     e.preventDefault();
-    $( "#revives-breakdown" ).load( "/target/revives/breakdown/", {
+    $("#revives-breakdown").load("/target/revives/breakdown/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    })
+    });
 });

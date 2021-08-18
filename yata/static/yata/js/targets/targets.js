@@ -1,41 +1,38 @@
 // refresh target from target list by clicking on the row
-$(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)', function(e){
+$(document).on("click", "tr[id^='target-list-refresh-'] > td:not(.dont-touch-me)", (e) => {
     e.preventDefault();
-    var reload = $(this).closest("tr");
-    // var targetId = reload.attr("id").split("-").pop();
-    var targetId = reload.attr("data-val");
+    const reload = $(e.target).closest("tr");
+    // const targetId = reload.attr("id").split("-").pop();
     reload.removeClass("old-refresh");
-    reload.load( "/target/target/", {
-        targetId: targetId,
+    reload.load("/target/target/", {
+        targetId: reload.attr("data-val"),
         type: "update",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<td colspan="15" class="text-center"><i class="fas fa-spinner fa-pulse p-1"></i></td>');
+    reload.html(`<td colspan="15" class="text-center">${spinner}</td>`);
 });
 
 // toggle faction target
-$(document).on('click', 'a.target-list-faction', function(e){
+$(document).on("click", "a.target-list-faction", (e) => {
     e.preventDefault();
-    var targetId = $(this).attr("id").split("-").pop();
-    var reload = $(this).closest("td");
-    reload.load( "/faction/target/", {
-        targetId: targetId,
+    const reload = $(e.target).closest("td");
+    reload.load("/faction/target/", {
+        targetId: $(e.target).attr("id").split("-").pop(),
         type: "toggle",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<i class="fas fa-spinner fa-pulse"></i>');
+    reload.html(spinner);
 });
 
 // delete target from target list button
-$(document).on('click', 'a.target-list-delete', function(e){
+$(document).on("click", "a.target-list-delete", (e) => {
     e.preventDefault();
 
     // if (confirm("Are you sure you want to delete your list?")) {
-      var targetId = $(this).attr("id").split("-").pop();
-      var reload = $("#target-list-refresh-"+targetId);
-      reload.load( "/target/target/", {
-          targetId: targetId,
-          type: "delete",
+      const targetId = $(e.target).attr("id").split("-").pop();
+      const reload = $(`#target-list-refresh-${targetId}`);
+      reload.load("/target/target/", {
+          targetId, type: "delete",
           csrfmiddlewaretoken: getCookie("csrftoken")
       });
       reload.remove();
@@ -43,62 +40,55 @@ $(document).on('click', 'a.target-list-delete', function(e){
 });
 
 // edit note
-$(document).on('focusout', 'input.target-list-note', function(e){
+$(document).on("focusout", "input.target-list-note", (e) => {
     e.preventDefault();
-    var targetId = $(this).next("input").attr("value");
-    var note = $(this).val();
-    var reload = $(this).closest('td');
+    const targetId = $(e.target).next("input").attr("value");
+    const note = $(e.target).val();
+    const reload = $(e.target).closest("td");
     // alert(targetId+notes)
-    reload.load( "/target/target/", {
-        targetId: targetId,
-        note: note,
-        type: "note",
+    reload.load("/target/target/", {
+        targetId, note, type: "note",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<i class="fas fa-spinner fa-pulse p-1"></i>');
+    reload.html("<i class='fas fa-spinner fa-pulse p-1'></i>");
 });
 
 // change color
-$(document).on('click', 'span.target-list-note-color', function(e){
+$(document).on("click", "span.target-list-note-color", (e) => {
     e.preventDefault();
-    var targetId = $(this).attr("data-val");
-    var reload = $(this).closest('td');
-    reload.load( "/target/target/", {
-        targetId: targetId,
+    const reload = $(e.target).closest("td");
+    reload.load("/target/target/", {
+        targetId: $(e.target).attr("data-val"),
         type: "note-color",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html('<i class="fas fa-spinner fa-pulse p-1"></i>');
+    reload.html("<i class='fas fa-spinner fa-pulse p-1'></i>");
 });
 
-
 // refresh all targets from target list by clicking on title refresh button
-$(document).on('click', '#target-refresh', function(e){
+$(document).on("click", "#target-refresh", (e) => {
     e.preventDefault();
-    var i = 1;
+    let i = 1;
     // get refresh color
-    let refresh_color = parseInt($(this).attr("data-val"));
-    let refresh_colors = []
-    $('i[id^=target-list-refresh-color-]').each(function(){
-        if ($(this).hasClass("fa-check-square")) {
-            refresh_colors.push($(this).attr("data-val"));
-        }
+    const refresh_color = parseInt(e.target.dataset.val);
+    const refresh_colors = [];
+    $("i[id^='target-list-refresh-color-']").each((i, e) => {
+        if ($(e).hasClass("fa-check-square")) refresh_colors.push(e.dataset.val);
     });
-    $("#target-targets").find('tr[id^="target-list-refresh-"]').each(function() {
+    $("#target-targets").find("tr[id^='target-list-refresh-']").each((useless, e) => {
         // if ((!refresh_color || $(this).find("span.target-color-" + refresh_color).length) && $(this).attr("data-ref") == "1") {
-        if (refresh_colors.includes($(this).find("span.target-list-note-color").attr("data-col")) && $(this).attr("data-ref") == "1") {
-          var reload = $(this);
-          var targetId = reload.attr("id").split("-").pop();
-          var wait = i*500 + parseInt(i/10)*3000;
-          (function(index) {
-              setTimeout(function() {
-                  reload.load( "/target/target/", {
-                      targetId: targetId,
-                      type: "update",
+        if (refresh_colors.includes($(e).find("span.target-list-note-color").attr("data-col")) && +e.dataset.ref === 1) {
+          const reload = $(e);
+          const targetId = reload.attr("id").split("-").pop();
+          const wait = i * 500 + parseInt(i / 10) * 3000;
+          ((index) => {
+              setTimeout(() => {
+                  reload.load("/target/target/", {
+                      targetId, type: "update",
                       csrfmiddlewaretoken: getCookie("csrftoken")
                   });
-                  reload.removeClass('old-refresh');
-                  reload.html('<td colspan="15" class="text-center"><i class="fas fa-spinner fa-pulse p-1"></i></td>');
+                  reload.removeClass("old-refresh");
+                  reload.html("<td colspan='15' class='text-center'><i class='fas fa-spinner fa-pulse p-1'></i></td>");
                }, wait);
           })(i);
           i++;
@@ -107,37 +97,33 @@ $(document).on('click', '#target-refresh', function(e){
 });
 
 // change refresh color
-$(document).on('click', '#target-list-refresh-color', function(e){
+$(document).on("click", "#target-list-refresh-color", (e) => {
     e.preventDefault();
     // get the current color & remove color class
-    let color = parseInt($(this).attr("data-val"));
-    $(this).removeClass("target-color-" + color);
+    let color = parseInt($(e.target).attr("data-val"));
+    $(e.target).removeClass(`target-color-${color}`);
 
     // set the new color (class and data-val)
     color = (color + 1) % 4;
-    $(this).addClass("target-color-" + color);
-    $(this).attr("data-val", color);
+    $(e.target).addClass(`target-color-${color}`);
+	e.target.dataset.val = color;
 
     // change refresh link (text and data-val)
-    let colors = ["all", "green", "orange", "red"];
-    $("#target-refresh").html('<i class="fas fa-sync-alt"></i>&nbsp;Refresh ' + colors[color]);
+    const colors = ["all", "green", "orange", "red"];
+    $("#target-refresh").html(`<i class="fas fa-sync-alt"></i>&nbsp;Refresh ${colors[color]}`);
     $("#target-refresh").attr("data-val", color);
 
     // hide the other colors
-    $('.target-list-note-color').each(function() {
-      const tr = $(this).parents('tr');
-      if($(this).attr('data-col') != color && color) {
-        tr.hide()
-      } else {
-        tr.show()
-      }
+    $(".target-list-note-color").each((i, e) => {
+      const tr = $(e).parents("tr");
+      if (e.dataset.col !== color && color) tr.hide();
+      else tr.show();
     });
 
     // change select checkbox
-    $("i[id^=target-list-refresh-color-]").removeClass("fa-check-square").addClass("fa-square");
-    $("#target-list-refresh-color-" + color).removeClass("fa-square").addClass("fa-check-square");
-    console.log($("#target-list-refresh-color-" + color));
-
+    $("i[id^='target-list-refresh-color-']").removeClass("fa-check-square").addClass("fa-square");
+    $(`#target-list-refresh-color-${color}`).removeClass("fa-square").addClass("fa-check-square");
+    console.log($(`#target-list-refresh-color-${color}`));
 });
 
 // // change hover ticks
@@ -156,76 +142,71 @@ $(document).on('click', '#target-list-refresh-color', function(e){
 // });
 
 // select color
-$(document).on('click', 'i[id^=target-list-refresh-color-]', function (e) {
-    const color = $(this).attr("data-val");
-    if ($(this).hasClass("fa-square")) {
+$(document).on("click", "i[id^='target-list-refresh-color-']", (e) => {
+    const color = e.target.dataset.val;
+    if ($(e.target).hasClass("fa-square")) {
         // add this color
-        $(this).removeClass("fa-square").addClass("fa-check-square");
-        $('.target-list-note-color').each(function () {
-            const tr = $(this).parents('tr');
-            if ($(this).attr('data-col') == color) { tr.show() }
+        $(e.target).removeClass("fa-square").addClass("fa-check-square");
+        $(".target-list-note-color").each((i, el) => {
+            if (e.dataset.col === color) $(el).parents("tr").show();
         });
     } else {
         // remove this color
-        $(this).removeClass("fa-check-square").addClass("fa-square");
-        $('.target-list-note-color').each(function () {
-            const tr = $(this).parents('tr');
-            if ($(this).attr('data-col') == color) { tr.hide() }
+        $(e.target).removeClass("fa-check-square").addClass("fa-square");
+        $(".target-list-note-color").each((i, el) => {
+            if (e.dataset.col === color) $(el.target).parents("tr").hide();
         });
     }
 });
 
 // add target manually
-$(document).on('click', '#target-add-submit', function(e){
+$(document).on("click", "#target-add-submit", (e) => {
     e.preventDefault();
-    var id = $("#target-add-id").val();
-    $( "#content-update" ).load( "/target/target/", {
-        targetId: id,
-        type: "addById",
+    const id = $("#target-add-id").val();
+    $("#content-update").load("/target/target/", {
+        targetId: id, type: "addById",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     $("#content-update h2").addClass("grey");
-    $("#content-update h2").html('<i class="fas fa-spinner fa-pulse"></i>&nbsp;&nbsp;Adding target id '+id+' (1 API call)')
-
+    $("#content-update h2").html(`${spinner}&nbsp;&nbsp;Adding target id ${id} (1 API call)`);
 });
 
 // refresh timer target update
-window.setInterval(function(){
-    $(".update-timer").each(function() {
-        var tr = $(this).closest("tr");
-        var status = tr.find(".status");
-        tr.attr("data-ref", "1");
+window.setInterval(() => {
+    $(".update-timer").each((i, e) => {
+        const tr = $(e).closest("tr");
+        const status = tr.find(".status");
+        tr.attr("data-ref", 1);
 
-        var tsRefresh = parseInt($.trim($(this).attr("data-val")));
-        var tsStatus = parseInt($.trim(status.attr("data-val")));
-        var tsNow = parseInt(Date.now() / 1000)
+        const tsRefresh = parseInt($.trim($(e.target).attr("data-val")));
+        const tsStatus = parseInt($.trim(status.attr("data-val")));
+        const tsNow = Date.now() / 1000;
 
         // transform notations if > 2 hours
-        if ( tsNow - tsRefresh > 7200 ) {
-            $(this).html("> 2 hrs");
+        if (tsNow - tsRefresh > 7200) {
+            $(e).html("> 2 hrs");
             tr.addClass("old-refresh");
-            $(this).removeClass('need-refresh');
-            status.removeClass('need-refresh');
+            $(e).removeClass("need-refresh");
+            status.removeClass("need-refresh");
         } else {
-
             // add/remove flash if tsStatus < tsRefresh
             if (tsStatus && tsRefresh) {
-                if(tsStatus < tsNow) {
-                    statusStr = "Out since " + fancyTimeFormat(tsNow - tsStatus) + " s"
-                    status.addClass('need-refresh');
-                    $(this).addClass('need-refresh');
+				let statusStr;
+                if (tsStatus < tsNow) {
+                    statusStr = "Out since ${fancyTimeFormat(tsNow - tsStatus)} s";
+                    status.addClass("need-refresh");
+                    $(e).addClass("need-refresh");
                 } else {
-                    status.removeClass('need-refresh');
-                    $(this).removeClass('need-refresh');
+                    status.removeClass("need-refresh");
+                    $(e).removeClass("need-refresh");
                     statusStr = status.text().substring(0, 6);
-                    statusStr += fancyTimeFormat(tsStatus - tsNow)
-                    tr.attr("data-ref", "0");
+                    statusStr += fancyTimeFormat(tsStatus - tsNow);
+                    tr.attr("data-ref", 0);
                 }
                 // update hosp time
-                status.html(statusStr)
+                status.html(statusStr);
             }
-            $(this).html(fancyTimeFormat(tsNow - tsRefresh))
+            $(e).html(fancyTimeFormat(tsNow - tsRefresh));
         }
-
     });
 }, 1000);

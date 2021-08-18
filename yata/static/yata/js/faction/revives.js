@@ -1,15 +1,11 @@
-$(document).on('change', '#date-live-revives', e=>{
+$(document).on("change", "#date-live-revives", e => {
     e.preventDefault();
-    var start = parseInt($("#ts-start-revives").val());
-    var end = parseInt($("#ts-end-revives").val());
-    var live = $(e.currentTarget).prop('checked');
-    if(live) {
+    const start = parseInt($("#ts-start-revives").val());
+    const live = $(e.currentTarget).prop("checked");
+    if (live) {
         $("#date-end-revives").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
-        if(start) {
-            $("#create-report-revives").show();
-        } else {
-            $("#create-report-revives").hide();
-        }
+        if (start) $("#create-report-revives").show();
+        else $("#create-report-revives").hide();
     } else {
         $("#date-end-revives").addClass("is-invalid").attr("disabled", false).focus();
         $("#create-report-revives").hide();
@@ -17,106 +13,105 @@ $(document).on('change', '#date-live-revives', e=>{
 });
 
 // create report
-$(document).on('click', '#create-report-revives', e=>{
+$(document).on("click", "#create-report-revives", e => {
     e.preventDefault();
-    var start = parseInt($("#ts-start-revives").val());
-    var end = parseInt($("#ts-end-revives").val());
-    if($("#date-live-revives").prop('checked')) {
-        var live = 1;
-        var end = 0;
-    } else {
-        var live = 0
-    }
-    $( "#content-update" ).load( "/faction/revives/", {
-        start: start, end: end, live: live, type: "new",
+    const start = parseInt($("#ts-start-revives").val());
+    let end = parseInt($("#ts-end-revives").val());
+	let live;
+    if ($("#date-live-revives").prop("checked")) {
+        live = 1;
+        end = 0;
+    } else live = 0;
+    $("#content-update").load("/faction/revives/", {
+        start, end, live, type: "new",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating report ');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");
 });
 
 // delete report
-$(document).on('click', '.faction-revives-reports-delete', e=>{
+$(document).on("click", ".faction-revives-reports-delete", e => {
     e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
-    $(e.currentTarget).closest("tr").load( "/faction/revives/manage/", {
-        type:"delete", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).closest("tr").load("/faction/revives/manage/", {
+        type: "delete",
+		reportId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).remove();
 });
 
 // see report
-$(document).on('click', '.faction-revives-reports-see', e=>{
+$(document).on("click", ".faction-revives-reports-see", e => {
     e.preventDefault();
     var reportId = $(e.currentTarget).attr("data-val");
-    $("#content-update").load( "/faction/revives/" + reportId, {
-        reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }, nav("/faction/revives/" + reportId));
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report');
+    $("#content-update").load(`/faction/revives/${reportId}`, {
+        reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }, nav(`/faction/revives/${reportId}`));
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Loading report");
     $("div.error").hide();
 });
 
 // show hide
-$(document).on('click', '.faction-revives-report-toggle', e=>{
+$(document).on("click", ".faction-revives-report-toggle", e => {
     e.preventDefault();
-    var splt = e.currentTarget.id.split("-");
-    var factionId = $(e.currentTarget).attr("data-val");
-    var order = splt.pop();
-    var page = splt.pop();
-    var reportId = splt.pop();
-    var reload = $(e.currentTarget).closest("td");
-    $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, factionId: factionId, type: "toggle", o_pl: order, page: page,
+    const splt = e.currentTarget.id.split("-");
+    const factionId = $(e.currentTarget).attr("data-val");
+    const order = splt.pop();
+    const page = splt.pop();
+    const reportId = splt.pop();
+    $("#content-update").load(`/faction/revives/${reportId}`, {
+        reportId, factionId, type: "toggle", o_pl: order, page,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Reload report ');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Reload report");
 });
 
 // filters
-$(document).on('click', 'span[id^="faction-revives-report-"]', e=>{
+$(document).on("click", "span[id^='faction-revives-report-']", e => {
     e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
-    var type = e.currentTarget.id.split("-").pop();
-    $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, type: type,
+    const reportId = $(e.currentTarget).attr("data-val");
+    const type = e.currentTarget.id.split("-").pop();
+    $("#content-update").load(`/faction/revives/${reportId}`, {
+        reportId, type,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Recompute report");
 });
-$(document).on('change', 'input[id^="faction-revives-report-"]', e=>{
+$(document).on("change", "input[id^='faction-revives-report-']", e => {
     e.preventDefault();
-    console.log(e.currentTarget)
-    var reportId = $(e.currentTarget).attr("data-val");
-    var type = e.currentTarget.id.split("-").pop();
-    var value = $(e.currentTarget).val()
+    console.log(e.currentTarget);
+    const reportId = $(e.currentTarget).attr("data-val");
+    const type = e.currentTarget.id.split("-").pop();
+    const value = $(e.currentTarget).val();
     console.log(value);
-    $( "#content-update" ).load( "/faction/revives/" + reportId, {
-        reportId: reportId, type: type, value: value,
+    $("#content-update").load(`/faction/revives/${reportId}`, {
+        reportId, type, value,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Recompute report ');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Recompute report");
 });
 
-$(document).on('click', 'table.faction-revives-list i.filter-player,table.faction-revives-list i.filter-player-activated', e=>{
+$(document).on("click", "table.faction-revives-list i.filter-player, table.faction-revives-list i.filter-player-activated", e => {
     e.preventDefault();
-    var splt = $(e.currentTarget).attr("data-val").split("-")
-    var reportId = splt[0];
-    var playerId = splt[1];
-    var reload = $(e.currentTarget).closest("div.pagination-list");
-    reload.load( "/faction/revives/list/" + reportId, {
-        playerId: playerId, type: "filter",
+    const splt = $(e.currentTarget).attr("data-val").split("-");
+    const reportId = splt[0];
+    const playerId = splt[1];
+    const reload = $(e.currentTarget).closest("div.pagination-list");
+    reload.load(`/faction/revives/list/${reportId}`, {
+        playerId, type: "filter",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+    $(e.currentTarget).closest("table").find("tr").html(`<td>${spinner}</td>`);
 });
 
-$(document).on('change', 'select.faction-revive-header-filter', e=>{
+$(document).on("change", "select.faction-revive-header-filter", e => {
     e.preventDefault();
-    var splt = $(e.currentTarget).val().split("-");
-    var reportId = splt[0];
-    var playerId = splt[1];
-    var reload = $(e.currentTarget).closest("div.pagination-list");
-    reload.load( "/faction/revives/list/" + reportId, {
-        playerId: playerId, type: "filter",
+    const splt = $(e.currentTarget).val().split("-");
+    const reportId = splt[0];
+    const playerId = splt[1];
+    const reload = $(e.currentTarget).closest("div.pagination-list");
+    reload.load(`/faction/revives/list/${reportId}`, {
+        playerId, type: "filter",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $(e.currentTarget).closest("table").find("tr").html('<td>'+spinner+'</td>');
+    $(e.currentTarget).closest("table").find("tr").html(`<td>${spinner}</td>`);
 });

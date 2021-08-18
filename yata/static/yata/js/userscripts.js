@@ -29,7 +29,7 @@ function msgbox(msg) {
 
 // Response OK
 function valid(msg) {
-    msgbox("<b>" + msg +"</b>");
+    msgbox(`<b>${msg}</b>`);
     setIcon(1);
 }
 
@@ -46,17 +46,13 @@ function errorKey(msg, good) {
         msg = "No API Key stored.";
         good = false;
     }
-    if (good)
-        msgbox("Stored key");
-    else
-        error(`${msg} Retype <a href="https://www.torn.com/preferences.php#tab=api" target="_blank" class="YATA-link">key</a>:`);
+    if (good) msgbox("Stored key");
+    else error(`${msg} Retype <a href="https://www.torn.com/preferences.php#tab=api" target="_blank" class="YATA-link">key</a>:`);
 
     // define input
-    const input = $('<input id="YATA-api-key" class="YATA-input">');
-    if (good)
-        input.val(key);
-    else
-        input.attr("placeholder", key);
+    const input = $("<input id='YATA-api-key' class='YATA-input'>");
+    if (good) input.val(key);
+    else input.attr("placeholder", key);
 
     // // define store button
     // let button = $('<button id="YATA-api-key-store" class="YATA-button">');
@@ -66,8 +62,7 @@ function errorKey(msg, good) {
     input.change(() => {
         const key = $("#YATA-api-key").val();
         GM_setValue("key", key);
-        if (key.length !== 16)
-            return errorKey("Key is not the correct length.");
+        if (key.length !== 16) return errorKey("Key is not the correct length.");
         valid("Key stored, ready to submit.");
         $("#YATA-api-key").remove();
         // $("#YATA-api-key-store").remove();

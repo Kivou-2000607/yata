@@ -1,66 +1,63 @@
 // refresh target from target list by clicking on the row
-$(document).on('click', 'tr[id^="target-list-refresh-"] > td:not(.dont-touch-me)', function(e){
+$(document).on("click", "tr[id^='target-list-refresh-'] > td:not(.dont-touch-me)", (e) => {
     e.preventDefault();
-    var reload = $(this).closest("tr");
-    // var targetId = reload.attr("id").split("-").pop();
-    var targetId = reload.attr("data-val");
+    const reload = $(e.target).closest("tr");
+    // const targetId = reload.attr("id").split("-").pop();
     reload.removeClass("old-refresh");
-    reload.load( "/faction/target/", {
-        targetId: targetId,
+    reload.load("/faction/target/", {
+        targetId: reload.attr("data-val"),
         type: "update",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: document.getElementsByName("csrfmiddlewaretoken")[0].value,
     });
-    reload.html('<td colspan="8" style="text-align: center;"><i class="fas fa-spinner fa-pulse"></i></td>');
+    reload.html(`<td colspan="8" style="text-align: center;">${spinner}</td>`);
 });
 
 // delete target from target list button
-$(document).on('click', 'a.target-list-delete', function(e){
+$(document).on("click", "a.target-list-delete", (e) => {
     e.preventDefault();
-    var reload = $(this).closest("tr");
-    var targetId = reload.attr("data-val");
+    const reload = $(e.target).closest("tr");
     reload.load( "/faction/target/", {
-        targetId: targetId,
+        targetId: reload.attr("data-val"),
         type: "delete",
-        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        csrfmiddlewaretoken: document.getElementsByName("csrfmiddlewaretoken")[0].value,
     });
     reload.remove();
 });
 
 // refresh timer target update
-window.setInterval(function(){
-    $(".update-timer").each(function() {
-        var tr = $(this).closest("tr");
-        var status = tr.find(".status");
+window.setInterval(() => {
+    $(".update-timer").each((i, e) => {
+        const tr = $(e).closest("tr");
+        const status = tr.find(".status");
 
-        var tsRefresh = parseInt($.trim($(this).attr("data-val")));
-        var tsStatus = parseInt($.trim(status.attr("data-val")));
-        var tsNow = parseInt(Date.now() / 1000)
+        const tsRefresh = parseInt($.trim($(e).attr("data-val")));
+        const tsStatus = parseInt($.trim(status.attr("data-val")));
+        const tsNow = parseInt(Date.now() / 1000);
 
         // transform notations if > 2 hours
-        if ( tsNow - tsRefresh > 7200 ) {
-            $(this).html("> 2 hrs");
+        if (tsNow - tsRefresh > 7200) {
+            $(e).html("> 2 hrs");
             tr.addClass("old-refresh");
-            $(this).removeClass('need-refresh');
-            status.removeClass('need-refresh');
+            $(e).removeClass("need-refresh");
+            status.removeClass("need-refresh");
         } else {
-
             // add/remove flash if tsStatus < tsRefresh
             if (tsStatus && tsRefresh) {
-                if(tsStatus < tsNow) {
-                    statusStr = "Out since " + fancyTimeFormat(tsNow - tsStatus) + " s"
-                    status.addClass('need-refresh');
-                    $(this).addClass('need-refresh');
+                let statusStr;
+                if (tsStatus < tsNow) {
+                    statusStr = "Out since " + fancyTimeFormat(tsNow - tsStatus) + " s";
+                    status.addClass("need-refresh");
+                    $(e.target).addClass("need-refresh");
                 } else {
-                    status.removeClass('need-refresh');
-                    $(this).removeClass('need-refresh');
+                    status.removeClass("need-refresh");
+                    $(e).removeClass("need-refresh");
                     statusStr = status.text().substring(0, 6);
-                    statusStr += fancyTimeFormat(tsStatus - tsNow)
+                    statusStr += fancyTimeFormat(tsStatus - tsNow);
                 }
                 // update hosp time
-                status.html(statusStr)
+                status.html(statusStr);
             }
-            $(this).html(fancyTimeFormat(tsNow - tsRefresh))
+            $(e).html(fancyTimeFormat(tsNow - tsRefresh));
         }
-
     });
 }, 1000);

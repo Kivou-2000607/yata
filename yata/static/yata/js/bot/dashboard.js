@@ -1,9 +1,9 @@
-$(document).on('click', '.dashboard-option', e=>{
+$(document).on("click", ".dashboard-option", e => {
     e.preventDefault();
-    if ($('#dashboard-readonly').length) return;
+    if ($("#dashboard-readonly").length) return;
 
-    const target = $(e.currentTarget)
-    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+    const target = $(e.currentTarget);
+    target.closest("div.module-doc").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -23,12 +23,12 @@ $(document).on('click', '.dashboard-option', e=>{
     target.html(spinner);
 });
 
-$(document).on('click', '.dashboard-option-tr', e=>{
+$(document).on("click", ".dashboard-option-tr", e => {
     e.preventDefault();
-    if($('#dashboard-readonly').length) return;
+    if ($("#dashboard-readonly").length) return;
 
-    const target = $(e.currentTarget)
-    target.closest("tr").load( "/bot/dashboard/option/", {
+    const target = $(e.currentTarget);
+    target.closest("tr").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -48,13 +48,13 @@ $(document).on('click', '.dashboard-option-tr', e=>{
     target.html(spinner);
 });
 
-$(document).on('click', '.dashboard-option-li', e=>{
+$(document).on("click", ".dashboard-option-li", e => {
     e.preventDefault();
-    console.log("triggers dashboard-option-li")
-    if($('#dashboard-readonly').length) return;
+    console.log("triggers dashboard-option-li");
+    if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget).closest("li");
-    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -74,13 +74,13 @@ $(document).on('click', '.dashboard-option-li', e=>{
     target.html(spinner);
 });
 
-$(document).on('click', '.dashboard-option-span', e=>{
+$(document).on("click", ".dashboard-option-span", e => {
     e.preventDefault();
-    console.log("triggers dashboard-option-span")
-    if($('#dashboard-readonly').length) return;
+    console.log("triggers dashboard-option-span");
+    if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget).closest("span");
-    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -101,15 +101,15 @@ $(document).on('click', '.dashboard-option-span', e=>{
     target.html(spinner);
 });
 
-$(document).on('click', '.dashboard-option-af', e=>{
+$(document).on("click", ".dashboard-option-af", e => {
     e.preventDefault();
-    if($('#dashboard-readonly').length) return;
+    if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
-    const id = $(target).parents("li.step-2").siblings("li.step-1").children("input.faction-add-id").val()
-    if(!$.isNumeric(id)) { console.log("faction id is not numeric:", id); return }
+    const id = $(target).parents("li.step-2").siblings("li.step-1").children("input.faction-add-id").val();
+    if (!$.isNumeric(id)) { console.log("faction id is not numeric:", id); return; }
 
-    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -130,14 +130,14 @@ $(document).on('click', '.dashboard-option-af', e=>{
     target.html(spinner);
 });
 
-$(document).on('change', 'input.faction-add-id', e=>{
+$(document).on("change", "input.faction-add-id", e => {
     e.preventDefault();
-    if($('#dashboard-readonly').length) return;
+    if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
     const fid = $(target).val();
     const step_2 = $(target).parents("li.step-1").siblings("li.step-2");
-    if($.isNumeric(fid)) {
+    if ($.isNumeric(fid)) {
         $(step_2).slideDown("fast");
         const all_li = $(step_2).children("ul").children("li");
         $(all_li).children("span").removeClass("selected").addClass("unselected");
@@ -153,12 +153,12 @@ $(document).on('change', 'input.faction-add-id', e=>{
     }
 });
 
-$(document).on('change', 'input.new-message', e=>{
+$(document).on("change", "input.new-message", e => {
     e.preventDefault();
-    if($('#dashboard-readonly').length) return;
+    if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
-    target.closest("div.module-doc").load( "/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -178,7 +178,7 @@ $(document).on('change', 'input.new-message', e=>{
     target.html(spinner);
 });
 
-$(document).on('click', 'span.dashboard-option-modify-positions', e=>{
+$(document).on("click", "span.dashboard-option-modify-positions", e => {
     e.preventDefault();
     $(e.currentTarget).parent("li").find("div.to-hide").toggle(100);
 });

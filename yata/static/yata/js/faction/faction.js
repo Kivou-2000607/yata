@@ -1,54 +1,55 @@
-
 // countdown
-window.setInterval(function(){
-    $(".event-countdown").each(function() {
-        var date = parseInt($.trim($(this).attr("data-val")));
-        var now = parseInt(Date.now() / 1000)
-        var countdown = Math.max(date - now, 0)
+window.setInterval(() => {
+    $(".event-countdown").each((i, e) => {
+        const date = parseInt($.trim($(e.target).attr("data-val")));
+        const now = parseInt(Date.now() / 1000);
+        const countdown = Math.max(date - now, 0);
 
+		const target = $(e.target);
         // transform notations if < 0
-        if ( countdown  == 0 ) {
-            $(this).addClass("valid");
-            $(this).html("Started");
-        } else if ( countdown < 3600 ) {
-            $(this).addClass("error");
-            $(this).closest("div.faction-event").addClass("faction-event-urgent");
-            $(this).html(fancyCountdown(countdown))
-        } else if ( countdown  < 24*3600 ) {
-            $(this).addClass("warning");
-            $(this).html(fancyCountdown(countdown))
-            $(this).closest("div.faction-event").addClass("faction-event-soon");
+        if (countdown === 0) {
+            target.addClass("valid");
+            target.html("Started");
+        } else if (countdown < 3600) {
+            target.addClass("error");
+            target.closest("div.faction-event").addClass("faction-event-urgent");
+            target.html(fancyCountdown(countdown));
+        } else if (countdown < 24 * 3600) {
+            target.addClass("warning");
+            target.html(fancyCountdown(countdown));
+            target.closest("div.faction-event").addClass("faction-event-soon");
         } else {
-            $(this).addClass("neutral");
-            $(this).html(fancyCountdown(countdown))
+            target.addClass("neutral");
+            target.html(fancyCountdown(countdown));
         }
-
     });
 }, 1000);
 
 
 // share reports
-$(document).on('click', '#faction-chain-report-share', e=>{
+$(document).on("click", "#faction-chain-report-share", e => {
     e.preventDefault();
-    var span = $(e.currentTarget).closest("div")
-    var chainId = $(e.currentTarget).attr("data-val");
-    span.load( "/faction/chains/manage/", {
-        type: "share", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).closest("div").load("/faction/chains/manage/", {
+        type: "share",
+		chainId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
-$(document).on('click', '#faction-attacks-report-share', e=>{
+$(document).on("click", "#faction-attacks-report-share", e => {
     e.preventDefault();
-    var span = $(e.currentTarget).closest("div")
-    var reportId = $(e.currentTarget).attr("data-val");
-    span.load( "/faction/attacks/manage/", {
-        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+	const span = $(e.currentTarget).closest("div");
+    span.load("/faction/attacks/manage/", {
+        type: "share",
+		reportId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(`<span style="margin-left: 5px; width: ${span.width()}px">${spinner}</span>`);
 });
-$(document).on('click', '#faction-revives-report-share', e=>{
+$(document).on("click", "#faction-revives-report-share", e => {
     e.preventDefault();
-    var span = $(e.currentTarget).closest("div")
-    var reportId = $(e.currentTarget).attr("data-val");
+	const span = $(e.currentTarget).closest("div");
     span.load( "/faction/revives/manage/", {
-        type: "share", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<span style="margin-left: 5px; width: '+span.width()+'px">' + spinner + '</span>');
+        type: "share",
+		reportId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(`<span style="margin-left: 5px; width: ${span.width()}px">${spinner}</span>`);
 });

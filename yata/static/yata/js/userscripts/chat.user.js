@@ -13,62 +13,57 @@
 // @downloadURL  https://github.com/Kivou-2000607/yata/raw/master/yata/static/yata/js/userscripts/chat.user.js
 // ==/UserScript==
 
-var CHECK = '';
+let CHECK = "";
 
 function setCookie() {
-  var d = new Date();
-  d.setTime(d.getTime() + (60*60*1000)); // expire after 1 hour
-  document.cookie = "yatachatsecret=true;expires="+ d.toUTCString()+";path=/";
+  const d = new Date();
+  d.setTime(d.getTime() + (60 * 60 * 1000)); // expire after 1 hour
+  document.cookie = `yatachatsecret=true;expires=${d.toUTCString()};path=/`;
 }
 
-var errorColor = "#b3382c"
-var validColor = "#4d7c1e"
+const errorColor = "#b3382c";
+const validColor = "#4d7c1e";
 
 function displayMessage(msg, color) {
-    var messageDIV = document.createElement("div");
+    const messageDIV = document.createElement("div");
     messageDIV.innerText = msg;
-    messageDIV.setAttribute("style", "line-height: 30px; text-align:center; font-weight: bold; color: "+color+";");
+	messageDIV.setAttribute("style", `line-height: 30px; text-align:center; font-weight: bold; color: ${color};`);
 
-    var container = document.getElementsByClassName("header-wrapper-bottom")[0];
+    const container = document.getElementsByClassName("header-wrapper-bottom")[0];
     container.appendChild(messageDIV);
 }
 
 (function() {
-  'use strict';
+  "use strict";
 
-    var check_cookie = (document.cookie.match(/^(?:.*;)?\s*yatachatsecret\s*=\s*([^;]+)(?:.*)?$/)||[,null])[1]
+    const check_cookie = (document.cookie.match(/^(?:.*;)?\s*yatachatsecret\s*=\s*([^;]+)(?:.*)?$/) || [undefined, null])[1];
 
-    if(check_cookie == null) {
-        var secret = document.querySelector('script[src^="/js/chat/chat"').getAttribute("secret");
-        var uid = document.querySelector('script[src^="/js/chat/chat"').getAttribute("uid");
-        var check = CHECK;
+    if (check_cookie === null) {
+        const secret = document.querySelector("script[src^='/js/chat/chat'").getAttribute("secret");
+        const uid = document.querySelector("script[src^='/js/chat/chat'").getAttribute("uid");
+        const check = CHECK;
 
         GM_xmlhttpRequest({
             method: "POST",
             url: "https://yata.yt/bot/secret/",
             //url: "http://127.0.0.1:8000/bot/secret/",
-            headers: {"secret": secret, "uid": uid, "check": check},
-            onload: resp=> {
-                let obj = JSON.parse(resp.responseText);
+            headers: { "secret": secret, "uid": uid, "check": check },
+            onload: resp => {
+                const obj = JSON.parse(resp.responseText);
                 if ("message" in obj) {
-                    if ("type" in obj && obj.type>0) {
+                    if ("type" in obj && obj.type > 0) {
                         displayMessage("YATA SECRET: " + obj.message, validColor);
                         setCookie();
-                    }
-                    else {
-                        displayMessage("YATA SECRET: " + obj.message, errorColor);
-                    }
-                } else {
-                    displayMessage("YATA SECRET: Error", errorColor);
-                }
+                    } else displayMessage("YATA SECRET: " + obj.message, errorColor);
+                } else displayMessage("YATA SECRET: Error", errorColor);
             },
-            ontimeout: ()=>{
+            ontimeout: () => {
                 displayMessage("YATA SECRET: Request has timed out", errorColor);
             },
-            onerror: ()=>{
+            onerror: () => {
                 displayMessage("YATA SECRET: Unknown error has occured when trying to send the data", errorColor);
             },
-            onabort: ()=>{
+            onabort: () => {
                 displayMessage("YATA SECRET: Upon sending the data, the request was canceled", errorColor);
             }
         });

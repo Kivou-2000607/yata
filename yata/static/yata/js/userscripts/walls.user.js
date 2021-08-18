@@ -21,74 +21,73 @@
 // @resource     YATA_CSS https://yata.yt/static/yata/css/userscripts.css
 // ==/UserScript==
 
-var cssTxt  = GM_getResourceText ("YATA_CSS");
-GM_addStyle (cssTxt);
+const cssTxt = GM_getResourceText("YATA_CSS");
+GM_addStyle(cssTxt);
 
-(function() {
-  'use strict';
-  if (typeof $ != "function") {
+(() => {
+  "use strict";
+  if (typeof $ !== "function") {
       alert("JQuery Missing. This is a critical error.");
       return;
   }
 
   // Startup function
-  const startup = ()=>{
+  function startup() {
       //Set up buttons
-      const buttonSetup = (text,cb)=>{
-          let button = $('<button class="YATA-button">');
+      function buttonSetup(text,cb) {
+          let button = $("<button class='YATA-button'>");
           button.text(text);
           button.click(cb);
           $("#YATA-message-buttons").append(button);
-      };
+      }
 
       //show info box
       $(".content-title").after(infobox);
       //Set up buttons
       buttonSetup("Export To YATA", sendJSON);
-      buttonSetup("API Storage", ()=>{errorKey("", true)});
-  };
+      buttonSetup("API Storage", () => errorKey("", true));
+  }
 
   // Generate Report
-  const genReport = ()=>{
-      let report = []; //Prepare 2D array
-      let focus = $(".enemy-faction,.your-faction"); //Grab both tables
+  function genReport() {
+      const report = []; //Prepare 2D array
+      const focus = $(".enemy-faction,.your-faction"); //Grab both tables
 
       //Clone logic for result determination
-      let resText = $(".faction-war-info").find("span.t-block > .text > a").parent().text();
+      const resText = $(".faction-war-info").find("span.t-block > .text > a").parent().text();
       let result;
-      if (resText.search("failed") != -1 || resText.search("truce") != -1)
+      if (resText.search("failed") !== -1 || resText.search("truce") !== -1)
           result = false;
-      else if (resText.search("claimed") != -1)
+      else if (resText.search("claimed") !== -1)
           result = true;
 
       //Header row
-      let row = [];
-      focus.first().find("div > div > div:not(.clear,.short)").each((i,e)=>{
-          let focus = $(e).text();
-          if (focus=="Members") {
+      const row = [];
+      focus.first().find("div > div > div:not(.clear,.short)").each((i, e) => {
+          const focus = $(e).text();
+          if (focus === "Members") {
               row.push("Position");
               row.push("Name");
               row.push("XID");
-          } else
-              row.push(focus);
+          } else row.push(focus);
       });
       report.push(row);
 
       //For Each Table (Both the att and def table)
-      focus.each((i,f)=>{
+      focus.each((i,f) => {
           //For each Player
-          $(f).find("div > ul.members-list > li").each((i,e)=>{
-              let row = [];
-              row.push($(f).hasClass('your-faction') == result ?"Attacker":"Defender"); //Determine if the user is att or def
+          $(f).find("div > ul.members-list > li").each((i, e) => {
+              const row = [];
+              row.push($(f).hasClass("your-faction") === result ? "Attacker" : "Defender"); //Determine if the user is att or def
 
-              $(e).find("div:not(.clear)").each((i,e)=>{
+              $(e).find("div:not(.clear)").each((i,e) => {
                   let focus = $(e);
 
                   if (focus.hasClass("member")) {//Player info (name, xid)
                       focus = focus.find("a.name");
-                      let name = focus.data("placeholder");
+                      const name = focus.data("placeholder");
 
-                      if (typeof name == "undefined") { //Parser for plaintext
+                      if (typeof name === "undefined") { //Parser for plaintext
                           row.push(focus.text());
                           row.push(parseInt(/XID=(\d+)/.exec(focus.attr("href"))[1]));
                       } else { //Parser for honor bar
@@ -103,37 +102,33 @@ GM_addStyle (cssTxt);
           });
       });
       return report;
-  };
+  }
 
-  const createJSON = ()=>{
-      let players = [];
-      let gen = genReport();
-      let head = gen.shift();
-      let focus = $(".faction-war-info");
-      let links = focus.find("span.t-block > .text > a");
-      let lazy = "(\\d{2})-(\\d{2})-(\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})";
-      let ts = (new RegExp(lazy+" to "+lazy)).exec(focus.find("span.t-block:eq(1)").text().trim());
-      let resText = links.parent().text();
+  function createJSON() {
+      const gen = genReport();
+      const head = gen.shift();
+      const focus = $(".faction-war-info");
+      const links = focus.find("span.t-block > .text > a");
+      const lazy = "(\\d{2})-(\\d{2})-(\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})";
+      const ts = (new RegExp(lazy+" to "+lazy)).exec(focus.find("span.t-block:eq(1)").text().trim());
+      const resText = links.parent().text();
       let result;
-      if (resText.search("failed") != -1)
-          result = -1;
-      else if (resText.search("claimed") != -1)
-          result = 1;
-      else if (resText.search("truce") != -1)
-          result = 0;
-      let report = {
-          author:parseInt(getCookie("uid")),
-          id:parseInt(/(\d+)/.exec($(".title-black").text())[1]),
-          att_fac:parseInt(/ID=(\d+)/.exec(links.eq(0).attr("href"))[1]),
-          att_fac_name:links.eq(0).text(),
-          def_fac:parseInt(/ID=(\d+)/.exec(links.eq(1).attr("href"))[1]),
-          def_fac_name:links.eq(1).text(),
-          result:result,
-          terr:links.eq(2).text(),
-          ts_start:Date.UTC(ts[3], ts[1]-1, ts[2], ts[4], ts[5], ts[6]) / 1000,
-          ts_end:Date.UTC(ts[3+6], ts[1+6]-1, ts[2+6], ts[4+6], ts[5+6], ts[6+6]) / 1000,
-          participants:gen.map(e=>{
-              let obj = {};
+      if (resText.search("failed") !== -1) result = -1;
+      else if (resText.search("claimed") !== -1) result = 1;
+      else if (resText.search("truce") !== -1) result = 0;
+      const report = {
+          author: parseInt(getCookie("uid")),
+          id: parseInt(/(\d+)/.exec($(".title-black").text())[1]),
+          att_fac: parseInt(/ID=(\d+)/.exec(links.eq(0).attr("href"))[1]),
+          att_fac_name: links.eq(0).text(),
+          def_fac: parseInt(/ID=(\d+)/.exec(links.eq(1).attr("href"))[1]),
+          def_fac_name: links.eq(1).text(),
+          result: result,
+          terr: links.eq(2).text(),
+          ts_start: Date.UTC(ts[3], ts[1]-1, ts[2], ts[4], ts[5], ts[6]) / 1000,
+          ts_end: Date.UTC(ts[3+6], ts[1+6]-1, ts[2+6], ts[4+6], ts[5+6], ts[6+6]) / 1000,
+          participants: gen.map(e => {
+              const obj = {};
               head.forEach((f,i)=>{
                   obj[f] = e[i];
               });
@@ -141,51 +136,46 @@ GM_addStyle (cssTxt);
           })
       };
       return report;
-  };
+  }
 
   // Send to server
-  const sendJSON = ()=>{
+  function sendJSON() {
       msgbox();
-      let report = createJSON();
-      let key = GM_getValue("key","");
+      const report = createJSON();
+      const key = GM_getValue("key","");
       GM_xmlhttpRequest({
           method: "POST",
           url: "https://yata.yt/api/v1/faction/walls/import/",
           data: JSON.stringify(report),
-          headers: {
-              "key":key
-          },
-          onload: resp=> {
+          headers: { "key": key },
+          onload: resp => {
               try {
-                  let obj = JSON.parse(resp.responseText);
+                  const obj = JSON.parse(resp.responseText);
                   console.log(resp.status);
                   console.log(obj);
-                  if (resp.status == 400)
+                  if (resp.status === 400) {
                       if (obj.error.code == 4)
                           error("API error (" + obj.error.error + ")");
                       else
                           error("User error (" + obj.error.error + ")");
-                  else if (resp.status == 500)
-                      error("Server error (" + obj.error.error + ")");
-                  else if (resp.status == 200)
-                      valid(obj.message);
-                  else
-                      error("No message received from the server");
+				  }
+				  else if (resp.status == 500) error("Server error (" + obj.error.error + ")");
+                  else if (resp.status == 200) valid(obj.message);
+                  else error("No message received from the server");
               } catch (e) {
                   error("Failed to parse response from server" + e);
               }
           },
-          ontimeout: ()=>{
+          ontimeout: () => {
               error("Request has timed out");
           },
-          onerror: ()=>{
+          onerror: () => {
               error("Unknown error has occured when trying to send the data");
           },
-          onabort: ()=>{
+          onabort: () => {
               error("Upon sending the data, the request was canceled");
           }
       });
-  };
+  }
   startup();
-
 })();

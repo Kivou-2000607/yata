@@ -1,153 +1,148 @@
 /* chain list */
 
 // combined report
-$(document).on('click', '#faction-chain-combined', e=>{
+$(document).on("click", "#faction-chain-combined", e => {
     e.preventDefault();
-    $("#content-update").load( "/faction/chains/combined/", {
+    $("#content-update").load("/faction/chains/combined/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
     }, nav("/faction/chains/combined/"));
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading combined report');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Loading combined report");
     $("div.error").hide();
 });
 
 /* chain list button */
 
 // create report
-$(document).on('click', '.faction-chains-create', e=>{
+$(document).on("click", ".faction-chains-create", e => {
     e.preventDefault();
-    var chainId = $(e.currentTarget).attr("data-val");
-    var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/chains/manage/", {
-        type: "create", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).parents("td").load("/faction/chains/manage/", {
+        type: "create",
+		chainId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
 
 // create report
-$(document).on('click', '.faction-chains-cooldown', e=>{
+$(document).on("click", ".faction-chains-cooldown", e => {
     e.preventDefault();
-    var chainId = $(e.currentTarget).attr("data-val");
-    var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/chains/manage/", {
-        type: "cooldown", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).parents("td").load( "/faction/chains/manage/", {
+        type: "cooldown",
+		chainId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
 
 // delete report
-$(document).on('click', '.faction-chains-delete', e=>{
+$(document).on("click", ".faction-chains-delete", e => {
     e.preventDefault();
     // handle n combined
-    var n = parseInt($("#n-combined").text());
-    if ($(e.currentTarget).siblings("a").children("i").hasClass("fa-toggle-on")) {
-        n -= 1;
-    }
+    let n = parseInt($("#n-combined").text());
+    if ($(e.currentTarget).siblings("a").children("i").hasClass("fa-toggle-on")) n -= 1;
     $("#n-combined").html(n);
 
-    var chainId = $(e.currentTarget).attr("data-val");
-    var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/chains/manage/", {
-        type: "delete", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).parents("td").load( "/faction/chains/manage/", {
+        type: "delete",
+		chainId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
 
 // toggle combine report
-$(document).on('click', '.faction-chains-combine', e=>{
+$(document).on("click", ".faction-chains-combine", e => {
     e.preventDefault();
     // handle n combined
-    var n = parseInt($("#n-combined").text());
-    if($(e.currentTarget).children("i").hasClass("fa-toggle-off")) {
-        n += 1;
-    } else {
-        n -= 1;
-    }
+    let n = parseInt($("#n-combined").text());
+    if ($(e.currentTarget).children("i").hasClass("fa-toggle-off")) n += 1;
+	else n -= 1;
     $("#n-combined").html(n);
 
     // handle toggle
-    var chainId = $(e.currentTarget).attr("data-val");
-    var td = $(e.currentTarget).parents("td");
-    td.load( "/faction/chains/manage/", {
-        type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(e.currentTarget).parents("td").load( "/faction/chains/manage/", {
+        type: "combine",
+		chainId: $(e.currentTarget).attr("data-val"),
+		csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
 
 // add all combine report
-$(document).on('click', '#faction-chains-combine-add-all', e=>{
+$(document).on("click", "#faction-chains-combine-add-all", e => {
     e.preventDefault();
-    $(".faction-chains-combine").each(function (index, value) {
-      if($(value).children("i").hasClass("fa-toggle-off")) {
-        var chainId = $(value).attr("data-val");
-        var td = $(value).parents("td");
-        td.load( "/faction/chains/manage/", {
-            type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(".faction-chains-combine").each((index, value) => {
+      if ($(value).children("i").hasClass("fa-toggle-off")) {
+        $(value).parents("td").load("/faction/chains/manage/", {
+            type: "combine",
+			chainId: $(value).attr("data-val"),
+			csrfmiddlewaretoken: getCookie("csrftoken")
         }).html(spinner);
-        var n = parseInt($("#n-combined").text()) + 1;
+        const n = parseInt($("#n-combined").text()) + 1;
         $("#n-combined").html(n);
       }
     });
 });
 
 // remove all combine report
-$(document).on('click', '#faction-chains-combine-rem-all', e=>{
+$(document).on("click", "#faction-chains-combine-rem-all", e => {
     e.preventDefault();
-    $(".faction-chains-combine").each(function (index, value) {
-      if($(value).children("i").hasClass("fa-toggle-on")) {
-        var chainId = $(value).attr("data-val");
-        var td = $(value).parents("td");
-        td.load( "/faction/chains/manage/", {
-            type: "combine", chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    $(".faction-chains-combine").each((index, value) => {
+      if ($(value).children("i").hasClass("fa-toggle-on")) {
+        $(value).parents("td").load("/faction/chains/manage/", {
+            type: "combine",
+			chainId: $(value).attr("data-val"),
+			csrfmiddlewaretoken: getCookie("csrftoken")
         }).html(spinner);
-        var n = parseInt($("#n-combined").text()) - 1;
+        const n = parseInt($("#n-combined").text()) - 1;
         $("#n-combined").html(n);
       }
     });
 });
 
 // see report
-$(document).on('click', '.faction-chains-see', e=>{
+$(document).on("click", ".faction-chains-see", e => {
     e.preventDefault();
     var chainId = $(e.currentTarget).attr("data-val");
-    $("#content-update").load( "/faction/chains/" + chainId, {
-        chainId: chainId, csrfmiddlewaretoken: getCookie("csrftoken")
-    }, nav("/faction/chains/" + chainId));
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Loading report');
+    $("#content-update").load(`/faction/chains/${chainId}`, {
+        chainId, csrfmiddlewaretoken: getCookie("csrftoken")
+    }, nav(`/faction/chains/${chainId}`));
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Loading report");
     $("div.error").hide();
 });
 
 /* reports */
 
 // toggle zero-hits
-$(document).on('click', '#toggle-zero-hits', e=>{
+$(document).on("click", "#toggle-zero-hits", e => {
     e.preventDefault();
-    $(".zero-hits").slideToggle('fast').promise().done(()=>{
+    $(".zero-hits").slideToggle("fast").promise().done(() => {
         $("#zero-hits-icon").toggleClass("fa-toggle-on fa-toggle-off");
     });
 });
 
 // toggle non-members
-$(document).on('click', '#toggle-kicked-members', e=>{
+$(document).on("click", "#toggle-kicked-members", e => {
     e.preventDefault();
-    $(".kicked-members").slideToggle('fast').promise().done(()=>{
+    $(".kicked-members").slideToggle("fast").promise().done(() => {
         $("#kicked-members-icon").toggleClass("fa-toggle-on fa-toggle-off");
     });
 });
 
 // show individual report
-$(document).on('click', 'tr[id^="faction-ireport-"] > td:not(.dont-touch-me)', e=>{
+$(document).on("click", "tr[id^='faction-ireport-'] > td:not(.dont-touch-me)", e => {
     e.preventDefault();
-    var splt = $(e.currentTarget).closest("tr").attr("id").split("-");
-    var memberId = splt.pop();
-    var chainId = splt.pop();
-    if( !$( "#individal-report-"+memberId ).length ) {
-        $('<tr id="individal-report-'+memberId+'"></tr>').insertAfter($(e.currentTarget).closest('tr'));
+    const splt = $(e.currentTarget).closest("tr").attr("id").split("-");
+    const memberId = splt.pop();
+    const chainId = splt.pop();
+    if (!$( "#individal-report-"+memberId ).length) {
+        $(`<tr id="individal-report-${memberId}"></tr>`).insertAfter($(e.currentTarget).closest("tr"));
     }
-    $("#individal-report-"+memberId).load( "/faction/chains/individual/", {
-        chainId: chainId,
-        memberId: memberId,
+    $(`#individal-report-${memberId}`).load("/faction/chains/individual/", {
+        chainId,
+        memberId,
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html('<td colspan="12" style="text-align: center;">'+spinner+'</td>');
+	}).html(`<td colspan="12" style="text-align: center;">${spinner}</td>`);
 });
 
 // close individual report
-$(document).on('click', '[id^="individal-report-"]', e=>{
+$(document).on("click", "[id^='individal-report-']", e => {
     e.preventDefault();
-    $(e.currentTarget).html("");
+    $(e.currentTarget).empty();
 });

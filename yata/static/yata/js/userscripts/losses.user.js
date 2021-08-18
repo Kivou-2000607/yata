@@ -15,28 +15,26 @@
 // change your price for a single loss here
 const price = 250000;
 
-const changeValue = () => {
+function changeValue() {
     const money = document.querySelector(".input-money:nth-child(2)");
     const message = document.querySelector("input.message:nth-child(2)");
     const losses = window.location.href.split("&")[1].split("=")[1];
     money.value = price * losses;
     message.value = losses == 1 ? `${losses} loss. Thanks.` : `${losses} losses. Thanks.`;
-};
+}
 
-(function() {
+(() => {
     const wrap = document.body.querySelector(".sendcash-form-wrap");
     if (wrap === null) {
         const wrapObserver = new MutationObserver((records) => {
-            if (records.some((record) => record.type == "childList"
-                && record.target instanceof Element
-                && record.target.classList.contains("input-money-group"))) {
-
+            if (records.some((record) => record.type == "childList" &&
+				record.target instanceof Element &&
+				record.target.classList.contains("input-money-group"))
+			) {
                 wrapObserver.disconnect();
-                changeValue()
+                changeValue();
             }
         });
         wrapObserver.observe(document.body, { subtree: true, childList: true });
-    } else {
-        changeValue();
-    }
+    } else changeValue();
 })();

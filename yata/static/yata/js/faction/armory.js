@@ -1,24 +1,20 @@
 // drop down armory record
-$(document).on('click', '.faction-armory-toggle-view', e=>{
+$(document).on("click", ".faction-armory-toggle-view", e => {
     e.preventDefault();
-    $(e.currentTarget).next("table").slideToggle("fast", ()=>{
+    $(e.currentTarget).next("table").slideToggle("fast", () => {
         $(e.currentTarget).find("i.fa-caret-right").toggleClass("fa-rotate-90");
     });
 });
 
-
 // show/hide breakdown
-$(document).on('click', 'h1.faction-armory-type', function(e){
+$(document).on("click", "h1.faction-armory-type", (e) => {
     e.preventDefault();
-    var h = $(this);
-    var d = $(this).next("div");
-    var i = h.find("i[class^='fas fa-caret']");
-    d.slideToggle("fast", function(){
-        if (d.css("display") == "none") {
-            i.removeClass("fa-rotate-90");
-        } else {
-            i.addClass("fa-rotate-90");
-        }
+    const h = $(e.target);
+    const d = h.next("div");
+    const i = h.find("i[class^='fas fa-caret']");
+    d.slideToggle("fast", () => {
+        if (d.css("display") === "none") i.removeClass("fa-rotate-90");
+        else i.addClass("fa-rotate-90");
     });
 });
 
@@ -56,18 +52,14 @@ $(document).on('click', 'h1.faction-armory-type', function(e){
 // });
 
 // make live
-$(document).on('change', '#date-live-armory', e=>{
+$(document).on("change", "#date-live-armory", e => {
     e.preventDefault();
-    var start = parseInt($("#ts-start-armory").val());
-    var end = parseInt($("#ts-end-armory").val());
-    var live = $(e.currentTarget).prop('checked');
-    if(live) {
+    const start = parseInt($("#ts-start-armory").val());
+    const live = $(e.currentTarget).prop("checked");
+    if (live) {
         $("#date-end-armory").removeClass("is-valid").removeClass("is-invalid").attr("disabled", true).val("");
-        if(start) {
-            $("#create-report-armory").show();
-        } else {
-            $("#create-report-armory").hide();
-        }
+        if (start) $("#create-report-armory").show();
+		else $("#create-report-armory").hide();
     } else {
         $("#date-end-armory").addClass("is-invalid").attr("disabled", false).focus();
         $("#create-report-armory").hide();
@@ -75,28 +67,27 @@ $(document).on('change', '#date-live-armory', e=>{
 });
 
 // create report
-$(document).on('click', '#create-report-armory', e=>{
+$(document).on("click", "#create-report-armory", e => {
     e.preventDefault();
-    var start = parseInt($("#ts-start-armory").val());
-    var end = parseInt($("#ts-end-armory").val());
-    if($("#date-live-armory").prop('checked')) {
-        var live = 1;
-        var end = 0;
-    } else {
-        var live = 0
-    }
-    $( "#content-update" ).load( "/faction/armory/", {
-        start: start, end: end, live: live, type: "new",
+    const start = parseInt($("#ts-start-armory").val());
+    let end = parseInt($("#ts-end-armory").val());
+    let live;
+    if ($("#date-live-armory").prop("checked")) {
+        live = 1;
+        end = 0;
+    } else live = 0;
+    $("#content-update").load("/faction/armory/", {
+        start, end, live, type: "new",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    $("#content-update h2").addClass("grey").html(spinner + '&nbsp;&nbsp;Creating report ');
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");
 });
 
 // delete report
-$(document).on('click', '.faction-armory-reports-delete', e=>{
+$(document).on("click", ".faction-armory-reports-delete", e => {
     e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
-    $(e.currentTarget).closest("tr").load( "/faction/armory/", {
-        type:"delete", reportId: reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+    const reportId = $(e.currentTarget).attr("data-val");
+    $(e.currentTarget).closest("tr").load("/faction/armory/", {
+        type:"delete", reportId, csrfmiddlewaretoken: getCookie("csrftoken")
     }).remove();
 });
