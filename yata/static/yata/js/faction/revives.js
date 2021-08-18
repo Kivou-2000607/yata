@@ -42,7 +42,7 @@ $(document).on("click", ".faction-revives-reports-delete", e => {
 // see report
 $(document).on("click", ".faction-revives-reports-see", e => {
     e.preventDefault();
-    var reportId = $(e.currentTarget).attr("data-val");
+    const reportId = $(e.currentTarget).attr("data-val");
     $("#content-update").load(`/faction/revives/${reportId}`, {
         reportId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, nav(`/faction/revives/${reportId}`));

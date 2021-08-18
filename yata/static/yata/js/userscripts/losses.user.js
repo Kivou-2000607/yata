@@ -20,14 +20,14 @@ function changeValue() {
     const message = document.querySelector("input.message:nth-child(2)");
     const losses = window.location.href.split("&")[1].split("=")[1];
     money.value = price * losses;
-    message.value = losses == 1 ? `${losses} loss. Thanks.` : `${losses} losses. Thanks.`;
+    message.value = parseInt(losses) === 1 ? `${losses} loss. Thanks.` : `${losses} losses. Thanks.`;
 }
 
 (() => {
     const wrap = document.body.querySelector(".sendcash-form-wrap");
     if (wrap === null) {
         const wrapObserver = new MutationObserver((records) => {
-            if (records.some((record) => record.type == "childList" &&
+            if (records.some((record) => record.type === "childList" &&
 				record.target instanceof Element &&
 				record.target.classList.contains("input-money-group"))
 			) {

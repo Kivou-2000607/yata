@@ -14,9 +14,9 @@ function getCookie(s) {
 
 function setIcon(type) {
   // valid case
-  if (type == 1) $("#YATA-icon").attr("src", iconValid);
+  if (type === 1) $("#YATA-icon").attr("src", iconValid);
   // error case
-  else if (type == -1) $("#YATA-icon").attr("src", iconError);
+  else if (type === -1) $("#YATA-icon").attr("src", iconError);
   // neutral
   else $("#YATA-icon").attr("src", iconNeutral);
 }

@@ -99,7 +99,7 @@ $(document).on("click", "#faction-chains-combine-rem-all", e => {
 // see report
 $(document).on("click", ".faction-chains-see", e => {
     e.preventDefault();
-    var chainId = $(e.currentTarget).attr("data-val");
+    const chainId = $(e.currentTarget).attr("data-val");
     $("#content-update").load(`/faction/chains/${chainId}`, {
         chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, nav(`/faction/chains/${chainId}`));

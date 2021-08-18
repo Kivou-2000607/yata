@@ -154,13 +154,11 @@ GM_addStyle(cssTxt);
                   console.log(resp.status);
                   console.log(obj);
                   if (resp.status === 400) {
-                      if (obj.error.code == 4)
-                          error("API error (" + obj.error.error + ")");
-                      else
-                          error("User error (" + obj.error.error + ")");
+                      if (obj.error.code === 4) error(`API error (${obj.error.error})`);
+                      else error(`User error (${obj.error.error})`);
 				  }
-				  else if (resp.status == 500) error("Server error (" + obj.error.error + ")");
-                  else if (resp.status == 200) valid(obj.message);
+				  else if (resp.status === 500) error("Server error (" + obj.error.error + ")");
+                  else if (resp.status === 200) valid(obj.message);
                   else error("No message received from the server");
               } catch (e) {
                   error("Failed to parse response from server" + e);

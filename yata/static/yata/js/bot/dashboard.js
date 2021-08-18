@@ -144,7 +144,7 @@ $(document).on("change", "input.faction-add-id", e => {
         $(all_li).children("tt").removeClass("valid");
         $(all_li).each((i, li) => {
             $(li).children("tt.dashboard-settings").each((j, tt) => {
-                if(fid == $(tt).attr("data-fid")) {
+                if(fid === $(tt).attr("data-fid")) {
                     $(li).children("span.unselected").removeClass("unselected").addClass("selected");
                     $(tt).addClass("valid");
                 }

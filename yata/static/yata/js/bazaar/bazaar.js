@@ -29,14 +29,14 @@ $(document).on("click", ".item-table-header:not(.no-click)", e => {
     if(action === "update") {
 		$(item_table).load(`/bazaar/update/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
 		$(e.currentTarget).find("button").html(spinner);
-    } else if (action == "delete") {
+    } else if (action === "delete") {
 		$(item_table).load(`/bazaar/delete/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
 		$(e.currentTarget).html(spinner);
-    } else if (action == "details") {
+    } else if (action === "details") {
 		$( "#bazaar-modal" ).load(`/bazaar/details/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
-    } else if (action == "toggle") {
+    } else if (action === "toggle") {
 		$(item_table).load(`/bazaar/toggle/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
-    } else if (action == "prices") {
+    } else if (action === "prices") {
 		$( "#bazaar-modal" ).load(`/bazaar/prices/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
     }
 });

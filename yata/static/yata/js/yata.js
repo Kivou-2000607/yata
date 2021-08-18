@@ -70,7 +70,7 @@ function toggle_h(h) {
 	h.closest(lookup[0])
 		.find(lookup[1])
 		.each((i, item) => {
-			if (item != h[0]) {
+			if (item !== h[0]) {
 				$(item).next("div").slideUp("fast");
 				$(item).find("i[class^='fas fa-caret']").removeClass("fa-rotate-90");
 			}
@@ -78,7 +78,7 @@ function toggle_h(h) {
 
 	// toggle
 	d.slideToggle("fast", () => {
-		if (d.css("display") == "none") {
+		if (d.css("display") === "none") {
 			i.removeClass("fa-rotate-90");
 		} else {
 			i.addClass("fa-rotate-90");
@@ -190,7 +190,7 @@ $(document).on("click", "h2.title.toggle-display div.no-click", (e) => {
 	const h = $(e.target.closest("h2"));
 	const div = h.next("div");
 	const i = h.find("div.toggle-rotate").find("i");
-	if (div.css("display") == "none") {
+	if (div.css("display") === "none") {
 		h.removeClass("rounded").removeClass("mb-3");
 		i.classList.add("fa-rotate-90");
 	} else {
