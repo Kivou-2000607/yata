@@ -178,7 +178,7 @@ window.setInterval(() => {
         const status = tr.find(".status");
         tr.attr("data-ref", 1);
 
-        const tsRefresh = parseInt($.trim($(e.target).attr("data-val")));
+        const tsRefresh = parseInt($.trim($(e).attr("data-val")));
         const tsStatus = parseInt($.trim(status.attr("data-val")));
         const tsNow = Date.now() / 1000;
 
