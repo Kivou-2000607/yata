@@ -25,7 +25,6 @@ window.setInterval(() => {
     });
 }, 1000);
 
-
 // share reports
 $(document).on("click", "#faction-chain-report-share", e => {
     e.preventDefault();

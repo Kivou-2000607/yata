@@ -90,7 +90,7 @@
 	--div-event-description-color: #666;
 	--table-faction-chains-tr-live-color: #d9ead3;
 	--table-faction-chains-tr-live-hover-color: #b6d7a8;
-	--div-faction-bonus-background-color: #fafafaaa;
+	--div-faction-bonus-background-color: #333;
 	--table-faction-report-tr-zero-hits-background: #f4cccc;
 	--table-faction-report-tr-zero-hits-hover-background: #ea9999;
 	--table-faction-report-tr-my-row-background: #cee8d0;
@@ -131,7 +131,7 @@
 	--table-awards-list-tr-next-background: #ff00000e;
 	--table-awards-hof-tr-its-you-background: #b6d7a8;
 	--span-award-default-color: #fff;
-	--div-awards-pinned-card-background-color: #fafafaaa;
+	--div-awards-pinned-card-background-color: var(--div-loot-card-background-color);
 	--span-awarded-time-color: #999;
 
 	/* for loot.css */
@@ -143,6 +143,87 @@
 }
 
 /* for homepage */
+body.dark #price-history svg text {
+    fill: #fff;
+}
+
+body.dark #price-history svg:hover text {
+    fill: #000;
+}
+
+body.dark #price-history .google-visualization-tooltip path {
+	fill: #000;
+}
+
+body.dark #price-history .google-visualization-tooltip text {
+	fill: #fff !important;
+}
+
+body.dark .google-visualization-atl.container svg > rect {
+    fill: #666;
+    color: #000;
+}
+
+body.dark .google-visualization-atl.container svg text {
+    fill: #fff;
+    stroke: #000;
+}
+
+body.dark .google-visualization-atl.container .chartControls {
+	color: #fff;
+	background: #666;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(1) {
+	color: #a6a6ff !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(2) {
+	color: #ff7d7d !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(3) {
+	color: #f3bb67 !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(4) {
+	color: #48ff53 !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(5) {
+	color: #ff94ff !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(7) {
+	color: #f580f5 !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(8) {
+	color: #aeff50 !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(9) {
+	color: #ffaac7 !important;
+}
+
+body.dark .google-visualization-atl.container .legend > span:nth-child(10) {
+	color: #a6d2ff !important;
+}
+
+body.dark .google-visualization-atl.container .rangeControl svg text {
+    fill: #fff;
+    stroke: #000;
+}
+
+body.dark .google-visualization-atl.container svg > g > rect {
+    fill: #999;
+    color: #000;
+}
+
+/* body.dark [aria-label*="A chart."] svg:hover text {
+    fill: #000;
+} */
+
 body.dark select {
 	color: #fff;
 	background-color: #999;
@@ -251,9 +332,15 @@ body.dark tr:hover .text-start > a {
     -webkit-text-stroke: 0.1px #000;
 }
 
-body.dark i.fas.fa-cannabis {
+body.dark table i.fas.fa-cannabis,
+body.dark table i.fas.fa-filter {
     color: #fff;
     opacity: 0.5 !important;
+}
+
+body.dark tr:hover i.fas.fa-cannabis,
+body.dark tr:hover i.fas.fa-filter {
+    color: #000;
 }
 
 body.dark .input-group > * {

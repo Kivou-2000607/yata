@@ -29,7 +29,7 @@ $(document).on("click", "a.target-list-delete", (e) => {
     e.preventDefault();
 
     // if (confirm("Are you sure you want to delete your list?")) {
-      const targetId = $(e.target).attr("id").split("-").pop();
+      const targetId = e.currentTarget.getAttribute("id").split("-").pop();
       const reload = $(`#target-list-refresh-${targetId}`);
       reload.load("/target/target/", {
           targetId, type: "delete",
@@ -56,9 +56,9 @@ $(document).on("focusout", "input.target-list-note", (e) => {
 // change color
 $(document).on("click", "span.target-list-note-color", (e) => {
     e.preventDefault();
-    const reload = $(e.target).closest("td");
+    const reload = $(e.currentTarget).closest("td");
     reload.load("/target/target/", {
-        targetId: $(e.target).attr("data-val"),
+        targetId: e.currentTarget.dataset.val,
         type: "note-color",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
@@ -100,13 +100,13 @@ $(document).on("click", "#target-refresh", (e) => {
 $(document).on("click", "#target-list-refresh-color", (e) => {
     e.preventDefault();
     // get the current color & remove color class
-    let color = parseInt($(e.target).attr("data-val"));
-    $(e.target).removeClass(`target-color-${color}`);
+    let color = +e.currentTarget.dataset.val;
+    $(e.currentTarget).removeClass(`target-color-${color}`);
 
     // set the new color (class and data-val)
     color = (color + 1) % 4;
-    $(e.target).addClass(`target-color-${color}`);
-	e.target.dataset.val = color;
+    $(e.currentTarget).addClass(`target-color-${color}`);
+	e.currentTarget.dataset.val = color;
 
     // change refresh link (text and data-val)
     const colors = ["all", "green", "orange", "red"];
@@ -114,9 +114,9 @@ $(document).on("click", "#target-list-refresh-color", (e) => {
     $("#target-refresh").attr("data-val", color);
 
     // hide the other colors
-    $(".target-list-note-color").each((i, e) => {
-      const tr = $(e).parents("tr");
-      if (e.dataset.col !== color && color) tr.hide();
+    $(".target-list-note-color").each((i, el) => {
+      const tr = $(el).parents("tr");
+      if (colors[color] !== "all" && +el.dataset.col !== color && color !== undefined && color !== null) tr.hide();
       else tr.show();
     });
 
@@ -148,13 +148,13 @@ $(document).on("click", "i[id^='target-list-refresh-color-']", (e) => {
         // add this color
         $(e.target).removeClass("fa-square").addClass("fa-check-square");
         $(".target-list-note-color").each((i, el) => {
-            if (e.dataset.col === color) $(el).parents("tr").show();
+            if (el.dataset.col === color) $(el).parents("tr").show();
         });
     } else {
         // remove this color
         $(e.target).removeClass("fa-check-square").addClass("fa-square");
         $(".target-list-note-color").each((i, el) => {
-            if (e.dataset.col === color) $(el.target).parents("tr").hide();
+            if (el.dataset.col === color) $(el.target).parents("tr").hide();
         });
     }
 });

@@ -77,7 +77,7 @@ $(document).on("click", ".awards-toggle-pin", (e) => {
     //         }).html("?");
     //     }));
 
-    event.target.closest("td").load("/awards/pin/",
+    $(event.target.closest("td")).load("/awards/pin/",
         {
             awardId: event.target.getAttribute("data-val"),
             csrfmiddlewaretoken: getCookie("csrftoken")

@@ -6,7 +6,7 @@ $(document).on("change", "select[id^='simu-tree-']", e => {
     const modification = splt.pop();
     const shortname = splt.pop();
 
-    const value = e.currentTarget.selectedOptions.getAttribute("value");
+    const value = e.currentTarget.value;
 
     $("#faction-upgrade-tree").load("/faction/simulator/", {
         change: true, modification, shortname, value,
