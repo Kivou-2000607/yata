@@ -193,7 +193,7 @@ window.setInterval(() => {
             if (tsStatus && tsRefresh) {
 				let statusStr;
                 if (tsStatus < tsNow) {
-                    statusStr = "Out since ${fancyTimeFormat(tsNow - tsStatus)} s";
+                    statusStr = `Out since ${fancyTimeFormat(tsNow - tsStatus)} s`;
                     status.addClass("need-refresh");
                     $(e).addClass("need-refresh");
                 } else {
