@@ -1,6 +1,6 @@
 $(document).on("click", "#toggle-awards-done", (e) => {
     e.preventDefault();
-    const cat = $('i[id^="award-category-"]:not(".fa-toggle-off")');
+    const cat = $("div[id^='award-category-'] > i:not(.fa-toggle-off)").parent();
     $("tr.award-done").promise().done(() => {
         const icon = $("#awards-done-icon");
         if (icon.hasClass("fas fa-toggle-on")) {
@@ -11,12 +11,9 @@ $(document).on("click", "#toggle-awards-done", (e) => {
         } else {
             icon.removeClass("fas fa-toggle-off");
             icon.addClass("fas fa-toggle-on");
-            $('#toggle-awards-done-txt').html("Hide");
-            if (cat.attr("id") === null) {
-                $("tr.award-done").slideDown('fast', () => {});
-            } else {
-                $("tr.award-done." + cat.attr("id")).slideDown("fast", () => {});
-            }
+            $("#toggle-awards-done-txt").html("Hide");
+            if (cat.attr("id") === null) $("tr.award-done").slideDown("fast", () => {});
+            else $("tr.award-done." + cat.attr("id")).slideDown("fast", () => {});
         }
     });
 });
