@@ -12,7 +12,7 @@ $(document).on("click", "#toggle-awards-done", (e) => {
             icon.removeClass("fas fa-toggle-off");
             icon.addClass("fas fa-toggle-on");
             $("#toggle-awards-done-txt").html("Hide");
-            if (cat.attr("id") === null) $("tr.award-done").slideDown("fast", () => {});
+            if (!cat.attr("id")) $("tr.award-done").slideDown("fast", () => {});
             else $("tr.award-done." + cat.attr("id")).slideDown("fast", () => {});
         }
     });
