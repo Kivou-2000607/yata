@@ -13,7 +13,7 @@ $(document).on("change", "#date-live-attacks", e => {
 });
 
 // create report
-$(document).on("lick", "#create-report-attacks", e => {
+$(document).on("click", "#create-report-attacks", e => {
     e.preventDefault();
     const start = parseInt($("#ts-start").val());
     let end = parseInt($("#ts-end").val());
