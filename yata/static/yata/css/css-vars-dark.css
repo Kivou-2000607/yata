@@ -31,7 +31,7 @@
 	--valid-color: #1bd838;
 	--valid-hover-active-focus-color: #2be848;
 	--nav-a-hover-filter: drop-shadow(0px 0px 1px rgba(68,126,155,0.5));
-	--citymap-background: linear-gradient(to left top,#6666,#666F),url(/static/images/citymap.png);
+	--citymap-background: linear-gradient(to left top,#5556,#444F),url(/static/images/citymap.png);
 	--pre-background: #f4f4f4;
 	--pre-color: #666;
 	--a-yt-page-link-hover-color: #f4f4f4;
@@ -86,7 +86,7 @@
 	--div-life-bar-span-background-color: #7d93c4;
 	--table-faction-networth-tr-today-background: #d9ead3;
 	--table-faction-networth-tr-today-hover-background: #b6d7a8;
-	--div-faction-event-background-color: #fafafaaa;
+	--div-faction-event-background-color: #000;
 	--div-event-description-color: #666;
 	--table-faction-chains-tr-live-color: #d9ead3;
 	--table-faction-chains-tr-live-hover-color: #b6d7a8;

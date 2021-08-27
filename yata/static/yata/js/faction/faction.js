@@ -1,11 +1,11 @@
 // countdown
 window.setInterval(() => {
     $(".event-countdown").each((i, e) => {
-        const date = parseInt($.trim($(e.target).attr("data-val")));
-        const now = parseInt(Date.now() / 1000);
+        const date = parseInt($.trim(e.dataset.val));
+        const now = Date.now() / 1000;
         const countdown = Math.max(date - now, 0);
 
-		const target = $(e.target);
+		const target = $(e);
         // transform notations if < 0
         if (countdown === 0) {
             target.addClass("valid");
