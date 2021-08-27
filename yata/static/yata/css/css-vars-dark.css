@@ -328,10 +328,6 @@ body.dark tr:hover .valid {
     text-shadow: 0 0 5px #666;
 }
 
-body.dark table i.fas.fa-star {
-    color: #0080ff;
-}
-
 body.dark tr:hover .error {
     color: red !important;
 }

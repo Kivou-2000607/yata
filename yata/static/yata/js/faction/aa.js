@@ -49,7 +49,7 @@ $(document).on("click", "a.faction-event-delete", e => {
     e.preventDefault();
     $(e.currentTarget).closest("tr").load("/faction/configurations/event/", {
         type: "delete",
-        eventId: $(e.currentTarget).attr("data-val"),
+        eventId: e.currentTarget.dataset.val,
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).remove();
 });

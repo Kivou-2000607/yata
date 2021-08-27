@@ -154,7 +154,7 @@ $(document).on("click", "i[id^='target-list-refresh-color-']", (e) => {
         // remove this color
         $(e.target).removeClass("fa-check-square").addClass("fa-square");
         $(".target-list-note-color").each((i, el) => {
-            if (el.dataset.col === color) $(el.target).parents("tr").hide();
+            if (el.dataset.col === color) $(el).parents("tr").hide();
         });
     }
 });
