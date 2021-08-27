@@ -1204,7 +1204,7 @@ def membersExport(request):
             members = faction.member_set.all().order_by(Lower("name"))
 
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="members_report.csv"'
+            response['Content-Disposition'] = f'attachment; filename="members_report_{filedate()}.csv"'
 
             csv_data = [['Name', 'ID', 'Last Action', 'Status', 'Days In Faction', 'Energy', 'CE Rank', 'NNB', 'EA', 'Strength', 'Speed', 'Defence', 'Dexterity', 'Total']]
 
@@ -3276,7 +3276,7 @@ def spies(request, secret=False, export=False):
                     pseudo_buffer = Echo()
                     writer = csv.writer(pseudo_buffer)
                     response = StreamingHttpResponse((writer.writerow(row) for row in rows), content_type="text/csv")
-                    response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.csv'
+                    response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.csv'
                     return response
 
                 else:
@@ -3284,7 +3284,7 @@ def spies(request, secret=False, export=False):
                     if db is not None and faction.tId == db.master_id:
                         payload = {"spies": db.getSpies()}
                         response = JsonResponse(payload)
-                        response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}.json'
+                        response['Content-Disposition'] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.json'
                         return response
 
             db = False
