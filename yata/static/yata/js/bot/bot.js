@@ -11,7 +11,7 @@ $(document).on("click", "#discord-update-id", e => {
 // toggle notifications
 $(document).on("click", "div.api-notifications", e => {
     e.preventDefault();
-    const reload = $(e.target);
+    const reload = $(e.currentTarget);
     reload.load("/bot/toggleNoti/", {
         type: reload.attr("data-val"),
         csrfmiddlewaretoken: document.getElementsByName("csrfmiddlewaretoken")[0].value,
