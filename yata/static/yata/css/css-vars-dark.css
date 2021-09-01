@@ -143,11 +143,11 @@
 }
 
 /* for homepage */
-body.dark #price-history svg text {
+body.dark #price-history svg text, body.dark #chartGuilds svg text {
     fill: #fff;
 }
 
-body.dark #price-history svg:hover text {
+body.dark #price-history svg:hover text, body.dark #chartGuilds svg:hover text {
     fill: #000;
 }
 
