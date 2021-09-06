@@ -88,6 +88,19 @@ class Server(models.Model):
         else:
             return False
 
+    def get_elim(self):
+        from_db = json.loads(self.configuration).get("elim", False)
+        all_teams = ["victorious-secret", "short-bus", "sea-men", "pandemic", "dongs", "snowflakes", "illuminati", "keyboard-warriors", "lettuce-win", "chicken-nuggets", "cereal-killers", "goat"]
+        if from_db:
+            for_template = {
+                "team_name": {"type": "bool", "all": all_teams, "selected": from_db.get("team_name", []), "title": "Server team", "prefix": "", "help": "Select your server's team", "mandatory": False},
+                "roles_team": {"type": "role", "all": self.get_roles(), "selected": from_db.get("roles_team", {}), "prefix": "@", "title": "Team role", "help": "Select one role for your team", "mandatory": False},
+                "channels_scores": {"type": "channel", "all": self.get_channels(), "selected": from_db.get("channels_scores", {}), "prefix": "#", "title": "Channel for the scores", "help": "Select one channel to display the current scores", "mandatory": False},
+            }
+            return for_template
+        else:
+            return False
+
     def get_war(self):
         from_db = json.loads(self.configuration).get("wars", False)
         if from_db:

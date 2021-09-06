@@ -204,7 +204,7 @@ def dashboardOption(request):
             elif "admin" not in json.loads(server.configuration):
                 context["error"] = "No admin section found. Try a !sync in the discord server..."
 
-            elif post.get("mod") in ["rackets", "wars", "loot", "admin", "revive", "verify", "oc", "stocks", "chain"]:
+            elif post.get("mod") in ["rackets", "wars", "loot", "admin", "revive", "verify", "oc", "elim", "chain"]:
                 module = post.get("mod")
                 context["module"] = module
                 context["server"] = server
@@ -223,7 +223,8 @@ def dashboardOption(request):
                     "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
                     "oc": ["channels_allowed", "currents", "notifications"],
                     "chain": ["channels_allowed", "currents", "chains"],
-                    "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
+                    "elim": ["channels_scores", "roles_team", "team_name"],
+                    # "stocks": ["channels_wssb", "channels_tcb", "channels_alerts", "roles_wssb", "roles_tcb", "roles_alerts"],
                 }.get(post.get("mod"), [])
 
                 configuration = json.loads(server.configuration)
@@ -293,6 +294,9 @@ def dashboardOption(request):
                                 elif id == b and a in c[type]:
                                     del c[type][a]
                                     break
+
+                        elif type == "team_name":
+                            c[type] = id
 
                         elif type in ["message_welcome"]:
                             if id == "add":

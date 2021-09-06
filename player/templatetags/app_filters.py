@@ -439,7 +439,7 @@ def attackLog(code):
 
 @register.filter(name="key_to_title")
 def key_to_title(key):
-    return str(key).replace("_", " ").title()
+    return str(key).replace("_", " ").replace("-", " ").title()
 
 
 @register.filter(name='workstats')
