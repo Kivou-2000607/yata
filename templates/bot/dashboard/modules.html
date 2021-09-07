@@ -130,7 +130,7 @@ This file is part of yata.
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
 {% elif module == "elim" %}
-    <p class="warning">As the composition of teams remains private (and not available in the API) during the selection period, the verification module will be available only at the begining of the elimination periode.</p>
+    <p class="warning">As the composition of teams remains private (and not available in the API) during the selection period, the verification module will be available only at the begining of the elimination period.</p>
     {% with mod=server.get_elim %}
         {% if mod %}
             {% for k, v in mod.items %}
