@@ -45,10 +45,13 @@ This file is part of yata.
           {% endfor %}
           <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions" data-key="{{faction_id}}" data-val="{{faction_id}}"> Positions roles
               {% if faction_id in v.positions %}
-                  <i class="fas fa-toggle-on valid"></i>
+                  <i class="fas fa-toggle-on valid" style="cursor: pointer"></i>
               {% else %}
-                  <i class="fas fa-toggle-off"></i>
+                  <i class="fas fa-toggle-off" style="cursor: pointer"></i>
               {% endif %}
+          </li>
+          <li class="dashboard-option-li" data-bid="{{server.bot.pk}}" data-sid="{{server.discord_id}}" data-mod="{{module}}" data-typ="positions-refresh" data-key="{{faction_id}}" data-val="{{faction_id}}"> Refresh positions
+              <i class="fas fa-sync-alt" style="cursor: pointer"></i>
           </li>
           <ul>
           {% for i, positions in v.positions.items %}

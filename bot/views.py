@@ -220,7 +220,7 @@ def dashboardOption(request):
                     "wars": ["channels_alerts", "roles_alerts", "channels_allowed"],
                     "loot": loot_conf,
                     "revive": ["channels_alerts", "roles_alerts", "channels_allowed", "sending", "blacklist", "other"],
-                    "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "other"],
+                    "verify": ["roles_verified", "channels_allowed", "channels_welcome", "factions", "positions", "positions-refresh", "other"],
                     "oc": ["channels_allowed", "currents", "notifications"],
                     "chain": ["channels_allowed", "currents", "chains"],
                     "elim": ["channels_scores", "roles_team", "team_name"],
@@ -269,6 +269,29 @@ def dashboardOption(request):
                                 else:
                                     positions = {html.unescape(k): {} for k, v in faction_info.get("positions", {}).items()}
                                     c[type][id] = positions
+
+                        elif type in ["positions-refresh"]:
+                            positions = {}
+                            faction_info = apiCall("faction", id, "positions", key=player.getKey(), verbose=True)
+                            if "apiError" in faction_info and faction_info["apiErrorCode"] == 7:
+                                faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
+                                if "apiError" not in faction_info:
+                                    positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
+
+                            else:
+                                positions = {html.unescape(k): {} for k, v in faction_info.get("positions", {}).items()}
+
+                            for k in positions:
+                                if k not in c["positions"][id]:
+                                    c["positions"][id][k] = {}
+
+                            if len(positions):
+                                todel = []
+                                for k in c["positions"][id]:
+                                    if k not in positions:
+                                        todel.append(k)
+                                for k in todel:
+                                    del c["positions"][id][k]
 
                         elif type in ["channels_allowed", "notifications"]:
                             # if type == "currents" and name == "disable" and id in c[type]:
