@@ -32,6 +32,7 @@ from bot.models import *
 import json
 import html
 
+
 def index(request):
     try:
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
@@ -162,8 +163,6 @@ def dashboard(request, secret=False):
                             for k in to_del:
                                 del vals[k]
 
-
-
                 server.configuration = json.dumps(configurations)
                 server.save()
 
@@ -173,9 +172,10 @@ def dashboard(request, secret=False):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
 def dashboardOption(request):
     try:
-        if request.session.get('player') and request.GET.get("prs", False):  #revive servers paginator
+        if request.session.get('player') and request.GET.get("prs", False):  # revive servers paginator
 
             player = getPlayer(request.session["player"].get("tId"))
             if str(request.GET.get("sid", 0)).isdigit():
@@ -259,11 +259,11 @@ def dashboardOption(request):
                                 else:
                                     c["positions"][id][html.unescape(sub)][name] = True
                             else:
-                                faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
+                                faction_info = apiCall("faction", id, "positions", key=player.getKey(), verbose=True)
                                 if "apiError" in faction_info:
                                     print("error")
                                 else:
-                                    positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
+                                    positions = {html.unescape(k): {} for k, v in faction_info.get("positions", {}).items()}
                                     c[type][id] = positions
 
                         elif type in ["channels_allowed", "notifications"]:
@@ -276,7 +276,7 @@ def dashboardOption(request):
                                 if fid not in c[type]:
                                     c[type][fid] = {}
                                 if id in c[type][fid]:
-                                    del c[type][fid][id] # (toggle)
+                                    del c[type][fid][id]  # (toggle)
                                 else:
                                     c[type][fid][id] = name  # (multiple)
 
@@ -353,7 +353,7 @@ def documentation(request):
         player = Player.objects.filter(tId=tId).first()
         notifications = json.loads(player.notifications)
 
-        context = {"player": player, "notifications":notifications, "botcat": True, "view": {"doc": True}}
+        context = {"player": player, "notifications": notifications, "botcat": True, "view": {"doc": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 
