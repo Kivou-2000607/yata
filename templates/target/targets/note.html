@@ -51,7 +51,7 @@ This file is part of yata.
     </span>
     {% if target.note %}
         <!-- <input class="target-list-note target-color-{{target.color}}" type="text" value="{{target.note}}"> -->
-        <input class="target-list-note ms-2" type="text" value="{{target.note}}">
+        <input class="target-list-note ms-2" type="text" value="{{target.note}}" title="{{target.note}}">
     {% else %}
         <input class="target-list-note ms-2" type="text" placeholder="Enter a note here" style="opacity: 0.5; cursor: pointer;" value="">
     {% endif %}
