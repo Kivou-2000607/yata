@@ -259,7 +259,7 @@ def dashboardOption(request):
                                 else:
                                     c["positions"][id][html.unescape(sub)][name] = True
                             else:
-                                faction_info = apiCall("faction", id, "positions", key=player.getKey(), verbose=True)
+                                faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
                                 if "apiError" in faction_info and faction_info["apiErrorCode"] == 7:
                                     faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
                                     if "apiError" not in faction_info:
@@ -267,19 +267,19 @@ def dashboardOption(request):
                                         c[type][id] = positions
 
                                 else:
-                                    positions = {html.unescape(k): {} for k, v in faction_info.get("positions", {}).items()}
+                                    positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
                                     c[type][id] = positions
 
                         elif type in ["positions-refresh"]:
                             positions = {}
-                            faction_info = apiCall("faction", id, "positions", key=player.getKey(), verbose=True)
+                            faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
                             if "apiError" in faction_info and faction_info["apiErrorCode"] == 7:
                                 faction_info = apiCall("faction", id, "", key=player.getKey(), verbose=True)
                                 if "apiError" not in faction_info:
                                     positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
 
                             else:
-                                positions = {html.unescape(k): {} for k, v in faction_info.get("positions", {}).items()}
+                                positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
 
                             for k in positions:
                                 if k not in c["positions"][id]:
