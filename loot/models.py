@@ -53,8 +53,9 @@ class NPC(models.Model):
         if old_hospitalTS != self.hospitalTS:
             print("[loot.NPC.update] clear context processor cache")
             cache.delete("context_processor_loot")
-            r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
-            print("[loot.NPC.update] clear cloudflare cache", r)
+            cache.delete("api_loot")
+            # r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
+            # print("[loot.NPC.update] clear cloudflare cache", r)
 
 
     def lootTimings(self, lvl=None):
