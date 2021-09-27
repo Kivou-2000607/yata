@@ -193,7 +193,7 @@ sou: South Africa</code></pre>
 
   <h3 id="spies" class="module-doc">Spies&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
   <div class="module-doc">
-<h4 class="command-doc">Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+<h4 class="command-doc">Export Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">
 
 <ul>
@@ -244,7 +244,7 @@ sou: South Africa</code></pre>
     "1": { null }
 }</code></pre>
 </div>
-<h4 class="command-doc">Spies [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+<h4 class="command-doc">Export Spies [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
 <div class="command-doc">
 
 <ul>
@@ -259,6 +259,35 @@ sou: South Africa</code></pre>
   </li>
   <li><b>Cache</b> There is a one hour cache on these requests
   <li><b>Rate limit</b> There is an IP based rate limit of 1 call / hours.</li>
+</div>
+
+<h4 class="command-doc">Import spies [POST]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+<div class="command-doc">
+  <ul>
+    <li><b>URL</b> <a href="{% url "api:importSpies" %}" target="_blank">{% url "api:importSpies" %}</a></li>
+    <li><b>Payload</b>
+      <pre><code classe="json">Object {
+  "key": String, // API key (mandatory)
+  "secret": String, // Spy database's secret (optional)
+  "spies": Object {
+    "&lt;target_id&gt;": Object {
+      "target_name": String, // target name (optional)
+      "target_faction_name": String, // target faction name (optional)
+      "target_faction_id": String, // target faction id (optional)
+      "strength": Number, // target strength (optional or -1 if not known)
+      "speed": Number, // target speed (optional or -1 if not known)
+      "defense": Number, // target defense (optional or -1 if not known)
+      "dexterity": Number, // target dexterity (optional or -1 if not known)
+      "total": Number, // target total (optional or -1 if not known)
+      "timestamp": Number, // spy timestamp (optional)
+    },
+    ...
+  }
+}</code></pre>
+    </li>
+    <li><b><tt>timestamp</tt></b> Set to request timestamp if not provided. Timestamps are used to compare existing spies and get the newest data.
+    <li><b><tt>secret</tt></b> Can be use to select a specific spy database (must be accessible by the player's faction). Add spies to all databases if non provided.
+    <li><b>Single missing battle stat</b> If a single battle stat is missing the API computes and stores it.
 </div>
 
 </div>

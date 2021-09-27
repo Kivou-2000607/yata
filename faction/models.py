@@ -4173,7 +4173,6 @@ class SpyDatabase(models.Model):
         return all_spies
 
 
-
 # Spies
 class Spy(models.Model):
     database = models.ForeignKey(SpyDatabase, on_delete=models.CASCADE)

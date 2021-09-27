@@ -31,6 +31,7 @@ urlpatterns = [
 
     # spies
     re_path(r'^v1/spies/$', spies.getSpies, name="getSpies"),
+    re_path(r'^v1/spies/import/$', spies.importSpies, name="importSpies"),
     re_path(r'^v1/spy/(?P<target_id>[0-9]*)/$', spies.getSpy, name="getSpy"),
 
     # faction
