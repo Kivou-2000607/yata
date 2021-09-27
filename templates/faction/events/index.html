@@ -63,11 +63,11 @@ This file is part of yata.
             <h4>Reset branch</h4>
           </div>
           <div class="col text-end">
-            <div>{{event.timestamp|sub:360000|ts2date:"%m/%d %H:%M"}}</div>
+            <div>{{event.timestamp|sub:259200|ts2date:"%m/%d %H:%M"}}</div>
           </div>
         </div>
         <div class="row mx-0">
-          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:360000}}"><i class="fas fa-spinner fa-pulse"></i></div>
+          <div class="text-center mt-2 event-countdown" data-val="{{event.timestamp|sub:259200}}"><i class="fas fa-spinner fa-pulse"></i></div>
         </div>
     {% endif %}
 </div>
