@@ -1725,7 +1725,9 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 educationTimeReduction = 1.0
                 edu_red_perks = []
                 for perks_string in ["merit_perks", "stock_perks", "job_perks"]:
-                    edu_red_perks += [int(perk.replace("- ", "").split("%")[0]) for perk in [_ for _ in userInfo.get(perks_string, []) if 'Education length' in _]]
+                    for perk in userInfo.get(perks_string, []):
+                        if 'Education length' in perk or 'Course Time Reduction' in perk:
+                            edu_red_perks.append(int(perk.replace("- ", "").split("%")[0]))
 
                 for red in edu_red_perks:
                     educationTimeReduction *= (1. - float(red) / 100.)
