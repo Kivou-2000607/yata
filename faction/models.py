@@ -1701,7 +1701,11 @@ class Chain(models.Model):
                 if id not in apiAttacks:
                     n += 1
                     apiAttacks[id] = attack
-                    tsl = max(tsl, attack["timestamp_ended"])
+
+                    ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
+                    # next 2 line to be deleted
+                    if attack["attacker_faction"] == faction.tId:
+                        tsl = max(tsl, attack["timestamp_ended"])
 
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
@@ -1728,8 +1732,10 @@ class Chain(models.Model):
         newEntry = 0
         batch = AttackChain.objects.bulk_operation()
         for k, v in apiAttacks.items():
-            ts = int(v["timestamp_ended"])
-            tsl = max(tsl, ts)
+            ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
+            # next two line to be uncommented
+            # ts = int(v["timestamp_ended"])
+            # tsl = max(tsl, ts)
 
             # probably because of cache
             before = int(v["timestamp_ended"]) - self.last
@@ -1743,6 +1749,11 @@ class Chain(models.Model):
             # chainAttack = int(v["chain"])
             # if newAttack and factionAttack:
             if newAttack and factionAttack:
+                ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
+                # next 2 line to be commented
+                ts = int(v["timestamp_ended"])
+                tsl = max(tsl, ts)
+
                 v = modifiers2lvl1(v)
                 # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
                 batch.update_or_create(report_id=int(self.id), tId=int(k), defaults=v)
