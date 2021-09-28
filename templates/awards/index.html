@@ -175,8 +175,8 @@ This file is part of yata.
                 {% endif %}
                 <td class="text-center"><span {% if award.circulation %}title="Rarity score: {{award.rScore|floatformat:4}}% ({{award.rarity}})"{% endif %}>{{award.circulation|intcomma}}</span></td>
                 <td class=""><span title="{{award.description}}">{{award.description}}</span></td>
-                <td class="text-end"><span title="Current: {{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
-                <td class="text-end"><span title="Goal: {{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
+                <td class="text-center"><span title="Current: {{award.head}}{{award.current|intcomma}}">{{award.head}}{{award.current|intcomma}}</span></td>
+                <td class="text-center"><span title="Goal: {{award.head}}{{award.goal|intcomma}}">{{award.head}}{{award.goal|intcomma}}</span></td>
                 {% if award.achieve == 1%}
                     <td class="text-center award-done" data-val="{{award.awarded_time}}">
                         <span title="Awarded on {{award.awarded_time|ts2date}}">100%</span>
