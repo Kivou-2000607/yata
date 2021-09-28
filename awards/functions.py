@@ -331,7 +331,10 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    nerve = max(forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1], 0)
+                    n = dLeftN(nerve)
+                    vp["left"] = n[0]
+                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [552]:
