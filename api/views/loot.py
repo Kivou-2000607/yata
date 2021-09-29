@@ -46,10 +46,10 @@ UPDATE_TIME = 15 * 60  # time elapsed after the loot level to do the update
 @method_decorator(never_ever_cache)
 def loot(request):
     try:
-        payload = cache.get(f"api_loot", False)
-        if payload:
-            print("[api.loot] get loot (cache)")
-            return JsonResponse(payload, status=200)
+        # payload = cache.get(f"api_loot", False)
+        # if payload:
+        #     print("[api.loot] get loot (cache)")
+        #     return JsonResponse(payload, status=200)
 
         # if getattr(request, 'limited', False):
         #     return JsonResponse({"error": {"code": 3, "error": "Too many requests (10 calls / hour)"}}, status=429)
@@ -84,7 +84,7 @@ def loot(request):
 
 
         print("[api.loot] get loot (computed)")
-        cache.set("api_loot", payload, 600)
+        # cache.set("api_loot", payload, 600)
 
         return JsonResponse(payload, status=200)
 
