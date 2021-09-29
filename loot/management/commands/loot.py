@@ -36,13 +36,10 @@ class Command(BaseCommand):
             print(f"[CRON {logdate()}] update {npc}")
             npc.update()
 
-        print(f"[CRON {logdate()}] clearloot cache")
-        cache.delete("context_processor_loot")
-        cache.delete("api_loot")
-        # if options.get("clear_cache", False):
-        #     r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
-        #     print(f"[CRON {logdate()}] clear cloudflare cache:")
-        #     for k, v in  r.items():
-        #         print(f"[CRON {logdate()}]\t\t{k}: {v}")
+        if options.get("clear_cache", False):
+            print(f"[CRON {logdate()}] clear loot cache")
+            cache.delete("context_processor_loot")
+            cache.delete("api_loot")
+            r = clear_cf_cache(["https://yata.yt/api/v1/loot/"])
 
         print(f"[CRON {logdate()}] end")
