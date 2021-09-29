@@ -297,6 +297,8 @@ def clear_cf_cache(urls):
         }
         data = {"files": urls}
         r = requests.post(f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/purge_cache', json=data, headers=headers)
+        rjson = r.json()
+        print(f'clearing CF cache: {urls} [{"success" if rjson["success"] else "failed"}]')
         return r.json()
     else:
         return {'result': {'id': None}, 'success': False, 'errors': [], 'messages': ["No cloudflare configurations found"]}

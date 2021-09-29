@@ -68,18 +68,18 @@ def loot(request):
                 next_update = hosp_out + UPDATE_LEVEL + UPDATE_TIME
                 break
 
-        # debug = {
-        #     "hosp_out": {k: timestampToDate(v, fmt=True) for k, v in npcs.items()},
-        #     "next_update": timestampToDate(next_update, fmt=True),
-        #     "timestamp": timestampToDate(ts, fmt=True),
-        #     "message": "This field is temporary to help debug cloudflare cache system. Don't use it in your code."
-        # }
+        debug = {
+            "hosp_out": {k: timestampToDate(v, fmt=True) for k, v in npcs.items()},
+            "next_update": timestampToDate(next_update, fmt=True),
+            "timestamp": timestampToDate(ts, fmt=True),
+            "message": "This field is temporary to help debug cloudflare cache system. Don't use it in your code."
+        }
 
         payload = {
             "hosp_out": npcs,
             "next_update": next_update,
             "timestamp": ts,
-            # "debug": debug
+            "debug": debug
         }
 
 
