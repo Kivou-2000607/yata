@@ -1701,11 +1701,7 @@ class Chain(models.Model):
                 if id not in apiAttacks:
                     n += 1
                     apiAttacks[id] = attack
-
-                    ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
-                    # next 2 line to be deleted
-                    if attack["attacker_faction"] == faction.tId:
-                        tsl = max(tsl, attack["timestamp_ended"])
+                    tsl = max(tsl, attack["timestamp_ended"])
 
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
@@ -1732,10 +1728,8 @@ class Chain(models.Model):
         newEntry = 0
         batch = AttackChain.objects.bulk_operation()
         for k, v in apiAttacks.items():
-            ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
-            # next two line to be uncommented
-            # ts = int(v["timestamp_ended"])
-            # tsl = max(tsl, ts)
+            ts = int(v["timestamp_ended"])
+            tsl = max(tsl, ts)
 
             # probably because of cache
             before = int(v["timestamp_ended"]) - self.last
@@ -1749,10 +1743,6 @@ class Chain(models.Model):
             # chainAttack = int(v["chain"])
             # if newAttack and factionAttack:
             if newAttack and factionAttack:
-                ### PATCH FOR INCONSISTENT END DATE: comment below and update lst only if faction attack
-                # next 2 line to be commented
-                ts = int(v["timestamp_ended"])
-                tsl = max(tsl, ts)
 
                 v = modifiers2lvl1(v)
                 # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
@@ -2120,8 +2110,26 @@ class Chain(models.Model):
         return 0
 
     def progress(self):
-        # print("progress", float((100 * self.current) / float(max(1, self.chain))))
         return int((100 * self.current) // float(max(1, self.chain)))
+
+    def progress_cd(self):
+
+        # return progress based on attacks if < 100
+        attack_progress = self.progress()
+        if attack_progress < 100:
+            return attack_progress
+
+        # otherwise return progress based on elapsed time in CD
+        if self.cooldown:
+            return int(100 * (self.last - self.end) / (10 * max(self.chain, 1)))
+        else:
+            return 0
+
+    def show_progress(self):
+        if self.cooldown:
+            return self.progress_cd()
+        else:
+            return self.progress()
 
     def displayCrontab(self):
         if self.crontab > 0:

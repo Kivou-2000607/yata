@@ -797,6 +797,8 @@ def manageReport(request):
                 chain.current = 0
                 chain.crontab = 0
                 chain.state = 0
+                chain.last = chain.start
+                chain.update = 0
                 chain.attackchain_set.all().delete()
                 chain.count_set.all().delete()
                 chain.bonus_set.all().delete()
