@@ -25,7 +25,7 @@ $(document).on("click", ".attack-list-paid", (e) => {
 $(document).on("click", ".targets-attacks-losses-payall", (e) => {
     e.preventDefault();
     $("#attack-losses").load("/target/attacks/losses/", {
-        payall: $(e.target).attr("data-val"),
+        payall: e.currentTarget.dataset.val,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
 });
