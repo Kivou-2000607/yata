@@ -1,9 +1,8 @@
 // toggle revive from revives list button
 $(document).on("click", "a[id^='revives-list-toggle-']", (e) => {
     e.preventDefault();
-    const reload = e.target.closest("td");
-    reload.load("/target/revive/", {
-        reviveId: e.target.getAttribute("id").split("-").pop(),
+    $(e.target.closest("td")).load("/target/revive/", {
+        reviveId: e.currentTarget.getAttribute("id").split("-").pop(),
         csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });
