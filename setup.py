@@ -103,8 +103,6 @@ if not len(Bot.objects.all()) >= 3:
 if fill_db:
     cmd = 'python manage.py check_keys'
     r = os.system(cmd)
-    cmd = 'python manage.py stocks'
-    r = os.system(cmd)
     cmd = 'python manage.py awards'
     r = os.system(cmd)
     cmd = 'python manage.py territories'
