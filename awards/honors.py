@@ -454,7 +454,7 @@ d = {
     730: 841650925,  # Backdrop
     969: 524309184,  # Phantastic
     964: 775408521,  # Something Humerus
-    966: 0,  # Oh My Gourd!
+    966: 932815844,  # Oh My Gourd!
 
     # 14
     12: 533285823,  # Pocket Money
