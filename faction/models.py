@@ -2363,7 +2363,7 @@ class AttacksReport(models.Model):
             weekAgo = tsnow() - week
             self.computing = False
             self.crontab = 0
-            self.attackreport_set.filter(timestamp_ended__gt=weekAgo).delete()
+            # self.attackreport_set.filter(timestamp_ended__gt=weekAgo).delete()
             self.state = -7
             self.save()
             return -7
@@ -2871,7 +2871,7 @@ class RevivesReport(models.Model):
             weekAgo = tsnow() - week
             self.computing = False
             self.crontab = 0
-            self.revive_set.filter(timestamp__gt=weekAgo).delete()
+            # self.revive_set.filter(timestamp__gt=weekAgo).delete()
             self.live = False
             self.state = -7
             self.save()
