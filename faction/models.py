@@ -4167,7 +4167,7 @@ class SpyDatabase(models.Model):
 
         print(f'{self} batch size: {batch.count()}')
         if batch.count():
-            batch.run()
+            batch.run(batch_size=100)
 
         self.n_spies = len(all_spies)
         self.update = int(time.time())
