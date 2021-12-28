@@ -54,6 +54,7 @@ class Attack(models.Model):
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
     raid = models.BooleanField(default=False)
+    ranked_war = models.BooleanField(default=False)
     respect_gain = models.FloatField(default=0.0)
     respect_loss = models.FloatField(default=0.0)
 

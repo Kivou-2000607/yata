@@ -2209,6 +2209,7 @@ class AttackChain(models.Model):
     respect_gain = models.FloatField(default=0.0)
     respect_lost = models.FloatField(default=0.0)
     raid = models.BooleanField(default=False)
+    ranked_war = models.BooleanField(default=False)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
 
@@ -2752,6 +2753,7 @@ class AttackReport(models.Model):
     respect_gain = models.FloatField(default=0.0)
     respect_lost = models.FloatField(default=0.0)
     raid = models.BooleanField(default=False)
+    ranked_war = models.BooleanField(default=False)
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
 
