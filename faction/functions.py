@@ -406,21 +406,26 @@ def updatePoster(faction):
 
     # check header
     if faction.posterHeadImg:
-        head = Image.open(faction.posterHeadImg)
-        head_ratio = POSTER_WIDTH / float(head.size[0])
-        head = head.resize((POSTER_WIDTH, int(head_ratio * head.size[1])))
-        full_poster.insert(0, head)
-        full_height += head.size[1]
+        try:
+            head = Image.open(faction.posterHeadImg)
+            head_ratio = POSTER_WIDTH / float(head.size[0])
+            head = head.resize((POSTER_WIDTH, int(head_ratio * head.size[1])))
+            full_poster.insert(0, head)
+            full_height += head.size[1]
+        except FileNotFoundError:
+            faction.posterHeadImg.delete()
+            faction.save()
 
     if faction.posterTailImg:
-        tail = Image.open(faction.posterTailImg)
-        tail_ratio = POSTER_WIDTH / float(tail.size[0])
-        tail = tail.resize((POSTER_WIDTH, int(tail_ratio * tail.size[1])))
-        full_poster.append(tail)
-        full_height += tail.size[1]
-
-
-    print(full_poster)
+        try:
+            tail = Image.open(faction.posterTailImg)
+            tail_ratio = POSTER_WIDTH / float(tail.size[0])
+            tail = tail.resize((POSTER_WIDTH, int(tail_ratio * tail.size[1])))
+            full_poster.append(tail)
+            full_height += tail.size[1]
+        except FileNotFoundError:
+            faction.posterTailImg.delete()
+            faction.save()
 
     poster = Image.new('RGBA', (POSTER_WIDTH, full_height), color=background)
 
