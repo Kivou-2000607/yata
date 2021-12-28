@@ -87,6 +87,11 @@ def login(request):
                     context = user
                     context['login'] = True
                     return render(request, 'header.html', context)
+                elif user['player_id'] in [1610750]:
+                    context = {"apiError": "User ban for being a dickhead"}
+                    context['login'] = True
+                    return render(request, 'header.html', context)
+
             except BaseException as e:
                 context = {'apiError': e, 'login': True}
                 return render(request, 'header.html', context)
