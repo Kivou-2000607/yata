@@ -225,31 +225,31 @@ class Server(models.Model):
     #     return json.dumps(configuration)
 
 
-class Chat(models.Model):
-    name = models.CharField(default="secret", max_length=128)
-    uid = models.IntegerField(default=0)
-    secret = models.CharField(default="secret", max_length=128)
-    check = models.CharField(default="check", max_length=128)
-    hookurl = models.TextField(default="{}")
+# class Chat(models.Model):
+#     name = models.CharField(default="secret", max_length=128)
+#     uid = models.IntegerField(default=0)
+#     secret = models.CharField(default="secret", max_length=128)
+#     check = models.CharField(default="check", max_length=128)
+#     hookurl = models.TextField(default="{}")
+#
+#     def __str__(self):
+#         return "Chat {}".format(self.name)
+#
+#     def setNewestSecret(self):
+#         cred = self.credential_set.all().order_by("-timestamp").first()
+#         self.secret = cred.secret
+#         self.uid = cred.uid
+#         self.save()
 
-    def __str__(self):
-        return "Chat {}".format(self.name)
 
-    def setNewestSecret(self):
-        cred = self.credential_set.all().order_by("-timestamp").first()
-        self.secret = cred.secret
-        self.uid = cred.uid
-        self.save()
-
-
-class Credential(models.Model):
-    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
-    uid = models.IntegerField(default=0)
-    secret = models.CharField(default="secret", max_length=128)
-    timestamp = models.IntegerField(default=0)
-
-    def __str__(self):
-        return "Credential [{}] for {}".format(self.uid, self.chat)
+# class Credential(models.Model):
+#     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+#     uid = models.IntegerField(default=0)
+#     secret = models.CharField(default="secret", max_length=128)
+#     timestamp = models.IntegerField(default=0)
+#
+#     def __str__(self):
+#         return "Credential [{}] for {}".format(self.uid, self.chat)
 
 
 class Rackets(models.Model):

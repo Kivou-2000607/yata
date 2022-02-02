@@ -3729,10 +3729,11 @@ class Territory(models.Model):
     sector = models.IntegerField(default=0)
     size = models.IntegerField(default=0)
     density = models.IntegerField(default=0)
+    slots = models.IntegerField(default=0)
     daily_respect = models.IntegerField(default=0)
+    faction = models.IntegerField(default=0)
     coordinate_x = models.FloatField(default=0)
     coordinate_y = models.FloatField(default=0)
-    faction = models.IntegerField(default=0)
     racket = models.TextField(default="{}", null=True, blank=True)
 
     def __str__(self):

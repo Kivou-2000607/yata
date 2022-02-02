@@ -59,8 +59,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'mathfilters',
     'django_json_widget',
-    'redisboard',
-    'rest_framework',
+    'redisboard'
+    # 'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -157,6 +157,8 @@ else:
         }
     }
 
+# removes the W042 warning on autofield for not user defined PK
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # Cache
 # https://docs.djangoproject.com/en/3.1/topics/cache/

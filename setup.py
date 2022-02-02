@@ -66,35 +66,44 @@ if not len(PlayerData.objects.all()):
     print('Create Players stats')
     cmd = 'python manage.py players_stats'
     r = os.system(cmd)
+
 if not len(Player.objects.filter(tId=-1)):
     print('Create Player')
     Player.objects.create(tId=-1, name="Anonymous", validKey=False)
+
 if not len(Faction.objects.filter(tId=-1)):
     print('Create Faction')
     Faction.objects.create(tId=-1, name="Faction Anonymous")
+
 if not len(APIKey.objects.all()) and key:
     print('Create API Key')
     APIKey.objects.create(key=key)
+
 if not len(AwardsData.objects.all()):
     print('Create Awards data')
     AwardsData.objects.create()
+
 if not len(BazaarData.objects.all()):
     print('Create Bazaar data')
     BazaarData.objects.create()
+
 if not len(FactionData.objects.all()):
     print('Create Faction data')
     FactionData.objects.create()
     cmd = 'python manage.py init_faction_tree'
     r = os.system(cmd)
+
 if not len(NPC.objects.all()):
     print('Create NPC')
     NPC.objects.create(tId=4, show=True)
     NPC.objects.create(tId=15, show=True)
     NPC.objects.create(tId=19, show=True)
+
 if not len(CompanyDescription.objects.all()):
     print('Create NPC')
     cmd = 'python manage.py init_companies'
     r = os.system(cmd)
+
 if not len(Bot.objects.all()) >= 3:
     print('Create Bots')
     for i in range(3):

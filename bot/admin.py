@@ -44,22 +44,22 @@ class ServerAdmin(admin.ModelAdmin):
     readonly_dashboard.allow_tags = True
 
 
-class CredentialInline(admin.TabularInline):
-    model = Credential
-    extra = 0
-    show_change_link = True
-    can_delete = True
-    readonly_fields = ('uid', 'secret', 'timestamp',)
-
-
-class CredentialAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'uid', 'timestamp']
-    list_filter = ['chat__name']
-
-
-class ChatAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'name', 'uid']
-    inlines = [CredentialInline, ]
+# class CredentialInline(admin.TabularInline):
+#     model = Credential
+#     extra = 0
+#     show_change_link = True
+#     can_delete = True
+#     readonly_fields = ('uid', 'secret', 'timestamp',)
+#
+#
+# class CredentialAdmin(admin.ModelAdmin):
+#     list_display = ['__str__', 'uid', 'timestamp']
+#     list_filter = ['chat__name']
+#
+#
+# class ChatAdmin(admin.ModelAdmin):
+#     list_display = ['__str__', 'name', 'uid']
+#     inlines = [CredentialInline, ]
 
 
 class RacketsAdmin(admin.ModelAdmin):
@@ -102,7 +102,7 @@ class StocksAdmin(admin.ModelAdmin):
 admin.site.register(Stocks, StocksAdmin)
 admin.site.register(Rackets, RacketsAdmin)
 admin.site.register(Wars, WarsAdmin)
-admin.site.register(Credential, CredentialAdmin)
-admin.site.register(Chat, ChatAdmin)
+# admin.site.register(Credential, CredentialAdmin)
+# admin.site.register(Chat, ChatAdmin)
 admin.site.register(Server, ServerAdmin)
 admin.site.register(Bot, BotAdmin)
