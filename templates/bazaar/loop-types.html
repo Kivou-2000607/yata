@@ -19,7 +19,7 @@ This file is part of yata.
 
 {% load app_filters %}
 
-{% for k,v in allItemsOnMarket.items|dictsort:"0.lower" %}
+{% for k, v in allItemsOnMarket|dictsort:0 %}
 <div class="catch-me">
 
   <h2 class="title rounded-top px-2 py-2 {% if view.hideType %}toggle-display rounded mb-3{% endif %}">

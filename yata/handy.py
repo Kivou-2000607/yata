@@ -284,6 +284,7 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
                 from sentry_sdk import capture_exception
                 capture_exception(exc)
             player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
+            print(message)
         except BaseException as e:
             print("Meta error", e)
         return HttpResponseServerError(render_to_string('500.html', {'exception': exc, 'home': home}))

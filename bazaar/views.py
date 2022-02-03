@@ -46,23 +46,24 @@ def index(request):
 
         # get items
         itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
-        tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        items = {tType: [] for tType in tTypes}
+        tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
+        items = []
 
         # get/update inventory
         inventory = player.getInventory()
         error = inventory if 'apiError' in inventory else False
 
         # build item list
-        for tType in items:
+        for tType in tTypes:
+            item_list = []
             for item in itemsOnMarket.filter(tType=tType):
                 item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
                 item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
                 item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
                 item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
-                items[tType].append(item)
-                # item.save()
+                item_list.append(item)
+            items.append((tType, item_list))
 
         context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         if error:
@@ -83,21 +84,22 @@ def custom(request):
 
             # get items
             itemsOnMarket = Item.objects.filter(tId__in=json.loads(player.bazaarList)).order_by('tName')
-            items = {"Custom": []}
+            items = []
 
             # get/update inventory
             inventory = player.getInventory()
             error = inventory if 'apiError' in inventory else False
 
             # build item list
+            item_list = []
             for item in itemsOnMarket:
                 item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
                 item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
                 item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
                 item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
-                items["Custom"].append(item)
-                # item.save()
+                item_list.append(item)
+            items.append(('Custom', item_list))
 
             context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
             if error:
@@ -117,23 +119,24 @@ def default(request):
 
         # get items
         itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
-        tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        items = {tType: [] for tType in tTypes}
+        tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
+        items = []
 
         # get/update inventory
         inventory = player.getInventory()
         error = inventory if 'apiError' in inventory else False
 
         # build item list
-        for tType in items:
+        for tType in tTypes:
+            item_list = []
             for item in itemsOnMarket.filter(tType=tType):
                 item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
                 item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
                 item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
                 item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
-                items[tType].append(item)
-                # item.save()
+                item_list.append(item)
+            items.append((tType, item_list))
 
         context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
         if error:
@@ -264,23 +267,24 @@ def all(request):
 
         # get items
         itemsOnMarket = Item.objects.all().order_by('tName')
-        tTypes = [r["tType"] for r in itemsOnMarket.values("tType").distinct()]
-        items = {tType: [] for tType in tTypes}
+        tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
+        items = []
 
         # get/update inventory
         inventory = player.getInventory()
         error = inventory if 'apiError' in inventory else False
 
         # build item list
-        for tType in items:
+        for tType in tTypes:
+            item_list = []
             for item in itemsOnMarket.filter(tType=tType):
                 item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
                 item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
                 item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
                 item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
-                items[tType].append(item)
-                # item.save()
+                item_list.append(item)
+            items.append((tType, item_list))
 
         context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
         if error:
@@ -297,29 +301,32 @@ def top10(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # get items
-        items = {"Sell": [], "Buy": []}
+        items = []
 
         # get/update inventory
         inventory = player.getInventory()
         error = inventory if 'apiError' in inventory else False
 
         # build item list
+        item_list = []
         for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
             item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
             item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
             item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
-            items["Buy"].append(item)
-            # item.save()
+            item_list.append(item)
+        items.append(('Buy', item_list))
+
+        item_list = []
         for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
             item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
             item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
             item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
-            items["Sell"].append(item)
-            # item.save()
+            item_list.append(item)
+        items.append(('Sell', item_list))
 
         context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
         if error:
