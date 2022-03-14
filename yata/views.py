@@ -38,7 +38,7 @@ from player.models import *
 from player.functions import updatePlayer
 from faction.models import Faction
 from yata.handy import *
-
+from yata.bans import user_bans
 
 def index(request):
     try:
@@ -87,8 +87,8 @@ def login(request):
                     context = user
                     context['login'] = True
                     return render(request, 'header.html', context)
-                elif user['player_id'] in [1610750]:
-                    context = {"apiError": "User ban for being a dickhead"}
+                elif user['player_id'] in user_bans:
+                    context = {"apiError": f'[YATA User ban] {user_bans[user["player_id"]]}'}
                     context['login'] = True
                     return render(request, 'header.html', context)
 
