@@ -71,8 +71,8 @@ $(document).on("click", "#faction-chains-combine-add-all", e => {
       if ($(value).children("i").hasClass("fa-toggle-off")) {
         $(value).parents("td").load("/faction/chains/manage/", {
             type: "combine",
-			chainId: $(value).attr("data-val"),
-			csrfmiddlewaretoken: getCookie("csrftoken")
+			      chainId: $(value).attr("data-val"),
+			      csrfmiddlewaretoken: getCookie("csrftoken")
         }).html(spinner);
         const n = parseInt($("#n-combined").text()) + 1;
         $("#n-combined").html(n);
@@ -99,7 +99,7 @@ $(document).on("click", "#faction-chains-combine-rem-all", e => {
 // see report
 $(document).on("click", ".faction-chains-see", e => {
     e.preventDefault();
-    const chainId = e.currentTarget.previousElementSibling.value;
+    const chainId = $(e.currentTarget).attr("data-val");
     $("#content-update").load(`/faction/chains/${chainId}`, {
         chainId, csrfmiddlewaretoken: getCookie("csrftoken")
     }, nav(`/faction/chains/${chainId}`));
