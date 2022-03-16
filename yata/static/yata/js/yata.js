@@ -222,27 +222,29 @@ $(document).on("click", "h2.title.toggle-display", (e) => {
 let lootTimer = document.querySelector("span#loot-countdown-header");
 window.setInterval(() => {
 	if (!lootTimer) lootTimer = document.querySelector("span#loot-countdown-header");
-	const loot = parseInt($.trim(lootTimer.dataset.lts));
-	const name = $.trim(lootTimer.dataset.nam);
-	const tid = $.trim(lootTimer.dataset.tid);
-	const now = Date.now() / 1000;
-	const diff = loot - now;
 
-	let cd = fancyTimeFormat(diff);
-	let cl = "";
+	if (lootTimer){
+		const loot = parseInt($.trim(lootTimer.dataset.lts));
+		const name = $.trim(lootTimer.dataset.nam);
+		const tid = $.trim(lootTimer.dataset.tid);
+		const now = Date.now() / 1000;
+		const diff = loot - now;
 
-	if (diff < 60) {
-		cd = "now";
-	}
+		let cd = fancyTimeFormat(diff);
+		let cl = "";
 
-	if (diff < 60 * 5) {
-		cl = "error";
-	} else if (diff < 60 * 15) {
-		cl = "warning";
-	}
+		if (diff < 60) {
+			cd = "now";
+		}
 
-	$(lootTimer).html(`<a class="${cl}" href="https://www.torn.com/loader.php?sid=attack&user2ID=${tid}" target="_blank">${name}: ${cd}</a>`);
-}, 1000);
+		if (diff < 60 * 5) {
+			cl = "error";
+		} else if (diff < 60 * 15) {
+			cl = "warning";
+		}
+
+		$(lootTimer).html(`<a class="${cl}" href="https://www.torn.com/loader.php?sid=attack&user2ID=${tid}" target="_blank">${name}: ${cd}</a>`);
+	}}, 1000);
 
 //
 // $(document).on("click", ".overlay.close", function(e){
