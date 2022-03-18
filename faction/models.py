@@ -2029,7 +2029,8 @@ class Chain(models.Model):
         print('{} fill database with counts'.format(self))
         self.count_set.all().delete()
         hitsForStats = []
-        bulk_mgr = BulkCreateManager(chunk_size=20)
+
+        batch = Count.objects.bulk_operation()
         for k, v in attackers.items():
             # for stats later
             if v[1]:
@@ -2060,41 +2061,28 @@ class Chain(models.Model):
             # 11: for chain watch
             # 12: #bonuses
             # 13: #war
-            # self.count_set.create(attackerId=k,
-            #                       name=v[10],
-            #                       hits=v[0],
-            #                       wins=v[1],
-            #                       bonus=v[12],
-            #                       fair_fight=v[2],
-            #                       war=v[3],
-            #                       retaliation=v[4],
-            #                       group_attack=v[5],
-            #                       overseas=v[6],
-            #                       respect=v[8],
-            #                       daysInFaction=v[9],
-            #                       beenThere=beenThere,
-            #                       graph=graphTmp,
-            #                       watcher=watcher,
-            #                       warhits=v[13])
-            bulk_mgr.add(Count(chain=self,
-                               attackerId=k,
-                               name=v[10],
-                               hits=v[0],
-                               wins=v[1],
-                               bonus=v[12],
-                               fair_fight=v[2],
-                               war=v[3],
-                               retaliation=v[4],
-                               group_attack=v[5],
-                               overseas=v[6],
-                               respect=v[8],
-                               daysInFaction=v[9],
-                               beenThere=beenThere,
-                               graph=graphTmp,
-                               watcher=watcher,
-                               warhits=v[13]))
+            batch.update_or_create(
+                chain_id=self.id,
+                attackerId=k,
+                name=v[10],
+                hits=v[0],
+                wins=v[1],
+                bonus=v[12],
+                fair_fight=v[2],
+                war=v[3],
+                retaliation=v[4],
+                group_attack=v[5],
+                overseas=v[6],
+                respect=v[8],
+                daysInFaction=v[9],
+                beenThere=beenThere,
+                graph=graphTmp,
+                watcher=watcher,
+                warhits=v[13]
+            )
 
-        bulk_mgr.done()
+        if batch.count():
+            batch.run(batch_size=20)
 
         # create attack stats
         stats, statsBins = numpy.histogram(hitsForStats, bins=32)
@@ -2164,6 +2152,9 @@ class Count(models.Model):
     graph = models.TextField(default="", null=True, blank=True)
     watcher = models.FloatField(default=0)
     warhits = models.IntegerField(default=0)
+
+    # bulk manager
+    objects = BulkManager()
 
     def __str__(self):
         return format_html("Count for {}".format(self.chain))
@@ -2586,36 +2577,46 @@ class AttacksReport(models.Model):
                                          "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
 
         print("{} update factions".format(self))
-        bulk_u_mgr = BulkUpdateManager(['hits', 'attacks', 'defends', 'attacked'], chunk_size=100)
-        bulk_c_mgr = BulkCreateManager(chunk_size=20)
-        all_factions = self.attacksfaction_set.all()
+
+        # update factions
+        batch = AttacksFaction.objects.bulk_operation()
         for k, v in f_set.items():
-            f = all_factions.filter(faction_id=k).first()
-            if f is not None:  # add to update manager
-                f.hits = v["hits"]
-                f.attacks = v["attacks"]
-                f.defends = v["defends"]
-                f.attacked = v["attacked"]
-                bulk_u_mgr.add(f)
-            else:  # add to create manager
-                bulk_c_mgr.add(AttacksFaction(report=self, **v))
+            defaults={
+                "hits": int(v["hits"]),
+                "attacks": int(v["attacks"]),
+                "defends": int(v["defends"]),
+                "attacked": int(v["attacked"])
+            }
+            batch.update_or_create(
+                report_id=int(self.id),
+                faction_id=int(k),
+                faction_name=v["faction_name"],
+                defaults=defaults
+            )
 
-        print("{} update players".format(self))
-        all_players = self.attacksplayer_set.all()
+        if batch.count():
+            batch.run(batch_size=20)
+
+        # update players
+        batch = AttacksPlayer.objects.bulk_operation()
         for k, v in p_set.items():
-            p = all_players.filter(player_id=k).first()
-            if p is not None:  # add to update manager
-                p.hits = v["hits"]
-                p.attacks = v["attacks"]
-                p.defends = v["defends"]
-                p.attacked = v["attacked"]
-                bulk_u_mgr.add(p)
-            else:  # add to create manager
-                bulk_c_mgr.add(AttacksPlayer(report=self, **v))
+            defaults={
+                "hits": int(v["hits"]),
+                "attacks": int(v["attacks"]),
+                "defends": int(v["defends"]),
+                "attacked": int(v["attacked"])
+            }
+            batch.update_or_create(
+                report_id=int(self.id),
+                player_id=int(k),
+                player_name=v["player_name"],
+                player_faction_id=int(v["player_faction_id"]),
+                player_faction_name=v["player_faction_name"],
+                defaults=defaults
+            )
 
-        print("{} execute managers".format(self))
-        bulk_u_mgr.done()
-        bulk_c_mgr.done()
+        if batch.count():
+            batch.run(batch_size=20)
 
         # set show/hide
         print("{} show hide".format(self))
@@ -2711,6 +2712,9 @@ class AttacksFaction(models.Model):
 
     show = models.BooleanField(default=False)
 
+    # bulk manager
+    objects = BulkManager()
+
     def __str__(self):
         return "{} [{}]: {} {} {} {}".format(self.faction_name, self.faction_id, self.hits, self.attacks, self.defends, self.attacked)
 
@@ -2729,6 +2733,9 @@ class AttacksPlayer(models.Model):
     attacked = models.IntegerField(default=0)
 
     show = models.BooleanField(default=False)
+
+    # bulk manager
+    objects = BulkManager()
 
     def __str__(self):
         return "{} [{}]: {} {} {} {}".format(self.player_name, self.player_id, self.hits, self.attacks, self.defends, self.attacked)
@@ -2976,7 +2983,6 @@ class RevivesReport(models.Model):
 
         # add attacks
         newEntry = 0
-       # bulk_mgr = BulkCreateManager(chunk_size=20)
         batch = Revive.objects.bulk_operation()
         for k, v in apiRevives.items():
             ts = int(v["timestamp"])
@@ -2995,12 +3001,6 @@ class RevivesReport(models.Model):
             v["result"] = v["result"] == "success"
 
             batch.update_or_create(tId=int(k), report_id=int(self.id), defaults=v)
-            #bulk_mgr.add(Revive(report=self, tId=int(k), **v))
-            # try:
-            #     a = self.revive_set.update_or_create(tId=int(k), defaults=v)
-            # except BaseException as e:
-            #     self.revive_set.filter(tId=int(k)).delete()
-            #     a = self.revive_set.update_or_create(tId=int(k), defaults=v)
             newEntry += 1
             tsl = max(tsl, ts)
             if v["reviver_faction"] == faction.tId:
@@ -3010,7 +3010,6 @@ class RevivesReport(models.Model):
 
         if batch.count():
             batch.run()
-        # bulk_mgr.done()
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
