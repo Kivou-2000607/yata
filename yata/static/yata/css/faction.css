@@ -825,7 +825,7 @@ table.faction-members th.a {
 	text-align: center;
 } /* x1 */
 table.faction-members th.b {
-	width: 10%;
+	width: 12.5%;
 	text-align: left;
 } /* x1 */
 table.faction-members th.c {
@@ -847,8 +847,13 @@ table.faction-members th.f {
 	text-align: right;
 	cursor: default;
 } /* x2 */
+table.faction-members th.i {
+	width: 5%;
+	text-align: right;
+	cursor: default;
+} /* x2 */
 table.faction-members th.g {
-	width: 10%;
+	width: 12.5%;
 	text-align: right;
 	cursor: default;
 } /* x1 */
