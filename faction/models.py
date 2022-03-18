@@ -881,7 +881,7 @@ class Faction(models.Model):
         contributors = apiCall('faction', self.tId, selection, key.value, verbose=False)
         if 'apiError' in contributors:
             msg = "Add contribution {} ({})".format(stat, contributors["apiErrorString"])
-            if contributors['apiErrorCode'] in [1, 2, 7, 10]:
+            if contributors['apiErrorCode'] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
@@ -1614,7 +1614,7 @@ class Chain(models.Model):
         print("{} last    {} {}".format(self, timestampToDate(tsl), tsl))
         print("{} end     {} {}".format(self, timestampToDate(tse), tse))
         if self.cooldown:
-            tse += self.chain * 10
+            tse += self.chain * 6
             print("{} end cd   {} {}".format(self, timestampToDate(tse), tse))
         else:
             self.current = min(self.current, self.chain)
@@ -1936,6 +1936,8 @@ class Chain(models.Model):
                     nWRA[3] = max(att.chain, nWRA[3])
 
                     if att.chain in BONUS_HITS:
+                        # don't add bonus as hist in attackers[attackerID][1]
+                        # because it's already accounded for in the report
                         attackers[attackerID][12] += 1
                         r = getBonusHits(att.chain, att.timestamp_ended)
                         # print('{} bonus {}: {} respects'.format(self, att.chain, r))
@@ -2121,7 +2123,7 @@ class Chain(models.Model):
 
         # otherwise return progress based on elapsed time in CD
         if self.cooldown:
-            return int(100 * (self.last - self.end) / (10 * max(self.chain, 1)))
+            return int(100 * (self.last - self.end) / (6 * max(self.chain, 1)))
         else:
             return 0
 

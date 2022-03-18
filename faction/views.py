@@ -654,7 +654,7 @@ def chains(request):
                 if apichains is not None:
                     for k, v in req.get("chains", dict({})).items():
                         old = tsnow() - int(v['end']) > faction.getHist("chains")
-                        new = tsnow() - int(v['end']) < v['chain'] * 10  # wait end of live chain cooldown
+                        new = tsnow() - int(v['end']) < v['chain'] * 6  # wait end of live chain cooldown
 
                         if v['chain'] < faction.hitsThreshold or old or new:
                             chains.filter(tId=k).delete()
