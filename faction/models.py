@@ -1606,7 +1606,7 @@ class Chain(models.Model):
 
         # compute last ts
         lastAttack = self.attackchain_set.order_by("-timestamp_ended").first()
-        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_ended, self.last)
+        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_started, self.last)
         self.last = tsl
 
         print("{} live    {}".format(self, self.live))
@@ -1655,7 +1655,7 @@ class Chain(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "chain,attacks,timestamp&from={}&to={}".format(tsl, tse)
+            selection = "chain,attacks,timestamp&from={}&to={}".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull attacks for chain report"
             key.lastPulled = tsnow()
@@ -1701,7 +1701,7 @@ class Chain(models.Model):
                 if id not in apiAttacks:
                     n += 1
                     apiAttacks[id] = attack
-                    tsl = max(tsl, attack["timestamp_ended"])
+                    tsl = max(tsl, attack["timestamp_started"])
 
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
@@ -1728,12 +1728,12 @@ class Chain(models.Model):
         newEntry = 0
         batch = AttackChain.objects.bulk_operation()
         for k, v in apiAttacks.items():
-            ts = int(v["timestamp_ended"])
+            ts = int(v["timestamp_started"])
             tsl = max(tsl, ts)
 
             # probably because of cache
-            before = int(v["timestamp_ended"]) - self.last
-            after = int(v["timestamp_ended"]) - tse
+            before = int(v["timestamp_started"]) - self.last
+            after = int(v["timestamp_started"]) - tse
             if before < 0 or after > 0:
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
@@ -2342,8 +2342,8 @@ class AttacksReport(models.Model):
         tse = self.end
 
         # compute last ts
-        lastAttack = self.attackreport_set.order_by("-timestamp_ended").first()
-        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_ended, self.last)
+        lastAttack = self.attackreport_set.order_by("-timestamp_started").first()
+        tsl = self.start if lastAttack is None else max(lastAttack.timestamp_started, self.last)
         self.last = tsl
 
         print("{} live {}".format(self, self.live))
@@ -2357,7 +2357,7 @@ class AttacksReport(models.Model):
             weekAgo = tsnow() - week
             self.computing = False
             self.crontab = 0
-            # self.attackreport_set.filter(timestamp_ended__gt=weekAgo).delete()
+            # self.attackreport_set.filter(timestamp_started__gt=weekAgo).delete()
             self.state = -7
             self.save()
             return -7
@@ -2437,7 +2437,7 @@ class AttacksReport(models.Model):
                 if id not in apiAttacks:
                     n += 1
                     apiAttacks[id] = attack
-                    tsl = max(tsl, attack["timestamp_ended"])
+                    tsl = max(tsl, attack["timestamp_started"])
 
             print(f'{self}\t adding {n} attacks')
             print(f'{self}\t last time {timestampToDate(tsl)}')
@@ -2460,11 +2460,11 @@ class AttacksReport(models.Model):
         newEntry = 0
         batch = AttackReport.objects.bulk_operation()
         for k, v in apiAttacks.items():
-            ts = int(v["timestamp_ended"])
+            ts = int(v["timestamp_started"])
 
             # probably because of cache
-            before = int(v["timestamp_ended"]) - self.last
-            after = int(v["timestamp_ended"]) - tse
+            before = int(v["timestamp_started"]) - self.last
+            after = int(v["timestamp_started"]) - tse
             if before < 0 or after > 0:
                 print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
