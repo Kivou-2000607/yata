@@ -98,7 +98,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
               <div class="nav-link yt-main-link">
                   {% if player.tId > 0 %}
                     <a class="valid" href="{% url 'player:index' %}" title="Faction"><b><i class="fas fa-home"></i>&nbsp;Home</b></a>
-                    <span class="d-none d-md-block">{{player.name}}</span>
+                    <span class="d-none d-md-block">{% key_access_html player.key_level %} {{player.name}}</span>
                   {% else %}
                     <span class="neutral" title="Home"><b><i class="fas fa-home"></i>&nbsp;Home</b></span>
                     <span class="d-none d-md-block">closed</span>

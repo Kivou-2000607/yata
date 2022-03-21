@@ -58,11 +58,6 @@ def filedate():
     now = datetime.datetime.utcnow()
     return f'{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}'
 
-def isProxyKey(key):
-    # return True if isinstance(key, str) and len(key) == 32 else False
-    return False
-
-
 
 def apiCall(section, id, selections, key, sub=None, verbose=False):
     from setup.models import ApiCallLog
@@ -137,15 +132,9 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
 
 
 def apiCallError(err):
-    if err.get("proxy", False):
-        # if err["proxy_code"] == 1 or err["proxy_code"] == 2:
-        return {"apiError": f'Proxy error {err["proxy_code"]}: {err["proxy_error"]}',
-                "apiErrorString": err["proxy_error"],
-                "apiErrorCode": int(err["code"])}  # send API code instead of proxy code to have same behavior
-    else:
-        return {"apiError": "API error {}: {}.".format(err["error"]["code"], err["error"]["error"]),
-                 "apiErrorString": err["error"]["error"],
-                 "apiErrorCode": int(err["error"]["code"])}
+    return {"apiError": "API error {}: {}.".format(err["error"]["code"], err["error"]["error"]),
+             "apiErrorString": err["error"]["error"],
+             "apiErrorCode": int(err["error"]["code"])}
 
 
 def timestampToDate(timestamp, fmt=False):

@@ -65,7 +65,19 @@ def index(request):
                 item_list.append(item)
             items.append((tType, item_list))
 
-        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
+        context = {
+            "player": player,
+            'list': json.loads(player.bazaarList),
+            "bazaarcat": True,
+            "allItemsOnMarket": items,
+            "view": {
+                "refreshType": True,
+                "timer": True,
+                "hideType": True,
+                "loopType": True
+                },
+            "keyLevelRequired": 2
+            }
         if error:
             context.update(error)
         return render(request, 'bazaar.html', context)
@@ -101,7 +113,60 @@ def custom(request):
                 item_list.append(item)
             items.append(('Custom', item_list))
 
-            context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+            context = {
+                "player": player,
+                'list': json.loads(player.bazaarList),
+                "bazaarcat": True,
+                "allItemsOnMarket": items,
+                "view": {"refreshType": True, "timer": True, "loopType": True},
+                "keyLevelRequired": 2
+            }
+            if error:
+                context.update(error)
+            page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+            return render(request, page, context)
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+def my(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session.get("player", {}).get("tId", -1))
+
+
+            # get/update inventory
+            inventory = player.getInventory(force=True)
+            print(inventory)
+            error = inventory if 'apiError' in inventory else False
+
+            # get items
+            itemsOnMarket = Item.objects.filter(tId__in=inventory.get("bazaar", {})).order_by('tName')
+            tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
+            items = []
+
+            # build item list
+            for tType in tTypes:
+                item_list = []
+                for item in itemsOnMarket.filter(tType=tType):
+                    item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
+                    item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
+                    item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
+                    item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
+                    item.stock = item.stockI + item.stockB + item.stockD
+                    item_list.append(item)
+                items.append((tType, item_list))
+
+            context = {
+                "player": player,
+                'list': json.loads(player.bazaarList),
+                "bazaarcat": True,
+                "allItemsOnMarket": items,
+                "view": {"refreshType": True, "timer": True, "summaryByType": True, "loopType": True},
+                "keyLevelRequired": 2
+            }
             if error:
                 context.update(error)
             page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
@@ -138,7 +203,14 @@ def default(request):
                 item_list.append(item)
             items.append((tType, item_list))
 
-        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True}}
+        context = {
+            "player": player,
+            'list': json.loads(player.bazaarList),
+            "bazaarcat": True,
+            "allItemsOnMarket": items,
+            "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True},
+            "keyLevelRequired": 2
+        }
         if error:
             context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
@@ -251,7 +323,14 @@ def sets(request):
             set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
 
 
-        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}}
+        context = {
+            "player": player,
+            'list': json.loads(player.bazaarList),
+            "bazaarcat": True,
+            "sets": sets,
+            "view": {"refreshType": True, "timer": True, "loopSets": True},
+            "keyLevelRequired": 2
+        }
         if error:
             context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
@@ -286,7 +365,14 @@ def all(request):
                 item_list.append(item)
             items.append((tType, item_list))
 
-        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}}
+        context = {
+            "player": player,
+            'list': json.loads(player.bazaarList),
+            "bazaarcat": True,
+            "allItemsOnMarket": items,
+            "view": {"hideType": True, "loopType": True},
+            "keyLevelRequired": 2
+        }
         if error:
             context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
@@ -328,7 +414,14 @@ def top10(request):
             item_list.append(item)
         items.append(('Sell', item_list))
 
-        context = {"player": player, 'list': json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"refreshType": True, "timer": True, "loopType": True}}
+        context = {
+            "player": player,
+            'list': json.loads(player.bazaarList),
+            "bazaarcat": True,
+            "allItemsOnMarket": items,
+            "view": {"refreshType": True, "timer": True, "loopType": True},
+            "keyLevelRequired": 2
+        }
         if error:
             context.update(error)
         page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"

@@ -557,3 +557,18 @@ body.dark header svg.yata .yata-stroke-other {
 body.dark header svg.yata .yata-fill {
 	fill: #fff;
 }
+
+
+
+.key-access {
+	cursor: help;
+}
+.key-access-min {
+	color: var(--key-access-min)!important;
+}
+.key-access-lim {
+	color: var(--key-access-lim)!important;
+}
+.key-access-ful {
+	color: var(--key-access-ful)!important;
+}

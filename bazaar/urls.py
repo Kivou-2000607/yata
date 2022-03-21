@@ -6,6 +6,7 @@ app_name = "bazaar"
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
     re_path(r'^default/$', views.default, name='default'),
+    re_path(r'^my/$', views.my, name='my'),
     re_path(r'^custom/$', views.custom, name='custom'),
     re_path(r'^sets/$', views.sets, name='sets'),
     re_path(r'^all/$', views.all, name='all'),

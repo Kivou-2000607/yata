@@ -162,14 +162,15 @@ def supervise(request, shareId=False):
                 company.effectiveness_ws_act += employee.effectiveness_working_stats
 
                 ws_eff_matrix.append(ws_eff_matrix_row)
+
             try:
                 ws_eff_matrix = numpy.array(ws_eff_matrix)
                 row_ind, col_ind = scipy.optimize.linear_sum_assignment(ws_eff_matrix, maximize=True)
                 company.effectiveness_ws_max = round(ws_eff_matrix[row_ind, col_ind].sum())
                 company.effectiveness_ws_err = round(100 * (company.effectiveness_ws_act)/company.effectiveness_ws_max)
                 company.employees_suggestion = [[list(employees)[i].name, list(employees)[i].tId, positions[j].name, ws_eff_matrix[i, j], list(employees)[i].effectiveness_working_stats] for i, j in zip(row_ind, col_ind)]
+
             except BaseException as e:
-                print(e)
                 company.effectiveness_ws_max = 0
                 company.effectiveness_ws_err = 0
                 company.employees_suggestion = []
@@ -250,7 +251,6 @@ def supervise(request, shareId=False):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
 
 def manageCompany(request):
     # try:

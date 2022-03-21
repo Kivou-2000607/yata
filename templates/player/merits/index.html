@@ -167,7 +167,9 @@ $( document ).ready(function() {
 </script>
 
 {% if apiErrorSub %}
-    <p class="error"><i class="fas fa-skull-crossbones fa-icon-inline"></i>{{apiErrorSub}}</p>
+    <p class="error mb-0"><i class="fas fa-skull-crossbones"></i>
+      {{apiErrorSub}}
+    </p>
 {% else %}
 
 <div class="table-responsive">

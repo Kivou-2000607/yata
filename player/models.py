@@ -26,10 +26,6 @@ import time
 
 from yata.handy import apiCall
 from yata.handy import tsnow
-from yata.handy import isProxyKey
-# from awards.functions import updatePlayerAwards
-# from faction.models import Faction
-# from awards.models import AwardsData
 
 
 SECTION_CHOICES = (
@@ -111,6 +107,15 @@ class Player(models.Model):
     activateNotifications = models.BooleanField(default=False)
     notifications = models.TextField(default="{}")
 
+    # key access level
+    # -1: no keys
+    # 0: key error or unkown level
+    # 1: Public
+    # 2: Minimal
+    # 3: Limited
+    # 4: Full
+    key_level = models.IntegerField(default=0)
+
     def save(self, *args, **kwargs):
         # add to cache
         cache.set(f'player-by-id-{self.tId}', self, 3600)
@@ -131,7 +136,9 @@ class Player(models.Model):
             return key.value if value else key
 
     def addKey(self, key):
+        print("[player.addKey] start")
         playerKey = self.key_set.first()
+        print(f"[player.addKey] get key {playerKey}")
         if playerKey is None:
             self.key_set.create(value=key, tId=self.tId)
         else:
@@ -139,8 +146,57 @@ class Player(models.Model):
             playerKey.save()
         # temporary for the bot...
         self.apikey = key
+        self.updateKeyLevel()
         self.save()
         return
+
+    def updateKeyLevel(self):
+        # get API key
+        key = self.key_set.first()
+
+        if key is None:
+            self.key_level = -1
+            return
+
+        # get api Key Info
+        key_info = apiCall("key", "", "info", key.value)
+
+        if 'apiError' in key_info:
+            # 0 => Unknown error : Unhandled error, should not occur.
+            # 1 => Key is empty : Private key is empty in current request.
+            # 2 => Incorrect Key : Private key is wrong/incorrect format.
+            # 3 => Wrong type : Requesting an incorrect basic type.
+            # 4 => Wrong fields : Requesting incorrect selection fields.
+            # 5 => Too many requests : Requests are blocked for a small period of time because of too many requests per user (max 100 per minute).
+            # 6 => Incorrect ID : Wrong ID value.
+            # 7 => Incorrect ID-entity relation : A requested selection is private (For example, personal data of another user / faction).
+            # 8 => IP block : Current IP is banned for a small period of time because of abuse.
+            # 9 => API disabled : Api system is currently disabled.
+            # 10 => Key owner is in federal jail : Current key can't be used because owner is in federal jail.
+            # 11 => Key change error : You can only change your API key once every 60 seconds.
+            # 12 => Key read error : Error reading key from Database.
+            # 13 => The key is temporarily disabled due to owner inactivity : The key owner hasn't been online for more than 7 days.
+            # 14 => Daily read limit reached : Too many records have been pulled today by this user from our cloud services.
+            # 15 => Temporary error : An error code specifically for testing purposes that has no dedicated meaning.
+            # 16 => Access level of this key is not high enough : A selection is being called of which this key does not have permission to access.
+
+            if key_info["apiErrorCode"] in [1, 2, 10]:
+                print(f'[updateKeyLevel] {self}: delete key (error code {key_info["apiErrorCode"]})')
+                self.key_level = -1
+                key.delete()
+                return
+
+            self.key_level = 0
+            key.access_level = 0
+            key.access_type = "Unkown"
+
+        else:
+            self.key_level = key_info["access_level"]
+            key.access_level = key_info["access_level"]
+            key.access_type = key_info["access_type"]
+
+        key.save()
+        self.save()
 
     def update_discord_id(self):
         error = False
@@ -154,14 +210,6 @@ class Player(models.Model):
 
         return error
 
-    def usingProxyKey(self):
-        key = self.getKey()
-        # test in case getKey return False
-        if isinstance(key, str):
-            return isProxyKey(self.getKey())
-        else:
-            False
-
     def getInventory(self, force=False):
         if self.tId < 0:
             return {}
@@ -172,9 +220,12 @@ class Player(models.Model):
             print("[getInventory] return cached inventory")
             return inventory
 
-        print("[getInventory] build inventory")
-
         inventory = {}
+        if self.key_level < 2:
+            print("[getInventory] key access not high enough")
+            return inventory
+
+        print("[getInventory] build inventory")
         invtmp = apiCall("user", "", "inventory,display,bazaar", self.getKey())
         for k, v in invtmp.items():
             if v is None:
@@ -426,6 +477,10 @@ class Key(models.Model):
     useSelf = models.BooleanField(default=True)
     useFact = models.BooleanField(default=True)
 
+    # access
+    access_level = models.IntegerField(default=0)
+    access_type = models.CharField(default="Unkown", max_length=64)
+
     def __str__(self):
         return "Key of {}".format(self.player)
 
@@ -439,115 +494,8 @@ class Error(models.Model):
 
 
 class TmpReq(models.Model):
+    # needed for "caching" awards
     player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
     timestamp = models.IntegerField(default=0)
     type = models.CharField(default="None", max_length=16)
     req = models.TextField(default="{}")
-
-
-class TrainFull(models.Model):
-    # for debug
-    id_key = models.CharField(default="x", max_length=32)
-    timestamp = models.IntegerField(default=0)
-    time_diff = models.IntegerField(default=0)
-
-    # happy
-    happy_before = models.IntegerField(default=0)
-    happy_after = models.IntegerField(default=0)
-    happy_delta = models.IntegerField(default=0)
-
-    # energy
-    energy_used = models.IntegerField(default=0)
-    single_train = models.IntegerField(default=False)
-
-    # stat
-    stat_type = models.CharField(default="None", max_length=16)
-    stat_before = models.FloatField(default=0.0)
-    stat_after = models.FloatField(default=0.0)
-    stat_delta = models.FloatField(default=0.0)
-
-    # gym
-    gym_id = models.IntegerField(default=1)
-    gym_dot = models.IntegerField(default=0)
-
-    # gains perks
-    perks_faction = models.IntegerField(default=0)
-    perks_property = models.IntegerField(default=0)
-    perks_education_stat = models.IntegerField(default=0)
-    perks_education_all = models.IntegerField(default=0)
-    perks_company = models.IntegerField(default=0)
-    perks_company_happy_red = models.IntegerField(default=0)
-
-    # books
-    perks_gym_book = models.IntegerField(default=0)
-    perks_happy_book = models.IntegerField(default=0)
-
-    # error
-    error = models.FloatField(default=0.0)
-
-    # tmp for debug
-    req = models.TextField(default="{}")
-
-    def stat_before_cap(self):
-        return min(self.stat_before, 50000000)
-
-    def stat_after_cap(self):
-        return min(self.stat_after, 50000000)
-
-    def happy(self):
-        return self.happy_before
-
-    def bonus(self, type="x"):
-        if type == "+":
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat + self.perks_education_all, self.perks_company, self.perks_gym_book]
-        else:
-            perks_list = [self.perks_faction, self.perks_property, self.perks_education_stat, self.perks_education_all, self.perks_company, self.perks_gym_book]
-        b_perks = [1 + p / 100. for p in perks_list]
-        return numpy.prod(b_perks) - 1.
-
-    def gym(self):
-        return self.gym_dot / 10.
-
-    def vladar(self):
-        # coefficients
-        a = 0.0000003480061091
-        b = 250.
-        c = 0.000003091619094
-        d = 0.0000682775184551527
-        e = -0.0301431777
-
-        # states coefficients
-        alpha = (a * numpy.log(self.happy() + b) + c) * (1. + self.bonus()) * self.gym()
-        beta = (d * (self.happy() + b) + e) * (1. + self.bonus()) * self.gym()
-
-        # stat cap
-        stat_cap = min(self.stat_before, 50000000.0)
-
-        return (alpha * stat_cap + beta) * self.energy_used
-
-    def vladar_diff(self):
-        return self.stat_delta - self.vladar()
-
-    def normalized_gain(self, type="x"):
-        return self.stat_delta / (self.gym() * (1. + self.bonus(type=type)) * float(self.energy_used))
-
-    def current(self):
-        # stat cap
-        stat_cap = min(self.stat_before, 50000000.0)
-
-        # normalization
-        norm = (1. + self.bonus()) * self.gym() * self.energy_used / 200000.
-        happy_func = stat_cap * numpy.round(1 + 0.07 * numpy.round(numpy.log(1. + self.happy() / 250.), decimals=4), decimals=4) + 8 * numpy.power(self.happy(), 1.05)
-        return happy_func * norm
-
-    def current_diff(self):
-        return self.stat_delta - self.current()
-
-    def set_single_train(self):
-        from yata.gyms import gyms
-        self.single_train = gyms.get(self.gym_id, {"energy": 0})["energy"] == self.energy_used
-        self.save()
-
-    def set_error(self):
-        self.error = abs(self.current_diff())
-        self.save()

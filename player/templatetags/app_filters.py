@@ -672,3 +672,34 @@ def faction_link(faction_id, faction_name="Faction", short=False):
         return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name}</a>')
     else:
         return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name} [{faction_id}]</a>')
+
+@register.simple_tag(name='key_access_html')
+def key_access_html(access_level):
+    if access_level == 1:
+        tag = "pub"
+    elif access_level == 2:
+        tag = "min"
+    elif access_level == 3:
+        tag = "lim"
+    elif access_level == 4:
+        tag = "ful"
+    else:
+        tag = "unk"
+
+    return format_html(f'<i title="API key level: {key_access(access_level)}" class="fas fa-key key-access key-access-{tag}"></i>')
+
+
+@register.simple_tag(name='key_access')
+def key_access(access_level):
+    if access_level == 1:
+        return "Public Only"
+    elif access_level == 2:
+        return "Minimal Access"
+    elif access_level == 3:
+        return "Limited Access"
+    elif access_level == 4:
+        return "Full Access"
+    elif access_level == -1:
+        return "No keys"
+    else:
+        return "Unknown"

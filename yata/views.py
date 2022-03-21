@@ -48,7 +48,6 @@ def index(request):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            # isProxy = isProxyKey(player.getKey())
 
             # shouldn't happen
             if player is None:
@@ -70,7 +69,6 @@ def index(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
 
 def login(request):
     try:
@@ -128,9 +126,7 @@ def login(request):
             # return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:
-        context = {'apiError': e}
-        return render(request, 'header.html', context)
-
+        return returnError(exc=e, session=request.session)
 
 def logout(request):
     try:
@@ -155,7 +151,6 @@ def update_session(request):
         request.session.modified = True
 
     return render(request, 'yata/toggle-colors.html')
-
 
 def delete(request):
     try:

@@ -17,24 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-{% include "yata/key-level.html" %}
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
 
-{% if apiErrorSub %}
-    {% include "yata/error.html" with apiError=apiErrorSub %}
-{% elif apiError %}
-  {% include "yata/error.html" %}
+{% if keyLevelRequired and player.key_level < keyLevelRequired %}
+  <div class="container-fluid p-md-3 p-1 mb-3 module rounded warning">
+      Access level of this key is not high enough to enjoy to full potential of this page.
+      {% key_access keyLevelRequired %} required.
+  </div>
 {% endif %}
-
-{% if view.loopType %}
-    {% include "bazaar/loop-types.html" %}
-{% endif %}
-
-{% if view.loopSets %}
-    {% include "bazaar/loop-sets.html" %}
-{% endif %}
-
-{% if view.abroad %}
-    {% include "bazaar/abroad/index.html" %}
-{% endif %}
-
-{% include "bazaar/tutorial.html" %}

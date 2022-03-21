@@ -12,7 +12,8 @@ class KeyInline(admin.TabularInline):
 
 
 class KeyAdmin(admin.ModelAdmin):
-    list_display = ['player', 'useFact', 'useSelf']
+    list_display = ['player', 'useFact', 'useSelf', 'access_type']
+    list_filter = ['access_type',]
     search_fields = ['player__name', 'tId']
     readonly_fields = ['player', ]
 
@@ -33,10 +34,6 @@ class PlayerAdmin(admin.ModelAdmin):
     def last_action(self, instance):
         return timestampToDate(instance.lastActionTS)
 
-# class NewsAdmin(admin.ModelAdmin):
-#     list_display = ['__str__', 'date', 'type', 'authorName', 'authorId', 'read']
-#     filter_horizontal = ('player',)
-
 
 def clear_message_cache(modeladmin, request, queryset):
     cache.delete("context_processor_message")
@@ -48,10 +45,8 @@ class MessageAdmin(admin.ModelAdmin):
 class DonationAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
-
 class PlayerDataAdmin(admin.ModelAdmin):
     list_display = ['__str__']
-
 
 def fix(modeladmin, request, queryset):
     queryset.update(fixed=True)
@@ -68,35 +63,7 @@ class ErrorAdmin(admin.ModelAdmin):
     def date(self, instance):
         return timestampToDate(instance.timestamp)
 
-def add_gym_book_20(modeladmin, request, queryset):
-    queryset.update(perks_gym_book=20)
-
-
-def add_gym_book_30(modeladmin, request, queryset):
-    queryset.update(perks_gym_book=30)
-
-
-def recompute_error(modeladmin, request, queryset):
-    for q in queryset:
-        q.set_error()
-
-
-def remove_gym_book(modeladmin, request, queryset):
-    queryset.update(perks_gym_book=0)
-
-
-class TrainFullAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'id_key', 'stat_type', 'error', 'single_train', 'timestamp']
-    search_fields = ['id_key', 'pk']
-    list_filter = ('single_train', )
-    actions = [add_gym_book_20, add_gym_book_30, recompute_error, remove_gym_book]
-
-    def diff(self, instance):
-        return instance.current_diff()
-
-
 admin.site.register(Error, ErrorAdmin)
-admin.site.register(TrainFull, TrainFullAdmin)
 admin.site.register(Key, KeyAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Message, MessageAdmin)

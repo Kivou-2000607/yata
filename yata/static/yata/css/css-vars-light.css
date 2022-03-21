@@ -49,6 +49,9 @@
 	--i-online-status-Idle-color: #ff8c00;
 	--select-header-filter-color: #888;
 	--select-header-filter-background-color: #f6f6f6;
+  --key-access-min: #698c00;
+  --key-access-lim: #b28500;
+  --key-access-ful: #d93600;
 
 	/* for players.css */
 	--span-le-background-color: rgba(68,126,155,.7);
