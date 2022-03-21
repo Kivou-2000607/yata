@@ -117,10 +117,14 @@ def updatePlayer(player, i=None, n=None):
         player.save()
         return 0
 
-    # skip if api error (not invalid key)
-    elif 'apiError' in user:
+
+    elif 'apiError' in user: # skip if api error (not invalid key)
         print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey, user["apiError"]))
         player.save()
+        return 0
+
+    elif not player.active:
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> inactive user".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
         return 0
 
     # skip if not active in torn since last update
