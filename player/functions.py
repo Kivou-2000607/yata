@@ -38,6 +38,14 @@ def updatePlayer(player, i=None, n=None):
 
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
+    # set active
+    # player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
+    player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 7
+
+    if not player.active:
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> inactive user".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
+        return 0
+
     if player.tId == -1:
         print("[player.functions.updatePlayer] {}{} action: ignore".format(progress, player.nameAligned()))
         return 0
@@ -92,40 +100,27 @@ def updatePlayer(player, i=None, n=None):
 
     user = apiCall('user', '', ','.join(selection), player.getKey(), verbose=False)
 
-    # set active
-    # player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
-    player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 7
-
     # change to false if error code 2
     player.validKey = False if user.get('apiErrorCode', 0) in [1, 2, 10] else player.validKey
 
     # change to true if fetch result
     player.validKey = True if user.get('name', False) else player.validKey
 
-    # delete key if not valid
-    if not player.validKey:
-        player.key_set.all().delete()
-
     # discrod id
     dId = user.get('discord', {'discordID': ''})['discordID']
     player.dId = 0 if dId in [''] else dId
 
     # skip if not yata active and no valid key
-    if not player.active and not player.validKey:
+    if not player.validKey:
         player.key_set.all().delete()
-        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> delete user".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
+        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> delete keys".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
         # player.delete()
         player.save()
         return 0
 
-
     elif 'apiError' in user: # skip if api error (not invalid key)
         print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey, user["apiError"]))
         player.save()
-        return 0
-
-    elif not player.active:
-        print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> inactive user".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
         return 0
 
     # skip if not active in torn since last update
