@@ -40,8 +40,9 @@ class Command(BaseCommand):
         ts_threshold = tsnow() - 86400
         players = Player.objects.filter(
             validKey=True,
-            active=True,
-            # lastUpdateTS__lt=ts_threshold
+            lastUpdateTS__lt=ts_threshold
+        ).exclude(
+            key_last_code__in=[13]
         ).order_by("lastUpdateTS")
         n = len(players)
         for i, player in enumerate(players):

@@ -115,6 +115,7 @@ class Player(models.Model):
     # 3: Limited
     # 4: Full
     key_level = models.IntegerField(default=0)
+    key_last_code = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
         # add to cache
