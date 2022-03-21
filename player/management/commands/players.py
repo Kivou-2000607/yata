@@ -38,7 +38,11 @@ class Command(BaseCommand):
         # update players info
         print(f"[CRON {logdate()}] START players")
         ts_threshold = tsnow() - 86400
-        players = Player.objects.filter(validKey=True, lastUpdateTS__lt=ts_threshold).order_by("lastUpdateTS")
+        players = Player.objects.filter(
+            validKey=True,
+            active=True,
+            # lastUpdateTS__lt=ts_threshold
+        ).order_by("lastUpdateTS")
         n = len(players)
         for i, player in enumerate(players):
             try:
