@@ -93,7 +93,8 @@ def updatePlayer(player, i=None, n=None):
     user = apiCall('user', '', ','.join(selection), player.getKey(), verbose=False)
 
     # set active
-    player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
+    # player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
+    player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 7
 
     # change to false if error code 2
     player.validKey = False if user.get('apiErrorCode', 0) in [1, 2, 10] else player.validKey
