@@ -43,13 +43,60 @@ def updatePlayer(player, i=None, n=None):
         return 0
 
     # API Calls
-    user = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,discord,weaponexp,hof', player.getKey(), verbose=False)
+    player.updateKeyLevel()
+    if player.key_level == 1:
+        selection = [
+            "personalstats",
+            "profile",
+            "discord"
+        ]
+    elif player.key_level == 2:
+        selection = [
+            "personalstats",
+            "crimes",
+            "education",
+            "workstats",
+            "perks",
+            "gym",
+            "merits",
+            "profile",
+            "medals",
+            "honors",
+            "icons",
+            "bars",
+            "discord",
+            "weaponexp"
+        ]
+    elif player.key_level >= 3:
+        selection = [
+            "personalstats",
+            "crimes",
+            "education",
+            "battlestats",
+            "workstats",
+            "perks",
+            "gym",
+            "networth",
+            "merits",
+            "profile",
+            "medals",
+            "honors",
+            "icons",
+            "bars",
+            "discord",
+            "weaponexp",
+            "hof"
+        ]
+    else:
+        selection = []
+
+    user = apiCall('user', '', ','.join(selection), player.getKey(), verbose=False)
 
     # set active
     player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
 
     # change to false if error code 2
-    player.validKey = False if user.get('apiErrorCode', 0) == 2 else player.validKey
+    player.validKey = False if user.get('apiErrorCode', 0) in [1, 2, 10] else player.validKey
 
     # change to true if fetch result
     player.validKey = True if user.get('name', False) else player.validKey

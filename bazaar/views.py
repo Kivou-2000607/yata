@@ -139,7 +139,6 @@ def my(request):
 
             # get/update inventory
             inventory = player.getInventory(force=True)
-            print(inventory)
             error = inventory if 'apiError' in inventory else False
 
             # get items
