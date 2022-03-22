@@ -201,8 +201,6 @@ class Faction(models.Model):
 
     # members
     membersUpda = models.IntegerField(default=0)
-    memberStatus = models.TextField(default="{}")  # dump all members status
-    memberStatusUpda = models.IntegerField(default=0)
 
     # crimes
     crimesUpda = models.IntegerField(default=0)
@@ -622,16 +620,16 @@ class Faction(models.Model):
         self.nKeys = len(self.getKeys())
         self.save()
 
-    def updateMembers(self, key=None, force=True, indRefresh=False):
+    def updateMembers(self, key=None, force=False, private=False):
         # it's not possible to delete all memebers and recreate the base
         # otherwise the target list will be lost
 
         now = tsnow()
 
-        # don't update if less than 1 hour ago and force is False
-        if not force and (now - self.membersUpda) < 3600:
-            print("{} skip update member".format(self))
-            return self.member_set.all()
+        # don't update if less than 5 minutes and force is False
+        # if not force and (now - self.membersUpda) < 300:
+        #     print("{} skip update member".format(self))
+        #     return self.member_set.all()
 
         # get key if needed
         if key is None or isinstance(key, bool):
@@ -646,115 +644,52 @@ class Faction(models.Model):
         if 'apiError' in membersAPI:
             return membersAPI
 
-        bulk_u_mgr = BulkUpdateManager(['name', 'daysInFaction',
-                                        'shareE', 'energy', 'energyRefillUsed', 'revive', 'drugCD',
-                                        'shareS', 'dexterity', 'speed', 'strength', 'defense',
-                                        'shareN', 'nnb', 'arson', 'singleHitHonors'], chunk_size=100)
+        batch = Member.objects.bulk_operation()
+        players_on_yata = Player.objects.filter(tId__in=membersAPI)
+        for k, v in membersAPI.items():
+
+            defaults = {
+                "name": v["name"],
+                "daysInFaction": v["days_in_faction"],
+                "lastActionStatus": v["last_action"]["status"],
+                "lastAction": v["last_action"]["relative"],
+                "lastActionTS": v["last_action"]["timestamp"]
+            }
+
+            # status
+            for k2, v2 in v['status'].items():
+                defaults[k2] = v2
+
+            # check if player on yata
+            player = players_on_yata.filter(tId=k).first()
+            if player is None:
+                defaults["shareE"] = -1
+                defaults["shareN"] = -1
+                defaults["shareS"] = -1
+            elif player.key_level < 3:
+                defaults["shareE"] = 0
+                defaults["shareN"] = 0
+                defaults["shareS"] = 0
+
+            batch.update_or_create(
+                faction_id=int(self.id),
+                tId=int(k),
+                defaults=defaults
+            )
+
+        if batch.count():
+            batch.run()
 
         membersDB = self.member_set.all()
-        for m in membersAPI:
-            memberDB = membersDB.filter(tId=m).first()
 
-            # faction member already exists
-            if memberDB is not None:
-                # update basics
-                memberDB.name = membersAPI[m]['name']
-                memberDB.daysInFaction = membersAPI[m]['days_in_faction']
-
-                # update status
-                memberDB.updateStatus(**membersAPI[m]['status'])
-                memberDB.updateLastAction(**membersAPI[m]['last_action'])
-
-                # update energy/NNB
-                player = Player.objects.filter(tId=memberDB.tId).first()
-                if player is None:
-                    memberDB.shareE = -1
-                    memberDB.energy = 0
-                    memberDB.energyRefillUsed = False
-                    memberDB.revive = False
-                    memberDB.drugCD = 0
-                    memberDB.shareS = -1
-                    memberDB.dexterity = 0
-                    memberDB.speed = 0
-                    memberDB.strength = 0
-                    memberDB.defense = 0
-                    memberDB.shareN = -1
-                    memberDB.nnb = 0
-                    memberDB.arson = 0
-                    memberDB.singleHitHonors = 0
-
-                else:
-                    # pass from -1 to 1 in case
-                    memberDB.shareN = 1 if memberDB.shareN == -1 else memberDB.shareN
-                    memberDB.shareS = 1 if memberDB.shareS == -1 else memberDB.shareS
-                    memberDB.shareE = 1 if memberDB.shareE == -1 else memberDB.shareE
-                    if indRefresh and (memberDB.shareE or memberDB.shareN or memberDB.shareS):
-                        req = apiCall("user", "", "perks,bars,crimes", key=player.getKey())
-                        memberDB.updateEnergy(key=player.getKey(), req=req)
-                        memberDB.updateNNB(key=player.getKey(), req=req)
-                        memberDB.updateStats(key=player.getKey(), req=req)
-
-                # memberDB.save()
-                bulk_u_mgr.add(memberDB)
-
-            # member exists but from another faction
-            elif Member.objects.filter(tId=m).first() is not None:
-                memberTmp = Member.objects.filter(tId=m).first()
-
-                skip_manager = memberTmp != self  # skip the buld manage if different faction (doesn't seem to save otherwise)
-
-                memberTmp.faction = self
-                memberTmp.name = membersAPI[m]['name']
-                memberTmp.daysInFaction = membersAPI[m]['days_in_faction']
-                memberTmp.updateStatus(**membersAPI[m]['status'])
-                memberTmp.updateLastAction(**membersAPI[m]['last_action'])
-
-                # keep same sharing options
-                player = Player.objects.filter(tId=memberTmp.tId).first()
-                memberTmp.shareE = -1 if player is None else memberTmp.shareE
-                memberTmp.shareN = -1 if player is None else memberTmp.shareN
-                memberTmp.shareS = -1 if player is None else memberTmp.shareS
-                memberTmp.energy = 0
-                memberTmp.energyRefillUsed = False
-                memberTmp.revive = False
-                memberTmp.drugCD = 0
-                memberTmp.nnb = 0
-                memberTmp.arson = 0
-                memberTmp.dexterity = 0
-                memberTmp.strength = 0
-                memberTmp.speed = 0
-                memberTmp.defense = 0
-                memberTmp.singleHitHonors = 0
-
-                if skip_manager:
-                    memberTmp.save()
-                else:
-                    bulk_u_mgr.add(memberTmp)
-
-            # new member
-            else:
-                try:  # do a try except to avoid: psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "faction_member_tId_key"
-                    # print('[VIEW members] member {} [{}] created'.format(membersAPI[m]['name'], m))
-                    player = Player.objects.filter(tId=m).first()
-                    memberNew = self.member_set.create(
-                        tId=m, name=membersAPI[m]['name'],
-                        lastAction=membersAPI[m]['last_action']['relative'],
-                        lastActionTS=membersAPI[m]['last_action']['timestamp'],
-                        daysInFaction=membersAPI[m]['days_in_faction'],
-                        shareE=-1 if player is None else 1,
-                        shareS=-1 if player is None else 1,
-                        shareN=-1 if player is None else 1)
-                    memberNew.updateStatus(**membersAPI[m]['status'])
-                    memberNew.updateLastAction(**membersAPI[m]['last_action'])
-                except BaseException:
-                    pass
-
-        bulk_u_mgr.done()
-
-        # delete old members
+        # delete old members and update private data
         for m in membersDB:
             if membersAPI.get(str(m.tId)) is None:
                 m.delete()
+                continue
+
+            if private:
+                m.updatePrivateData()
 
         # remove AA keys from old members
         for key in self.masterKeys.all():
@@ -763,32 +698,8 @@ class Faction(models.Model):
 
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.membersUpda = now
-        self.memberStatusUpda = now
         self.save()
-        return self.member_set.all()
-
-    def updateMemberStatus(self, key=None):
-        # get now and delta update
-        now = tsnow()
-        delta = now - self.memberStatusUpda
-        if delta > 30:
-            key = self.getKey() if key is None else key
-            membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
-            key.lastPulled = now
-            key.reason = "Update member status"
-            key.save()
-
-            if 'apiError' in membersAPI:
-                return json.loads(self.memberStatus)
-
-            # print("update members status", delta)
-            self.memberStatus = json.dumps(membersAPI)
-            self.memberStatusUpda = now
-            self.save()
-        # else:
-        #     print("skip update members status", delta)
-
-        return json.loads(self.memberStatus)
+        return membersDB
 
     def getLogs(self, page=1, n_logs=7):
         logsAll = self.log_set.order_by("timestamp").all()
@@ -1348,41 +1259,10 @@ class Member(models.Model):
     speed = models.BigIntegerField(default=0)
     strength = models.BigIntegerField(default=0)
 
+    objects = BulkManager()
+
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
-
-    def updateStatus(self, description=None, details=None, state=None, color=None, until=None, save=False, **args):
-        # the **args is here to hade extra keys not needed
-        if description is not None:
-            splt = description.split("data-time=")
-            if len(splt) > 1:
-                try:
-                    ts = int(splt[1].split(">")[0])
-                    description = "{} {:.1f} minutes".format(cleanhtml(description), ts / 60)
-                except BaseException as e:
-                    description = "{} ?? minutes".format(cleanhtml(description))
-            self.description = description
-        if details is not None:
-            self.details = details
-        if state is not None:
-            self.state = state
-        if color is not None:
-            self.color = color
-        if until is not None:
-            self.until = until
-        if save:
-            self.save()
-
-    def updateLastAction(self, status=None, timestamp=None, relative=None, save=False, **args):
-        # the **args is here to hade extra keys not needed
-        if status is not None:
-            self.lastActionStatus = status
-        if relative is not None:
-            self.lastAction = relative
-        if timestamp is not None:
-            self.lastActionTS = timestamp
-        if save:
-            self.save()
 
     def updateEnergy(self, key=None, save=False, req=False):
         error = False
@@ -1518,6 +1398,38 @@ class Member(models.Model):
             self.save()
 
         return error
+
+    def updatePrivateData(self):
+        player = Player.objects.filter(tId=self.tId).first()
+        if player is None:
+            self.shareE = -1
+            self.shareN = -1
+            self.shareS = -1
+        elif player.key_level < 3:
+            self.shareE = 0
+            self.shareN = 0
+            self.shareS = 0
+        else:
+            key = player.getKey()
+            selections = [
+                "perks",
+                "bars",
+                "crimes",
+                "battlestats",
+                "honors",
+                "refills",
+                "cooldowns"
+            ]
+            req = apiCall("user", "", ",".join(selections), key=player.getKey())
+            self.updateEnergy(req=req)
+            self.updateStats(req=req)
+            self.updateNNB(req=req)
+            self.updateHonors(req=req)
+            self.updateHonors(req=req)
+        self.save()
+
+    def shareData(self):
+        return self.shareE > 0 or self.shareN > 0 or self.shareS > 0
 
     def getTotalStats(self):
         return self.dexterity + self.speed + self.strength + self.defense

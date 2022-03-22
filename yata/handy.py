@@ -319,3 +319,15 @@ def json_context(context):
         # else:
         #     print(k, "?", type(v))
     return context
+
+
+def clean_html_status_description(description):
+    splt = description.split("data-time=")
+    if len(splt) > 1:
+        try:
+            ts = int(splt[1].split(">")[0])
+            description = f"{cleanhtml(description)} {ts / 60:.1f} minutes"
+        except BaseException as e:
+            description = f"{cleanhtml(description)} ?? minutes"
+
+    return description

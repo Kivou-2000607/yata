@@ -55,8 +55,11 @@ along with yata. If not, see
           <div class="px-2">
             <a href="{% url 'faction:membersExport' %}" target="_blank"><i class="fas fa-file-export" title="Export members to CSV"></i>&nbsp;Export members</a>
           </div>
+          <div class="px-2 yt-cat-link">
+            <a id="" href="{% url 'faction:members' %}" title="Refresh members status"><i class="fas fa-users"></i>&nbsp;Update members</a>
+          </div>
           <div class="px-2">
-            <a id="member-refresh" href="" title="Refresh status"><i class="fas fa-sync-alt"></i>&nbsp;Refresh status</a>
+            <a id="member-refresh" href="" title="Refresh members private data"><i class="fas fa-user"></i>&nbsp;Update shared data</a>
           </div>
         </div>
     </h2>
@@ -99,7 +102,7 @@ along with yata. If not, see
             </thead>
             <tbody>
                 {% for member in members %}
-                <tr class="faction-member-refresh" data-val="{{member.tId}}">
+                <tr class="{% if member.shareData %}faction-member-refresh{% endif %}" data-val="{{member.tId}}">
                     {% include "faction/members/line.html" %}
                 </tr>
                 {% endfor %}
@@ -107,7 +110,6 @@ along with yata. If not, see
         </table>
       </div>
         <p class="update-info mb-0">Last update of the list: {{faction.membersUpda|ts2date}}</p>
-        <p class="update-info mb-0">Last update of the members status: {{faction.memberStatusUpda|ts2date}}</p>
 
     </div>
 </div>

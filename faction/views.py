@@ -458,13 +458,11 @@ def members(request):
 
             # update chains if AA
             key = player.getKey(value=False)
-            members = faction.updateMembers(key=key, force=False)
+            members = faction.updateMembers(key=key, force=True)
             error = False
             if 'apiError' in members:
                 error = members
-
-            # get members
-            members = faction.member_set.all()
+                members = faction.member_set.all()
 
             context = {'player': player, 'factioncat': True, 'faction': faction, 'members': members, 'view': {'members': True}}
             if error:
@@ -493,9 +491,6 @@ def updateMember(request):
             if faction is None:
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Faction {} not found'.format(factionId)})
 
-            # update members status for the faction (skip < 30s)
-            membersAPI = faction.updateMemberStatus(key=player.getKey(value=False))
-
             # get member id
             memberId = request.POST.get("memberId", 0)
 
@@ -505,31 +500,37 @@ def updateMember(request):
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Member {} not found in faction {}'.format(memberId, factionId)})
 
             # update status and last action
-            try:
-                status = membersAPI.get(memberId, dict({})).get("status", {})
-                member.updateStatus(**status)
-                lastAction = membersAPI.get(memberId, dict({})).get("last_action", {})
-                member.updateLastAction(**lastAction)
-            except BaseException as e:
-                return render(request, 'faction/members/line.html', {'errorMessage': 'Error with member {}: {}'.format(memberId, e)})
+            r = apiCall("user", memberId, "profile", key=player.getKey())
+            if 'apiError' in r:
+                return render(
+                    request,
+                    'faction/members/line.html',
+                    {
+                        'errorMessage': f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'
+                    }
+                )
 
-            # update private data
-            tmpP = Player.objects.filter(tId=memberId).first()
-            if tmpP is None:
-                member.shareE = -1
-                member.shareN = -1
-                member.shareS = -1
-                member.save()
-            elif member.shareE > 0 or member.shareN > 0 or member.shareS > 0:
-                req = apiCall("user", "", "perks,bars,crimes,battlestats,honors,refills,cooldowns", key=tmpP.getKey())
-                member.updateEnergy(key=tmpP.getKey(), req=req)
-                member.updateStats(key=tmpP.getKey(), req=req)
-                member.updateNNB(key=tmpP.getKey(), req=req)
-                member.updateHonors(key=tmpP.getKey(), req=req)
-            elif member.singleHitHonors < 3:
-                req = apiCall("user", "", "honors", key=tmpP.getKey())
-                member.updateHonors(key=tmpP.getKey(), req=req)
+            update = {}
+            # update basic
+            update["name"] = r["name"]
+            update["daysInFaction"] = r["faction"]["days_in_faction"]
+            # update status
+            update["description"] = clean_html_status_description(r["status"]["description"])
+            update["details"] = r["status"]["details"]
+            update["state"] = r["status"]["state"]
+            update["color"] = r["status"]["color"]
+            update["until"] = r["status"]["until"]
+            # update last action
+            update["lastActionStatus"] = r["last_action"]["status"]
+            update["lastAction"] = r["last_action"]["relative"]
+            update["lastActionTS"] = r["last_action"]["timestamp"]
+
+            for k, v in update.items():
+                setattr(member, k, v)
+
             member.save()
+
+            member.updatePrivateData()
 
             context = {"player": player, "member": member}
             return render(request, 'faction/members/line.html', context)

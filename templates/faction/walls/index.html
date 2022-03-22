@@ -146,7 +146,6 @@ This file is part of yata.
     </div>
 </h2>
 <div class="container-fluid p-md-3 p-1 mb-3 module">
-    <p>In order to add a wall report, install this <a href="{% url_userscript 'walls' %}" target="_blank"> userscript</a> and go to the an ingame report page.</p>
     {% if wallHistory|length %}
     <h3>Previous walls</h3>
     {% for factionId, factionDic in wallHistory %}
@@ -167,4 +166,5 @@ This file is part of yata.
       </div>
     {% endfor %}
     {% endif %}
+    <p class="mb-0">In order to add a wall report, install this <a href="{% url_userscript 'walls' %}" target="_blank"> userscript</a> and go to the an ingame report page.</p>
 </div>

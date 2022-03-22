@@ -123,12 +123,6 @@ def updatePlayer(player, i=None, n=None):
         player.save()
         return 0
 
-    # skip if not active in torn since last update
-    # elif player.lastUpdateTS > int(user.get("last_action")["timestamp"]):
-    #     print("[player.functions.updatePlayer] {}{} skip since not active since last update".format(progress, player.nameAligned()))
-    #     return 0
-
-    # do update
     else:
         player.key_last_code = 0
         print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
