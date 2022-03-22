@@ -644,8 +644,17 @@ class Faction(models.Model):
         if 'apiError' in membersAPI:
             return membersAPI
 
+
         batch = Member.objects.bulk_operation()
         players_on_yata = Player.objects.filter(tId__in=membersAPI)
+
+        # set members newly on yata from -1 to 0
+        id_on_yata = [p.tId for p in players_on_yata]
+        p = self.member_set.filter(shareE=-1).filter(tId__in=id_on_yata).update(
+            shareE=0,
+            shareN=0,
+            shareS=0
+        )
         for k, v in membersAPI.items():
 
             defaults = {
@@ -670,6 +679,7 @@ class Faction(models.Model):
                 defaults["shareE"] = 0
                 defaults["shareN"] = 0
                 defaults["shareS"] = 0
+
 
             batch.update_or_create(
                 faction_id=int(self.id),

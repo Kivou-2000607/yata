@@ -102,7 +102,7 @@ along with yata. If not, see
             </thead>
             <tbody>
                 {% for member in members %}
-                <tr class="{% if member.shareData %}faction-member-refresh{% endif %}" data-val="{{member.tId}}">
+                <tr class="faction-member-refresh {% if member.shareData %}faction-member-refresh-private{% endif %}" data-val="{{member.tId}}">
                     {% include "faction/members/line.html" %}
                 </tr>
                 {% endfor %}

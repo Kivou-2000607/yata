@@ -39,7 +39,7 @@ $(document).on("click", ".faction-member-shareN", e => {
 // refresh all members from member list by clicking on title refresh button
 $(document).on("click", "#member-refresh", e => {
     e.preventDefault();
-    $("#faction-members").find("tr.faction-member-refresh").each((i, e) => {
+    $("#faction-members").find("tr.faction-member-refresh-private").each((i, e) => {
         const reload = $(e);
         const memberId = reload.attr("data-val");
         let wait = 0;

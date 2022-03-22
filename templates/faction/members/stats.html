@@ -39,17 +39,15 @@ along with yata. If not, see
     {% endif %}
 </span>
 {% elif player.factionAA %}
-{% if member.shareS == -1 %}
-<span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
-{% elif member.shareS == 0 %}
-<span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
-{% elif member.shareS == 1 %}
-<span
-    title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}">{{member.getTotalStats|intcomma}}</span>
-{% endif %}
+  {% if member.shareS == -1 %}
+  <span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span>
+  {% elif member.shareS == 0 %}
+  <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
+  {% elif member.shareS == 1 %}
+  <span
+      title="Total stats: {{member.getTotalStats|intcomma}}&#10;Dexterity: {{member.dexterity|intcomma}}&#10;Speed: {{member.speed|intcomma}}&#10;Strength: {{member.strength|intcomma}}&#10;Defense: {{member.defense|intcomma}}">{{member.getTotalStats|intcomma}}</span>
+  {% endif %}
 {% else %}
-<span title="You need AA perm">-</span>
+  <span title="You need AA perm"><i class="fas fa-times-circle error"></i></span>
 {% endif %}
-
-
 {% endif %}
