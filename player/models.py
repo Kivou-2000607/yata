@@ -202,7 +202,7 @@ class Player(models.Model):
             key.access_level = key_data["access_level"]
             key.access_type = key_data["access_type"]
 
-        print(f'[updateKeyLevel] {self}: {key_data.get("access_type")}')
+        # print(f'[updateKeyLevel] {self}: {key_data.get("access_type")}')
 
         key.save()
         self.save()
