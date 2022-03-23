@@ -1654,17 +1654,27 @@ class Chain(models.Model):
             tsl = max(tsl, ts)
 
             # probably because of cache
-            before = int(v["timestamp_started"]) - self.last
-            after = int(v["timestamp_started"]) - tse
-            if before < 0 or after > 0:
-                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+            # before = int(v["timestamp_started"]) - self.last
+            # after = int(v["timestamp_ended"]) - tse
+            # if before < 0 or after > 0:
+            #     print(f'{self} Attack out of bound')
+            #     print(f'{self}\t timestamp_started = {v["timestamp_started"]} {timestampToDate(v["timestamp_started"])}')
+            #     print(f'{self}\t timestamp_ended = {v["timestamp_ended"]} {timestampToDate(v["timestamp_ended"])}')
+            #     print(f'{self}\t self.last = {self.last} {timestampToDate(self.last)}')
+            #     print(f'{self}\t tse = {tse} {timestampToDate(tse)}')
+            #     print(f'{self}\t before = {before}s')
+            #     print(f'{self}\t after = {after}s')
 
             newAttack = int(k) not in attacks
             factionAttack = v["attacker_faction"] == faction.tId
             respect = float(v["respect_gain"]) > 0
+
             # chainAttack = int(v["chain"])
             # if newAttack and factionAttack:
-            if newAttack and factionAttack:
+            if v["timestamp_started"] < tss or v["timestamp_ended"] > tse:
+                print(f'{self} attack out of bound {k}: {v}')
+
+            elif newAttack and factionAttack:
 
                 v = modifiers2lvl1(v)
                 # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
@@ -1680,6 +1690,7 @@ class Chain(models.Model):
 
         if batch.count():
             batch.run()
+
         self.last = tsl
 
         print("{} last  {}".format(self, timestampToDate(self.last)))
