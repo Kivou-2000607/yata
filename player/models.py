@@ -192,10 +192,22 @@ class Player(models.Model):
                 self.save()
                 return
 
-            self.key_level = 0
-            self.validKey = False
-            key.access_level = 0
-            key.access_type = "Unkown"
+            elif key_data["apiErrorCode"] in [13]:
+                print(f'[updateKeyLevel] {self}: inactive key (error code {key_data["apiErrorCode"]})')
+                self.key_level = -2
+                self.validKey = False
+                key.delete()
+                self.save()
+                return
+
+            else:
+                print(f'[updateKeyLevel] {self}: keep key (error code {key_data["apiErrorCode"]})')
+                return
+
+            # self.key_level = 0
+            # self.validKey = False
+            # key.access_level = 0
+            # key.access_type = "Unkown"
 
         else:
             self.key_level = key_data["access_level"]
