@@ -153,17 +153,19 @@ class Player(models.Model):
 
     def updateKeyLevel(self):
         # get API key
-        key = self.getKey()
+        key = self.key_set.first()
 
         if not key:
+            print(f'[updateKeyLevel] {self}: no keys found')
             self.key_level = -1
+            self.validKey = 0
+            self.save()
             return
 
         # get api Key Info
-        key_info = apiCall("key", "", "info", key)
-        print(f'[updateKeyLevel] {self}: {key_info.get("access_type")}')
+        key_data = apiCall("key", "", "info", key.value)
 
-        if 'apiError' in key_info:
+        if 'apiError' in key_data:
             # 0 => Unknown error : Unhandled error, should not occur.
             # 1 => Key is empty : Private key is empty in current request.
             # 2 => Incorrect Key : Private key is wrong/incorrect format.
@@ -182,20 +184,25 @@ class Player(models.Model):
             # 15 => Temporary error : An error code specifically for testing purposes that has no dedicated meaning.
             # 16 => Access level of this key is not high enough : A selection is being called of which this key does not have permission to access.
 
-            if key_info["apiErrorCode"] in [1, 2, 10]:
-                print(f'[updateKeyLevel] {self}: delete key (error code {key_info["apiErrorCode"]})')
+            if key_data["apiErrorCode"] in [1, 2, 10]:
+                print(f'[updateKeyLevel] {self}: delete key (error code {key_data["apiErrorCode"]})')
                 self.key_level = -1
+                self.validKey = False
                 key.delete()
+                self.save()
                 return
 
             self.key_level = 0
+            self.validKey = False
             key.access_level = 0
             key.access_type = "Unkown"
 
         else:
-            self.key_level = key_info["access_level"]
-            key.access_level = key_info["access_level"]
-            key.access_type = key_info["access_type"]
+            self.key_level = key_data["access_level"]
+            key.access_level = key_data["access_level"]
+            key.access_type = key_data["access_type"]
+
+        print(f'[updateKeyLevel] {self}: {key_data.get("access_type")}')
 
         key.save()
         self.save()
