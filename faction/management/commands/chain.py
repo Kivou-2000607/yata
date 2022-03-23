@@ -48,4 +48,4 @@ class Command(BaseCommand):
             if state in [51, 52]:
                 chain.attackchain_set.all().delete()
 
-        print(f"[CRON {logdate()}] START chain on crontab {crontabId}")
+        print(f"[CRON {logdate()}] END chain on crontab {crontabId}")

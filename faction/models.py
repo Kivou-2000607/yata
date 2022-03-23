@@ -1669,12 +1669,11 @@ class Chain(models.Model):
             factionAttack = v["attacker_faction"] == faction.tId
             respect = float(v["respect_gain"]) > 0
 
-            # chainAttack = int(v["chain"])
-            # if newAttack and factionAttack:
-            if v["timestamp_started"] < tss or v["timestamp_ended"] > tse:
-                print(f'{self} attack out of bound {k}: {v}')
+            # we can display this warning but can't trust it as sometimes hits are 1s after the official end of the chain.
+            if v["timestamp_ended"] < self.start or v["timestamp_ended"] > self.end:
+                print(f'{self} attack out of bound {k}: {v["code"]}')
 
-            elif newAttack and factionAttack:
+            if newAttack and factionAttack:
 
                 v = modifiers2lvl1(v)
                 # self.attackchain_set.get_or_create(tId=int(k), defaults=v)
@@ -1817,11 +1816,16 @@ class Chain(models.Model):
 
         # loop over attacks
         lastTS = 0
+        chain_hit_count = []
         for att in self.attackchain_set.order_by('timestamp_ended'):
             attackerID = att.attacker_id
             attackerName = att.attacker_name
             # if attacker part of the faction at the time of the chain
             if att.attacker_faction == faction.tId:
+                if att.chain in chain_hit_count:
+                    print(f'{self} ignoring attack {att.tId} {att.code}: second hit #{att.chain}')
+                    continue
+
                 # if attacker not part of the faction at the time of the call
                 if attackerID not in attackers:
                     # print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
@@ -1830,15 +1834,12 @@ class Chain(models.Model):
                 attackers[attackerID][0] += 1
                 nWRA[2] += 1
 
-                # if it's a hit
-                # if respect > 0.0 and chainCount == 0:
-                #     print("[function.chain.fillReport] Attack with respect but no hit {}:".format(k))
-                #     for kk, vv in v.items():
-                #         print("[function.chain.fillReport] \t{}: {}".format(kk, vv))
-                # if att.chain:
-                if att.respect_gain > 0.0:
-                    # chainIterator.append(v["chain"])
-                    # print("Time stamp:", att.timestamp_ended)
+
+                if self.cooldown:
+                    its_a_hit = att.respect_gain > 0.0
+                else:
+                    its_a_hit = att.respect_gain > 0.0 and att.chain
+                if its_a_hit:
 
                     # init lastTS for the first iteration of the loop
                     lastTS = att.timestamp_ended if lastTS == 0 else lastTS

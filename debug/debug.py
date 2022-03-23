@@ -33,7 +33,7 @@ def faction_keys(faction_id):
 
     cur.close()
 
-    return [_[0] for _ in keys]
+    return [_[0] for _ in keys if _]
 
 def player_key(player_id):
     db_cred = {
