@@ -22,9 +22,9 @@ class PlayerAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('yata/css/admin.css',)}
 
-    list_display = ['tId', 'name', 'active', 'validKey', 'dId', 'key_last_code']
+    list_display = ['tId', 'name', 'active', 'validKey', 'key_level', 'key_last_code']
     search_fields = ['name', 'tId']
-    list_filter = ['active', 'validKey', 'key_last_code']
+    list_filter = ['active', 'validKey', 'key_level', 'key_last_code']
     inlines = [KeyInline]
     exclude = ['apikey', 'awardsJson', 'stocksJson']
 

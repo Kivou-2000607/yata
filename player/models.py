@@ -153,14 +153,15 @@ class Player(models.Model):
 
     def updateKeyLevel(self):
         # get API key
-        key = self.key_set.first()
+        key = self.getKey()
 
-        if key is None:
+        if not key:
             self.key_level = -1
             return
 
         # get api Key Info
-        key_info = apiCall("key", "", "info", key.value)
+        key_info = apiCall("key", "", "info", key)
+        print(f'[updateKeyLevel] {self}: {key_info.get("access_type")}')
 
         if 'apiError' in key_info:
             # 0 => Unknown error : Unhandled error, should not occur.

@@ -44,6 +44,7 @@ def updatePlayer(player, i=None, n=None):
 
     # API Calls
     player.updateKeyLevel()
+    
     if player.key_level == 1:
         selection = [
             "personalstats",
