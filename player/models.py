@@ -152,6 +152,15 @@ class Player(models.Model):
         return
 
     def updateKeyLevel(self):
+        # key levels
+        # -2: not valid key because of inactivity
+        # -1: key deleted because of major error
+        # 0: Unkown or custom key level
+        # 1: Public
+        # 2: Minimal
+        # 3: Limited
+        # 4: Full Access
+
         # get API key
         key = self.key_set.first()
 
