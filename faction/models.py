@@ -658,6 +658,7 @@ class Faction(models.Model):
         for k, v in membersAPI.items():
 
             defaults = {
+                "faction_id": int(self.id),
                 "name": v["name"],
                 "daysInFaction": v["days_in_faction"],
                 "lastActionStatus": v["last_action"]["status"],
@@ -682,7 +683,7 @@ class Faction(models.Model):
 
 
             batch.update_or_create(
-                faction_id=int(self.id),
+                # faction_id=int(self.id),
                 tId=int(k),
                 defaults=defaults
             )
