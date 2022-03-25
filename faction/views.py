@@ -500,7 +500,7 @@ def updateMember(request):
                 return render(request, 'faction/members/line.html', {'errorMessage': 'Member {} not found in faction {}'.format(memberId, factionId)})
 
             # update status and last action
-            r = apiCall("user", memberId, "profile", key=player.getKey())
+            r = apiCall("faction", faction.tId, "", key=player.getKey(), sub="members", cache_response=60)
             if 'apiError' in r:
                 return render(
                     request,
@@ -510,27 +510,38 @@ def updateMember(request):
                     }
                 )
 
+            try:
+                api_member = r[str(member.tId)]
+            except:
+                return render(
+                    request,
+                    'faction/members/line.html',
+                    {
+                        'errorMessage': f'{member} not found'
+                    }
+                )
+
             update = {}
             # update basic
-            update["name"] = r["name"]
-            update["daysInFaction"] = r["faction"]["days_in_faction"]
+            update["name"] = api_member["name"]
+            update["daysInFaction"] = api_member["days_in_faction"]
             # update status
-            update["description"] = clean_html_status_description(r["status"]["description"])
-            update["details"] = r["status"]["details"]
-            update["state"] = r["status"]["state"]
-            update["color"] = r["status"]["color"]
-            update["until"] = r["status"]["until"]
+            update["description"] = clean_html_status_description(api_member["status"]["description"])
+            update["details"] = api_member["status"]["details"]
+            update["state"] = api_member["status"]["state"]
+            update["color"] = api_member["status"]["color"]
+            update["until"] = api_member["status"]["until"]
             # update last action
-            update["lastActionStatus"] = r["last_action"]["status"]
-            update["lastAction"] = r["last_action"]["relative"]
-            update["lastActionTS"] = r["last_action"]["timestamp"]
+            update["lastActionStatus"] = api_member["last_action"]["status"]
+            update["lastAction"] = api_member["last_action"]["relative"]
+            update["lastActionTS"] = api_member["last_action"]["timestamp"]
 
             for k, v in update.items():
                 setattr(member, k, v)
 
-            member.save()
-
             member.updatePrivateData()
+
+            member.save()
 
             context = {"player": player, "member": member}
             return render(request, 'faction/members/line.html', context)

@@ -59,7 +59,7 @@ def filedate():
     return f'{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}'
 
 
-def apiCall(section, id, selections, key, sub=None, verbose=False):
+def apiCall(section, id, selections, key, sub=None, verbose=False, cache_response=False):
     from setup.models import ApiCallLog
     import requests
 
@@ -90,6 +90,15 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
 
+    if cache_response:
+        cache_key = f'{section}-{id}-{selections}-{key}'
+
+        # try to get cache
+        r = cache.get(cache_key)
+        print(f'[yata.function.apiCall] cached: {"yes" if r else "no"}')
+        if r is not None:
+            return r
+
     try:
         r = requests.get(url)
     except BaseException as e:
@@ -115,6 +124,9 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
         else:
             if sub is not None:
                 if sub in rjson:
+                    if cache_response:
+                        print(f'[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}')
+                        cache.set(cache_key, rjson[sub], cache_response)
                     return rjson[sub]
                 else:  # key not found
                     err = dict({"error": {"code": 0, "error": "key not found... something went wrong..."}})
@@ -123,6 +135,9 @@ def apiCall(section, id, selections, key, sub=None, verbose=False):
                 if config("API_CALL_LOG", default=False, cast=bool):
                     ApiCallLog.objects.create(timestamp=tsnow(), error=-1, url=url.replace("&key=" + key, ""))
 
+                if cache_response:
+                    print(f'[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}')
+                    cache.set(cache_key, rjson, cache_response)
                 return rjson
 
     if config("API_CALL_LOG", default=False, cast=bool):

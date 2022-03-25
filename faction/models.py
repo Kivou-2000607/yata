@@ -650,11 +650,26 @@ class Faction(models.Model):
 
         # set members newly on yata from -1 to 0
         id_on_yata = [p.tId for p in players_on_yata]
-        p = self.member_set.filter(shareE=-1).filter(tId__in=id_on_yata).update(
+        members_on_yata = self.member_set.filter(tId__in=id_on_yata)
+        members_on_yata.filter(shareE=-1).update(shareE=0)
+        members_on_yata.filter(shareN=-1).update(shareN=0)
+        members_on_yata.filter(shareS=-1).update(shareS=0)
+
+        # force low level perm to 0
+        id_low_lvl = [p.tId for p in players_on_yata.filter(key_level__lt=3)]
+        self.member_set.filter(tId__in=id_low_lvl).update(
             shareE=0,
             shareN=0,
             shareS=0
         )
+
+        # set members not on yata to -1
+        self.member_set.exclude(tId__in=id_on_yata).update(
+            shareE=-1,
+            shareN=-1,
+            shareS=-1
+        )
+
         for k, v in membersAPI.items():
 
             defaults = {
@@ -669,18 +684,6 @@ class Faction(models.Model):
             # status
             for k2, v2 in v['status'].items():
                 defaults[k2] = v2
-
-            # check if player on yata
-            player = players_on_yata.filter(tId=k).first()
-            if player is None:
-                defaults["shareE"] = -1
-                defaults["shareN"] = -1
-                defaults["shareS"] = -1
-            elif player.key_level < 3:
-                defaults["shareE"] = 0
-                defaults["shareN"] = 0
-                defaults["shareS"] = 0
-
 
             batch.update_or_create(
                 # faction_id=int(self.id),
