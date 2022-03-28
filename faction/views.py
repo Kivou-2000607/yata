@@ -1271,10 +1271,40 @@ def reportExport(request, chainId, type):
                 response = HttpResponse(content_type='text/csv')
                 response['Content-Disposition'] = 'attachment; filename="Chain_report_{}_counts.csv"'.format(chain.tId)
 
-                csv_data = [['Attacker ID', 'Name', 'Hits', 'Bonus', 'Wins', 'Respect', 'Fair Fight', 'War', 'Retaliation', 'Group Attack', 'Overseas', 'Days In Faction', 'Watcher', 'War Hits']]
+                csv_data = [[
+                    'Attacker ID',
+                    'Name',
+                    'Number of Hits',
+                    'Number of attacks',
+                    'War Hits',
+                    'Bonus',
+                    'Respect',
+                    'Fair Fight',
+                    'War',
+                    'Retaliation',
+                    'Group Attack',
+                    'Overseas',
+                    'Watcher',
+                    'Days In Faction'
+                ]]
 
                 for c in chain.count_set.extra(select={'fieldsum': 'wins + bonus'}, order_by=('-fieldsum', '-respect')):
-                    csv_data.append([c.attackerId, c.name, c.hits, c.bonus, c.wins, c.respect, c.fair_fight, c.war, c.retaliation, c.group_attack, c.overseas, c.daysInFaction, c.watcher, c.warhits])
+                    csv_data.append([
+                        c.attackerId,
+                        c.name,
+                        c.wins + c.bonus,
+                        c.hits,
+                        c.warhits,
+                        c.bonus,
+                        c.respect,
+                        c.fair_fight,
+                        c.war,
+                        c.retaliation,
+                        c.group_attack,
+                        c.overseas,
+                        c.watcher,
+                        c.daysInFaction
+                    ])
 
                 t = loader.get_template('faction/chains/csv-counts.txt')
                 c = {'data': csv_data}
