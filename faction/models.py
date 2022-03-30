@@ -52,7 +52,7 @@ FONT_DIR = os.path.join(settings.SRC_ROOT, 'fonts')
 
 
 if settings.DEBUG:
-    CACHE_RESPONSE = int(config('CACHE_RESPONSE'), default=10, cast=int)
+    CACHE_RESPONSE = int(config('CACHE_RESPONSE', default=10, cast=int))
 else:
     CACHE_RESPONSE = 10
 
