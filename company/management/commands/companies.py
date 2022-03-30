@@ -23,6 +23,8 @@ from company.models import *
 from yata.handy import apiCall
 from yata.handy import logdate
 
+import time
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-r', '--rebuild-past', action='store_true')
@@ -32,6 +34,10 @@ class Command(BaseCommand):
         print(f'[CRON {logdate()}] start companies: rebuild past = {rebuild_past}')
         for company in Company.objects.all():
             company.update_info(rebuildPast=rebuild_past)
-        print(f'[CRON {logdate()}] clean spurious data')
-        CompanyData.objects.filter(id_ts=0).delete()
+        print(f'[CRON {logdate()}] clean old data')
+        one_year_ago = int(time.time() - 3600 * 24 * 365)
+        n, _ = CompanyData.objects.filter(id_ts__lt=one_year_ago).delete()
+        print(f'[CRON {logdate()}] {n} company data rows deleted')
+        n, _ = CompanyStock.objects.filter(id_ts__lt=one_year_ago).delete()
+        print(f'[CRON {logdate()}] {n} company stock rows deleted')
         print(f'[CRON {logdate()}] end')
