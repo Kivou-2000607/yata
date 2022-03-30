@@ -54,10 +54,10 @@ table.company-overview {
 }
 
 table.company-details-employees th.a {
-	width: 14%;
+	width: 13%;
 } /* x1 */
 table.company-details-employees th.b {
-	width: 9%;
+	width: 8%;
 	cursor: pointer;
 } /* x1 */
 table.company-details-employees th.c {
@@ -65,12 +65,12 @@ table.company-details-employees th.c {
 } /* x1 */
 table.company-details-employees th.d {
 	width: 5%;
-} /* x5 */
+} /* x6 */
 table.company-details-employees th.e {
 	width: 10%;
 } /* x1 */
 table.company-details-employees th.f {
-	width: 10%;
+	width: 9%;
 } /* x3 */
 table.company-details-employees th.g {
 	width: 3%;

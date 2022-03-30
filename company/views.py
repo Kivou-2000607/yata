@@ -325,7 +325,7 @@ def manageCompany(request):
 #                       "addiction": employee.effectiveness_addiction,
 #                       "inactivity": employee.effectiveness_inactivity,
 #                       "management": employee.effectiveness_management,
-#                       "book_bonus": employee.effectiveness_book_bonus,
+#                       "book": employee.effectiveness_book,
 #                       "merits": employee.effectiveness_merits,
 #                       "effectiveness_total": employee.effectiveness_total,
 #                       "manager_effectiveness": manager_effectiveness,

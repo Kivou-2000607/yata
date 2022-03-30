@@ -107,7 +107,7 @@ class Company(models.Model):
     effectiveness_addiction = models.IntegerField(default=0)
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
-    effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_book = models.IntegerField(default=0)
     effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
@@ -196,7 +196,7 @@ class Company(models.Model):
             # remove status
             del v["status"]
             # flatten effectiveness and compute company effectiveness
-            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book_bonus", "merits", "total"]:
+            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book", "merits", "total"]:
                 effectiveness_key = f'effectiveness_{eff}'
                 effectiveness_val = v.get("effectiveness", {}).get(eff, 0)
                 v[effectiveness_key] = effectiveness_val
@@ -396,7 +396,7 @@ class Employee(models.Model):
     effectiveness_addiction = models.IntegerField(default=0)
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
-    effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_book = models.IntegerField(default=0)
     effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 
@@ -432,7 +432,7 @@ class CompanyData(models.Model):
     effectiveness_addiction = models.IntegerField(default=0)
     effectiveness_inactivity = models.IntegerField(default=0)
     effectiveness_management = models.IntegerField(default=0)
-    effectiveness_book_bonus = models.IntegerField(default=0)
+    effectiveness_book = models.IntegerField(default=0)
     effectiveness_merits = models.IntegerField(default=0)
     effectiveness_total = models.IntegerField(default=0)
 

@@ -56,6 +56,7 @@ This file is part of yata.
         <th class="d" title="Settled in effectiveness">E. STL</th>
         <th class="d" title="Merits effectiveness">E. MER</th>
         <th class="d" title="Addiction effectiveness">E. ADD</th>
+        <th class="d" title="Book bonus">E. BOO</th>
         <th class="d" title="Inactivity effectiveness">E. INA</th>
         <th class="e">Last action</th>
         <th class="f">MAN</th>
@@ -87,6 +88,7 @@ This file is part of yata.
           <td data-val="{{e.effectiveness_settled_in}}" class="text-center">{{e.effectiveness_settled_in|signColor}}</td>
           <td data-val="{{e.effectiveness_merits}}" class="text-center">{{e.effectiveness_merits|signColor}}</td>
           <td data-val="{{e.effectiveness_addiction}}" class="text-center">{{e.effectiveness_addiction|signColor}}</td>
+          <td data-val="{{e.effectiveness_book}}" class="text-center">{{e.effectiveness_book|signColor}}</td>
           <td data-val="{{e.effectiveness_inactivity}}" class="text-center">{{e.effectiveness_inactivity|signColor}}</td>
           <td data-val="{{e.last_action_relative}}" class="text-end{%if e.last_action_relative > 172800%} error{%elif e.last_action_relative > 86400%} warning{%else%} valid{%endif%}">{{e.last_action_relative|ts2ago}}</td>
           <td data-val="{{e.manual_labor}}" class="text-end">{{e.manual_labor|workstatsinv:e.man_required}}</td>
