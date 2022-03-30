@@ -100,17 +100,24 @@ This file is part of yata.
                             <tr>
                                 {% if tItem == "Blood Bag" %}
                                     <td class="text-start">{% player_link k v.name short=True %}</td>
-                                    <td class="text-center">{{v.filled|format:"{:,.0f}"}}</td>
-                                    <td class="text-center">{{v.gave|format:"{:,.0f}"}}</td>
-                                    <td class="text-center">{{v.took|format:"{:,.0f}"}}</td>
-                                    <td class="text-center {% if v.gave|add:v.filled < v.took %}error{% elif v.gave|add:v.filled > v.took %}valid{% else %}neutral{% endif %}">{{v.gave|add:v.filled|sub:v.took|format:"{:+,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.filled}}">{{v.filled|format:"{:,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.gave}}">{{v.gave|format:"{:,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.took}}">{{v.took|format:"{:,.0f}"}}</td>
+                                    <td class="text-center {% if v.gave|add:v.filled < v.took %}error{% elif v.gave|add:v.filled > v.took %}valid{% else %}neutral{% endif %}" data-val="{{v.gave|add:v.filled|sub:v.took}}">{{v.gave|add:v.filled|sub:v.took|format:"{:+,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.first}}">{{v.first|ts2date}}</td>
+                                    <td class="text-center" data-val="{{v.last}}">{{v.last|ts2date}}</td>
+                                {% elif tItem == "money"%}
+                                    <td class="text-start">{% player_link k v.name short=True %}</td>
+                                    <td class="text-center" data-val="{{v.gave}}" title='${{v.gave|format:"{:,.0f}"}}'>${% eng_fmt_letters v.gave %}</td>
+                                    <td class="text-center" data-val="{{v.took}}" title='${{v.took|format:"{:,.0f}"}}'>${% eng_fmt_letters v.took %}</td>
+                                    <td class="text-center {% if v.gave < v.took %}error{% elif v.gave > v.took %}valid{% else %}neutral{% endif %}" data-val="{{v.gave|sub:v.took}}" title='${{v.gave|sub:v.took|format:"{:,.0f}"}}'>{% eng_fmt_letters v.gave|sub:v.took %}</td>
                                     <td class="text-center" data-val="{{v.first}}">{{v.first|ts2date}}</td>
                                     <td class="text-center" data-val="{{v.last}}">{{v.last|ts2date}}</td>
                                 {% else %}
                                     <td class="text-start">{% player_link k v.name short=True %}</td>
-                                    <td class="text-center">{{v.gave|format:"{:,.0f}"}}</td>
-                                    <td class="text-center">{{v.took|format:"{:,.0f}"}}</td>
-                                    <td class="text-center {% if v.gave < v.took %}error{% elif v.gave > v.took %}valid{% else %}neutral{% endif %}">{{v.gave|sub:v.took|format:"{:+,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.gave}}">{{v.gave|format:"{:,.0f}"}}</td>
+                                    <td class="text-center" data-val="{{v.took}}">{{v.took|format:"{:,.0f}"}}</td>
+                                    <td class="text-center {% if v.gave < v.took %}error{% elif v.gave > v.took %}valid{% else %}neutral{% endif %}" data-val="{{v.gave|sub:v.took}}">{{v.gave|sub:v.took|format:"{:+,.0f}"}}</td>
                                     <td class="text-center" data-val="{{v.first}}">{{v.first|ts2date}}</td>
                                     <td class="text-center" data-val="{{v.last}}">{{v.last|ts2date}}</td>
                                 {% endif %}
@@ -124,6 +131,6 @@ This file is part of yata.
         {% endif %}
         {% endfor %}
     {% else %}
-        <p class="error">No news found for this report.</p>
+        <p class="error mb-0">No news found for this report.</p>
     {% endif %}
 </div>

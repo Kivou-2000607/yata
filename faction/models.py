@@ -2334,7 +2334,7 @@ class AttacksReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "attacks,timestamp&from={}&to={}".format(tsl, tse)
+            selection = "attacks,timestamp&from={}&to={}".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull attacks for attacks report"
             key.lastPulled = tsnow()
@@ -2860,7 +2860,7 @@ class RevivesReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "revives,timestamp&from={}&to={}".format(tsl, tse)
+            selection = "revives,timestamp&from={}&to={}".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull revives for report"
             key.lastPulled = tsnow()
@@ -3377,7 +3377,7 @@ class ArmoryReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = f"armorynews,timestamp&from={tsl}&to={tse}"
+            selection = f"armorynews,fundsnews,timestamp&from={tsl - 1}&to={tse}"
             req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull armory for report"
             key.lastPulled = tsnow()
@@ -3419,7 +3419,13 @@ class ArmoryReport(models.Model):
 
             # add news to global dictionnary
             new_entries = 0
-            for id, r in req["armorynews"].items():
+            # patch buggy API return empty [] instead of {}
+            if len(req["armorynews"]) == 0:
+                req["armorynews"] = {}
+            if len(req["fundsnews"]) == 0:
+                req["fundsnews"] = {}
+
+            for id, r in dict(req["armorynews"], **req["fundsnews"]).items():
                 if r["timestamp"] > tse:
                     print(f"{self}\t news {id} ignored because too recent")
                 elif r["timestamp"] < tss:
@@ -3457,13 +3463,14 @@ class ArmoryReport(models.Model):
         print(f"{self} {len(api_news)} news from the API for a total of {len(news_ids)}")
 
         ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
-        TRANSACTIONS_HANDLED = ["used", "deposited", "filled"]
+        TRANSACTIONS_HANDLED = ["used", "deposited", "filled", "was"]
         CONVERT_TRANSACTIONS = {
             "used": "took",
+            "was": "took",  # was given
             "deposited": "gave",
             "filled": "filled",
         }
-        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved", "gave"]
+        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved", "gave", "opened", "adjusted"]
         # update report
         for news in api_news.values():
             news_string = news["news"]
@@ -3480,24 +3487,42 @@ class ArmoryReport(models.Model):
             news_info = [cleanhtml(_) for _ in news_string.split("</a>")[1].replace("items.", "").split()]
             transaction_type = news_info.pop(0)  # used / deposit / filled
 
-            # if transaction_type in ["gave"]:
-            #     print(format_html(news_string))
-
-            # ignoe loaned
+            # ignored
             if transaction_type in TRANSACTIONS_IGNORED:
+                # print(f'{self} WARNING news transaction ignored: {news_string}')
                 continue
 
+            # unkown
             if transaction_type not in TRANSACTIONS_HANDLED:
                 print(f'{self} WARNING news transaction not handeled: {news_string}')
                 continue
 
+            # "news": "<a href = http://www.torn.com/profiles.php?XID=2000607>Kivou</a> was given $5,760,000,000 by <a href = http://www.torn.com/profiles.php?XID=517092>Karalynn</a>.",
+            if news_info[-1] == "points":  # case: deposited 25 points
+                transaction_number = int(news_info[0])
+                item = "point"
 
-            if news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card or gace
+            elif news_info[0] == "given":  # case: was given $64,882,742,829 by <a href...
+                n = news_info[1].replace("$", "").replace(",", "")
+                if n.isdigit():
+                    transaction_number = int(n)
+                    item = "money"
+                else:
+                    continue
+
+
+            elif news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card or gace
                 transaction_number = int(news_info[0])
                 item = " ".join(news_info[2:])
+
             elif news_info[0] == "one":  # case: one of the faction's Bottle of Beer
                 transaction_number = 1
                 item = " ".join(news_info[4:])
+
+            elif news_info[0].replace("$", "").replace(",", "").isdigit():  # case: deposited $1,000
+                transaction_number = int(news_info[0].replace("$", "").replace(",", ""))
+                item = "money"
+
             else:
                 print(f'{self} WARNING news item not known: {news_string}')
                 continue
@@ -3511,10 +3536,8 @@ class ArmoryReport(models.Model):
                 item = "point"
 
             # get item type
-            item_type = ITEM_TYPE.get(item, "Unknown")
-
-            if item == "point":
-                item_type = "Points"
+            fake_types = {"point": "Points", "money": "$"}
+            item_type = dict(ITEM_TYPE, **fake_types).get(item, "Unknown")
 
             # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
 

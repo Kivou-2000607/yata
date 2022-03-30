@@ -703,3 +703,17 @@ def key_access(access_level):
         return "No keys"
     else:
         return "Unknown"
+
+
+@register.simple_tag(name='eng_fmt_letters')
+def eng_fmt_letters(n):
+    fmt = (
+        ('b', 1e9),
+        ('m', 1e6),
+        ('k', 1e3),
+    )
+    for label, threshold in fmt:
+        if abs(int(n)) > threshold:
+            return f'{n / threshold:.1f}{label}'
+
+    return n
