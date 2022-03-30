@@ -12,6 +12,7 @@ jobs:
       DEBUG: True
       ALLOWED_HOSTS: "*"
       DATABASE: sqlite
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     runs-on: ubuntu-latest
     strategy:
