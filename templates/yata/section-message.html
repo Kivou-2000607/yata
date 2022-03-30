@@ -24,7 +24,7 @@ This file is part of yata.
 {% if sectionMessages|length %}
 <div class="container-fluid p-md-3 p-1 mb-3 module rounded">
   {% for sm in sectionMessages %}
-          <p class="mb-0">
+          <div class="mb-0">
             {% if sm.2 == "warning" %}
               <span title="Warning" class="warning" style="font-weight: bold;">
                 <i class="fas fa-exclamation-triangle"></i>&nbsp;
@@ -36,7 +36,7 @@ This file is part of yata.
                 <i class="fas fa-info-circle"></i>&nbsp;
             {% endif %}
             {{sm.0|title}}</span><span class="ms-2">{{sm.1|safe}}</span>
-          </p>
+          </div>
   {% endfor %}
   </div>
 {% endif %}
