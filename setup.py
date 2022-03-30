@@ -27,7 +27,7 @@ def yes_or_no(question):
         return yes_or_no("Uhhhh... please enter ")
 
 
-key = config('APIKEY')
+key = config('SECRET_KEY')
 reset_db = False
 fill_db = False
 static_files = False

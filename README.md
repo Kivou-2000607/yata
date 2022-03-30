@@ -38,8 +38,6 @@ Create a local .env file
     #PG_CONN_MAX_AGE=600
 
     ###### OPTIONAL ######
-    # Your TORN API KEY (only needed for the setup phase)
-    APIKEY="API KEY HERE"
     # For most leaving this as default should be fine, but if you have any issues with -4 cache responses you may wish to increase this gradually
     CACHE_RESPONSE=10
 

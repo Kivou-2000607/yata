@@ -5,15 +5,15 @@ from decouple import config
 
 
 def every_minute():
-    for x in range(1, int(config("CHAIN_REPORT")) + 1):
+    for x in range(1, int(config("CHAIN_REPORT", default=1)) + 1):
         print("Running Chain Report: " + str(x))
         os.system('python manage.py chain ' + str(x))
 
-    for x in range(1, int(config("ATTACK_REPORT")) + 1):
+    for x in range(1, int(config("ATTACK_REPORT", default=1)) + 1):
         print("Running Attack Report: " + str(x))
         os.system('python manage.py attacks ' + str(x))
 
-    for x in range(1, int(config("REVIVE_REPORT")) + 1):
+    for x in range(1, int(config("REVIVE_REPORT", default=1)) + 1):
         print("Running Revive Report: " + str(x))
         os.system('python manage.py revives ' + str(x))
 
