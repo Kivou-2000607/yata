@@ -123,8 +123,8 @@ REPORTS_STATUS = {
     -2: "ERROR: Fatal API error on faction key (key deleted) [continue]",
     -3: "ERROR: API error on faction key [continue]",
     -4: "WARNING: Received cache from torn API [continue]",
-    -5: "ERROR: Running for too long [stop]"
-
+    -5: "ERROR: Running for too long [stop]",
+    -6: "ERROR: Server error [stop]"
 }
 
 BB_BRIDGE = {
@@ -3499,7 +3499,8 @@ class ArmoryReport(models.Model):
 
             # "news": "<a href = http://www.torn.com/profiles.php?XID=2000607>Kivou</a> was given $5,760,000,000 by <a href = http://www.torn.com/profiles.php?XID=517092>Karalynn</a>.",
             if news_info[-1] == "points":  # case: deposited 25 points
-                transaction_number = int(news_info[0])
+                n = news_info[0].replace(",", "")
+                transaction_number = int(n)
                 item = "point"
 
             elif news_info[0] == "given":  # case: was given $64,882,742,829 by <a href...
