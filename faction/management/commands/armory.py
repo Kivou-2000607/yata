@@ -33,10 +33,16 @@ class Command(BaseCommand):
         print(f"[CRON {logdate()}] START armory report on crontab {crontabId}")
         report = ArmoryReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
         if report is not None:
-            report.updateReport()
-            # type = "error" if state < 0 else "exit"
-            # status = REPORT_REVIVES_STATUS.get(state, f"code {state}")
-            # print(f"[CRON {logdate()}] {report} {type} code {state}: {status}")
-            # report.fillReport()
+            # report.updateReport()
+            try:
+                report.updateReport()
+            except BaseException as e:
+                report.computing = False
+                report.crontab = 0
+                report.state = -6
+                report.state_string = "Server error"
+                report.last = report.start
+                report.save()
+                print(f"{report} {report.state_string}: {e}")
 
         print(f"[CRON {logdate()}] END")
