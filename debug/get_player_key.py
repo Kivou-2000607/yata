@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from debug import player_key
 import requests
 

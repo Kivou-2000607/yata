@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from debug import faction_keys
 import json
 

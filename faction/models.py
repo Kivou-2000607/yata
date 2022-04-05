@@ -3419,28 +3419,62 @@ class ArmoryReport(models.Model):
 
             # add news to global dictionnary
             new_entries = 0
+            new_funds = 0
+            new_armory = 0
             # patch buggy API return empty [] instead of {}
             if len(req["armorynews"]) == 0:
                 req["armorynews"] = {}
             if len(req["fundsnews"]) == 0:
                 req["fundsnews"] = {}
 
-            for id, r in dict(req["armorynews"], **req["fundsnews"]).items():
+            tsl_armory = tsl
+            for id, r in dict(req["armorynews"]).items():
                 if r["timestamp"] > tse:
-                    print(f"{self}\t news {id} ignored because too recent")
+                    print(f"{self}\t armory news {id} ignored because too recent")
                 elif r["timestamp"] < tss:
-                    print(f"{self}\t news {id} ignored because too old")
+                    print(f"{self}\t armory news {id} ignored because too old")
                 elif id in news_ids:
-                    print(f"{self}\t news {id} ignored because already reported")
+                    # print(f"{self}\t armory news {id} ignored because already reported")
+                    continue
                 else:
                     api_news[id] = r
                     news_ids.append(id)
                     new_entries += 1
-                    tsl = max(tsl, r["timestamp"])
+                    new_armory += 1
+                    tsl_armory = max(tsl_armory, r["timestamp"])
                     # print(f'{self}\t news {id} new entry {timestampToDate(r["timestamp"])}')
 
+            tsl_funds = tsl
+            for id, r in dict(req["fundsnews"]).items():
+                if r["timestamp"] > tse:
+                    print(f"{self}\t funds news {id} ignored because too recent")
+                elif r["timestamp"] < tss:
+                    print(f"{self}\t funds news {id} ignored because too old")
+                elif id in news_ids:
+                    # print(f"{self}\t funds news {id} ignored because already reported")
+                    continue
+                else:
+                    api_news[id] = r
+                    news_ids.append(id)
+                    new_entries += 1
+                    new_funds += 1
+                    tsl_funds = max(tsl_funds, r["timestamp"])
+                    # print(f'{self}\t news {id} new entry {timestampToDate(r["timestamp"])}')
 
-            print(f'{self}\t adding {new_entries} news')
+            print(f'{self}\t tsl_armory {timestampToDate(tsl_armory)} ({tsl_armory})')
+            print(f'{self}\t tsl_funds {timestampToDate(tsl_funds)} ({tsl_funds})')
+
+            if tsl_funds == tsl:
+                print(f'{self}\t tsl_funds unchanged -> tsl = ts_armory')
+                tsl = tsl_armory
+            elif tsl_armory == tsl:
+                print(f'{self}\t tsl_armory unchanged -> tsl = tsl_funds')
+                tsl = tsl_funds
+            else:
+                print(f'{self}\t tsl_armory and ts_armory changed -> tsl = min(tsl_funds, tsl_armory)')
+                tsl = min(tsl_funds, tsl_armory)
+
+            print(f'{self}\t adding {new_entries} news ({new_armory} armory, {new_funds} funds)')
             print(f'{self}\t last time {timestampToDate(tsl)} ({tsl})')
             if not new_entries:
                 print(f'{self}\t escape api key loop because no new news')
@@ -3487,15 +3521,18 @@ class ArmoryReport(models.Model):
             news_info = [cleanhtml(_) for _ in news_string.split("</a>")[1].replace("items.", "").split()]
             transaction_type = news_info.pop(0)  # used / deposit / filled
 
-            # ignored
-            if transaction_type in TRANSACTIONS_IGNORED:
+            if transaction_type in TRANSACTIONS_IGNORED: # ignored
                 # print(f'{self} WARNING news transaction ignored: {news_string}')
                 continue
 
-            # unkown
-            if transaction_type not in TRANSACTIONS_HANDLED:
+            elif transaction_type not in TRANSACTIONS_HANDLED: # unkown
                 print(f'{self} WARNING news transaction not handeled: {news_string}')
                 continue
+
+            else:
+                # print(f'{self} WARNING news transaction handeled: {news_string}')
+                pass
+
 
             # "news": "<a href = http://www.torn.com/profiles.php?XID=2000607>Kivou</a> was given $5,760,000,000 by <a href = http://www.torn.com/profiles.php?XID=517092>Karalynn</a>.",
             if news_info[-1] == "points":  # case: deposited 25 points
