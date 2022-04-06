@@ -24,9 +24,9 @@ This file is part of yata.
   <p class="warning"><i class="fas fa-question-circle"></i>&nbsp;Error 404: Not Found</p>
   <p>Page not found.</p>
     {% if exception %}
-      <p class="neutral">{{exception}}</p>
+      <pre>{{exception}}</pre>
     {% else %}
-      <p>You seems to be lost...</p>
+      <pre>You seems to be lost...</pre>
     {% endif %}
 </div>
 {% endblock %}
