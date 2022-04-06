@@ -97,6 +97,16 @@ def ts2ago(timestamp):
     return "{} sec{} ago".format(t, s)
 
 
+
+@register.filter(name='percent')
+def percent(fl):
+    try:
+        return f'{fl * 100:.0f}%'
+    except BaseException as e:
+        return "-"
+
+
+
 @register.filter(name='format')
 def format(value, fmt):
     return fmt.format(value)
@@ -171,11 +181,6 @@ def playerURL(value, arg):
         return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>'.format(name=value, id=arg)
     else:
         return '-'
-
-@register.simple_tag(name='displayplayer')
-def displayplayer(name, id):
-    return format_html(f'<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name} [{id}]</a>')
-
 
 @register.filter(name='playerURLShort')
 def playerURL(value, arg):
@@ -559,6 +564,16 @@ def compPopColor(p):
     return format_html(f'<span class={cl}>{p}%</class>')
 
 
+@register.filter(name="compOpeningsColor")
+def compOpeningsColor(p):
+    cl = ""
+    if str(p).isdigit() and int(p):
+        cl = "valid"
+    else:
+        cl = "error"
+    return format_html(f'<span class="{cl}"><b>{p}</b></class>')
+
+
 # MEDIA URLS
 # @register.filter(name='honorUrl')
 # def honorUrl(id):
@@ -672,6 +687,17 @@ def faction_link(faction_id, faction_name="Faction", short=False):
         return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name}</a>')
     else:
         return format_html(f'<a href="https://www.torn.com/factions.php?step=profile&ID={faction_id}" title="{faction_name} [{faction_id}]" target="_blank">{faction_name} [{faction_id}]</a>')
+
+@register.simple_tag(name='company_link')
+def company_link(company_id, company_name="Company", short=False):
+    if not company_id:
+        return "-"
+    url = f"https://www.torn.com/joblist.php#!p=corpinfo&ID={company_id}"
+    company_name = company_name.replace("{", "{{").replace("}", "}}")
+    if short:
+        return format_html(f'<a href="{url}" title="{company_name} [{company_id}]" target="_blank">{company_name}</a>')
+    else:
+        return format_html(f'<a href="{url}" title="{company_name} [{company_id}]" target="_blank">{company_name} [{company_id}]</a>')
 
 @register.simple_tag(name='key_access_html')
 def key_access_html(access_level):

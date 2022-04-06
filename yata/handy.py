@@ -59,7 +59,7 @@ def filedate():
     return f'{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}'
 
 
-def apiCall(section, id, selections, key, sub=None, verbose=False, cache_response=False):
+def apiCall(section, id, selections, key, sub=None, verbose=False, cache_response=False, cache_private=True):
     from setup.models import ApiCallLog
     import requests
 
@@ -91,11 +91,14 @@ def apiCall(section, id, selections, key, sub=None, verbose=False, cache_respons
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "")))
 
     if cache_response:
-        cache_key = f'{section}-{id}-{selections}-{key}'
+        cache_key = f'{section}-{id}-{selections}'
+        if cache_private:
+            cache_key += f'-{key}'
 
         # try to get cache
         r = cache.get(cache_key)
-        print(f'[yata.function.apiCall] cached: {"yes" if r else "no"}')
+        if verbose:
+            print(f'[yata.function.apiCall] cached: {"yes" if r else "no"} ({cache_key})')
         if r is not None:
             return r
 

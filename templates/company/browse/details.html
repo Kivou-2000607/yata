@@ -7,7 +7,7 @@
 <script>
 
     $(document).ready(function () {
-        $("#comapny-details-positions").tablesorter({
+        $("#company-details-positions").tablesorter({
             textExtraction: {
                 0: function (node, table, cellIndex) { return $(node).attr("data-val"); },
                 1: function (node, table, cellIndex) { return $(node).attr("data-val"); },
@@ -34,18 +34,38 @@
         $("#company-details-stocks").tablesorter({sortList: [[2, 0]]});
     });
 
+    $(document).ready(function () {
+      // inject spinner
+      $("#company-list").html('<div style="text-align: center;">'+spinner+'</div>');
+      // call backend for company list
+      $("#company-list").load("/company/browse/companies", {
+          company_id: $("#company-id").attr("data-val"),
+          csrfmiddlewaretoken: getCookie("csrftoken")
+      });
+    });
+
 </script>
 
+<div id="company-id" data-val="{{company_details.tId}}" hidden></div>
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
-      <div class="px-2 me-auto"><i class="fas fa-building"></i>&nbsp;{{company_details.name}}</div>
+      <div class="px-2 me-auto">
+        <i class="fas fa-building"></i>&nbsp;{{company_details.name}} [{{company_details.tId}}]
+      </div>
     </div>
+
+
 </h2>
 <div class="container-fluid p-md-3 p-1 mb-3 module">
+    <h3>Companies</h3>
+    <div id="company-list" class="pagination-list">
+      {# include company list dynamically with js #}
+    </div>
+
     <h3>Positions</h3>
     <div class="table-responsive mb-3">
 
-    <table id="comapny-details-positions" class="table table-hover table-striped table-borderless tablesorter comapny-details-positions">
+    <table id="company-details-positions" class="table table-hover table-striped table-borderless tablesorter company-details-positions">
         <thead>
             <tr>
                 <th class="a">Name</th>
@@ -82,7 +102,7 @@
 
   <h3>Specials</h3>
   <div class="table-responsive mb-3">
-    <table id="company-details-specials" class="table table-hover table-striped table-borderless tablesorter comapny-details-specials">
+    <table id="company-details-specials" class="table table-hover table-striped table-borderless tablesorter company-details-specials">
         <thead>
             <tr>
                 <th class="a">Name</th>
@@ -108,7 +128,7 @@
 
   <h3>Stocks</h3>
   <div class="table-responsive mb-3">
-    <table id="company-details-stocks" class="table table-hover table-striped table-borderless tablesorter comapny-details-stocks">
+    <table id="company-details-stocks" class="table table-hover table-striped table-borderless tablesorter company-details-stocks">
         <thead>
             <tr>
                 <th class="a">Name</th>

@@ -1,0 +1,77 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load humanize %}
+{% load app_filters %}
+
+<div class="table-responsive">
+<table class="table table-hover table-borderless company-companies">
+<thead>
+
+    <tr>
+        <th class="a">Company</th>
+        <th class="b">Director</th>
+        <th class="c">Openings
+          {% if openings %}
+            <a class="yt-page-link" href="{% url 'company:companies' %}?company_id={{company_id}}&openings=0"><i class="fas fa-toggle-on"></i></a>
+          {% else %}
+            <a class="yt-page-link" href="{% url 'company:companies' %}?company_id={{company_id}}&openings=1"><i class="fas fa-toggle-off"></i></a>
+          {% endif %}
+        </th>
+        <th class="d">Weekly income</th>
+        <th class="e">Days old</th>
+        <th class="f">Rating</th>
+    </thead>
+    <tbody>
+    {% for v in companies %}
+    <tr class="{% if v.flat_respect == 0 %}zero-respect{% endif %} {% if v.fair_fight == 3 %}max-fair-fight{% elif v.fair_fight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-tId="{{v.targetId}}" data-aId="{{v.tId}}">
+        <td class="text-start">{% company_link v.ID v.name %}</td>
+        <td class="text-start"><span class="update-player-name" data-val="{{v.director}}">{% player_link v.director %}</span></td>
+        <td class="text-center">{{v.employees_capacity|sub:v.employees_hired|compOpeningsColor}}</td>
+        <td class="text-center">${{v.weekly_income|intcomma}} ({{v.weekly_income|div:cap|percent}})</td>
+        <td class="text-center">{{v.days_old}} days</td>
+        <td class="text-center">{{v.rating|compstars}}</td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+      <td colspan="9" class="text-center">
+        <div class="pagination d-block">
+            <span class="step-links">
+                {% if companies.has_previous %}
+                    <a class="yt-page-link rounded first" href="{% url 'company:companies' %}?openings={{openings}}&company_id={{company_id}}&page=1"></a>
+                    <a class="yt-page-link rounded previous" href="{% url 'company:companies' %}?openings={{openings}}&company_id={{company_id}}&page={{ companies.previous_page_number }}"></a>
+                {% endif %}
+
+                <span class="current">
+                    {{ companies.number }}/{{ companies.paginator.num_pages }}
+                </span>
+
+                {% if companies.has_next %}
+                    <a class="yt-page-link rounded next" href="{% url 'company:companies' %}?openings={{openings}}&company_id={{company_id}}&page={{ companies.next_page_number }}"></a>
+                    <a class="yt-page-link rounded last" href="{% url 'company:companies' %}?openings={{openings}}&company_id={{company_id}}&page={{ companies.paginator.num_pages }}"></a>
+                {% endif %}
+            </span>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+</table>
+</div>
