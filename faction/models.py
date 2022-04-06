@@ -3497,14 +3497,26 @@ class ArmoryReport(models.Model):
         print(f"{self} {len(api_news)} news from the API for a total of {len(news_ids)}")
 
         ITEM_TYPE = json.loads(BazaarData.objects.first().itemType)
-        TRANSACTIONS_HANDLED = ["used", "deposited", "filled", "was"]
+        TRANSACTIONS_HANDLED = [
+            "used",  # A member uses an item or a refill
+            "deposited",  # A member deposits money, points or an item
+            "filled",  # A member fills a blood bag
+            "was"  # A member was given money
+        ]
         CONVERT_TRANSACTIONS = {
             "used": "took",
-            "was": "took",  # was given
+            "was": "took",
             "deposited": "gave",
-            "filled": "filled",
+            "filled": "filled"
         }
-        TRANSACTIONS_IGNORED = ["loaned", "returned", "retrieved", "gave", "opened", "adjusted"]
+        TRANSACTIONS_IGNORED = [
+            "loaned",  # member loans an item
+            "returned",  # member returns an item
+            "retrieved",  # member retrieve an item from another member
+            "gave",  # member gives an item to another member
+            "opened",  # member opens a cache
+            "adjusted"  # member adjusts vault balance of another member
+        ]
         # update report
         for news in api_news.values():
             news_string = news["news"]
@@ -3532,7 +3544,6 @@ class ArmoryReport(models.Model):
             else:
                 # print(f'{self} WARNING news transaction handeled: {news_string}')
                 pass
-
 
             # "news": "<a href = http://www.torn.com/profiles.php?XID=2000607>Kivou</a> was given $5,760,000,000 by <a href = http://www.torn.com/profiles.php?XID=517092>Karalynn</a>.",
             if news_info[-1] == "points":  # case: deposited 25 points

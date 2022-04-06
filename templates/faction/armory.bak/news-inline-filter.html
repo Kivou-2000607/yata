@@ -1,7 +1,0 @@
-<form class="flush-right news">
-{% if news.member == faction.armoryNewsFilter %}
-    <i class="fas fa-filter filter-player-activated" style="opacity: 1.0;" data-start="{{timestamps.fstart}}"  data-end="{{timestamps.fend}}" data-val=""></i>
-{% else %}
-    <i class="fas fa-filter filter-player" data-start="{{timestamps.fstart}}"  data-end="{{timestamps.fend}}" data-val="{{news.member}}"></i>
-{% endif %}
-</form>
