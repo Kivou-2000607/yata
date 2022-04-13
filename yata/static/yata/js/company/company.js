@@ -93,7 +93,7 @@ $(document).on("click", "#update-data", e => {
 // share company data
 $(document).on("click", "#company-share", e => {
     e.preventDefault();
-    $(e.currentTarget).closest("div").load( "/company/supervise/manage", {
+    $(e.currentTarget).closest("div").load( "/company/supervise/manage/", {
         type: "share", csrfmiddlewaretoken: getCookie("csrftoken")
     }).html(spinner);
 });

@@ -92,6 +92,15 @@ $(document).ready(function() {
     });
 })
 
+$(document).ready(function () {
+  // inject spinner
+  $("#wars-list").html('<div style="text-align: center;">'+spinner+'</div>');
+  // call backend for company list
+  $("#wars-list").load("/faction/attacks/wars/", {
+      csrfmiddlewaretoken: getCookie("csrftoken")
+  });
+});
+
 </script>
 
 {# h2 buttons #}
@@ -174,6 +183,15 @@ $(document).ready(function() {
       <div class="col-auto m-2 align-self-center">
         <button id="create-report-attacks" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
       </div>
+    </div>
+
+    <hr class="sep">
+
+    <h3>Create reports based on wars</h3>
+    <p><i>Select a war and create an attacks report based on its starting and ending dates.</i></p>
+
+    <div id="wars-list">
+      {# include wars list dynamically with js #}
     </div>
 {% endif %}
 </div>

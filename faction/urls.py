@@ -31,17 +31,14 @@ urlpatterns = [
     re_path(r'^chains/(?P<chainId>\w+)$', views.report, name='report'),
     re_path(r'^chains/export/(?P<chainId>\w+)/(?P<type>\w+)$', views.reportExport, name='reportExport'),
 
-    # SECTION: wall
-    re_path(r'^walls/$', views.walls, name='walls'),
-    re_path(r'^walls/manage/$', views.manageWall, name='manageWall'),
-    re_path(r'^walls/import/$', views.importWall, name='importWall'),
-
     # SECTION: attacks
     re_path(r'^attacks/$', views.attacksReports, name='attacks'),
     re_path(r'^attacks/list/(?P<reportId>\w+)$', views.attacksList, name='attacksList'),
     re_path(r'^attacks/members/(?P<reportId>\w+)$', views.attacksMembers, name='attacksMembers'),
     re_path(r'^attacks/export/(?P<reportId>\w+)/(?P<type>\w+)$', views.attacksExport, name='attacksExport'),
     re_path(r'^attacks/manage/$', views.manageAttacks, name='manageAttacks'),
+    re_path(r'^attacks/war/$', views.war, name='war'),
+    re_path(r'^attacks/wars/$', views.wars, name='wars'),
     re_path(r'^attacks/(?P<reportId>\w+)$', views.attacksReport, name='attacks'),
 
     # SECTION: revives

@@ -22,6 +22,20 @@ This file is part of yata.
 {% load static %}
 {% load app_filters %}
 
+<script>
+  $(document).ready(function () {
+    const div = $("#api-war-report")
+    // inject spinner
+    div.html('<div style="text-align: center;">'+spinner+'</div>');
+    // call backend for company list
+    div.load("/faction/attacks/war/", {
+        type: div.attr("data-typ"),
+        war_id: div.attr("data-val"),
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+  });
+</script>
+
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
       <div class="px-2 me-auto"><i class="fas fa-skull"></i>&nbsp;{{faction.name}}'s attacks report [{{report.pk}}]</div>
@@ -39,11 +53,6 @@ This file is part of yata.
 
   <div class="table-responsive">
     <table class="table table-hover table-borderless attacks-summary">
-        {% if report.wall > 0 %}
-          <thead>
-            <tr><th colspan="3">This report correspond to the <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank">{{report.wall.first}}</a></th></tr>
-          </thead>
-        {% endif %}
         <tbody>
             <tr>
                 <td><b>Start:</b> {{report.start|ts2date}}</td>
@@ -74,6 +83,25 @@ This file is part of yata.
 </div>
 
 {% if not share %}
+
+  {% if report.war_type == "ranked" %}
+    {% with war=report.get_war %}
+
+      <h2 class="title rounded-top px-2 py-2 toggle-display rounded mb-3">
+          <div class="d-flex flex-wrap align-items-center">
+            <div class="px-2 me-auto"><i class="fas fa-shield-alt"></i>&nbsp;Ranked war [{{war.war_id}}]: {{war.us.name}} VS {{war.ennemy.name}}</div>
+            <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+          </div>
+      </h2>
+      <div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+      {# <div class="container-fluid p-md-3 p-1 mb-3 module"> #}
+        <div id="api-war-report" data-typ="ranked" data-val="{{war.war_id}}">
+          {# include report dynamically with js #}
+        </div>
+      </div>
+    {% endwith %}
+  {% endif %}
+
   <h2 class="title rounded-top px-2 py-2">
       <div class="d-flex flex-wrap align-items-center">
         <div class="px-2 me-auto"><i class="fas fa-users"></i>&nbsp;Members breakdown</div>

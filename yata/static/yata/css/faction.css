@@ -1091,3 +1091,19 @@ table.faction-armory-breakdown th.bb {
 table.faction-armory-breakdown th.bc {
 	width: 22.5%;
 }
+
+/* war reports */
+table.faction-ranked-war-report {
+	min-width: 500px;
+	width: 100%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-ranked-war-report th.a {
+	width: 40%;
+}
+table.faction-ranked-war-report th.b {
+	width: 20%;
+}

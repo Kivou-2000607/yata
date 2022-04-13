@@ -142,7 +142,7 @@ class AttacksReportAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'live', 'computing', 'progress', 'crontab', 'state', 'status', 'update', 'start', 'last', 'end', 'elapsed']
     search_fields = ('pk', 'faction__name')
     list_filter = ('computing', 'live', 'state', 'crontab')
-    autocomplete_fields = ['wall']
+    # autocomplete_fields = ['wall']
     actions = [reset_report_a, start_computing, assign_crontab]
     # inlines = [AttacksFactionAdmin, AttacksPlayerAdmin]
 
@@ -176,13 +176,6 @@ class ArmoryReportAdmin(admin.ModelAdmin):
     def status(self, instance):
         return REPORTS_STATUS.get(instance.state, "?")
 
-
-class WallAdmin(admin.ModelAdmin):
-    class Media:
-        css = {'all': ('yata/css/admin.css',)}
-
-    list_display = ['__str__', 'attackerFactionName', 'defenderFactionName']
-    search_fields = ('attackerFactionName', 'defenderFactionName', 'tId')
 
 
 class LogAdmin(admin.ModelAdmin):
@@ -242,7 +235,6 @@ admin.site.register(Contributors, ContributorsAdmin)
 admin.site.register(ArmoryReport, ArmoryReportAdmin)
 admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
-admin.site.register(Wall, WallAdmin)
 admin.site.register(Chain, ChainAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Faction, FactionAdmin)

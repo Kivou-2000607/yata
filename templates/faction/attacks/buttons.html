@@ -32,10 +32,16 @@ This file is part of yata.
     {% endif %}
   </div>
   <div class="me-2">
-    {% if report.wall.first %}
-      <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank"><i class="fas fa-shield-alt valid" title="{{report.wall.first}}"></i></a>
+    {% if report.war_id %}
+      {% if report.war_type == "ranked" %}
+        <a href="https://www.torn.com/war.php?step=rankreport&rankID={{report.war_id}}" target="_blank"><i class="fas fa-shield-alt valid" title="Ranked war report {{report.war_id}}"></i></a>
+      {% elif report.war_type == "territory" %}
+        <a href="https://www.torn.com/war.php?step=warreport&warID={{report.wall.first.tId}}" target="_blank"><i class="fas fa-shield-alt valid" title="{{report.wall.first}}"></i></a>
+      {% else %}
+        <i class="fas fa-shield-alt warning" title="Unkown war type {{report.war_type}}"></i>
+      {% endif %}
     {% else %}
-      <i class="fas fa-shield-alt error" style="opacity: 0.5;" title="No wall attached"></i>
+      <i class="fas fa-shield-alt error" style="opacity: 0.5;" title="No wars related to this report"></i>
     {% endif %}
   </div>
   {% if report.live %}

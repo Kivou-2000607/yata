@@ -1322,280 +1322,6 @@ def reportExport(request, chainId, type):
         return returnError(exc=e, session=request.session)
 
 
-# SECTION: walls
-def walls(request):
-    try:
-        if request.session.get('player'):
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
-
-            walls = Wall.objects.filter(factions=faction).all()
-
-            summary = dict({})
-            for wall in walls:
-                # account for this wall only of faction id in wall.breakdown
-                breakdown = json.loads(wall.breakdown)
-                if str(faction.tId) in breakdown:
-                    pass
-                else:
-                    continue
-
-                aFac = "{} [{}]".format(wall.attackerFactionName, wall.attackerFactionId)
-                dFac = "{} [{}]".format(wall.defenderFactionName, wall.defenderFactionId)
-
-                if aFac not in summary:
-                    summary[aFac] = dict({'Total': [0, 0, 0],  # Total [Points / Joins / Clears]
-                                          'Players': dict({})})
-                if dFac not in summary:
-                    summary[dFac] = dict({'Total': [0, 0, 0],  # Total [Points / Joins / Clears]
-                                          'Players': dict({})})
-
-                attackers = json.loads(wall.attackers)
-                for k, v in attackers.items():
-                    if k not in summary[aFac]['Players']:
-                        summary[aFac]['Players'][k] = {"D": [0, 0, 0],  # [Points / Joins / Clears]
-                                                       "A": [0, 0, 0],  # [Points / Joins / Clears]
-                                                       "P": [v["XID"], v["Name"], v["Level"]]}
-                    summary[aFac]['Players'][k]["A"][0] += v["Points"]
-                    summary[aFac]['Players'][k]["A"][1] += v["Joins"]
-                    summary[aFac]['Players'][k]["A"][2] += v["Clears"]
-                    summary[aFac]['Total'][0] += v["Points"]
-                    summary[aFac]['Total'][1] += v["Joins"]
-                    summary[aFac]['Total'][2] += v["Clears"]
-
-                defenders = json.loads(wall.defenders)
-                for k, v in defenders.items():
-                    if k not in summary[dFac]['Players']:
-                        summary[dFac]['Players'][k] = {"D": [0, 0, 0],  # [Points / Joins / Clears]
-                                                       "A": [0, 0, 0],  # [Points / Joins / Clears]
-                                                       "P": [v["XID"], v["Name"], v["Level"]]}
-                    summary[dFac]['Players'][k]["A"][0] += v["Points"]
-                    summary[dFac]['Players'][k]["A"][1] += v["Joins"]
-                    summary[dFac]['Players'][k]["A"][2] += v["Clears"]
-                    summary[dFac]['Total'][0] += v["Points"]
-                    summary[dFac]['Total'][1] += v["Joins"]
-                    summary[dFac]['Total'][2] += v["Clears"]
-
-            for wall in walls:
-                wall.report = wall.getReport(faction)
-            context = {'player': player, 'factioncat': True, 'faction': faction, "walls": walls, 'summary': summary, 'view': {'walls': True}}
-
-            # get wall history
-            wallHistory, state = faction.getWallHistory()
-            if state:
-                for k, v in wallHistory:
-                    for wall in v["walls"]:
-                        wall.append(walls.filter(tId=wall[1]).first())
-                context['wallHistory'] = wallHistory
-
-            else:
-                if 'apiError' in wallHistory:
-                    selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-                    context[selectError] = wallHistory["apiError"] + " Wall history not displayed."
-                else:
-                    selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
-                    context[selectError] = "No AA key found for the faction. Wall history not displayed."
-
-            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
-            return render(request, page, context)
-
-        else:
-            message = "You might want to log in."
-            return returnError(type=403, msg=message)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
-def manageWall(request):
-    try:
-        if request.session.get('player') and request.method == 'POST':
-            player = getPlayer(request.session["player"].get("tId"))
-            factionId = player.factionId
-
-            if not player.factionAA:
-                return returnError(type=403, msg="You need AA rights.")
-
-            faction = Faction.objects.filter(tId=factionId).first()
-            if faction is None:
-                return render(request, 'yata/error.html', {'inlineError': 'Faction {} not found in the database.'.format(factionId)})
-
-            wallId = request.POST.get("wallId", 0)
-            wall = Wall.objects.filter(tId=wallId).first()
-            if wall is None:
-                return render(request, 'yata/error.html', {'inlineError': 'Wall {} not found in the database.'.format(wallId)})
-
-            elif request.POST.get("type") == "delete":
-                wall.attacksreport_set.filter(faction=faction).delete()
-                wall.factions.remove(faction)
-                if not len(wall.factions.all()):
-                    wall.delete()
-                return render(request, 'faction/walls/buttons.html')
-
-            elif request.POST.get("type") == "toggle":
-
-                breakdown = json.loads(wall.breakdown)
-
-                if str(faction.tId) in breakdown:
-                    # the wall was on we turn it off
-                    breakdown = [id for id in breakdown if id != str(faction.tId)]
-                    wall.breakSingleFaction = False
-                else:
-                    # the wall was off we turn it on
-                    breakdown.append(str(faction.tId))
-                    wall.breakSingleFaction = True
-
-                wall.breakdown = json.dumps(breakdown)
-
-            wall.save()
-            wall.report = wall.getReport(faction)
-
-            context = {"player": player, "wall": wall}
-            return render(request, 'faction/walls/buttons.html', context)
-
-        else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
-            return returnError(type=403, msg=message)
-
-    except Exception as e:
-        return returnError(exc=e, session=request.session)
-
-
-@csrf_exempt
-def importWall(request):
-    if request.method == 'POST':
-        try:
-            req = json.loads(request.body)
-
-            # get author
-            authorId = req.get("author", 0)
-            author = Player.objects.filter(tId=authorId).first()
-
-            #  check if author is in YATA
-            if author is None:
-                t = 0
-                m = "You're not register in YATA"
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("Author in yata: checked")
-
-            # check if API key is valid with api call
-            HTTP_KEY = request.META.get("HTTP_KEY")
-            call = apiCall('user', '', '', key=HTTP_KEY)
-            if "apiError" in call:
-                t = -1
-                m = call
-                # print({"message": m, "type": t})
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-
-            # check if API key sent == API key in YATA
-            if HTTP_KEY != author.getKey():
-                t = 0
-                m = "Your API key seems to be out of date in YATA, please log again"
-                # print(m)
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("API keys match: checked")
-
-            #  check if AA of a faction
-            if not author.factionAA:
-                t = 0
-                m = "You don't have AA perm"
-                # print(m)
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("AA perm: checked")
-
-            #  check if can get faction
-            faction = Faction.objects.filter(tId=author.factionId).first()
-            if faction is None:
-                t = 0
-                m = "Can't find faction {} in YATA database".format(author.factionId)
-                # print(m)
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("Faction exists: checked")
-
-            attackers = dict({})
-            defenders = dict({})
-            i = 0
-            for p in req.get("participants"):
-                i += 1
-                # print("import wall, participants before: ", p)
-                p = {k.split(" ")[0].strip(): v for k, v in p.items()}
-                if p.get("Name")[0] == '=':
-                    p["Name"] = p["Name"][2:-1]
-                # print("import wall, participants after: ", p)
-                if p.get("Position") in ["Attacker"]:
-                    attackers[p.get('XID')] = p
-                else:
-                    defenders[p.get('XID')] = p
-            # print("Wall Participants: {}".format(i))
-
-            if i > 500:
-                t = 0
-                m = "{} is too much participants for a wall".format(i)
-                # print(m)
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("# Participant: checked")
-
-            r = int(req.get('result', 0))
-            if r == -1:
-                result = "Timeout"
-            elif r == 1:
-                result = "Win"
-            else:
-                result = "Truce"
-
-            wallDic = {'tId': int(req.get('id')),
-                       'tss': int(req.get('ts_start')),
-                       'tse': int(req.get('ts_end')),
-                       'attackers': json.dumps(attackers),
-                       'defenders': json.dumps(defenders),
-                       'attackerFactionId': int(req.get('att_fac')),
-                       'defenderFactionId': int(req.get('def_fac')),
-                       'attackerFactionName': req.get('att_fac_name'),
-                       'defenderFactionName': req.get('def_fac_name'),
-                       'territory': req.get('terr'),
-                       'result': result}
-            # print("Wall headers: processed")
-
-            if faction.tId not in [wallDic.get('attackerFactionId'), wallDic.get('defenderFactionId')]:
-                t = 0
-                m = "{} is not involved in this war".format(faction)
-                # print(m)
-                return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-            # print("Faction in wall: checked")
-
-            messageList = []
-            wall = Wall.objects.filter(tId=wallDic.get('tId')).first()
-            if wall is None:
-                messageList.append("Wall {} created".format(wallDic.get('tId')))
-                creation = True
-                wall = Wall.objects.create(**wallDic)
-            else:
-                messageList.append("Wall {} modified".format(wallDic.get('tId')))
-                wall.update(wallDic)
-
-            if faction in wall.factions.all():
-                messageList.append("wall already added to {}".format(faction))
-            else:
-                messageList.append("adding wall to {}".format(faction))
-                wall.factions.add(faction)
-
-            t = 1
-            m = ", ".join(messageList)
-            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-
-        except BaseException as e:
-            t = 0
-            m = "Server error... YATA's been poorly coded: {}".format(e)
-            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
-
-    else:
-        return returnError(type=403, msg="You need to post. Don\'t try to be a smart ass.")
-
-
 # SECTION: attacks
 def attacksReports(request):
     try:
@@ -1619,21 +1345,73 @@ def attacksReports(request):
                 # dummy render
                 return render(request, page)
 
-            # create contract
+            # create report
             message = False
-            wallId = request.POST.get("wallId", 0)
-            if wallId:
-                wall = Wall.objects.filter(tId=wallId).first()
-                if wall is None:
-                    message = ["errorMessageSub", "Could not import Wall [{}]".format(wallId)]
-                elif len(faction.attacksreport_set.filter(start=wall.tss).filter(end=wall.tse)):
-                    message = ["errorMessageSub", "Wall [{}] already exists".format(wallId)]
+            war_id = request.POST.get("war_id", 0)
+            if war_id:
+                if request.POST.get("type") == "ranked":
+
+                    # get report data from API
+                    key = faction.getKey()
+                    if key is None:
+                        message = ["errorMessageSub", "No faction keys found."]
+                    else:
+                        api_report = apiCall(
+                            "torn",
+                            war_id,
+                            "rankedwarreport",
+                            key=key.value,
+                            sub="rankedwarreport",
+                            cache_response=3600,
+                            cache_private=False,
+                            verbose=True
+                        )
+
+                        # get report data
+                        start = api_report["war"]["start"]
+                        end = api_report["war"]["end"]
+
+                        other_faction = 0
+                        for faction_id in api_report["factions"]:
+                            if faction_id != str(faction.tId):
+                                other_faction = str(faction_id)
+                        war = {k: v for k, v in api_report["war"].items()}
+                        war["war_id"] = war_id
+                        if api_report["war"]["winner"] == faction.tId:
+                            war["won"] = 1
+                        else:
+                            war["won"] = 0
+
+                        war["ennemy"] = api_report["factions"][other_faction]
+                        war["us"] = api_report["factions"][str(faction.tId)]
+
+                        # create report
+                        report = faction.attacksreport_set.create(
+                            start=start,
+                            end=end,
+                            war=json.dumps(war),
+                            war_type="ranked",
+                            war_id=war_id,
+                            computing=True
+                        )
+                        report.assignCrontab()
+                        report.save()
+
+                        # send message
+                        msg = [
+                            f'New report created based on ranked war {war_id} '
+                            f'against {war["ennemy"]["name"]}',
+                            f'Starts: {timestampToDate(start, fmt=True)}',
+                            f'Ends: {timestampToDate(end, fmt=True)}'
+                        ]
+                        message = [
+                            "validMessageSub",
+                            "<br>".join(msg)
+                        ]
+
+
                 else:
-                    report = faction.attacksreport_set.create(start=wall.tss, end=wall.tse, computing=True)
-                    report.wall.add(wall)
-                    c = report.assignCrontab()
-                    report.save()
-                    message = ["validMessageSub", "New wall created.<br>Starts: {}<br>Ends: {}".format(timestampToDate(wall.tss, fmt=True), timestampToDate(wall.tse, fmt=True))]
+                    pass
 
             elif request.POST.get("type") == "new":
                 try:
@@ -2160,6 +1938,136 @@ def attacksExport(request, reportId, type):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+def wars(request):
+    """
+        feeds the wars list table
+    """
+    try:
+
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(
+                    request,
+                    'yata/error.html',
+                    {
+                        'errorMessage': f'Faction {factionId} not found in the database.'
+                    }
+                )
+
+            wars = faction.getWarsHistory()
+
+            if "apiError" in wars:
+                msg = f'API error: {wars["apiErrorString"]}'
+                context = {"apiError": msg}
+                return render(request, "yata/error.html", context)
+
+            return render(
+                request,
+                'faction/attacks/wars.html',
+                {
+                    "wars": wars,
+                }
+            )
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
+        return render(request, "yata/error.html", context)
+
+
+def war(request):
+    """
+        feeds the war API report
+    """
+    try:
+
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                msg = f'Faction {factionId} not found in the database.'
+                return render(
+                    request,
+                    'yata/error.html',
+                    {
+                        'errorMessage': msg
+                    }
+                )
+
+            war_type = request.POST.get("type")
+            war_id = request.POST.get("war_id")
+            if war_type == "ranked":
+                war = apiCall(
+                    "torn",
+                    war_id,
+                    "rankedwarreport",
+                    key=player.getKey(),
+                    sub="rankedwarreport",
+                    cache_response=3600,
+                    cache_private=False,
+                    verbose=True
+                )
+                if "apiError" in war:
+                    msg = f'API error: {war["apiErrorString"]}'
+                    context = {"inlineError": msg}
+                    return render(request, "yata/error.html", context)
+
+                # merge "members" with "factions"
+                factions = war["factions"]
+                for member_id, member in sorted(
+                    war["members"].items(),
+                    key=lambda x: -x[1]["score"]
+                ):
+                    if not member.get("attacks"):
+                        continue
+                    member_faction = str(member["faction_id"])
+                    if "members" not in factions[member_faction]:
+                        factions[member_faction]["members"] = {}
+                    factions[member_faction]["members"][member_id] = member
+
+                del war["members"]
+                # json.dump(war, open("tmp.json", 'w'), indent=4)
+
+                page = "faction/attacks/war-ranked-report.html"
+            else:
+                # unkown war type
+                msg = f'{war_type.title()} war type not handled.'
+                return render(
+                    request,
+                    'yata/error.html',
+                    {
+                        'inlineError': msg
+                    }
+                )
+
+
+
+            return render(
+                request,
+                page,
+                {
+                    "war": war,
+                }
+            )
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
+        return render(request, "yata/error.html", context)
 
 
 # SECTION: revives

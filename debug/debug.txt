@@ -1,0 +1,1 @@
+                        "news": "<a class="t-red bold" href = http://www.torn.com/factions.php?step=profile&ID=21526>NS Bomb Shelter</a> has defeated <a class="t-green bold" href = http://www.torn.com/factions.php?step=profile&ID=14365>JFK 2.1</a> in a ranked war [<a href = http://www.torn.com/war.php?step=rankreport&rankID=692>view</a>] ",

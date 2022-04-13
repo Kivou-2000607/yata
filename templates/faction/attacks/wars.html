@@ -1,0 +1,48 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+
+{% for fac_id, fac_dic in wars %}
+  <h3 class="module-doc">{{fac_dic.name}} [{{fac_id}}]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+  <div class="module-doc">
+    <ul>
+        {% for w in fac_dic.wars %}
+            <li>
+                {% if w.type == "ranked" %}
+                  <a href="https://www.torn.com/war.php?step=rankreport&rankID={{w.war_id}}" target="_blank">Ranked war [{{w.war_id}}]</a>
+                  {% if w.us_first %}
+                    <span class="valid">won</span>
+                  {% else %}
+                    <span class="error">lost</span>
+                  {% endif %}
+                  on {{w.timestamp|ts2date}}
+                {% elif w.type == "territorial" %}
+                  <a href="https://www.torn.com/war.php?step=warreport&warID={{w.war_id}}" target="_blank">Territorial war [{{w.war_id}}]</a> of {{w.timestamp|ts2date}}:
+                {% endif %}
+                {% include "faction/attacks/war-add.html" %}
+            </li>
+        {% endfor %}
+    </ul>
+  </div>
+{% endfor %}

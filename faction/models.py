@@ -262,38 +262,80 @@ class Faction(models.Model):
     def getTargetsId(self):
         return [t.target_id for t in self.target_set.all()]
 
-    def getWallHistory(self):
+    def getWarsHistory(self):
         # api call and update key
         key = self.getKey()
 
         if key is None:
-            return {}, False
+            return {}
         else:
-            news = apiCall("faction", "", "mainnews", key=key.value, sub="mainnews")
+            news = apiCall(
+                "faction",
+                self.tId,
+                "mainnews",
+                key=key.value,
+                sub="mainnews",
+                cache_response=3600,
+                cache_private=False,
+                verbose=True
+            )
 
         if 'apiError' in news:
-            return news, False
+            return news
 
-        walls = dict({})
-        for _, v in news.items():
-            reg = r'warreport&warID=\d{1,10}'
-            if re.findall(reg, v["news"]):
-                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}">'
-                fac1, fac2, war = re.findall(reg, v["news"])
-                factionId = int(fac1.split("=")[-1].replace('">', ''))
-                assaulting = 1 if factionId == self.tId else 0
-                factionId = int(fac2.split("=")[-1].replace('">', '')) if assaulting else factionId
-                warId = int(war.split("=")[-1].replace('">', ''))
+        wars = dict({})
+        for v in news.values():
 
-                if factionId not in walls:
-                    dbFaction = Faction.objects.filter(tId=factionId).first()
-                    factionName = "Faction" if dbFaction is None else dbFaction.name
-                    walls[factionId] = {"name": factionName, "n": 0, "walls": []}
+            if "rankreport&rankID=" in v["news"]:  # case ranked war
+                war_type = "ranked"
+            elif "warreport&warID=" in v["news"]:  # case territorial war
+                war_type = "territorial"
+            else:
+                continue
 
-                walls[factionId]["walls"].append([assaulting, warId, v["timestamp"]])
-                walls[factionId]["n"] += 1
+            if war_type == "ranked":
+                reg = r'rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}'
+            elif war_type == "territorial":
+                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}'
 
-        return sorted(walls.items(), key=lambda x: -x[1]["n"]), True
+            # get factions ID and war ID
+            fac_a, fac_b, war_id = re.findall(reg, v["news"])
+            fac_a = int(fac_a.split("=")[-1])
+            fac_b = int(fac_b.split("=")[-1])
+            war_id = int(war_id.split("=")[-1])
+
+            # get other faction id
+            us_first = 1 if fac_a == self.tId else 0
+            other_fac_id = fac_b if us_first else fac_a
+
+            if other_fac_id not in wars:
+                if war_type == "ranked":
+                    reg = fr'ID={other_fac_id}>(.*?)</a>'
+                elif war_type == "territorial":
+                    reg = fr'ID={other_fac_id}">(.*?)</a>'
+
+                name = re.findall(reg, v["news"])[0]
+                wars[other_fac_id] = {
+                    "name": name,
+                    "n": 0,
+                    "wars": []
+                }
+
+            # try to get report
+            report = self.attacksreport_set.filter(
+                war_id=war_id,
+                war_type=war_type
+            ).first()
+            wars[other_fac_id]["wars"].append({
+                "type": war_type,
+                "us_first": us_first,
+                "war_id": war_id,
+                "report": report,
+                "timestamp": v["timestamp"]
+            })
+            wars[other_fac_id]["n"] += 1
+
+        return sorted(wars.items(), key=lambda x: -x[1]["n"])
 
     def updateCrimes(self, force=False):
 
@@ -2159,50 +2201,6 @@ class AttackChain(models.Model):
         return format_html("Attack for chain [{}]".format(self.tId))
 
 
-# Walls
-class Wall(models.Model):
-    tId = models.IntegerField(default=0)
-    tss = models.IntegerField(default=0)
-    tse = models.IntegerField(default=0)
-    attackers = models.TextField(default="{}", null=True, blank=True)
-    defenders = models.TextField(default="{}", null=True, blank=True)
-    attackerFactionId = models.IntegerField(default=0)
-    attackerFactionName = models.CharField(default="AttackFaction", max_length=64)
-    defenderFactionId = models.IntegerField(default=0)
-    defenderFactionName = models.CharField(default="DefendFaction", max_length=64)
-    territory = models.CharField(default="AAA", max_length=3)
-    result = models.CharField(default="Unset", max_length=10)
-    factions = models.ManyToManyField(Faction, blank=True)
-    # array of the two faction ID. Toggle wall for a faction adds/removes the ID to this array
-    breakdown = models.TextField(default="[]", null=True, blank=True)
-    # temporary bool only here to pass breakdown of the faction to template
-    breakSingleFaction = models.BooleanField(default=False)
-
-    def __str__(self):
-        return format_html("Wall [{}]".format(self.tId))
-
-    def update(self, req):
-        self.tId = int(req.get('tId'))
-        self.tss = int(req.get('tss'))
-        self.tse = int(req.get('tse'))
-        self.attackers = req.get('attackers')
-        self.defenders = req.get('defenders')
-        self.attackerFactionId = int(req.get('attackerFactionId'))
-        self.attackerFactionName = req.get('attackerFactionName')
-        self.defenderFactionId = int(req.get('defenderFactionId'))
-        self.defenderFactionName = req.get('defenderFactionName')
-        self.territory = req.get('territory')
-        self.result = req.get('result', 0)
-
-        self.save()
-
-    def getReport(self, faction):
-        # WARNING a wall does not belong to a single faction
-        # get potential report
-        report = self.attacksreport_set.filter(faction=faction).first()
-        return False if report is None else report
-
-
 # Attacks report
 class AttacksReport(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -2226,8 +2224,10 @@ class AttacksReport(models.Model):
     defends = models.IntegerField(default=0)
     attacks = models.IntegerField(default=0)
 
-    # link to wall
-    wall = models.ManyToManyField(Wall, blank=True)
+    # war
+    war = models.TextField(default="{}")
+    war_type = models.CharField(default="Unkown", max_length=16)
+    war_id = models.IntegerField(default=0)
 
     # share ID
     shareId = models.SlugField(default="", null=True, blank=True, max_length=32)
@@ -2634,6 +2634,9 @@ class AttacksReport(models.Model):
         o2 = 0 if o1 == 6 else 6
         return sorted(members.items(), key=lambda x: (-x[1][type][o1], -x[1][type][o2]))
 
+    def get_war(self):
+        print(type(self.war))
+        return json.loads(self.war)
 
 class AttacksFaction(models.Model):
     report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
