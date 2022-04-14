@@ -38,7 +38,7 @@
       // inject spinner
       $("#company-list").html('<div style="text-align: center;">'+spinner+'</div>');
       // call backend for company list
-      $("#company-list").load("/company/browse/companies", {
+      $("#company-list").load("/company/browse/companies/", {
           company_id: $("#company-id").attr("data-val"),
           csrfmiddlewaretoken: getCookie("csrftoken")
       });
