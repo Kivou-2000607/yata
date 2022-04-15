@@ -36,10 +36,21 @@ This file is part of yata.
                   {% else %}
                     <span class="error">lost</span>
                   {% endif %}
-                  on {{w.timestamp|ts2date}}
                 {% elif w.type == "territorial" %}
-                  <a href="https://www.torn.com/war.php?step=warreport&warID={{w.war_id}}" target="_blank">Territorial war [{{w.war_id}}]</a> of {{w.timestamp|ts2date}}:
+                  <a href="https://www.torn.com/war.php?step=warreport&warID={{w.war_id}}" target="_blank">
+                      Territorial war [{{w.war_id}}]
+                  </a>
+                  over the sovereignty of
+                  <a href="http://www.torn.com/city.php#terrName={{w.territory}}" target="_blank">
+                    {{w.territory}}
+                  </a>
+                {% elif w.type == "raid" %}
+                  <a href="https://www.torn.com/war.php?step=raidreport&raidID={{w.war_id}}" target="_blank">
+                      Raid [{{w.war_id}}]
+                  </a>
+                  ceased by {% if w.us_first %}us{% else %}them{% endif %}
                 {% endif %}
+                on {{w.timestamp|ts2date}}
                 {% include "faction/attacks/war-add.html" %}
             </li>
         {% endfor %}

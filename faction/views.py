@@ -1409,6 +1409,178 @@ def attacksReports(request):
                             "<br>".join(msg)
                         ]
 
+                elif request.POST.get("type") == "territorial":
+
+                    key = faction.getKey()
+                    if key is None:
+                        message = ["errorMessageSub", "No faction keys found."]
+                    else:
+
+                        mainnews = apiCall(
+                            "faction",
+                            faction.tId,
+                            "mainnews",
+                            key=player.getKey(),
+                            sub="mainnews",
+                            cache_response=3600,
+                            cache_private=False,
+                            verbose=True
+                        )
+                        if "apiError" in mainnews:
+                            message = [
+                                "errorMessageSub",
+                                f'API error: {mainnews["apiErrorString"]}'
+                            ]
+                        else:
+                            war_id = request.POST.get("war_id")
+                            faction_id = request.POST.get("faction_id")
+                            faction_name = request.POST.get("faction_name")
+                            territory = request.POST.get("territory")
+                            end = int(request.POST.get("timestamp"))
+                            start = 0
+                            # fetch corresponding initial assault news
+                            # to get start
+                            for news in mainnews.values():
+                                if news["timestamp"] >= end:
+                                    continue
+
+                                # needs to find all these keys in the news
+                                regs = [
+                                    'has initiated an assault',
+                                    f'terrName={territory}',
+                                    f'step=profile&ID={faction_id}',
+                                ]
+                                reg = fr'{"|".join(regs)}'
+                                if re.findall(reg, news["news"]):
+                                    start = news["timestamp"]
+                                    continue
+                                else:
+                                    pass
+
+                            if not start:
+                                message = [
+                                    "errorMessageSub",
+                                    f'Can\'t find when assault for {territory}'
+                                    'started.'
+                                ]
+                            else:
+                                # create report
+                                war = {
+                                    "faction_id": faction_id,
+                                    "faction_name": faction_name,
+                                    "territory": territory,
+                                    "war_id": war_id,
+                                    "start": start,
+                                    "end": end
+                                }
+                                report = faction.attacksreport_set.create(
+                                    start=start,
+                                    end=end,
+                                    war=json.dumps(war),
+                                    war_type="territorial",
+                                    war_id=war_id,
+                                    computing=True
+                                )
+                                report.assignCrontab()
+                                report.save()
+
+                                # send message
+                                msg = [
+                                    f'New report created based on territory war {war_id} '
+                                    f'against {faction_name} over the sovereignty of {territory}',
+                                    f'Starts: {timestampToDate(start, fmt=True)}',
+                                    f'Ends: {timestampToDate(end, fmt=True)}'
+                                ]
+                                message = [
+                                    "validMessageSub",
+                                    "<br>".join(msg)
+                                ]
+
+                elif request.POST.get("type") == "raid":
+
+                    key = faction.getKey()
+                    if key is None:
+                        message = ["errorMessageSub", "No faction keys found."]
+                    else:
+
+                        mainnews = apiCall(
+                            "faction",
+                            faction.tId,
+                            "mainnews",
+                            key=player.getKey(),
+                            sub="mainnews",
+                            cache_response=3600,
+                            cache_private=False,
+                            verbose=True
+                        )
+                        if "apiError" in mainnews:
+                            message = [
+                                "errorMessageSub",
+                                f'API error: {mainnews["apiErrorString"]}'
+                            ]
+                        else:
+                            war_id = request.POST.get("war_id")
+                            faction_id = request.POST.get("faction_id")
+                            faction_name = request.POST.get("faction_name")
+                            end = int(request.POST.get("timestamp"))
+                            start = 0
+                            # fetch corresponding initial assault news
+                            # to get start
+                            for news in mainnews.values():
+                                if news["timestamp"] >= end:
+                                    continue
+
+                                # needs to find all these keys in the news
+                                # print(news["news"])
+                                regs = [
+                                    'has initiated a raid',
+                                    f'step=profile&ID={faction_id}',
+                                ]
+                                reg = fr'{"|".join(regs)}'
+                                if re.findall(reg, news["news"]):
+                                    start = news["timestamp"]
+                                    continue
+                                else:
+                                    pass
+
+                            if not start:
+                                message = [
+                                    "errorMessageSub",
+                                    f'Can\'t find when assault for {territory}'
+                                    'started.'
+                                ]
+                            else:
+                                # create report
+                                war = {
+                                    "faction_id": faction_id,
+                                    "faction_name": faction_name,
+                                    "war_id": war_id,
+                                    "start": start,
+                                    "end": end
+                                }
+                                report = faction.attacksreport_set.create(
+                                    start=start,
+                                    end=end,
+                                    war=json.dumps(war),
+                                    war_type="raid",
+                                    war_id=war_id,
+                                    computing=True
+                                )
+                                report.assignCrontab()
+                                report.save()
+
+                                # send message
+                                msg = [
+                                    f'New report created based on raid {war_id} '
+                                    f'against {faction_name}',
+                                    f'Starts: {timestampToDate(start, fmt=True)}',
+                                    f'Ends: {timestampToDate(end, fmt=True)}'
+                                ]
+                                message = [
+                                    "validMessageSub",
+                                    "<br>".join(msg)
+                                ]
+
 
                 else:
                     pass
@@ -2040,6 +2212,7 @@ def war(request):
                 # json.dump(war, open("tmp.json", 'w'), indent=4)
 
                 page = "faction/attacks/war-ranked-report.html"
+
             else:
                 # unkown war type
                 msg = f'{war_type.title()} war type not handled.'

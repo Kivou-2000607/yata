@@ -118,12 +118,16 @@ $(document).on("change", "select.faction-attack-header-filter", e => {
 $(document).on("click", "a.create-war-report", e => {
     e.preventDefault();
     const type = $(e.currentTarget).attr("data-typ")
-    const allowed_types = ["ranked"]
+    const allowed_types = ["ranked", "territorial", "raid"]
     $(e.currentTarget).html(spinner);
     if(allowed_types.includes(type)) {
       $("#content-update").load("/faction/attacks/", {
         type: $(e.currentTarget).attr("data-typ"),
         war_id: $(e.currentTarget).attr("data-val"),
+        timestamp: $(e.currentTarget).attr("data-tim"),
+        faction_id: $(e.currentTarget).attr("data-fid"),
+        faction_name: $(e.currentTarget).attr("data-fna"),
+        territory: $(e.currentTarget).attr("data-ter"),
         csrfmiddlewaretoken: getCookie("csrftoken")
       });
       $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");

@@ -288,15 +288,15 @@ class Faction(models.Model):
 
             if "rankreport&rankID=" in v["news"]:  # case ranked war
                 war_type = "ranked"
+                reg = r'rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}'
             elif "warreport&warID=" in v["news"]:  # case territorial war
                 war_type = "territorial"
+                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}'
+            elif "raidreport&raidID=" in v["news"]:  # case raid war
+                war_type = "raid"
+                reg = r'raidreport&raidID=\d{1,10}|step=profile&ID=\d{1,10}'
             else:
                 continue
-
-            if war_type == "ranked":
-                reg = r'rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}'
-            elif war_type == "territorial":
-                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}'
 
             # get factions ID and war ID
             fac_a, fac_b, war_id = re.findall(reg, v["news"])
@@ -313,6 +313,8 @@ class Faction(models.Model):
                     reg = fr'ID={other_fac_id}>(.*?)</a>'
                 elif war_type == "territorial":
                     reg = fr'ID={other_fac_id}">(.*?)</a>'
+                elif war_type == "raid":
+                    reg = fr'ID={other_fac_id}">(.*?)</a>'
 
                 name = re.findall(reg, v["news"])[0]
                 wars[other_fac_id] = {
@@ -320,6 +322,17 @@ class Faction(models.Model):
                     "n": 0,
                     "wars": []
                 }
+
+            # extra data (dump for js)
+            extra = {}
+            if war_type == "territorial":
+                reg = r'terrName=(.*?)">'
+                extra["territory"] = re.findall(reg, v["news"])[0]
+                reg = fr'ID={other_fac_id}">(.*?)</a>'
+                extra["other_fac_name"] = re.findall(reg, v["news"])[0]
+            elif war_type == "raid":
+                reg = fr'ID={other_fac_id}">(.*?)</a>'
+                extra["other_fac_name"] = re.findall(reg, v["news"])[0]
 
             # try to get report
             report = self.attacksreport_set.filter(
@@ -331,9 +344,17 @@ class Faction(models.Model):
                 "us_first": us_first,
                 "war_id": war_id,
                 "report": report,
-                "timestamp": v["timestamp"]
+                "other_fac_id": other_fac_id,
+                "timestamp": v["timestamp"],
+                **extra
             })
             wars[other_fac_id]["n"] += 1
+
+        # print("get wars")
+        # for k1, v1 in wars.items():
+        #     print(f'{k1}')
+        #     for k2, v2 in v1.items():
+        #         print(f'\t{k2}: {v2}')
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
 
