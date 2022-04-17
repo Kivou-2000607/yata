@@ -3588,10 +3588,14 @@ def spiesImport(request):
                             if key == "name":  # get names and target id
                                 target_id = value.split("[")[1].replace("]", "")
                                 spy["target_name"] = value.split("[")[0]
+                                if int(target_id) > 2147483647:
+                                    raise ValueError(f'Target ID for player {spy["target_name"]} [{target_id}] out of bounds.')
                                 line_parsed += 1
                             elif key in ["strength", "speed", "dexterity", "defense", "total"]:
                                 integer = value.replace(",", "").strip()
                                 spy[key] = int(integer) if integer.isdigit() else -1
+                                if spy[key] > 9223372036854775807:
+                                    raise ValueError(f'Stat {key} = {spy[key]} out of bounds.')
                                 spy[f'{key}_timestamp'] = ts
                                 line_parsed += 1
 
@@ -3653,8 +3657,11 @@ def spiesImport(request):
                                 if len(splt1) == 1:
                                     splt1 = [_.strip("\"").strip("\'").replace(" ", "") for _ in row.rstrip().decode().split(",")]  # try torn stats style
                                 splt2 = row.decode().split(",")  # try yata style
+
                                 if len(splt1) == 11:
                                     target_id = int(splt1[1].split("[")[1].replace("]", ""))
+                                    if target_id > 2147483647:
+                                        raise ValueError(f'Target ID = {target_id} out of bounds.')
                                     ts = int(time.mktime(datetime.datetime.strptime(splt1[10], "%d/%m/%y").timetuple()))
                                     new_spies[target_id] = {}
                                     for j, k in enumerate(["strength", "defense", "speed", "dexterity", "total"]):
@@ -3663,6 +3670,8 @@ def spiesImport(request):
                                         timestamp = ts if stat + 1 else 0
                                         new_spies[target_id][k] = stat
                                         new_spies[target_id][f'{k}_timestamp'] = timestamp
+                                        if stat > 9223372036854775807:
+                                            raise ValueError(f'Stat {key} = {stat} out of bounds.')
 
                                     new_spies[target_id]["target_faction_name"] = splt1[3].replace("None", "Faction") if splt1[3] else "Faction"
                                     new_spies[target_id]["target_faction_id"] = 0
@@ -3715,6 +3724,7 @@ def spiesImport(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
 
 def fightclub(request):
     try:
