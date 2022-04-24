@@ -1,7 +1,14 @@
+.env
+.gitignore
+
+
 *~
 *.pyc
 venv
-.env
+
+requirements.txt
+.gitignore
+
 **/.vscode/
 db.sqlite3*
 secretkey.txt
