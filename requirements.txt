@@ -28,19 +28,19 @@ requests==2.27.1
 python-decouple==3.6
 schedule==1.1.0                          
 python-magic>=0.4.22
-#python-magic-bin==0.4.14                 # Uncomment for Windows
-Pillow==9.0.1                            # If OOM: pip install --compile --install-option=-O1 Pillow
+# python-magic-bin==0.4.14                  # Uncomment for Windows
+Pillow==9.0.1                               # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 fontawesome-free
 
 # http server                            
-#gunicorn==20.1.0                         # Uncomment for Windows
-uwsgi==2.0.20                            # MacOS
+# gunicorn==20.1.0                          # Uncomment for Windows
+# uwsgi==2.0.20                             # MacOS
 
 # database
 psycopg2-binary==2.9.3
-# psycopg2==2.9.3                        # dependencies: libpq-dev python3-dev
+# psycopg2==2.9.3                           # dependencies: libpq-dev python3-dev
 
 # math
-numpy==1.21.5                            # avoid 1.22: https://stackoverflow.com/questions/70612364/numpy-warning-with-django-4-numpy-float64-type-is-zero
+numpy==1.21.5                               # avoid 1.22: https://stackoverflow.com/questions/70612364/numpy-warning-with-django-4-numpy-float64-type-is-zero
 scipy==1.7.3

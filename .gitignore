@@ -1,7 +1,7 @@
-# -- Windows Users --
-# Highlight commented lines, Ctrl+K -> Ctrl+U
-# .gitignore                # Uncomment for Windows
-# .requirements.txt         # Uncomment for Windows
+# -- Windows users uncomment --
+#.gitignore               
+#.requirements.txt  
+
 *~
 *.pyc
 venv
