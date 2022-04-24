@@ -1,6 +1,6 @@
 # .gitignore
-# .requirements.txt
-# .env
+.requirements.txt
+.env
 
 *~
 *.pyc
