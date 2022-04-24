@@ -1,0 +1,1109 @@
+/* MAIN PAGE */
+
+/* targets */
+table.target-targets {
+	min-width: 600px;
+	width: 70%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.target-targets th.a {
+	width: 20%;
+	text-align: left;
+}
+table.target-targets th.b {
+	width: 10%;
+	text-align: center;
+}
+table.target-targets th.c {
+	width: 5%;
+	text-align: center;
+}
+table.target-targets th.d {
+	width: 15%;
+	text-align: left;
+}
+table.target-targets th.e {
+	width: 15%;
+	text-align: center;
+}
+table.target-targets th.f {
+	width: 20%;
+	text-align: left;
+}
+table.target-targets th.g {
+	width: 10%;
+	text-align: center;
+}
+table.target-targets th.h {
+	width: 5%;
+	text-align: center;
+}
+div.life-bar {
+	background-color: var(--div-life-bar-background-color);
+	border-radius: 4px;
+	width: 100%;
+	height: 14px;
+	display: inline-block;
+}
+
+div.life-bar > span {
+	display: block;
+	height: 100%;
+	border-radius: 4px;
+	box-shadow: inset 0 2px 9px rgba(255, 255, 255, 0.3), inset 0 -2px 6px rgba(0, 0, 0, 0.4);
+	position: relative;
+	overflow: hidden;
+	text-align: center;
+	line-height: 14px;
+	font-weight: 700;
+	background-color: var(--div-life-bar-span-background-color);
+}
+
+@-webkit-keyframes need-refresh {
+	0% {
+		background-color: #ff00001e;
+	}
+	50% {
+		background-color: inherit;
+	}
+	100% {
+		background-color: #ff00001e;
+	}
+}
+@-moz-keyframes need-refresh {
+	0% {
+		background-color: #ff00001e;
+	}
+	50% {
+		background-color: inherit;
+	}
+	100% {
+		background-color: #ff00001e;
+	}
+}
+@-o-keyframes need-refresh {
+	0% {
+		background-color: #ff00001e;
+	}
+	50% {
+		background-color: inherit;
+	}
+	100% {
+		background-color: #ff00001e;
+	}
+}
+@keyframes need-refresh {
+	0% {
+		background-color: #ff00001e;
+	}
+	50% {
+		background-color: inherit;
+	}
+	100% {
+		background-color: #ff00001e;
+	}
+}
+.need-refresh {
+	-webkit-animation: need-refresh 2s infinite; /* Safari 4+ */
+	-moz-animation: need-refresh 2s infinite; /* Fx 5+ */
+	-o-animation: need-refresh 2s infinite; /* Opera 12+ */
+	animation: need-refresh 2s infinite; /* IE 10+ */
+}
+
+/* logs */
+table.networth-graph {
+	width: 90%;
+}
+table.faction-networth {
+	min-width: 800px;
+	width: 70%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-networth th.a {
+	width: 10%;
+} /* x1 */
+table.faction-networth th.b {
+	width: 15%;
+} /* x6 */
+table.faction-networth tr.today {
+	background: var(--table-faction-networth-tr-today-background);
+}
+table.faction-networth tr.today:hover {
+	background: var(--table-faction-networth-tr-today-hover-background);
+}
+
+/* events */
+div.faction-event {
+	border: 1px solid #ccc;
+	background-color: var(--div-faction-event-background-color);
+	min-width: 25%;
+}
+
+div.event-description {
+	font-style: italic;
+	color: var(--div-event-description-color);
+	white-space: nowrap;
+}
+
+/* CHAINS */
+
+/* table.faction-chains { min-width: 800px; width: 100%; margin: auto;} */
+table.faction-chains th.a {
+	width: 10%;
+}
+table.faction-chains th.b {
+	width: 15%;
+} /* x2 */
+table.faction-chains th.c {
+	width: 17%;
+}
+table.faction-chains th.d {
+	width: 10%;
+} /* x3 */
+table.faction-chains th.e {
+	width: 12%;
+}
+/* table.faction-chains td.e a { display: inline; } */
+/* table.faction-chains td.e form { display: inline; } */
+table.faction-chains tr.live {
+	background: var(--table-faction-chains-tr-live-color);
+}
+table.faction-chains tr.live:hover {
+	background: var(--table-faction-chains-tr-live-hover-color);
+}
+table.chain-summary {
+	min-width: 700px;
+	width: 70%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+
+div.faction-bonus {
+	border: 1px solid #ccc;
+	background-color: var(--div-faction-bonus-background-color);
+	min-width: 10%;
+}
+
+table.faction-report th.a {
+	width: 4%;
+}
+table.faction-report th.b {
+	width: 15%;
+}
+table.faction-report th.c {
+	width: 9%;
+}
+table.faction-report tr.zero-hits {
+	background: var(--table-faction-report-tr-zero-hits-background);
+	display: none;
+}
+table.faction-report tr.zero-hits:hover {
+	background: var(--table-faction-report-tr-zero-hits-hover-background);
+}
+table.faction-report tr.my-row {
+	background: var(--table-faction-report-tr-my-row-background);
+	font-weight: 700;
+}
+table.faction-report tr.my-row:hover {
+	background: var(--table-faction-report-tr-my-row-hover-background);
+	font-weight: 700;
+}
+
+tr.kicked-members {
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
+table.faction-jsummary {
+	min-width: 700px;
+	width: 60%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-jbonus {
+	min-width: 700px;
+	width: 60%;
+	margin: auto;
+	overflow: hidden;
+}
+table.faction-jbonus th.a {
+	width: 25%;
+	text-align: left;
+}
+table.faction-jbonus th.b {
+	width: 17.5%;
+	text-align: left;
+}
+table.faction-jbonus th.c {
+	width: 10%;
+	text-align: center;
+} /* x3 */
+table.faction-jbonus th.d {
+	width: 17.5%;
+	text-align: right;
+}
+table.faction-jbonus th.e {
+	width: 10%;
+	text-align: center;
+}
+
+/* ATTACKS */
+table.faction-attacks-report td.a {
+	width: 10%;
+	text-align: left;
+}
+table.faction-attacks-report td.b {
+	width: 15%;
+	text-align: center;
+} /* 3 */
+table.faction-attacks-report td.c {
+	width: 15%;
+	text-align: center;
+} /* 2 */
+table.faction-attacks-report td.d {
+	width: 15%;
+	text-align: left;
+}
+
+table.attacks-summary {
+	min-width: 700px;
+	width: 70%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-attacks-report-factions {
+	min-width: 500px;
+	width: 100%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-attacks-report-factions th.a {
+	width: 30%;
+}
+table.faction-attacks-report-factions th.b {
+	width: 15%;
+}
+table.faction-attacks-report-factions th.c {
+	width: 10%;
+}
+table.faction-attacks-report-players {
+	min-width: 500px;
+	width: 100%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-attacks-report-players th.a {
+	width: 30%;
+}
+table.faction-attacks-report-players th.b {
+	width: 15%;
+}
+table.faction-attacks-report-players th.c {
+	width: 10%;
+}
+table.faction-attacks-members-breakdown th.a {
+	width: 16%;
+}
+table.faction-attacks-members-breakdown th.b {
+	width: 6%;
+}
+
+table.faction-attacks-list td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-attacks-list th.a {
+	width: 15%;
+}
+table.faction-attacks-list th.b {
+	width: 15%;
+}
+table.faction-attacks-list th.c {
+	width: 10%;
+}
+table.faction-attacks-list th.d {
+	width: 5%;
+}
+
+i.filter-player {
+	color: var(--i-filter-player-color);
+	opacity: 0.2;
+	cursor: pointer;
+}
+tr:hover > td > form > i.filter-player {
+	opacity: 0.5;
+}
+tr:hover > td > span > a > i.filter-player {
+	opacity: 0.5;
+}
+i.filter-player:hover {
+	opacity: 1 !important;
+}
+i.filter-player-activated {
+	color: var(--i-filter-player-activated-color);
+	cursor: pointer;
+}
+i.filter-player-activated:hover {
+	color: var(--i-filter-player-activated-hover-color);
+}
+
+/* WALLS */
+table.faction-walls th.a {
+	width: 10%;
+} /* x1 */
+table.faction-walls th.b {
+	width: 11%;
+} /* x2 */
+table.faction-walls th.c {
+	width: 13%;
+} /* x1 */
+table.faction-walls th.d {
+	width: 13%;
+} /* x2 */
+table.faction-walls th.e {
+	width: 8%;
+} /* x3 */
+table.faction-walls td.Timeout {
+	color: var(--table-faction-walls-td-Timeout-color);
+} /* x3 */
+table.faction-walls td.Truce {
+	color: var(--table-faction-walls-td-Truce-color);
+} /* x3 */
+
+table.faction-walls-breakdown {
+	min-width: 400px;
+	width: 60%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-walls-breakdown th.a {
+	width: 30%;
+}
+table.faction-walls-breakdown th.b {
+	width: 10%;
+}
+table.faction-walls-breakdown th.c {
+	width: 20%;
+}
+table.faction-walls-breakdown th.d {
+	width: 20%;
+}
+table.faction-walls-breakdown-total {
+	min-width: 400px;
+	width: 60%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+	table-layout: fixed;
+}
+table.faction-walls-breakdown-total td.a {
+	width: 30%;
+}
+table.faction-walls-breakdown-total td.b {
+	width: 10%;
+}
+table.faction-walls-breakdown-total td.c {
+	width: 20%;
+}
+table.faction-walls-breakdown-total td.d {
+	width: 20%;
+}
+
+table.faction-simulator-faction-wise {
+	min-width: 600px;
+	width: 70%;
+	margin: auto;
+}
+table.faction-simulator-faction-wise {
+	background: var(--table-faction-simulator-faction-wise-background);
+}
+table.faction-simulator-branch-wise {
+	min-width: 600px;
+	width: 70%;
+	margin: auto;
+}
+table.faction-simulator-branch-wise th.a {
+	width: 10%;
+} /* x1 */
+table.faction-simulator-branch-wise th.b {
+	width: 10%;
+} /* x6 */
+table.faction-simulator-branch-wise th.c {
+	width: 6%;
+} /* x5 */
+table.faction-simulator-branch-wise tr.max-order {
+	text-decoration: line-through;
+	opacity: 0.5;
+	font-style: oblique;
+} /* x5 */
+
+table.faction-simulator {
+	min-width: 600px;
+	width: 70%;
+	margin: auto;
+}
+table.faction-simulator td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+
+table.faction-simulator tr.order-1 {
+	background-color: #447e9b11;
+}
+table.faction-simulator tr.order-2 {
+	background-color: #447e9b22;
+}
+table.faction-simulator tr.order-3 {
+	background-color: #447e9b33;
+}
+table.faction-simulator tr.order-4 {
+	background-color: #447e9b44;
+}
+table.faction-simulator tr.order-5 {
+	background-color: #447e9b55;
+}
+table.faction-simulator tr.order-6 {
+	background-color: #447e9b66;
+}
+table.faction-simulator tr.order-7 {
+	text-decoration: line-through;
+	opacity: 0.5;
+	font-style: oblique;
+}
+table.faction-simulator tr.order-8 {
+	text-decoration: line-through;
+	opacity: 0.5;
+	font-style: oblique;
+}
+table.faction-simulator tr.order-core {
+	background-color: #0001;
+}
+table.faction-simulator td.show-upgrade-details {
+	cursor: help;
+	height: 30px;
+}
+select.faction-upgrade-tree {
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	overflow: hidden;
+	/* -webkit-appearance: none; */
+	font-weight: 700;
+	/* height: 16px; */
+	width: 20px;
+	text-align: center;
+	/* margin-top: 2px;
+    margin-left: 5px; */
+	border-width: 0px;
+	background: var(--select-faction-upgrade-tree-background);
+	-moz-appearance: none; /* Firefox */
+	-webkit-appearance: none; /* Safari and Chrome */
+	appearance: none;
+}
+
+table.faction-simulator th.a {
+	width: 12%;
+	text-align: left;
+} /* x1 */
+table.faction-simulator th.b {
+	width: 16%;
+	text-align: left;
+} /* x1 */
+table.faction-simulator th.c {
+	width: 7%;
+	text-align: center;
+} /* x6 */
+table.faction-simulator th.d {
+	width: 10%;
+	text-align: right;
+} /* x3 */
+
+table.faction-simulator-details {
+	min-width: 600px;
+	table-layout: fixed;
+} /* x1 */
+table.faction-simulator-details td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+} /* x1 */
+table.faction-simulator-details td.a {
+	width: 15%;
+	text-align: left;
+} /* x1 */
+table.faction-simulator-details td.b {
+	width: 40%;
+	text-align: left;
+} /* x1 */
+table.faction-simulator-details td.c {
+	width: 35%;
+	text-align: left;
+} /* x1 */
+table.faction-simulator-details td.d {
+	width: 10%;
+	text-align: right;
+} /* x1 */
+
+tr.upgrade-details {
+	cursor: pointer;
+	display: none;
+	padding: 0;
+	background-color: var(--tr-upgrade-details-background-color);
+	color: #555;
+}
+
+/* configuration */
+table.faction-aa-keys {
+	min-width: 500px;
+	width: 50%;
+	margin: auto;
+}
+table.faction-aa-keys th.a {
+	width: 30%;
+} /* x2 */
+table.faction-aa-keys th.b {
+	width: 15%;
+} /* x1 */
+table.faction-aa-keys th.c {
+	width: 25%;
+} /* x1 */
+table.faction-events {
+	min-width: 500px;
+	width: 50%;
+	margin: auto;
+}
+table.faction-events th.a {
+	width: 30%;
+} /* x2 */
+table.faction-events th.b {
+	width: 60%;
+} /* x2 */
+table.faction-events th.c {
+	width: 10%;
+} /* x2 */
+
+/* crimes */
+table.faction-crimes-breakdown {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-crimes-breakdown td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-crimes-breakdown th.a {
+	width: 17%;
+}
+table.faction-crimes-breakdown th.b {
+	width: 7%;
+}
+table.faction-crimes-breakdown th.c {
+	width: 10%;
+}
+table.faction-crimes-breakdown th.d {
+	width: 13%;
+}
+table.faction-crimes-breakdown th.e {
+	width: 6%;
+}
+table.faction-crimes-breakdown th.f {
+	width: 6%;
+}
+
+table.faction-crimes-teams {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-crimes-teams td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-crimes-teams th.a {
+	width: 17%;
+}
+table.faction-crimes-teams th.b {
+	width: 7%;
+}
+table.faction-crimes-teams th.c {
+	width: 10%;
+}
+table.faction-crimes-teams th.d {
+	width: 13%;
+}
+table.faction-crimes-teams th.e {
+	width: 6%;
+}
+
+table.faction-crimes-team {
+	min-width: 400px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-crimes-team td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-crimes-team th.a {
+	width: 40%;
+}
+table.faction-crimes-team th.b {
+	width: 20%;
+}
+
+table.faction-crimes-list-current {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-crimes-list-current td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-crimes-list-current th.a {
+	width: 13%;
+	text-align: left;
+	font-weight: 700;
+}
+table.faction-crimes-list-current th.b {
+	width: 20%;
+	text-align: left;
+}
+table.faction-crimes-list-current th.c {
+	width: 17%;
+	text-align: left;
+}
+table.faction-crimes-list-current th.d {
+	width: 13%;
+	text-align: center;
+}
+table.faction-crimes-list-current th.e {
+	width: 14%;
+	text-align: right;
+}
+table.faction-crimes-list-current th.f {
+	width: 10%;
+	text-align: center;
+}
+
+table.faction-crimes-list-past {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-crimes-list-past td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-crimes-list-past th.a {
+	width: 5%;
+	text-align: center;
+}
+table.faction-crimes-list-past th.b {
+	width: 17.5%;
+	text-align: left;
+}
+table.faction-crimes-list-past th.c {
+	width: 15%;
+	text-align: left;
+}
+table.faction-crimes-list-past th.d {
+	width: 15%;
+	text-align: center;
+}
+table.faction-crimes-list-past th.e {
+	width: 10%;
+	text-align: right;
+}
+table.faction-crimes-list-past th.f {
+	width: 7.5%;
+	text-align: right;
+}
+
+/* spies */
+table.spy-database {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.spy-database td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.spy-database th.a {
+	width: 15%;
+	text-align: left;
+}
+table.spy-database th.b {
+	width: 15%;
+	text-align: left;
+}
+table.spy-database th.c {
+	width: 10%;
+	text-align: right;
+}
+table.spy-database th.d {
+	width: 15%;
+	text-align: center;
+}
+table.spy-database th.e {
+	width: 5%;
+	text-align: center;
+}
+span.spies-faction {
+	cursor: default;
+	border: solid 1px;
+	/* border-radius: 5px; */
+	/* padding: 5px 10px; */
+	/* margin: 10px; */
+	display: inline-block;
+	text-transform: uppercase;
+	font-weight: 700;
+}
+
+span.spies-faction.kickable:hover {
+	/* color: #eee!important; */
+	border-color: #cc3434;
+	color: var(--span-spies-faction-kickable-hover-color) !important;
+	-webkit-box-shadow: 0 5px 40px -10px #000;
+	-moz-box-shadow: 0 5px 40px -10px #000;
+	box-shadow: 0 5px 40px -10px #000;
+	/* border-radius: 10px; */
+	transition: all 0.4s ease 0s;
+	cursor: pointer;
+}
+span.spies-faction.kickable:hover:after {
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	content: "\f506";
+	margin-left: 5px;
+}
+
+/* members */
+table.faction-members {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-members td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-members th.a {
+	width: 5%;
+	text-align: center;
+} /* x1 */
+table.faction-members th.b {
+	width: 12.5%;
+	text-align: left;
+} /* x1 */
+table.faction-members th.c {
+	width: 9%;
+	text-align: right;
+	cursor: pointer;
+} /* x1 */
+table.faction-members th.d {
+	width: 15%;
+	text-align: left;
+} /* x1 */
+table.faction-members th.e {
+	width: 7%;
+	text-align: center;
+	cursor: pointer;
+} /* x2 */
+table.faction-members th.f {
+	width: 10%;
+	text-align: right;
+	cursor: default;
+} /* x2 */
+table.faction-members th.i {
+	width: 5%;
+	text-align: right;
+	cursor: default;
+} /* x2 */
+table.faction-members th.g {
+	width: 12.5%;
+	text-align: right;
+	cursor: default;
+} /* x1 */
+table.faction-members th.h {
+	width: 7%;
+	text-align: center;
+	cursor: default;
+} /* x1 */
+/* table.faction-members td.z { text-align: center; opacity: 0.3} */
+
+/* big brother */
+table.faction-bb-comparison {
+	min-width: 600px;
+	width: 60%;
+	margin: auto;
+}
+table.faction-bb-comparison td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-bb-comparison th.a {
+	width: 10%;
+	text-align: center;
+}
+table.faction-bb-comparison th.b {
+	width: 30%;
+	text-align: left;
+}
+table.faction-bb-comparison th.c {
+	width: 20%;
+	text-align: right;
+}
+table.faction-bb-comparison th.d {
+	width: 20%;
+	text-align: center;
+}
+table.faction-bb-stats {
+	min-width: 200px;
+	width: 60%;
+	margin: auto;
+}
+table.faction-bb-stats td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+
+/* revives */
+table.faction-revives-report {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-revives-report td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-revives-report th.a {
+	width: 10%;
+}
+table.faction-revives-report th.b {
+	width: 15%;
+}
+table.faction-revives-report th.c {
+	width: 15%;
+}
+table.faction-revives-report th.d {
+	width: 15%;
+}
+input#faction-revives-report-chance {
+	height: 16px;
+	width: 25px;
+	margin-left: 5px;
+	border-width: 0;
+	border: 0;
+	text-align: right;
+	background: var(--input-faction-revives-report-chance-background);
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+}
+table.contract-summary {
+	min-width: 700px;
+	width: 70%;
+}
+table.contract-summary td {
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-revives-report-factions {
+	min-width: 500px;
+	width: 100%;
+}
+table.faction-revives-report-factions td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-revives-report-factions th.a {
+	width: 35%;
+}
+table.faction-revives-report-factions th.b {
+	width: 25%;
+}
+table.faction-revives-report-factions th.c {
+	width: 15%;
+}
+table.faction-revives-report-players {
+	min-width: 500px;
+	width: 100%;
+}
+table.faction-revives-report-players td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-revives-report-players th.a {
+	width: 30%;
+}
+table.faction-revives-report-players th.b {
+	width: 30%;
+}
+table.faction-revives-report-players th.c {
+	width: 20%;
+}
+
+table.faction-revives-list tr.fail {
+	background: var(--table-faction-revives-list-tr-fail-background);
+}
+table.faction-revives-list tr.success {
+	background: var(--table-faction-revives-list-tr-success-background);
+}
+table.faction-revives-list {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-revives-list td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-revives-list th.a {
+	width: 11%;
+	text-align: center;
+}
+table.faction-revives-list th.b {
+	width: 14%;
+	text-align: left;
+}
+table.faction-revives-list th.c {
+	width: 4%;
+	text-align: center;
+}
+table.faction-revives-list th.d {
+	width: 13%;
+	text-align: left;
+}
+table.faction-revives-list th.e {
+	width: 4%;
+	text-align: center;
+}
+table.faction-revives-list th.f {
+	width: 4%;
+	text-align: center;
+}
+
+/* armory */
+table.faction-armory-report {
+	min-width: 1000px;
+	width: 100%;
+	margin: auto;
+}
+table.faction-armory-report td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-armory-report th.a {
+	width: 10%;
+	text-align: left;
+}
+table.faction-armory-report th.b {
+	width: 20%;
+	text-align: center;
+}
+table.faction-armory-report th.c {
+	width: 10%;
+	text-align: center;
+}
+table.faction-armory-report th.d {
+	width: 20%;
+	text-align: left;
+}
+table.armory-summary {
+	min-width: 600px;
+	width: 60%;
+	margin: auto;
+}
+table.armory-summary td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+
+table.faction-armory-breakdown {
+	min-width: 600px;
+	width: 60%;
+	margin: auto;
+}
+table.faction-armory-breakdown td {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-armory-breakdown th.aa {
+	width: 25%;
+}
+table.faction-armory-breakdown th.ab {
+	width: 10%;
+}
+table.faction-armory-breakdown th.ac {
+	width: 22.5%;
+}
+table.faction-armory-breakdown th.ba {
+	width: 23%;
+}
+table.faction-armory-breakdown th.bb {
+	width: 8%;
+}
+table.faction-armory-breakdown th.bc {
+	width: 22.5%;
+}
+
+/* war reports */
+table.faction-ranked-war-report {
+	min-width: 500px;
+	width: 100%;
+	margin: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-ranked-war-report th.a {
+	width: 40%;
+}
+table.faction-ranked-war-report th.b {
+	width: 20%;
+}

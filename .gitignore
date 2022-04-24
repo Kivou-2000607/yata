@@ -1,3 +1,7 @@
+# .gitignore
+# .requirements.txt
+# .env
+
 *~
 *.pyc
 venv

@@ -1,0 +1,22 @@
+<svg width="93.101mm" height="93.101mm" version="1.1" viewBox="0 0 93.101 93.101" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="linearGradient861" x1="40.481" x2="40.481" y1="92.604" y2="-.52916" gradientTransform="translate(.77751 .77751)" gradientUnits="userSpaceOnUse" spreadMethod="repeat">
+   <stop stop-color="#757575" offset="0"/>
+   <stop stop-color="#fff" offset="1"/>
+  </linearGradient>
+  <filter id="filter871" x="-.012" y="-.012" width="1.024" height="1.024" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="0.45459404"/>
+  </filter>
+ </defs>
+ <path d="m92.01 46.55a45.459 45.459 0 0 1-45.459 45.459 45.459 45.459 0 0 1-45.459-45.459 45.459 45.459 0 0 1 45.459-45.459 45.459 45.459 0 0 1 45.459 45.459z" fill="url(#linearGradient861)" filter="url(#filter871)" stroke="#447e9b" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8441" style="paint-order:markers fill stroke"/>
+ <g transform="matrix(19.479 0 0 19.479 2304.2 -2549.8)">
+  <g transform="matrix(.044117 0 0 .044117 -112.41 129.62)">
+   <path d="m-79.156 86.351 17.548-38.755h18.996l-27.683 54.824v31.193h-17.664v-31.193l-27.683-54.824h19.054z" fill="#447e9b" stroke="#414c51" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.9422" style="paint-order:markers fill stroke"/>
+  </g>
+ </g>
+ <g transform="matrix(.4742 -.88766 .86979 .48064 0 0)" fill="#414c51" stroke="#adadad" stroke-linecap="round" stroke-linejoin="round" stroke-width=".65668" style="paint-order:markers fill stroke" aria-label="ATA">
+  <path d="m-25.285 96.015h-5.9243l-1.1263 3.3789h-3.5929l6.1045-16.399h3.1311l6.1383 16.399h-3.5929zm-5.012-2.7369h4.0997l-2.0611-6.1383z" style="paint-order:markers fill stroke"/>
+  <path d="m-8.0082 85.732h-5.0232v13.662h-3.3789v-13.662h-4.9557v-2.7369h13.358z" style="paint-order:markers fill stroke"/>
+  <path d="m1.8355 96.015h-5.9243l-1.1263 3.3789h-3.5929l6.1045-16.399h3.1311l6.1383 16.399h-3.5929zm-5.012-2.7369h4.0997l-2.0611-6.1383z" style="paint-order:markers fill stroke"/>
+ </g>
+</svg>

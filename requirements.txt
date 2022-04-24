@@ -19,7 +19,7 @@ djangorestframework==3.13.1
 # optimisation
 django-htmlmin==0.11.0
 django-brotli==0.2.0
-whitenoise==5.3.0
+whitenoise==6.0.0
 
 # sentry
 sentry-sdk==1.5.4
@@ -29,13 +29,14 @@ requests==2.27.1
 python-decouple==3.6
 schedule==1.1.0                          # needed for ?
 python-magic>=0.4.22
+python-magic-bin==0.4.14                 # windows
 Pillow==9.0.1                            # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 # fontawesome-free
 
 # http server                            # for prod, not both needed
-# gunicorn==20.1.0
-uwsgi==2.0.20
+gunicorn==20.1.0
+# uwsgi==2.0.20                            # Unix (MacOS)
 
 # database
 psycopg2-binary==2.9.3

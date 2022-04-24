@@ -1,0 +1,107 @@
+table.merits-summary {
+    min-width: 500px;
+    width: 50%;
+    margin: auto;
+}
+table.merits-summary td {
+    text-align: center;
+    font-weight: 700;
+}
+
+table.merits-bar td {
+    /* overflow-x: scroll; */
+    /* font-size: 13px; */
+    line-height: 100%;
+    /* padding: 3px; */
+    /* border-bottom: 0px solid #eee; */
+    /* border-bottom: 0px solid #eee; */
+}
+
+table.merits-bar {
+    min-width: 1200px;
+    width: 50%;
+    margin: auto;
+}
+table.merits-bar th {
+    font-size: 100%;
+}
+table.merits-bar th.a {
+    width: 40%;
+}
+table.merits-bar th.b {
+    width: 20%;
+}
+table.merits-bar th.c {
+    width: 40%;
+}
+
+span.merits-button {
+    padding: 0 10px;
+    margin: 0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+span.le {
+    background-color: var(--span-le-background-color);
+    box-shadow: 0 0 1px 1px var(--span-le-background-color);
+}
+span.gt {
+    background-color: var(--span-gt-background-color);
+    box-shadow: 0 0 1px 1px var(--span-gt-background-color);
+}
+
+span.fix {
+    background-color: var(--span-fix-background-color);
+    box-shadow: 0 0 1px 1px var(--span-fix-background-color);
+}
+span.rem {
+    background-color: var(--span-rem-background-color);
+    box-shadow: 0 0 1px 1px var(--span-rem-background-color);
+}
+span.add {
+    background-color: var(--span-add-background-color);
+    box-shadow: 0 0 1px 1px var(--span-add-background-color);
+}
+span.del {
+    background-color: var(--span-del-background-color);
+    box-shadow: 0 0 1px 1px var(--span-del-background-color);
+}
+
+span.le-flash {
+    background-color: var(--span-le-flash-background-color);
+    box-shadow: 0 0 3px 3px rgba(140, 204, 233, 0.7);
+}
+span.le-flash-2 {
+    background-color: var(--span-le-flash-background-color);
+    box-shadow: 5px 0 4px 4px rgba(140, 204, 233, 0.9);
+}
+/* span.le-flash { background-color: rgba(68, 126, 155, 0.7); box-shadow: 0px 0px 3px 3px rgba(228,113,243, 0.7); }
+span.le-flash-2 { background-color: rgba(68, 126, 155, 0.7); box-shadow: 5px 0px 4px 4px rgba(228,113,243, 0.9); } */
+
+span.gt-flash {
+    background-color: var(--span-gt-flash-background-color);
+    box-shadow: 0 0 2px 2px rgba(68, 126, 155, 0.7);
+}
+span.gt-flash-2 {
+    background-color: var(--span-gt-flash-2-background-color);
+    box-shadow: -5px 0 4px 4px rgba(204, 52, 52, 0.7);
+}
+
+div.player-personalstats-category {
+    display: none;
+    margin-left: 10px;
+}
+div.player-personalstats-sub-category {
+    display: none;
+    margin-left: 20px;
+}
+.player-personalstats-header {
+    cursor: pointer;
+}
+
+table.personalstats {
+    min-width: 0;
+    width: 30%;
+    margin-left: 5%;
+}
