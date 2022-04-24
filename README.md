@@ -18,6 +18,8 @@ The website is hosted here: https://yata.yt/
 
     pip install -U pip
 
+    Windows users uncomment relevent lines in requirements.txt and gitignore
+
     pip install -r requirements.txt
 
 Create a local .env file
