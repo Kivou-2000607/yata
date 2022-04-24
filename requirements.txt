@@ -5,12 +5,11 @@
 # django
 Django==4.0.2
 django-mathfilters==1.0.0
-django-json-widget==1.1.1                # https://github.com/jmrivas86/django-json-widget/issues/63
+django-json-widget==1.1.1                
 django-extensions==3.1.5
 django-bulk-update==2.2.0
 
 # cache and ratelimit
-# python-memcached==1.59                 # last update 2017...
 django-ratelimit==3.0.1
 django-redis==5.2.0
 django-redisboard==5.0.0
@@ -27,16 +26,16 @@ sentry-sdk==1.5.4
 # misc
 requests==2.27.1
 python-decouple==3.6
-schedule==1.1.0                          # needed for ?
+schedule==1.1.0                          
 python-magic>=0.4.22
-python-magic-bin==0.4.14                 # windows
+#python-magic-bin==0.4.14                 # Uncomment for Windows
 Pillow==9.0.1                            # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
-# fontawesome-free
+fontawesome-free
 
-# http server                            # for prod, not both needed
-gunicorn==20.1.0
-# uwsgi==2.0.20                            # Unix (MacOS)
+# http server                            
+#gunicorn==20.1.0                         # Uncomment for Windows
+uwsgi==2.0.20                            # MacOS
 
 # database
 psycopg2-binary==2.9.3
