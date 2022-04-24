@@ -16,25 +16,22 @@ from bot.models import Bot
 from decouple import config
 
 class Configuration:
-    reset_db = "Do you want to reset the database?"
-    fill_db = "Do you want to fill the database?"
-    static_files = "Do you want to generate static files?"
+    reset_db_question = "Do you want to reset the database?"
+    fill_db_question = "Do you want to fill the database?"
     key = config('SECRET_KEY')
 
     def yes_or_no(self, question):
-        reply = str(input(question + ' (y/n): '))
-        return self.evaluateReply(reply)
+        reply = str(input(question + ' (y/n): ')).lower().strip() 
 
-    def evaluateReply(self, reply):
-        reply = reply.lower().strip()[0] 
+        confirmation = [ "yes", "ye", "y" ]
 
-        if (reply in ['y', 'n']):
-            return reply == 'y'
+        if (reply in confirmation or [ 'no', 'n']):
+            return reply in confirmation
         else:
-            self.yes_or_no("Uhhhh... please enter ")
+            return self.yes_or_no("Invalid input. Please enter")
 
-    def resetDb(self):
-        if (self.yes_or_no(self.reset_db) is False):
+    def reset_db(self):
+        if (self.yes_or_no(self.reset_db_question) is False):
             return
 
         if (config("DATABASE") == "postgresql"):
@@ -108,8 +105,8 @@ class Configuration:
             for i in range(3):
                 Bot.objects.create(token=f"Token {i + 1}", name=f"Bot {i + 1}")
     
-    def fillDb(self):
-        if (self.yes_or_no(self.fill_db) is False):
+    def fill_db(self):
+        if (self.yes_or_no(self.fill_db_question) is False):
             return
 
         cmd = 'python manage.py check_keys'
@@ -129,9 +126,7 @@ class Configuration:
         cmd = 'python manage.py companies'
         r = os.system(cmd)
 
-    def staticFiles(self):
-        if (platform.system() == 'Windows' or self.yes_or_no(self.static_files) is False):
-            return
-
+    def static_files(self):
+        # Has its own yes/no
         cmd = 'python manage.py collectstatic'
         r = os.system(cmd)

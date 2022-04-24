@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import platform
 from decouple import config
 from yata.handy import datestr
 
@@ -243,8 +244,9 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'), )
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # whitenoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
+if (platform.system() != 'Windows'):
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
