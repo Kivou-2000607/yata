@@ -34,8 +34,8 @@ xkcdpass==1.19.3
 fontawesome-free
 
 # http server                            
-# gunicorn==20.1.0                          # Uncomment for Windows
-# uwsgi==2.0.20                             # MacOS
+# gunicorn==20.1.0                            # Windows
+uwsgi==2.0.20                               # MacOS
 
 # database
 psycopg2-binary==2.9.3
