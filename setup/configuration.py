@@ -47,17 +47,17 @@ class Configuration:
 
         if (config("DATABASE") == "postgresql"):
             print('Remove local database')
-            self.executeCommand('py -3.8 manage.py reset_db')
+            self.executeCommand('python manage.py reset_db')
         else:
             # remove local database
             print('Remove local database')
             self.executeCommand('rm -fr db.sqlite3')
 
         # migrate
-        self.executeCommand('py -3.8 manage.py migrate')
+        self.executeCommand('python manage.py migrate')
 
         # create cache table
-        self.executeCommand('py -3.8 manage.py createcachetable')
+        self.executeCommand('python manage.py createcachetable')
 
         # create db super user
         if not len(User.objects.all()):
@@ -67,7 +67,7 @@ class Configuration:
         # create required objects
         if not len(PlayerData.objects.all()):
             print('Create Players stats')
-            self.executeCommand('py -3.8 manage.py players_stats')
+            self.executeCommand('python manage.py players_stats')
 
         if not len(Player.objects.filter(tId=-1)):
             print('Create Player')
@@ -92,7 +92,7 @@ class Configuration:
         if not len(FactionData.objects.all()):
             print('Create Faction data')
             FactionData.objects.create()
-            self.executeCommand('py -3.8 manage.py init_faction_tree')
+            self.executeCommand('python manage.py init_faction_tree')
 
         if not len(NPC.objects.all()):
             print('Create NPC')
@@ -102,7 +102,7 @@ class Configuration:
 
         if not len(CompanyDescription.objects.all()):
             print('Create Companies')
-            self.executeCommand('py -3.8 manage.py init_companies')
+            self.executeCommand('python manage.py init_companies')
 
         if not len(Bot.objects.all()) >= 3:
             print('Create Bots')
@@ -114,14 +114,14 @@ class Configuration:
             return
 
         cmds = [
-            'py -3.8 manage.py check_keys',
-            'py -3.8 manage.py awards',
-            'py -3.8 manage.py territories',
-            'py -3.8 manage.py items',
-            'py -3.8 manage.py players',
-            'py -3.8 manage.py loot',
-            'py -3.8 manage.py factions',
-            'py -3.8 manage.py companies'
+            'python manage.py check_keys',
+            'python manage.py awards',
+            'python manage.py territories',
+            'python manage.py items',
+            'python manage.py players',
+            'python manage.py loot',
+            'python manage.py factions',
+            'python manage.py companies'
         ]
 
         for cmd in cmds:
@@ -129,5 +129,5 @@ class Configuration:
 
     def staticFiles(self):
         # Has its own yes/no
-        cmd = 'py -3.8 manage.py collectstatic'
+        cmd = 'python manage.py collectstatic'
         r = os.system(cmd)
