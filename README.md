@@ -19,11 +19,18 @@ The website is hosted here: https://yata.yt/
 ## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
 
+    **Windows users**
+
+        In requirements.txt, uncomment:
+        - python-magic-bin==0.4.14
+        - # gunicorn==20.1.0 
+
+        And comment:
+        - uwsgi==2.0.20  
+
     cd yata
 
     pip install -U pip
-
-    Windows users, uncomment the relevent lines in requirements.txt and .gitignore
 
     pip install -r requirements.txt
 
