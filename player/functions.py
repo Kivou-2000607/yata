@@ -44,7 +44,7 @@ def updatePlayer(player, i=None, n=None):
 
     # API Calls
     player.updateKeyLevel()
-    
+
     if player.key_level == 1:
         selection = [
             "personalstats",
@@ -140,8 +140,7 @@ def updatePlayer(player, i=None, n=None):
             faction = Faction.objects.create(tId=player.factionId)
         faction.name = player.factionNa
 
-        chains = apiCall("faction", "", "chains", player.getKey(), verbose=False)
-        if chains.get("chains") is not None:
+        if 'money' in apiCall('faction', '', 'currency', player.getKey()):
             player.factionAA = True
             player.chainInfo = "{}".format(player.factionNa)
         else:
