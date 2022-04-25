@@ -18,7 +18,7 @@ The website is hosted here: https://yata.yt/
 
     pip install -U pip
 
-    Windows users uncomment relevent lines in requirements.txt and gitignore
+    Windows users, uncomment the relevent lines in requirements.txt and .gitignore
 
     pip install -r requirements.txt
 
@@ -64,7 +64,7 @@ Create a local .env file
     #SENTRY_ENVIRONMENT=dev
     #SENTRY_SAMPLE_RATE=1.0
 
-Replace SECRET_KEY with your api key
+Replace SECRET_KEY with your Torn api key
 
 Then run setup.py to initalise everything
 
