@@ -23,3 +23,9 @@ class TestConfiguration(unittest.TestCase):
 
         for input_tuple in inputs:
             self.testInput(input_tuple)
+
+    def test_invalid_inputs(self):
+        inputs = [['invalid', False], ['a', False]]
+
+        for input_tuple in inputs:
+            self.testInput(input_tuple)

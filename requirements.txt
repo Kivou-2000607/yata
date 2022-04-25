@@ -32,9 +32,9 @@ python-magic>=0.4.22
 Pillow==9.0.1                               # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 
-# http server                            
-# gunicorn==20.1.0                          
-uwsgi==2.0.20                              
+# http server                               # for prod, not both needed
+# gunicorn==20.1.0
+uwsgi==2.0.20
 
 # database
 psycopg2-binary==2.9.3
