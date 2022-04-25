@@ -17,11 +17,8 @@ from bot.models import Bot
 from decouple import config
 
 class Configuration:
-    reset_db_question = "Do you want to reset the database?"
-    fill_db_question = "Do you want to fill the database?"
-    key = config('SECRET_KEY')
-
-    def question(self, question):
+    @classmethod
+    def question(cls, question):
         reply = str(input(question + ' (y/n): ')).lower().strip() 
 
         confirmation = [ "yes", "ye", "y" ]
@@ -29,7 +26,7 @@ class Configuration:
         if (reply in confirmation or reply in [ 'no', 'n']):
             return reply in confirmation
         else:
-            return self.question("Invalid input. Please enter")
+            return cls.question("Invalid input. Please enter")
 
     @staticmethod
     def executeCommand(command):
@@ -41,23 +38,26 @@ class Configuration:
         except subprocess.CalledProcessError:
             print(command + ' does not exist')
 
-    def resetDb(self):
-        if (self.question(self.reset_db_question) is False):
+    @classmethod
+    def resetDb(cls):
+        if (cls.question("Do you want to reset the database?") is False):
             return
+            
+        key = config('SECRET_KEY')
 
         if (config("DATABASE") == "postgresql"):
             print('Remove local database')
-            self.executeCommand('python manage.py reset_db')
+            cls.executeCommand('python manage.py reset_db')
         else:
             # remove local database
             print('Remove local database')
-            self.executeCommand('rm -fr db.sqlite3')
+            cls.executeCommand('rm -fr db.sqlite3')
 
         # migrate
-        self.executeCommand('python manage.py migrate')
+        cls.executeCommand('python manage.py migrate')
 
         # create cache table
-        self.executeCommand('python manage.py createcachetable')
+        cls.executeCommand('python manage.py createcachetable')
 
         # create db super user
         if not len(User.objects.all()):
@@ -67,7 +67,7 @@ class Configuration:
         # create required objects
         if not len(PlayerData.objects.all()):
             print('Create Players stats')
-            self.executeCommand('python manage.py players_stats')
+            cls.executeCommand('python manage.py players_stats')
 
         if not len(Player.objects.filter(tId=-1)):
             print('Create Player')
@@ -92,7 +92,7 @@ class Configuration:
         if not len(FactionData.objects.all()):
             print('Create Faction data')
             FactionData.objects.create()
-            self.executeCommand('python manage.py init_faction_tree')
+            cls.executeCommand('python manage.py init_faction_tree')
 
         if not len(NPC.objects.all()):
             print('Create NPC')
@@ -102,15 +102,16 @@ class Configuration:
 
         if not len(CompanyDescription.objects.all()):
             print('Create Companies')
-            self.executeCommand('python manage.py init_companies')
+            cls.executeCommand('python manage.py init_companies')
 
         if not len(Bot.objects.all()) >= 3:
             print('Create Bots')
             for i in range(3):
                 Bot.objects.create(token=f"Token {i + 1}", name=f"Bot {i + 1}")
     
-    def fillDb(self):
-        if (self.question(self.fill_db_question) is False):
+    @classmethod
+    def fillDb(cls):
+        if (cls.question("Do you want to fill the database?") is False):
             return
 
         cmds = [
@@ -125,9 +126,10 @@ class Configuration:
         ]
 
         for cmd in cmds:
-            self.executeCommand(cmd)
+            cls.executeCommand(cmd)
 
-    def staticFiles(self):
+    @classmethod
+    def staticFiles(cls):
         # Has its own yes/no
         cmd = 'python manage.py collectstatic'
         r = os.system(cmd)
