@@ -15,13 +15,13 @@ class TestConfiguration(unittest.TestCase):
         config.getInput.assert_called_with("test (y/n): ")
         self.assertEqual(result, input_tuple[1])
 
-    def invalidInput(self, input_tuple, mock_call_count):
+    def invalidInput(self, input_tuple):
         config = Configuration()
         config.getInput = MagicMock(side_effect=input_tuple[0])
 
         result = config.question("test")
 
-        self.assertEqual(config.getInput.call_count, mock_call_count)
+        self.assertEqual(config.getInput.call_count, len(input_tuple[0]))
         self.assertEqual(result, input_tuple[1])
 
     def test_valid_inputs(self):
@@ -34,4 +34,4 @@ class TestConfiguration(unittest.TestCase):
         inputs = [[['invalid', 'maybe', 'uncertain', 'no'], False], [['a', 'yes'], True]]
 
         for input_tuple in inputs:
-            self.invalidInput(input_tuple, len(input_tuple[0]))
+            self.invalidInput(input_tuple)
