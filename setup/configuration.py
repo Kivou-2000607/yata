@@ -30,13 +30,7 @@ class Configuration:
 
     @staticmethod
     def executeCommand(command):
-        try:
-            if command[:2] == "rm" and platform.system() == "Windows":
-                subprocess.run(["C:\Program Files\Git\git-bash.exe", "c", command], check = True, shell = True)
-            else:
-                os.system(command)
-        except subprocess.CalledProcessError:
-            print(command + ' does not exist')
+        r = os.system(command)
 
     @classmethod
     def resetDb(cls):
@@ -51,7 +45,11 @@ class Configuration:
         else:
             # remove local database
             print('Remove local database')
-            cls.executeCommand('rm -fr db.sqlite3')
+            command = 'rm -fr db.sqlite3'
+            try:
+                subprocess.run(["C:\Program Files\Git\git-bash.exe", "c", command], check = True, shell = True)
+            except subprocess.CalledProcessError:
+                print(command + ' does not exist')
 
         # migrate
         cls.executeCommand('python manage.py migrate')
@@ -77,9 +75,9 @@ class Configuration:
             print('Create Faction')
             Faction.objects.create(tId=-1, name="Faction Anonymous")
 
-        if not len(APIKey.objects.all()) and self.key:
+        if not len(APIKey.objects.all()) and key:
             print('Create API Key')
-            APIKey.objects.create(key=self.key)
+            APIKey.objects.create(key=key)
 
         if not len(AwardsData.objects.all()):
             print('Create Awards data')
@@ -131,5 +129,4 @@ class Configuration:
     @classmethod
     def staticFiles(cls):
         # Has its own yes/no
-        cmd = 'python manage.py collectstatic'
-        r = os.system(cmd)
+        cls.executeCommand('python manage.py collectstatic')
