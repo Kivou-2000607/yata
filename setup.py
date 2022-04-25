@@ -4,9 +4,9 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yata.settings")
 django.setup()
 
-from _config import Configuration
+from _config import configuration
 
-config = Configuration.Configuration()
-config.reset_db()
-config.fill_db()
-config.static_files()
+config = configuration.Configuration()
+config.resetDb()
+config.fillDb()
+config.staticFiles()

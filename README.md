@@ -9,7 +9,9 @@ The website is hosted here: https://yata.yt/
 
 # Local Setup Instructions
 
+## Requirements
 
+Windows only - Git for windows (Sets up a necessary ) https://github.com/git-for-windows/git/releases
 
 ## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
@@ -63,6 +65,8 @@ Create a local .env file
     #SENTRY_DSN=YOURDSN
     #SENTRY_ENVIRONMENT=dev
     #SENTRY_SAMPLE_RATE=1.0
+
+Replace SECRET_KEY with your api key
 
 Then run setup.py to initalise everything
 

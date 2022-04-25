@@ -26,7 +26,6 @@ from yata.handy import apiCall
 class Command(BaseCommand):
     def handle(self, **options):
         companies = apiCall("torn", "", "companies", randomKey())
-        # print(companies)
         for k, v in companies["companies"].items():
             positions = v["positions"]
             specials = v["specials"]
@@ -65,7 +64,6 @@ class Command(BaseCommand):
             company.special_set.exclude(name__in=specials).delete()
             company.stock_set.exclude(name__in=stocks).delete()
             company.position_set.exclude(name__in=positions).delete()
-
 
         # create ABV
         for position in Position.objects.all():

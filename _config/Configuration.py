@@ -1,4 +1,5 @@
 import os
+import subprocess
 import platform
 
 from sre_constants import SRE_FLAG_DEBUG
@@ -20,37 +21,40 @@ class Configuration:
     fill_db_question = "Do you want to fill the database?"
     key = config('SECRET_KEY')
 
-    def yes_or_no(self, question):
+    def question(self, question):
         reply = str(input(question + ' (y/n): ')).lower().strip() 
 
         confirmation = [ "yes", "ye", "y" ]
 
-        if (reply in confirmation or [ 'no', 'n']):
+        if (reply in confirmation or reply in [ 'no', 'n']):
             return reply in confirmation
         else:
-            return self.yes_or_no("Invalid input. Please enter")
+            return self.question("Invalid input. Please enter")
 
-    def reset_db(self):
-        if (self.yes_or_no(self.reset_db_question) is False):
+    @staticmethod
+    def executeCommand(command):
+        try:
+            os.system(command)
+        except subprocess.CalledProcessError:
+            print(command + ' does not exist')
+
+    def resetDb(self):
+        if (self.question(self.reset_db_question) is False):
             return
 
         if (config("DATABASE") == "postgresql"):
             print('Remove local database')
-            cmd = 'python manage.py reset_db'
-            r = os.system(cmd)
+            self.executeCommand('py -3.8 manage.py reset_db')
         else:
             # remove local database
             print('Remove local database')
-            cmd = 'rm -vf db.sqlite3'
-            r = os.system(cmd)
+            self.executeCommand('rm -fr db.sqlite3')
 
         # migrate
-        cmd = 'python manage.py migrate'
-        r = os.system(cmd)
+        self.executeCommand('py -3.8 manage.py migrate')
 
         # create cache table
-        cmd = 'python manage.py createcachetable'
-        r = os.system(cmd)
+        self.executeCommand('py -3.8 manage.py createcachetable')
 
         # create db super user
         if not len(User.objects.all()):
@@ -60,8 +64,7 @@ class Configuration:
         # create required objects
         if not len(PlayerData.objects.all()):
             print('Create Players stats')
-            cmd = 'python manage.py players_stats'
-            r = os.system(cmd)
+            self.executeCommand('py -3.8 manage.py players_stats')
 
         if not len(Player.objects.filter(tId=-1)):
             print('Create Player')
@@ -86,8 +89,7 @@ class Configuration:
         if not len(FactionData.objects.all()):
             print('Create Faction data')
             FactionData.objects.create()
-            cmd = 'python manage.py init_faction_tree'
-            r = os.system(cmd)
+            self.executeCommand('py -3.8 manage.py init_faction_tree')
 
         if not len(NPC.objects.all()):
             print('Create NPC')
@@ -96,37 +98,33 @@ class Configuration:
             NPC.objects.create(tId=19, show=True)
 
         if not len(CompanyDescription.objects.all()):
-            print('Create NPC')
-            cmd = 'python manage.py init_companies'
-            r = os.system(cmd)
+            print('Create Companies')
+            self.executeCommand('py -3.8 manage.py init_companies')
 
         if not len(Bot.objects.all()) >= 3:
             print('Create Bots')
             for i in range(3):
                 Bot.objects.create(token=f"Token {i + 1}", name=f"Bot {i + 1}")
     
-    def fill_db(self):
-        if (self.yes_or_no(self.fill_db_question) is False):
+    def fillDb(self):
+        if (self.question(self.fill_db_question) is False):
             return
 
-        cmd = 'python manage.py check_keys'
-        r = os.system(cmd)
-        cmd = 'python manage.py awards'
-        r = os.system(cmd)
-        cmd = 'python manage.py territories'
-        r = os.system(cmd)
-        cmd = 'python manage.py items'
-        r = os.system(cmd)
-        cmd = 'python manage.py players'
-        r = os.system(cmd)
-        cmd = 'python manage.py loot'
-        r = os.system(cmd)
-        cmd = 'python manage.py factions'
-        r = os.system(cmd)
-        cmd = 'python manage.py companies'
-        r = os.system(cmd)
+        cmds = [
+            'py -3.8 manage.py check_keys',
+            'py -3.8 manage.py awards',
+            'py -3.8 manage.py territories',
+            'py -3.8 manage.py items',
+            'py -3.8 manage.py players',
+            'py -3.8 manage.py loot',
+            'py -3.8 manage.py factions',
+            'py -3.8 manage.py companies'
+        ]
 
-    def static_files(self):
+        for cmd in cmds:
+            self.executeCommand(cmd)
+
+    def staticFiles(self):
         # Has its own yes/no
-        cmd = 'python manage.py collectstatic'
+        cmd = 'py -3.8 manage.py collectstatic'
         r = os.system(cmd)
