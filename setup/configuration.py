@@ -1,8 +1,6 @@
 import os
 import subprocess
-import platform
 
-from sre_constants import SRE_FLAG_DEBUG
 from django.contrib.auth.models import User
 from player.models import Player
 from player.models import PlayerData
@@ -16,30 +14,33 @@ from loot.models import NPC
 from bot.models import Bot
 from decouple import config
 
+
 class Configuration:
-    @classmethod
-    def question(cls, question):
-        reply = str(input(question + ' (y/n): ')).lower().strip() 
+    def getInput(question):
+        user_input = input(question)
+        return user_input is None if "" else user_input
 
-        confirmation = [ "yes", "ye", "y" ]
-
-        if (reply in confirmation or reply in [ 'no', 'n']):
-            return reply in confirmation
-        else:
-            return cls.question("Invalid input. Please enter")
-
-    @staticmethod
     def executeCommand(command):
         r = os.system(command)
 
+    def question(self, question):
+        reply = self.getInput(question + ' (y/n): ').lower().strip()
+
+        confirmation = ["yes", "ye", "y"]
+
+        if reply in confirmation or reply in ['no', 'n']:
+            return reply in confirmation
+        else:
+            return self.question("Invalid input. Please enter")
+
     @classmethod
     def resetDb(cls):
-        if (cls.question("Do you want to reset the database?") is False):
+        if cls.question("Do you want to reset the database?") is False:
             return
             
         key = config('SECRET_KEY')
 
-        if (config("DATABASE") == "postgresql"):
+        if config("DATABASE") == "postgresql":
             print('Remove local database')
             cls.executeCommand('python manage.py reset_db')
         else:
@@ -47,7 +48,7 @@ class Configuration:
             print('Remove local database')
             command = 'rm -fr db.sqlite3'
             try:
-                subprocess.run(["C:\Program Files\Git\git-bash.exe", "c", command], check = True, shell = True)
+                subprocess.run(["C:\Program Files\Git\git-bash.exe", "c", command], check=True, shell=True)
             except subprocess.CalledProcessError:
                 print(command + ' does not exist')
 
