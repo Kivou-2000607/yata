@@ -9,6 +9,8 @@ The website is hosted here: https://yata.yt/
 
 # Local Setup Instructions
 
+
+
 ## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
 
