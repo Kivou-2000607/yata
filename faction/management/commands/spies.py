@@ -27,7 +27,6 @@ import json
 class Command(BaseCommand):
     def handle(self, **options):
         print(f'[CRON {logdate()}] START spies')
-        database = SpyDatabase.objects.filter(id=1).first()
-        database.change_name()
-        database.updateSpies()
+        for database in SpyDatabase.objects.filter(use_api=True):
+            database.updateSpies()
         print(f'[CRON {logdate()}] END')
