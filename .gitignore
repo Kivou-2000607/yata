@@ -1,5 +1,4 @@
-# -- Windows users uncomment --
-#.gitignore               
+# -- Windows users uncomment --           
 #requirements.txt  
 
 *~
