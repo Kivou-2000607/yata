@@ -34,7 +34,10 @@ class Configuration:
     @staticmethod
     def executeCommand(command):
         try:
-            os.system(command)
+            if command[:2] == "rm" and platform.system() == "Windows":
+                subprocess.run(["C:\Program Files\Git\git-bash.exe", "c", command], check = True, shell = True)
+            else:
+                os.system(command)
         except subprocess.CalledProcessError:
             print(command + ' does not exist')
 
