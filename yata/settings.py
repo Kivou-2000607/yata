@@ -245,7 +245,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # whitenoise
 WHITENOISE_MANIFEST_STRICT = False
-if (platform.system() != 'Windows'):
+if platform.system() != 'Windows':
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = "/media/"

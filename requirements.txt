@@ -28,7 +28,7 @@ requests==2.27.1
 python-decouple==3.6
 schedule==1.1.0                          
 python-magic>=0.4.22
-# python-magic-bin==0.4.14                    # Windows users uncomment
+python-magic-bin==0.4.14                    # Windows users uncomment
 Pillow==9.0.1                               # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 

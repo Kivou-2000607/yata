@@ -22,7 +22,6 @@ from .models import APIKey
 import random
 
 def randomKey():
-    query = APIKey.objects.filter(status=True)
-    keys = [_.key for _ in query]
-
-    return random.choice(keys)
+    keys = [_.key for _ in APIKey.objects.filter(status=True)]
+    key = random.choice(keys)
+    return key
