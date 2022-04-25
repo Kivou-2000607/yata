@@ -12,9 +12,9 @@ The website is hosted here: https://yata.yt/
 
 ## Requirements
 
-    [Python >=3.8.13](https://www.python.org/downloads/)
+    Python >=3.8.13 https://www.python.org/downloads/
 
-    (Windows only) [Git for Windows](https://gitforwindows.org/)
+    (Windows only) Git for Windows https://gitforwindows.org/
 
 ## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
