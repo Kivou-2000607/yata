@@ -654,9 +654,12 @@ class Faction(models.Model):
             return {k.player.tId: k.value for k in self.masterKeys.filter(useFact=True)}
 
     def checkKeys(self):
+        # print(f'{self} check keys')
         masterKeys = self.masterKeys.all()
 
         for key in masterKeys:
+            # print(f'{self} check key {key}: {key.value}')
+
             # check currency for AA perm (smallest payload and give )
             req = apiCall("faction", "", "currency", key.value, verbose=False)
 
@@ -666,7 +669,7 @@ class Faction(models.Model):
                     # delete key
                     print("{} delete {} (API error {})".format(self, key, code))
                     key.delete()
-                elif code in [7]:
+                elif code in [4, 7, 16]:  # 4 because of API bug returning 4 in case of no perm
                     # remove key
                     print("{} remove {} (API error {})".format(self, key, code))
                     self.masterKeys.remove(key)
@@ -675,6 +678,7 @@ class Faction(models.Model):
                 # remove key
                 print("{} remove {} (changed faction)".format(self, key))
                 self.masterKeys.remove(key)
+
 
             key.lastPulled = tsnow()
             key.reason = "Check AA perm"

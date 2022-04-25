@@ -17,7 +17,7 @@ $(document).on("click", "a.target-list-faction", (e) => {
     e.preventDefault();
     const reload = $(e.target).closest("td");
     reload.load("/faction/target/", {
-        targetId: $(e.target).attr("id").split("-").pop(),
+        targetId: e.currentTarget.getAttribute("id").split("-").pop(),
         type: "toggle",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });

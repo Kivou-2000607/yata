@@ -72,7 +72,7 @@ def index(request):
             player.chainInfo = user.get("faction")["faction_name"]
             player.factionNa = user.get("faction")["faction_name"]
             player.factionId = factionId
-            if 'chains' in apiCall('faction', factionId, 'chains', key):
+            if 'money' in apiCall('faction', factionId, 'currency', key):
                 player.factionAA = True
             else:
                 player.factionAA = False
