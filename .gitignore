@@ -1,6 +1,6 @@
 # -- Windows users uncomment --
 #.gitignore               
-#.requirements.txt  
+#requirements.txt  
 
 *~
 *.pyc
