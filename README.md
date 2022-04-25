@@ -23,10 +23,6 @@ The website is hosted here: https://yata.yt/
 
         In requirements.txt, uncomment:
         - python-magic-bin==0.4.14
-        - gunicorn==20.1.0 
-
-        And comment:
-        - uwsgi==2.0.20  
 
     cd yata
 
