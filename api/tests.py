@@ -79,16 +79,16 @@ class SimpleTest(unittest.TestCase):
             "author_id": 2000607,
             "country": "uae",
             "items": [
-              {
-                 "id": 268,
-                 "quantity": 339,
-                 "cost": 1000
-              },
-              {
-                 "id": 266,
-                 "quantity": 1,
-                 "cost": 200
-              },
+               {
+                  "id": 268,
+                  "quantity": 339,
+                  "cost": 1000
+               },
+               {
+                  "id": 266,
+                  "quantity": 1,
+                  "cost": 200
+               },
             ]
         }
 
