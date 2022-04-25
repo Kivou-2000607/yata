@@ -34,7 +34,7 @@ xkcdpass==1.19.3
 
 # http server                            
 # gunicorn==20.1.0                            # Windows users uncomment
-uwsgi==2.0.20                               # MacOS (Windows users comment)
+uwsgi==2.0.20                               # Unix required (Windows users comment)
 
 # database
 psycopg2-binary==2.9.3
