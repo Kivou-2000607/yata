@@ -19,11 +19,6 @@ The website is hosted here: https://yata.yt/
 ## Setup guide
     git clone https://github.com/Kivou-2000607/yata.git
 
-        **Windows users**
-
-        In requirements.txt, uncomment:
-        - python-magic-bin==0.4.14
-
     cd yata
 
     pip install -U pip
