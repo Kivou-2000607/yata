@@ -33,8 +33,8 @@ Pillow==9.0.1                               # If OOM: pip install --compile --in
 xkcdpass==1.19.3
 
 # http server                               # for prod, not both needed
-gunicorn==20.1.0                            # Windows users uncomment
-# uwsgi==2.0.20                               # Windows users comment 
+# gunicorn==20.1.0                            # Windows users uncomment
+uwsgi==2.0.20                               # Windows users comment
 
 # database
 psycopg2-binary==2.9.3
