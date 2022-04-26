@@ -22,6 +22,9 @@ The website is hosted here: https://yata.yt/
     cd yata
 
     pip install -U pip
+        
+        ** Windows users **
+        Uncomment gunicorn==20.1.0 in requirements.txt
 
     pip install -r requirements.txt
 
