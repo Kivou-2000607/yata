@@ -73,6 +73,17 @@ button.YATA-button:hover {
   cursor: pointer;
 }
 
+select.YATA-select {
+  display: inline;
+  height: 22px;
+  margin: 4px;
+  border: 0;
+  color: #666;
+  background-color: #fff;
+  border-radius: 4px;
+  text-align: center;
+}
+
 
 span.error { color: #db6051;}
 
