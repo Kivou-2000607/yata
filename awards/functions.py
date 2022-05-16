@@ -177,7 +177,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
         timeToGet1nerveRefi = 5 / float(1 + ngain5)
 
         # nerve gain with one beer for 1h
-        pub = True if "+ 50% bottle of alcohol boost" in userInfo.get("company_perks", []) else False
+        pub = True if "+ 50% bottle of alcohol boost" in userInfo.get("job_perks", []) else False
         ngain = 1.5 if pub else 1
         # nerve gain with one beer for 5min
         ngain5 = ngain / float(1 * 60 / 5)
@@ -1333,7 +1333,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                             c *= (1. - r)
                             coding_perks.append("education ({}%)".format(int(r * 100)))
                             break
-                    for p in userInfo.get("company_perks", []):
+                    for p in userInfo.get("job_perks", []):
                         if "virus coding time reduction" == p[6:].lower():
                             c *= 0.5
                             coding_perks.append("job (50%)")

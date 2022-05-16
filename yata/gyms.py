@@ -468,7 +468,7 @@ def get_bonus(req):
                 continue
 
         # company perks
-        for p in req.get("company_perks", []):
+        for p in req.get("job_perks", []):
             # all gym
             reg = '\+ \d{{1,3}}\% gym gains'.format(stat)
             if re.match(reg, p.lower()) is not None:
