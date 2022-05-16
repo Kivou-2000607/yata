@@ -1442,7 +1442,7 @@ class Member(models.Model):
                 nnb = req['nerve'].get('maximum', 0)
 
                 # company perks
-                for p in req.get("company_perks", []):
+                for p in req.get("job_perks", []):
                     sp = p.split(' ')
                     # not python 3.5 compatible
                     # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
