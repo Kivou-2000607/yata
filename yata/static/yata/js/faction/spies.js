@@ -137,11 +137,13 @@ $(document).on("click", ".spy-list-refresh", e => {
 
 // refresh spies from list by clicking on title refresh button
 $(document).on("click", "#spies-refresh", (e) => {
+    console.log("coucou");
     e.preventDefault();
     let i = 1;
     $("#spy-database").find("tr.spy-list-refresh").each((useless, e) => {
         const wait = i * 500 + parseInt(i / 10) * 3000;
-        const reload = $(e.target);
+        const reload = $(e);
+        console.log(reload);
         ((index) => {
             setTimeout(() => {
                 reload.load("/faction/spies/", {
