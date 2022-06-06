@@ -393,6 +393,7 @@ def configurationsPoster(request):
             if faction is None:
                 return render(request, 'yata/error.html', {'errorMessage': 'Faction {} not found in the database.'.format(factionId)})
 
+            print(request.POST)
             # case we enable/disable or hold/unhold the poster
             if request.POST.get("type", False) == "enable":
                 faction.poster = not faction.poster
@@ -407,6 +408,13 @@ def configurationsPoster(request):
 
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
+
+            elif request.POST.get("type", False) == "current":
+                faction.posterPerksCurrent = not faction.posterPerksCurrent
+            elif request.POST.get("type", False) == "peace":
+                faction.posterPerksPeace = not faction.posterPerksPeace
+            elif request.POST.get("type", False) == "war":
+                faction.posterPerksWar = not faction.posterPerksWar
 
             # update poster
             if request.method == "POST" and request.POST.get("posterConf"):

@@ -188,6 +188,9 @@ class Faction(models.Model):
     # poster
     poster = models.BooleanField(default=False)
     posterHold = models.BooleanField(default=False)
+    posterPerksWar = models.BooleanField(default=False)
+    posterPerksPeace = models.BooleanField(default=False)
+    posterPerksCurrent = models.BooleanField(default=True)
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
     posterGymImg = models.ImageField(blank=True)

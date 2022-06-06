@@ -22,6 +22,8 @@ This file is part of yata.
 
 {# load popovers #}
 
+<h3>Content</h3>
+
 {% if posterDeleted %}
     <p class="error"><i class="fas fa-trash fa-icon-inline"></i>Your poster has been deleted</p>
 {% endif %}
@@ -51,6 +53,63 @@ This file is part of yata.
           <div class="input-group-text flex-grow-1 valid" id="link-poster">Automatic update is enabled</div>
           <button type="submit" class="btn btn-outline" title="Disable automatic update">
             <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    {% if faction.posterPerksCurrent %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 valid" id="link-poster">Current upgrades are displayed</div>
+          <button type="submit" class="btn btn-outline" title="Hide current updates">
+            <a id="faction-aa-toggle-poster-current" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 error" id="link-poster">Current upgrades are hidden</div>
+          <button type="submit" class="btn btn-outline" title="Display current updates">
+            <a id="faction-aa-toggle-poster-current" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    {% if faction.posterPerksWar %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 valid" id="link-poster">War upgrades are displayed</div>
+          <button type="submit" class="btn btn-outline" title="Hide war updates">
+            <a id="faction-aa-toggle-poster-war" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 error" id="link-poster">War upgrades are hidden</div>
+          <button type="submit" class="btn btn-outline" title="Display war updates">
+            <a id="faction-aa-toggle-poster-war" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+          </button>
+        </div>
+      </div>
+    {% endif %}
+    {% if faction.posterPerksPeace %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 valid" id="link-poster">Peace upgrades are displayed</div>
+          <button type="submit" class="btn btn-outline" title="Hide peace updates">
+            <a id="faction-aa-toggle-poster-peace" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="col-md-6 my-2">
+        <div class="input-group">
+          <div class="input-group-text flex-grow-1 error" id="link-poster">Peace upgrades are hidden</div>
+          <button type="submit" class="btn btn-outline" title="Display peace updates">
+            <a id="faction-aa-toggle-poster-peace" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
           </button>
         </div>
       </div>

@@ -337,15 +337,26 @@ def updatePoster(faction):
     key.reason = "Faction -> poster"
     key.save()
 
-    upgrades = req["upgrades"]
+    all_upgrades = {}
+    if faction.posterPerksCurrent:
+        all_upgrades["current"] = req["upgrades"]
+    if faction.posterPerksWar:
+        all_upgrades["war"] = req["war"]
+    if faction.posterPerksPeace:
+        all_upgrades["peace"] = req["peace"]
 
     # building upgrades tree
-    tree = dict({})
-    for k, upgrade in sorted(upgrades.items(), key=lambda x: x[1]['branchorder'], reverse=False):
-        if upgrade['branch'] != 'Core':
-            if tree.get(upgrade['branch']) is None:
-                tree[upgrade['branch']] = dict({})
-            tree[upgrade['branch']][upgrade['name']] = upgrade
+    trees = dict({})
+    for upgrades_type, upgrades in all_upgrades.items():
+        if upgrades_type not in trees:
+            trees[upgrades_type] = dict({})
+        for _, upgrade in sorted(upgrades.items(),
+                                 key=lambda x: x[1]['branchorder'],
+                                 reverse=False):
+            if upgrade['branch'] != 'Core':
+                if trees[upgrades_type].get(upgrade['branch']) is None:
+                    trees[upgrades_type][upgrade['branch']] = dict({})
+                trees[upgrades_type][upgrade['branch']][upgrade['name']] = upgrade
 
     # create image background
     background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
@@ -377,23 +388,31 @@ def updatePoster(faction):
     x, y = d.textsize(txt, font=fntBig)
 
     iconType = posterOpt.get('iconType', [0])[0]
-    for branch, upgrades in tree.items():
-        icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
-        icon = icon.convert("RGBA")
-        main.paste(icon, (10, y), mask=icon)
-        txt = ""
-        txt += "  {}\n".format(branch)
-        for k, v in upgrades.items():
-            txt += "    {}: {}\n".format(k, v["ability"])
-        txt += "\n"
-
-        # txt = "a"
-        d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
-        xTmp, yTmp = d.textsize(txt, font=fnt)
+    for upgrades_type, tree in trees.items():
+        txt = upgrades_type.title()
+        d.text((20, 10 + y), txt, font=fntBig, fill=fontColor)
+        xTmp, yTmp = d.textsize(txt, font=fntBig)
         x = max(xTmp, x)
-        y += yTmp
+        y += yTmp + 10
 
-        # print('[function.chain.factionTree] {} ({} upgrades)'.format(branch, len(upgrades)))
+        # print('[function.chain.factionTree] {}'.format(upgrades_type))
+        for branch, upgrades in tree.items():
+            icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
+            icon = icon.convert("RGBA")
+            main.paste(icon, (10, y), mask=icon)
+            txt = ""
+            txt += "  {}\n".format(branch)
+            for k, v in upgrades.items():
+                txt += "    {}: {}\n".format(k, v["ability"])
+            txt += "\n"
+
+            # txt = "a"
+            d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
+            xTmp, yTmp = d.textsize(txt, font=fnt)
+            x = max(xTmp, x)
+            y += yTmp
+
+            # print('[function.chain.factionTree] \t{} ({} upgrades)'.format(branch, len(upgrades)))
 
     main = main.crop((0, 0, x + 90 + 10, y))
 
@@ -448,10 +467,9 @@ def updatePoster(faction):
     img_gym = Image.new('RGBA', (5000, 5000), color=background)
     gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
 
-    for k, v in tree.get("Steadfast", {}).items():
+    for k, v in trees.get("current", {}).get("Steadfast", {}).items():
         stat_type = k.split(" ")[0][:3].upper()
         gym_perks[stat_type] = v["level"]
-
 
     d = ImageDraw.Draw(img_gym)
     sep = [' ', '\n', ' ', '']
