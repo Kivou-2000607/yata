@@ -27,6 +27,7 @@ from django.core.cache import cache
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-c', '--clear-cache', action='store_true')
+        parser.add_argument('-ts', '--torn-stats', action='store_true')
 
     def handle(self, **options):
         print(f"[CRON {logdate()}] start loot")
@@ -34,7 +35,11 @@ class Command(BaseCommand):
         # update NPC status
         for npc in NPC.objects.filter(show=True):
             print(f"[CRON {logdate()}] update {npc}")
-            npc.update()
+            if options.get("torn_stats"):
+                # backup plan in case of failure
+                npc.update_from_torn_stats()
+            else:
+                npc.update()
 
         if options.get("clear_cache", False):
             print(f"[CRON {logdate()}] clear loot cache")

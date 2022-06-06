@@ -10,6 +10,7 @@ from yata.handy import apiCall
 from yata.handy import tsnow
 from yata.handy import clear_cf_cache
 from setup.functions import randomKey
+from setup.models import APIKey
 
 
 class NPC(models.Model):
@@ -55,6 +56,18 @@ class NPC(models.Model):
             cache.delete("context_processor_loot")
             # cache.delete("api_loot")
             r = clear_cf_cache(["https://yata.yt/api/v1/loot/", "https://yata.yt/api/v1/loot"])
+
+    def update_from_torn_stats(self):
+        key = APIKey.objects.first().key
+        req = requests.get(f'https://www.tornstats.com/api/v2/{key}/loot').json()
+        if str(self.tId) in req:
+            req = req[str(self.tId)]
+            self.name = req.get("name", "?")
+            self.updateTS = int(req.get("updated", 0))
+            self.hospitalTS = req.get("hosp_out", 0)
+            self.status = req.get("status", "Ok")
+            self.save()
+            print("[loot.NPC.update] {self.name} updated from tornstats")
 
 
     def lootTimings(self, lvl=None):
