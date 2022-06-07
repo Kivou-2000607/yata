@@ -41,6 +41,25 @@ table.target-targets th.h {
 	width: 5%;
 	text-align: center;
 }
+
+table.faction-targets {
+	/* min-width: 600px; */
+	/* width: 70%; */
+	/* margin: auto; */
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: clip;
+}
+table.faction-targets th.a { width: 15%; }
+table.faction-targets th.b { width: 5%; }
+table.faction-targets th.d { width: 7%; } /* x5 */
+table.faction-targets th.e { width: 10%; }
+table.faction-targets th.c { width: 5%; }
+table.faction-targets th.f { width: 10%; }
+table.faction-targets th.g { width: 5%; }
+table.faction-targets th.h { width: 5%; }
+table.faction-targets th.i { width: 10%; }
+
 div.life-bar {
 	background-color: var(--div-life-bar-background-color);
 	border-radius: 4px;

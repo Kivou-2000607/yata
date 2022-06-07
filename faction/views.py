@@ -3750,3 +3750,171 @@ def fightclub(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
+
+
+# SECTION: war
+# (json compatible)
+def war(request):
+    try:
+        if request.session.get('player'):
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            # get page
+            page = 'faction/content-reload.html' if request.method == 'POST' else 'faction.html'
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
+                msg = f'Faction {factionId} not found in the database'
+                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, page, {'player': player, selectError: msg})
+
+            error = False
+            message = "Valid"
+
+            context = {'player': player, 'faction': faction, 'factioncat': True, 'view': {'war': True}}
+            if error:
+                selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
+                context.update({selectError: error["apiError"]})
+            if message:
+                selectMessage = 'validMessageSub' if request.method == 'POST' else 'validMessage'
+                context.update({selectMessage: message})
+
+            if request.session.get('json-output'):
+                del context['player']
+                context = json_context(context)
+                return JsonResponse(context, status=200)
+            else:
+                return render(request, page, context)
+
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+@csrf_exempt
+def warstatus(request):
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        factionId = player.factionId
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            msg = f'Faction {factionId} not found in the database.'
+            if request.session.get('json-output'):
+                return JsonResponse({'error': msg}, status=400)
+            else:
+                context = {"inlineError": f'Server error: {msg}'}
+                return render(request, "yata/error.html", context)
+
+        war = faction.getWarStatus()
+
+        return render(
+            request,
+            'faction/war/status.html',
+            {
+                "war": war,
+            }
+        )
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
+        return render(request, "yata/error.html", context)
+
+@csrf_exempt
+def wartargets(request):
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        factionId = player.factionId
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            msg = f'Faction {factionId} not found in the database.'
+            if request.session.get('json-output'):
+                return JsonResponse({'error': msg}, status=400)
+            else:
+                context = {"inlineError": f'Server error: {msg}'}
+                return render(request, "yata/error.html", context)
+
+        targets = faction.updateFactionTargets()
+
+        return render(
+            request,
+            "faction/war/targets.html",
+            {
+                "player": player,
+                "faction": faction,
+                "targets": targets,
+            }
+        )
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
+        return render(request, "yata/error.html", context)
+
+@csrf_exempt
+def wartarget(request):
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        factionId = player.factionId
+
+        # get faction
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            msg = f'Faction {factionId} not found in the database.'
+            context = {"inlineError": f'Server error: {msg}'}
+            return render(request, "yata/error.html", context)
+
+        target = faction.factiontarget_set.filter(target_id=request.POST.get("targetId")).first()
+
+        if target is None:
+            msg = f'Target {request.POST.get("target_id")} not found in the database.'
+            context = {"inlineError": f'Server error: {msg}'}
+            if request.POST.get("type") == "update":
+                page = "faction/war/target.html"
+            else:
+                page = "yata/error.html"
+            return render(request, page, context)
+
+        if request.POST.get("type") == "dibs":
+            if target.dibs_tid:
+                target.dibs_tid = 0
+                target.dibs_name = "name"
+            else:
+                target.dibs_tid = player.tId
+                target.dibs_name = player.name
+            target.save()
+            page = "faction/war/dibs.html"
+        elif request.POST.get("type") == "update":
+            r = apiCall(
+                "user",
+                target.target_id,
+                "profile,timestamp",
+                key=player.getKey(),
+                verbose=True
+            )
+            target.updateFromApi(r)
+            page = "faction/war/target.html"
+
+        else:
+            context = {"inlineError": f'User error: Unknown action {request.POST.get("type")}'}
+            return render(request, "yata/error.html", context)
+
+        return render(
+            request,
+            page,
+            {
+                "target": target,
+                "player": player,
+            }
+        )
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
+        return render(request, "faction/war/target.html", context)

@@ -1,0 +1,11 @@
+{% load app_filters %}
+
+{% if target.dibs_tid %}
+    {% if target.dibs_tid == player.tId %}
+        <a href="" class="dibs valid">{{target.dibs_name}}</a>
+    {% else %}
+        {{target.dibs_name}}
+    {% endif %}
+{% else %}
+    <a href="" class="dibs">Dibs</a>
+{% endif %}

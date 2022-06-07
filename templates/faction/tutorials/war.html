@@ -1,0 +1,36 @@
+{% comment %}
+Copyright 2020 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load app_filters %}
+
+<h2 class="title green rounded-top px-2 py-2 toggle-display rounded mb-3">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-life-ring"></i>&nbsp;Tutorial</div>
+      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module" style="display: none;">
+  <ul class="mb-0">
+    <li>The target list is automatically generated based on your current ranked war status</li>
+    <li>Click on the refresh button to update the full list (all except life)</li>
+    <li>Click on row to update a specific target (with life)</li>
+  </ul>
+</div>

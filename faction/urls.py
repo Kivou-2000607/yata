@@ -76,4 +76,10 @@ urlpatterns = [
     # SECTION: fight club
     re_path(r'^fightclub/$', views.fightclub, name='fightclub'),
 
+    # SECTION: war
+    re_path(r'^war/$', views.war, name='war'),
+    re_path(r'^war/status/$', views.warstatus, name='warstatus'),
+    re_path(r'^war/targets/$', views.wartargets, name='wartargets'),
+    re_path(r'^war/target/$', views.wartarget, name='wartarget'),
+
 ]

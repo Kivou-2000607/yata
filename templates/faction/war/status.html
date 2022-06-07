@@ -1,0 +1,47 @@
+{% comment %}
+Copyright 2022 kivou@yata.yt
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+{% if not war|length %}
+    Your faction is not at war.
+{% elif war.end %}
+    The war against {% faction_link war.them.faction_id war.them.name %} is over.<br>
+    View <a href="https://www.torn.com/war.php?step=rankreport&rankID={{war.war_id}}" target="_blank">in-game report</a>.
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-hover table-borderless war-summary">
+            <tbody>
+                <tr>
+                    <td><b>Faction: </b> {% faction_link war.them.faction_id war.them.name %}</td>
+                    <td><b>Start:</b> {{war.start|ts2date}}</td>
+                    {% if war.winner %}
+                        <td><b>End:</b> {{war.end|ts2date}}</td>
+                        <td><b class="me-1">Report:</b>
+                            <a href="https://www.torn.com/war.php?step=rankreport&rankID={{war.war_id}}" target="_blank">Ranked war [{{war.war_id}}]</a></td>
+                    {% endif %}
+                    <td><b>Target: </b> {{war.target|intcomma}}</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+{% endif %}

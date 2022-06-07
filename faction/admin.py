@@ -223,6 +223,10 @@ class SpyDatabaseAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'secret']
     search_fields = ('factions', )
 
+class FactionTargetAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'faction_name']
+    search_fields = ('factions', )
+
 
 admin.site.register(Crimes, CrimesAdmin)
 admin.site.register(SpyDatabase, SpyDatabaseAdmin)
@@ -237,4 +241,5 @@ admin.site.register(RevivesReport, RevivesReportAdmin)
 admin.site.register(AttacksReport, AttacksReportAdmin)
 admin.site.register(Chain, ChainAdmin)
 admin.site.register(Member, MemberAdmin)
+admin.site.register(FactionTarget, FactionTargetAdmin)
 admin.site.register(Faction, FactionAdmin)

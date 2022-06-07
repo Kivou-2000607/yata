@@ -37,13 +37,6 @@ This file is part of yata.
         });
 </script>
 
-
-
-
-
-
-
-
 <div class="table-responsive">
   <table id="target-targets" class="table table-hover table-striped table-borderless tablesorter target-targets">
       <thead>
@@ -56,11 +49,11 @@ This file is part of yata.
               <th class="f" title="Status of the target">Status</th>
               <th class="g" title="Time since last update">Update</th>
               <th class="h" title="Delete">&nbsp;</th>
+          </tr>
       </thead>
       <tbody>
       {% for target in targets %}
           <tr id="target-list-refresh-{{target.target_id}}" data-val="{{target.target_id}}">
-            {# <td>{{target}}</td> #}
               {% include "faction/targets/line.html" %}
           </tr>
       {% endfor %}

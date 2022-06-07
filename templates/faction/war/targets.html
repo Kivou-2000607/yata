@@ -1,0 +1,84 @@
+{% comment %}
+Copyright 2022 kivou@yata.yt
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+{% if not targets|length %}
+    No targets available.
+{% else %}
+
+<script>
+
+    $(document).ready(function() {
+        $("#faction-targets").tablesorter({
+            textExtraction: {
+              0: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              1: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              2: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              3: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              4: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              5: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              6: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              7: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              8: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              10: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              11: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+            },
+            cssAsc: 'up',
+            cssDesc: 'down',
+            sortList: [[10,0],[7,1],[2,0]]
+        });
+
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+
+<div class="table-responsive">
+    <table id="faction-targets" class="table table-hover table-striped table-borderless tablesorter faction-targets">
+          <thead>
+              <tr>
+                  <th class="a" title="Name of the target">Name</th>
+                  <th class="b" title="Level of the target">lvl</th>
+                  <th class="d" title="Strength">Str</th>
+                  <th class="d" title="Defense">Def</th>
+                  <th class="d" title="Speed">Spe</th>
+                  <th class="d" title="Dexterity">Dex</th>
+                  <th class="d" title="Total">Tot</th>
+                  <th class="e" title="Last action of the target">Last action</th>
+                  <th class="c" title="Online status"><i class="fas fa-circle"></i></th>
+                  <th class="i" title="Life">Life</th>
+                  <th class="f" title="Status of the target">Status</th>
+                  <th class="g" title="Time since last update">Update</th>
+                  <th class="h" title="Call dibs">Dibs</th>
+          </thead>
+          <tbody>
+          {% for target in targets %}
+            <tr class="faction-targets-refresh" data-val="{{target.target_id}}">{% include "faction/war/target.html" %}</tr>
+          {% endfor %}
+          </tbody>
+      </table>
+  </div>
+{% endif %}

@@ -1,0 +1,47 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load mathfilters %}
+{% load app_filters %}
+{% load humanize %}
+
+{% if inlineError %}
+    <td colspan="13" class="text-center"><div class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;{{inlineError}}</div></td>
+{% else %}
+    <td class="text-start dont-touch-me" data-val="{{target.target_id}}">{% player_link target.target_id target.name "attack" %}</td>
+    <td class="text-center align-middle" data-val="{{target.level}}">{{target.level}}</td>
+    <td class="text-center" data-val="{{target.strength}}" title="{{target.strength|intcomma}} ({{target.strength_timestamp|ts2date}})">{% battle_stats target.strength %}</td>
+    <td class="text-center" data-val="{{target.defense}}" title="{{target.defense|intcomma}} ({{target.defense_timestamp|ts2date}})">{% battle_stats target.defense %}</td>
+    <td class="text-center" data-val="{{target.speed}}" title="{{target.speed|intcomma}} ({{target.speed_timestamp|ts2date}})">{% battle_stats target.speed %}</td>
+    <td class="text-center" data-val="{{target.dexterity}}" title="{{target.dexterity|intcomma}} ({{target.dexterity_timestamp|ts2date}})">{% battle_stats target.dexterity %}</td>
+    <td class="text-center" data-val="{{target.total}}" title="{{target.total|intcomma}} ({{target.total_timestamp|ts2date}})">{% battle_stats target.total %}</td>
+    <td class="text-end" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
+    <td class="text-center" title="{{target.last_action_status}}" data-val='{% if target.last_action_status == "Offline" %}-1{% elif target.last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{target.last_action_status}}"></i></td>
+    <td class="text-center" data-val="{{target.life_current}}">
+        <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
+            <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
+        </div>
+    </td>
+    <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
+    <td class="text-center update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}"><i class="fa fa-spinner fa-pulse"></i></td>
+
+    <td class="text-center dont-touch-me" data-val="{{target.target_id}}">
+        {% include "faction/war/dibs.html" %}
+    </td>
+{% endif %}

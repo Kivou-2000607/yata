@@ -1,0 +1,68 @@
+{% comment %}
+Copyright 2022 kivou@yata.yt
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+{% load humanize %}
+{% load mathfilters %}
+{% load static %}
+{% load app_filters %}
+
+<script>
+    $(document).ready(function () {
+        // inject spinner
+        $("#war-status").html('<div style="text-align: center;">'+spinner+'</div>');
+        // call backend for war status
+        $("#war-status").load("/faction/war/status/", {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+    });
+    $(document).ready(function () {
+        // inject spinner
+        $("#war-targets").html('<div style="text-align: center;">'+spinner+'</div>');
+        // call backend for war targets
+        $("#war-targets").load("/faction/war/targets/", {
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+    });
+</script>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-skull-crossbones"></i>&nbsp;{{faction.name|safe}}'s ranked war status</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div id="war-status">
+        {# include war status dynamically with js #}
+    </div>
+</div>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-crosshairs"></i>&nbsp;Target list</div>
+        <div class="px-2">
+            <a id="faction-targets-refresh" href=""><i class="fas fa-sync fa-icon-inline" title="Refresh targets"></i>&nbsp;Refresh</a>
+        </div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div id="war-targets">
+        {# include war targets dynamically with js #}
+    </div>
+</div>
+

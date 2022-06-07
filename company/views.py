@@ -70,55 +70,55 @@ def companies(request):
     """
         feeds the company list table
     """
-    # try:
-    player = getPlayer(request.session.get("player", {}).get("tId", -1))
-    if request.method != 'POST':
-        company_id = request.GET.get('company_id')
-    else:
-        company_id = request.POST.get('company_id')
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
+        if request.method != 'POST':
+            company_id = request.GET.get('company_id')
+        else:
+            company_id = request.POST.get('company_id')
 
-    # make the api call
-    r =  apiCall(
-        "company",
-        company_id,
-        "companies",
-        player.getKey(),
-        sub="company",
-        cache_response=3600,
-        cache_private=False,
-        verbose=True
-    )
+        # make the api call
+        r =  apiCall(
+            "company",
+            company_id,
+            "companies",
+            player.getKey(),
+            sub="company",
+            cache_response=3600,
+            cache_private=False,
+            verbose=True
+        )
 
-    if "apiError" in r:
-        context = {"apiError": f'API error: {r["apiErrorString"]}'}
+        if "apiError" in r:
+            context = {"apiError": f'API error: {r["apiErrorString"]}'}
+            return render(request, "yata/error.html", context)
+
+        # get companies cap
+        cap = 0
+        for v in r.values():
+            cap += v["weekly_income"]
+
+        # filter based open positions
+        openings = 1 if request.GET.get('openings') == '1' else 0
+        if openings:
+            paginator = Paginator([_ for _ in r.values() if _["employees_capacity"] > _["employees_hired"]], 10)
+        else:
+            paginator = Paginator([_ for _ in r.values()], 10)
+        companies = paginator.get_page(request.GET.get('page'))
+        return render(
+            request,
+            'company/browse/companies.html',
+            {
+                "companies": companies,
+                "company_id": company_id,
+                "openings": openings,
+                "cap": cap
+            }
+        )
+
+    except Exception as e:
+        context = {"inlineError": f'Server error: {e}'}
         return render(request, "yata/error.html", context)
-
-    # get companies cap
-    cap = 0
-    for v in r.values():
-        cap += v["weekly_income"]
-
-    # filter based open positions
-    openings = 1 if request.GET.get('openings') == '1' else 0
-    if openings:
-        paginator = Paginator([_ for _ in r.values() if _["employees_capacity"] > _["employees_hired"]], 10)
-    else:
-        paginator = Paginator([_ for _ in r.values()], 10)
-    companies = paginator.get_page(request.GET.get('page'))
-    return render(
-        request,
-        'company/browse/companies.html',
-        {
-            "companies": companies,
-            "company_id": company_id,
-            "openings": openings,
-            "cap": cap
-        }
-    )
-
-    # except Exception as e:
-    #     context = {"inlineError": f'Server error: {e}'}
-    #     return render(request, "yata/error.html", context)
 
 def supervise(request, shareId=False):
     try:

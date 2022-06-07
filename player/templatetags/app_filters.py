@@ -743,3 +743,10 @@ def eng_fmt_letters(n):
             return f'{n / threshold:.1f}{label}'
 
     return n
+
+@register.simple_tag(name='battle_stats')
+def battle_stats(n):
+    if n < 0:
+        return "-"
+    else:
+        return eng_fmt_letters(n)

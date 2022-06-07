@@ -218,6 +218,9 @@ class Faction(models.Model):
     revivesHist = models.CharField(default="three_months", max_length=16)
     liveLength = models.CharField(default="one_week", max_length=16)
 
+    # war against
+    warAgainst = models.IntegerField(default=0)
+
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
 
@@ -1279,11 +1282,15 @@ class Faction(models.Model):
 
         return tree, respect
 
-    def getSpies(self):
+    def getSpies(self, use_cache=True):
         from faction.functions import optimize_spies
 
-        all_spies = cache.get(f"spy-faction-{self.tId}")
-        print(f'[getSpies] faction cache: {"no" if all_spies is None else "yes"}')
+        if use_cache:
+            all_spies = cache.get(f"spy-faction-{self.tId}")
+            print(f'{self} [getSpies] faction cache: {"no" if all_spies is None else "yes"}')
+        else:
+            print(f'{self} [getSpies] faction cache: forced no')
+            all_spies = None
         if all_spies is None or settings.DEBUG:
             all_spies = {}
             for database in self.spydatabase_set.all():
@@ -1297,6 +1304,169 @@ class Faction(models.Model):
         from faction.serializer import FactionSerializer
         return FactionSerializer(self).data
 
+    def getWarStatus(self):
+        print(f"{self} [faction war status] Update war status")
+
+        key = self.getKey()
+        if key is None:
+            self.nKey = 0
+            self.save()
+            return {}
+
+        # update key
+        key.reason = "Update faction war status"
+        key.lastPulled = tsnow()
+        key.save()
+
+        faction_id = str(self.tId)
+        # debug with warring factions
+        # faction_id = "38675"
+        # faction_id = "8510"
+
+        # get war_against
+        r =  apiCall(
+            "faction",
+            faction_id,
+            "",
+            key.value,
+            sub="ranked_wars",
+            cache_response=60,
+            cache_private=False,
+            verbose=True
+        )
+
+        war = {}
+
+        for war_id, fw in r.items():
+            factions = fw["factions"]
+            if faction_id in factions:
+                war = fw["war"]
+                war["war_id"] = war_id
+                for fid, f in factions.items():
+                    if faction_id == fid:
+                        war["us"] = f
+                        war["us"]["faction_id"] = int(fid)
+                    else:
+                        war["them"] = f
+                        war["them"]["faction_id"] = int(fid)
+                        self.warAgainst = fid
+                break
+
+        return war
+
+    def updateFactionTargets(self):
+        print(f"{self} [faction targets] Update targets")
+
+        key = self.getKey()
+        if key is None:
+            self.nKey = 0
+            self.save()
+            return {}
+
+        # update key
+        key.reason = "Update faction targets"
+        key.lastPulled = tsnow()
+        key.save()
+
+        # get war status
+        war = self.getWarStatus()
+
+        # get all members
+        r =  apiCall(
+            "faction",
+            self.warAgainst,
+            "basic,timestamp",
+            key.value,
+            # cache_response=3600,
+            # cache_private=False,
+            verbose=True
+        )
+
+        if not len(war):
+            a = self.factiontarget_set.all().delete()
+            self.warAgainst = 0
+            self.save()
+            print(f"{self} [faction targets] Delete {a} targets (no more wars)")
+            return {}
+        elif int(war["them"]["faction_id"]) != self.warAgainst:
+            a = self.factiontarget_set.exclude(faction_faction_id=war["them"]["faction_id"]).delete()
+            self.warAgainst = int(war["them"]["faction_id"])
+            self.save()
+            print(f"{self} [faction targets] Delete {a} targets (changed war)")
+
+        # get all spies
+        spies = self.getSpies(use_cache=True)
+
+        # loop over targets
+        batch = FactionTarget.objects.bulk_operation()
+        for target_id, target in r["members"].items():
+
+            # spy
+            spy = spies.get(int(target_id), {})
+
+            # custom description
+            status_description = target['status']['description']
+            status_state = target['status']['state']
+
+            if status_state == "Hospital":
+                _, time = status_description.split(" for ")
+                status_description = f'H for {time}'
+                dibs = False
+            elif status_state == "Jail":
+                status_description = status_description.replace("In jail", "J")
+                dibs = False
+            elif status_state == "Traveling":
+                status_description = status_description.replace("In jail", "J")
+                target['status']['details'] = status_description
+                status_description = status_state
+                dibs = False
+            else:
+                dibs = True
+
+            defaults = {
+                'target_id': target_id,
+                'name': target['name'],
+                'level': target['level'],
+                'faction_name': r['name'],
+                'faction_faction_id': r['ID'],
+                'faction_faction_dif': target['days_in_faction'],
+                'faction_position': target['position'],
+                'last_action_timestamp': target['last_action']['timestamp'],
+                'last_action_relative': target['last_action']['relative'],
+                'last_action_status': target['last_action']['status'],
+                'status_description': status_description,
+                'status_details': target['status']['details'],
+                'status_state': target['status']['state'],
+                'status_color': target['status']['color'],
+                'status_until': target['status']['until'],
+                'strength': spy.get('strength', -1),
+                'strength_timestamp': spy.get('strength_timestamp', -1),
+                'dexterity': spy.get('dexterity', -1),
+                'dexterity_timestamp': spy.get('dexterity_timestamp', -1),
+                'speed': spy.get('speed', -1),
+                'speed_timestamp': spy.get('speed_timestamp', -1),
+                'defense': spy.get('defense', -1),
+                'defense_timestamp': spy.get('defense_timestamp', -1),
+                'total': spy.get('total', -1),
+                'total_timestamp': spy.get('total_timestamp', -1),
+                'update_timestamp': r["timestamp"],
+            }
+            if not dibs:
+                defaults["dibs_tid"] = 0
+                defaults["dibs_name"] = "name"
+
+            batch.update_or_create(
+                faction_id=self.pk,
+                target_id=target_id,
+                defaults=defaults
+            )
+
+        print(f'{self} [faction targets] batch size: {batch.count()}')
+        if batch.count():
+            batch.run(batch_size=100)
+
+        targets = self.factiontarget_set.all()
+        return targets
 
 class Member(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
@@ -2665,6 +2835,7 @@ class AttacksReport(models.Model):
     def get_war(self):
         print(type(self.war))
         return json.loads(self.war)
+
 
 class AttacksFaction(models.Model):
     report = models.ForeignKey(AttacksReport, on_delete=models.CASCADE)
@@ -4226,13 +4397,13 @@ class SpyDatabase(models.Model):
     def getSpies(self, cc=False):
         all_spies = cache.get(f"spy-db-{self.secret}")
         if all_spies is None or cc or settings.DEBUG:
-            print(f'[getSpies] database cached: no')
+            print(f'{self} [getSpies] database cached: no')
             all_spies = {}
             for spy in self.spy_set.all():
                 all_spies[spy.target_id] = spy.dictionnary()
             cache.set(f"spy-db-{self.secret}", all_spies, 3600)
         else:
-            print(f'[getSpies] database cached: yes')
+            print(f'{self} [getSpies] database cached: yes')
 
         return all_spies
 
@@ -4285,3 +4456,116 @@ class Spy(models.Model):
             "target_faction_id": self.target_faction_id
         }
         return v
+
+
+# War targets
+class FactionTarget(models.Model):
+    # the faction to which the targets belongs to
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    # target general info
+    target_id = models.IntegerField(default=0)
+    name = models.CharField(default="target_name", max_length=16)
+    rank = models.CharField(default="rank", max_length=128)
+    level = models.IntegerField(default=0)
+    age = models.IntegerField(default=0)
+
+    # last update
+    update_timestamp = models.IntegerField(default=0)
+
+    # life
+    life_current = models.IntegerField(default=0)
+    life_maximum = models.IntegerField(default=1)
+
+    # last action (ts)
+    last_action_timestamp = models.IntegerField(default=0)
+    last_action_relative = models.CharField(default="last_action_relative", max_length=32, null=True, blank=True)
+    last_action_status = models.CharField(default="Offline", max_length=16)
+
+    # status
+    status_description = models.CharField(default="status_description", max_length=64, null=True, blank=True)
+    status_details = models.CharField(default="status_details", max_length=128, null=True, blank=True)
+    status_state = models.CharField(default="status_state", max_length=32, null=True, blank=True)
+    status_color = models.CharField(default="green", max_length=16, null=True, blank=True)
+    status_until = models.IntegerField(default=0)
+
+    # faction
+    faction_position = models.CharField(default="faction_position", max_length=32)
+    faction_name = models.CharField(default="faction_name", max_length=64)
+    faction_faction_id = models.IntegerField(default=0)
+    faction_faction_dif = models.IntegerField(default=0)
+
+    # stats
+    strength = models.BigIntegerField(default=-1)
+    speed = models.BigIntegerField(default=-1)
+    defense = models.BigIntegerField(default=-1)
+    dexterity = models.BigIntegerField(default=-1)
+    total = models.BigIntegerField(default=-1)
+    strength_timestamp = models.IntegerField(default=0)
+    speed_timestamp = models.IntegerField(default=0)
+    defense_timestamp = models.IntegerField(default=0)
+    dexterity_timestamp = models.IntegerField(default=0)
+    total_timestamp = models.IntegerField(default=0)
+
+    # dibs
+    dibs_tid = models.IntegerField(default=0)
+    dibs_name = models.CharField(default="player_name", max_length=16)
+
+    # bulk manager
+    objects = BulkManager()
+
+    def __str__(self):
+        return f'Target {self.name} [{self.target_id}]'
+
+    def updateFromApi(self, req):
+        if 'apiError' in req:
+            return True, self
+
+        self.name = req.get("name", "?")
+        self.rank = req.get("rank", "?")
+        self.level = int(req.get("level", 0))
+        self.age = int(req.get("age", 1))
+
+        if req.get("life") is None:
+            self.life_current = 0
+            self.life_maximum = 1
+        else:
+            self.life_current = req["life"].get("current", 0)
+            self.life_maximum = req["life"].get("maximum", 1)
+
+        if req.get("status") is None:
+            self.status_description = "?"
+            self.status_details = "?"
+            self.status_state = "?"
+            self.status_color = "?"
+            self.status_until = 0
+        else:
+            self.status_description = req["status"].get("description", "?")
+            self.status_details = req["status"].get("details", "?")
+            self.status_state = req["status"].get("state", "?")
+            self.status_color = req["status"].get("color", "?")
+            self.status_until = req["status"].get("until", 0)
+
+        if req.get("faction") is None:
+            self.faction_position = "?"
+            self.faction_name = "?"
+            # self.faction_id = 0
+            self.faction_dif = 0
+        else:
+            self.faction_position = req["faction"].get("position", "?")
+            self.faction_name = req["faction"].get("faction_name", "?")
+            # self.faction_id = req["faction"].get("faction_id", 0)
+            self.faction_dif = req["faction"].get("days_in_faction", 0)
+
+        if req.get("last_action") is None:
+            self.last_action_timestamp = 0
+            self.last_action_relative = "?"
+            self.last_action_status = "Offline"
+        else:
+            self.last_action_timestamp = req["last_action"].get("timestamp", 0)
+            self.last_action_relative = req["last_action"].get("relative", "?")
+            self.last_action_status = req["last_action"].get("status", "Offline")
+
+        self.update_timestamp = req.get("timestamp", 0)
+        self.save()
+        return False, self
