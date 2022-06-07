@@ -3753,7 +3753,6 @@ def fightclub(request):
 
 
 # SECTION: war
-# (json compatible)
 def war(request):
     try:
         if request.session.get('player'):
@@ -3768,18 +3767,14 @@ def war(request):
             if faction is None:
                 selectError = 'errorMessageSub' if request.method == 'POST' else 'errorMessage'
                 msg = f'Faction {factionId} not found in the database'
-                return JsonResponse({'error': msg}, status=400) if request.session.get('json-output') else render(request, page, {'player': player, selectError: msg})
+                return render(request, page, {'player': player, selectError: msg})
 
             error = False
-            message = "Valid"
 
             context = {'player': player, 'faction': faction, 'factioncat': True, 'view': {'war': True}}
             if error:
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
                 context.update({selectError: error["apiError"]})
-            if message:
-                selectMessage = 'validMessageSub' if request.method == 'POST' else 'validMessage'
-                context.update({selectMessage: message})
 
             if request.session.get('json-output'):
                 del context['player']
