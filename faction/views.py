@@ -3776,12 +3776,7 @@ def war(request):
                 selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
                 context.update({selectError: error["apiError"]})
 
-            if request.session.get('json-output'):
-                del context['player']
-                context = json_context(context)
-                return JsonResponse(context, status=200)
-            else:
-                return render(request, page, context)
+            return render(request, page, context)
 
 
         else:
