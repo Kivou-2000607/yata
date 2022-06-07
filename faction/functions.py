@@ -298,6 +298,7 @@ def updatePoster(faction):
     from PIL import Image
     from PIL import ImageDraw
     from PIL import ImageFont
+    import html
 
     from io import BytesIO
     from django.core.files.base import ContentFile
@@ -379,7 +380,7 @@ def updatePoster(faction):
     # FACTION PERKS POSTER
 
     # add title
-    txt = "{}".format(req["name"])
+    txt = html.unescape(req["name"])
     d.text((10, 10), txt, font=fntBig, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
 
@@ -415,7 +416,6 @@ def updatePoster(faction):
             # print('[function.chain.factionTree] \t{} ({} upgrades)'.format(branch, len(upgrades)))
 
     main = main.crop((0, 0, x + 90 + 10, y))
-
 
     # resize main
     main_ratio = POSTER_WIDTH / float(main.size[0])
