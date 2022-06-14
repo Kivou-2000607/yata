@@ -1890,7 +1890,7 @@ def attacksMembers(request, reportId):
                 context = {'player': player, selectError: "Report {} not found.".format(reportId)}
                 return render(request, 'yata/error.html', context)
 
-            o_me = int(request.GET.get('o_me', 6))
+            o_me = int(request.GET.get('o_me', 7))
             if request.GET.get('p_me') is not None or request.GET.get('o_me') is not None:
                 members = Paginator(report.getMembersBreakdown(order=o_me), 10)
                 p_me = request.GET.get('p_me')

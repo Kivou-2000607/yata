@@ -33,15 +33,17 @@ This file is part of yata.
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=2">#hosp</a></th>
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=3">#war</a></th>
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=4">#win</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=5" title="lost / assist / stalemate / timeout / escape" >#lost</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=6">#total</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=7">#leaves</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=8">#mug</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=9">#hosp</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=10">#war</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=11">#win</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=12" title="lost / assist / stalemate / timeout / escape">#lost</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=13">#total</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=5">#assists</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=6" title="lost / interrupted / stalemate / timeout / escape" >#lost</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=7">#total</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=8">#leaves</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=9">#mug</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=10">#hosp</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=11">#war</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=12">#win</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=13">#assists</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=14" title="lost / interrupted / stalemate / timeout / escape">#lost</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=15">#total</a></th>
         </tr>
         <tr>
           <th></th>
@@ -58,26 +60,28 @@ This file is part of yata.
             {% else %}
                 <td class="text-start">Stealth</td>
             {% endif %}
-            {# # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 lost, 5 total] #}
+            {# n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total] #}
             <td class="text-center">{{m.out.0}}</td>
             <td class="text-center">{{m.out.1}}</td>
             <td class="text-center">{{m.out.2}}</td>
             <td class="text-center">{{m.out.3}}</td>
             <td class="text-center">{{m.out.4}}</td>
             <td class="text-center">{{m.out.5}}</td>
-            <td class="text-center"><b>{{m.out.6}}</b></td>
+            <td class="text-center">{{m.out.6}}</td>
+            <td class="text-center"><b>{{m.out.7}}</b></td>
             <td class="text-center">{{m.in.0}}</td>
             <td class="text-center">{{m.in.1}}</td>
             <td class="text-center">{{m.in.2}}</td>
             <td class="text-center">{{m.in.3}}</td>
             <td class="text-center">{{m.in.4}}</td>
             <td class="text-center">{{m.in.5}}</td>
-            <td class="text-center"><b>{{m.in.6}}</b></td>
+            <td class="text-center">{{m.in.6}}</td>
+            <td class="text-center"><b>{{m.in.7}}</b></td>
         </tr>
         {% endfor %}
 
         <tr>
-          <td colspan="15" class="text-center">
+          <td colspan="17" class="text-center">
             <div class="pagination d-block">
                 <span class="step-links">
                     {% if members.has_previous %}
@@ -100,7 +104,7 @@ This file is part of yata.
 
     {% else %}
         <tr>
-            <td colspan="15">No players found. Click on the eyes to select factions members.</td>
+            <td colspan="17">No players found. Click on the eyes to select factions members.</td>
         </tr>
     {% endif %}
     </tbody>
