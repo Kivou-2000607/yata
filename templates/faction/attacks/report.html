@@ -27,7 +27,7 @@ This file is part of yata.
     const div = $("#api-war-report")
     // inject spinner
     div.html('<div style="text-align: center;">'+spinner+'</div>');
-    // call backend for company list
+    // call backend for war list
     div.load("/faction/attacks/war/", {
         type: div.attr("data-typ"),
         war_id: div.attr("data-val"),

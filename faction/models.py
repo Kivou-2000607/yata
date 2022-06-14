@@ -201,6 +201,7 @@ class Faction(models.Model):
     upgradesUpda = models.IntegerField(default=0)
     simulationTS = models.IntegerField(default=0)
     simulationID = models.IntegerField(default=0)
+    upgradeType = models.CharField(default="upgrades", max_length=16)
 
     # members
     membersUpda = models.IntegerField(default=0)
@@ -949,7 +950,7 @@ class Faction(models.Model):
                 print("{} {}".format(self, msg))
             return False, "API error {}, faction upgrades not updated".format(facInfo["apiErrorString"])
 
-        upgrades = facInfo["upgrades"]
+        upgrades = facInfo[self.upgradeType]
         self.respect = facInfo.get("respect", 0)
 
         # update key
@@ -969,6 +970,7 @@ class Faction(models.Model):
             v["shortname"] = t.shortname
             v["branch"] = t.branch
             v["unsets_completed"] = v.get("unsets_completed", 0)
+            v["can_be_unset"] = v.get("can_be_unset", 0)
             try:
                 self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
             except BaseException as e:
@@ -977,7 +979,8 @@ class Faction(models.Model):
 
         self.upgradesUpda = tsnow()
         self.save()
-        return True, "Faction upgrades updated"
+        print(f"{self} Faction upgrades updated ({self.upgradeType})")
+        return True, f"Faction upgrades updated ({self.upgradeType})"
 
     def resetSimuUpgrades(self, update=False):
         if update:
@@ -4179,6 +4182,7 @@ class Upgrade(models.Model):
     branchmultiplier = models.IntegerField(default=0)
     unlocked = models.CharField(default="unlocked", max_length=32, null=True, blank=True)
     unsets_completed = models.IntegerField(default=0)
+    can_be_unset = models.IntegerField(default=0)
 
     # reserverd for simulation
     simu = models.BooleanField(default=False)

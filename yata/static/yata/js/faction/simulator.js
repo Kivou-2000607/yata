@@ -49,3 +49,16 @@ $(document).on("click", ".upgrade-details", e => {
     e.preventDefault();
     $(e.currentTarget).hide();
 });
+
+
+// select branch
+$(document).on("click", "a.faction-simu-select", e => {
+    e.preventDefault();
+    const selectTree = $(e.currentTarget).attr("data-val");
+    console.log(selectTree);
+    $("#content-update").load("/faction/simulator/", {
+        selectTree: selectTree,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");
+});

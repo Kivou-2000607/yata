@@ -3151,6 +3151,14 @@ def simulator(request):
             elif request.POST.get("refresh"):
                 faction.updateUpgrades()
 
+            elif request.POST.get("selectTree"):
+                if request.POST.get("selectTree") not in ["war", "peace"]:
+                    select = "upgrades"
+                else:
+                    select = request.POST.get("selectTree")
+                faction.upgradeType = select
+                faction.updateUpgrades()
+
             tree, respect = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
 
             deltaSimu = tsnow() - faction.simulationTS
