@@ -2784,7 +2784,7 @@ class AttacksReport(models.Model):
             # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
             n = members[attack.attacker_id]["out"] if attack.attacker_id in members else [0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
-            if attack.result in ["Attacked", "Special"]:
+            if attack.result in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
                 addOne.append(4)
             elif attack.result in ["Mugged"]:
@@ -2814,7 +2814,7 @@ class AttacksReport(models.Model):
             # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
             n = members[attack.defender_id]["in"] if attack.defender_id in members else [0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
-            if attack.result in ["Attacked", "Special"]:
+            if attack.result in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
                 addOne.append(4)
             elif attack.result in ["Mugged"]:
