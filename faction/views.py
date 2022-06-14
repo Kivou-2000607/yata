@@ -2120,7 +2120,7 @@ def attacksExport(request, reportId, type):
         return returnError(exc=e, session=request.session)
 
 
-def wars(request):
+def attacksWars(request):
     """
         feeds the wars list table
     """
@@ -2164,7 +2164,7 @@ def wars(request):
         return render(request, "yata/error.html", context)
 
 
-def war(request):
+def attacksWar(request):
     """
         feeds the war API report
     """
@@ -2231,8 +2231,6 @@ def war(request):
                         'inlineError': msg
                     }
                 )
-
-
 
             return render(
                 request,
@@ -3761,8 +3759,9 @@ def fightclub(request):
 
 
 # SECTION: war
-def war(request):
+def rankedWar(request):
     try:
+
         if request.session.get('player'):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
@@ -3792,7 +3791,6 @@ def war(request):
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
-
 
 @csrf_exempt
 def warstatus(request):

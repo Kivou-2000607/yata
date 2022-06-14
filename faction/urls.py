@@ -37,8 +37,8 @@ urlpatterns = [
     re_path(r'^attacks/members/(?P<reportId>\w+)$', views.attacksMembers, name='attacksMembers'),
     re_path(r'^attacks/export/(?P<reportId>\w+)/(?P<type>\w+)$', views.attacksExport, name='attacksExport'),
     re_path(r'^attacks/manage/$', views.manageAttacks, name='manageAttacks'),
-    re_path(r'^attacks/war/$', views.war, name='war'),
-    re_path(r'^attacks/wars/$', views.wars, name='wars'),
+    re_path(r'^attacks/war/$', views.attacksWar, name='attacksWar'),
+    re_path(r'^attacks/wars/$', views.attacksWars, name='attacksWars'),
     re_path(r'^attacks/(?P<reportId>\w+)$', views.attacksReport, name='attacks'),
 
     # SECTION: revives
@@ -77,7 +77,7 @@ urlpatterns = [
     re_path(r'^fightclub/$', views.fightclub, name='fightclub'),
 
     # SECTION: war
-    re_path(r'^war/$', views.war, name='war'),
+    re_path(r'^war/$', views.rankedWar, name='rankedWar'),
     re_path(r'^war/status/$', views.warstatus, name='warstatus'),
     re_path(r'^war/targets/$', views.wartargets, name='wartargets'),
     re_path(r'^war/target/$', views.wartarget, name='wartarget'),
