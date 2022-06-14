@@ -1401,7 +1401,8 @@ class Faction(models.Model):
         spies = self.getSpies(use_cache=True)
 
         # loop over targets
-        batch = FactionTarget.objects.bulk_operation()
+        batch1 = FactionTarget.objects.bulk_operation()
+        batch2 = FactionTarget.objects.bulk_operation()
         for target_id, target in r["members"].items():
 
             # spy
@@ -1410,7 +1411,6 @@ class Faction(models.Model):
             # custom description
             status_description = target['status']['description']
             status_state = target['status']['state']
-
             if status_state == "Hospital":
                 _, time = status_description.split(" for ")
                 status_description = f'H for {time}'
@@ -1418,8 +1418,7 @@ class Faction(models.Model):
             elif status_state == "Jail":
                 status_description = status_description.replace("In jail", "J")
                 dibs = False
-            elif status_state == "Traveling":
-                status_description = status_description.replace("In jail", "J")
+            elif status_state in ["Traveling", "Abroad"]:
                 target['status']['details'] = status_description
                 status_description = status_state
                 dibs = False
@@ -1455,18 +1454,25 @@ class Faction(models.Model):
                 'update_timestamp': r["timestamp"],
             }
             if not dibs:
-                defaults["dibs_tid"] = 0
-                defaults["dibs_name"] = "name"
-
-            batch.update_or_create(
+                defaults.update({'dibs_tid': 0, 'dibs_name': 'name'})
+                batch1.update_or_create(
+                    faction_id=self.pk,
+                    target_id=target_id,
+                    defaults=defaults
+                )
+            else:
+                batch2.update_or_create(
                 faction_id=self.pk,
                 target_id=target_id,
                 defaults=defaults
             )
 
-        print(f'{self} [faction targets] batch size: {batch.count()}')
-        if batch.count():
-            batch.run(batch_size=100)
+        print(f'{self} [faction targets] batch size (hosp): {batch1.count()}')
+        if batch1.count():
+            batch1.run(batch_size=100)
+        print(f'{self} [faction targets] batch size (okay): {batch2.count()}')
+        if batch2.count():
+            batch2.run(batch_size=100)
 
         targets = self.factiontarget_set.all()
         return targets
@@ -4511,6 +4517,9 @@ class FactionTarget(models.Model):
     dexterity_timestamp = models.IntegerField(default=0)
     total_timestamp = models.IntegerField(default=0)
 
+    # revivable
+    revivable = models.BooleanField(default=0)
+
     # dibs
     dibs_tid = models.IntegerField(default=0)
     dibs_name = models.CharField(default="player_name", max_length=16)
@@ -4529,6 +4538,7 @@ class FactionTarget(models.Model):
         self.rank = req.get("rank", "?")
         self.level = int(req.get("level", 0))
         self.age = int(req.get("age", 1))
+        self.revivable = bool(req.get("revivable", 1))
 
         if req.get("life") is None:
             self.life_current = 0
@@ -4544,11 +4554,32 @@ class FactionTarget(models.Model):
             self.status_color = "?"
             self.status_until = 0
         else:
-            self.status_description = req["status"].get("description", "?")
+
+            # custom description
+            status_description = req['status']['description']
+            status_state = req['status']['state']
+            if status_state == "Hospital":
+                _, time = status_description.split(" for ")
+                status_description = f'H for {time}'
+                dibs = False
+            elif status_state == "Jail":
+                status_description = status_description.replace("In jail", "J")
+                dibs = False
+            elif status_state in ["Traveling", "Abroad"]:
+                req['status']['details'] = status_description
+                status_description = status_state
+                dibs = False
+            else:
+                dibs = True
+
+            self.status_description = status_description
             self.status_details = req["status"].get("details", "?")
-            self.status_state = req["status"].get("state", "?")
+            self.status_state = status_state
             self.status_color = req["status"].get("color", "?")
             self.status_until = req["status"].get("until", 0)
+            if not dibs:
+                self.dibs_tid = 0
+                self.dibs_name = "name"
 
         if req.get("faction") is None:
             self.faction_position = "?"

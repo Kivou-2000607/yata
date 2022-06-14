@@ -22,7 +22,7 @@ This file is part of yata.
 {% load humanize %}
 
 {% if inlineError %}
-    <td colspan="13" class="text-center"><div class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;{{inlineError}}</div></td>
+    <td colspan="14" class="text-center"><div class="error"><i class="fas fa-skull-crossbones"></i>&nbsp;{{inlineError}}</div></td>
 {% else %}
     <td class="text-start dont-touch-me" data-val="{{target.target_id}}">{% player_link target.target_id target.name "attack" %}</td>
     <td class="text-center align-middle" data-val="{{target.level}}">{{target.level}}</td>
@@ -33,6 +33,13 @@ This file is part of yata.
     <td class="text-center" data-val="{{target.total}}" title="{{target.total|intcomma}} ({{target.total_timestamp|ts2date}})">{% battle_stats target.total %}</td>
     <td class="text-end" data-val="{{target.last_action_timestamp}}">{{target.last_action_relative}}</td>
     <td class="text-center" title="{{target.last_action_status}}" data-val='{% if target.last_action_status == "Offline" %}-1{% elif target.last_action_status == "Idle" %}0{% else %}1{% endif%}'><i class="fas fa-circle online-status-{{target.last_action_status}}"></i></td>
+    <td class="text-center" title="{{target.last_action_status}}" data-val='{{target.revivable}}'>
+        {% if target.revivable %}
+            <i class="fa-solid fa-bed-pulse valid"></i>
+        {% else %}
+            <i class="fa-solid fa-bed-pulse error"></i>
+        {% endif %}
+    </td>
     <td class="text-center" data-val="{{target.life_current}}">
         <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
             <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>

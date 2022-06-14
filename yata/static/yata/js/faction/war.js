@@ -16,7 +16,7 @@ $(document).on("click", "tr[class='faction-targets-refresh'] > td:not(.dont-touc
         type: "update",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
-    reload.html(`<td colspan="13" class="text-center">${spinner}</td>`);
+    reload.html(`<td colspan="14" class="text-center">${spinner}</td>`);
 });
 
 // call dibs

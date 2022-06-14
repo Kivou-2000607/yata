@@ -50,11 +50,11 @@ table.faction-targets {
 	white-space: nowrap;
 	text-overflow: clip;
 }
-table.faction-targets th.a { width: 15%; }
+table.faction-targets th.a { width: 14%; }
 table.faction-targets th.b { width: 5%; }
 table.faction-targets th.d { width: 7%; } /* x5 */
 table.faction-targets th.e { width: 10%; }
-table.faction-targets th.c { width: 5%; }
+table.faction-targets th.c { width: 3%; } /* x2 */
 table.faction-targets th.f { width: 10%; }
 table.faction-targets th.g { width: 5%; }
 table.faction-targets th.h { width: 5%; }
