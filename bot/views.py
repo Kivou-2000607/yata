@@ -269,6 +269,9 @@ def dashboardOption(request):
                             if "apiError" not in faction_info:
                                 positions = {html.unescape(v["position"]): {} for k, v in faction_info.get("members", {}).items()}
 
+                            if 'positions' not in c:
+                                c['positions'] = {}
+
                             if id in c["positions"]:
                                 for k in positions:
                                     if k not in c["positions"][id]:
