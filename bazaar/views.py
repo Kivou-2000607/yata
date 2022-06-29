@@ -430,7 +430,7 @@ def top10(request):
         return returnError(exc=e, session=request.session)
 
 
-def details(request, itemId):
+def details(request, itemId=168):
     try:
         if request.method == "POST":
             item = Item.objects.filter(tId=itemId).first()
@@ -446,7 +446,7 @@ def details(request, itemId):
         return returnError(exc=e, session=request.session)
 
 
-def prices(request, itemId):
+def prices(request, itemId=168):
     try:
         if request.method == "POST":
             item = Item.objects.filter(tId=itemId).first()
@@ -483,7 +483,7 @@ def prices(request, itemId):
         return returnError(exc=e, session=request.session)
 
 
-def update(request, itemId):
+def update(request, itemId=168):
     try:
         if request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
