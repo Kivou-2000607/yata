@@ -225,6 +225,8 @@ def priceTendency(fl, arg="item"):
         fl *= 100
         sign = "%"
     colors = ["valid", "error"]
+    if not isinstance(fl, float):
+        fl = 0
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
@@ -246,6 +248,8 @@ def priceTendencyShort(fl, arg="item"):
         fl *= 100
         sign = "%"
     colors = ["valid", "error"]
+    if not isinstance(fl, float):
+        fl = 0
     s = "caret-up" if fl > 0 else "caret-down"
     s = "sort" if fl == 0 else s
     if fl >= 1:
