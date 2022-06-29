@@ -3591,6 +3591,7 @@ def spiesImport(request):
                 }
 
                 try:
+                    row_i = 0
                     ts = int(time.mktime(datetime.datetime.strptime(request.POST.get("date", "70/1/1"), "%y/%m/%d").timetuple()))
                     line_parsed = 0
                     for row_i, line in enumerate(request.POST.get("spy", "").split("\n")):
@@ -3618,6 +3619,7 @@ def spiesImport(request):
                         message_content = f'Spy imported: {line_parsed} lines parsed'
                     else:
                         message_content = f'Spy not imported: {line_parsed} line{"" if line_parsed else "s"} parsed'
+
                 except BaseException as e:
                     request.session['message'] = ('errorMessageSub', f'Error while parsing text line {row_i + 1}: {e}')
                     return redirect('faction:spies')
