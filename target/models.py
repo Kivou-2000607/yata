@@ -177,8 +177,12 @@ class Target(models.Model):
     def customDescription(self):
         if self.status_state == "Hospital":
             # return "H for {}".format(self.status_until - tsnow())
-            _, time = self.status_description.split(" for ")
-            self.status_description = f"H for {time}"
+            try:
+                _, time = self.status_description.split(" for ")
+                self.status_description = f"H for {time}"
+            except ValueError:
+                # probably flying back after hosp... needs to be refreshed
+                self.status_description = "Unknown (refresh)"
             return self.status_description
         elif self.status_state == "Jail":
             return self.status_description.replace("In jail", "J")

@@ -1412,8 +1412,12 @@ class Faction(models.Model):
             status_description = target['status']['description']
             status_state = target['status']['state']
             if status_state == "Hospital":
-                _, time = status_description.split(" for ")
-                status_description = f'H for {time}'
+                try:
+                    _, time = status_description.split(" for ")
+                    status_description = f'H for {time}'
+                except ValueError:
+                    # probably flying back after hosp... needs to be refreshed
+                    status_description = "Unknown (refresh)"
                 dibs = False
             elif status_state == "Jail":
                 status_description = status_description.replace("In jail", "J")
@@ -4564,8 +4568,12 @@ class FactionTarget(models.Model):
             status_description = req['status']['description']
             status_state = req['status']['state']
             if status_state == "Hospital":
-                _, time = status_description.split(" for ")
-                status_description = f'H for {time}'
+                try:
+                    _, time = status_description.split(" for ")
+                    status_description = f'H for {time}'
+                except ValueError:
+                    # probably flying back after hosp... needs to be refreshed
+                    status_description = "Unknown (refresh)"
                 dibs = False
             elif status_state == "Jail":
                 status_description = status_description.replace("In jail", "J")
