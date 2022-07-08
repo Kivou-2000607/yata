@@ -264,9 +264,9 @@ class Player(models.Model):
             cache.set(f"bazaar-inventory-{self.tId}", inventory, 60)
             return invtmp
         else:
-            inventory["inventory"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("inventory", dict({}))}
-            inventory["bazaar"] = {str(v["ID"]): [v["quantity"], v["price"]] for v in invtmp.get("bazaar", dict({}))}
-            inventory["display"] = {str(v["ID"]): [v["quantity"], 0] for v in invtmp.get("display", dict({}))}
+            inventory["inventory"] = {str(v["ID"]): [v.get("quantity", 0), 0] for v in invtmp.get("inventory", dict({}))}
+            inventory["bazaar"] = {str(v["ID"]): [v.get("quantity", 0), v.get("price", 0)] for v in invtmp.get("bazaar", dict({}))}
+            inventory["display"] = {str(v["ID"]): [v.get("quantity", 0), 0] for v in invtmp.get("display", dict({}))}
             cache.set(f"bazaar-inventory-{self.tId}", inventory, 60)
 
         return inventory
