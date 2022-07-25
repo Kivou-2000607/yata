@@ -1757,11 +1757,14 @@ class Chain(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         chain = self.faction.chain_set.filter(computing=True).only("crontab").first()
-        crontab_type = "crontabs_chain_live" if self.live else "crontabs_chain_report"
+        # crontab_type = "crontabs_chain_live" if self.live else "crontabs_chain_report"
+        crontab_type = "crontabs_chain_report"  # single crontab type for live and reports
         if chain is None or chain.crontab not in getCrontabs(crontab_type):
+            # if no (or wrong) crontab already assigned to the faction get the least populated one
             cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
-        elif chain is not None:
+        else:
+            # if faction allready on a crontab assign the same
             self.crontab = chain.crontab
         self.save()
         return self.crontab
@@ -2470,11 +2473,14 @@ class AttacksReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.attacksreport_set.filter(computing=True).only("crontab").first()
-        crontab_type = "crontabs_attacks_live" if self.live else "crontabs_attacks_report"
+        # crontab_type = "crontabs_attacks_live" if self.live else "crontabs_attacks_report"
+        crontab_type = "crontabs_attacks_report"  # single crontab type for live and reports
         if report is None or report.crontab not in getCrontabs(crontab_type):
+            # if no (or wrong) crontab already assigned to the faction get the least populated one
             cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
+            # if faction allready on a crontab assign the same
             self.crontab = report.crontab
         self.save()
         return self.crontab
@@ -3003,11 +3009,14 @@ class RevivesReport(models.Model):
     def assignCrontab(self):
         # check if already in a crontab
         report = self.faction.revivesreport_set.filter(computing=True).only("crontab").first()
-        crontab_type = "crontabs_revives_live" if self.live else "crontabs_revives_report"
+        # crontab_type = "crontabs_revives_live" if self.live else "crontabs_revives_report"
+        crontab_type = "crontabs_revives_report"  # single crontab type for live and reports
         if report is None or report.crontab not in getCrontabs(crontab_type):
+            # if no (or wrong) crontab already assigned to the faction get the least populated one
             cn = {c: len(RevivesReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
+            # if faction allready on a crontab assign the same
             self.crontab = report.crontab
         self.save()
         return self.crontab
