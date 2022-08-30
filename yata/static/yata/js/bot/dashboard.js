@@ -3,7 +3,7 @@ $(document).on("click", ".dashboard-option", e => {
     if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
-    target.closest("div.module-doc").load("/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -28,7 +28,7 @@ $(document).on("click", ".dashboard-option-tr", e => {
     if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
-    target.closest("tr").load("/bot/dashboard/option/", {
+    target.closest("tr").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -54,7 +54,7 @@ $(document).on("click", ".dashboard-option-li", e => {
     if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget).closest("li");
-    target.closest("div.module-doc").load("/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -80,7 +80,7 @@ $(document).on("click", ".dashboard-option-span", e => {
     if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget).closest("span");
-    target.closest("div.module-doc").load("/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -109,7 +109,7 @@ $(document).on("click", ".dashboard-option-af", e => {
     const id = $(target).parents("li.step-2").siblings("li.step-1").children("input.faction-add-id").val();
     if (!$.isNumeric(id)) { console.log("faction id is not numeric:", id); return; }
 
-    target.closest("div.module-doc").load("/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),
@@ -158,7 +158,7 @@ $(document).on("change", "input.new-message", e => {
     if ($("#dashboard-readonly").length) return;
 
     const target = $(e.currentTarget);
-    target.closest("div.module-doc").load("/bot/dashboard/option/", {
+    target.closest("div.module-doc").load("/bot/legacy/dashboard/option/", {
 
         // bot /server / module / type (select the section in the configuration)
         bid: target.attr("data-bid"),

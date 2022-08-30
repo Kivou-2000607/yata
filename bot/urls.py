@@ -20,4 +20,4 @@ urlpatterns = [
     re_path(r'^toggleNoti/$', views.toggleNoti, name='toggleNoti'),
 
     re_path(r'^legacy/secret/$', views.secret, name='secret'),
-    ]
+]
