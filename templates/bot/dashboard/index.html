@@ -100,7 +100,7 @@ This file is part of yata.
 
 {% else %}
 <div class="container-fluid p-md-3 p-1 mb-3 rounded module error">
-     You are not a bot admin. Reach out to a <tt>@Staff</tt> on the <a href='{% url "discord" %}' target="_blank"><i class="fab fa-discord"></i> YATA discord server</a>.<br/>
-     Check before that you're logged in.
+     You are not a bot admin.<br/>
+     Check before that you're logged in or see <a href="{% url 'bot:host' %}" title="bot documentation">how to host it</a>.
  </div>
 {% endif %}

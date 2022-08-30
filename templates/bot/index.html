@@ -23,23 +23,65 @@ This file is part of yata.
     <div class="clearfix">
       <img class="bd-placeholder-img col-md-2 float-md-end mb-3 ms-md-3 d-none d-md-block rounded" src="/media/misc/bot_verified.png" alt="YATA" width="100%" />
 
-    <p><b>The YATA bot is a discord made for Torn</b>.<br/>It has a set of commands made to facilitate you Torn life while keeping you server secure.</p>
-    <p>Currently it has 9 modules:</p>
+      <p>
+        <b>The YATA bot is a discord bot made for Torn</b>.
+        <br/>It has a set of <a href="https://discord.com/blog/slash-commands-are-here" target="_blank">appplication commands</a> made to facilitate your Torn life while keeping your server secure.</p>
+    <p>Currently it has 2 modules (more might come <i class="far fa-smile-wink"></i>):</p>
     <ul>
         <li>Verify</li>
-        <li>Loot</li>
-        <li>Chain</li>
-        <li>Rackets</li>
-        <li>Wars</li>
-        <li>Revive</li>
-        <li>Crimes</li>
-        <li>Torn API</li>
+        <li>Notifications</li>
     </ul>
     </div>
-    <p class="mb-0">For more details, check out <a href="{% url 'bot:documentation' %}">the documentation</a>. You want to know more? <a href="{% url 'discord' %}" target="_blank">Join the YATA server</a> and <b>kindly</b> ask <tt>@Staff</tt> for more information. You want to host the bot on your server? Follow <a href="{% url 'bot:host'%}">these steps</a>.</p>
+    <h3>Getting started with the setup</h3>
+    Before starting, know that you need to have admin permissions to fully setup the bot on your server. If so, follow these steps.
+
+    <ol class="mb-0">
+        <li>
+            Invite the bot following this link.
+            <div class="invite-container">
+                <a href="https://www.paypal.com/donate?hosted_button_id=B6QFKDKF35EX4&source=url">
+                    <img src="/media/misc/bot_invite.png" title="Donate to YATA" class="invite-button">
+                </a>
+            </div>
+            By default it asks for administrator permission. This is not mandatory, however change them if you know what you are doing.
+        </li>
+        <li>
+            Type / (and select the YATA bot if you have a lot of them) to check what it has in the belly. You might want to start with <pre>/serverkeys add</pre>
+        </li>
+        <li>
+            Try the different commands. If you encounter any difficulties, you can ask questions on <a href="https://yata.yt/discord" target="_blank">our discord</a>.</b>
+        </li>
+    </ol>
 </div>
 
 <h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-crown"></i>&nbsp;Legacy bot</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div class="clearfix">
+        <img class="bd-placeholder-img col-md-2 float-md-end mb-0 ms-md-3 d-none d-md-block rounded" src="/media/misc/bot_legacy.png" alt="YATA" width="100%" />
+
+        <p>
+            The <b>Legacy YATA bot</b> is a replica of the message commands bot that you might have used before the 30th of August 2022.<br />
+            We had to stop delivering it for free on an unlimited number of servers for various reasons (more details <a href="https://www.torn.com/forums.php#/p=threads&f=14&t=16287776" target="_blank">on the forums</a>).
+        </p>
+        <p>
+            <span class="error">The development of this bot is discontinued</span>. Only major breakings that might occur because of API changes will be fixed.
+        </p>
+        <p>
+            If you still want to use it you'll have to pay 1 SE/month.<br>
+            <a href="https://discordapp.com/users/227470975317311488" target="_blank">DM me on discord</a> if you're interested.
+        </p>
+
+        <p class="mb-0">
+            Keep in mind that the long time goal is to implement its features to the free bot.
+            However it's not likely to happen anytime soon.
+        </p>
+    </div>
+</div>
+{% comment %} <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
       <div class="px-2 me-auto"><i class="fas fa-code-branch"></i>&nbsp;Open source</div>
     </div>
@@ -56,4 +98,4 @@ This file is part of yata.
     <p>You can check if you're dealing with the official bot by checking the list of servers hosting the bot below <b>and</b> by checking that the bot ID is <tt>623862007434706986</tt> (<a href="https://support.discordapp.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-" target="_blank">how to look at discord ID</a>).<br>There should be a little tick on the bot badge.</p>
     <h3><i class="fas fa-code-branch"></i>&nbsp; Unofficial YATA bots</h3>
     <p class="mb-0">There is no control whatsoever on the different versions of the bot. Some might be better, some might be worse, some might be malicious... The only thing known is that they don't have access to the YATA database (and will never have).</p>
-</div>
+</div> {% endcomment %}

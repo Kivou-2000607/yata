@@ -40,36 +40,21 @@ def index(request):
         # update discord id
         error = player.update_discord_id()
 
-        # get servers
-        servers_db = Bot.objects.filter(pk=3).first().server_set.all()
-        servers = dict({})
-        for s in servers_db:
-            configuration = json.loads(s.configuration)
-            server_admins = configuration.get("admin", {}).get("server_admins")
-            joined_at = configuration.get("admin", {}).get("joined_at", 0)
-            if server_admins is None or not joined_at:
-                print(f'skip {s}')
-                continue
+        context = {"player": player, "error": error, "view": {"index": True}}
+        page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
+        return render(request, page, context)
 
-            servers[str(s.discord_id)] = {"server_name": s.name, "server_id": str(s.discord_id), "joined_at": joined_at, "admins": [[v["name"], v["torn_id"]] for k, v in server_admins.items()]}
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
 
-        # sort
-        servers = sorted(servers.items(), key=lambda x: x[1]["joined_at"], reverse=True)
-        total_servers = len(servers)
+def legacy(request):
+    try:
+        player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
-        graphs = []
-        for i, (k, v) in enumerate(servers):
-            v["i"] = total_servers - i
-            graphs.append([timestampToDate(v.get("joined_at", 1)), total_servers - i])
+        # update discord id
+        error = player.update_discord_id()
 
-        paginator = Paginator(servers, 25)
-        page = request.GET.get('page')
-        servers = paginator.get_page(page)
-
-        if request.GET.get('page') is not None:
-            return render(request, "bot/guilds-list.html", {"servers": servers, "total_servers": total_servers})
-
-        context = {"player": player, "servers": servers, "total_servers": total_servers, "graphs": graphs, "error": error, "botcat": True, "view": {"index": True}}
+        context = {"player": player, "error": error, "botcat": True, "view": {"index": True}}
         page = 'bot/content-reload.html' if request.method == 'POST' else 'bot.html'
         return render(request, page, context)
 

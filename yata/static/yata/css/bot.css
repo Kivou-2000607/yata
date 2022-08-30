@@ -1,3 +1,23 @@
+div.invite-container {
+    position: relative;
+    text-align: center;
+}
+
+img.invite-button {
+    width: 256px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 10px;
+    cursor: pointer;
+    box-shadow: 0px  0px  1px  1px #aaa!important;
+    border-radius: 40px;
+}
+
+img.invite-button:hover {
+    box-shadow: 2px  2px  2px  2px #aaa!important;
+}
+
+
 p.color-private { color: #CC3434; }
 p.color-public { color: #447e9b; }
 p.color-none { color: #0B8E14; }
