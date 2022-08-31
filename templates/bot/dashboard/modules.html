@@ -143,6 +143,24 @@ This file is part of yata.
         {% endif %}
         {% include "bot/dashboard/module-enable-disable.html" %}
     {% endwith %}
+
+{% elif module == "sub" %}
+    {% if server.start %}
+        <ul>
+            <li><b>Starting date:</b> {{server.start|ts2date}}</li>
+            <li><b>End of contract:</b> {{server.end|ts2date}} ({{server.end|sub:now|ts2time}} left)</li>
+            <li><b>Donations:</b> {{server.n_donations}}
+                <ol>
+                    {% for k, v in server.get_donations.items %}
+                        <li><tt>{{k}}</tt> (x{{v.quantity}}): sent by {{v.sender}} on {{v.timestamp|ts2date}}</li>
+                    {% endfor %}
+                </ol>
+            </li>
+        </ul>
+    {% else %}
+        Unlimited
+    {% endif %}
+
 {% else %}
     <p class="error">{{error}}</p>
 {% endif %}

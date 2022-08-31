@@ -38,12 +38,19 @@ class Server(models.Model):
     configuration = models.TextField(default='{}', help_text="Server name configuration (json)", validators=[check_json])
     server_admin = models.ManyToManyField(Player, blank=True, help_text="Enter torn ID or name to find the player. If it doesn't show up it means the player is not on YATA.")
     secret = models.CharField(default="x", max_length=16, help_text="Secret key to access read only configurations")
+    start = models.IntegerField(default=0, help_text="Date from which the contract starts")
+    end = models.IntegerField(default=0, help_text="Date of the end of the contract (computed by crontabs)")
+    n_donations = models.IntegerField(default=0, help_text="Number of donations (computed by crontabs)")
+    donations = models.TextField(default='{}', help_text="Donations (autofill by crontab)")
 
     def __str__(self):
         return '{} on bot {}'.format(self.bot, self.name)
 
     def get_prefixes(self):
         return
+
+    def get_donations(self):
+        return json.loads(self.donations)
 
     def get_admins(self):
         return [v for k, v in json.loads(self.configuration).get("admin", {}).get("server_admins", {}).items()]

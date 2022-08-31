@@ -31,6 +31,7 @@ from bot.models import *
 
 import json
 import html
+import time
 
 
 def index(request):
@@ -151,7 +152,7 @@ def dashboard(request, secret=False):
                 server.configuration = json.dumps(configurations)
                 server.save()
 
-        context = {"player": player, "servers": servers, "botcat": True, "secret": secret, "view": {"dashboard": True}}
+        context = {"player": player, "servers": servers, "now": int(time.time()), "botcat": True, "secret": secret, "view": {"dashboard": True}}
         return render(request, page, context)
 
     except Exception as e:

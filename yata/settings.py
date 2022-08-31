@@ -30,6 +30,9 @@ print(f"[YATA {datestr()}] settings DEBUG={DEBUG}")
 SECRET_KEY = config('SECRET_KEY')
 print(f"[YATA {datestr()}] settings SECRET_KEY={SECRET_KEY}")
 
+LOG_KEY = config('LOG_KEY')
+print(f"[YATA {datestr()}] settings LOG_KEY={LOG_KEY}")
+
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS', default="*")]
 print(f"[YATA {datestr()}] settings ALLOWED_HOSTS={ALLOWED_HOSTS}")
 
