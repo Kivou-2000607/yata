@@ -52,7 +52,6 @@ class Command(BaseCommand):
                 print(f'[CRON {logdate()}]         Start: {timestampToDate(s.start)}')
                 admins = {str(a.tId): a.name for a in s.server_admin.all()}
 
-                admins["2302823"] = "coucou"
                 for k, v in admins.items():
                     print(f'[CRON {logdate()}]         Admin: {v} [{k}]')
                 if s.start:
