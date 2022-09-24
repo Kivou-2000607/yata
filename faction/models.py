@@ -1645,7 +1645,7 @@ class Member(models.Model):
                 # merit perks
                 for p in req.get("merit_perks", []):
                     sp = p.split(' ')
-                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "Maximum":
+                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
                         nnb -= int(sp[1])
 
                 self.nnb = nnb
