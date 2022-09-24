@@ -1639,8 +1639,8 @@ class Member(models.Model):
                 # faction perks
                 for p in req.get("faction_perks", []):
                     sp = p.split(' ')
-                    if len(sp) == 6 and sp[3] == "nerve" and sp[2] == "maximum":
-                        nnb -= int(sp[5])
+                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
+                        nnb -= int(sp[1])
 
                 # merit perks
                 for p in req.get("merit_perks", []):
