@@ -394,15 +394,15 @@ class Player(models.Model):
             elif k == "Education Length":
                 merits[k]["description"] = ["Decreases education course length by", [2], ["%"], "."]
             elif k == "Awareness":
-                merits[k]["description"] = ["Increases ability to find items."]
+                merits[k]["description"] = ["Increases frequency of items appearing in the city by", [20], ["%"], "."]
             elif k == "Bank Interest":
                 merits[k]["description"] = ["Increases bank interest by", [5], ["%"], "."]
             elif k == "Masterful Looting":
                 merits[k]["description"] = ["Increases money gained from mugging by", [5], ["%"], "."]
             elif k == "Stealth":
-                merits[k]["description"] = ["Increases ability to do stealth attacks."]
+                merits[k]["description"] = ["Increases stealth during outgoing attacks by", [0.2], [""], "."]
             elif k == "Hospitalizing":
-                merits[k]["description"] = ["Increases time when hospitalizing people by", [10], [""], " minutes."]
+                merits[k]["description"] = ["Increases hospitalization time by", [5], ["%"], "."]
             elif k == "Addiction Mitigation":
                 merits[k]["description"] = ["Reduces the negative effects of addiction by", [2], ["%"], "."]
             elif k == "Employee Effectiveness":
@@ -413,6 +413,11 @@ class Player(models.Model):
             elif k.split(" ")[-1] == "Mastery":
                 # merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [1, 0.2], ["%", ""], " respectively."]
                 merits[k]["description"] = ["Increases damage and accuracy by", [1, 0.2], ["%", ""], "."]
+
+        # Critical Hit Rate - *Increases critical hit rate by 0.5%*
+        # Awareness - *Increases frequency of items appearing in the city by *20%
+        # Stealth - *Increases stealth during outgoing attacks by +0.2*
+        # Hospitalizing - *Increases hospitalization time by 5%*
 
         return merits
 
