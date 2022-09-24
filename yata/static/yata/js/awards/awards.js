@@ -26,7 +26,7 @@ $(document).on("click", "div[id^='award-category-']", (e) => {
     // *********************** //
 
     // select award category and toggleButton
-    let awardCategory = e.target.getAttribute("id");
+    let awardCategory = e.currentTarget.getAttribute("id");
     let toggleButton = $("#"+awardCategory).children("i");
 
     // check if toggle button was already on and change to Allawards if so
