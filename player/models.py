@@ -386,7 +386,7 @@ class Player(models.Model):
             if k == "Nerve Bar":
                 merits[k]["description"] = ["Increases maximum nerve bar by", [1], [""], " points."]
             elif k == "Critical Hit Rate":
-                merits[k]["description"] = ["Increases critical hit rate by", [1], ["%"], "."]
+                merits[k]["description"] = ["Increases critical hit rate by", [0.5], ["%"], "."]
             elif k == "Life Points":
                 merits[k]["description"] = ["Constantly modifies life by", [5], ["%"], "."]
             elif k == "Crime Experience":
@@ -394,13 +394,13 @@ class Player(models.Model):
             elif k == "Education Length":
                 merits[k]["description"] = ["Decreases education course length by", [2], ["%"], "."]
             elif k == "Awareness":
-                merits[k]["description"] = ["Increases ability to find items.", [0], [""], ""]
+                merits[k]["description"] = ["Increases ability to find items."]
             elif k == "Bank Interest":
                 merits[k]["description"] = ["Increases bank interest by", [5], ["%"], "."]
             elif k == "Masterful Looting":
                 merits[k]["description"] = ["Increases money gained from mugging by", [5], ["%"], "."]
             elif k == "Stealth":
-                merits[k]["description"] = ["Increases ability to do stealth attacks.", [0], [""], "."]
+                merits[k]["description"] = ["Increases ability to do stealth attacks."]
             elif k == "Hospitalizing":
                 merits[k]["description"] = ["Increases time when hospitalizing people by", [10], [""], " minutes."]
             elif k == "Addiction Mitigation":
@@ -411,7 +411,8 @@ class Player(models.Model):
                 b = {"Brawn": "strength", "Protection": "defense", "Evasion": "dexterity", "Sharpness": "speed"}
                 merits[k]["description"] = ["Passive bonus of", [3], ["%"], " in {}.".format(b.get(k))]
             elif k.split(" ")[-1] == "Mastery":
-                merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [2.5, 0.2], ["%", ""], " respectively."]
+                # merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [1, 0.2], ["%", ""], " respectively."]
+                merits[k]["description"] = ["Increases damage and accuracy by", [1, 0.2], ["%", ""], "."]
 
         return merits
 
