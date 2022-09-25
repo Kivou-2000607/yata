@@ -258,7 +258,12 @@ def supervise(request, shareId=False):
                 d = json.loads(data.employees)
                 tmp_data = [data.timestamp, []]
                 for e_id, e_name in employee_graph_headers:
-                    to_append = [d.get(e_id, {}).get("effectiveness_total", "undefined"), d.get(e_id, {}).get("position", "undefined")]
+                    to_append = [
+                        d.get(e_id, {}).get("effectiveness_total", "undefined"),
+                        d.get(e_id, {}).get("effectiveness_addiction", "undefined"),
+                        d.get(e_id, {}).get("effectiveness_inactivity", "undefined"),
+                        d.get(e_id, {}).get("position", "undefined")
+                    ]
                     if to_append[0] == 0:
                         to_append[0] = "undefined"
                     tmp_data[1].append(to_append)

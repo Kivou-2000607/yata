@@ -22,7 +22,6 @@ This file is part of yata.
 {% load humanize %}
 
 {% if company %}
-
 <script>
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(()=>{
@@ -114,9 +113,14 @@ This file is part of yata.
 
 <script>
   google.charts.load('current', {'packages':['annotationchart']});
-  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}));
+  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}, 1));
 
-  function drawChart(employees_graph) {
+  $(document).on("change", "#company-data-employees-select", e => {
+    e.preventDefault();
+    google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}, $(e.currentTarget).val()));
+  });
+
+  function drawChart(employees_graph, dt_i) {
     //Set Visualizer (dt)
     const dt = new google.visualization.DataTable();
 
@@ -127,7 +131,7 @@ This file is part of yata.
 
     //Map Row (dt.addRow)
     employees_graph.data
-      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[0] === 'number'?data[0]:undefined)])
+      .map(row=>[new Date((row[0]-86400)*1000),...row[1].map(data=>typeof data[dt_i] === 'number'?data[dt_i]:undefined)])
       .forEach(row=>dt.addRow(row));
 
     const options = {
@@ -178,6 +182,7 @@ This file is part of yata.
       downloadLink = null;
     }
   });
+
   function raiseEvent(element, eventType) {
     var eventRaised;
     if (document.createEvent) {
@@ -189,6 +194,7 @@ This file is part of yata.
       element.fireEvent('on' + eventType, eventRaised);
     }
   }
+
     //Add onclick for chart
     google.visualization.events.addListener(chart,'select',()=>{
       //Get Selected Row
@@ -366,6 +372,12 @@ This file is part of yata.
   </div>
 
   <div class="table-responsive">
+    <select name="companies" id="company-data-employees-select" class="form-select">
+      {% comment %} <option value="" disabled selected>List of all companies</option> {% endcomment %}
+      <option value="0">Employees total effectiveness</option>
+      <option value="1">Employees drug addiction</option>
+      <option value="2">Employees inactivity</option>
+    </select>
     <table class="table table-hover table-borderless tablesorter">
       <tbody>
         <tr><td id="company-data-employees"></td></tr>
