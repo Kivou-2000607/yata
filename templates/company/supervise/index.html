@@ -113,7 +113,7 @@ This file is part of yata.
 
 <script>
   google.charts.load('current', {'packages':['annotationchart']});
-  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}, 1));
+  google.charts.setOnLoadCallback(()=>drawChart({{employees_graph|safe}}, 0));
 
   $(document).on("change", "#company-data-employees-select", e => {
     e.preventDefault();
