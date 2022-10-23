@@ -192,6 +192,55 @@ def getCrimes(request):
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
+@cache_page(60*10)
+def getMembers(request):
+    try:
+        # check if API key is valid with api call
+        key = request.GET.get("key", False)
+        if not key:
+            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+
+        call = apiCall('user', '', '', key=key)
+        if "apiError" in call:
+            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+
+        #  check if can get faction
+        factionId = call.get("faction", {}).get("faction_id")
+        faction = Faction.objects.filter(tId=factionId).first()
+        if faction is None:
+            return JsonResponse({"error": {"code": 2, "error": f"Can't find faction {factionId} in YATA database"}}, status=400)
+
+        # update faction members
+        faction.updateMembers()
+
+        # get members
+        members = {}
+        for member in faction.member_set.all():
+            members[str(member.tId)] = {
+                "onlineStatus": member.lastActionStatus,
+                "name": member.name,
+                "lastAction": member.lastAction,
+                "lastActionTS": member.lastActionTS,
+                "status": member.lastActionStatus,
+                "daysInFaction": member.daysInFaction,
+                "crimesRank": member.crimesRank,
+                "NNB": member.nnb if member.shareN else "Not Shared",
+                "energy": member.energy,
+                "refillUsed": member.refillUsed,
+                "drugCD": member.drugCD,
+                "canRevive": member.revive,
+                "totalStats": member.getTotalStats() if member.shareS else "Not Shared",
+                "dexterity": member.dexterity if member.shareS else "Not Shared",
+                "defense": member.defense if member.shareS else "Not Shared",
+                "speed": member.speed if member.shareS else "Not Shared",
+                "strength": member.strength if member.shareS else "Not Shared",
+                "carnage": member.singleHitHonors,
+                "score": member.bonusScore,
+            }
+
+        return JsonResponse({"members": members, "timestamp": tsnow()}, status=200)
+    except BaseException as e:
+        return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 @csrf_exempt
 def updateRanking(request):
