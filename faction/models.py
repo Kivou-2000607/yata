@@ -4372,7 +4372,8 @@ class SpyDatabase(models.Model):
                         "dexterity_timestamp": m.stats_ts,
                         "total_timestamp": m.stats_ts,
                     }
-                    new_spies[m.tId] = optimize_spies(tmp, spy_2=all_spies.get(m.tId, False))
+                    # new_spies[m.tId] = optimize_spies(tmp, spy_2=all_spies.get(m.tId, False))
+                    new_spies[m.tId] = tmp
 
                 key = faction.getKey()
                 if key is None:
