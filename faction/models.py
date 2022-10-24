@@ -37,6 +37,7 @@ import random
 import os
 from decouple import config
 import hashlib
+import time
 
 from yata.handy import *
 from yata.bulkManager import *
@@ -1526,6 +1527,7 @@ class Member(models.Model):
     defense = models.BigIntegerField(default=0)
     speed = models.BigIntegerField(default=0)
     strength = models.BigIntegerField(default=0)
+    stats_ts = models.IntegerField(default=0)
 
     objects = BulkManager()
 
@@ -1589,6 +1591,7 @@ class Member(models.Model):
             self.defense = 0
             self.speed = 0
             self.strength = 0
+            self.stats_ts = 0
         else:
             if not req:
                 req = apiCall("user", "", "battlestats", key=key)
@@ -1601,11 +1604,13 @@ class Member(models.Model):
                 self.defense = 0
                 self.speed = 0
                 self.strength = 0
+                self.stats_ts = 0
             else:
                 self.dexterity = int(str(req.get('dexterity', 0)).replace(",", ""))
                 self.defense = int(str(req.get('defense', 0)).replace(",", ""))
                 self.speed = int(str(req.get('speed', 0)).replace(",", ""))
                 self.strength = int(str(req.get('strength', 0)).replace(",", ""))
+                self.stats_ts = int(time.time())
 
         if save:
             self.save()
@@ -4338,6 +4343,7 @@ class SpyDatabase(models.Model):
 
         # get old spies
         all_spies = self.getSpies(cc=True)
+        # print(all_spies)
 
         new_spies = {}
         if payload is None and self.use_api:
@@ -4345,6 +4351,29 @@ class SpyDatabase(models.Model):
             # get all factions
             for faction in self.factions.all():
                 print(f'{self} {faction}')
+
+                # first add faction members stats as "spies"
+                members_with_stats = faction.member_set.filter(shareS=1)
+                for m in members_with_stats:
+                    strength = m.strength
+                    speed = m.speed
+                    defense = m.defense
+                    dexterity = m.dexterity
+                    total = m.strength + m.speed + m.defense + m.dexterity
+                    tmp = {
+                        "strength": strength,
+                        "speed": speed,
+                        "defense": defense,
+                        "dexterity": dexterity,
+                        "total": total,
+                        "strength_timestamp": m.stats_ts,
+                        "speed_timestamp": m.stats_ts,
+                        "defense_timestamp": m.stats_ts,
+                        "dexterity_timestamp": m.stats_ts,
+                        "total_timestamp": m.stats_ts,
+                    }
+                    new_spies[m.tId] = optimize_spies(tmp, spy_2=all_spies.get(m.tId, False))
+
                 key = faction.getKey()
                 if key is None:
                     continue
@@ -4397,7 +4426,6 @@ class SpyDatabase(models.Model):
             for target_id, spy in payload.items():
                 new_spies[target_id] = optimize_spies(spy, spy_2=new_spies.get(target_id, False))
             print(f'{self} Spies from imports: {len(new_spies)}')
-
 
         # compare old and new
         batch = Spy.objects.bulk_operation()
