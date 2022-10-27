@@ -1674,7 +1674,7 @@ class Member(models.Model):
 
     def updatePrivateData(self):
         player = Player.objects.filter(tId=self.tId).first()
-        if player is None:
+        if player is None or not player.validKey:
             self.shareE = -1
             self.shareN = -1
             self.shareS = -1

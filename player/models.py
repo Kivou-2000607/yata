@@ -167,7 +167,7 @@ class Player(models.Model):
         if not key:
             print(f'[updateKeyLevel] {self}: no keys found')
             self.key_level = -1
-            self.validKey = 0
+            self.validKey = False
             self.save()
             return
 
