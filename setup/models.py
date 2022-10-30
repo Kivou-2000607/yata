@@ -197,3 +197,47 @@ class ApiCallLog(models.Model):
     timestamp = models.IntegerField(default=0)
     url = models.CharField(default="", max_length=256, blank=True)
     error = models.IntegerField(default=-1)
+
+
+class Disabled(models.Model):
+    disable_load1_threshold = models.IntegerField(default=0)
+    disable_load5_threshold = models.IntegerField(default=0)
+    disable_load15_threshold = models.IntegerField(default=0)
+    enable_load1_threshold = models.IntegerField(default=0)
+    enable_load5_threshold = models.IntegerField(default=0)
+    enable_load15_threshold = models.IntegerField(default=0)
+
+    targets = models.BooleanField(default=False)
+
+    def __str__(self):
+        attrs = [f'enable_load{m}_threshold' for m in [1, 5, 15]] + \
+                [f'disable_load{m}_threshold' for m in [1, 5, 15]]
+        return f'Auto disable [{self.id}]: ' + \
+                '/'.join([f'{getattr(self, attr)}' for attr in attrs])
+
+    def get_rules(self):
+        rules = {
+            "enable": {
+                "load1": 0,
+                "load5": 0,
+                "load15": 0
+            },
+            "disable": {
+                "load1": 0,
+                "load5": 0,
+                "load15": 0
+            }
+        }
+        for k1, v1 in rules.items():
+            for k2 in v1.keys():
+                rules[k1][k2] =  getattr(self, f'{k1}_{k2}_threshold')
+        return rules
+
+    def get_load(self):
+        import os
+        load1, load5, load15 = os.getloadavg()
+        return {
+            'load1': load1,
+            'load5': load5,
+            'load15': load15
+        }

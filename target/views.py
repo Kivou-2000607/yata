@@ -35,11 +35,18 @@ from player.models import Player
 from player.models import Key
 from faction.functions import BONUS_HITS
 from target.functions import *
+from setup.models import Disabled
 
 
 def index(request):
     try:
         if request.session.get('player'):
+            disabled = Disabled.objects.first()
+            if disabled and disabled.targets:
+                return returnError(
+                    type=503,
+                    msg="The server is currently overloaded. This section has been automatically disabled in order to insure a normal functionning of the other features of the website.")
+
             player = getPlayer(request.session["player"].get("tId"))
 
             targets = getTargets(player)

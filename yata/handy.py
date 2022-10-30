@@ -302,6 +302,11 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
     if type == 404:
         msg = "Not Found" if msg is None else msg
         return HttpResponseNotFound(render_to_string('404.html', {'exception': msg, 'home': home}))
+    if type == 503:
+        from setup.models import Disabled
+        d = Disabled.objects.first()
+        msg = "Service Unavailable" if msg is None else msg
+        return HttpResponseNotFound(render_to_string('503.html', {'disabled': d, 'exception': msg, 'home': home}))
     else:
         message = traceback.format_exc().strip()
         if session is not None and session.get("player", False):

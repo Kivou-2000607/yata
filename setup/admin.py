@@ -75,3 +75,9 @@ class BalanceAdmin(admin.ModelAdmin):
         return timestampToDate(instance.timestamp)
 
 admin.site.register(Balance, BalanceAdmin)
+
+
+class DisabledAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'targets']
+
+admin.site.register(Disabled, DisabledAdmin)
