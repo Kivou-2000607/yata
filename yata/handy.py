@@ -339,6 +339,30 @@ def clear_cf_cache(urls):
     else:
         return {'result': {'id': None}, 'success': False, 'errors': [], 'messages': ["No cloudflare configurations found"]}
 
+def cf_fw_rules(paused=True):
+    if not config("ENABLE_CF", False):
+        return
+
+    headers = {
+        "X-Auth-Email": config("CF_EMAIL"),
+        "X-Auth-Key": config("CF_API_KEY"),
+    }
+    r = requests.get(
+        f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/firewall/rules',
+        headers=headers
+    )
+    cf_fw_rule = r.json()['result'][0]
+    print(f'CF firewalls get rules: {cf_fw_rule}')
+
+    cf_fw_rule['paused'] = paused
+    r = requests.put(
+        f'https://api.cloudflare.com/client/v4/zones/{config("CF_ZONE")}/firewall/rules/{cf_fw_rule["id"]}',
+        json=cf_fw_rule,
+        headers=headers
+    )
+    print(f'CF firewalls set rules: {r.json()}')
+
+
 
 def get_payload(request):
     if len(request.POST):

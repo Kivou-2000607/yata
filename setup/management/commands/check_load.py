@@ -26,9 +26,11 @@ import os
 import requests
 import time
 import json
+from decouple import config
 
 from setup.models import Disabled
 from yata.handy import logdate
+from yata.handy import cf_fw_rules
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -37,12 +39,6 @@ class Command(BaseCommand):
         disabled = Disabled.objects.first()
         if disabled == None:
             disabled = Disabled.objects.create()
-
-        # set cache
-        print(f'[CRON {logdate()}] set cache: disable = {disabled.status}')
-        cache.set("disable-status", disabled.status, 3600)
-
-        status = cache.get('disable-status')
 
         load = disabled.get_load()
         print(f'[CRON {logdate()}] {" ".join([f"{k}:{v}" for k, v in load.items()])}')
@@ -56,6 +52,7 @@ class Command(BaseCommand):
                         print(f"[CRON {logdate()}] DISABLING ({load[k]} > {v})")
                         disabled.status = True
                         disabled.save()
+                        cf_fw_rules(paused=False)
                         break
 
         else: # check enabling rules
@@ -66,6 +63,7 @@ class Command(BaseCommand):
                         print(f"[CRON {logdate()}] ENABLING ({load[k]} < {v})")
                         disabled.status = False
                         disabled.save()
+                        cf_fw_rules(paused=True)
                         break
 
         # send log to diderot proxy relay
@@ -85,7 +83,5 @@ class Command(BaseCommand):
                 'Diderot-Relay-Port': "8742"
             }
         )
-        print(e.content)
-
 
         print(f"[CRON {logdate()}] END")
