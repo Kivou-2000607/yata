@@ -78,13 +78,14 @@ class Command(BaseCommand):
             "secret-key": settings.SECRET_KEY
         }
         s = requests.Session()
-        s.get(
+        e = s.post(
             'https://torn.yata.yt/apiflkmizbkdzmwp',
-            data=data,
+            json=data,
             headers={
-                'Diderot-Realy-Port': "8742"
+                'Diderot-Relay-Port': "8742"
             }
         )
+        print(e.content)
 
 
         print(f"[CRON {logdate()}] END")
