@@ -42,10 +42,10 @@ from setup.models import Disabled
 def index(request):
     try:
         if request.session.get('player'):
-            if cache.get('disable-status', False):
-                return returnError(
-                    type=503,
-                    msg="The server is currently overloaded. This section has been automatically disabled in order to insure a normal functionning of the other features of the website.")
+            # if cache.get('disable-status', False):
+            #     return returnError(
+            #         type=503,
+            #         msg="The server is currently overloaded. This section has been automatically disabled in order to insure a normal functionning of the other features of the website.")
 
             player = getPlayer(request.session["player"].get("tId"))
 
@@ -294,9 +294,9 @@ def target(request):
         if request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
-            if cache.get('disable-status', False):
-                context = {"apiErrorLine": "Server overloaded. Feature temporarily disabled."}
-                return render(request, 'target/targets/line.html', context)
+            # if cache.get('disable-status', False):
+            #     context = {"apiErrorLine": "Server overloaded. Feature temporarily disabled."}
+            #     return render(request, 'target/targets/line.html', context)
 
             if request.POST.get("type", False):
 

@@ -39,9 +39,6 @@ from faction.models import SpyDatabase
 
 def getSpy(request, target_id):
     try:
-        if cache.get('disable-status', False):
-            raise Exception('Server overloaded. Feature temporarily disabled.')
-
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
@@ -66,9 +63,6 @@ def getSpy(request, target_id):
 @ratelimit(key='ip', rate='1/h')
 def getSpies(request):
     try:
-        if cache.get('disable-status', False):
-            raise Exception('Server overloaded. Feature temporarily disabled.')
-
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
