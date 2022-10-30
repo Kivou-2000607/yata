@@ -24,6 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
 from ratelimit.decorators import ratelimit
 from ratelimit.core import get_usage, is_ratelimited
+from django.core.cache import cache
 
 # standards
 import json
@@ -38,6 +39,8 @@ from faction.models import SpyDatabase
 
 def getSpy(request, target_id):
     try:
+        if cache.get('disable-status', False):
+            raise Exception('Server overloaded. Feature temporarily disabled.')
 
         # check if key is correct
         key = str(request.GET.get("key"))
@@ -63,6 +66,8 @@ def getSpy(request, target_id):
 @ratelimit(key='ip', rate='1/h')
 def getSpies(request):
     try:
+        if cache.get('disable-status', False):
+            raise Exception('Server overloaded. Feature temporarily disabled.')
 
         # check if key is correct
         key = str(request.GET.get("key"))
