@@ -207,7 +207,7 @@ class Disabled(models.Model):
     enable_load5_threshold = models.IntegerField(default=0)
     enable_load15_threshold = models.IntegerField(default=0)
 
-    targets = models.BooleanField(default=False)
+    status = models.BooleanField(default=False)
 
     def __str__(self):
         attrs = [f'enable_load{m}_threshold' for m in [1, 5, 15]] + \

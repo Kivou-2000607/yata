@@ -78,6 +78,6 @@ admin.site.register(Balance, BalanceAdmin)
 
 
 class DisabledAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'targets']
+    list_display = ['__str__', 'status']
 
 admin.site.register(Disabled, DisabledAdmin)

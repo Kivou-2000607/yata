@@ -25,6 +25,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 
 import json
 import math
@@ -41,8 +42,7 @@ from setup.models import Disabled
 def index(request):
     try:
         if request.session.get('player'):
-            disabled = Disabled.objects.first()
-            if disabled and disabled.targets:
+            if cache.get('disable-status', False):
                 return returnError(
                     type=503,
                     msg="The server is currently overloaded. This section has been automatically disabled in order to insure a normal functionning of the other features of the website.")
@@ -293,6 +293,10 @@ def target(request):
     try:
         if request.session.get('player') and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
+
+            if cache.get('disable-status', False):
+                context = {"apiErrorLine": "Server overloaded. Feature temporarily disabled."}
+                return render(request, 'target/targets/line.html', context)
 
             if request.POST.get("type", False):
 
