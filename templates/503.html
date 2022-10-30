@@ -44,7 +44,7 @@ This file is part of yata.
     <br>
 
     <h3>Enabling rules</h3>
-    {% for k, v in disabled.get_rules.disable.items %}
+    {% for k, v in disabled.get_rules.enable.items %}
       {% if v %}
         {{k}} < {{v}}<br>
       {% endif %}
