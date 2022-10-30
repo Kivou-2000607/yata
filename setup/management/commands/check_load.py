@@ -63,7 +63,10 @@ class Command(BaseCommand):
 
         # send log to diderot proxy relay
         data = {
-            "loads": load,
+            "type": "server-stats",
+            "load": load,
+            "status": disabled.targets,
+            "rules": rules,
             "timestamp": time.time(),
             "secret-key": settings.SECRET_KEY
         }
