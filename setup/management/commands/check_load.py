@@ -35,7 +35,6 @@ class Command(BaseCommand):
         if disabled == None:
             disabled = Disabled.objects.create()
         load = disabled.get_load()
-        load["load1"] = 11
         print(f'[CRON {logdate()}] {" ".join([f"{k}:{v}" for k, v in load.items()])}')
 
 
