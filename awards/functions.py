@@ -28,7 +28,7 @@ from awards.honors import d as honorsId
 
 AWARDS_CAT = ["crimes", "drugs", "attacks", "faction", "items", "travel", "work", "gym", "money", "competitions", "commitment", "miscellaneous"]
 
-HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223, 476]
+HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223]
 
 HOF_SIZE = 50
 
