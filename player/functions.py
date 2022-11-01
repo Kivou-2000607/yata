@@ -27,7 +27,7 @@ from awards.functions import updatePlayerAwards
 from faction.models import Faction
 # from chain.models import Faction
 from awards.models import AwardsData
-from target.functions import getTargets
+# from target.functions import getTargets
 from company.models import CompanyDescription
 from company.models import Company
 
@@ -39,7 +39,7 @@ def updatePlayer(player, i=None, n=None):
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
     if player.tId == -1:
-        print("[player.functions.updatePlayer] {}{} action: ignore".format(progress, player.nameAligned()))
+        # print("[player.functions.updatePlayer] {}{} action: ignore".format(progress, player.nameAligned()))
         return 0
 
     # API Calls
@@ -129,11 +129,13 @@ def updatePlayer(player, i=None, n=None):
         print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey))
 
     # update basic info (and chain)
+    # print("[player.functions.updatePlayer] update basic info")
     player.name = user.get("name", "?")
     player.factionId = user.get("faction", dict({})).get("faction_id", 0)
     player.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
 
     # update chain info
+    # print("[player.functions.updatePlayer] update chain info")
     if player.factionId:
         faction = Faction.objects.filter(tId=player.factionId).first()
         if faction is None:
@@ -156,6 +158,7 @@ def updatePlayer(player, i=None, n=None):
     player.chainUpda = int(timezone.now().timestamp())
 
     # update company info
+    # print("[player.functions.updatePlayer] update company info")
     player.companyId = user.get("job", {}).get("company_id", 0)
     if player.companyId:
         player.companyTy = user.get("job", {}).get("company_type", 0)
@@ -176,17 +179,22 @@ def updatePlayer(player, i=None, n=None):
     player.wend = user.get("endurance", 0)
 
     # update awards info
+    # print("[player.functions.updatePlayer] update awards info")
     # only award score
     player.getAwards(userInfo=user)
 
     # clean targets
+    # print("[player.functions.updatePlayer] get targets")
     old = tsnow() - 2678400  # 1 month old
-    targets = getTargets(player)
+    # targets = getTargets(player)
+
+    player.targetInfo = player.targetinfo_set.all().count()
+    # print("[player.functions.updatePlayer] clean attacks")
     player.attack_set.filter(timestamp_ended__lt=old).delete()
+    # print("[player.functions.updatePlayer] clean revives")
     player.revive_set.filter(timestamp__lt=old).delete()
-    player.targetInfo = len(targets)
 
     player.lastUpdateTS = int(timezone.now().timestamp())
     player.save()
 
-    # print("[player.functions.updatePlayer] {} / {}".format(player.chainInfo, player.awardsInfo))
+    # print("[player.functions.updatePlayer] done")
