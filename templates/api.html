@@ -293,6 +293,45 @@ sou: South Africa</code></pre>
 </div>
 
 
+<h3 id="members" class="module-doc">Faction members&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+<div class="module-doc">
+<h4 class="command-doc">Export Faction members [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+<div class="command-doc">
+
+<ul>
+<li><b>URL</b> <tt>/api/v1/faction/members/?key=&lt;api_key&gt;</tt></li>
+<li><b>Payload</b>
+  <pre><code classe="json">Object {
+  "&lt;member_id&gt;": Object {
+    "id": Number,  // member torn ID
+    "name": String,  // member name
+    "status": String,  // online status (online/idle/offline)
+    "last_action": Number,  // last action timestamp
+    "dif": Number,  // days in faction
+    "crimes_rank": Number,  // crimes rank in the faction
+    "bonus_score": Number,  // bonus score (combined report)
+    "nnb_share": Number,  // nnb sharing status (-1 not sharing, 0 not on yata, 1 sharing)
+    "nnb": nnb,  // natural nerve bar
+    "energy_share": Number,  // energy level sharing status (-1 not sharing, 0 not on yata, 1 sharing)
+    "energy": Number,  // energy level
+    "refill": Bool,  // refill available
+    "drug_cd": Number,  // drug cooldown
+    "revive": Bool,  // ability to revive
+    "carnage": Number,  // 0 to 3 single hit respect honors
+    "stats_share": Number,  // stats sharing status (-1 not sharing, 0 not on yata, 1 sharing)
+    "stats_dexterity": Number,  // 0 if unknown
+    "stats_defense": Number,  // 0 if unknown
+    "stats_speed": Number,  // 0 if unknown
+    "stats_strength": Number,  // 0 if unknown
+    "stats_total": Number,  // 0 if unknown
+  },
+}</code></pre>
+</li>
+<li><b>Cache</b> There is a one hour cache on these requests
+</div>
+
+</div>
+
     <h3 id="errors" class="module-doc">Errors format&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
     <div class="module-doc">
       <ul class="mb-0">

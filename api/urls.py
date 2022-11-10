@@ -37,6 +37,7 @@ urlpatterns = [
     # faction
     re_path(r'^v1/faction/crimes/export/$', faction.getCrimes, name="getCrimes"),
     re_path(r'^v1/faction/crimes/import/ranking/$', faction.updateRanking, name="updateRanking"),
+    re_path(r'^v1/faction/members/$', faction.getMembers, name="getMembers"),
     re_path(r'^v1/faction/livechain/$', faction.livechain, name="livechain"),
 
     # auth
