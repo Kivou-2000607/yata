@@ -20,6 +20,7 @@ This file is part of yata.
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 
 # cache and rate limit
 from django.views.decorators.cache import cache_page
@@ -192,7 +193,7 @@ def getCrimes(request):
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
-@cache_page(60*10)
+@cache_page(60*10)  # cache based on full uri (player wide)
 def getMembers(request):
     try:
         # check if API key is valid with api call
@@ -210,6 +211,12 @@ def getMembers(request):
         if faction is None:
             return JsonResponse({"error": {"code": 2, "error": f"Can't find faction {factionId} in YATA database"}}, status=400)
 
+        # get faction wide cache
+        c = cache.get(f"faction-members-{factionId}", False)
+        if c:
+            print(f"[api.faction.getMembers] send members {factionId} [cache]")
+            return JsonResponse(c, status=200)
+
         # update faction members
         faction.updateMembers()
 
@@ -217,28 +224,34 @@ def getMembers(request):
         members = {}
         for member in faction.member_set.all():
             members[str(member.tId)] = {
-                "onlineStatus": member.lastActionStatus,
+                "id": member.tId,
                 "name": member.name,
-                "lastAction": member.lastAction,
-                "lastActionTS": member.lastActionTS,
                 "status": member.lastActionStatus,
-                "daysInFaction": member.daysInFaction,
-                "crimesRank": member.crimesRank,
-                "NNB": member.nnb if member.shareN else "Not Shared",
+                "last_action": member.lastActionTS,
+                "dif": member.daysInFaction,
+                "crimes_rank": member.crimesRank,
+                "bonus_score": member.bonusScore,
+                "nnb_share": member.shareN,
+                "nnb": member.nnb,
+                "energy_share": member.shareE,
                 "energy": member.energy,
-                "refillUsed": member.refillUsed,
-                "drugCD": member.drugCD,
-                "canRevive": member.revive,
-                "totalStats": member.getTotalStats() if member.shareS else "Not Shared",
-                "dexterity": member.dexterity if member.shareS else "Not Shared",
-                "defense": member.defense if member.shareS else "Not Shared",
-                "speed": member.speed if member.shareS else "Not Shared",
-                "strength": member.strength if member.shareS else "Not Shared",
+                "refill": not member.energyRefillUsed,
+                "drug_cd": member.drugCD,
+                "revive": member.revive,
                 "carnage": member.singleHitHonors,
-                "score": member.bonusScore,
+                "stats_share": member.shareS,
+                "stats_dexterity": member.dexterity,
+                "stats_defense": member.defense,
+                "stats_speed": member.speed,
+                "stats_strength": member.strength,
+                "stats_total": member.getTotalStats(),
             }
 
-        return JsonResponse({"members": members, "timestamp": tsnow()}, status=200)
+        # cache payload
+        payload = {"members": members, "timestamp": tsnow()}
+        cache.set(f"faction-members-{factionId}", payload, 3600)
+        print(f"[api.faction.getMembers] update & send members to faction {factionId}")
+        return JsonResponse(payload, status=200)
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
