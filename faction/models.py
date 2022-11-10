@@ -701,9 +701,9 @@ class Faction(models.Model):
         now = tsnow()
 
         # don't update if less than 5 minutes and force is False
-        # if not force and (now - self.membersUpda) < 300:
-        #     print("{} skip update member".format(self))
-        #     return self.member_set.all()
+        if not force and (now - self.membersUpda) < 300:
+            print("{} skip update member".format(self))
+            return self.member_set.all()
 
         # get key if needed
         if key is None or isinstance(key, bool):
@@ -717,7 +717,6 @@ class Faction(models.Model):
 
         if 'apiError' in membersAPI:
             return membersAPI
-
 
         batch = Member.objects.bulk_operation()
         players_on_yata = Player.objects.filter(tId__in=membersAPI)
