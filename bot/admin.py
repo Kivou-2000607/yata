@@ -5,6 +5,7 @@ from django_json_widget.widgets import JSONEditorWidget
 from django.utils.safestring import mark_safe
 
 import json
+import time
 
 from .models import *
 from yata.handy import *
@@ -18,13 +19,20 @@ class BotAdmin(admin.ModelAdmin):
 
 
 class ServerAdmin(admin.ModelAdmin):
-    list_display = ['bot', 'discord_id', 'name', 'admins', 'readonly_dashboard', ]
+    list_display = ['bot', 'sub', 'date_end', 'name', 'admins', 'readonly_dashboard', ]
     # readonly_fields = ('bot', 'discord_id', 'name', 'secret',)
     autocomplete_fields = ("server_admin", )
     search_fields = ['name', 'discord_id', "server_admin__name", "server_admin__tId"]
     formfield_overrides = {
         models.TextField: {'widget': JSONEditorWidget},
     }
+
+    def sub(self, instance):
+        return instance.end > time.time() if instance.start else True
+    sub.boolean = True
+
+    def date_end(self, instance):
+        return timestampToDate(instance.end, fmt="%Y/%m/%d") if instance.start else "-"
 
     def get_form(self, request, obj=None, **kwargs):
         if not request.user.is_superuser:
