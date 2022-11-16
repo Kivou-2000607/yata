@@ -18,7 +18,8 @@ urlpatterns = [
 
     re_path(r'^toggle/(?P<itemId>\w+)$', views.toggle, name='toggle'),
     re_path(r'^details/(?P<itemId>\w+)$', views.details, name='details'),
-    re_path(r'^prices/(?P<itemId>\w+)$', views.prices, name='prices'),
+    # re_path(r'^prices/(?P<itemId>\w+)$', views.prices, name='prices'),
+    re_path(r'^prices/$', views.prices, name='prices'),
 
     # re_path(r'^abroad/import/$', views.abroadImport, name='abroadImport'),
     # re_path(r'^abroad/export/$', views.abroadExport, name='abroadExport'),

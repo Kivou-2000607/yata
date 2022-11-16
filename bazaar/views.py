@@ -446,9 +446,10 @@ def details(request, itemId=168):
         return returnError(exc=e, session=request.session)
 
 
-def prices(request, itemId=168):
+def prices(request):
     try:
         if request.method == "POST":
+            itemId = request.POST['item_id']
             item = Item.objects.filter(tId=itemId).first()
 
             # create price histogram

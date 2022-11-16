@@ -122,8 +122,8 @@ This file is part of yata.
                 <td class="text-end" data-val="{{stock.cost}}">${{stock.cost|intcomma}}</td>
                 <td class="text-end" title="Market price ${{stock.item.tMarketValue|intcomma}}">{{stock.profit|signColor|intcomma}}</td>
                 <td class="text-end" title="One way standard flight duration {{stock.get_country.fly_time}} minutes">{{stock.profitperhour|signColor|intcomma}}</td>
-                <td class="text-center dont-touch-me" data-val="{{stock.item.weekTendency}}">
-                    <a href="{% url 'bazaar:prices' stock.item.tId %}" class="prices-item" title="Prices tendency over a week / a month">
+                <td class="text-center items-details" data-val="{{stock.item.weekTendency}}">
+                    <a href="{% url 'bazaar:prices' %}" data-ite="{{stock.item.tId}}" class="prices-item" title="Prices tendency over a week / a month">
                         {{stock.item.weekTendency|priceTendency|safe}}
                     </a>
                 </td>

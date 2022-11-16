@@ -4,7 +4,6 @@ $(document).on("click", "tr.abroad-item-stocks > td:not(.items-details)", e => {
 	const tr = $(e.target).parent("tr");
     const item_id = tr.attr("data-ite");
     const country_key = tr.attr("data-cou");
-    console.log("you");
     $("#bazaar-modal").load("/bazaar/abroad/stocks/", {
         item_id, country_key, csrfmiddlewaretoken: getCookie("csrftoken"),
     });
@@ -14,8 +13,9 @@ $(document).on("click", "tr.abroad-item-stocks > td:not(.items-details)", e => {
 $(document).on("click", "tr.abroad-item-stocks > td.items-details", e => {
     e.preventDefault();
     const item_id = $(e.target).parent("tr").attr("data-ite");
-    console.log(item_id);
-    $("#bazaar-modal").load(`/bazaar/prices/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
+    // const item_id = $(e.target).attr("data-ite");
+    console.log('Item ID for prices:', item_id);
+    $("#bazaar-modal").load(`/bazaar/prices/`, { item_id: item_id, csrfmiddlewaretoken: getCookie("csrftoken") });
 });
 
 // header click
@@ -37,7 +37,7 @@ $(document).on("click", ".item-table-header:not(.no-click)", e => {
     } else if (action === "toggle") {
 		$(item_table).load(`/bazaar/toggle/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
     } else if (action === "prices") {
-		$( "#bazaar-modal" ).load(`/bazaar/prices/${item_id}`, { csrfmiddlewaretoken: getCookie("csrftoken") });
+		$( "#bazaar-modal" ).load(`/bazaar/prices/`, { item_id: item_id, csrfmiddlewaretoken: getCookie("csrftoken") });
     }
 });
 
