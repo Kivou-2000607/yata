@@ -35,7 +35,7 @@ xkcdpass==1.19.3
 
 # http server                            # for prod, not both needed
 # gunicorn==20.1.0
-uwsgi==2.0.20
+#uwsgi==2.0.20				 # failed on python10
 
 # database
 psycopg2-binary==2.9.3

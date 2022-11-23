@@ -94,6 +94,7 @@ class Command(BaseCommand):
                     s.end = s.start + 2678400 * s.n_donations
                     s.save()
 
+                    print(f'[CRON {logdate()}]         End  : {timestampToDate(s.end)}')
 
 
                 else:
