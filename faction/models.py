@@ -2605,6 +2605,11 @@ class AttacksReport(models.Model):
                 print(f'{self}\t escape loop because no new attacks')
                 break
 
+        # update timestamp
+        self.update = tsnow()
+        faction.lastAttacksPulled = self.update
+        faction.save()
+
         # in case empty payload
         if not len(apiAttacks):
             print('{} empty payload'.format(self))
@@ -2656,7 +2661,7 @@ class AttacksReport(models.Model):
         #     return -6
 
         if len(apiAttacks) < MINIMAL_API_ATTACKS_STOP and not self.live:
-            print("{} no api entry for non live chain [stop]".format(self))
+            print("{} no api entry for non live attacks report [stop]".format(self))
             self.computing = False
             self.crontab = 0
             self.state = 1
@@ -2665,14 +2670,13 @@ class AttacksReport(models.Model):
             return 1
 
         if len(apiAttacks) < 2 and self.live:
-            print("{} no api entry for live chain [continue]".format(self))
+            print("{} no api entry for live attacks report [continue]".format(self))
             self.state = 2
             self.end = self.last
             self.save()
             return 2
 
         self.state = 3
-        self.update = tsnow()
         self.save()
         return 3
 
