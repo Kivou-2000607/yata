@@ -434,6 +434,10 @@ def updatePoster(faction):
         except FileNotFoundError:
             faction.posterHeadImg.delete()
             faction.save()
+        except ValueError:
+            # most probably height == 0
+            faction.posterHeadImg.delete()
+            faction.save()
 
     if faction.posterTailImg:
         try:
@@ -444,6 +448,10 @@ def updatePoster(faction):
             full_height += tail.size[1]
         except FileNotFoundError:
             faction.posterTailImg.delete()
+            faction.save()
+        except ValueError:
+            # most probably height == 0
+            faction.posterHeadImg.delete()
             faction.save()
 
     poster = Image.new('RGBA', (POSTER_WIDTH, full_height), color=background)
@@ -466,7 +474,8 @@ def updatePoster(faction):
     # FACTION GYM POSTER
     img_gym = Image.new('RGBA', (5000, 5000), color=background)
     gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
-    for k, v in trees.get("peace", {}).get("Steadfast", {}).items():
+    tree_state = req["state"]
+    for k, v in trees.get(tree_state, {}).get("Steadfast", {}).items():
         stat_type = k.split(" ")[0][:3].upper()
         gym_perks[stat_type] = v["level"]
 
