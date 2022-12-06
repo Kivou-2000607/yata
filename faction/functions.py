@@ -474,7 +474,7 @@ def updatePoster(faction):
     # FACTION GYM POSTER
     img_gym = Image.new('RGBA', (5000, 5000), color=background)
     gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
-    tree_state = req["state"]
+    tree_state = "upgrades" if req["state"] == "current" else req["state"]
     for k, v in trees.get(tree_state, {}).get("Steadfast", {}).items():
         stat_type = k.split(" ")[0][:3].upper()
         gym_perks[stat_type] = v["level"]
