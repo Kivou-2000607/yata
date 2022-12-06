@@ -12,9 +12,8 @@ $(document).on("click", "tr.abroad-item-stocks > td:not(.items-details)", e => {
 // show foreing stocks item details
 $(document).on("click", "tr.abroad-item-stocks > td.items-details", e => {
     e.preventDefault();
-    const item_id = $(e.target).parent("tr").attr("data-ite");
-    // const item_id = $(e.target).attr("data-ite");
-    console.log('Item ID for prices:', item_id);
+	const tr = $(e.currentTarget).parent("tr");
+    const item_id = tr.attr("data-ite");
     $("#bazaar-modal").load(`/bazaar/prices/`, { item_id: item_id, csrfmiddlewaretoken: getCookie("csrftoken") });
 });
 
