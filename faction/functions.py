@@ -466,8 +466,7 @@ def updatePoster(faction):
     # FACTION GYM POSTER
     img_gym = Image.new('RGBA', (5000, 5000), color=background)
     gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
-
-    for k, v in trees.get("current", {}).get("Steadfast", {}).items():
+    for k, v in trees.get("peace", {}).get("Steadfast", {}).items():
         stat_type = k.split(" ")[0][:3].upper()
         gym_perks[stat_type] = v["level"]
 
