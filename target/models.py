@@ -65,6 +65,7 @@ class Attack(models.Model):
     group_attack = models.FloatField(default=1.0)
     overseas = models.FloatField(default=1.0)
     chain_bonus = models.FloatField(default=1.0)
+    warlord_bonus = models.FloatField(default=1.0)
 
     # perso fields
     attacker = models.BooleanField(default=False)

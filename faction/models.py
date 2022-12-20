@@ -2413,6 +2413,7 @@ class AttackChain(models.Model):
     group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chain_bonus = models.FloatField(default=0.0)
+    warlord_bonus = models.FloatField(default=0.0)
 
     objects = BulkManager()
 

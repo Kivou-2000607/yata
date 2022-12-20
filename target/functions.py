@@ -57,7 +57,7 @@ def updateAttacks(player, full=False):
             v["defender_name"] = "Player"
             v["defender_factionname"] = "Faction"
             v["chain"] = 0
-            v["modifiers"] = {"fair_fight": 1, "war": 1, "retaliation": 1, "group_attack": 1, "overseas": 1, "chain_bonus": 1}
+            v["modifiers"] = {"fair_fight": 1, "war": 1, "retaliation": 1, "group_attack": 1, "overseas": 1, "chain_bonus": 1, "warlord_bonus": 1}
 
         # ignore stealth incoming
         if v.get("stealthed") and v["defender_id"] == player.tId:
@@ -74,10 +74,9 @@ def updateAttacks(player, full=False):
             # case attacker and bonus hit
             v["flat_respect"] = float(v["respect"]) / float(v['modifiers']['chain_bonus'])
             v["bonus"] = v["chain"]
-
         else:
             allModifiers = 1.0
-            for mod in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus"]:
+            for mod in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "warlord_bonus"]:
                 allModifiers *= float(v['modifiers'].get(mod, 1))
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
