@@ -1,10 +1,11 @@
+import json
+
 from django.db import models
 from django.utils.safestring import mark_safe
 
-import json
-
 from player.models import Player
 from yata.handy import apiCall
+
 
 # Company description
 class CompanyDescription(models.Model):
@@ -15,6 +16,7 @@ class CompanyDescription(models.Model):
 
     def __str__(self):
         return f"{self.name} [{self.tId}]"
+
 
 # Company position
 class Position(models.Model):
@@ -35,6 +37,7 @@ class Position(models.Model):
     def __str__(self):
         return f"{self.company} position {self.name}"
 
+
 # Company special
 class Special(models.Model):
     company = models.ForeignKey(CompanyDescription, on_delete=models.CASCADE)
@@ -45,6 +48,7 @@ class Special(models.Model):
 
     def __str__(self):
         return f"{self.company} special {self.name}"
+
 
 # Company stock
 class Stock(models.Model):
@@ -131,7 +135,13 @@ class Company(models.Model):
         print(f"Company {self} -> update with director key: {director}")
 
         # api call
-        req = apiCall("company", self.tId, "detailed,employees,profile,stock,timestamp", director.getKey(), verbose=False)
+        req = apiCall(
+            "company",
+            self.tId,
+            "detailed,employees,profile,stock,timestamp",
+            director.getKey(),
+            verbose=False,
+        )
         if "apiError" in req:
             if req["apiErrorCode"] in [7]:
                 req = apiCall("company", self.tId, "profile", director.getKey(), verbose=False)
@@ -160,19 +170,42 @@ class Company(models.Model):
         #     return True, {"error": "no director and no player"}
 
         # create update dict
-        defaults = {"timestamp": req.get("timestamp", 0), "director_name": director.name if director is not None else "Player", "director_yata": director is not None}
+        defaults = {
+            "timestamp": req.get("timestamp", 0),
+            "director_name": director.name if director is not None else "Player",
+            "director_yata": director is not None,
+        }
 
         # update profile
-        for k in ["rating", "name", "director", "employees_hired", "employees_capacity", "employees_capacity", "daily_income", "daily_customers", "weekly_income", "weekly_customers", "days_old"]:
+        for k in [
+            "rating",
+            "name",
+            "director",
+            "employees_hired",
+            "employees_capacity",
+            "employees_capacity",
+            "daily_income",
+            "daily_customers",
+            "weekly_income",
+            "weekly_customers",
+            "days_old",
+        ]:
             defaults[k] = req.get("company", {}).get(k, 0)
 
         # update detailed
-        for k in ["company_funds", "popularity", "efficiency", "environment", "trains_available", "advertising_budget"]:
+        for k in [
+            "company_funds",
+            "popularity",
+            "efficiency",
+            "environment",
+            "trains_available",
+            "advertising_budget",
+        ]:
             defaults[k] = req.get("company_detailed", {}).get(k, 0)
 
         # update detailed upgrades
         for k in ["company_size", "staffroom_size", "storage_size", "storage_space"]:
-            defaults[f'upgrades_{k}'] = req.get("company_detailed", {}).get("upgrades", {}).get(k, 0)
+            defaults[f"upgrades_{k}"] = req.get("company_detailed", {}).get("upgrades", {}).get(k, 0)
 
         # get director edication
         if not self.director_hrm and director is not None:
@@ -196,8 +229,18 @@ class Company(models.Model):
             # remove status
             del v["status"]
             # flatten effectiveness and compute company effectiveness
-            for eff in ["working_stats", "settled_in", "director_education", "addiction", "inactivity", "management", "book", "merits", "total"]:
-                effectiveness_key = f'effectiveness_{eff}'
+            for eff in [
+                "working_stats",
+                "settled_in",
+                "director_education",
+                "addiction",
+                "inactivity",
+                "management",
+                "book",
+                "merits",
+                "total",
+            ]:
+                effectiveness_key = f"effectiveness_{eff}"
                 effectiveness_val = v.get("effectiveness", {}).get(eff, 0)
                 v[effectiveness_key] = effectiveness_val
                 defaults[effectiveness_key] = defaults[effectiveness_key] + effectiveness_val if effectiveness_key in defaults else effectiveness_val
@@ -221,7 +264,21 @@ class Company(models.Model):
         timestamp = defaults["timestamp"]
         id_ts = (timestamp + 3600 * 6) - (timestamp + 3600 * 6) % (3600 * 24)
         # remove some data from defaults
-        for k in ['company_funds', 'director_yata', 'days_old', 'director', 'employees_capacity', 'name', 'rating', 'trains_available', 'upgrades_company_size', 'upgrades_staffroom_size', 'upgrades_storage_size', 'upgrades_storage_space', 'director_name']:
+        for k in [
+            "company_funds",
+            "director_yata",
+            "days_old",
+            "director",
+            "employees_capacity",
+            "name",
+            "rating",
+            "trains_available",
+            "upgrades_company_size",
+            "upgrades_staffroom_size",
+            "upgrades_storage_size",
+            "upgrades_storage_space",
+            "director_name",
+        ]:
             del defaults[k]
 
         # remove some data from employees
@@ -232,7 +289,7 @@ class Company(models.Model):
         defaults["employees"] = json.dumps(employees)
         try:
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
-        except BaseException as e:
+        except BaseException:
             self.companydata_set.filter(id_ts=id_ts).delete()
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
@@ -241,7 +298,6 @@ class Company(models.Model):
         # contains 7 days before for the last week daily comparison and 1 to 6 days before for the weekly
         # company_datas.count() should be 8 if all data are found
         company_datas = self.companydata_set.filter(id_ts__gte=id_ts_lastw).order_by("id_ts")
-
 
         # get last week data
         cd = company_datas.filter(id_ts=id_ts_lastw).first()
@@ -283,7 +339,6 @@ class Company(models.Model):
                 # company_datas.count() should be 8 if all data are found
                 company_datas = self.companydata_set.filter(id_ts__gte=id_ts_lastw).order_by("id_ts")
 
-
                 # get last week data
                 cd = company_datas.filter(id_ts=id_ts_lastw).first()
                 if cd is None:
@@ -319,7 +374,6 @@ class Company(models.Model):
                     setattr(company_data, attr, value)
                 company_data.save()
 
-
         # get stocks
         defaults = {"timestamp": timestamp}
         stocks = req.get("company_stock", {})
@@ -340,7 +394,7 @@ class Company(models.Model):
         previous_stock = self.companystock_set.exclude(id_ts=id_ts).order_by("-timestamp").first()
         if previous_stock is not None:
             pp = json.loads(previous_stock.positions)
-            delta_positions = {k: f'{int(v - pp.get(k, 0)):+d}' for k, v in positions.items() if v - pp.get(k, 0)}
+            delta_positions = {k: f"{int(v - pp.get(k, 0)):+d}" for k, v in positions.items() if v - pp.get(k, 0)}
         else:
             delta_positions = {}
 
@@ -369,7 +423,7 @@ class Company(models.Model):
 
             try:
                 company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
-            except BaseException as e:
+            except BaseException:
                 self.companystock_set.filter(id_ts=id_ts, name=stock_name).delete()
                 company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
             # print(company_stock, create)
@@ -377,6 +431,7 @@ class Company(models.Model):
             #     print(k, v)
 
         return False, "updated"
+
 
 # Employee
 class Employee(models.Model):
@@ -402,6 +457,7 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.company} employee {self.name} [{self.tId}]"
+
 
 # Company data
 class CompanyData(models.Model):
@@ -441,6 +497,7 @@ class CompanyData(models.Model):
     def __str__(self):
         return f"Company data {self.company.name} [{self.company.tId}]"
 
+
 # Company stock
 class CompanyStock(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -476,7 +533,7 @@ class CompanyStock(models.Model):
     def display_pos(self):
         emps = json.loads(self.positions)
         demps = json.loads(self.delta_positions)
-        pos = ' '.join([f'{k}: {v}' for k, v in emps.items() if k not in ['TOT']])
-        dpos = ' '.join([f'{k}: {v}' for k, v in demps.items() if v])
+        pos = " ".join([f"{k}: {v}" for k, v in emps.items() if k not in ["TOT"]])
+        dpos = " ".join([f"{k}: {v}" for k, v in demps.items() if v])
         tot = emps.get("TOT", 0)
         return pos, dpos, tot

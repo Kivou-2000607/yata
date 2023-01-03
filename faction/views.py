@@ -2081,7 +2081,7 @@ def attacksExport(request, reportId, type):
                 keys = ["tId", "timestamp_started",
                         "attacker_faction", "attacker_factionname", "attacker_id", "attacker_name",
                         "defender_faction", "defender_factionname", "defender_id", "defender_name",
-                        "result", "respect_gain", "chain", "fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "code"
+                        "result", "respect_gain", "chain", "fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "warlord_bonus", "code"
                         ]
 
                 csv_data = [keys]

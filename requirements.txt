@@ -44,3 +44,6 @@ psycopg2-binary==2.9.3
 # math
 numpy==1.21.5                            # avoid 1.22: https://stackoverflow.com/questions/70612364/numpy-warning-with-django-4-numpy-float64-type-is-zero
 scipy==1.7.3
+
+# git
+pre-commit

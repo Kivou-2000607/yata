@@ -17,73 +17,68 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.db import models
-from django.utils import timezone
-from django.forms.models import model_to_dict
-from django.utils.html import format_html
-from django.core.exceptions import MultipleObjectsReturned
-from django.conf import settings
-from django.core.paginator import Paginator
-from django.core.cache import cache
-
-from numpy.core.numeric import normalize_axis_tuple
-from rest_framework import serializers
-from yata.BulkManager2 import BulkManager
-
-import json
-import requests
-import re
-import random
-import os
-from decouple import config
 import hashlib
+import json
+import os
+import re
 import time
 
-from yata.handy import *
-from yata.bulkManager import *
-from player.models import Key
-from player.models import Player
+import numpy
+from decouple import config
+from django.conf import settings
+from django.core.cache import cache
+from django.core.paginator import Paginator
+from django.db import models
+from django.utils.html import format_html
+
 from bazaar.models import BazaarData
-from faction.functions import *
+from faction.functions import API_CODE_DELETE, getBonusHits, getCrontabs, modifiers2lvl1
 from faction.storage import OverwriteStorage
+from player.models import Key, Player
+from yata.bulkManager import BulkUpdateManager
+from yata.BulkManager2 import BulkManager
+from yata.handy import (
+    HISTORY_TIMES,
+    apiCall,
+    cleanhtml,
+    datestr,
+    randomSlug,
+    timestampToDate,
+    tsnow,
+)
 
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 MINIMAL_API_ATTACKS_STOP = 10
-FONT_DIR = os.path.join(settings.SRC_ROOT, 'fonts')
+FONT_DIR = os.path.join(settings.SRC_ROOT, "fonts")
 
 
 if settings.DEBUG:
-    CACHE_RESPONSE = int(config('CACHE_RESPONSE', default=10, cast=int))
+    CACHE_RESPONSE = int(config("CACHE_RESPONSE", default=10, cast=int))
 else:
     CACHE_RESPONSE = 10
 
 CHAIN_ATTACKS_STATUS = {
-
     # cooldown
     52: "No new attacks [stop]",
     32: "No new entries [continue]",
     12: "Computing [continue]",
-
     # no cooldown
     51: "Reached end of chain [stop]",
     21: "Looking after end of chain [continue]",
     11: "Computing [continue]",
-
     # live
     50: "Reached end of chain [stop]",
     10: "Computing [continue]",
-
     # init
     1: "Waiting for first call",
     0: "No reports",
-
     # errors
     -1: "No enabled AA keys [stop]",
     -2: "API key major error (key deleted) [continue]",
     -3: "API key temporary error [continue]",
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
-    -6: "No new entry (looked 1h after end) [stop]"
+    -6: "No new entry (looked 1h after end) [stop]",
 }
 
 REPORT_ATTACKS_STATUS = {
@@ -97,7 +92,8 @@ REPORT_ATTACKS_STATUS = {
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
     -6: "No new entry [continue]",
-    -7: "Run for more than a week [stop]"}
+    -7: "Run for more than a week [stop]",
+}
 
 REPORT_REVIVES_STATUS = {
     3: "Normal [continue]",
@@ -110,7 +106,8 @@ REPORT_REVIVES_STATUS = {
     -4: "Probably cached response [continue]",
     -5: "Empty payload [stop]",
     -6: "No new entry [continue]",
-    -7: "Run for more than a week [stop]"}
+    -7: "Run for more than a week [stop]",
+}
 
 REPORTS_STATUS = {
     # init
@@ -118,14 +115,13 @@ REPORTS_STATUS = {
     1: "Report computed [stop]",
     2: "Live report up to date [continue]",
     3: "Report being computed [continue]",
-
     # errors
     -1: "ERROR: No keys found [stop]",
     -2: "ERROR: Fatal API error on faction key (key deleted) [continue]",
     -3: "ERROR: API error on faction key [continue]",
     -4: "WARNING: Received cache from torn API [continue]",
     -5: "ERROR: Running for too long [stop]",
-    -6: "ERROR: Server error [stop]"
+    -6: "ERROR: Server error [stop]",
 }
 
 BB_BRIDGE = {
@@ -154,17 +150,18 @@ BB_BRIDGE = {
     "attacksdamage": "Damage dealt",
     "attacksdamaging": "Damage received",
     "attacksrunaway": "Runaways",
-    "allgyms": "Energy all stats"}
+    "allgyms": "Energy all stats",
+}
 
 
 def posterRenameHead(instance, filename):
-    ext = filename.split('.')[-1]
-    return f'posters/{instance.tId}-head.{ext}'
+    ext = filename.split(".")[-1]
+    return f"posters/{instance.tId}-head.{ext}"
 
 
 def posterRenameTail(instance, filename):
-    ext = filename.split('.')[-1]
-    return f'posters/{instance.tId}-tail.{ext}'
+    ext = filename.split(".")[-1]
+    return f"posters/{instance.tId}-tail.{ext}"
 
 
 # Faction
@@ -195,8 +192,18 @@ class Faction(models.Model):
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
     posterGymImg = models.ImageField(blank=True)
-    posterHeadImg = models.ImageField(max_length=64, blank=True, upload_to=posterRenameHead, storage=OverwriteStorage())
-    posterTailImg = models.ImageField(max_length=64, blank=True, upload_to=posterRenameTail, storage=OverwriteStorage())
+    posterHeadImg = models.ImageField(
+        max_length=64,
+        blank=True,
+        upload_to=posterRenameHead,
+        storage=OverwriteStorage(),
+    )
+    posterTailImg = models.ImageField(
+        max_length=64,
+        blank=True,
+        upload_to=posterRenameTail,
+        storage=OverwriteStorage(),
+    )
 
     # respect simulator
     upgradesUpda = models.IntegerField(default=0)
@@ -225,7 +232,6 @@ class Faction(models.Model):
 
     # discord
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
-
 
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
@@ -285,10 +291,10 @@ class Faction(models.Model):
                 sub="mainnews",
                 cache_response=3600,
                 cache_private=False,
-                verbose=True
+                verbose=True,
             )
 
-        if 'apiError' in news:
+        if "apiError" in news:
             return news
 
         wars = dict({})
@@ -296,13 +302,13 @@ class Faction(models.Model):
 
             if "rankreport&rankID=" in v["news"]:  # case ranked war
                 war_type = "ranked"
-                reg = r'rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}'
+                reg = r"rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}"
             elif "warreport&warID=" in v["news"]:  # case territorial war
                 war_type = "territorial"
-                reg = r'warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}'
+                reg = r"warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}"
             elif "raidreport&raidID=" in v["news"]:  # case raid war
                 war_type = "raid"
-                reg = r'raidreport&raidID=\d{1,10}|step=profile&ID=\d{1,10}'
+                reg = r"raidreport&raidID=\d{1,10}|step=profile&ID=\d{1,10}"
             else:
                 continue
 
@@ -318,44 +324,39 @@ class Faction(models.Model):
 
             if other_fac_id not in wars:
                 if war_type == "ranked":
-                    reg = fr'ID={other_fac_id}>(.*?)</a>'
+                    reg = rf"ID={other_fac_id}>(.*?)</a>"
                 elif war_type == "territorial":
-                    reg = fr'ID={other_fac_id}">(.*?)</a>'
+                    reg = rf'ID={other_fac_id}">(.*?)</a>'
                 elif war_type == "raid":
-                    reg = fr'ID={other_fac_id}">(.*?)</a>'
+                    reg = rf'ID={other_fac_id}">(.*?)</a>'
 
                 name = re.findall(reg, v["news"])[0]
-                wars[other_fac_id] = {
-                    "name": name,
-                    "n": 0,
-                    "wars": []
-                }
+                wars[other_fac_id] = {"name": name, "n": 0, "wars": []}
 
             # extra data (dump for js)
             extra = {}
             if war_type == "territorial":
                 reg = r'terrName=(.*?)">'
                 extra["territory"] = re.findall(reg, v["news"])[0]
-                reg = fr'ID={other_fac_id}">(.*?)</a>'
+                reg = rf'ID={other_fac_id}">(.*?)</a>'
                 extra["other_fac_name"] = re.findall(reg, v["news"])[0]
             elif war_type == "raid":
-                reg = fr'ID={other_fac_id}">(.*?)</a>'
+                reg = rf'ID={other_fac_id}">(.*?)</a>'
                 extra["other_fac_name"] = re.findall(reg, v["news"])[0]
 
             # try to get report
-            report = self.attacksreport_set.filter(
-                war_id=war_id,
-                war_type=war_type
-            ).first()
-            wars[other_fac_id]["wars"].append({
-                "type": war_type,
-                "us_first": us_first,
-                "war_id": war_id,
-                "report": report,
-                "other_fac_id": other_fac_id,
-                "timestamp": v["timestamp"],
-                **extra
-            })
+            report = self.attacksreport_set.filter(war_id=war_id, war_type=war_type).first()
+            wars[other_fac_id]["wars"].append(
+                {
+                    "type": war_type,
+                    "us_first": us_first,
+                    "war_id": war_id,
+                    "report": report,
+                    "other_fac_id": other_fac_id,
+                    "timestamp": v["timestamp"],
+                    **extra,
+                }
+            )
             wars[other_fac_id]["n"] += 1
 
         # print("get wars")
@@ -368,11 +369,11 @@ class Faction(models.Model):
 
     def updateCrimes(self, force=False):
 
-        now = int(timezone.now().timestamp())
+        now = tsnow()
         old = now - self.getHist("crimes")
         # don't update if less than 1 hour ago and force is False
-        if (not force and (now - self.crimesUpda) < 3600):
-           return self.crimes_set.all(), False, False
+        if not force and (now - self.crimesUpda) < 3600:
+            return self.crimes_set.all(), False, False
 
         # api call and update key
         key = self.getKey()
@@ -383,9 +384,9 @@ class Faction(models.Model):
             return self.crimes_set.all(), True, "No keys to update faction upgrades"
 
         crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes", verbose=False)
-        if 'apiError' in crimesAPI:
+        if "apiError" in crimesAPI:
             msg = f'Update faction upgrades ({crimesAPI["apiErrorString"]})'
-            if crimesAPI['apiErrorCode'] in API_CODE_DELETE:
+            if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
                 return self.crimes_set.all(), True, msg
@@ -418,7 +419,7 @@ class Faction(models.Model):
         # create ranking based on sub ranking
         # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
         sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
-        main_ranking = self.updateRanking(sub_ranking)
+        self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
         batch = Crimes.objects.bulk_operation()
@@ -476,7 +477,9 @@ class Faction(models.Model):
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
         # save only participants ids of successful PH and PA
-        self.ph_pa_Dump = json.dumps([[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)])
+        self.ph_pa_Dump = json.dumps(
+            [[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)]
+        )
 
         self.save()
         return self.crimes_set.all(), False, n
@@ -484,7 +487,7 @@ class Faction(models.Model):
     def updateRanking(self, sub_ranking):
 
         # get members for ranking
-        faction_members = self.member_set.order_by("-nnb").only("tId", "nnb", 'crimesRank')
+        faction_members = self.member_set.order_by("-nnb").only("tId", "nnb", "crimesRank")
         faction_members_nnb = {m.tId: m.nnb for m in faction_members}
 
         # DEBUG
@@ -597,7 +600,7 @@ class Faction(models.Model):
         self.save()
 
         # save members ranking
-        bulk_u_mgr = BulkUpdateManager(['crimesRank'], chunk_size=100)
+        bulk_u_mgr = BulkUpdateManager(["crimesRank"], chunk_size=100)
         for member in faction_members:
             # print(member.name, member.crimesRank, main_ranking.index(member.tId) + 1)
             # try:
@@ -671,22 +674,25 @@ class Faction(models.Model):
             # check currency for AA perm (smallest payload and give )
             req = apiCall("faction", "", "currency", key.value, verbose=False)
 
-            if 'apiError' in req:
-                code = req['apiErrorCode']
+            if "apiError" in req:
+                code = req["apiErrorCode"]
                 if code in API_CODE_DELETE:
                     # delete key
                     print("{} delete {} (API error {})".format(self, key, code))
                     key.delete()
-                elif code in [4, 7, 16]:  # 4 because of API bug returning 4 in case of no perm
+                elif code in [
+                    4,
+                    7,
+                    16,
+                ]:  # 4 because of API bug returning 4 in case of no perm
                     # remove key
                     print("{} remove {} (API error {})".format(self, key, code))
                     self.masterKeys.remove(key)
 
-            elif req['faction_id'] != self.tId:
+            elif req["faction_id"] != self.tId:
                 # remove key
                 print("{} remove {} (changed faction)".format(self, key))
                 self.masterKeys.remove(key)
-
 
             key.lastPulled = tsnow()
             key.reason = "Check AA perm"
@@ -711,12 +717,12 @@ class Faction(models.Model):
             key = self.getKey()
 
         # call members and return error
-        membersAPI = apiCall('faction', '', 'basic', key.value, sub='members')
+        membersAPI = apiCall("faction", "", "basic", key.value, sub="members")
         key.lastPulled = tsnow()
         key.reason = "Update member list"
         key.save()
 
-        if 'apiError' in membersAPI:
+        if "apiError" in membersAPI:
             return membersAPI
 
         batch = Member.objects.bulk_operation()
@@ -731,18 +737,10 @@ class Faction(models.Model):
 
         # force low level perm to 0
         id_low_lvl = [p.tId for p in players_on_yata.filter(key_level__lt=3)]
-        self.member_set.filter(tId__in=id_low_lvl).update(
-            shareE=0,
-            shareN=0,
-            shareS=0
-        )
+        self.member_set.filter(tId__in=id_low_lvl).update(shareE=0, shareN=0, shareS=0)
 
         # set members not on yata to -1
-        self.member_set.exclude(tId__in=id_on_yata).update(
-            shareE=-1,
-            shareN=-1,
-            shareS=-1
-        )
+        self.member_set.exclude(tId__in=id_on_yata).update(shareE=-1, shareN=-1, shareS=-1)
 
         for k, v in membersAPI.items():
 
@@ -752,17 +750,17 @@ class Faction(models.Model):
                 "daysInFaction": v["days_in_faction"],
                 "lastActionStatus": v["last_action"]["status"],
                 "lastAction": v["last_action"]["relative"],
-                "lastActionTS": v["last_action"]["timestamp"]
+                "lastActionTS": v["last_action"]["timestamp"],
             }
 
             # status
-            for k2, v2 in v['status'].items():
+            for k2, v2 in v["status"].items():
                 defaults[k2] = v2
 
             batch.update_or_create(
                 # faction_id=int(self.id),
                 tId=int(k),
-                defaults=defaults
+                defaults=defaults,
             )
 
         if batch.count():
@@ -795,8 +793,11 @@ class Faction(models.Model):
         r = 0
         m = 0
         for log in logsAll:
-            logtmp[log.timestamp] = {"deltaMoney": (log.money - log.donationsmoney) - m, "deltaRespect": log.respect - r}
-            m = (log.money - log.donationsmoney)
+            logtmp[log.timestamp] = {
+                "deltaMoney": (log.money - log.donationsmoney) - m,
+                "deltaRespect": log.respect - r,
+            }
+            m = log.money - log.donationsmoney
             r = log.respect
 
         logsAll = logsAll.order_by("-timestamp").all()
@@ -818,11 +819,11 @@ class Faction(models.Model):
             return False, "No keys to update the armory."
 
         # api call
-        selection = 'stats,donations,currency,basic,timestamp'
-        factionInfo = apiCall('faction', self.tId, selection, key.value, verbose=False)
-        if 'apiError' in factionInfo:
+        selection = "stats,donations,currency,basic,timestamp"
+        factionInfo = apiCall("faction", self.tId, selection, key.value, verbose=False)
+        if "apiError" in factionInfo:
             msg = "Update logs ({})".format(factionInfo["apiErrorString"])
-            if factionInfo['apiErrorCode'] in API_CODE_DELETE:
+            if factionInfo["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
@@ -859,7 +860,8 @@ class Faction(models.Model):
             logdict["points"] = factionInfo.get("points", 0)
         logdict["timestamp"] = now
 
-        log = self.log_set.update_or_create(timestampday=day, defaults=logdict)
+        # update log
+        self.log_set.update_or_create(timestampday=day, defaults=logdict)
 
         # update faction
         self.save()
@@ -876,11 +878,11 @@ class Faction(models.Model):
             return False, "No keys to add contribution."
 
         # api call
-        selection = 'basic,contributors&stat={}'.format(stat)
-        contributors = apiCall('faction', self.tId, selection, key.value, verbose=False)
-        if 'apiError' in contributors:
+        selection = "basic,contributors&stat={}".format(stat)
+        contributors = apiCall("faction", self.tId, selection, key.value, verbose=False)
+        if "apiError" in contributors:
             msg = "Add contribution {} ({})".format(stat, contributors["apiErrorString"])
-            if contributors['apiErrorCode'] in API_CODE_DELETE:
+            if contributors["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
@@ -908,11 +910,17 @@ class Faction(models.Model):
             # c = dict({})
             # for k, v in {k: v for k, v in con.items() if v["in_faction"]}.items():
             for k, v in {k: v for k, v in con.items()}.items():
-                c[k] = [mem.get(k, dict({"name": "Player"})).get("name"), v["contributed"]]
+                c[k] = [
+                    mem.get(k, dict({"name": "Player"})).get("name"),
+                    v["contributed"],
+                ]
 
             # need to add contributors if in faction but hasn't contributed
 
-            contrdict = {"timestamp": now, "contributors": json.dumps(c, separators=(',', ':'))}
+            contrdict = {
+                "timestamp": now,
+                "contributors": json.dumps(c, separators=(",", ":")),
+            }
 
             if self.contributors_set.filter(stat=stat).filter(timestamphour=hour).filter(stat=stat).first() is None:
                 mod = "added"
@@ -937,10 +945,10 @@ class Faction(models.Model):
             return False, "No keys to update faction upgrades"
 
         # api call
-        facInfo = apiCall('faction', self.tId, "basic,upgrades", key.value, verbose=False)
-        if 'apiError' in facInfo:
+        facInfo = apiCall("faction", self.tId, "basic,upgrades", key.value, verbose=False)
+        if "apiError" in facInfo:
             msg = "Update faction upgrades ({})".format(facInfo["apiErrorString"])
-            if facInfo['apiErrorCode'] in API_CODE_DELETE:
+            if facInfo["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
             else:
@@ -973,7 +981,7 @@ class Faction(models.Model):
             v["can_be_unset"] = v.get("can_be_unset", 0)
             try:
                 self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
-            except BaseException as e:
+            except BaseException:
                 self.upgrade_set.filter(tId=k, simu=False).all().delete()
                 self.upgrade_set.update_or_create(tId=k, simu=False, defaults=v)
 
@@ -1025,42 +1033,36 @@ class Faction(models.Model):
             # Toleration
             27: [[29, 1]],  # side effect
             28: [[29, 13]],  # overdosing
-
             # Criminality
             13: [[14, 2]],  # nerve
             15: [[14, 2]],  # jail time
             17: [[14, 2], [15, 10]],  # bust skill
             16: [[14, 2], [15, 10], [17, 10]],  # bust nerve
-
             # Excrusion
             34: [[33, 2]],  # travel cost
             31: [[33, 3]],  # hunting
             35: [[33, 8]],  # rehab
             32: [[33, 9]],  # oversea banking
-
             # Supression
             45: [[46, 7]],  # maximum life
             48: [[47, 3]],  # escape
-
             # Agression
             44: [[43, 10]],  # accuracy
             40: [[42, 3]],  # hospitalization
             41: [[42, 15]],  # damage
-
             # Fortitude
             18: [[20, 2]],  # medical cooldown
             19: [[20, 13]],  # reviving
             21: [[20, 4]],  # life regeneration
             22: [[20, 4], [21, 5]],  # medical effectiveness
-
             # Voracity
             23: [[25, 2]],  # candy effect
             24: [[25, 15]],  # energy drink effect
             26: [[25, 9]],  # alcohol effect
-
             # Core
             10: [[11, 2]],  # chaining
-            12: [[11, 2]]}  # territory
+            12: [[11, 2]],
+        }  # territory
 
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, [])]:
             u = FactionTree.objects.filter(tId=tId).first()
@@ -1076,36 +1078,35 @@ class Faction(models.Model):
         r = {
             # Toleration
             29: [[27, 1], [28, 13]],  # addiction
-
             # Criminality
             17: [[16, 10]],  # bust skill
             15: [[17, 10], [16, 10]],  # jail time
             14: [[15, 2], [13, 2], [17, 2], [16, 2]],  # crimes
-
             # Excrusion
             33: [[34, 2], [31, 3], [35, 8], [32, 9]],  # travel capacity
-
             # Supression
             46: [[45, 7]],  # defense
             47: [[48, 3]],  # dexterity
-
             # Agression
             43: [[44, 10]],  # speed
             42: [[40, 3], [41, 15]],  # strength
-
             # Fortitude
-            20: [[18, 2], [21, 4], [22, 4], [19, 13]],   # hospitalization time
-            21: [[22, 5]],   # life regeneration
-
+            20: [[18, 2], [21, 4], [22, 4], [19, 13]],  # hospitalization time
+            21: [[22, 5]],  # life regeneration
             # Voracity
             25: [[23, 2], [24, 15], [26, 9]],  # booster cooldown
-
             # Core
-            11: [[10, 2], [12, 2]]}  # capacity
+            11: [[10, 2], [12, 2]],
+        }  # capacity
 
         for tId, lvl in [(b[0], b[1]) for b in r.get(upgrade.tId, []) if b[1] > upgrade.level]:
             u = FactionTree.objects.filter(tId=tId).first()
-            v = {"level": 1, "active": False, "shortname": u.shortname, "branch": u.branch}
+            v = {
+                "level": 1,
+                "active": False,
+                "shortname": u.shortname,
+                "branch": u.branch,
+            }
             self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
 
         # special case for steadfast
@@ -1113,7 +1114,8 @@ class Faction(models.Model):
             37: [36, 38, 39],  # speed training
             36: [37, 38, 39],  # strength training
             38: [39, 36, 37],  # defense training
-            39: [38, 36, 37]}  # dexterity training
+            39: [38, 36, 37],
+        }  # dexterity training
 
         if r.get(upgrade.tId, False):
             # max the close branch to 10
@@ -1145,12 +1147,18 @@ class Faction(models.Model):
             5: [1, 2, 3],  # booster armory
             6: [1, 2, 4],  # drug armory
             7: [1, 2, 3, 4, 5, 6],  # point storage
-            8: [1, 2, 3, 4, 5, 6, 7]}  # laboratory
+            8: [1, 2, 3, 4, 5, 6, 7],
+        }  # laboratory
 
         if r.get(upgrade.tId) is not None:
             if unset:
                 for u in [FactionTree.objects.filter(tId=i).first() for i, v in r.items() if upgrade.tId in v]:
-                    v = {"shortname": u.shortname, "branch": u.branch, "level": 1, "active": False}
+                    v = {
+                        "shortname": u.shortname,
+                        "branch": u.branch,
+                        "level": 1,
+                        "active": False,
+                    }
                     self.upgrade_set.update_or_create(simu=True, tId=u.tId, defaults=v)
             else:
                 for u in [FactionTree.objects.filter(tId=i).first() for i in r.get(upgrade.tId)]:
@@ -1167,7 +1175,7 @@ class Faction(models.Model):
         order = 1
         orders = dict({})
         for k, v in sorted(branchCost.items(), key=lambda x: -x[1]):
-            if k == 'Core':
+            if k == "Core":
                 orders[k] = 0
             else:
                 orders[k] = order
@@ -1224,11 +1232,11 @@ class Faction(models.Model):
                 faction_level = max(fu.level, faction_level)
                 if fu.unsets_completed:
                     unsets_completed = fu.unsets_completed
-            if u.branch == 'Core' and faction_level:
+            if u.branch == "Core" and faction_level:
                 faction_cost += u.base_cost
                 faction_base += u.base_cost
             if faction_order:
-                faction_cost += 2**(faction_order - 1) * (u.base_cost)
+                faction_cost += 2 ** (faction_order - 1) * (u.base_cost)
                 faction_base += u.base_cost
             tree[u.branch][u.shortname]["faction_order"] = faction_order
             tree[u.branch][u.shortname]["faction_level"] = faction_level
@@ -1244,11 +1252,11 @@ class Faction(models.Model):
             if fu is not None:
                 simu_order = max(fu.branchorder, simu_order) if not optimize else simuOrders.get(u.branch, -1)
                 simu_level = max(fu.level, simu_level)
-            if u.branch == 'Core' and simu_level:
+            if u.branch == "Core" and simu_level:
                 simu_cost += u.base_cost
                 simu_base += u.base_cost
             if simu_order:
-                simu_cost += 2**(simu_order - 1) * (u.base_cost)
+                simu_cost += 2 ** (simu_order - 1) * (u.base_cost)
                 simu_base += u.base_cost
             tree[u.branch][u.shortname]["simu_order"] = simu_order
             tree[u.branch][u.shortname]["simu_level"] = simu_level
@@ -1266,9 +1274,16 @@ class Faction(models.Model):
         respect = dict({"Total": dict({"simu_cost": 0, "faction_cost": 0})})
 
         for k1, v1 in tree.items():
-            respect[k1] = dict({"simu_cost": 0, "faction_cost": 0,
-                                "simu_base": 0, "faction_base": 0,
-                                "simu_order": 0, "faction_order": 0})
+            respect[k1] = dict(
+                {
+                    "simu_cost": 0,
+                    "faction_cost": 0,
+                    "simu_base": 0,
+                    "faction_base": 0,
+                    "simu_order": 0,
+                    "faction_order": 0,
+                }
+            )
             for k2, v2 in v1.items():
                 v2["faction_order"] = maxorder[k1][0]
                 v2["simu_order"] = maxorder[k1][1]
@@ -1292,7 +1307,7 @@ class Faction(models.Model):
             all_spies = cache.get(f"spy-faction-{self.tId}")
             print(f'{self} [getSpies] faction cache: {"no" if all_spies is None else "yes"}')
         else:
-            print(f'{self} [getSpies] faction cache: forced no')
+            print(f"{self} [getSpies] faction cache: forced no")
             all_spies = None
         if all_spies is None or settings.DEBUG:
             all_spies = {}
@@ -1305,6 +1320,7 @@ class Faction(models.Model):
 
     def json(self):
         from faction.serializer import FactionSerializer
+
         return FactionSerializer(self).data
 
     def getWarStatus(self):
@@ -1327,7 +1343,7 @@ class Faction(models.Model):
         # faction_id = "8510"
 
         # get war_against
-        r =  apiCall(
+        r = apiCall(
             "faction",
             faction_id,
             "",
@@ -1335,7 +1351,7 @@ class Faction(models.Model):
             sub="ranked_wars",
             cache_response=60,
             cache_private=False,
-            verbose=True
+            verbose=True,
         )
 
         war = {}
@@ -1375,14 +1391,14 @@ class Faction(models.Model):
         war = self.getWarStatus()
 
         # get all members
-        r =  apiCall(
+        r = apiCall(
             "faction",
             self.warAgainst,
             "basic,timestamp",
             key.value,
             # cache_response=3600,
             # cache_private=False,
-            verbose=True
+            verbose=True,
         )
 
         if not len(war):
@@ -1409,12 +1425,12 @@ class Faction(models.Model):
             spy = spies.get(int(target_id), {})
 
             # custom description
-            status_description = target['status']['description']
-            status_state = target['status']['state']
+            status_description = target["status"]["description"]
+            status_state = target["status"]["state"]
             if status_state == "Hospital":
                 try:
                     _, time = status_description.split(" for ")
-                    status_description = f'H for {time}'
+                    status_description = f"H for {time}"
                 except ValueError:
                     # probably flying back after hosp... needs to be refreshed
                     status_description = "Unknown (refresh)"
@@ -1423,58 +1439,50 @@ class Faction(models.Model):
                 status_description = status_description.replace("In jail", "J")
                 dibs = False
             elif status_state in ["Traveling", "Abroad"]:
-                target['status']['details'] = status_description
+                target["status"]["details"] = status_description
                 status_description = status_state
                 dibs = False
             else:
                 dibs = True
 
             defaults = {
-                'target_id': target_id,
-                'name': target['name'],
-                'level': target['level'],
-                'faction_name': r['name'],
-                'faction_faction_id': r['ID'],
-                'faction_faction_dif': target['days_in_faction'],
-                'faction_position': target['position'],
-                'last_action_timestamp': target['last_action']['timestamp'],
-                'last_action_relative': target['last_action']['relative'],
-                'last_action_status': target['last_action']['status'],
-                'status_description': status_description,
-                'status_details': target['status']['details'],
-                'status_state': target['status']['state'],
-                'status_color': target['status']['color'],
-                'status_until': target['status']['until'],
-                'strength': spy.get('strength', -1),
-                'strength_timestamp': spy.get('strength_timestamp', -1),
-                'dexterity': spy.get('dexterity', -1),
-                'dexterity_timestamp': spy.get('dexterity_timestamp', -1),
-                'speed': spy.get('speed', -1),
-                'speed_timestamp': spy.get('speed_timestamp', -1),
-                'defense': spy.get('defense', -1),
-                'defense_timestamp': spy.get('defense_timestamp', -1),
-                'total': spy.get('total', -1),
-                'total_timestamp': spy.get('total_timestamp', -1),
-                'update_timestamp': r["timestamp"],
+                "target_id": target_id,
+                "name": target["name"],
+                "level": target["level"],
+                "faction_name": r["name"],
+                "faction_faction_id": r["ID"],
+                "faction_faction_dif": target["days_in_faction"],
+                "faction_position": target["position"],
+                "last_action_timestamp": target["last_action"]["timestamp"],
+                "last_action_relative": target["last_action"]["relative"],
+                "last_action_status": target["last_action"]["status"],
+                "status_description": status_description,
+                "status_details": target["status"]["details"],
+                "status_state": target["status"]["state"],
+                "status_color": target["status"]["color"],
+                "status_until": target["status"]["until"],
+                "strength": spy.get("strength", -1),
+                "strength_timestamp": spy.get("strength_timestamp", -1),
+                "dexterity": spy.get("dexterity", -1),
+                "dexterity_timestamp": spy.get("dexterity_timestamp", -1),
+                "speed": spy.get("speed", -1),
+                "speed_timestamp": spy.get("speed_timestamp", -1),
+                "defense": spy.get("defense", -1),
+                "defense_timestamp": spy.get("defense_timestamp", -1),
+                "total": spy.get("total", -1),
+                "total_timestamp": spy.get("total_timestamp", -1),
+                "update_timestamp": r["timestamp"],
             }
             if not dibs:
-                defaults.update({'dibs_tid': 0, 'dibs_name': 'name'})
-                batch1.update_or_create(
-                    faction_id=self.pk,
-                    target_id=target_id,
-                    defaults=defaults
-                )
+                defaults.update({"dibs_tid": 0, "dibs_name": "name"})
+                batch1.update_or_create(faction_id=self.pk, target_id=target_id, defaults=defaults)
             else:
-                batch2.update_or_create(
-                faction_id=self.pk,
-                target_id=target_id,
-                defaults=defaults
-            )
+                batch2.update_or_create(faction_id=self.pk, target_id=target_id, defaults=defaults)
 
-        print(f'{self} [faction targets] batch size (hosp): {batch1.count()}')
+        print(f"{self} [faction targets] batch size (hosp): {batch1.count()}")
         if batch1.count():
             batch1.run(batch_size=100)
-        print(f'{self} [faction targets] batch size (okay): {batch2.count()}')
+        print(f"{self} [faction targets] batch size (okay): {batch2.count()}")
         if batch2.count():
             batch2.run(batch_size=100)
 
@@ -1543,13 +1551,13 @@ class Member(models.Model):
 
             # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
             # req = requests.get(url).json()
-            if 'apiError' in req:
+            if "apiError" in req:
                 error = req
                 self.energy = 0
                 self.energyRefillUsed = True
                 self.drugCD = 0
             else:
-                energy = req['energy'].get('current', 0)
+                energy = req["energy"].get("current", 0)
                 self.energy = energy
                 self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
                 self.revive = "+ Ability to revive" in req["job_perks"]
@@ -1568,7 +1576,7 @@ class Member(models.Model):
         if not req:
             req = apiCall("user", "", "honors", key=key)
 
-        if 'apiError' in req:
+        if "apiError" in req:
             error = req
         else:
             if 478 in req["honors_awarded"]:
@@ -1597,7 +1605,7 @@ class Member(models.Model):
 
             # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
             # req = requests.get(url).json()
-            if 'apiError' in req:
+            if "apiError" in req:
                 error = req
                 self.dexterity = 0
                 self.defense = 0
@@ -1605,11 +1613,11 @@ class Member(models.Model):
                 self.strength = 0
                 self.stats_ts = 0
             else:
-                self.dexterity = int(str(req.get('dexterity', 0)).replace(",", ""))
-                self.defense = int(str(req.get('defense', 0)).replace(",", ""))
-                self.speed = int(str(req.get('speed', 0)).replace(",", ""))
-                self.strength = int(str(req.get('strength', 0)).replace(",", ""))
-                self.stats_ts = int(time.time())
+                self.dexterity = int(str(req.get("dexterity", 0)).replace(",", ""))
+                self.defense = int(str(req.get("defense", 0)).replace(",", ""))
+                self.speed = int(str(req.get("speed", 0)).replace(",", ""))
+                self.strength = int(str(req.get("strength", 0)).replace(",", ""))
+                self.stats_ts = tsnow()
 
         if save:
             self.save()
@@ -1625,16 +1633,16 @@ class Member(models.Model):
             if not req:
                 req = apiCall("user", "", "perks,bars,crimes", key=key)
 
-            if 'apiError' in req:
+            if "apiError" in req:
                 error = req
                 self.nnb = 0
                 self.arson = 0
             else:
-                nnb = req['nerve'].get('maximum', 0)
+                nnb = req["nerve"].get("maximum", 0)
 
                 # company perks
                 for p in req.get("job_perks", []):
-                    sp = p.split(' ')
+                    sp = p.split(" ")
                     # not python 3.5 compatible
                     # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
                     if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
@@ -1642,13 +1650,13 @@ class Member(models.Model):
 
                 # faction perks
                 for p in req.get("faction_perks", []):
-                    sp = p.split(' ')
+                    sp = p.split(" ")
                     if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
                         nnb -= int(sp[1])
 
                 # merit perks
                 for p in req.get("merit_perks", []):
-                    sp = p.split(' ')
+                    sp = p.split(" ")
                     if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
                         nnb -= int(sp[1])
 
@@ -1682,7 +1690,7 @@ class Member(models.Model):
             self.shareN = 0
             self.shareS = 0
         else:
-            key = player.getKey()
+            player.getKey()
             selections = [
                 "perks",
                 "bars",
@@ -1690,7 +1698,7 @@ class Member(models.Model):
                 "battlestats",
                 "honors",
                 "refills",
-                "cooldowns"
+                "cooldowns",
             ]
             req = apiCall("user", "", ",".join(selections), key=player.getKey())
             self.updateEnergy(req=req)
@@ -1708,6 +1716,7 @@ class Member(models.Model):
 
     def json(self):
         from faction.serializer import MemberSerializer
+
         return MemberSerializer(self).data
 
 
@@ -1751,7 +1760,7 @@ class Chain(models.Model):
         return format_html("{} chain [{}]".format(self.faction, self.tId))
 
     def cdTime(self):
-        return "{:.1f} mins".format(self.chain / 6. if self.cooldown else 0)
+        return "{:.1f} mins".format(self.chain / 6.0 if self.cooldown else 0)
 
     def elapsed(self):
         last = "{:.1f} days".format((self.last - self.start) / (60 * 60 * 24)) if self.last else "-"
@@ -1765,7 +1774,7 @@ class Chain(models.Model):
         crontab_type = "crontabs_chain_report"  # single crontab type for live and reports
         if chain is None or chain.crontab not in getCrontabs(crontab_type):
             # if no (or wrong) crontab already assigned to the faction get the least populated one
-            cn = {c: len(Chain.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
+            cn = {c: len(Chain.objects.filter(crontab=c).only("crontab")) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         else:
             # if faction allready on a crontab assign the same
@@ -1780,8 +1789,7 @@ class Chain(models.Model):
         return 100000
 
     def getAttacks(self):
-        """ Fill chain with attacks
-        """
+        """Fill chain with attacks"""
         # handle live chain
         if self.live:
             self.end = tsnow()
@@ -1822,7 +1830,7 @@ class Chain(models.Model):
 
         # stop if no master keys
         if not nKeys:
-            print("{} no keys".format(self))
+            print(f"{self} no keys")
             self.computing = False
             self.crontab = 0
             self.attackchain_set.all().delete()
@@ -1835,7 +1843,10 @@ class Chain(models.Model):
             print(f"{self} Key #{i}: {key}")
 
             # prevent cache response
-            delay = min(tsnow() - faction.lastAttacksPulled, tsnow() - self.update)
+            delay = min(
+                tsnow() - faction.lastAttacksPulled,
+                tsnow() - self.update,
+            )
             if delay < 32:
                 sleeptime = 32 - delay
                 print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
@@ -1853,8 +1864,8 @@ class Chain(models.Model):
             # even if the other keys are good
             # It can be optimized but since it's never a critical status it's ok for now
             if "apiError" in req:
-                print('{}\t api key error: {}'.format(self, req['apiError']))
-                if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{}\t api key error: {}".format(self, req["apiError"]))
+                if req["apiErrorCode"] in API_CODE_DELETE:
                     faction.delKey(key=key)
                     print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
                     self.state = -2
@@ -1874,7 +1885,7 @@ class Chain(models.Model):
 
             # in case cache
             if cache > CACHE_RESPONSE:
-                print('{}\t probably cached response... (blank turn)'.format(self))
+                print("{}\t probably cached response... (blank turn)".format(self))
                 self.state = -4
                 self.save()
                 return self.state
@@ -1890,10 +1901,10 @@ class Chain(models.Model):
                     apiAttacks[id] = attack
                     tsl = max(tsl, attack["timestamp_started"])
 
-            print(f'{self}\t adding {n} attacks')
-            print(f'{self}\t last time {timestampToDate(tsl)}')
+            print(f"{self}\t adding {n} attacks")
+            print(f"{self}\t last time {timestampToDate(tsl)}")
             if not n:
-                print(f'{self}\t escape loop because no new attacks')
+                print(f"{self}\t escape loop because no new attacks")
                 break
 
         # update timestamp
@@ -1903,7 +1914,7 @@ class Chain(models.Model):
 
         # in case empty payload
         if not len(apiAttacks):
-            print('{} empty payload'.format(self))
+            print("{} empty payload".format(self))
             self.computing = False
             self.crontab = 0
             self.state = -5
@@ -2050,7 +2061,12 @@ class Chain(models.Model):
         members = faction.updateMembers(key=key, force=False)
 
         # initialisation of variables before loop
-        nWRA = [0, 0.0, 0, 0]  # number of wins, respect and attacks, max count (should be = to number of wins)
+        nWRA = [
+            0,
+            0.0,
+            0,
+            0,
+        ]  # number of wins, respect and attacks, max count (should be = to number of wins)
         bonus = []  # chain bonus
         attacksForHisto = []  # record attacks timestamp histogram
         attacksCriticalForHisto = dict({"30": [], "60": [], "90": []})  # record critical attacks timestamp histogram
@@ -2073,7 +2089,22 @@ class Chain(models.Model):
             # 11: sum(time(hit)-time(lasthit))
             # 12: #bonuses
             # 13: #war
-            attackers[m.tId] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, m.daysInFaction, m.name, 0, 0, 0]
+            attackers[m.tId] = [
+                0,
+                0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                m.daysInFaction,
+                m.name,
+                0,
+                0,
+                0,
+            ]
 
         #  for debug
         # PRINT_NAME = {"Thiirteen": 0,}
@@ -2082,23 +2113,37 @@ class Chain(models.Model):
         # loop over attacks
         lastTS = 0
         chain_hit_count = []
-        for att in self.attackchain_set.order_by('timestamp_ended'):
+        for att in self.attackchain_set.order_by("timestamp_ended"):
             attackerID = att.attacker_id
             attackerName = att.attacker_name
             # if attacker part of the faction at the time of the chain
             if att.attacker_faction == faction.tId:
                 if att.chain in chain_hit_count:
-                    print(f'{self} ignoring attack {att.tId} {att.code}: second hit #{att.chain}')
+                    print(f"{self} ignoring attack {att.tId} {att.code}: second hit #{att.chain}")
                     continue
 
                 # if attacker not part of the faction at the time of the call
                 if attackerID not in attackers:
                     # print('[function.chain.fillReport] hitter out of faction: {} [{}]'.format(attackerName, attackerID))
-                    attackers[attackerID] = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1, attackerName, 0, 0, 0]  # add out of faction attackers on the fly
+                    attackers[attackerID] = [
+                        0,
+                        0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        -1,
+                        attackerName,
+                        0,
+                        0,
+                        0,
+                    ]  # add out of faction attackers on the fly
 
                 attackers[attackerID][0] += 1
                 nWRA[2] += 1
-
 
                 if self.cooldown:
                     its_a_hit = att.respect_gain > 0.0
@@ -2140,7 +2185,17 @@ class Chain(models.Model):
                         attackers[attackerID][12] += 1
                         r = getBonusHits(att.chain, att.timestamp_ended)
                         # print('{} bonus {}: {} respects'.format(self, att.chain, r))
-                        bonus.append((att.chain, attackerID, attackerName, att.respect_gain, r, att.defender_id, att.defender_name))
+                        bonus.append(
+                            (
+                                att.chain,
+                                attackerID,
+                                attackerName,
+                                att.respect_gain,
+                                r,
+                                att.defender_id,
+                                att.defender_name,
+                            )
+                        )
                     else:
                         attackers[attackerID][1] += 1
                         attackers[attackerID][2] += float(att.fair_fight)
@@ -2208,13 +2263,13 @@ class Chain(models.Model):
         histo, bin_edges = numpy.histogram(attacksForHisto, bins=bins)
         binsCenter = [int(0.5 * (a + b)) for (a, b) in zip(bin_edges[0:-1], bin_edges[1:])]
         graphs = dict({})
-        graphs["hits"] = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histo)])
+        graphs["hits"] = ",".join(["{}:{}".format(a, b) for (a, b) in zip(binsCenter, histo)])
 
         # fill 30, 60, 90s critical attacks histogram
         histo30, _ = numpy.histogram(attacksCriticalForHisto["30"], bins=bins)
         histo60, _ = numpy.histogram(attacksCriticalForHisto["60"], bins=bins)
         histo90, _ = numpy.histogram(attacksCriticalForHisto["90"], bins=bins)
-        graphs["crit"] = ','.join(['{}:{}:{}'.format(a, b, c) for (a, b, c) in zip(histo30, histo60, histo90)])
+        graphs["crit"] = ",".join(["{}:{}:{}".format(a, b, c) for (a, b, c) in zip(histo30, histo60, histo90)])
 
         # potentially add this to chain to compare with API
         if self.live:
@@ -2225,7 +2280,7 @@ class Chain(models.Model):
         self.save()
 
         # fill the database with counts
-        print('{} fill database with counts'.format(self))
+        print("{} fill database with counts".format(self))
         self.count_set.all().delete()
         hitsForStats = []
 
@@ -2236,15 +2291,15 @@ class Chain(models.Model):
                 hitsForStats.append(v[1])
 
             # time now - chain end - days old: determine if member was in the fac for the chain
-            delta = int(timezone.now().timestamp()) - self.end - v[9] * 24 * 3600
+            delta = tsnow() - self.end - v[9] * 24 * 3600
             beenThere = True if (delta < 0 or v[9] < 0) else False
             if k in attackersHisto:
                 histoTmp, _ = numpy.histogram(attackersHisto[k], bins=bins)
                 # watcher = sum(histoTmp > 0) / float(len(histoTmp)) if len(histo) else 0
                 watcher = v[11] / float(diff)
-                graphTmp = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
+                graphTmp = ",".join(["{}:{}".format(a, b) for (a, b) in zip(binsCenter, histoTmp)])
             else:
-                graphTmp = ''
+                graphTmp = ""
                 watcher = 0
             # 0: attacks
             # 1: wins
@@ -2277,7 +2332,7 @@ class Chain(models.Model):
                 beenThere=beenThere,
                 graph=graphTmp,
                 watcher=watcher,
-                warhits=v[13]
+                warhits=v[13],
             )
 
         if batch.count():
@@ -2286,14 +2341,21 @@ class Chain(models.Model):
         # create attack stats
         stats, statsBins = numpy.histogram(hitsForStats, bins=32)
         statsBinsCenter = [int(0.5 * (a + b)) for (a, b) in zip(statsBins[0:-1], statsBins[1:])]
-        graphs["members"] = ','.join(['{}:{}'.format(a, b) for (a, b) in zip(statsBinsCenter, stats)])
+        graphs["members"] = ",".join(["{}:{}".format(a, b) for (a, b) in zip(statsBinsCenter, stats)])
         self.graphs = json.dumps(graphs)
 
         # fill the database with bonus
-        print('{} fill database with bonus'.format(self))
+        print("{} fill database with bonus".format(self))
         self.bonus_set.all().delete()
         for b in bonus:
-            self.bonus_set.create(hit=b[0], tId=b[1], name=b[2], respect=b[3], targetId=b[5], targetName=b[6])
+            self.bonus_set.create(
+                hit=b[0],
+                tId=b[1],
+                name=b[2],
+                respect=b[3],
+                targetId=b[5],
+                targetName=b[6],
+            )
 
         self.save()
         return 0
@@ -2330,6 +2392,7 @@ class Chain(models.Model):
 
     def json(self):
         from faction.serializer import ChainSerializer
+
         return ChainSerializer(self).data
 
 
@@ -2360,6 +2423,7 @@ class Count(models.Model):
 
     def json(self):
         from faction.serializer import CountSerializer
+
         return CountSerializer(self).data
 
 
@@ -2377,6 +2441,7 @@ class Bonus(models.Model):
 
     def json(self):
         from faction.serializer import BonusSerializer
+
         return BonusSerializer(self).data
 
 
@@ -2405,7 +2470,6 @@ class AttackChain(models.Model):
     chain = models.IntegerField(default=0)
     code = models.SlugField(default="0", max_length=32)
 
-
     # mofifiers
     fair_fight = models.FloatField(default=0.0)
     war = models.IntegerField(default=0)
@@ -2413,6 +2477,7 @@ class AttackChain(models.Model):
     group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chain_bonus = models.FloatField(default=0.0)
+    warlord_bonus = models.FloatField(default=0.0)
 
     objects = BulkManager()
 
@@ -2481,7 +2546,7 @@ class AttacksReport(models.Model):
         crontab_type = "crontabs_attacks_report"  # single crontab type for live and reports
         if report is None or report.crontab not in getCrontabs(crontab_type):
             # if no (or wrong) crontab already assigned to the faction get the least populated one
-            cn = {c: len(AttacksReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
+            cn = {c: len(AttacksReport.objects.filter(crontab=c).only("crontab")) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             # if faction allready on a crontab assign the same
@@ -2490,8 +2555,7 @@ class AttacksReport(models.Model):
         return self.crontab
 
     def getAttacks(self):
-        """ Fill report with attacks
-        """
+        """Fill report with attacks"""
         # handle live chain
         if self.live:
             self.end = tsnow()
@@ -2514,7 +2578,7 @@ class AttacksReport(models.Model):
         # check if not running for too long
         week = 60 * 60 * 24 * 7
         if self.last - self.start > week:
-            weekAgo = tsnow() - week
+            tsnow() - week
             self.computing = False
             self.crontab = 0
             # self.attackreport_set.filter(timestamp_started__gt=weekAgo).delete()
@@ -2532,7 +2596,7 @@ class AttacksReport(models.Model):
         # get the keys and init the attacks dict
         apiAttacks = {}
         keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
-        nKeys = len(keys)
+        len(keys)
 
         # stop if no master keys
         if not keys:
@@ -2549,7 +2613,10 @@ class AttacksReport(models.Model):
             print(f"{self} Key #{i}: {key}")
 
             # prevent cache response
-            delay = min(tsnow() - faction.lastAttacksPulled, tsnow() - self.update)
+            delay = min(
+                tsnow() - faction.lastAttacksPulled,
+                tsnow() - self.update,
+            )
             if delay < 32:
                 sleeptime = 32 - delay
                 print("{} last update {}s ago, waiting {} for cache...".format(self, delay, sleeptime))
@@ -2567,8 +2634,8 @@ class AttacksReport(models.Model):
             # even if the other keys are good
             # It can be optimized but since it's never a critical status it's ok for now
             if "apiError" in req:
-                print('{} api key error: {}'.format(self, req['apiError']))
-                if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} api key error: {}".format(self, req["apiError"]))
+                if req["apiErrorCode"] in API_CODE_DELETE:
                     print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
                     faction.delKey(key=key)
                     self.state = -2
@@ -2587,7 +2654,7 @@ class AttacksReport(models.Model):
 
             # in case cache
             if cache > CACHE_RESPONSE:
-                print('{} probably cached response... (blank turn)'.format(self))
+                print("{} probably cached response... (blank turn)".format(self))
                 self.state = -4
                 self.save()
                 return -4
@@ -2599,10 +2666,10 @@ class AttacksReport(models.Model):
                     apiAttacks[id] = attack
                     tsl = max(tsl, attack["timestamp_started"])
 
-            print(f'{self}\t adding {n} attacks')
-            print(f'{self}\t last time {timestampToDate(tsl)}')
+            print(f"{self}\t adding {n} attacks")
+            print(f"{self}\t last time {timestampToDate(tsl)}")
             if not n:
-                print(f'{self}\t escape loop because no new attacks')
+                print(f"{self}\t escape loop because no new attacks")
                 break
 
         # update timestamp
@@ -2612,7 +2679,7 @@ class AttacksReport(models.Model):
 
         # in case empty payload
         if not len(apiAttacks):
-            print('{} empty payload'.format(self))
+            print("{} empty payload".format(self))
             self.computing = False
             self.crontab = 0
             self.state = -5
@@ -2631,7 +2698,7 @@ class AttacksReport(models.Model):
             before = int(v["timestamp_started"]) - self.last
             after = int(v["timestamp_started"]) - tse
             if before < 0 or after > 0:
-                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+                print(r"{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
             newAttack = int(k) not in attacks
             factionAttack = v["attacker_faction"] == faction.tId
@@ -2696,7 +2763,13 @@ class AttacksReport(models.Model):
         f_set = dict({})
         p_set = dict({})
         for attack in allAttacks:
-            won = attack.result not in ["Stalemate", "Assist", "Lost", "Timeout", "Escape"]
+            won = attack.result not in [
+                "Stalemate",
+                "Assist",
+                "Lost",
+                "Timeout",
+                "Escape",
+            ]
 
             # handle attacker faction
             if attack.attacker_faction in f_set:
@@ -2705,8 +2778,14 @@ class AttacksReport(models.Model):
                 n[1] = n[1] + 1
             else:
                 n = [1 if won else 0, 1, 0, 0]
-            f_set[attack.attacker_faction] = {"faction_id": attack.attacker_faction, "faction_name": attack.attacker_factionname,
-                                              "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
+            f_set[attack.attacker_faction] = {
+                "faction_id": attack.attacker_faction,
+                "faction_name": attack.attacker_factionname,
+                "hits": n[0],
+                "attacks": n[1],
+                "defends": n[2],
+                "attacked": n[3],
+            }
 
             # handle defender faction
             if attack.defender_faction in f_set:
@@ -2715,8 +2794,14 @@ class AttacksReport(models.Model):
                 n[3] = n[3] + 1
             else:
                 n = [0, 0, 0 if won else 1, 1]
-            f_set[attack.defender_faction] = {"faction_id": attack.defender_faction, "faction_name": attack.defender_factionname,
-                                              "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
+            f_set[attack.defender_faction] = {
+                "faction_id": attack.defender_faction,
+                "faction_name": attack.defender_factionname,
+                "hits": n[0],
+                "attacks": n[1],
+                "defends": n[2],
+                "attacked": n[3],
+            }
 
             # handle attacker player
             if attack.attacker_id in p_set:
@@ -2725,9 +2810,16 @@ class AttacksReport(models.Model):
                 n[1] = n[1] + 1
             else:
                 n = [1 if won else 0, 1, 0, 0]
-            p_set[attack.attacker_id] = {"player_id": attack.attacker_id, "player_name": attack.attacker_name,
-                                         "player_faction_id": attack.attacker_faction, "player_faction_name": attack.attacker_factionname,
-                                         "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
+            p_set[attack.attacker_id] = {
+                "player_id": attack.attacker_id,
+                "player_name": attack.attacker_name,
+                "player_faction_id": attack.attacker_faction,
+                "player_faction_name": attack.attacker_factionname,
+                "hits": n[0],
+                "attacks": n[1],
+                "defends": n[2],
+                "attacked": n[3],
+            }
 
             # handle defender player
             if attack.defender_id in p_set:
@@ -2736,26 +2828,33 @@ class AttacksReport(models.Model):
                 n[3] = n[3] + 1
             else:
                 n = [0, 0, 0 if won else 1, 1]
-            p_set[attack.defender_id] = {"player_id": attack.defender_id, "player_name": attack.defender_name,
-                                         "player_faction_id": attack.defender_faction, "player_faction_name": attack.defender_factionname,
-                                         "hits": n[0], "attacks": n[1], "defends": n[2], "attacked": n[3]}
+            p_set[attack.defender_id] = {
+                "player_id": attack.defender_id,
+                "player_name": attack.defender_name,
+                "player_faction_id": attack.defender_faction,
+                "player_faction_name": attack.defender_factionname,
+                "hits": n[0],
+                "attacks": n[1],
+                "defends": n[2],
+                "attacked": n[3],
+            }
 
         print("{} update factions".format(self))
 
         # update factions
         batch = AttacksFaction.objects.bulk_operation()
         for k, v in f_set.items():
-            defaults={
+            defaults = {
                 "hits": int(v["hits"]),
                 "attacks": int(v["attacks"]),
                 "defends": int(v["defends"]),
-                "attacked": int(v["attacked"])
+                "attacked": int(v["attacked"]),
             }
             batch.update_or_create(
                 report_id=int(self.id),
                 faction_id=int(k),
                 faction_name=v["faction_name"],
-                defaults=defaults
+                defaults=defaults,
             )
 
         if batch.count():
@@ -2764,11 +2863,11 @@ class AttacksReport(models.Model):
         # update players
         batch = AttacksPlayer.objects.bulk_operation()
         for k, v in p_set.items():
-            defaults={
+            defaults = {
                 "hits": int(v["hits"]),
                 "attacks": int(v["attacks"]),
                 "defends": int(v["defends"]),
-                "attacked": int(v["attacked"])
+                "attacked": int(v["attacked"]),
             }
             batch.update_or_create(
                 report_id=int(self.id),
@@ -2776,7 +2875,7 @@ class AttacksReport(models.Model):
                 player_name=v["player_name"],
                 player_faction_id=int(v["player_faction_id"]),
                 player_faction_name=v["player_faction_name"],
-                defaults=defaults
+                defaults=defaults,
             )
 
         if batch.count():
@@ -2813,7 +2912,13 @@ class AttacksReport(models.Model):
                 addOne.append(4)
             elif attack.result in ["Assist"]:
                 addOne.append(5)
-            elif attack.result in ["Stalemate", "Lost", "Timeout", "Escape", "Interrupted"]:
+            elif attack.result in [
+                "Stalemate",
+                "Lost",
+                "Timeout",
+                "Escape",
+                "Interrupted",
+            ]:
                 addOne.append(6)
             else:
                 print(attack.result)
@@ -2824,7 +2929,11 @@ class AttacksReport(models.Model):
             addOne.append(7)
             for i in addOne:
                 n[i] = n[i] + 1
-            members[attack.attacker_id] = {"name": attack.attacker_name, "out": n, "in": [0, 0, 0, 0, 0, 0, 0, 0]}
+            members[attack.attacker_id] = {
+                "name": attack.attacker_name,
+                "out": n,
+                "in": [0, 0, 0, 0, 0, 0, 0, 0],
+            }
 
         # incoming
         attacks = self.attackreport_set.filter(attacker_faction__in=json.loads(self.factions))
@@ -2843,7 +2952,13 @@ class AttacksReport(models.Model):
                 addOne.append(4)
             elif attack.result in ["Assist"]:
                 addOne.append(5)
-            elif attack.result in ["Stalemate", "Lost", "Timeout", "Escape", "Interrupted"]:
+            elif attack.result in [
+                "Stalemate",
+                "Lost",
+                "Timeout",
+                "Escape",
+                "Interrupted",
+            ]:
                 addOne.append(6)
             else:
                 print(attack.result)
@@ -2857,7 +2972,11 @@ class AttacksReport(models.Model):
             if attack.defender_id in members:
                 members[attack.defender_id]["in"] = n
             else:
-                members[attack.defender_id] = {"name": attack.defender_name, "in": n, "out": [0, 0, 0, 0, 0, 0, 0, 0]}
+                members[attack.defender_id] = {
+                    "name": attack.defender_name,
+                    "in": n,
+                    "out": [0, 0, 0, 0, 0, 0, 0, 0],
+                }
 
         type = "in" if order > 7 else "out"
         o1 = order % 8
@@ -2888,7 +3007,14 @@ class AttacksFaction(models.Model):
     objects = BulkManager()
 
     def __str__(self):
-        return "{} [{}]: {} {} {} {}".format(self.faction_name, self.faction_id, self.hits, self.attacks, self.defends, self.attacked)
+        return "{} [{}]: {} {} {} {}".format(
+            self.faction_name,
+            self.faction_id,
+            self.hits,
+            self.attacks,
+            self.defends,
+            self.attacked,
+        )
 
 
 class AttacksPlayer(models.Model):
@@ -2910,7 +3036,14 @@ class AttacksPlayer(models.Model):
     objects = BulkManager()
 
     def __str__(self):
-        return "{} [{}]: {} {} {} {}".format(self.player_name, self.player_id, self.hits, self.attacks, self.defends, self.attacked)
+        return "{} [{}]: {} {} {} {}".format(
+            self.player_name,
+            self.player_id,
+            self.hits,
+            self.attacks,
+            self.defends,
+            self.attacked,
+        )
 
 
 class AttackReport(models.Model):
@@ -2945,6 +3078,7 @@ class AttackReport(models.Model):
     group_attack = models.FloatField(default=0.0)
     overseas = models.FloatField(default=0.0)
     chain_bonus = models.FloatField(default=0.0)
+    warlord_bonus = models.FloatField(default=0.0)
 
     objects = BulkManager()
 
@@ -3021,7 +3155,7 @@ class RevivesReport(models.Model):
         crontab_type = "crontabs_revives_report"  # single crontab type for live and reports
         if report is None or report.crontab not in getCrontabs(crontab_type):
             # if no (or wrong) crontab already assigned to the faction get the least populated one
-            cn = {c: len(RevivesReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
+            cn = {c: len(RevivesReport.objects.filter(crontab=c).only("crontab")) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             # if faction allready on a crontab assign the same
@@ -3030,8 +3164,7 @@ class RevivesReport(models.Model):
         return self.crontab
 
     def getRevives(self):
-        """ Fill report with revives
-        """
+        """Fill report with revives"""
         # handle live report
         if self.live:
             self.end = tsnow()
@@ -3054,7 +3187,7 @@ class RevivesReport(models.Model):
         # check if not running for too long
         week = 60 * 60 * 24 * 7
         if self.last - self.start > week:
-            weekAgo = tsnow() - week
+            tsnow() - week
             self.computing = False
             self.crontab = 0
             # self.revive_set.filter(timestamp__gt=weekAgo).delete()
@@ -3073,7 +3206,7 @@ class RevivesReport(models.Model):
         # get the keys and init the attacks dict
         apiRevives = {}
         keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
-        nKeys = len(keys)
+        len(keys)
 
         if not keys:
             print("{} no key".format(self))
@@ -3105,8 +3238,8 @@ class RevivesReport(models.Model):
 
             # in case there is an API error
             if "apiError" in req:
-                print('{} api key error: {}'.format(self, req['apiError']))
-                if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} api key error: {}".format(self, req["apiError"]))
+                if req["apiErrorCode"] in API_CODE_DELETE:
                     print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
                     faction.delKey(key=key)
                     self.state = -2
@@ -3123,7 +3256,7 @@ class RevivesReport(models.Model):
             print("{} cache = {}s".format(self, cache))
             # in case cache
             if cache > CACHE_RESPONSE:
-                print('{} probably cached response... (blank turn)'.format(self))
+                print("{} probably cached response... (blank turn)".format(self))
                 self.state = -4
                 self.save()
                 return -4
@@ -3136,15 +3269,15 @@ class RevivesReport(models.Model):
                     n += 1
                 tsl = max(tsl, r["timestamp"])
 
-            print(f'{self}\t adding {n} attacks')
-            print(f'{self}\t last time {timestampToDate(tsl)}')
+            print(f"{self}\t adding {n} attacks")
+            print(f"{self}\t last time {timestampToDate(tsl)}")
             if not n:
-                print(f'{self}\t escape loop because no new revives')
+                print(f"{self}\t escape loop because no new revives")
                 break
 
         # in case empty payload
         if not len(apiRevives):
-            print('{} empty payload'.format(self))
+            print("{} empty payload".format(self))
             self.computing = False
             self.crontab = 0
             self.state = -5
@@ -3166,7 +3299,7 @@ class RevivesReport(models.Model):
             before = int(v["timestamp"]) - self.last
             after = int(v["timestamp"]) - tse
             if before < 0 or after > 0:
-                print("{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
+                print(r"{} /!\ ts out of bound: before = {} after = {}".format(self, before, after))
 
             # flatten last action
             v["target_last_action_status"] = v["target_last_action"].get("status", "Unknown")
@@ -3228,11 +3361,11 @@ class RevivesReport(models.Model):
         self.revivesReceived = tmp.count()
         self.revivesReceivedSuccess = tmp.filter(result=True).count()
 
-        print(f'[YATA {datestr()}] {self} include failed: {self.include_failed}')
+        print(f"[YATA {datestr()}] {self} include failed: {self.include_failed}")
         if not self.include_failed:
             allRevives = allRevives.exclude(result=False)
 
-        print(f'[YATA {datestr()}] {self} include early: {self.include_early}')
+        print(f"[YATA {datestr()}] {self} include early: {self.include_early}")
         if not self.include_early:
             allRevives = allRevives.exclude(target_early_discharge=True)
 
@@ -3242,8 +3375,16 @@ class RevivesReport(models.Model):
         # create factions and players
         f_set = dict({})
         p_set = dict({})
-        revives_count_types = ["revivesMade", "revivesMadeH", "revivesMadeO", "revivesMadeB",
-                               "revivesReceived", "revivesReceivedH", "revivesReceivedO", "revivesReceivedB"]
+        revives_count_types = [
+            "revivesMade",
+            "revivesMadeH",
+            "revivesMadeO",
+            "revivesMadeB",
+            "revivesReceived",
+            "revivesReceivedH",
+            "revivesReceivedO",
+            "revivesReceivedB",
+        ]
         for revive in allRevives:
 
             online = 1 if revive.target_last_action_status in ["Online"] else 0
@@ -3258,20 +3399,42 @@ class RevivesReport(models.Model):
                 n[1] = n[1] + hospitalized
                 n[2] = n[2] + online
                 n[3] = n[3] + both
-                m = [f_set[revive.reviver_faction][f'{k}Success'] for k in revives_count_types]
+                m = [f_set[revive.reviver_faction][f"{k}Success"] for k in revives_count_types]
                 m[0] = m[0] + (1 * int(success))
                 m[1] = m[1] + (hospitalized * int(success))
                 m[2] = m[2] + (online * int(success))
                 m[3] = m[3] + (both * int(success))
             else:
                 n = [1, hospitalized, online, both, 0, 0, 0, 0]
-                m = [1 * int(success), hospitalized * int(success), online * int(success), both * int(success), 0, 0, 0, 0]
+                m = [
+                    1 * int(success),
+                    hospitalized * int(success),
+                    online * int(success),
+                    both * int(success),
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
             f_set[revive.reviver_faction] = {
-                "faction_id": revive.reviver_faction, "faction_name": revive.reviver_factionname,
-                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
-                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
-                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7],
+                "faction_id": revive.reviver_faction,
+                "faction_name": revive.reviver_factionname,
+                "revivesMade": n[0],
+                "revivesMadeH": n[1],
+                "revivesMadeO": n[2],
+                "revivesMadeB": n[3],
+                "revivesReceived": n[4],
+                "revivesReceivedH": n[5],
+                "revivesReceivedO": n[6],
+                "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0],
+                "revivesMadeHSuccess": m[1],
+                "revivesMadeOSuccess": m[2],
+                "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4],
+                "revivesReceivedHSuccess": m[5],
+                "revivesReceivedOSuccess": m[6],
+                "revivesReceivedBSuccess": m[7],
             }
 
             # handle target faction
@@ -3281,20 +3444,42 @@ class RevivesReport(models.Model):
                 n[5] = n[5] + hospitalized
                 n[6] = n[6] + online
                 n[7] = n[7] + both
-                m = [f_set[revive.target_faction][f'{k}Success'] for k in revives_count_types]
+                m = [f_set[revive.target_faction][f"{k}Success"] for k in revives_count_types]
                 m[4] = m[4] + (1 * int(success))
                 m[5] = m[5] + (hospitalized * int(success))
                 m[6] = m[6] + (online * int(success))
                 m[7] = m[7] + (both * int(success))
             else:
                 n = [0, 0, 0, 0, 1, hospitalized, online, both]
-                m = [0, 0, 0, 0, 1 * int(success), hospitalized * int(success), online * int(success), both * int(success)]
+                m = [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1 * int(success),
+                    hospitalized * int(success),
+                    online * int(success),
+                    both * int(success),
+                ]
             f_set[revive.target_faction] = {
-                "faction_id": revive.target_faction, "faction_name": revive.target_factionname,
-                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
-                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
-                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7],
+                "faction_id": revive.target_faction,
+                "faction_name": revive.target_factionname,
+                "revivesMade": n[0],
+                "revivesMadeH": n[1],
+                "revivesMadeO": n[2],
+                "revivesMadeB": n[3],
+                "revivesReceived": n[4],
+                "revivesReceivedH": n[5],
+                "revivesReceivedO": n[6],
+                "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0],
+                "revivesMadeHSuccess": m[1],
+                "revivesMadeOSuccess": m[2],
+                "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4],
+                "revivesReceivedHSuccess": m[5],
+                "revivesReceivedOSuccess": m[6],
+                "revivesReceivedBSuccess": m[7],
             }
 
             # handle reviver player
@@ -3304,21 +3489,44 @@ class RevivesReport(models.Model):
                 n[1] = n[1] + hospitalized
                 n[2] = n[2] + online
                 n[3] = n[3] + both
-                m = [p_set[revive.reviver_id][f'{k}Success'] for k in revives_count_types]
+                m = [p_set[revive.reviver_id][f"{k}Success"] for k in revives_count_types]
                 m[0] = m[0] + (1 * int(success))
                 m[1] = m[1] + (hospitalized * int(success))
                 m[2] = m[2] + (online * int(success))
                 m[3] = m[3] + (both * int(success))
             else:
                 n = [1, hospitalized, online, both, 0, 0, 0, 0]
-                m = [1 * int(success), hospitalized * int(success), online * int(success), both * int(success), 0, 0, 0, 0]
+                m = [
+                    1 * int(success),
+                    hospitalized * int(success),
+                    online * int(success),
+                    both * int(success),
+                    0,
+                    0,
+                    0,
+                    0,
+                ]
             p_set[revive.reviver_id] = {
-                "player_id": revive.reviver_id, "player_name": revive.reviver_name,
-                "player_faction_id": revive.reviver_faction, "player_faction_name": revive.reviver_factionname,
-                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
-                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
-                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7]
+                "player_id": revive.reviver_id,
+                "player_name": revive.reviver_name,
+                "player_faction_id": revive.reviver_faction,
+                "player_faction_name": revive.reviver_factionname,
+                "revivesMade": n[0],
+                "revivesMadeH": n[1],
+                "revivesMadeO": n[2],
+                "revivesMadeB": n[3],
+                "revivesReceived": n[4],
+                "revivesReceivedH": n[5],
+                "revivesReceivedO": n[6],
+                "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0],
+                "revivesMadeHSuccess": m[1],
+                "revivesMadeOSuccess": m[2],
+                "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4],
+                "revivesReceivedHSuccess": m[5],
+                "revivesReceivedOSuccess": m[6],
+                "revivesReceivedBSuccess": m[7],
             }
 
             # handle defender player
@@ -3328,21 +3536,44 @@ class RevivesReport(models.Model):
                 n[5] = n[5] + hospitalized
                 n[6] = n[6] + online
                 n[7] = n[7] + both
-                m = [p_set[revive.target_id][f'{k}Success'] for k in revives_count_types]
+                m = [p_set[revive.target_id][f"{k}Success"] for k in revives_count_types]
                 m[4] = m[4] + (1 * int(success))
                 m[5] = m[5] + (hospitalized * int(success))
                 m[6] = m[6] + (online * int(success))
                 m[7] = m[7] + (both * int(success))
             else:
                 n = [0, 0, 0, 0, 1, hospitalized, online, both]
-                m = [0, 0, 0, 0, 1 * int(success), hospitalized * int(success), online * int(success), both * int(success)]
+                m = [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1 * int(success),
+                    hospitalized * int(success),
+                    online * int(success),
+                    both * int(success),
+                ]
             p_set[revive.target_id] = {
-                "player_id": revive.target_id, "player_name": revive.target_name,
-                "player_faction_id": revive.target_faction, "player_faction_name": revive.target_factionname,
-                "revivesMade": n[0], "revivesMadeH": n[1], "revivesMadeO": n[2], "revivesMadeB": n[3],
-                "revivesReceived": n[4], "revivesReceivedH": n[5], "revivesReceivedO": n[6], "revivesReceivedB": n[7],
-                "revivesMadeSuccess": m[0], "revivesMadeHSuccess": m[1], "revivesMadeOSuccess": m[2], "revivesMadeBSuccess": m[3],
-                "revivesReceivedSuccess": m[4], "revivesReceivedHSuccess": m[5], "revivesReceivedOSuccess": m[6], "revivesReceivedBSuccess": m[7]
+                "player_id": revive.target_id,
+                "player_name": revive.target_name,
+                "player_faction_id": revive.target_faction,
+                "player_faction_name": revive.target_factionname,
+                "revivesMade": n[0],
+                "revivesMadeH": n[1],
+                "revivesMadeO": n[2],
+                "revivesMadeB": n[3],
+                "revivesReceived": n[4],
+                "revivesReceivedH": n[5],
+                "revivesReceivedO": n[6],
+                "revivesReceivedB": n[7],
+                "revivesMadeSuccess": m[0],
+                "revivesMadeHSuccess": m[1],
+                "revivesMadeOSuccess": m[2],
+                "revivesMadeBSuccess": m[3],
+                "revivesReceivedSuccess": m[4],
+                "revivesReceivedHSuccess": m[5],
+                "revivesReceivedOSuccess": m[6],
+                "revivesReceivedBSuccess": m[7],
             }
 
         print(f"[YATA {datestr()}] {self} update factions")
@@ -3405,23 +3636,23 @@ class RevivesFaction(models.Model):
 
     def revivesMadeDisp(self):
         if self.report.filter == 1:
-            return f'{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}'
+            return f"{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}"
         elif self.report.filter == 10:
-            return f'{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}'
+            return f"{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}"
         elif self.report.filter == 11:
-            return f'{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}'
+            return f"{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}"
         else:
-            return f'{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}'
+            return f"{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}"
 
     def revivesReceivedDisp(self):
         if self.report.filter == 1:
-            return f'{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}'
+            return f"{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}"
         elif self.report.filter == 10:
-            return f'{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}'
+            return f"{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}"
         elif self.report.filter == 11:
-            return f'{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}'
+            return f"{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}"
         else:
-            return f'{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}'
+            return f"{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}"
 
 
 class RevivesPlayer(models.Model):
@@ -3462,23 +3693,23 @@ class RevivesPlayer(models.Model):
 
     def revivesMadeDisp(self):
         if self.report.filter == 1:
-            return f'{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}'
+            return f"{self.revivesMadeH:,d} | {self.revivesMadeHSuccess:,d} | {self.revivesMadeH - self.revivesMadeHSuccess:,d}"
         elif self.report.filter == 10:
-            return f'{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}'
+            return f"{self.revivesMadeO:,d} | {self.revivesMadeOSuccess:,d} | {self.revivesMadeO - self.revivesMadeOSuccess:,d}"
         elif self.report.filter == 11:
-            return f'{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}'
+            return f"{self.revivesMadeB:,d} | {self.revivesMadeBSuccess:,d} | {self.revivesMadeB - self.revivesMadeBSuccess:,d}"
         else:
-            return f'{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}'
+            return f"{self.revivesMade:,d} | {self.revivesMadeSuccess:,d} | {self.revivesMade - self.revivesMadeSuccess:,d}"
 
     def revivesReceivedDisp(self):
         if self.report.filter == 1:
-            return f'{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}'
+            return f"{self.revivesReceivedH:,d} | {self.revivesReceivedHSuccess:,d} | {self.revivesReceivedH - self.revivesReceivedHSuccess:,d}"
         elif self.report.filter == 10:
-            return f'{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}'
+            return f"{self.revivesReceivedO:,d} | {self.revivesReceivedOSuccess:,d} | {self.revivesReceivedO - self.revivesReceivedOSuccess:,d}"
         elif self.report.filter == 11:
-            return f'{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}'
+            return f"{self.revivesReceivedB:,d} | {self.revivesReceivedBSuccess:,d} | {self.revivesReceivedB - self.revivesReceivedBSuccess:,d}"
         else:
-            return f'{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}'
+            return f"{self.revivesReceived:,d} | {self.revivesReceivedSuccess:,d} | {self.revivesReceived - self.revivesReceivedSuccess:,d}"
 
 
 class Revive(models.Model):
@@ -3548,7 +3779,7 @@ class ArmoryReport(models.Model):
         crontab_type = "crontabs_armory_report"  # single crontab type for live and reports
         if report is None or report.crontab not in getCrontabs(crontab_type):
             # if no (or wrong) crontab already assigned to the faction get the least populated one
-            cn = {c: len(ArmoryReport.objects.filter(crontab=c).only('crontab')) for c in getCrontabs(crontab_type)}
+            cn = {c: len(ArmoryReport.objects.filter(crontab=c).only("crontab")) for c in getCrontabs(crontab_type)}
             self.crontab = sorted(cn.items(), key=lambda x: x[1])[0][0]
         elif report is not None:
             # if faction allready on a crontab assign the same
@@ -3592,7 +3823,7 @@ class ArmoryReport(models.Model):
         news_ids = json.loads(self.news_ids)
 
         keys = faction.masterKeys.filter(useFact=True).order_by("lastPulled")
-        nKeys = len(keys)
+        len(keys)
 
         if not keys:
             self.computing = False
@@ -3625,8 +3856,8 @@ class ArmoryReport(models.Model):
 
             # in case there is an API error
             if "apiError" in req:
-                print('{} api key error: {}'.format(self, req['apiError']))
-                if req['apiErrorCode'] in API_CODE_DELETE:
+                print("{} api key error: {}".format(self, req["apiError"]))
+                if req["apiErrorCode"] in API_CODE_DELETE:
                     print("{} --> deleting {}'s key from faction (blank turn)".format(self, key.player))
                     faction.delKey(key=key)
                     self.state = -2
@@ -3701,23 +3932,23 @@ class ArmoryReport(models.Model):
                     tsl_funds = max(tsl_funds, r["timestamp"])
                     # print(f'{self}\t news {id} new entry {timestampToDate(r["timestamp"])}')
 
-            print(f'{self}\t tsl_armory {timestampToDate(tsl_armory)} ({tsl_armory})')
-            print(f'{self}\t tsl_funds {timestampToDate(tsl_funds)} ({tsl_funds})')
+            print(f"{self}\t tsl_armory {timestampToDate(tsl_armory)} ({tsl_armory})")
+            print(f"{self}\t tsl_funds {timestampToDate(tsl_funds)} ({tsl_funds})")
 
             if tsl_funds == tsl:
-                print(f'{self}\t tsl_funds unchanged -> tsl = ts_armory')
+                print(f"{self}\t tsl_funds unchanged -> tsl = ts_armory")
                 tsl = tsl_armory
             elif tsl_armory == tsl:
-                print(f'{self}\t tsl_armory unchanged -> tsl = tsl_funds')
+                print(f"{self}\t tsl_armory unchanged -> tsl = tsl_funds")
                 tsl = tsl_funds
             else:
-                print(f'{self}\t tsl_armory and ts_armory changed -> tsl = min(tsl_funds, tsl_armory)')
+                print(f"{self}\t tsl_armory and ts_armory changed -> tsl = min(tsl_funds, tsl_armory)")
                 tsl = min(tsl_funds, tsl_armory)
 
-            print(f'{self}\t adding {new_entries} news ({new_armory} armory, {new_funds} funds)')
-            print(f'{self}\t last time {timestampToDate(tsl)} ({tsl})')
+            print(f"{self}\t adding {new_entries} news ({new_armory} armory, {new_funds} funds)")
+            print(f"{self}\t last time {timestampToDate(tsl)} ({tsl})")
             if not new_entries:
-                print(f'{self}\t escape api key loop because no new news')
+                print(f"{self}\t escape api key loop because no new news")
                 break
 
         # update general information
@@ -3741,13 +3972,13 @@ class ArmoryReport(models.Model):
             "used",  # A member uses an item or a refill
             "deposited",  # A member deposits money, points or an item
             "filled",  # A member fills a blood bag
-            "was"  # A member was given money
+            "was",  # A member was given money
         ]
         CONVERT_TRANSACTIONS = {
             "used": "took",
             "was": "took",
             "deposited": "gave",
-            "filled": "filled"
+            "filled": "filled",
         }
         TRANSACTIONS_IGNORED = [
             "loaned",  # member loans an item
@@ -3755,7 +3986,7 @@ class ArmoryReport(models.Model):
             "retrieved",  # member retrieve an item from another member
             "gave",  # member gives an item to another member
             "opened",  # member opens a cache
-            "adjusted"  # member adjusts vault balance of another member
+            "adjusted",  # member adjusts vault balance of another member
         ]
         # update report
         for news in api_news.values():
@@ -3763,7 +3994,7 @@ class ArmoryReport(models.Model):
             news_timestamp = news["timestamp"]
 
             # get member ID
-            m = re.search('XID=(\d)+', news_string)
+            m = re.search(r"XID=(\d)+", news_string)
             member_id = m[0].split("=")[1]
             member_id = m[0].split("=")[1]
             m = re.search(f'XID={member_id}"?>([A-Za-z0-9-_])+', news_string)
@@ -3773,12 +4004,12 @@ class ArmoryReport(models.Model):
             news_info = [cleanhtml(_) for _ in news_string.split("</a>")[1].replace("items.", "").split()]
             transaction_type = news_info.pop(0)  # used / deposit / filled
 
-            if transaction_type in TRANSACTIONS_IGNORED: # ignored
+            if transaction_type in TRANSACTIONS_IGNORED:  # ignored
                 # print(f'{self} WARNING news transaction ignored: {news_string}')
                 continue
 
-            elif transaction_type not in TRANSACTIONS_HANDLED: # unkown
-                print(f'{self} WARNING news transaction not handeled: {news_string}')
+            elif transaction_type not in TRANSACTIONS_HANDLED:  # unkown
+                print(f"{self} WARNING news transaction not handeled: {news_string}")
                 continue
 
             else:
@@ -3799,7 +4030,6 @@ class ArmoryReport(models.Model):
                 else:
                     continue
 
-
             elif news_info[0].isdigit():  # case: deposited 1 x Lawyer Business Card or gace
                 transaction_number = int(news_info[0])
                 item = " ".join(news_info[2:])
@@ -3813,7 +4043,7 @@ class ArmoryReport(models.Model):
                 item = "money"
 
             else:
-                print(f'{self} WARNING news item not known: {news_string}')
+                print(f"{self} WARNING news item not known: {news_string}")
                 continue
 
             # merge blood bags
@@ -3831,7 +4061,7 @@ class ArmoryReport(models.Model):
             # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
 
             if item_type == "Unknown":
-                print(f'{self} item type not known: {news_string} {item}')
+                print(f"{self} item type not known: {news_string} {item}")
                 # continue
 
             # fill report
@@ -3859,7 +4089,6 @@ class ArmoryReport(models.Model):
         #         print(f'\t{item}')
         #         for member_id, transaction in members.items():
         #             print(f'\t\t{member_id:>9}: {transaction}')
-
 
         # check if not running for too long
         if self.last - self.start > (HISTORY_TIMES.get(faction.armoryHist)):
@@ -4309,6 +4538,7 @@ class Crimes(models.Model):
 
     def get_team_id(self):
         import hashlib
+
         h = hash(tuple(sorted([p[0] for p in self.get_participants()])))
         return int(hashlib.sha256(str(h).encode("utf-8")).hexdigest(), 16) % 10**8
 
@@ -4324,10 +4554,11 @@ class SpyDatabase(models.Model):
     use_api = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.name} [{self.pk}]'
+        return f"{self.name} [{self.pk}]"
 
     def change_name(self):
         from xkcdpass import xkcd_password as xp
+
         wordfile = xp.locate_wordfile()
         words = xp.generate_wordlist(wordfile=wordfile, min_length=3, max_length=6)
         self.name = xp.generate_xkcdpassword(words, acrostic="torn")
@@ -4337,7 +4568,8 @@ class SpyDatabase(models.Model):
         return self.factions.filter(tId=self.master_id).first().name
 
     def change_secret(self):
-        from xkcdpass import xkcd_password as xp
+        pass
+
         self.secret = randomSlug(length=16)
         self.save()
 
@@ -4353,7 +4585,7 @@ class SpyDatabase(models.Model):
 
             # get all factions
             for faction in self.factions.all():
-                print(f'{self} {faction}')
+                print(f"{self} {faction}")
 
                 # first add faction members stats as "spies"
                 members_with_stats = faction.member_set.filter(shareS=1)
@@ -4388,8 +4620,8 @@ class SpyDatabase(models.Model):
                 key.save()
 
                 if "apiError" in req:
-                    print(f'{self} {req["apiError"]}'.format(self, req['apiError']))
-                    if req['apiErrorCode'] in API_CODE_DELETE:
+                    print(f'{self} {req["apiError"]}'.format(self, req["apiError"]))
+                    if req["apiErrorCode"] in API_CODE_DELETE:
                         faction.delKey(key=key)
                     continue
 
@@ -4423,13 +4655,13 @@ class SpyDatabase(models.Model):
                     }
                     new_spies[v["target"]] = optimize_spies(tmp, spy_2=new_spies.get(v["target"], False))
 
-            print(f'{self} Spies from API: {len(new_spies)}')
+            print(f"{self} Spies from API: {len(new_spies)}")
 
         elif payload is not None:
             new_spies = {}
             for target_id, spy in payload.items():
                 new_spies[target_id] = optimize_spies(spy, spy_2=new_spies.get(target_id, False))
-            print(f'{self} Spies from imports: {len(new_spies)}')
+            print(f"{self} Spies from imports: {len(new_spies)}")
 
         # compare old and new
         batch = Spy.objects.bulk_operation()
@@ -4444,12 +4676,12 @@ class SpyDatabase(models.Model):
             # add to all spies for cache
             all_spies[target_id] = opt_spy
 
-        print(f'{self} batch size: {batch.count()}')
+        print(f"{self} batch size: {batch.count()}")
         if batch.count():
             batch.run(batch_size=100)
 
         self.n_spies = len(all_spies)
-        self.update = int(time.time())
+        self.update = tsnow()
         self.save()
 
         # set new cache
@@ -4460,13 +4692,13 @@ class SpyDatabase(models.Model):
     def getSpies(self, cc=False):
         all_spies = cache.get(f"spy-db-{self.secret}")
         if all_spies is None or cc or settings.DEBUG:
-            print(f'{self} [getSpies] database cached: no')
+            print(f"{self} [getSpies] database cached: no")
             all_spies = {}
             for spy in self.spy_set.all():
                 all_spies[spy.target_id] = spy.dictionnary()
             cache.set(f"spy-db-{self.secret}", all_spies, 3600)
         else:
-            print(f'{self} [getSpies] database cached: yes')
+            print(f"{self} [getSpies] database cached: yes")
 
         return all_spies
 
@@ -4498,8 +4730,7 @@ class Spy(models.Model):
     objects = BulkManager()
 
     def __str__(self):
-        return f'Spy {self.target_name} [{self.target_id}]'
-
+        return f"Spy {self.target_name} [{self.target_id}]"
 
     def dictionnary(self):
         v = {
@@ -4516,7 +4747,7 @@ class Spy(models.Model):
             "update": self.update,
             "target_name": self.target_name,
             "target_faction_name": self.target_faction_name,
-            "target_faction_id": self.target_faction_id
+            "target_faction_id": self.target_faction_id,
         }
         return v
 
@@ -4581,10 +4812,10 @@ class FactionTarget(models.Model):
     objects = BulkManager()
 
     def __str__(self):
-        return f'Target {self.name} [{self.target_id}]'
+        return f"Target {self.name} [{self.target_id}]"
 
     def updateFromApi(self, req):
-        if 'apiError' in req:
+        if "apiError" in req:
             return True, self
 
         self.name = req.get("name", "?")
@@ -4609,12 +4840,12 @@ class FactionTarget(models.Model):
         else:
 
             # custom description
-            status_description = req['status']['description']
-            status_state = req['status']['state']
+            status_description = req["status"]["description"]
+            status_state = req["status"]["state"]
             if status_state == "Hospital":
                 try:
                     _, time = status_description.split(" for ")
-                    status_description = f'H for {time}'
+                    status_description = f"H for {time}"
                 except ValueError:
                     # probably flying back after hosp... needs to be refreshed
                     status_description = "Unknown (refresh)"
@@ -4623,7 +4854,7 @@ class FactionTarget(models.Model):
                 status_description = status_description.replace("In jail", "J")
                 dibs = False
             elif status_state in ["Traveling", "Abroad"]:
-                req['status']['details'] = status_description
+                req["status"]["details"] = status_description
                 status_description = status_state
                 dibs = False
             else:

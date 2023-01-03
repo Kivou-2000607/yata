@@ -183,8 +183,8 @@ def optimize_spies(spy_1, spy_2=False):
 
 
 def modifiers2lvl1(v):
-    for tmpKey in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus"]:
-        v[tmpKey] = float(v["modifiers"][tmpKey])
+    for tmpKey in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "warlord_bonus"]:
+        v[tmpKey] = float(v['modifiers'].get(tmpKey, 1))
     del v["modifiers"]
     if v["stealthed"] and v["attacker_id"] == "":
         v["attacker_id"] = 0
