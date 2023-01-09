@@ -1,58 +1,60 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
+# Copyright 2019 kivou.2000607@gmail.com
+#
+# This file is part of yata.
+#
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+#
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
-This file is part of yata.
 
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
-
-from django.utils import timezone
-
-from yata.handy import *
-from faction.models import *
-from player.models import Player
-
-import requests
-import time
-import numpy
 import json
-import random
 
+from yata.handy import apiCall, tsnow
 
 # global bonus hits
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 API_CODE_DELETE = [2, 7, 13, 16]
-OC_EFFICIENCY = {1: {"money": 5000, "respect": 1.0}, 2: {"money": 8750, "respect": 1.25}, 3: {"money": 16667, "respect": 1.11}, 4: {"money": 30000, "respect": 1.2}, 5: {"money": 141667, "respect": 1.17}, 6: {"money": 305556, "respect": 0.89}, 7: {"money": 892857, "respect": 1.79}, 8: {"money": 9375000, "respect": 9.38}}
+OC_EFFICIENCY = {
+    1: {"money": 5000, "respect": 1.0},
+    2: {"money": 8750, "respect": 1.25},
+    3: {"money": 16667, "respect": 1.11},
+    4: {"money": 30000, "respect": 1.2},
+    5: {"money": 141667, "respect": 1.17},
+    6: {"money": 305556, "respect": 0.89},
+    7: {"money": 892857, "respect": 1.79},
+    8: {"money": 9375000, "respect": 9.38},
+}
 
 
 POSTER_WIDTH = 750
+
 
 def getBonusHits(hitNumber, ts):
     # new report timestamp based on ched annoncement date
     # https://www.torn.com/forums.php#!p=threads&t=16067103
     import datetime
     import time
+
     if int(ts) < int(time.mktime(datetime.datetime(2018, 10, 30, 15, 00).timetuple())):
         # bonus respect values are 4.2*2**n
-        return 4.2 * 2**(1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+        return 4.2 * 2 ** (1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
     else:
         # bonus respect values are 10*2**(n-1)
-        return 10 * 2**(int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+        return 10 * 2 ** (int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
 
 
 def getCrontabs(type):
     from faction.models import FactionData
+
     data = FactionData.objects.only(type).first()
     crontabs = [] if data is None else json.loads(getattr(data, type))
     return crontabs if len(crontabs) else [0]
@@ -66,7 +68,7 @@ def optimize_spies(spy_1, spy_2=False):
         spy = {}
         for k in bs_keys:
             spy[k] = max(spy_1[k], spy_2[k])
-            spy[f'{k}_timestamp'] = max(spy_1[f'{k}_timestamp'], spy_2[f'{k}_timestamp'])
+            spy[f"{k}_timestamp"] = max(spy_1[f"{k}_timestamp"], spy_2[f"{k}_timestamp"])
     else:
         spy = spy_1
 
@@ -79,9 +81,12 @@ def optimize_spies(spy_1, spy_2=False):
 
     # TODO: more fancy checks based in timestamps
 
-
     # Add faction and name
-    for k, d in [("target_name", "Player"), ("target_faction_name", "Faction"), ("target_faction_id", 0)]:
+    for k, d in [
+        ("target_name", "Player"),
+        ("target_faction_name", "Faction"),
+        ("target_faction_id", 0),
+    ]:
         if spy_2:  # in case of both
             if spy_1.get(k, d) != d and spy_2.get(k, d) != d:  # priority to spy_1
                 spy[k] = spy_1.get(k, d)
@@ -97,8 +102,7 @@ def optimize_spies(spy_1, spy_2=False):
         # in case of empty entry put default
         spy[k] = spy[k] if spy[k] else d
 
-
-    spy["update"] = max([spy[f'{k}_timestamp'] for k in bs_keys])
+    spy["update"] = max([spy[f"{k}_timestamp"] for k in bs_keys])
     return spy
 
 
@@ -183,8 +187,16 @@ def optimize_spies(spy_1, spy_2=False):
 
 
 def modifiers2lvl1(v):
-    for tmpKey in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "warlord_bonus"]:
-        v[tmpKey] = float(v['modifiers'].get(tmpKey, 1))
+    for tmpKey in [
+        "fair_fight",
+        "war",
+        "retaliation",
+        "group_attack",
+        "overseas",
+        "chain_bonus",
+        "warlord_bonus",
+    ]:
+        v[tmpKey] = float(v["modifiers"].get(tmpKey, 1))
     del v["modifiers"]
     if v["stealthed"] and v["attacker_id"] == "":
         v["attacker_id"] = 0
@@ -293,29 +305,28 @@ def modifiers2lvl1(v):
 
 
 def updatePoster(faction):
-    from django.conf import settings
-    import os
-    from PIL import Image
-    from PIL import ImageDraw
-    from PIL import ImageFont
     import html
-
+    import os
     from io import BytesIO
+
+    from django.conf import settings
     from django.core.files.base import ContentFile
+    from PIL import Image, ImageDraw, ImageFont
 
     from faction.models import FONT_DIR
 
-    url = os.path.join(settings.MEDIA_ROOT, f"poster/{faction.tId}.png")
+    # url = os.path.join(settings.MEDIA_ROOT, f"poster/{faction.tId}.png")
 
-    bridge = {"Criminality": 0,
-              "Fortitude": 1,
-              "Voracity": 2,
-              "Toleration": 3,
-              "Excursion": 4,
-              "Steadfast": 5,
-              "Aggression": 6,
-              "Suppression": 7,
-              }
+    bridge = {
+        "Criminality": 0,
+        "Fortitude": 1,
+        "Voracity": 2,
+        "Toleration": 3,
+        "Excursion": 4,
+        "Steadfast": 5,
+        "Aggression": 6,
+        "Suppression": 7,
+    }
 
     posterOpt = json.loads(faction.posterOpt)
 
@@ -329,8 +340,8 @@ def updatePoster(faction):
         return 0
 
     # call for upgrades
-    req = apiCall('faction', faction.tId, 'basic,upgrades', key.value, verbose=False)
-    if 'apiError' in req and req['apiErrorCode'] in API_CODE_DELETE:
+    req = apiCall("faction", faction.tId, "basic,upgrades", key.value, verbose=False)
+    if "apiError" in req and req["apiErrorCode"] in API_CODE_DELETE:
         faction.delKey(key=key)
         return 0
 
@@ -351,20 +362,18 @@ def updatePoster(faction):
     for upgrades_type, upgrades in all_upgrades.items():
         if upgrades_type not in trees:
             trees[upgrades_type] = dict({})
-        for _, upgrade in sorted(upgrades.items(),
-                                 key=lambda x: x[1]['branchorder'],
-                                 reverse=False):
-            if upgrade['branch'] != 'Core':
-                if trees[upgrades_type].get(upgrade['branch']) is None:
-                    trees[upgrades_type][upgrade['branch']] = dict({})
-                trees[upgrades_type][upgrade['branch']][upgrade['name']] = upgrade
+        for _, upgrade in sorted(upgrades.items(), key=lambda x: x[1]["branchorder"], reverse=False):
+            if upgrade["branch"] != "Core":
+                if trees[upgrades_type].get(upgrade["branch"]) is None:
+                    trees[upgrades_type][upgrade["branch"]] = dict({})
+                trees[upgrades_type][upgrade["branch"]][upgrade["name"]] = upgrade
 
     # create image background
-    background = tuple(posterOpt.get('background', (0, 0, 0, 0)))
-    main = Image.new('RGBA', (5000, 5000), color=background)
+    background = tuple(posterOpt.get("background", (0, 0, 0, 0)))
+    main = Image.new("RGBA", (5000, 5000), color=background)
 
     # choose font
-    fontFamily = posterOpt.get('fontFamily', [0])[0]
+    fontFamily = posterOpt.get("fontFamily", [0])[0]
     fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(FONT_DIR)))}
     if fontFamily not in fntId:
         fontFamily = 0
@@ -375,7 +384,7 @@ def updatePoster(faction):
     fnt = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1])
     d = ImageDraw.Draw(main)
 
-    fontColor = tuple(posterOpt.get('fontColor', (0, 0, 0, 255)))
+    fontColor = tuple(posterOpt.get("fontColor", (0, 0, 0, 255)))
 
     # FACTION PERKS POSTER
 
@@ -388,7 +397,7 @@ def updatePoster(faction):
     d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
 
-    iconType = posterOpt.get('iconType', [0])[0]
+    iconType = posterOpt.get("iconType", [0])[0]
     for upgrades_type, tree in trees.items():
         txt = upgrades_type.title()
         d.text((20, 10 + y), txt, font=fntBig, fill=fontColor)
@@ -398,7 +407,12 @@ def updatePoster(faction):
 
         # print('[function.chain.factionTree] {}'.format(upgrades_type))
         for branch, upgrades in tree.items():
-            icon = Image.open(os.path.join(settings.SRC_ROOT, f'posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png'))
+            icon = Image.open(
+                os.path.join(
+                    settings.SRC_ROOT,
+                    f"posters/tier_unlocks_b{bridge[branch]}_t{iconType}.png",
+                )
+            )
             icon = icon.convert("RGBA")
             main.paste(icon, (10, y), mask=icon)
             txt = ""
@@ -454,25 +468,24 @@ def updatePoster(faction):
             faction.posterHeadImg.delete()
             faction.save()
 
-    poster = Image.new('RGBA', (POSTER_WIDTH, full_height), color=background)
+    poster = Image.new("RGBA", (POSTER_WIDTH, full_height), color=background)
 
     for i, img_tmp in enumerate(full_poster):
-        y = y + full_poster[i-1].size[1] if i else 0
+        y = y + full_poster[i - 1].size[1] if i else 0
         poster.paste(img_tmp, (0, y))
 
     f = BytesIO()
     try:
         faction.posterImg.delete()
 
-        poster.save(f, format='png')
-        faction.posterImg.save(f'posters/{faction.tId}.png', ContentFile(f.getvalue()))
-        faction.posterImg.name = f'posters/{faction.tId}.png'
+        poster.save(f, format="png")
+        faction.posterImg.save(f"posters/{faction.tId}.png", ContentFile(f.getvalue()))
+        faction.posterImg.name = f"posters/{faction.tId}.png"
     finally:
         f.close()
 
-
     # FACTION GYM POSTER
-    img_gym = Image.new('RGBA', (5000, 5000), color=background)
+    img_gym = Image.new("RGBA", (5000, 5000), color=background)
     gym_perks = {"STR": 0, "SPE": 0, "DEF": 0, "DEX": 0}
     gym_state = "peace" if "current" not in trees else "current"
     for k, v in trees.get(gym_state, {}).get("Steadfast", {}).items():
@@ -480,19 +493,19 @@ def updatePoster(faction):
         gym_perks[stat_type] = v["level"]
 
     d = ImageDraw.Draw(img_gym)
-    sep = [' ', '\n', ' ', '']
-    txt = ''.join(f'{k} {v}%{s}' for s, (k, v) in zip(sep, gym_perks.items()))
+    sep = [" ", "\n", " ", ""]
+    txt = "".join(f"{k} {v}%{s}" for s, (k, v) in zip(sep, gym_perks.items()))
     d.text((10, 5), txt, font=fntBig, fill=fontColor)
     x, y = d.textsize(txt, font=fntBig)
-    img_gym = img_gym.crop((0, 0, x + 20 , y + 20))
+    img_gym = img_gym.crop((0, 0, x + 20, y + 20))
 
     f = BytesIO()
     try:
         faction.posterGymImg.delete()
 
-        img_gym.save(f, format='png')
-        faction.posterGymImg.save(f'posters/{faction.tId}-gym.png', ContentFile(f.getvalue()))
-        faction.posterGymImg.name = f'posters/{faction.tId}-gym.png'
+        img_gym.save(f, format="png")
+        faction.posterGymImg.save(f"posters/{faction.tId}-gym.png", ContentFile(f.getvalue()))
+        faction.posterGymImg.name = f"posters/{faction.tId}-gym.png"
     finally:
         f.close()
 

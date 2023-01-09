@@ -1,63 +1,61 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
+# Copyright 2019 kivou.2000607@gmail.com
+#
+# This file is part of yata.
+#
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+#
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
-
-from django.core.exceptions import ValidationError
 
 from django import forms
+from django.core.exceptions import ValidationError
+
 from faction.models import Faction
 
 
 class PosterHeadForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["posterHeadImg"].required = True
 
     def clean_posterHeadImg(self):
-        data = self.cleaned_data['posterHeadImg']
+        data = self.cleaned_data["posterHeadImg"]
         print(data)
         if data is not None:
-            if data.size > 500*1024:
+            if data.size > 500 * 1024:
                 print("error head")
-                raise ValidationError("Image size > 500kb", code='invalid')
+                raise ValidationError("Image size > 500kb", code="invalid")
             return data
 
     class Meta:
         model = Faction
-        fields = ('posterHeadImg', )
+        fields = ("posterHeadImg",)
 
 
 class PosterTailForm(forms.ModelForm):
-
     def clean_posterTailImg(self):
-        data = self.cleaned_data['posterTailImg']
+        data = self.cleaned_data["posterTailImg"]
         print(data)
         if data is not None:
-            if data.size > 500*1024:
+            if data.size > 500 * 1024:
                 print("error tail")
-                raise ValidationError("Image size > 500kb", code='invalid')
+                raise ValidationError("Image size > 500kb", code="invalid")
             return data
 
     class Meta:
         model = Faction
-        fields = ('posterTailImg', )
+        fields = ("posterTailImg",)
+
 
 #
 #

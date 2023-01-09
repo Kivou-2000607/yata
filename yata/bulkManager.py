@@ -1,7 +1,9 @@
 from collections import defaultdict
+
 from django.apps import apps
 
-class BulkdManager(object):
+
+class BulkdManager:
     def __init__(self, chunk_size=100):
         self._create_queues = defaultdict(list)
         self.chunk_size = chunk_size
