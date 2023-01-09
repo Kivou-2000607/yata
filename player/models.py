@@ -17,32 +17,27 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.db import models
-from django.core.cache import cache
-
 import json
-import numpy
 import time
 
-from yata.handy import apiCall
-from yata.handy import tsnow
+from django.core.cache import cache
+from django.db import models
 
+from yata.handy import apiCall, tsnow
 
 SECTION_CHOICES = (
-    ('all', 'all'),
-    ('player', 'player'),
-    ('bazaar', 'bazaar'),
-    ('faction', 'faction'),
-    ('target', 'target'),
-    ('awards', 'awards'),
-    ('stock', 'stock'),
-    ('company', 'company'),
-    ('loot', 'loot'))
+    ("all", "all"),
+    ("player", "player"),
+    ("bazaar", "bazaar"),
+    ("faction", "faction"),
+    ("target", "target"),
+    ("awards", "awards"),
+    ("stock", "stock"),
+    ("company", "company"),
+    ("loot", "loot"),
+)
 
-LEVEL_CHOICES = (
-    ('notice', 'notice'),
-    ('warning', 'warning'),
-    ('error', 'error'))
+LEVEL_CHOICES = (("notice", "notice"), ("warning", "warning"), ("error", "error"))
 
 
 class Player(models.Model):
@@ -119,9 +114,8 @@ class Player(models.Model):
 
     def save(self, *args, **kwargs):
         # add to cache
-        cache.set(f'player-by-id-{self.tId}', self, 3600)
-        super(Player, self).save(*args, **kwargs)
-
+        cache.set(f"player-by-id-{self.tId}", self, 3600)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.tId)
@@ -165,7 +159,7 @@ class Player(models.Model):
         key = self.key_set.first()
 
         if not key:
-            print(f'[updateKeyLevel] {self}: no keys found')
+            print(f"[updateKeyLevel] {self}: no keys found")
             self.key_level = -1
             self.validKey = False
             self.save()
@@ -174,7 +168,7 @@ class Player(models.Model):
         # get api Key Info
         key_data = apiCall("key", "", "info", key.value)
 
-        if 'apiError' in key_data:
+        if "apiError" in key_data:
             # 0 => Unknown error : Unhandled error, should not occur.
             # 1 => Key is empty : Private key is empty in current request.
             # 2 => Incorrect Key : Private key is wrong/incorrect format.
@@ -231,11 +225,11 @@ class Player(models.Model):
     def update_discord_id(self):
         error = False
         discord = apiCall("user", "", "discord", self.getKey())
-        if 'apiError' in discord:
+        if "apiError" in discord:
             error = {"apiErrorSub": discord["apiError"]}
         else:
-            dId = discord.get('discord', {'discordID': ''})['discordID']
-            self.dId = 0 if dId in [''] else dId
+            dId = discord.get("discord", {"discordID": ""})["discordID"]
+            self.dId = 0 if dId in [""] else dId
             self.save()
 
         return error
@@ -260,7 +254,7 @@ class Player(models.Model):
         for k, v in invtmp.items():
             if v is None:
                 invtmp[k] = dict({})
-        if 'apiError' in invtmp:
+        if "apiError" in invtmp:
             cache.set(f"bazaar-inventory-{self.tId}", inventory, 60)
             return invtmp
         else:
@@ -272,9 +266,8 @@ class Player(models.Model):
         return inventory
 
     def getAwards(self, userInfo=dict({}), force=False):
+        from awards.functions import AWARDS_CAT, createAwards
         from awards.models import AwardsData
-        from awards.functions import AWARDS_CAT
-        from awards.functions import createAwards
 
         # get torn awards
         awardsTorn = AwardsData.objects.first().loadAPICall()
@@ -289,16 +282,21 @@ class Player(models.Model):
 
                 else:
                     userInfo = dict({})
-                    error = {'apiError': "Your data can't be found in the database."}
+                    error = {"apiError": "Your data can't be found in the database."}
 
             if not len(userInfo) or force:
-                req = apiCall('user', '', 'personalstats,crimes,education,battlestats,workstats,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof', self.getKey())
-                if 'apiError' not in req:
+                req = apiCall(
+                    "user",
+                    "",
+                    "personalstats,crimes,education,battlestats,workstats,skills,perks,gym,networth,merits,profile,medals,honors,icons,bars,weaponexp,hof",
+                    self.getKey(),
+                )
+                if "apiError" not in req:
                     self.awardsUpda = tsnow()
                     defaults = {"req": json.dumps(req), "timestamp": tsnow()}
                     try:
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
-                    except BaseException as e:
+                    except BaseException:
                         self.tmpreq_set.filter(type="awards").delete()
                         self.tmpreq_set.update_or_create(type="awards", defaults=defaults)
 
@@ -345,7 +343,10 @@ class Player(models.Model):
             if not i:
                 break
 
-        summaryByType["AllAwards"] = {"nAwarded": len(myHonors) + len(myMedals), "nAwards": len(honors) + len(medals)}
+        summaryByType["AllAwards"] = {
+            "nAwarded": len(myHonors) + len(myMedals),
+            "nAwards": len(honors) + len(medals),
+        }
         summaryByType["AllHonors"] = {"nAwarded": len(myHonors), "nAwards": len(honors)}
         summaryByType["AllMedals"] = {"nAwarded": len(myMedals), "nAwards": len(medals)}
 
@@ -357,10 +358,21 @@ class Player(models.Model):
             if v.get("achieve", 0) == 1:
                 rScorePerso += v.get("rScore", 0)
 
-        awardsPlayer = {"userInfo": userInfo,
-                        "awards": awards,
-                        "pinnedAwards": pinnedAwards,
-                        "summaryByType": dict({k: v for k, v in sorted(summaryByType.items(), key=lambda x: x[1]['nAwarded'], reverse=True)})}
+        awardsPlayer = {
+            "userInfo": userInfo,
+            "awards": awards,
+            "pinnedAwards": pinnedAwards,
+            "summaryByType": dict(
+                {
+                    k: v
+                    for k, v in sorted(
+                        summaryByType.items(),
+                        key=lambda x: x[1]["nAwarded"],
+                        reverse=True,
+                    )
+                }
+            ),
+        }
 
         if self.tId > 0 and not error:
             self.awardsScor = int(rScorePerso * 10000)
@@ -370,7 +382,7 @@ class Player(models.Model):
         return awardsPlayer, awardsTorn, error
 
     def awardsInfo(self):
-        return "{:.4f}".format(self.awardsScor / 10000.)
+        return "{:.4f}".format(self.awardsScor / 10000.0)
 
     def getMerits(self, req=None, init=False):
         if req is None:
@@ -384,35 +396,110 @@ class Player(models.Model):
             else:
                 merits[k] = {"level": v, "fix": v}
             if k == "Nerve Bar":
-                merits[k]["description"] = ["Increases maximum nerve bar by", [1], [""], " points."]
+                merits[k]["description"] = [
+                    "Increases maximum nerve bar by",
+                    [1],
+                    [""],
+                    " points.",
+                ]
             elif k == "Critical Hit Rate":
-                merits[k]["description"] = ["Increases critical hit rate by", [0.5], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases critical hit rate by",
+                    [0.5],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Life Points":
-                merits[k]["description"] = ["Constantly modifies life by", [5], ["%"], "."]
+                merits[k]["description"] = [
+                    "Constantly modifies life by",
+                    [5],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Crime Experience":
-                merits[k]["description"] = ["Increases crime success ability by", [3], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases crime success ability by",
+                    [3],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Education Length":
-                merits[k]["description"] = ["Decreases education course length by", [2], ["%"], "."]
+                merits[k]["description"] = [
+                    "Decreases education course length by",
+                    [2],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Awareness":
-                merits[k]["description"] = ["Increases frequency of items appearing in the city by", [20], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases frequency of items appearing in the city by",
+                    [20],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Bank Interest":
-                merits[k]["description"] = ["Increases bank interest by", [5], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases bank interest by",
+                    [5],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Masterful Looting":
-                merits[k]["description"] = ["Increases money gained from mugging by", [5], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases money gained from mugging by",
+                    [5],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Stealth":
-                merits[k]["description"] = ["Increases stealth during outgoing attacks by", [0.2], [""], "."]
+                merits[k]["description"] = [
+                    "Increases stealth during outgoing attacks by",
+                    [0.2],
+                    [""],
+                    ".",
+                ]
             elif k == "Hospitalizing":
-                merits[k]["description"] = ["Increases hospitalization time by", [5], ["%"], "."]
+                merits[k]["description"] = [
+                    "Increases hospitalization time by",
+                    [5],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Addiction Mitigation":
-                merits[k]["description"] = ["Reduces the negative effects of addiction by", [2], ["%"], "."]
+                merits[k]["description"] = [
+                    "Reduces the negative effects of addiction by",
+                    [2],
+                    ["%"],
+                    ".",
+                ]
             elif k == "Employee Effectiveness":
-                merits[k]["description"] = ["Increases employee effectiveness by", [1], [""], "."]
+                merits[k]["description"] = [
+                    "Increases employee effectiveness by",
+                    [1],
+                    [""],
+                    ".",
+                ]
             elif k in ["Brawn", "Protection", "Sharpness", "Evasion"]:
-                b = {"Brawn": "strength", "Protection": "defense", "Evasion": "dexterity", "Sharpness": "speed"}
-                merits[k]["description"] = ["Passive bonus of", [3], ["%"], " in {}.".format(b.get(k))]
+                b = {
+                    "Brawn": "strength",
+                    "Protection": "defense",
+                    "Evasion": "dexterity",
+                    "Sharpness": "speed",
+                }
+                merits[k]["description"] = [
+                    "Passive bonus of",
+                    [3],
+                    ["%"],
+                    " in {}.".format(b.get(k)),
+                ]
             elif k.split(" ")[-1] == "Mastery":
                 # merits[k]["description"] = ["Increases damage and accuracy of {} by".format(k.replace(" Mastery", "").lower()), [1, 0.2], ["%", ""], " respectively."]
-                merits[k]["description"] = ["Increases damage and accuracy by", [1, 0.2], ["%", ""], "."]
+                merits[k]["description"] = [
+                    "Increases damage and accuracy by",
+                    [1, 0.2],
+                    ["%", ""],
+                    ".",
+                ]
 
         # Critical Hit Rate - *Increases critical hit rate by 0.5%*
         # Awareness - *Increases frequency of items appearing in the city by *20%
@@ -421,16 +508,24 @@ class Player(models.Model):
 
         return merits
 
-
     def getPersonalstats(self, req=None):
         from player.personalstats_dic import d as personalstats_dic
+
         if req is None:
             return dict({})
 
         personnalstats = dict({})
 
         for k, v in req.items():
-            s = personalstats_dic.get(k, {"category": "New entries", "sub": "default", "type": "integer", "name": k})
+            s = personalstats_dic.get(
+                k,
+                {
+                    "category": "New entries",
+                    "sub": "default",
+                    "type": "integer",
+                    "name": k,
+                },
+            )
             if s["category"] not in personnalstats:
                 personnalstats[s["category"]] = [[], dict({})]
             if s["sub"] == "default":
@@ -445,6 +540,7 @@ class Player(models.Model):
 
         return personnalstats
 
+
 class Message(models.Model):
     section = models.CharField(default="all", max_length=16, choices=SECTION_CHOICES)
     level = models.CharField(default="notice", max_length=16, choices=LEVEL_CHOICES)
@@ -452,6 +548,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message {self.pk} in {self.section}"
+
 
 class Donation(models.Model):
     event = models.CharField(max_length=512)
