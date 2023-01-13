@@ -26,6 +26,7 @@ Create a local .env file
     DEBUG=True
     SECRET_KEY="xxx"
     ALLOWED_HOSTS="*"
+    LOG_KEY="xxx"
 
     # Database selection
     DATABASE=sqlite
