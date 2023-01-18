@@ -42,7 +42,8 @@ This file is part of yata.
     </td>
     <td class="text-center" data-val="{{target.life_current}}">
         <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
-            <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
+            <span style="width: {% life_percentage target.life_current target.life_maximum %}%;"></span>
+
         </div>
     </td>
     {% if target.status_color == "blue" %}

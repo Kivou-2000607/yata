@@ -46,7 +46,7 @@ This file is part of yata.
     {# <td class="text-center">{{target.flat_respect|mul:target.fair_fight|floatformat:2}}</td> #}
     <td class="text-center" data-val="{{target.life_current}}">
         <div class="life-bar" title="{{target.life_current}}/{{target.life_maximum}}">
-            <span style="width: {{target.life_current|div:target.life_maximum|mul:100|floatformat:0}}%;"></span>
+            <span style="width: {% life_percentage target.life_current target.life_maximum %}%;"></span>
         </div>
     </td>
     <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
