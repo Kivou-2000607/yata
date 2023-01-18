@@ -2495,18 +2495,20 @@ def attacksExport(request, reportId, type):
                     [
                         "Player Id",
                         "Player Name",
-                        "Outgoing Win",
+                        "Outgoing Leave",
                         "Outgoing Mug",
                         "Outgoing Hosp",
                         "Outgoing War",
                         "Outgoing Win",
+                        "Outgoing Assist",
                         "Outgoing Lost",
                         "Outgoing Total",
-                        "Incoming Win",
+                        "Incoming Leave",
                         "Incoming Mug",
                         "Incoming Hosp",
                         "Incoming War",
                         "Incoming Win",
+                        "Incoming Assist",
                         "Incoming Lost",
                         "Incoming Total",
                     ]
@@ -2514,7 +2516,11 @@ def attacksExport(request, reportId, type):
 
                 players = report.getMembersBreakdown()
                 for k, v in players:
-                    # (id, {'name': 'Name', 'out': [40, 2, 1, 0, 43, 1, 44], 'in': [0, 0, 0, 0, 0, 1, 1]})
+                    # v = {
+                    #         'name': 'Name',
+                    #         'out': [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total],
+                    #         'in': [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
+                    # }
                     data = [k, v["name"]]
                     for _ in v["out"]:
                         data.append(_)
