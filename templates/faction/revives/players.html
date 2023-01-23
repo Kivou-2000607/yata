@@ -37,7 +37,7 @@ This file is part of yata.
     {% if players|length %}
         {% for p in players %}
             <tr>
-                <td class="a">{{p.player_name|playerURL:p.player_id|safe}}</td>
+                <td class="a">{{p.player_name|playerURLShort:p.player_id|safe}}</td>
                 <td class="b">{{p.player_faction_name|factionURLShort:p.player_faction_id|safe}}</td>
                 <td class="c" title='{% include "faction/revives/players-tooltip.html" with type=0%}'>{{p.revivesMadeDisp}}</td>
                 <td class="c" title='{% include "faction/revives/players-tooltip.html" with type=1%}'>{{p.revivesReceivedDisp}}</td>

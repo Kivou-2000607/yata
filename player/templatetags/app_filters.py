@@ -169,11 +169,9 @@ def playerURL(value, arg):
         return "-"
 
 
-# @register.filter(name="playerURLShort")
-# def playerURL(value, arg):
-#     return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name}</a>'.format(
-#         name=value, id=arg
-#     )
+@register.filter(name="playerURLShort")
+def playerURLShort(value, arg):
+    return '<a href="https://www.torn.com/profiles.php?XID={id}" target="_blank">{name}</a>'.format(name=value, id=arg)
 
 
 @register.filter(name="cleanhtml")
