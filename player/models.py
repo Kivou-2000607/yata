@@ -602,7 +602,7 @@ class PlayerData(models.Model):
 class Key(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)  # player
     tId = models.IntegerField(default=0)
-    value = models.SlugField(default="aaaa", max_length=32)  # key
+    value = models.SlugField(max_length=32, unique=True)  # key
     lastPulled = models.IntegerField(default=0)  # ts when last pulled
     reason = models.CharField(default="-", max_length=64)  # reason why it was pulled
 
