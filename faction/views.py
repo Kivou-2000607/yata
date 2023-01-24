@@ -17,6 +17,7 @@
 
 import csv
 import datetime
+import glob
 import html
 import json
 import math
@@ -311,7 +312,7 @@ def configurations(request):
                     context["validMessageSub"] = "Poster header uploaded"
                 else:
                     context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
-            if request.POST.get("upload_tail"):
+            elif request.POST.get("upload_tail"):
                 form = PosterTailForm(request.POST, request.FILES, instance=faction)
                 valid_form = form.is_valid()
                 if valid_form:
@@ -319,6 +320,21 @@ def configurations(request):
                     context["validMessageSub"] = "Poster footer uploaded"
                 else:
                     context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
+            elif request.GET.get("delete_header"):
+                files = glob.glob(os.path.join(settings.MEDIA_ROOT, "posters") + f"/{faction.tId}-head.*")
+                for file in files:
+                    os.remove(file)
+                faction.posterHeadImg.delete()
+                faction.save()
+                context["validMessageSub"] = "Poster header deleted"
+
+            elif request.GET.get("delete_footer"):
+                files = glob.glob(os.path.join(settings.MEDIA_ROOT, "posters") + f"/{faction.tId}-tail.*")
+                for file in files:
+                    os.remove(file)
+                faction.posterTailImg.delete()
+                faction.save()
+                context["validMessageSub"] = "Poster footer deleted"
 
             # add poster
             if faction.poster:

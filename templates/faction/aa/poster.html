@@ -19,22 +19,21 @@ This file is part of yata.
 {% load humanize %}
 {% load mathfilters %}
 {% load app_filters %}
-
 {# load popovers #}
-
 <h3>Content</h3>
-
 {% if posterDeleted %}
-    <p class="error"><i class="fas fa-trash fa-icon-inline"></i>Your poster has been deleted</p>
+  <p class="error">
+    <i class="fas fa-trash fa-icon-inline"></i>Your poster has been deleted
+  </p>
 {% endif %}
-
 {% if faction.poster %}
   <div class="row mx-0 mb-2">
     <div class="col-md-6 my-2">
       <div class="input-group">
         <div class="input-group-text flex-grow-1 valid" id="link-poster">Upgrades poster is enabled</div>
         <button type="submit" class="btn btn-outline" title="Disable poster">
-          <a id="faction-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          <a id="faction-aa-toggle-poster-enable"
+             href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
         </button>
       </div>
     </div>
@@ -43,7 +42,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 error" id="link-poster">Automatic update is disabled</div>
           <button type="submit" class="btn btn-outline" title="Enable automatic update">
-            <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+            <a id="faction-aa-toggle-poster-hold"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
           </button>
         </div>
       </div>
@@ -51,8 +51,11 @@ This file is part of yata.
       <div class="col-md-6 my-2">
         <div class="input-group">
           <div class="input-group-text flex-grow-1 valid" id="link-poster">Automatic update is enabled</div>
-          <button type="submit" class="btn btn-outline" title="Disable automatic update">
-            <a id="faction-aa-toggle-poster-hold" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+          <button type="submit"
+                  class="btn btn-outline"
+                  title="Disable automatic update">
+            <a id="faction-aa-toggle-poster-hold"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
           </button>
         </div>
       </div>
@@ -62,7 +65,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 valid" id="link-poster">Current upgrades are displayed</div>
           <button type="submit" class="btn btn-outline" title="Hide current updates">
-            <a id="faction-aa-toggle-poster-current" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+            <a id="faction-aa-toggle-poster-current"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
           </button>
         </div>
       </div>
@@ -71,7 +75,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 error" id="link-poster">Current upgrades are hidden</div>
           <button type="submit" class="btn btn-outline" title="Display current updates">
-            <a id="faction-aa-toggle-poster-current" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+            <a id="faction-aa-toggle-poster-current"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
           </button>
         </div>
       </div>
@@ -81,7 +86,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 valid" id="link-poster">War upgrades are displayed</div>
           <button type="submit" class="btn btn-outline" title="Hide war updates">
-            <a id="faction-aa-toggle-poster-war" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+            <a id="faction-aa-toggle-poster-war"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
           </button>
         </div>
       </div>
@@ -90,7 +96,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 error" id="link-poster">War upgrades are hidden</div>
           <button type="submit" class="btn btn-outline" title="Display war updates">
-            <a id="faction-aa-toggle-poster-war" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+            <a id="faction-aa-toggle-poster-war"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
           </button>
         </div>
       </div>
@@ -100,7 +107,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 valid" id="link-poster">Peace upgrades are displayed</div>
           <button type="submit" class="btn btn-outline" title="Hide peace updates">
-            <a id="faction-aa-toggle-poster-peace" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
+            <a id="faction-aa-toggle-poster-peace"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
           </button>
         </div>
       </div>
@@ -109,7 +117,8 @@ This file is part of yata.
         <div class="input-group">
           <div class="input-group-text flex-grow-1 error" id="link-poster">Peace upgrades are hidden</div>
           <button type="submit" class="btn btn-outline" title="Display peace updates">
-            <a id="faction-aa-toggle-poster-peace" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+            <a id="faction-aa-toggle-poster-peace"
+               href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
           </button>
         </div>
       </div>
@@ -121,189 +130,335 @@ This file is part of yata.
       <div class="input-group">
         <div class="input-group-text error" id="link-poster">Upgrades poster is disabled</div>
         <button type="submit" class="btn btn-outline" title="Enabled poster">
-          <a id="faction-aa-toggle-poster-enable" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
+          <a id="faction-aa-toggle-poster-enable"
+             href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
         </button>
       </div>
     </div>
   </div>
 {% endif %}
-
 {% if faction.poster %}
-
-<h3>Links</h3>
-<div class="row mx-0 mb-2">
-  <div class="col-md-6 my-2">
-    <div class="input-group">
-      <span class="input-group-text" id="link-poster">Poster</span>
-      <input type="text" class="form-control" placeholder="https://yata.yt{{faction.posterImg.url}}" disabled>
-      <button type="submit" class="btn btn-outline"><a href="https://yata.yt{{faction.posterImg.url}}" target="_blank"><i class="fas fa-eye"></i></a></button>
-      <button type="submit" class="btn btn-outline" id="link-poster-clipboard" data-val="https://yata.yt{{faction.posterImg.url}}" data-bs-toggle="popover" data-bs-content="Link copied to clipboard" data-bs-placement="bottom" data-bs-trigger="focus"><i class="fas fa-clipboard" title="copy to clipboard"></i></button>
-    </div>
-  </div>
-  <div class="col-md-6 my-2">
-    <div class="input-group">
-      <span class="input-group-text" id="link-poster-gym">Gym</span>
-      <input type="text" class="form-control" placeholder="https://yata.yt{{faction.posterGymImg.url}}" disabled>
-      <button type="submit" class="btn btn-outline"><a href="https://yata.yt{{faction.posterGymImg.url}}" target="_blank"><i class="fas fa-eye"></i></a></button>
-      <button type="submit" class="btn btn-outline" id="link-poster-gym-clipboard" data-val="https://yata.yt{{faction.posterGymImg.url}}" data-bs-toggle="popover" data-bs-content="Link copied to clipboard" data-bs-placement="bottom" data-bs-trigger="focus"><i class="fas fa-clipboard" title="copy to clipboard"></i></button>
-    </div>
-  </div>
-  <div class="col-md-6 my-2">
-    <div class="input-group">
-      <span class="input-group-text">Userscript</span>
-      <input type="text" class="form-control" placeholder="{% url_userscript "gym" %}" disabled>
-      <span class="input-group-text" title="Displays gym poster on the gym page" style="cursor: help;"><i class="fas fa-question-circle"></i></span>
-      <button type="submit" class="btn btn-outline" title="copy to clipboard"><a href="{% url_userscript "gym" %}" target="_blank"><i class="fas fa-download"></i></a></button>
-    </div>
-  </div>
-</div>
-
-<h3>Font color</h3>
-<div class="row mx-0 mb-2">
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-fontColor-0" class="input-group-text">Red</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-fontColor-0" class="form-range" type="range" min="0" max="255" value="{{posterOpt.fontColor.0}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-fontColor-1" class="input-group-text">Green</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-fontColor-1" class="form-range" type="range" min="0" max="255" value="{{posterOpt.fontColor.1}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-fontColor-2" class="input-group-text">Blue</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-fontColor-2" class="form-range" type="range" min="0" max="255" value="{{posterOpt.fontColor.2}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-fontColor-3" class="input-group-text">Opacity</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-fontColor-3" class="form-range" type="range" min="0" max="255" value="{{posterOpt.fontColor.3}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-fontColor-4" class="input-group-text">Hexadecimal</label>
-      <input id="faction-poster-fontColor-4" class="form-control" type="text" placeholder="#{{posterOpt.fontColor|hexa}}">
-    </div>
-  </div>
-</div>
-
-<h3>Background color</h3>
-<div class="row mx-0 mb-2">
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-background-0" class="input-group-text">Red</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-background-0" class="form-range" type="range" min="0" max="255" value="{{posterOpt.background.0}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-background-1" class="input-group-text">Green</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-background-1" class="form-range" type="range" min="0" max="255" value="{{posterOpt.background.1}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-background-2" class="input-group-text">Blue</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-background-2" class="form-range" type="range" min="0" max="255" value="{{posterOpt.background.2}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-background-3" class="input-group-text">Opacity</label>
-      <span class="input-group-text flex-grow-1">
-        <input id="faction-poster-background-3" class="form-range" type="range" min="0" max="255" value="{{posterOpt.background.3}}">
-      </span>
-    </div>
-  </div>
-  <div class="col-md-6 my-2 align-self-center">
-    <div class="input-group">
-      <label for="faction-poster-background-4" class="input-group-text">Hexadecimal</label>
-      <input id="faction-poster-background-4" class="form-control" type="text" placeholder="#{{posterOpt.background|hexa}}">
-    </div>
-  </div>
-</div>
-
-<h3>Icons and font</h3>
-<div class="row mx-0 mb-2">
-  <div class="col-md-6 my-2">
-    <div class="input-group">
-      <label for="faction-poster-iconType-0" class="input-group-text">Icon</label>
-      <select id="faction-poster-iconType-0" class="form-select">
-        <option value="0" {% if 0 == posterOpt.iconType.0 %}selected{% endif %}>Green</option>
-        <option value="1" {% if 1 == posterOpt.iconType.0 %}selected{% endif %}>Light Green</option>
-        <option value="2" {% if 2 == posterOpt.iconType.0 %}selected{% endif %}>Grey</option>
-        <option value="3" {% if 3 == posterOpt.iconType.0 %}selected{% endif %}>Blue</option>
-      </select>
-    </div>
-  </div>
-  <div class="col-md-6 my-2">
-    <div class="input-group">
-      <label for="faction-poster-fontFamily-0" class="input-group-text">Font family</label>
-      <select id="faction-poster-fontFamily-0" class="form-select">
-        {% for k, v in fonts.items %}
-        <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>{{v.0}}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-</div>
-
-<h3>Header and footer</h3>
-<div class="row mx-0 mb-2">
-  <div class="col-md-12 my-2">
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-      <input type="hidden" name="upload_image" value="1">
-      <input type="hidden" name="upload_head" value="1">
+  <h3>Links</h3>
+  <div class="row mx-0 mb-2">
+    <div class="col-md-6 my-2">
       <div class="input-group">
-        <label class="input-group-text" for="id_posterHeadImg">{% if faction.posterHeadImg %}Update{% else %}Add{% endif %} header</label>
-        <input type="file" name="posterHeadImg" accept="image/*" id="id_posterHeadImg" class="form-control" required>
-        <button type="submit" class="btn btn-outline">Upload</button>
+        <span class="input-group-text" id="link-poster">Poster</span>
+        <input type="text"
+               class="form-control"
+               placeholder="https://yata.yt{{ faction.posterImg.url }}"
+               disabled/>
+        <button type="submit" class="btn btn-outline">
+          <a href="https://yata.yt{{ faction.posterImg.url }}" target="_blank"><i class="fas fa-eye"></i></a>
+        </button>
+        <button type="submit"
+                class="btn btn-outline"
+                id="link-poster-clipboard"
+                data-val="https://yata.yt{{ faction.posterImg.url }}"
+                data-bs-toggle="popover"
+                data-bs-content="Link copied to clipboard"
+                data-bs-placement="bottom"
+                data-bs-trigger="focus">
+          <i class="fas fa-clipboard" title="copy to clipboard"></i>
+        </button>
       </div>
-    </form>
-  </div>
-  <div class="col-md-12 my-2">
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-      <input type="hidden" name="upload_image" value="1">
-      <input type="hidden" name="upload_tail" value="1">
+    </div>
+    <div class="col-md-6 my-2">
       <div class="input-group">
-        <label class="input-group-text" for="id_posterTailImg">{% if faction.posterTailImg %}Update{% else %}Add{% endif %} footer</label>
-        <input type="file" name="posterTailImg" accept="image/*" id="id_posterTailImg" class="form-control" required>
-        <button type="submit" class="btn btn-outline">Upload</button>
+        <span class="input-group-text" id="link-poster-gym">Gym</span>
+        <input type="text"
+               class="form-control"
+               placeholder="https://yata.yt{{ faction.posterGymImg.url }}"
+               disabled/>
+        <button type="submit" class="btn btn-outline">
+          <a href="https://yata.yt{{ faction.posterGymImg.url }}" target="_blank"><i class="fas fa-eye"></i></a>
+        </button>
+        <button type="submit"
+                class="btn btn-outline"
+                id="link-poster-gym-clipboard"
+                data-val="https://yata.yt{{ faction.posterGymImg.url }}"
+                data-bs-toggle="popover"
+                data-bs-content="Link copied to clipboard"
+                data-bs-placement="bottom"
+                data-bs-trigger="focus">
+          <i class="fas fa-clipboard" title="copy to clipboard"></i>
+        </button>
       </div>
-    </form>
+    </div>
+    <div class="col-md-6 my-2">
+      <div class="input-group">
+        <span class="input-group-text">Userscript</span>
+        <input type="text"
+               class="form-control"
+               placeholder="{% url_userscript "gym" %}"
+               disabled />
+        <span class="input-group-text"
+              title="Displays gym poster on the gym page"
+              style="cursor: help"><i class="fas fa-question-circle"></i></span>
+        <button type="submit" class="btn btn-outline" title="copy to clipboard">
+          <a href="{% url_userscript "gym" %}" target="_blank"><i class="fas fa-download"></i></a>
+        </button>
+      </div>
+    </div>
   </div>
-</div>
-
-<div class="row mx-0 justify-content-center">
-  <div class="col-12 col-md-7 my-2 p-2 border rounded">
-    <a href="{{faction.posterImg.url}}" target="_blank" atl="faction upgrade tree">
-      <img src="{{faction.posterImg.url}}?cache={{random}}" class="w-100">
-    </a>
+  <h3>Font color</h3>
+  <div class="row mx-0 mb-2">
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-fontColor-0" class="input-group-text">Red</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-fontColor-0"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.fontColor.0 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-fontColor-1" class="input-group-text">Green</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-fontColor-1"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.fontColor.1 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-fontColor-2" class="input-group-text">Blue</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-fontColor-2"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.fontColor.2 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-fontColor-3" class="input-group-text">Opacity</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-fontColor-3"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.fontColor.3 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-fontColor-4" class="input-group-text">Hexadecimal</label>
+        <input id="faction-poster-fontColor-4"
+               class="form-control"
+               type="text"
+               placeholder="#{{ posterOpt.fontColor|hexa }}">
+      </div>
+    </div>
   </div>
-  <div class="col-12 col-md-7 my-2 p-2 border rounded">
-    <a href="{{faction.posterGymImg.url}}" target="_blank" atl="faction upgrade tree">
-      <img src="{{faction.posterGymImg.url}}?cache={{random}}" class="w-100">
-    </a>
+  <h3>Background color</h3>
+  <div class="row mx-0 mb-2">
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-background-0" class="input-group-text">Red</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-background-0"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.background.0 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-background-1" class="input-group-text">Green</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-background-1"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.background.1 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-background-2" class="input-group-text">Blue</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-background-2"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.background.2 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-background-3" class="input-group-text">Opacity</label>
+        <span class="input-group-text flex-grow-1">
+          <input id="faction-poster-background-3"
+                 class="form-range"
+                 type="range"
+                 min="0"
+                 max="255"
+                 value="{{ posterOpt.background.3 }}">
+        </span>
+      </div>
+    </div>
+    <div class="col-md-6 my-2 align-self-center">
+      <div class="input-group">
+        <label for="faction-poster-background-4" class="input-group-text">
+          Hexadecimal
+        </label>
+        <input id="faction-poster-background-4"
+               class="form-control"
+               type="text"
+               placeholder="#{{ posterOpt.background|hexa }}">
+      </div>
+    </div>
   </div>
-</div>
-
-{%endif%}
+  <h3>
+    Icons and font
+  </h3>
+  <div class="row mx-0 mb-2">
+    <div class="col-md-6 my-2">
+      <div class="input-group">
+        <label for="faction-poster-iconType-0" class="input-group-text">
+          Icon
+        </label>
+        <select id="faction-poster-iconType-0" class="form-select">
+          <option value="0" {% if 0 == posterOpt.iconType.0 %}selected{% endif %}>
+            Green
+          </option>
+          <option value="1" {% if 1 == posterOpt.iconType.0 %}selected{% endif %}>
+            Light Green
+          </option>
+          <option value="2" {% if 2 == posterOpt.iconType.0 %}selected{% endif %}>
+            Grey
+          </option>
+          <option value="3" {% if 3 == posterOpt.iconType.0 %}selected{% endif %}>
+            Blue
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6 my-2">
+      <div class="input-group">
+        <label for="faction-poster-fontFamily-0" class="input-group-text">
+          Font family
+        </label>
+        <select id="faction-poster-fontFamily-0" class="form-select">
+          {% for k, v in fonts.items %}
+            <option value="{{k}}" {% if k == posterOpt.fontFamily.0 %}selected{% endif %}>
+              {{ v.0 }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+  <h3>
+    Header and footer
+  </h3>
+  <div class="row mx-0 mb-2">
+    <div class="input-group" style="column-gap: 20px;">
+      <form stlye="display:inline-block;" method="get">
+        {% csrf_token %}
+        <input type="hidden" name="delete_header" value="1">
+        <button type="submit" class="btn btn-outline">
+          Delete Header
+        </button>
+      </form>
+      <form stlye="display:inline-block;" method="get">
+        {% csrf_token %}
+        <input type="hidden" name="delete_footer" value="1">
+        <button type="submit" class="btn btn-outline">
+          Delete Footer
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="row mx-0 mb-2">
+    <div class="col-md-12 my-2">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="upload_image" value="1">
+        <input type="hidden" name="upload_head" value="1">
+        <div class="input-group">
+          <label class="input-group-text" for="id_posterHeadImg">
+            {% if faction.posterHeadImg %}
+              Update
+            {% else %}
+              Add
+            {% endif %}
+            header
+          </label>
+          <input type="file"
+                 name="posterHeadImg"
+                 accept="image/*"
+                 id="id_posterHeadImg"
+                 class="form-control"
+                 required>
+          <button type="submit" class="btn btn-outline">
+            Upload
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-12 my-2">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="upload_image" value="1">
+        <input type="hidden" name="upload_tail" value="1">
+        <div class="input-group">
+          <label class="input-group-text" for="id_posterTailImg">
+            {% if faction.posterTailImg %}
+              Update
+            {% else %}
+              Add
+            {% endif %}
+            footer
+          </label>
+          <input type="file"
+                 name="posterTailImg"
+                 accept="image/*"
+                 id="id_posterTailImg"
+                 class="form-control"
+                 required>
+          <button type="submit" class="btn btn-outline">
+            Upload
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row mx-0 justify-content-center">
+    <div class="col-12 col-md-7 my-2 p-2 border rounded">
+      <a href="{{ faction.posterImg.url }}"
+         target="_blank"
+         atl="faction upgrade tree">
+        <img src="{{ faction.posterImg.url }}?cache={{ random }}" class="w-100">
+      </a>
+    </div>
+    <div class="col-12 col-md-7 my-2 p-2 border rounded">
+      <a href="{{ faction.posterGymImg.url }}"
+         target="_blank"
+         atl="faction upgrade tree">
+        <img src="{{ faction.posterGymImg.url }}?cache={{ random }}" class="w-100">
+      </a>
+    </div>
+  </div>
+{% endif %}
