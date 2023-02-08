@@ -2138,6 +2138,25 @@ def attacksReport(request, reportId, share=False):
                 except BaseException as e:
                     print("Error toggle faction {}".format(e))
 
+            elif request.POST.get("type") == "faction_filter_all":
+                try:
+                    factions_false = [f.faction_id for f in report.attacksfaction_set.filter(show=False)]
+
+                    # move all false to true
+                    report.attacksfaction_set.filter(faction_id__in=factions_false).update(show=True)
+                    report.attacksplayer_set.filter(player_faction_id__in=factions_false).update(show=True)
+
+                    # move all true to false
+                    report.attacksfaction_set.exclude(faction_id__in=factions_false).update(show=False)
+                    report.attacksplayer_set.exclude(player_faction_id__in=factions_false).update(show=False)
+
+                    report.factions = json.dumps(factions_false)
+                    report.save()
+                    p_fa = request.POST["page"]
+
+                except BaseException as e:
+                    print("Error toggle all faction {}".format(e))
+
             report.player_filter = 0
             report.save()
             attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
