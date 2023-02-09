@@ -17,7 +17,7 @@ $(document).on("click", "#create-report-attacks", e => {
     e.preventDefault();
     const start = parseInt($("#ts-start").val());
     let end = parseInt($("#ts-end").val());
-	let live;
+    let live;
     if ($("#date-live-attacks").prop("checked")) {
         live = 1;
         end = 0;
@@ -35,7 +35,7 @@ $(document).on("click", ".faction-attacks-reports-delete", e => {
     e.preventDefault();
     const reportId = $(e.currentTarget).attr("data-val");
     $(e.currentTarget).closest("tr").load("/faction/attacks/manage/", {
-        type:"delete", reportId, csrfmiddlewaretoken: getCookie("csrftoken")
+        type: "delete", reportId, csrfmiddlewaretoken: getCookie("csrftoken")
     }).remove();
 });
 
@@ -58,8 +58,21 @@ $(document).on("click", ".faction-attacks-report-toggle", e => {
     const factionId = $(e.currentTarget).attr("data-val");
     const page = splt.pop();
     const reportId = splt.pop();
+    console.log("toggle faction", reportId, factionId, page)
     $("#content-update").load(`/faction/attacks/${reportId}`, {
         reportId, factionId, type: "faction_filter", page,
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    });
+    $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Reload report");
+});
+
+$(document).on("click", "i#faction-attacks-report-toggle-all", e => {
+    e.preventDefault();
+    const reportId = $(e.currentTarget).attr("data-report");
+    const page = $(e.currentTarget).attr("data-page");
+    console.log("toggle all faction", reportId)
+    $("#content-update").load(`/faction/attacks/${reportId}`, {
+        reportId, type: "faction_filter_all", page: page,
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
     $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Reload report");
@@ -92,7 +105,7 @@ $(document).on("click", "table.faction-attacks-list i.filter-player, table.facti
     const reportId = splt[0];
     const playerId = splt[1];
     const reload = $(e.currentTarget).closest("div.pagination-list");
-    reload.load( "/faction/attacks/list/" + reportId, {
+    reload.load("/faction/attacks/list/" + reportId, {
         playerId, type: "filter",
         csrfmiddlewaretoken: getCookie("csrftoken")
     });
@@ -120,18 +133,18 @@ $(document).on("click", "a.create-war-report", e => {
     const type = $(e.currentTarget).attr("data-typ")
     const allowed_types = ["ranked", "territorial", "raid"]
     $(e.currentTarget).html(spinner);
-    if(allowed_types.includes(type)) {
-      $("#content-update").load("/faction/attacks/", {
-        type: $(e.currentTarget).attr("data-typ"),
-        war_id: $(e.currentTarget).attr("data-val"),
-        timestamp: $(e.currentTarget).attr("data-tim"),
-        faction_id: $(e.currentTarget).attr("data-fid"),
-        faction_name: $(e.currentTarget).attr("data-fna"),
-        territory: $(e.currentTarget).attr("data-ter"),
-        csrfmiddlewaretoken: getCookie("csrftoken")
-      });
-      $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");
+    if (allowed_types.includes(type)) {
+        $("#content-update").load("/faction/attacks/", {
+            type: $(e.currentTarget).attr("data-typ"),
+            war_id: $(e.currentTarget).attr("data-val"),
+            timestamp: $(e.currentTarget).attr("data-tim"),
+            faction_id: $(e.currentTarget).attr("data-fid"),
+            faction_name: $(e.currentTarget).attr("data-fna"),
+            territory: $(e.currentTarget).attr("data-ter"),
+            csrfmiddlewaretoken: getCookie("csrftoken")
+        });
+        $("#content-update h2").addClass("grey").html(spinner + "&nbsp;&nbsp;Creating report");
     } else {
-      $(e.currentTarget).html('<span class="error"><span style="text-transform: capitalize;">'+ type +'</span> wars not implemented yet.</span>');
+        $(e.currentTarget).html('<span class="error"><span style="text-transform: capitalize;">' + type + '</span> wars not implemented yet.</span>');
     }
 });
