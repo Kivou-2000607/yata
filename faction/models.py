@@ -414,7 +414,10 @@ class Faction(models.Model):
                 crime.delete()
 
         # sort crimes API (from older to newer)
-        crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
+        if len(crimesAPI):
+            crimesAPI = sorted(crimesAPI.items(), key=lambda x: (-x[1]["initiated"], x[1]["time_started"]))
+        else:
+            crimesAPI = {}
 
         # create ranking based on sub ranking
         # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
@@ -688,6 +691,8 @@ class Faction(models.Model):
                     # remove key
                     print("{} remove {} (API error {})".format(self, key, code))
                     self.masterKeys.remove(key)
+                else:
+                    print("{} ignore {} (API error {})".format(self, key, code))
 
             elif req["faction_id"] != self.tId:
                 # remove key
