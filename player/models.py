@@ -186,6 +186,7 @@ class Player(models.Model):
             # 14 => Daily read limit reached : Too many records have been pulled today by this user from our cloud services.
             # 15 => Temporary error : An error code specifically for testing purposes that has no dedicated meaning.
             # 16 => Access level of this key is not high enough : A selection is being called of which this key does not have permission to access.
+            # 17 => Backend error occurred, please try again.
 
             if key_data["apiErrorCode"] in [1, 2, 10]:
                 print(f'[updateKeyLevel] {self}: delete key (error code {key_data["apiErrorCode"]})')

@@ -702,7 +702,7 @@ class Faction(models.Model):
         self.save()
 
     def updateMembers(self, key=None, force=False, private=False):
-        # it's not possible to delete all memebers and recreate the base
+        # it's not possible to delete all members and recreate the base
         # otherwise the target list will be lost
 
         now = tsnow()
@@ -1592,37 +1592,30 @@ class Member(models.Model):
         return error
 
     def updateStats(self, key=None, save=False, req=False):
-        error = False
-        if not self.shareS:
-            self.dexterity = 0
-            self.defense = 0
-            self.speed = 0
-            self.strength = 0
-            self.stats_ts = 0
-        else:
-            if not req:
-                req = apiCall("user", "", "battlestats", key=key)
+        """
+            return False or API error (for HTML display)
+        """
 
-            # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
-            # req = requests.get(url).json()
-            if "apiError" in req:
-                error = req
-                self.dexterity = 0
-                self.defense = 0
-                self.speed = 0
-                self.strength = 0
-                self.stats_ts = 0
-            else:
-                self.dexterity = int(str(req.get("dexterity", 0)).replace(",", ""))
-                self.defense = int(str(req.get("defense", 0)).replace(",", ""))
-                self.speed = int(str(req.get("speed", 0)).replace(",", ""))
-                self.strength = int(str(req.get("strength", 0)).replace(",", ""))
-                self.stats_ts = tsnow()
+        if not self.shareS:
+            return False
+
+        if not req:
+            req = apiCall("user", "", "battlestats", key=key)
+
+        if "apiError" in req:
+            print(req)
+            return req
+
+        self.dexterity = req.get("dexterity", 0)
+        self.defense = req.get("defense", 0)
+        self.speed = req.get("speed", 0)
+        self.strength = req.get("strength", 0)
+        self.stats_ts = tsnow()
 
         if save:
             self.save()
 
-        return error
+        return False
 
     def updateNNB(self, key=None, save=False, req=False):
         error = False
