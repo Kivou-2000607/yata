@@ -18,10 +18,10 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from faction.models import Faction
 from yata.handy import logdate
+
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -39,6 +39,9 @@ class Command(BaseCommand):
 
                     # print(f"[CRON {logdate()}] faction {faction}: update crimes")
                     faction.updateCrimes()
+
+                    # print(f"[CRON {logdate()}] faction {faction}: update members")
+                    faction.updateMembers()
 
                     # print(f"[CRON {logdate()}] faction {faction}: update upgrades")
                     # faction.updateUpgrades()

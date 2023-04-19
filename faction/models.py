@@ -35,7 +35,6 @@ from bazaar.models import BazaarData
 from faction.functions import API_CODE_DELETE, getBonusHits, getCrontabs, modifiers2lvl1
 from faction.storage import OverwriteStorage
 from player.models import Key, Player
-from yata.bulkManager import BulkUpdateManager
 from yata.BulkManager2 import BulkManager
 from yata.handy import (
     HISTORY_TIMES,
@@ -216,7 +215,6 @@ class Faction(models.Model):
 
     # crimes
     crimesUpda = models.IntegerField(default=0)
-    ph_pa_Dump = models.TextField(default="[]")
     crimesRank = models.TextField(default="[]")
 
     # history options
@@ -419,10 +417,10 @@ class Faction(models.Model):
         else:
             crimesAPI = {}
 
-        # create ranking based on sub ranking
-        # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
-        sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
-        self.updateRanking(sub_ranking)
+        # # create ranking based on sub ranking
+        # # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False) and not v.get("initiated", False)]
+        # sub_ranking = [[int(list(p.keys())[0]) for p in v["participants"]] for k, v in crimesAPI if v.get("participants", False)]
+        # self.updateRanking(sub_ranking)
 
         # second loop over API to create new crimes
         batch = Crimes.objects.bulk_operation()
@@ -479,141 +477,10 @@ class Faction(models.Model):
 
         self.nKeys = len(self.masterKeys.filter(useFact=True))
         self.crimesUpda = now
-        # save only participants ids of successful PH and PA
-        self.ph_pa_Dump = json.dumps(
-            [[int(list(p.keys())[0]) for p in v["participants"] if isinstance(p, dict)] for k, v in crimesAPI if v["crime_id"] in [7, 8] and v["success"] == 1 and v.get("participants", False)]
-        )
 
         self.save()
+
         return self.crimes_set.all(), False, n
-
-    def updateRanking(self, sub_ranking):
-
-        # get members for ranking
-        faction_members = self.member_set.order_by("-nnb").only("tId", "nnb", "crimesRank")
-        faction_members_nnb = {m.tId: m.nnb for m in faction_members}
-
-        # DEBUG
-        # members_full = {m.tId: m for m in self.member_set.all()}
-
-        # get previous main ranking
-        previous_ranking = json.loads(self.crimesRank)
-        # previous_ranking = []
-
-        # remove old players from previous ranking
-        to_delete = []
-        for m_id in previous_ranking:
-            if m_id not in faction_members_nnb:
-                to_delete.append(m_id)
-        for m_id in to_delete:
-            previous_ranking.remove(m_id)
-
-        # append new members
-        for m_id in [m.tId for m in faction_members]:
-            if m_id not in previous_ranking:
-                previous_ranking.append(m_id)
-
-        # reorder with NNB in case there are new members
-        # (well all the time...)
-        current_nnb = 60
-        wrong_nnb = []
-        for i, m_id in enumerate(previous_ranking):
-            m_nnb = faction_members_nnb[m_id]
-            if m_nnb > current_nnb:
-                wrong_nnb.append(m_id)
-            else:
-                # update current nnb if not 0 (ie if nnb is known)
-                current_nnb = m_nnb if m_nnb else current_nnb
-
-        for m_id in wrong_nnb:
-            # get member NNB
-            m_nnb = faction_members_nnb[m_id]
-            # get previous ranking with NNB
-            previous_ranking_nnb = [[m_id, faction_members_nnb[m_id]] for m_id in previous_ranking]
-            # get member wrong rank
-            m_rank = previous_ranking.index(m_id)
-
-            # find the lowest position with this NNB in the previous ranking
-            for p_id, p_nnb in previous_ranking_nnb:
-                if p_nnb < m_nnb:  # NNB lower (assign this position then exit)
-                    # assign m_id to p_id postion then exit the loop
-                    # 1. get index of p_id
-                    p_rank = previous_ranking.index(p_id)
-                    # 2. put m_id at p_id
-                    previous_ranking.insert(p_rank, previous_ranking.pop(m_rank))
-                    break
-
-        # main ranking based on previous if possible or ordered NNB
-        # NOTE: can directly put previous_ranking now that we append missing members just above
-        main_ranking = previous_ranking if len(previous_ranking) else [m.tId for m in faction_members]
-
-        # DEBUG
-        # main_ranking_before = main_ranking[:]
-
-        # print("rank before:", main_ranking.index(2190204))
-
-        # loop over the sub rankings
-        for team in sub_ranking:
-
-            # first loop over participants (member point of view)
-            for member in [p for p in team if p in main_ranking]:
-
-                # get member main and sub rank
-                mem_m_rank = main_ranking.index(member)
-                mem_s_rank = team.index(member)
-
-                # second loop over participants (for comparison)
-                for participant in [p for p in team if p != member and p in main_ranking]:
-
-                    # get participant global and crime rank
-                    par_m_rank = main_ranking.index(participant)
-                    par_s_rank = team.index(participant)
-
-                    # update main ranking
-                    mem_m_rank = main_ranking.index(member)
-                    mem_s_rank = team.index(member)
-
-                    # check if bad ordering
-                    if (mem_m_rank > par_m_rank) != (mem_s_rank > par_s_rank):
-
-                        # change global ordering
-                        if par_s_rank < mem_s_rank:
-                            # participant should be above member
-                            main_ranking.insert(mem_m_rank, main_ranking.pop(par_m_rank))
-
-                        # elif par_s_rank > mem_s_rank:
-                        #     # member should be above member
-                        #     main_ranking.insert(par_m_rank, main_ranking.pop(mem_m_rank))
-
-        # print("rank after:", main_ranking.index(2190204))
-
-        # cleanup old members
-        for rank_id in main_ranking:
-            if rank_id not in [m.tId for m in faction_members]:
-                main_ranking.remove(rank_id)
-
-        # DEBUG
-        # for i, (r1, r2) in enumerate(zip(main_ranking_before, main_ranking)):
-        #     m1 = members_full[r1]
-        #     m2 = members_full[r2]
-        #     print(f'{i:<3}{m1.name:<16}\t{m2.name}')
-
-        # update crimesRank
-        self.crimesRank = json.dumps(main_ranking)
-        self.save()
-
-        # save members ranking
-        bulk_u_mgr = BulkUpdateManager(["crimesRank"], chunk_size=100)
-        for member in faction_members:
-            # print(member.name, member.crimesRank, main_ranking.index(member.tId) + 1)
-            # try:
-            member.crimesRank = main_ranking.index(member.tId) + 1
-            # except BaseException:
-            # member.crimesRank = 100
-            bulk_u_mgr.add(member)
-        bulk_u_mgr.done()
-
-        return main_ranking
 
     def cleanHistory(self):
         # clean chains
@@ -722,13 +589,20 @@ class Faction(models.Model):
             key = self.getKey()
 
         # call members and return error
-        membersAPI = apiCall("faction", "", "basic", key.value, sub="members")
+        response = apiCall("faction", "", "basic,crimeexp", key.value)
         key.lastPulled = tsnow()
         key.reason = "Update member list"
         key.save()
 
-        if "apiError" in membersAPI:
-            return membersAPI
+        if "apiError" in response:
+            return response
+
+        # save crimes exp
+        self.crimesRank = json.dumps(response["crimeexp"])  # for saving
+        crimesRank = response["crimeexp"]  # for using
+
+        # handle memebers
+        membersAPI = response["members"]
 
         batch = Member.objects.bulk_operation()
         players_on_yata = Player.objects.filter(tId__in=membersAPI)
@@ -749,6 +623,13 @@ class Faction(models.Model):
 
         for k, v in membersAPI.items():
 
+            # get rank:
+            try:
+                rank = crimesRank.index(int(k)) + 1
+            except Exception:
+                print(f"id {k} not found in crimesRank")
+                rank = 100
+
             defaults = {
                 "faction_id": int(self.id),
                 "name": v["name"],
@@ -756,6 +637,7 @@ class Faction(models.Model):
                 "lastActionStatus": v["last_action"]["status"],
                 "lastAction": v["last_action"]["relative"],
                 "lastActionTS": v["last_action"]["timestamp"],
+                "crimesRank": rank,
             }
 
             # status
@@ -763,7 +645,6 @@ class Faction(models.Model):
                 defaults[k2] = v2
 
             batch.update_or_create(
-                # faction_id=int(self.id),
                 tId=int(k),
                 defaults=defaults,
             )
@@ -853,6 +734,19 @@ class Faction(models.Model):
         # add daily log
         day = now - now % (3600 * 24)
         logdict = factionInfo.get("stats", dict({}))
+
+        # check out that all entries in the log are in the database
+        last_log = self.log_set.last()
+        entries_to_ignore = []
+        for k in logdict:
+            try:
+                getattr(last_log, k)
+            except Exception:
+                print(f"ignoring entry {k} in faction log update")
+                entries_to_ignore.append(k)
+
+        logdict = {k: v for k, v in logdict.items() if k not in entries_to_ignore}
+
         donationsmoney = 0
         donationspoints = 0
         for k, v in factionInfo.get("donations", dict({})).items():
@@ -1598,7 +1492,7 @@ class Member(models.Model):
 
     def updateStats(self, key=None, save=False, req=False):
         """
-            return False or API error (for HTML display)
+        return False or API error (for HTML display)
         """
 
         if not self.shareS:
