@@ -573,7 +573,7 @@ class Faction(models.Model):
         self.nKeys = len(self.getKeys())
         self.save()
 
-    def updateMembers(self, key=None, force=False, private=False):
+    def updateMembers(self, force=False, private=False):
         # it's not possible to delete all members and recreate the base
         # otherwise the target list will be lost
 
@@ -585,8 +585,8 @@ class Faction(models.Model):
             return self.member_set.all()
 
         # get key if needed
-        if key is None or isinstance(key, bool):
-            key = self.getKey()
+        # if key is None or isinstance(key, bool):
+        key = self.getKey()
 
         # call members and return error
         response = apiCall("faction", "", "basic,crimeexp", key.value)
@@ -1423,7 +1423,6 @@ class Member(models.Model):
     # -1: not on YATA 0: doesn't wish to share 1: share
     shareN = models.IntegerField(default=1)
     nnb = models.IntegerField(default=0)
-    arson = models.IntegerField(default=0)
     crimesRank = models.IntegerField(default=100)
 
     # share stats
@@ -1520,7 +1519,6 @@ class Member(models.Model):
         error = False
         if not self.shareN:
             self.nnb = 0
-            self.arson = 0
         else:
             if not req:
                 req = apiCall("user", "", "perks,bars,crimes", key=key)
@@ -1528,7 +1526,6 @@ class Member(models.Model):
             if "apiError" in req:
                 error = req
                 self.nnb = 0
-                self.arson = 0
             else:
                 nnb = req["nerve"].get("maximum", 0)
 
@@ -1554,18 +1551,6 @@ class Member(models.Model):
 
                 self.nnb = nnb
 
-                # compute equivalent arons
-                arson = req["criminalrecord"].get("fraud_crimes", 0)  # assumed arson
-                arson += 0.11 * req["criminalrecord"].get("theft", 0)  # assumed steal jackets
-                arson += 0.66 * req["criminalrecord"].get("auto_theft", 0)  # assumed Steal Parked Car
-                arson -= 0.5 * req["criminalrecord"].get("drug_deals", 0)  # assumed -5k for 10k
-                arson += 0.5 * req["criminalrecord"].get("computer_crimes", 0)  # assumed Stealth Virus
-                arson += 0.66 * req["criminalrecord"].get("murder", 0)  # assumed Assassinate Mob Boss
-                for oc in json.loads(self.faction.ph_pa_Dump):
-                    if self.tId in oc:
-                        add = 650 if len(oc) == 4 else 150  # PA or PH
-                        arson += add
-                self.arson = int(arson)
         if save:
             self.save()
 
@@ -1945,12 +1930,9 @@ class Chain(models.Model):
         return self.state
 
     def fillReport(self):
-        # get faction / key
-        faction = self.faction
-        key = faction.getKey()
 
         # get members
-        members = faction.updateMembers(key=key, force=False)
+        members = self.faction.updateMembers(force=False)
 
         # initialisation of variables before loop
         nWRA = [
@@ -2009,7 +1991,7 @@ class Chain(models.Model):
             attackerID = att.attacker_id
             attackerName = att.attacker_name
             # if attacker part of the faction at the time of the chain
-            if att.attacker_faction == faction.tId:
+            if att.attacker_faction == self.faction.tId:
                 if att.chain in chain_hit_count:
                     print(f"{self} ignoring attack {att.tId} {att.code}: second hit #{att.chain}")
                     continue
@@ -4418,14 +4400,12 @@ class Crimes(models.Model):
             if member is None:
                 name = "Player"
                 nnb = 0
-                arson = 0
                 rank = 0
             else:
                 name = member.name
                 nnb = member.nnb
-                arson = member.arson
                 rank = member.crimesRank
-            participants.append([id, name, nnb, arson, rank])
+            participants.append([id, name, nnb, 0, rank])  # index 3 used to be arson
         return participants
 
     def get_team_id(self):

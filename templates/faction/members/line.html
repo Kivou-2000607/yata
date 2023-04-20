@@ -44,7 +44,7 @@ This file is part of yata.
     {% if member.shareE < 0 %}
       <td class="text-center" colspan="4"><span class="error" title="{{member.name}} is not on YATA"><i class="fas fa-user-slash"></i></span></td>
     {% else %}
-      <td class="text-end{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.nnb|mul:100000|add:member.arson}}{%endif%}">
+      <td class="text-end{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareN > 0%}{{member.crimesRank}}{%endif%}">
         {% include "faction/members/nnb.html"%}
       </td>
       <td class="text-center{% if member.tId == player.tId %} dont-touch-me{% endif %}" data-val="{%if member.shareE > 0%}{{member.energy}}{%endif%}">

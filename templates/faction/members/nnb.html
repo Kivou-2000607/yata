@@ -27,7 +27,7 @@ This file is part of yata.
     <span style="cursor: pointer;">
     {% if member.shareN %}
         <span class="neutral faction-member-shareN" title="{{member.nnb}} NNB&#10;Click to stop sharing your nerve bar.">
-            {% comment %}{{member.nnb}} | {{member.arson|intcomma}}{% endcomment %}
+            {% comment %}{{member.nnb}}{% endcomment %}
             {{member.nnb}}
         </span>
     {% else %}
@@ -42,7 +42,7 @@ This file is part of yata.
     {% elif member.shareN == 0 %}
         <span class="warning" title="{{member.name}} does not wish to share"><i class="fas fa-user-times"></i></span>
     {% elif member.shareN == 1 %}
-        {% comment %}<span title="{{member.nnb}} NNB&#10;{{member.arson}} fraud crimes">{{member.nnb}} | {{member.arson|intcomma}}</span>{% endcomment %}
+        {% comment %}<span title="{{member.nnb}} NNB">{{member.nnb}}</span>{% endcomment %}
         <span title="{{member.nnb}} NNB">{{member.nnb}}</span>
     {% endif %}
 {% endif %}

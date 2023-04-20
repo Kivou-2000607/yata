@@ -275,7 +275,7 @@ def configurations(request):
             faction.manageKey(player)
 
             # update members before to avoid coming here before having members
-            faction.updateMembers(key=player.getKey(value=False), force=False)
+            faction.updateMembers(force=False)
 
             # get keys
             keys = faction.masterKeys.filter(useSelf=True)
@@ -554,8 +554,7 @@ def members(request):
                 return render(request, page, context)
 
             # update chains if AA
-            key = player.getKey(value=False)
-            members = faction.updateMembers(key=key, force=True)
+            members = faction.updateMembers(force=True)
             error = False
             if "apiError" in members:
                 error = members
@@ -1251,7 +1250,6 @@ def combined(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            key = player.getKey(value=False)
             page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
 
             # get faction
@@ -1268,7 +1266,7 @@ def combined(request):
             # add last time connected in bonus table
             # more recent dif than from count
             error = False
-            update = faction.updateMembers(key=key, force=False)
+            update = faction.updateMembers(force=False)
             if "apiError" in update:
                 error = update
 
