@@ -197,13 +197,11 @@ def getCrimes(request):
             if member.nnb:
                 members[str(member.tId)] = {
                     "NNB": member.nnb,
-                    "equivalent_arsons": member.arson,
                     "ce_rank": member.crimesRank,
                 }
             else:
                 members[str(member.tId)] = {
                     "NNB": None,
-                    "equivalent_arsons": None,
                     "ce_rank": member.crimesRank,
                 }
 
