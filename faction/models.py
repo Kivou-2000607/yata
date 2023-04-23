@@ -2777,20 +2777,20 @@ class AttacksReport(models.Model):
         # outgoing
         attacks = self.attackreport_set.filter(defender_faction__in=json.loads(self.factions))
         for attack in attacks:
-            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
-            n = members[attack.attacker_id]["out"] if attack.attacker_id in members else [0, 0, 0, 0, 0, 0, 0, 0]
+            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total]
+            n = members[attack.attacker_id]["out"] if attack.attacker_id in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
             if attack.result in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
-                addOne.append(4)
+                addOne.append(5)
             elif attack.result in ["Mugged"]:
                 addOne.append(1)
-                addOne.append(4)
+                addOne.append(5)
             elif attack.result in ["Hospitalized"]:
                 addOne.append(2)
-                addOne.append(4)
-            elif attack.result in ["Assist"]:
                 addOne.append(5)
+            elif attack.result in ["Assist"]:
+                addOne.append(6)
             elif attack.result in [
                 "Stalemate",
                 "Lost",
@@ -2798,39 +2798,42 @@ class AttacksReport(models.Model):
                 "Escape",
                 "Interrupted",
             ]:
-                addOne.append(6)
+                addOne.append(7)
             else:
                 print(attack.result)
 
             if attack.war > 1:
                 addOne.append(3)
 
-            addOne.append(7)
+            if attack.retaliation > 1.0:
+                addOne.append(4)
+
+            addOne.append(8)
             for i in addOne:
                 n[i] = n[i] + 1
             members[attack.attacker_id] = {
                 "name": attack.attacker_name,
                 "out": n,
-                "in": [0, 0, 0, 0, 0, 0, 0, 0],
+                "in": [0, 0, 0, 0, 0, 0, 0, 0, 0],
             }
 
         # incoming
         attacks = self.attackreport_set.filter(attacker_faction__in=json.loads(self.factions))
         for attack in attacks:
-            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
-            n = members[attack.defender_id]["in"] if attack.defender_id in members else [0, 0, 0, 0, 0, 0, 0, 0]
+            # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total]
+            n = members[attack.defender_id]["in"] if attack.defender_id in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
             if attack.result in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
-                addOne.append(4)
+                addOne.append(5)
             elif attack.result in ["Mugged"]:
                 addOne.append(1)
-                addOne.append(4)
+                addOne.append(5)
             elif attack.result in ["Hospitalized"]:
                 addOne.append(2)
-                addOne.append(4)
-            elif attack.result in ["Assist"]:
                 addOne.append(5)
+            elif attack.result in ["Assist"]:
+                addOne.append(6)
             elif attack.result in [
                 "Stalemate",
                 "Lost",
@@ -2838,14 +2841,17 @@ class AttacksReport(models.Model):
                 "Escape",
                 "Interrupted",
             ]:
-                addOne.append(6)
+                addOne.append(7)
             else:
                 print(attack.result)
 
             if attack.war > 1:
                 addOne.append(3)
 
-            addOne.append(7)
+            if attack.retaliation > 1.0:
+                addOne.append(4)
+
+            addOne.append(8)
             for i in addOne:
                 n[i] = n[i] + 1
             if attack.defender_id in members:
@@ -2854,12 +2860,12 @@ class AttacksReport(models.Model):
                 members[attack.defender_id] = {
                     "name": attack.defender_name,
                     "in": n,
-                    "out": [0, 0, 0, 0, 0, 0, 0, 0],
+                    "out": [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 }
 
-        type = "in" if order > 7 else "out"
-        o1 = order % 8
-        o2 = 0 if o1 == 7 else 7
+        type = "in" if order > 8 else "out"
+        o1 = order % 9
+        o2 = 0 if o1 == 8 else 8
         return sorted(members.items(), key=lambda x: (-x[1][type][o1], -x[1][type][o2]))
 
     def get_war(self):

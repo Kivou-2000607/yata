@@ -32,23 +32,25 @@ This file is part of yata.
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=1">#mug</a></th>
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=2">#hosp</a></th>
             <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=3">#war</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=4">#win</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=5">#assists</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=6" title="lost / interrupted / stalemate / timeout / escape" >#lost</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=7">#total</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=8">#leaves</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=9">#mug</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=10">#hosp</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=11">#war</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=12">#win</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=13">#assists</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=14" title="lost / interrupted / stalemate / timeout / escape">#lost</a></th>
-            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=15">#total</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=4">#Retal</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=5">#win</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=6">#assists</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=7" title="lost / interrupted / stalemate / timeout / escape" >#lost</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=8">#total</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=9">#leaves</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=10">#mug</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=11">#hosp</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=12">#war</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=13">#Retal</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=14">#win</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=15">#assists</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=16" title="lost / interrupted / stalemate / timeout / escape">#lost</a></th>
+            <th class="b"><a class="yt-page-link" href="{% url 'faction:attacksMembers' report.pk %}?o_me=17">#total</a></th>
         </tr>
         <tr>
           <th></th>
-          <th style="text-align: center!important;" colspan="8">Outgoing attacks</th>
-          <th style="text-align: center!important;" colspan="8">Incoming attacks</th>
+          <th style="text-align: center!important;" colspan="9">Outgoing attacks</th>
+          <th style="text-align: center!important;" colspan="9">Incoming attacks</th>
         </tr>
       </thead>
     <tbody>
@@ -68,7 +70,8 @@ This file is part of yata.
             <td class="text-center">{{m.out.4}}</td>
             <td class="text-center">{{m.out.5}}</td>
             <td class="text-center">{{m.out.6}}</td>
-            <td class="text-center"><b>{{m.out.7}}</b></td>
+            <td class="text-center">{{m.out.7}}</td>
+            <td class="text-center"><b>{{m.out.8}}</b></td>
             <td class="text-center">{{m.in.0}}</td>
             <td class="text-center">{{m.in.1}}</td>
             <td class="text-center">{{m.in.2}}</td>
@@ -76,7 +79,8 @@ This file is part of yata.
             <td class="text-center">{{m.in.4}}</td>
             <td class="text-center">{{m.in.5}}</td>
             <td class="text-center">{{m.in.6}}</td>
-            <td class="text-center"><b>{{m.in.7}}</b></td>
+            <td class="text-center">{{m.in.7}}</td>
+            <td class="text-center"><b>{{m.in.8}}</b></td>
         </tr>
         {% endfor %}
 

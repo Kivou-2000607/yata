@@ -2514,6 +2514,7 @@ def attacksExport(request, reportId, type):
                         "Outgoing Mug",
                         "Outgoing Hosp",
                         "Outgoing War",
+                        "Outgoing Retal",
                         "Outgoing Win",
                         "Outgoing Assist",
                         "Outgoing Lost",
@@ -2522,6 +2523,7 @@ def attacksExport(request, reportId, type):
                         "Incoming Mug",
                         "Incoming Hosp",
                         "Incoming War",
+                        "Incoming Retal",
                         "Incoming Win",
                         "Incoming Assist",
                         "Incoming Lost",
@@ -2533,8 +2535,8 @@ def attacksExport(request, reportId, type):
                 for k, v in players:
                     # v = {
                     #         'name': 'Name',
-                    #         'out': [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total],
-                    #         'in': [0 leave, 1 mug, 2 hosp, 3 war, 4 win, 5 assist, 6 lost, 7 total]
+                    #         'out': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
+                    #         'in': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
                     # }
                     data = [k, v["name"]]
                     for _ in v["out"]:
