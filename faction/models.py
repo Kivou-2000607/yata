@@ -1213,8 +1213,7 @@ class Faction(models.Model):
         if all_spies is None or settings.DEBUG:
             all_spies = {}
             for database in self.spydatabase_set.all():
-                if faction_id:
-                    key = self.getKey()
+                key = self.getKey() if faction_id else None
                 for target_id, spy in database.getSpies(faction_id=faction_id, key=key, cc=True).items():
                     all_spies[target_id] = optimize_spies(spy, all_spies[target_id]) if target_id in all_spies else spy
 
@@ -4577,18 +4576,28 @@ class SpyDatabase(models.Model):
         if all_spies is None or cc or settings.DEBUG:
             all_spies = {}
             if isinstance(faction_id, int):
-                members = apiCall(
+                faction = apiCall(
                     "faction",
                     faction_id,
                     "",
                     key.value,
-                    sub="members",
                 )
-                if "apiError" in members:
-                    return members
+                if "apiError" in faction:
+                    return faction
 
-                members_id = [int(k) for k in members]
-                spy_set = self.spy_set.filter(target_id__in=members_id)
+                members = {int(k): v["name"] for k, v in faction["members"].items()}
+                spy_set = self.spy_set.filter(target_id__in=members)
+
+                batch = Spy.objects.bulk_operation()
+                for spy in spy_set:
+                    v = {"target_name": members[spy.target_id], "target_faction_name": faction["name"], "target_faction_id": faction_id}
+                    batch.update_or_create(database_id=spy.database_id, target_id=spy.target_id, defaults=v)
+
+                if batch.count():
+                    batch.run(batch_size=100)
+
+                spy_set = self.spy_set.filter(target_id__in=members)
+
             else:
                 spy_set = self.spy_set.all()
 
