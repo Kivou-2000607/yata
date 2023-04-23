@@ -1,49 +1,37 @@
 from django.urls import re_path
 
-from .views import main
-from .views import loot
-from .views import stocks
-from .views import travel
-from .views import targets
-from .views import spies
-from .views import faction
-from .views import auth
-from .views import setup
+from .views import auth, faction, loot, main, setup, spies, targets, travel
 
 app_name = "api"
 urlpatterns = [
-    re_path(r'^$', main.index, name='index'),
-    re_path(r'^v1/$', main.documentation, name='documentation'),
-
+    re_path(r"^$", main.index, name="index"),
+    re_path(r"^v1/$", main.documentation, name="documentation"),
     # loot
-    re_path(r'^v1/loot/$', loot.loot, name="loot"),
-
+    re_path(r"^v1/loot/$", loot.loot, name="loot"),
     # stocks
     # re_path(r'^v1/stocks/get/$', stocks.getStocks, name="getStocks"),
-
     # travel
-    re_path(r'^v1/travel/export/$', travel.exportStocks, name="exportStocks"),
-    re_path(r'^v1/travel/import/$', travel.importStocks, name="importStocks"),
-
+    re_path(r"^v1/travel/export/$", travel.exportStocks, name="exportStocks"),
+    re_path(r"^v1/travel/import/$", travel.importStocks, name="importStocks"),
     # targets
-    re_path(r'^v1/targets/export/$', targets.exportTargets, name="exportTargets"),
-    re_path(r'^v1/targets/import/$', targets.importTargets, name="importTargets"),
-
+    re_path(r"^v1/targets/export/$", targets.exportTargets, name="exportTargets"),
+    re_path(r"^v1/targets/import/$", targets.importTargets, name="importTargets"),
     # spies
-    re_path(r'^v1/spies/$', spies.getSpies, name="getSpies"),
-    re_path(r'^v1/spies/import/$', spies.importSpies, name="importSpies"),
-    re_path(r'^v1/spy/(?P<target_id>[0-9]*)/$', spies.getSpy, name="getSpy"),
-
+    re_path(r"^v1/spies/$", spies.getSpies, name="getSpies"),
+    re_path(r"^v1/spies/import/$", spies.importSpies, name="importSpies"),
+    re_path(r"^v1/spy/(?P<target_id>[0-9]*)/$", spies.getSpy, name="getSpy"),
     # faction
-    re_path(r'^v1/faction/crimes/export/$', faction.getCrimes, name="getCrimes"),
-    re_path(r'^v1/faction/crimes/import/ranking/$', faction.updateRanking, name="updateRanking"),
-    re_path(r'^v1/faction/members/$', faction.getMembers, name="getMembers"),
-    re_path(r'^v1/faction/livechain/$', faction.livechain, name="livechain"),
-
+    re_path(r"^v1/faction/crimes/export/$", faction.getCrimes, name="getCrimes"),
+    re_path(
+        r"^v1/faction/crimes/import/ranking/$",
+        faction.updateRanking,
+        name="updateRanking",
+    ),  # deprecated
+    re_path(r"^v1/faction/members/$", faction.getMembers, name="getMembers"),
+    re_path(r"^v1/faction/livechain/$", faction.livechain, name="livechain"),
     # auth
-    re_path(r'^v1/auth/$', auth.index, name="auth"),
-
+    re_path(r"^v1/auth/$", auth.index, name="auth"),
     # setup
-    re_path(r'^v1/setup/donations/$', setup.donations, name="donations"),
-    re_path(r'^v1/setup/players/$', setup.players, name="players"),
-    ]
+    re_path(r"^v1/setup/donations/$", setup.donations, name="donations"),
+    re_path(r"^v1/setup/players/$", setup.players, name="players"),
+]

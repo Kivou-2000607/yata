@@ -248,7 +248,7 @@ sou: South Africa</code></pre>
 <div class="command-doc">
 
 <ul>
-  <li><b>URL</b> <a href="{% url "api:getSpies" %}?key=&lt;api_key&gt;" target="_blank">{% url "api:getSpies" %}?key=&lt;api_key&gt;</a></li>
+  <li><b>URL</b> <a href="{% url "api:getSpies" %}?key=&lt;api_key&gt;" target="_blank">{% url "api:getSpies" %}?key=&lt;api_key&gt;&amp;faction=&lt;faction_id&gt;</a></li>
   <li><b>Payload</b>
     <pre><code classe="json">Object {
   "&lt;target_id&gt;": Object { ... // same data as a single spy },
@@ -257,6 +257,8 @@ sou: South Africa</code></pre>
   ...
 }</code></pre>
   </li>
+  <li>This request will get all spies from all faction's databases.
+  <li>If <code>faction_id</code> is given it will filter members of the faction.
   <li><b>Cache</b> There is a one hour cache on these requests
   <li><b>Rate limit</b> There is an IP based rate limit of 1 call / hours.</li>
 </div>

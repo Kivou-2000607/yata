@@ -1199,20 +1199,25 @@ class Faction(models.Model):
 
         return tree, respect
 
-    def getSpies(self, use_cache=True):
+    def getSpies(self, faction_id=None, use_cache=True):
         from faction.functions import optimize_spies
 
         if use_cache:
-            all_spies = cache.get(f"spy-faction-{self.tId}")
+            all_spies = cache.get(f"spy-faction-{self.tId}-{faction_id}")
             print(f'{self} [getSpies] faction cache: {"no" if all_spies is None else "yes"}')
+
         else:
             print(f"{self} [getSpies] faction cache: forced no")
             all_spies = None
+
         if all_spies is None or settings.DEBUG:
             all_spies = {}
             for database in self.spydatabase_set.all():
-                for target_id, spy in database.getSpies(cc=True).items():
+                if faction_id:
+                    key = self.getKey()
+                for target_id, spy in database.getSpies(faction_id=faction_id, key=key, cc=True).items():
                     all_spies[target_id] = optimize_spies(spy, all_spies[target_id]) if target_id in all_spies else spy
+
             cache.set(f"spy-faction-{self.tId}", all_spies, 3600)
 
         return all_spies
@@ -4561,12 +4566,27 @@ class SpyDatabase(models.Model):
 
         return all_spies
 
-    def getSpies(self, cc=False):
-        all_spies = cache.get(f"spy-db-{self.secret}")
+    def getSpies(self, faction_id=None, key=None, cc=False):
+        all_spies = cache.get(f"spy-db-{self.secret}-{faction_id}")
         if all_spies is None or cc or settings.DEBUG:
-            print(f"{self} [getSpies] database cached: no")
             all_spies = {}
-            for spy in self.spy_set.all():
+            if isinstance(faction_id, int):
+                members = apiCall(
+                    "faction",
+                    faction_id,
+                    "",
+                    key.value,
+                    sub="members",
+                )
+                if "apiError" in members:
+                    return members
+
+                members_id = [int(k) for k in members]
+                spy_set = self.spy_set.filter(target_id__in=members_id)
+            else:
+                spy_set = self.spy_set.all()
+
+            for spy in spy_set:
                 all_spies[spy.target_id] = spy.dictionnary()
             cache.set(f"spy-db-{self.secret}", all_spies, 3600)
         else:

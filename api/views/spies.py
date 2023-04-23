@@ -16,25 +16,17 @@ This file is part of yata.
     You should have received a copy of the GNU General Public License
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
-# django
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
-# cache and rate limit
-from django.views.decorators.cache import cache_page
-from ratelimit.decorators import ratelimit
-from ratelimit.core import get_usage, is_ratelimited
-from django.core.cache import cache
-
-# standards
 import json
 import time
 
-# yata
-from yata.handy import getPlayerBykey
-from yata.handy import getFaction
-from yata.regex import compile_api_key
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from ratelimit.decorators import ratelimit
+
 from faction.models import SpyDatabase
+from yata.handy import getFaction, getPlayerBykey
+from yata.regex import compile_api_key
 
 
 def getSpy(request, target_id):
@@ -42,7 +34,7 @@ def getSpy(request, target_id):
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
-            return JsonResponse({"error": {"code": 2, "error": f"Invalid API key"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": "Invalid API key"}}, status=400)
 
         # get user
         player = getPlayerBykey(key)
@@ -60,23 +52,36 @@ def getSpy(request, target_id):
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
-@ratelimit(key='ip', rate='1/h')
+@ratelimit(key="ip", rate="1/h")
 def getSpies(request):
     try:
         # check if key is correct
         key = str(request.GET.get("key"))
         if compile_api_key().match(key) is None:
-            return JsonResponse({"error": {"code": 2, "error": f"Invalid API key"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": "Invalid API key"}}, status=400)
 
         # get user
         player = getPlayerBykey(key)
         if player is None:
             return JsonResponse({"error": {"code": 2, "error": "Player not found"}}, status=400)
 
+        # get faction
         faction = getFaction(player.factionId)
         if faction is None:
             return JsonResponse({"error": {"code": 2, "error": "Faction not found"}}, status=400)
-        spies = faction.getSpies()
+
+        # get option faction id filter
+        try:
+            faction_id = int(request.GET.get("faction"))
+        except Exception:
+            faction_id = None
+
+        # get spies
+        spies = faction.getSpies(faction_id=faction_id)
+
+        # handle API error if faction filter
+        if "apiError" in spies:
+            return JsonResponse({"error": {"error": spies["apiError"], "code": 4}}, status=400)
 
         return JsonResponse({"spies": spies}, status=200)
 
@@ -87,7 +92,7 @@ def getSpies(request):
 @csrf_exempt
 def importSpies(request):
     try:
-        if request.method != 'POST':
+        if request.method != "POST":
             return JsonResponse({"error": {"code": 2, "error": "POST request needed"}}, status=400)
 
         # get payload
@@ -95,12 +100,20 @@ def importSpies(request):
 
         for key in ["key", "spies"]:
             if key not in body:
-                return JsonResponse({"error": {"code": 2, "error": f"Couldn't find key '{key}' in the payload"}}, status=400)
+                return JsonResponse(
+                    {
+                        "error": {
+                            "code": 2,
+                            "error": f"Couldn't find key '{key}' in the payload",
+                        }
+                    },
+                    status=400,
+                )
 
         # check key
         key = body["key"]
         if compile_api_key().match(key) is None:
-            return JsonResponse({"error": {"code": 2, "error": f"Invalid API key"}}, status=400)
+            return JsonResponse({"error": {"code": 2, "error": "Invalid API key"}}, status=400)
 
         # get player
         player = getPlayerBykey(key)
@@ -150,9 +163,12 @@ def importSpies(request):
             db.updateSpies(payload=spies)
 
         if len(spies):
-            return JsonResponse({"message": f'You added {len(spies)} spies in {len(databases)} db'}, status=200)
+            return JsonResponse(
+                {"message": f"You added {len(spies)} spies in {len(databases)} db"},
+                status=200,
+            )
         else:
-            return JsonResponse({"message": f'No new targets added'}, status=200)
+            return JsonResponse({"message": "No new targets added"}, status=200)
 
     except BaseException as e:
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
