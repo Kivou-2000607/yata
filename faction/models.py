@@ -1589,6 +1589,8 @@ class Member(models.Model):
             self.updateHonors(req=req)
         self.save()
 
+        return req
+
     def shareData(self):
         return self.shareE > 0 or self.shareN > 0 or self.shareS > 0
 

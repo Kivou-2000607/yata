@@ -656,7 +656,13 @@ def updateMember(request):
             for k, v in update.items():
                 setattr(member, k, v)
 
-            member.updatePrivateData()
+            r = member.updatePrivateData()
+            if "apiError" in r:
+                return render(
+                    request,
+                    "faction/members/line.html",
+                    {"errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'},
+                )
 
             member.save()
 
