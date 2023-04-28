@@ -505,15 +505,23 @@ h3.module-doc {
 }
 div.module-doc {
 	display: none;
+	margin-left: 2%;
 }
 h4.command-doc {
 	cursor: pointer;
-	margin-left: 5%;
 }
 div.command-doc {
 	display: none;
-	margin-left: 5%;
+	margin-left: 2%;
 }
+div.command-description {
+	font-style: italic;
+}
+span.command-dropdown {
+	font-weight: bold;
+	font-style: normal;
+}
+
 .hidden {
 	display: none;
 }

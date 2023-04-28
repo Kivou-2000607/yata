@@ -90,7 +90,7 @@ function toggle_h(h) {
 $(document).on("click", "h3.module-doc, h4.command-doc", (e) => {
 	e.preventDefault();
 	// get h2 and div
-	toggle_h($(e.target));
+	toggle_h($(e.currentTarget));
 });
 
 function fancyCountdown(time) {
