@@ -663,6 +663,12 @@ def updateMember(request):
                     "faction/members/line.html",
                     {"errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'},
                 )
+            elif "error" in r:
+                return render(
+                    request,
+                    "faction/members/line.html",
+                    {"errorMessage": f'error: {r["error"]}'},
+                )
 
             member.save()
 

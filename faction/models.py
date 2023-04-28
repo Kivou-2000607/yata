@@ -379,7 +379,7 @@ class Faction(models.Model):
             msg = "{} no key to update news".format(self)
             self.nKey = 0
             self.save()
-            return self.crimes_set.all(), True, "No keys to update faction upgrades"
+            return self.crimes_set.all(), True, "No keys to update faction crimes"
 
         crimesAPI = apiCall("faction", "", "crimes", key=key.value, sub="crimes", verbose=False)
         if "apiError" in crimesAPI:
@@ -699,10 +699,10 @@ class Faction(models.Model):
         # get key
         key = self.getKey()
         if key is None:
-            msg = "{} no key to update news".format(self)
+            msg = "{} no key to update log".format(self)
             self.nKey = 0
             self.save()
-            return False, "No keys to update the armory."
+            return False, "No keys to update log."
 
         # api call
         selection = "stats,donations,currency,basic,timestamp"
@@ -838,7 +838,7 @@ class Faction(models.Model):
         # get key
         key = self.getKey()
         if key is None:
-            msg = "{} no key to update news".format(self)
+            msg = "{} no key to update upgrades".format(self)
             self.nKey = 0
             self.save()
             return False, "No keys to update faction upgrades"
@@ -1566,10 +1566,12 @@ class Member(models.Model):
             self.shareE = -1
             self.shareN = -1
             self.shareS = -1
+            req = {"error": "Player not found or unvalid key"}
         elif player.key_level < 3:
             self.shareE = 0
             self.shareN = 0
             self.shareS = 0
+            req = {"error": "Low level key"}
         else:
             player.getKey()
             selections = [
