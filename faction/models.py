@@ -50,7 +50,6 @@ BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 
 MINIMAL_API_ATTACKS_STOP = 10
 FONT_DIR = os.path.join(settings.SRC_ROOT, "fonts")
 
-
 if settings.DEBUG:
     CACHE_RESPONSE = int(config("CACHE_RESPONSE", default=10, cast=int))
 else:
@@ -605,7 +604,7 @@ class Faction(models.Model):
         membersAPI = response["members"]
 
         batch = Member.objects.bulk_operation()
-        players_on_yata = Player.objects.filter(tId__in=membersAPI)
+        players_on_yata = Key.objects.filter(tId__in=membersAPI)
 
         # set members newly on yata from -1 to 0
         id_on_yata = [p.tId for p in players_on_yata]
@@ -615,7 +614,7 @@ class Faction(models.Model):
         members_on_yata.filter(shareS=-1).update(shareS=0)
 
         # force low level perm to 0
-        id_low_lvl = [p.tId for p in players_on_yata.filter(key_level__lt=3)]
+        id_low_lvl = [p.tId for p in players_on_yata.filter(access_level__lt=3)]
         self.member_set.filter(tId__in=id_low_lvl).update(shareE=0, shareN=0, shareS=0)
 
         # set members not on yata to -1
@@ -1443,69 +1442,63 @@ class Member(models.Model):
     def __str__(self):
         return format_html("{} [{}]".format(self.name, self.tId))
 
-    def updateEnergy(self, key=None, save=False, req=False):
-        error = False
-        if not self.shareE:
-            self.energy = 0
-        else:
-            if not req:
-                req = apiCall("user", "", "bars,refills,cooldowns,perks", key=key)
+    def updateEnergy(self, key=None, req=False):
 
-            # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
-            # req = requests.get(url).json()
-            if "apiError" in req:
-                error = req
-                self.energy = 0
-                self.energyRefillUsed = True
-                self.drugCD = 0
-            else:
-                energy = req["energy"].get("current", 0)
-                self.energy = energy
-                self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
-                self.revive = "+ Ability to revive" in req["job_perks"]
-                self.drugCD = req["cooldowns"]["drug"]
+        if self.shareE < 1:
+            return {}
 
-        if save:
-            self.save()
+        if not req:
+            req = apiCall("user", "", "bars,refills,cooldowns,perks", key=key)
 
-        return error
+        # url = "https://api.torn.com/user/?selections=bars&key=2{}".format(key)
+        # req = requests.get(url).json()
+        if "apiError" in req:
+            if req["apiErrorCode"] in API_CODE_DELETE:
+                self.shareE = -1
+            return req
 
-    def updateHonors(self, key=None, save=False, req=False):
+        energy = req["energy"].get("current", 0)
+        self.energy = energy
+        self.energyRefillUsed = req["refills"]["energy_refill_used"] is True
+        self.revive = "+ Ability to revive" in req["job_perks"]
+        self.drugCD = req["cooldowns"]["drug"]
+
+        return {}
+
+    def updateHonors(self, key=None, req=False):
+
         if self.singleHitHonors == 3:
-            return False
+            return {}
 
-        error = False
         if not req:
             req = apiCall("user", "", "honors", key=key)
 
         if "apiError" in req:
-            error = req
-        else:
-            if 478 in req["honors_awarded"]:
-                self.singleHitHonors = 3
-            elif 477 in req["honors_awarded"]:
-                self.singleHitHonors = 2
-            elif 256 in req["honors_awarded"]:
-                self.singleHitHonors = 1
+            return req
 
-        if save:
-            self.save()
+        if 478 in req["honors_awarded"]:
+            self.singleHitHonors = 3
+        elif 477 in req["honors_awarded"]:
+            self.singleHitHonors = 2
+        elif 256 in req["honors_awarded"]:
+            self.singleHitHonors = 1
 
-        return error
+        return {}
 
     def updateStats(self, key=None, save=False, req=False):
         """
         return False or API error (for HTML display)
         """
 
-        if not self.shareS:
-            return False
+        if self.shareS < 1:
+            return {}
 
         if not req:
             req = apiCall("user", "", "battlestats", key=key)
 
         if "apiError" in req:
-            print(req)
+            if req["apiErrorCode"] in API_CODE_DELETE:
+                self.shareS = -1
             return req
 
         self.dexterity = req.get("dexterity", 0)
@@ -1514,81 +1507,81 @@ class Member(models.Model):
         self.strength = req.get("strength", 0)
         self.stats_ts = tsnow()
 
-        if save:
-            self.save()
-
-        return False
+        return {}
 
     def updateNNB(self, key=None, save=False, req=False):
-        error = False
-        if not self.shareN:
-            self.nnb = 0
-        else:
-            if not req:
-                req = apiCall("user", "", "perks,bars,crimes", key=key)
 
-            if "apiError" in req:
-                error = req
-                self.nnb = 0
-            else:
-                nnb = req["nerve"].get("maximum", 0)
+        if self.shareN < 1:
+            return {}
 
-                # company perks
-                for p in req.get("job_perks", []):
-                    sp = p.split(" ")
-                    # not python 3.5 compatible
-                    # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
-                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
-                        nnb -= int(sp[1])
+        if not req:
+            req = apiCall("user", "", "perks,bars,crimes", key=key)
 
-                # faction perks
-                for p in req.get("faction_perks", []):
-                    sp = p.split(" ")
-                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
-                        nnb -= int(sp[1])
+        if "apiError" in req:
+            if req["apiErrorCode"] in API_CODE_DELETE:
+                self.shareN = -1
+            return req
 
-                # merit perks
-                for p in req.get("merit_perks", []):
-                    sp = p.split(" ")
-                    if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
-                        nnb -= int(sp[1])
+        nnb = req["nerve"].get("maximum", 0)
 
-                self.nnb = nnb
+        # company perks
+        for p in req.get("job_perks", []):
+            sp = p.split(" ")
+            # not python 3.5 compatible
+            # match = re.match(r'([+]){1} (\d){1,2} ([mMaximum]){7} nerve', p)
+            if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
+                nnb -= int(sp[1])
 
-        if save:
-            self.save()
+        # faction perks
+        for p in req.get("faction_perks", []):
+            sp = p.split(" ")
+            if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
+                nnb -= int(sp[1])
 
-        return error
+        # merit perks
+        for p in req.get("merit_perks", []):
+            sp = p.split(" ")
+            if len(sp) == 4 and sp[3] == "nerve" and sp[2] == "maximum":
+                nnb -= int(sp[1])
+
+        self.nnb = nnb
+
+        return {}
 
     def updatePrivateData(self):
+
         player = Player.objects.filter(tId=self.tId).first()
+
         if player is None or not player.validKey:
             self.shareE = -1
             self.shareN = -1
             self.shareS = -1
-            req = {"error": "Player not found or unvalid key"}
-        elif player.key_level < 3:
+            self.save()
+            return {}
+
+        if player.key_level < 3:
             self.shareE = 0
             self.shareN = 0
             self.shareS = 0
-            req = {"error": "Low level key"}
-        else:
-            player.getKey()
-            selections = [
-                "perks",
-                "bars",
-                "crimes",
-                "battlestats",
-                "honors",
-                "refills",
-                "cooldowns",
-            ]
-            req = apiCall("user", "", ",".join(selections), key=player.getKey())
-            self.updateEnergy(req=req)
-            self.updateStats(req=req)
-            self.updateNNB(req=req)
-            self.updateHonors(req=req)
-            self.updateHonors(req=req)
+            self.save()
+            return {}
+
+        player.getKey()
+        selections = [
+            "perks",
+            "bars",
+            "crimes",
+            "battlestats",
+            "honors",
+            "refills",
+            "cooldowns",
+        ]
+        req = apiCall("user", "", ",".join(selections), key=player.getKey())
+
+        self.updateEnergy(req=req)
+        self.updateStats(req=req)
+        self.updateNNB(req=req)
+        self.updateHonors(req=req)
         self.save()
 
         return req
