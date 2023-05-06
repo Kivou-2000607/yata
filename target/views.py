@@ -17,31 +17,28 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.shortcuts import render
+import json
+import time
+
+from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse
+
 # from django.core.exceptions import PermissionDenied
 # from django.utils import timezone
-from django.shortcuts import redirect
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.core.paginator import Paginator
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-from django.core.cache import cache
 
-import json
-import math
+from faction.models import Faction
+from player.models import Key, Player
+from target.functions import getTargets, updateAttacks, updateRevives
+from yata.handy import apiCall, getFaction, getPlayer, returnError
 
-from yata.handy import *
-
-from player.models import Player
-from player.models import Key
-from faction.functions import BONUS_HITS
-from target.functions import *
-from setup.models import Disabled
+# from django.core.cache import cache
 
 
 def index(request):
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             # if cache.get('disable-status', False):
             #     return returnError(
             #         type=503,
@@ -57,8 +54,15 @@ def index(request):
 
             player.targetInfo = len(targets)
             player.save()
-            context = {"player": player, "targetcat": True, "factionTargets": factionTargets, "targets": targets, "ts": tsnow(), "view": {"targets": True}}
-            return render(request, 'target.html', context)
+            context = {
+                "player": player,
+                "targetcat": True,
+                "factionTargets": factionTargets,
+                "targets": targets,
+                "ts": int(time.time()),
+                "view": {"targets": True},
+            }
+            return render(request, "target.html", context)
 
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -69,10 +73,10 @@ def index(request):
 
 def attacks(request):
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
 
-            full = request.GET.get('full', False)
+            full = request.GET.get("full", False)
             error, attacks = updateAttacks(player, full=full)
             targets = getTargets(player)
 
@@ -99,26 +103,41 @@ def attacks(request):
             # sluts
             losses = player.attack_set.filter(result="Lost").exclude(attacker_id=player.tId)
 
-            sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
+            sluts = {i: [] for i in set(losses.values_list("attacker_id", flat=True))}
             for i in sluts:
                 a = losses.order_by("timestamp_ended").filter(attacker_id=i)
                 if len(a):
                     # name, paid, total
-                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all()), a.first().timestamp_ended, a.first().code]
+                    sluts[i] = [
+                        a.first().attacker_name,
+                        len(a.filter(paid=True)),
+                        len(a.all()),
+                        a.first().timestamp_ended,
+                        a.first().code,
+                    ]
 
             # sort sluts
-            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][3]))
+            sluts = sorted(sluts.items(), key=lambda x: (x[1][1] - x[1][2], -x[1][3]))
 
             # paginator
             paginator = Paginator(attacks, 25)
-            attacks = paginator.get_page(request.GET.get('p_at'))
+            attacks = paginator.get_page(request.GET.get("p_at"))
 
-            context = {"player": player, "targetcat": True, "attacks": attacks, "sluts": sluts, "breakdownType": breakdownType, "breakdownPlayer": breakdownPlayer, "targets": targets, "view": {"attacks": True}}
+            context = {
+                "player": player,
+                "targetcat": True,
+                "attacks": attacks,
+                "sluts": sluts,
+                "breakdownType": breakdownType,
+                "breakdownPlayer": breakdownPlayer,
+                "targets": targets,
+                "view": {"attacks": True},
+            }
             context["apiErrorSub"] = error["apiError"] if error else False
 
-            page = 'target/content-reload.html'if request.method == "POST" else 'target.html'
-            if request.GET.get('p_at', False):
-                page = 'target/attacks/attacks.html'
+            page = "target/content-reload.html" if request.method == "POST" else "target.html"
+            if request.GET.get("p_at", False):
+                page = "target/attacks/attacks.html"
 
             return render(request, page, context)
 
@@ -131,7 +150,7 @@ def attacks(request):
 
 def losses(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
             losses = player.attack_set.filter(result="Lost").exclude(attacker_id=player.tId)
@@ -145,21 +164,27 @@ def losses(request):
                     print("update all")
                     losses.update(paid=True)
 
-            sluts = {i: [] for i in set(losses.values_list('attacker_id', flat=True))}
+            sluts = {i: [] for i in set(losses.values_list("attacker_id", flat=True))}
             for i in sluts:
                 a = losses.order_by("timestamp_ended").filter(attacker_id=i)
                 if len(a):
                     # name, paid, total
-                    sluts[i] = [a.first().attacker_name, len(a.filter(paid=True)), len(a.all()), a.first().timestamp_ended, a.first().code]
+                    sluts[i] = [
+                        a.first().attacker_name,
+                        len(a.filter(paid=True)),
+                        len(a.all()),
+                        a.first().timestamp_ended,
+                        a.first().code,
+                    ]
 
             # sort sluts
-            sluts = sorted(sluts.items(), key=lambda x:(x[1][1]-x[1][2], -x[1][3]))
+            sluts = sorted(sluts.items(), key=lambda x: (x[1][1] - x[1][2], -x[1][3]))
 
             context = {"player": player, "sluts": sluts}
-            return render(request, 'target/attacks/losses.html', context)
+            return render(request, "target/attacks/losses.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -168,7 +193,7 @@ def losses(request):
 
 def attack(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
             if request.POST["type"] == "paid":
@@ -178,8 +203,8 @@ def attack(request):
                     attack.paid = not attack.paid
                     attack.save()
 
-                context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
-                return render(request, 'target/attacks/button-paid.html', context)
+                context = {"v": attack, "targets": getTargets(player), "ts": int(time.time())}
+                return render(request, "target/attacks/button-paid.html", context)
 
             elif request.POST["type"] == "toggle":
                 # toggle target
@@ -187,7 +212,7 @@ def attack(request):
                 attack_id = int(request.POST["attackId"])
                 try:
                     targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
-                except BaseException as e:
+                except BaseException:
                     player.targetinfo_set.filter(target_id=target_id).all().delete()
                     targetInfo, state = player.targetinfo_set.get_or_create(target_id=target_id)
 
@@ -204,11 +229,11 @@ def attack(request):
             else:
                 returnError(type=403, msg="Unknown request")
 
-            context = {"v": attack, "targets": getTargets(player), "ts": tsnow()}
-            return render(request, 'target/attacks/button-target.html', context)
+            context = {"v": attack, "targets": getTargets(player), "ts": int(time.time())}
+            return render(request, "target/attacks/button-target.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -217,7 +242,7 @@ def attack(request):
 
 def targets(request):
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
 
             targets = getTargets(player)
@@ -226,8 +251,15 @@ def targets(request):
             faction = Faction.objects.filter(tId=player.factionId).first()
             factionTargets = [] if faction is None else faction.getTargetsId()
 
-            context = {"player": player, "targetcat": True, "targets": targets, "factionTargets": factionTargets, "ts": tsnow(), "view": {"targets": True}}
-            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
+            context = {
+                "player": player,
+                "targetcat": True,
+                "targets": targets,
+                "factionTargets": factionTargets,
+                "ts": int(time.time()),
+                "view": {"targets": True},
+            }
+            page = "target/content-reload.html" if request.method == "POST" else "target.html"
             return render(request, page, context)
 
         else:
@@ -239,22 +271,22 @@ def targets(request):
 
 def targetsList(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
-            if request.POST["action_type"] == 'export':
+            if request.POST["action_type"] == "export":
                 targets = getTargets(player)
-                response = HttpResponse(json.dumps(targets, separators=(',', ':')), content_type='text/json')
-                response['Content-Disposition'] = 'attachment; filename="target_list.json"'
+                response = HttpResponse(json.dumps(targets, separators=(",", ":")), content_type="text/json")
+                response["Content-Disposition"] = 'attachment; filename="target_list.json"'
                 return response
 
-            elif request.POST["action_type"] == 'delete':
+            elif request.POST["action_type"] == "delete":
                 player.targetinfo_set.all().delete()
 
-            elif request.POST["action_type"] == 'import' and len(request.FILES):
+            elif request.POST["action_type"] == "import" and len(request.FILES):
                 file = request.FILES["json_file"]
 
-                if file.content_type == 'application/json':
+                if file.content_type == "application/json":
                     targets = json.loads(file.read())
                     try:
                         for k, v in targets.items():
@@ -266,7 +298,8 @@ def targetsList(request):
                                 "flat_respect": float(v["flat_respect"]),
                                 "result": str(v["result"])[:16],
                                 "color": int(v["color"]),
-                                "note": str(v["note"])[:128]}
+                                "note": str(v["note"])[:128],
+                            }
 
                             player.targetinfo_set.get_or_create(target_id=k, defaults=defaults)
 
@@ -279,10 +312,10 @@ def targetsList(request):
                     message = "Wrong file format. Require: application/json. Give: {}".format(file.content_type)
                     return returnError(type=404, msg=message)
 
-            return redirect('/target/')
+            return redirect("/target/")
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -291,7 +324,7 @@ def targetsList(request):
 
 def target(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
             # if cache.get('disable-status', False):
@@ -299,7 +332,6 @@ def target(request):
             #     return render(request, 'target/targets/line.html', context)
 
             if request.POST.get("type", False):
-
                 # update target
                 if request.POST["type"] == "update":
                     target_id = int(request.POST["targetId"])
@@ -316,9 +348,15 @@ def target(request):
                     else:
                         faction = Faction.objects.filter(tId=player.factionId).first()
                         factionTargets = [] if faction is None else faction.getTargetsId()
-                        context = {"player": player, "factionTargets": factionTargets, "target": target, "targetId": target_id, "ts": tsnow()}
+                        context = {
+                            "player": player,
+                            "factionTargets": factionTargets,
+                            "target": target,
+                            "targetId": target_id,
+                            "ts": int(time.time()),
+                        }
 
-                    return render(request, 'target/targets/line.html', context)
+                    return render(request, "target/targets/line.html", context)
 
                 if request.POST["type"] == "note":
                     target_id = int(request.POST["targetId"])
@@ -326,9 +364,12 @@ def target(request):
                     targetInfo.note = str(request.POST["note"])[:128]
                     targetInfo.save()
 
-                    context = {"target": {"note": targetInfo.note, "color": targetInfo.color}, "targetId": target_id}
+                    context = {
+                        "target": {"note": targetInfo.note, "color": targetInfo.color},
+                        "targetId": target_id,
+                    }
 
-                    return render(request, 'target/targets/note.html', context)
+                    return render(request, "target/targets/note.html", context)
 
                 if request.POST["type"] == "note-color":
                     target_id = int(request.POST["targetId"])
@@ -336,9 +377,12 @@ def target(request):
                     targetInfo.color = (targetInfo.color + 1) % 4
                     targetInfo.save()
 
-                    context = {"target": {"note": targetInfo.note, "color": targetInfo.color}, "targetId": target_id}
+                    context = {
+                        "target": {"note": targetInfo.note, "color": targetInfo.color},
+                        "targetId": target_id,
+                    }
 
-                    return render(request, 'target/targets/note.html', context)
+                    return render(request, "target/targets/note.html", context)
 
                 # add by Id target
                 if request.POST["type"] == "addById":
@@ -350,44 +394,56 @@ def target(request):
                         faction = getFaction(player.factionId)
                         factionTargets = [] if faction is None else faction.getTargetsId()
                         targets = getTargets(player)
-                        context = {"player": player, "targets": targets, "factionTargets": factionTargets, "targetId": target_id, "ts": tsnow()}
+                        context = {
+                            "player": player,
+                            "targets": targets,
+                            "factionTargets": factionTargets,
+                            "targetId": target_id,
+                            "ts": int(time.time()),
+                        }
 
                     except BaseException as e:
                         faction = getFaction(player.factionId)
                         factionTargets = [] if faction is None else faction.getTargetsId()
                         targets = getTargets(player)
-                        context = {"player": player, "targets": targets, "factionTargets": factionTargets, "addError": e, "ts": tsnow()}
+                        context = {
+                            "player": player,
+                            "targets": targets,
+                            "factionTargets": factionTargets,
+                            "addError": e,
+                            "ts": int(time.time()),
+                        }
 
-                    return render(request, 'target/targets/index.html', context)
+                    return render(request, "target/targets/index.html", context)
 
                 # delete target
                 if request.POST["type"] == "delete":
                     target_id = int(request.POST["targetId"])
                     targetInfo, _ = player.targetinfo_set.get(target_id=target_id).delete()
 
-                    return render(request, 'target/targets/line.html')
+                    return render(request, "target/targets/line.html")
 
             else:
                 # should not happen
-                context = {"target": None, "targetId": None, "ts": tsnow()}
-                return render(request, 'target/targets/line.html', context)
+                context = {"target": None, "targetId": None, "ts": int(time.time())}
+                return render(request, "target/targets/line.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except BaseException as e:
         context = {"apiErrorLine": "Error while updating target: {}".format(e)}
-        return render(request, 'target/targets/line.html', context)
+        return render(request, "target/targets/line.html", context)
 
 
 def revives(request):
     try:
-        if request.session.get('player'):
-            print('[view.traget.attacks] get player id from session')
+        if request.session.get("player"):
+            print("[view.traget.attacks] get player id from session")
             tId = request.session["player"].get("tId")
             player = Player.objects.filter(tId=tId).first()
-            player.lastActionTS = tsnow()
+            player.lastActionTS = int(time.time())
             player.save()
 
             error, revives = updateRevives(player)
@@ -419,15 +475,22 @@ def revives(request):
             breakdownStatus = sorted(breakdownStatus.items(), key=lambda x: x[0])
             breakdownPlayer = sorted(breakdownPlayer.items(), key=lambda x: x[0])
 
+            revives = Paginator(revives, 25).get_page(request.GET.get("p_re"))
 
-            revives = Paginator(revives, 25).get_page(request.GET.get('p_re'))
-
-            context = {"player": player, "targetcat": True, "revives": revives, "breakdownPlayer": breakdownPlayer, "breakdownType": breakdownType, "breakdownStatus": breakdownStatus, "view": {"revives": True}}
+            context = {
+                "player": player,
+                "targetcat": True,
+                "revives": revives,
+                "breakdownPlayer": breakdownPlayer,
+                "breakdownType": breakdownType,
+                "breakdownStatus": breakdownStatus,
+                "view": {"revives": True},
+            }
             context["apiErrorSub"] = error["apiError"] if error else False
 
-            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
-            if request.GET.get('p_re', False):
-                page = 'target/revives/revives.html'
+            page = "target/content-reload.html" if request.method == "POST" else "target.html"
+            if request.GET.get("p_re", False):
+                page = "target/revives/revives.html"
 
             return render(request, page, context)
 
@@ -440,7 +503,7 @@ def revives(request):
 
 def revive(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
 
             r = player.revive_set.filter(tId=request.POST.get("reviveId", 0)).first()
@@ -448,28 +511,30 @@ def revive(request):
                 r.paid = not r.paid
                 r.save()
 
-            return render(request, 'target/revives/buttons.html', {"revive": r})
+            return render(request, "target/revives/buttons.html", {"revive": r})
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
 @csrf_exempt
 def targetImport(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
-
             # get payload
             body = json.loads(request.body)
-
 
             if "key" not in body:
                 return JsonResponse({"message": "couldn't find key 'key' in the payload"}, status=400)
             if "targets" not in body:
-                return JsonResponse({"message": "couldn't find key 'targets' in the payload"}, status=400)
+                return JsonResponse(
+                    {"message": "couldn't find key 'targets' in the payload"},
+                    status=400,
+                )
 
             # get user
             player_key = Key.objects.filter(value=body.get("key")).first()
@@ -484,25 +549,32 @@ def targetImport(request):
                 # old version of torn pda
                 for target_id, note in body.get("targets", {}).items():
                     if target_id.isdigit():
-                        info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults={"note": note})
+                        (
+                            info,
+                            create,
+                        ) = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults={"note": note})
                         if create:
                             added.append(target_id)
 
             else:
-
                 print("new version")
                 # old version of torn pda
                 for target_id, target_data in body.get("targets", {}).items():
                     if target_id.isdigit():
-                        info, create = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults=target_data)
+                        (
+                            info,
+                            create,
+                        ) = player_key.player.targetinfo_set.update_or_create(target_id=int(target_id), defaults=target_data)
                         if create:
                             added.append(target_id)
 
-
             if len(added):
-                return JsonResponse({"message": f'You added {len(added)} targets: {", ".join(added)}'}, status=200)
+                return JsonResponse(
+                    {"message": f'You added {len(added)} targets: {", ".join(added)}'},
+                    status=200,
+                )
             else:
-                return JsonResponse({"message": f'No targets have been added'}, status=200)
+                return JsonResponse({"message": "No targets have been added"}, status=200)
 
         except BaseException as e:
             return JsonResponse({"message": f"YATA error: {e}"}, status=500)
@@ -513,7 +585,6 @@ def targetImport(request):
 
 def targetExport(request):
     try:
-
         # get api key
         key = request.GET.get("key")
 
@@ -538,10 +609,11 @@ def targetExport(request):
 
 def dogtags(request):
     from target.models import DogTags
+
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
-            if player.tId not in [2002288]:
+            if player.tId not in [2000607, 2002288, 1880691, 1693153]:
                 return returnError(type=403, msg="This is a private section.")
 
             if request.POST.get("type") == "delete":  # delete target
@@ -565,13 +637,19 @@ def dogtags(request):
                     return render(request, "dummy.html")
 
                 # API call
-                target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
+                target_api = apiCall(
+                    "user",
+                    uid,
+                    "profile,personalstats,timestamp",
+                    player.getKey(),
+                    verbose=False,
+                )
                 if "apiError" in target_api:
                     context = {"error": target_api["apiError"]}
                     return render(request, "target/dogtags/line.html", context)
 
                 # delete target Federal
-                if target_api["status"]["state"] in ['Federal']:
+                if target_api["status"]["state"] in ["Federal"]:
                     target.delete()
                     context = {"error": f'Target deleted: {target_api["status"]["state"]}'}
                     return render(request, "target/dogtags/line.html", context)
@@ -581,7 +659,7 @@ def dogtags(request):
                 delta = deflost - target.defendslost - target.failedattack
                 if delta > 0:
                     target.delete()
-                    context = {"error": f'Target deleted: Delta = {delta}'}
+                    context = {"error": f"Target deleted: Delta = {delta}"}
                     return render(request, "target/dogtags/line.html", context)
 
                 return render(request, "target/dogtags/line.html", {"target": target})  # dummy template
@@ -590,39 +668,50 @@ def dogtags(request):
                 uid = request.POST.get("uid")
                 target = DogTags.objects.filter(target_id=uid).first()
                 if target is None:
-                    context = {"error": f'Target ID {uid} not found'}
+                    context = {"error": f"Target ID {uid} not found"}
                 else:
-
                     # API call
-                    target_api = apiCall("user", uid, "profile,personalstats,timestamp", player.getKey(), verbose=False)
+                    target_api = apiCall(
+                        "user",
+                        uid,
+                        "profile,personalstats,timestamp",
+                        player.getKey(),
+                        verbose=False,
+                    )
                     if "apiError" in target_api:
                         context = {"error": target_api["apiError"]}
                     else:
                         deflost = target_api.get("personalstats", {}).get("defendslost", 0)
                         status = target_api.get("status", {}).get("state", "??")
                         color = target_api.get("status", {}).get("color", "red")
-                        comparison = {"defendslost": deflost,
-                                      "defendslost_delta": deflost - target.defendslost - target.failedattack,
-                                      "status": status,
-                                      "color": color
-                                      }
+                        comparison = {
+                            "defendslost": deflost,
+                            "defendslost_delta": deflost - target.defendslost - target.failedattack,
+                            "status": status,
+                            "color": color,
+                        }
                         context = {"comparison": comparison}
 
                     context["target"] = target
-                return render(request, "target/dogtags/comparison.html", context)
+                return render(request, "target/dogtags/line.html", context)
 
             # main page (display targets table)
-            old = tsnow() - 3600 * 24 * 30
+            old = int(time.time()) - 3600 * 24 * 30
             targets = DogTags.objects.filter(last_action__lt=old).order_by("-level")
             n_targets = targets.count()
 
-            targets = Paginator(targets, 100).get_page(request.GET.get('page'))
+            targets = Paginator(targets, 100).get_page(request.GET.get("page"))
 
-            context = {"player": player, "targets": targets, "n_targets": n_targets, "view": {"dogtags": True}}
+            context = {
+                "player": player,
+                "targets": targets,
+                "n_targets": n_targets,
+                "view": {"dogtags": True},
+            }
 
-            page = 'target/content-reload.html' if request.method == "POST" else 'target.html'
-            if request.GET.get('nav', False):
-                page = 'target/dogtags/targets.html'
+            page = "target/content-reload.html" if request.method == "POST" else "target.html"
+            if request.GET.get("page", False):
+                page = "target/dogtags/targets.html"
 
             return render(request, page, context)
 

@@ -17,30 +17,30 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.core.management.base import BaseCommand
-
-import json
-import time
 import random
+import time
+
+from django.core.management.base import BaseCommand
 
 from player.models import Key
 from target.models import DogTags
-from yata.handy import tsnow, apiCall
+from yata.handy import apiCall
+
 
 class Command(BaseCommand):
     def handle(self, **options):
-
-        keys_id = [2000607]
+        keys_id = [2000607, 2002288, 1880691, 1693153]
         keys = [k.value for k in Key.objects.filter(tId__in=keys_id)]
+        print(keys)
 
         n_calls_max = 50
         delta_t_max = 60
 
         n_calls = 0
-        ts_start = tsnow()
+        ts_start = int(time.time())
         while True:
             n_calls += 1
-            delta_t = tsnow() - ts_start
+            delta_t = int(time.time()) - ts_start
 
             # test if too many api calls
             if n_calls > n_calls_max:
@@ -48,15 +48,21 @@ class Command(BaseCommand):
                 time.sleep(delta_t_max - delta_t)
                 n_calls = 0
                 delta_t = 0
-                ts_start = tsnow()
-            
+                ts_start = int(time.time())
+
             # print(f"Call number {n_calls} in {delta_t} seconds (iteration ({i}))")
             for n, key in enumerate(keys):
-                randomID = random.randrange(100000, 2300000)                
+                randomID = random.randrange(100000, 2300000)
                 string = f"Use key {n} for id {randomID:07d}"
-                player = apiCall("user", randomID, "profile,personalstats,timestamp", key, verbose=False)
-                
-                if 'apiError' in player:
+                player = apiCall(
+                    "user",
+                    randomID,
+                    "profile,personalstats,timestamp",
+                    key,
+                    verbose=False,
+                )
+
+                if "apiError" in player:
                     print(string + "\tIgnore")
                     continue
 
@@ -70,8 +76,8 @@ class Command(BaseCommand):
                     "attackswon": player.get("personalstats", {}).get("attackswon", 0),
                     "last_action": player.get("last_action", {}).get("timestamp", 0),
                     "last_update": player.get("timestamp"),
-                    }
-                
+                }
+
                 _, create = DogTags.objects.get_or_create(target_id=dogtags["target_id"], defaults=dogtags)
                 if create:
                     print(string + "\tTarget created")
@@ -82,4 +88,3 @@ class Command(BaseCommand):
                 #     print(k, v)
 
             # time.sleep(2)
-
