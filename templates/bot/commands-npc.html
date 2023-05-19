@@ -1,0 +1,40 @@
+{% comment %}
+Copyright 2019 kivou.2000607@gmail.com
+
+This file is part of yata.
+
+    yata is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    yata is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with yata. If not, see <https://www.gnu.org/licenses/>.
+{% endcomment %}
+
+<h3 id="{{anchor}}" class="module-doc admin"><i class="fas fa-user-secret"></i>&nbsp;&nbsp;Module NPC&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+<div class="module-doc ms-4 mb-4">
+
+    <p>This module handles general settings for NPCs.</p>
+
+    <h4 class="command-doc admin">Command <code>/npc rangers</code>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+    <div class="command-doc ms-4">
+        <ul class="args mb-2">
+            <li><code>dashboard</code> the channel where an embed message will display NPC status.</li>
+            <li><code>alerts</code> the channel where the alerts will be sent.</li>
+            <li><code>role</code> the role to mention for the alerts.</li>
+            <li><code>timing</code> the number of minutes between the alerts and the attacks.</li>
+        </ul>
+        <div class="command-description p-2">
+            NPC are currently attacked based on Loot Rangers team schedule.
+            This command allows you to setup a dashboard channel where the status and the next attack are scheduled.
+            You can also setup a different channel for alerts before the attacks.
+        </div>
+    </div>
+
+</div>

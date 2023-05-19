@@ -17,6 +17,14 @@ img.invite-button:hover {
     box-shadow: 2px  2px  2px  2px #aaa!important;
 }
 
+ul.args li {
+	list-style-type: none !important;
+}
+
+div.command-notes ul li {
+    list-style-type: square !important;
+}
+
 h4.command-doc.admin::before {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
@@ -25,9 +33,9 @@ h4.command-doc.admin::before {
     color: #CC3434;
 }
 
-ul.command-list {
-    list-style-type: none !important;
-}
+/* ul.command-list li {
+    list-style-type: initial;
+} */
 
 /* old */
 p.color-private { color: #CC3434; }

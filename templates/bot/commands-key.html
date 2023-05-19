@@ -17,7 +17,49 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<h3 id="{{anchor}}" class="module-doc"><i class="fas fa-key"></i>&nbsp;Module key&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+<h3 id="{{anchor}}" class="module-doc"><i class="fas fa-key"></i>&nbsp;Module user&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
 <div class="module-doc">
+    <div class="module-doc ms-4 mb-4">
+        <p>
+            This module handles personal data such as API key storage for the bot.
+        </p>
+        {% comment %} <p>
+            Note that key stored here will only be used by the player itself and not for passive features (like verification).
+        </p> {% endcomment %}
+        <h4 class="command-doc admin">Group <code>/key</code>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+        <div class="command-doc ms-4">
+            <div class="p-2">
+                A personal API key can be used for various features like starting war watch or getting notifications.
+                The level needed depends on the features you use. Limited Access and faction API Access (AA) <i>should</i> cover all the cases.
+            </div>
 
+            <ul class="command-list">
+                <li>
+                    <code>/key add</code><br>
+                    <ul class="args mb-2">
+                        <li><code>key:</code> the <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">Torn API key</a> you want to add.</li>
+                    </ul>
+                    <div class="command-description p-2 mb-2">
+                        Enters your API key to the bot's database.
+                    </div>
+                </li>
+                <li>
+                    <code>/key delete</code><br>
+                    <div class="command-description p-2 mb-2">
+                        Deletes your API key from the bot's database.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="command-notes mb-2">
+                Notes:
+                <ul>
+                    <li>You can only enter a single key.</li>
+                    <li>The key is available from all servers where the Yata bot is.</li>
+                    <li>Admins don't have access to your key.</li>
+                    <li>Your key will only be used from commands you issued yourself.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>

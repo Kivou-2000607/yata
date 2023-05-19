@@ -30,21 +30,29 @@ This file is part of yata.
 
     <ul class="command-list">
         <li>
-            <code>/server keys add</code><br>
-            <div class="command-description p-2">Enter a key (no necessarly yours) to the bot's database.
-            Public keys are enough for the tasks that will use these keys.
-            The more key you have here the less pressure it puts on each one.
+            <code>/server keys add</code>
+            <ul class="args mb-2">
+                <li><code>key:</code> the <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">Torn API key</a> you want to add</li>
+            </ul>
+            <div class="command-description mb-2 p-2">
+                Adds an API key (no necessarly yours) to the server.
+                Public keys are enough for the tasks that will use these keys.
+                The more keys you add, the less pressure it puts on each one.
+            </div>
+        </li>
+        <div class="command-notes mb-2">
+            Notes
             <ul>
-                <li><code>key</code> the <a href="https://www.torn.com/preferences.php#tab=api" target="_blank">Torn API key</a> you want to add</li>
+                <li>It is mandatory to setup at least one valid API key.</li>
+                <li>The bot will eventually leave your server if no valid keys are found.</li>
+                <li>A key of an inactive player (2 weeks) becomes invalid.</li>
             </ul>
         </div>
-        </li>
         <li>
             <code>/server keys check</code><br>
-            <div class="command-description p-2">Displays all valid keys and removes invalid ones.
+            <div class="command-description mb-2 p-2">Displays all valid keys and removes invalid ones.
             A dropdown <span class="command-dropdown">Delete keys</span> attached to the message will allow you to delete some keys.</div>
         </li>
     </ul>
     </div>
-
 </div>
