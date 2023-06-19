@@ -1736,7 +1736,7 @@ class Chain(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "chain,attacks,timestamp&from={}&to={}".format(tsl - 1, tse)
+            selection = "chain,attacks,timestamp&from={}&to={}&sort=asc".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull attacks for chain report"
             key.lastPulled = tsnow()
@@ -2503,7 +2503,7 @@ class AttacksReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "attacks,timestamp&from={}&to={}".format(tsl - 1, tse)
+            selection = "attacks,timestamp&from={}&to={}&sort=asc".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull attacks for attacks report"
             key.lastPulled = tsnow()
@@ -3116,7 +3116,7 @@ class RevivesReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = "revives,timestamp&from={}&to={}".format(tsl - 1, tse)
+            selection = "revives,timestamp&from={}&to={}&sort=asc".format(tsl - 1, tse)
             req = apiCall("faction", faction.tId, selection, key.value, verbose=False)
             key.reason = "Pull revives for report"
             key.lastPulled = tsnow()
@@ -3734,7 +3734,8 @@ class ArmoryReport(models.Model):
                 time.sleep(sleeptime)
 
             # make call
-            selection = f"armorynews,fundsnews,timestamp&from={tsl - 1}&to={tse}"
+            selection = f"armorynews,fundsnews,timestamp&from={tsl - 1}&to={tse}&sort=asc"
+            # selection = f"armorynews,fundsnews,timestamp&from={tsl - 1}&to={tse}"
             req = apiCall("faction", faction.tId, selection, key.value, verbose=True)
             key.reason = "Pull armory for report"
             key.lastPulled = tsnow()
@@ -3766,13 +3767,13 @@ class ArmoryReport(models.Model):
             print("{} cache = {}s".format(self, cache))
 
             # in case cache
-            if cache > CACHE_RESPONSE:
-                self.state = -4
-                self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
-                self.update = tsnow()
-                self.save()
-                print(f"{self} {self.state_string}")
-                return -4
+            # if cache > CACHE_RESPONSE:
+            #     self.state = -4
+            #     self.state_string = REPORTS_STATUS.get(self.state, f"Unknown code {self.state}")
+            #     self.update = tsnow()
+            #     self.save()
+            #     print(f"{self} {self.state_string}")
+            #     return -4
 
             # add news to global dictionnary
             new_entries = 0
