@@ -20,17 +20,27 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-{% if target %}
-    <td class="a">{{target.last_update|ts2date}}</td>
-    <td class="b">{{target.name|playerURL:target.target_id|safe}}</td>
-    <td class="c">Level {{target.level}} {{target.rank}}</td>
-    <td class="c">{{target.age}}</td>
-    <td class="c">{{target.last_action|ts2date}}</td>
-    <td class="c">{{target.defendslost}}</td>
-    <td class="c">{{target.attackswon}}</td>
-    <td class="c">{{target.failedattack}}</td>
-    <td class="c dont-touch-me">
-        <a style="display: inline;" href="" class="target-dogtags-add" data-val="{{target.target_id}}"> <i class="fas fa-plus-square fa-icon-inline"></i></a> <a style="display: inline;" href="" class="target-dogtags-delete" data-val="{{target.target_id}}"> <i class="fas fa-trash-alt fa-icon-inline"></i></a>
+{% if comparison %}
+
+    {% if comparison.defendslost_delta %}
+        <td colspan="9" class="dont-touch-me error text-center">Delta loss: {{comparison.defendslost_delta}} <i class="fas fa-times fa-icon-inline ms-2"></i></td>
+    {% else %}
+        <td colspan="9" class="dont-touch-me valid text-center">Delta loss: {{comparison.defendslost_delta}} <i class="fas fa-check fa-icon-inline ms-2"></i> <a href="https://www.torn.com/loader.php?sid=attack&user2ID={{target.target_id}}" target="_blank" class="ms-2">attack</a>
+        </td>
+    {% endif %}
+
+{% elif target %}
+    <td class="">{{target.last_update|ts2date}}</td>
+    <td class="dont-touch-me">{{target.name|playerURL:target.target_id|safe}}</td>
+    <td class="">{{target.rank}} lvl {{target.level}}</td>
+    <td class="">{{target.age}}</td>
+    <td class="">{{target.last_action|ts2date}}</td>
+    <td class="text-end">{{target.defendslost}}</td>
+    <td class="text-end">{{target.attackswon}}</td>
+    <td class="text-center">{{target.failedattack}}</td>
+    <td class="text-center dont-touch-me">
+        <a style="display: inline;" href="" class="target-dogtags-add mx-2" data-val="{{target.target_id}}"> <i class="fas fa-plus-square fa-icon-inline"></i></a>
+        <a style="display: inline;" href="" class="target-dogtags-delete mx-2" data-val="{{target.target_id}}"> <i class="fas fa-trash-alt fa-icon-inline"></i></a>
     </td>
 {% elif error %}
     <td colspan="9" class="error">{{error}}</td>

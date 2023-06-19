@@ -17,7 +17,27 @@ img.invite-button:hover {
     box-shadow: 2px  2px  2px  2px #aaa!important;
 }
 
+ul.args li {
+	list-style-type: none !important;
+}
 
+div.command-notes ul li {
+    list-style-type: square !important;
+}
+
+h4.command-doc.admin::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f502";
+    margin-right: 5px;
+    color: #CC3434;
+}
+
+/* ul.command-list li {
+    list-style-type: initial;
+} */
+
+/* old */
 p.color-private { color: #CC3434; }
 p.color-public { color: #447e9b; }
 p.color-none { color: #0B8E14; }
@@ -28,6 +48,7 @@ p.privacy-master::before {
     content: "\f509";
     margin-right: 5px;
 }
+
 
 p.privacy-private::before {
     font-family: "Font Awesome 5 Free";

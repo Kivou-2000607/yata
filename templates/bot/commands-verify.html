@@ -17,51 +17,115 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 {% endcomment %}
 
-<h3 id="{{anchor}}" class="module-doc"><i class="fas fa-check"></i>&nbsp;Module Verify&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
-<div class="module-doc">
-<p>This module brings a set of features and commands to verify a discord account with a torn account. Verifying means:
-    <ul>
-        <li>Giving a special verified role (it can change depending on the servers)</li>
-        <li>Potentially giving faction and group of factions roles</li>
-        <li>Changing the discord display name to the Torn name</li>
+<h3 id="{{anchor}}" class="module-doc"><i class="fas fa-check"></i>&nbsp;&nbsp;Module verify&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+<div class="module-doc ms-4 mb-4">
+
+    <p>This module handles verification commands and settings for the server.</p>
+
+    <h4 class="command-doc">Command <code>/v</code>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+    <div class="command-doc ms-4">
+        <div class="command-description p-2 mb-4">
+            The command <code>/v</code> verifies the author of the commands or another userserver's member if the optional argument <code>member</code> is entered.
+            Depending on the options set by the server admins, the verification can do the following things if the member is officialy verified by Torn:
+            give a role, change the name to the member Torn's name and append its Torn ID, give a set of roles based on faction membership and position, give a role based on elimination team.
+        </div>
+    </div>
+
+    <h4 class="command-doc admin">Group <code>/verify</code>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+    <div class="command-doc ms-4">
+    <div class="p-2">
+        The <code>/verify</code> group of commands handles server wide verifications and verification options.
+    </div>
+    <ul class="command-list">
+        <li>
+            <code>/verify options</code>
+            <ul class="args mb-2">
+                <li><code>role:</code> the role to be given upon successful verification.</li>
+                <li><code>name:</code> whether to change or not the members' display name to their Torn name.</li>
+                <li><code>id:</code> whether to append the Torn ID to their display name (mandatory to enable <code>/verify faction check</code>).</li>
+                <li><code>check:</code> enable/disable daily faction checks.</li>
+                <li><code>disable:</code> disable the verification module.</li>
+            </ul>
+            <div class="command-description p-2 mb-2">
+                Sets up the several options for the verification module.
+            </div>
+            <div class="command-notes mb-2">
+                Notes
+                <ul>
+                    <li>The bot can't assign roles that are above its own role.</li>
+                    <li>The bot can't change the name of the server owner.</li>
+                    <li>Members are automatically verified when they join your server. A message is sent to the server system message.</li>
+                    <li>
+                        <code>/verify all force</code> should only be used if roles settings have been changed.
+                        For faction membership changes prefer <code>/verify faction check</code> which is equally secure and more efficient.
+                    </li>
+                    <li>Daily checks are performed 24h after the previous one, whether triggered automatically or manually.</li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <code>/verify all</code>
+            <div class="command-description p-2 mb-4">Loops over all members of the server and applies <code>/v</code> only to non verified members.
+                If the argument <code>force</code> is set, it applies <code>/v</code> to all members.
+                Forcing verification can take a lot of time on large server. It's better to have multiple keys set with <code>/server keys</code>.
+            </div>
+        </li>
     </ul>
-</p>
+    </div>
 
-<h4 class="command-doc privacy-master">Command <tt>!verify</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>Links a discord account with a torn account. If no arguments given it verifies the author of the command. It will never remove any role.</p>
-<p><b>Syntax:</b> <tt>!verify</tt> or <tt>!verify &lt;TornID&gt;</tt> or <tt>!verify &lt;@DiscordMember&gt;</tt></p>
-</div>
-
-<h4 class="command-doc privacy-master">Command <tt>!tag</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>Do the same as <tt>!verify</tt> and append a tag (4 letters max) at the end of the nickname. </p>
-<p><b>Syntax:</b> <tt>!tag</tt> or <tt>!verify &lt;tag&gt;</tt></p>
-<p><b>Note:</b> This function must be enabled by the server admins (disabled by default) and only work on self.</p>
-</div>
-
-{# <h4 class="command-doc privacy-personal-public">Command <tt>!verifyKey</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4> #}
-{# <div class="command-doc"> #}
-{# <p>Links a discord account with the Torn account corresponding to the API key on all mutual servers between the bot and the member. It will never remove any role. Official discord Torn verifiaction is not required.</p> #}
-{# <p><b>Syntax:</b> <tt>!verifyKey &lt;APIKey&gt;</tt></p> #}
-{# <p class="warning"><b>Scope:</b> it has to be used in a private conversation with the bot.</p> #}
-{# </div> #}
-
-<h4 class="command-doc privacy-master">Command <tt>!verifyAll</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>Loops over all members of the server and apply <tt>!verify</tt> only to non verified members. If <tt>force</tt> is asked is applies <tt>!verify</tt> to all members.</p>
-<p><b>Syntax:</b> <tt>!verifyAll</tt> or <tt>!verifyAll force</tt></p>
-</div>
-
-<h4 class="command-doc privacy-master">Command <tt>!checkFactions</tt>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>Loops over all factions and mention if a member is not part part of it. If <tt>force</tt> is asked it also removes the faction role and apply <tt>!verify</tt>.</p>
-<p><b>Syntax:</b> <tt>!checkFactions</tt> or <tt>!checkFactions force</tt></p>
-</div>
-
-<h4 class="command-doc privacy-master">On member join&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-<div class="command-doc">
-<p>The bot automatically applies <tt>!verify</tt> to new members of a server. It sends a welcome message and the result of the verification in the system channel.</p>
-</div>
+    <h4 class="command-doc admin">Group <code>/verify faction</code>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+    <div class="command-doc ms-4">
+    <div class="p-2">
+        The <code>/verify faction</code> group of commands handles faction membership verification options.
+    </div>
+    <ul class="command-list">
+        <li>
+            <code>/verify faction check</code>
+            <div class="command-description p-2 mb-2">
+                For every factions setup on the server, the bot goes through all the members of each faction unique role and check if they still belong to it.
+                If not they are verified.
+                It can been seen as a lightweight version of <code>/verify all force</code> as only members that switch factions are verified.
+                It is to be used if no changes has been made in the roles settings and you only want to check faction memberships (it can be setup automatically on a daily basis with <code>/verify options</code>).
+            </div>
+        </li>
+        <li>
+            <code>/verify faction add</code>
+            <ul class="args mb-2">
+                <li><code>id:</code> the Torn ID of the faction you want to add.
+                    This is the number in the faction page url after <tt>&ID=</tt>.
+                </li>
+            </ul>
+            <div class="command-description p-2 mb-2">
+                Allows you to add a faction to the verification process and edit its options.
+                You will se a dropdown <span class="command-dropdown">Edit &lt;faction_name&gt;</span> that will lead you to the several options.
+                <span class="command-dropdown">Unique role</span> is a mandatory role that you need to only give to this faction.
+                Sharing this roles with other members and factions (which is not possible through the bot) can introduce loopholes in the verification process.
+                <span class="command-dropdown">Extra roles</span> are additional roles that can also be assigned and shared among several factions (such as an alliance roles).
+                <span class="command-dropdown">Position role</span> will allow you to first select a faction position, then select it roles to be assigned.
+            </div>
+            <div class="command-notes mb-2">
+                Notes
+                <ul>
+                    <li>Only the positions assigned to faction members in-game are shown (as all positions are private data).</li>
+                    <li>For <code>/verify faction check</code> to work you <b>have to</b> enable the append <code>id</code> option in <code>/verify options</code>.</li>
+                    <li>Don't try to bypass the unique role or use it in a funky way. It can be a simple "label" without specific permissions.</li>
+                    <li><b>Don't forget to save your settings with the green button :)</b></li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <code>/verify faction edit</code>
+            <div class="command-description p-2 mb-2">
+                Prompt a <span class="command-dropdown">Factions selection</span> dropdown that will lead you to the same process as <code>/verify faction add</code> where you will be able to edit your settings.
+            </div>
+        </li>
+        <li>
+            <code>/verify faction view</code>
+            <div class="command-description p-2 mb-2">
+                Displays all the faction settings.
+            </div>
+        </li>
+    </ul>
+    </div>
 
 </div>

@@ -22,15 +22,35 @@ This file is part of yata.
 
 <div id="target-dogtags-compare"></div>
 
-<table id="target-dogtags" class="center-large trshadow target-dogtags">
-    <thead>
+<div class="table-responsive">
+    <table id="target-dogtags" class="table table-hover table-borderless target-dogtags">
+        <thead>
+            <tr>
+                <th class="a">Last update</th>
+                <th class="a">Target</th>
+                <th class="c">Level / Ranks</th>
+                <th class="b">Age</th>
+                <th class="a">Last Action</th>
+                <th class="b">Defends Lost</th>
+                <th class="b">Attacks Won</th>
+                <th class="b">Failed attacks</th>
+                <th class="b">Add failed / Delete</th>
+        </thead>
+        <tbody>
+        {% for target in targets %}
+            <tr class="target-dogtag" data-uid="{{target.target_id}}" data-los="{{target.defendslost}}">
+                {% include "target/dogtags/line.html" %}
+            </tr>
+        {% endfor %}
 
-        <tr><td colspan="9">
-            <div class="pagination">
+
+        <tr>
+            <td colspan="9" class="text-center">
+            <div class="pagination d-block">
                 <span class="step-links">
                     {% if targets.has_previous %}
-                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page=1">&laquo; first</a>
-                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.previous_page_number }}">previous</a>
+                        <a class="yt-page-link rounded first" href="{% url 'target:dogtags' %}?page=1"></a>
+                        <a class="yt-page-link rounded previous" href="{% url 'target:dogtags' %}?page={{ targets.previous_page_number }}"></a>
                     {% endif %}
 
                     <span class="current">
@@ -38,29 +58,14 @@ This file is part of yata.
                     </span>
 
                     {% if targets.has_next %}
-                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.next_page_number }}">next</a>
-                        <a class="page-link" href="{% url 'target:dogtags' %}?nav=t&page={{ targets.paginator.num_pages }}">last &raquo;</a>
+                        <a class="yt-page-link rounded next" href="{% url 'target:dogtags' %}?page={{ targets.next_page_number }}"></a>
+                        <a class="yt-page-link rounded last" href="{% url 'target:dogtags' %}?page={{ targets.paginator.num_pages }}"></a>
                     {% endif %}
                 </span>
             </div>
-        </td></tr>
-
-        <tr>
-            <th>Last update</th>
-            <th>Target</th>
-            <th>Level / Ranks</th>
-            <th>Age</th>
-            <th>Last Action</th>
-            <th>Defends Lost</th>
-            <th>Attacks Won</th>
-            <th>Failed attacks</th>
-            <th>Add failed / Delete</th>
-    </thead>
-    <tbody>
-    {% for target in targets %}
-        <tr class="target-dogtag" data-uid="{{target.target_id}}" data-los="{{target.defendslost}}">
-            {% include "target/dogtags/line.html" %}
+            </td>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+
+        </tbody>
+    </table>
+</div>

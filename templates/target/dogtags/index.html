@@ -20,11 +20,14 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 
-<div class="module rounded">
-    <p>Total of {{n_targets}} targets</p>
-</div>
-<h2 class="title"><i class="fas fa-user-shield fa-icon-inline"></i>Targets list<a href="" class="flush-right target-dogtags-clean">Clean targets</a></h2>
-<div class="module">
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-user-shield"></i>Targets list</div>
+      <div class="px-2">
+        <span class="flush-right"><a href="#" class="target-dogtags-clean">Clean targets</a></span>
+      </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
     <div class="pagination-list">
         {% include "target/dogtags/targets.html"%}
     </div>

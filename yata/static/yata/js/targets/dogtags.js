@@ -1,12 +1,14 @@
 $(document).on("click", "table#target-dogtags > tbody > tr > td:not(.dont-touch-me)", (e) => {
     e.preventDefault();
     const tr = $(e.target).parents("tr");
+    tr[0].insertAdjacentHTML("afterEnd", `<tr><td class="text-center" colspan="9">${spinner}</td></tr>`);
     const uid = tr.attr("data-uid");
     const los = tr.attr("data-los");
-    $("#target-dogtags-compare").load("/target/dogtags/", {
+    const next = tr[0].nextSibling
+    $(next).load("/target/dogtags/", {
         uid, los, type: "compare",
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html(`<div class="container"><div class="overlay close"></div><div class="modal-center-large"><div class="module" ><p>${spinner}</p></div></div></div>`);
+    });
 });
 
 // delete target from target list button
