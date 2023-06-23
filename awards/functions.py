@@ -39,6 +39,7 @@ AWARDS_CAT = [
 ]
 
 HONORS_UNREACH = [263, 306, 311, 263, 214, 224, 225, 278, 223]
+# HONORS_UNREACH += [25, 157, 251, 161, 158, 155, 154, 6, 152, 160, 159]
 
 HOF_SIZE = 50
 
@@ -137,50 +138,58 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
             return energy, energy
 
     if category == "crimes":
-
         crimeBridgeMedal2App = {
-            "Computer": "Computer crimes",
-            "Murder": "Murder",
-            "Grand theft auto": "Auto theft",
+            "Illegal Production": "Illegal Production",
+            "Extortion": "Extortion",
+            "Cybercrime": "Cybercrime",
+            "Illicit Service": "Illicit Service",
+            "Fraud": "Fraud",
+            "Counterfeiting": "Counterfeiting",
             "Theft": "Theft",
-            "Drug dealing": "Drug deals",
-            "Fraud": "Fraud crimes",
+            "Vandalism": "Vandalism",
         }
 
         crimeBridgeApp2API = {
-            "Computer crimes": "computer_crimes",
-            "Illegal products": "selling_illegal_products",
-            "Murder": "murder",
-            "Auto theft": "auto_theft",
-            "Theft": "theft",
-            "Drug deals": "drug_deals",
-            "Fraud crimes": "fraud_crimes",
-            "Other crimes": "other",
+            "Illegal Production": "illegalproduction",
+            "Extortion": "extortion",
+            "Cybercrime": "cybercrime",
+            "Illicit Service": "illicitservices",
+            "Fraud": "fraud",
+            "Counterfeiting": "counterfeiting",
             "Total": "total",
+            "Vandalism": "vandalism",
+            "Theft": "theft",
         }
 
-        forComment = {
-            "Computer crimes": [9, 0.75],
-            "Illegal products": [3, 1.0],
-            "Murder": [10, 0.75],
-            "Auto theft": [12, 0.7],
-            "Theft": [4, 1.0],
-            "Drug deals": [8, 0.8],
-            "Fraud crimes": [11, 0.95],
-            "Other crimes": [2, 1.0],
-            "Total": [2, 1.0],
-        }
+        # forComment = {
+        #     "Computer crimes": [9, 0.75],
+        #     "Illegal products": [3, 1.0],
+        #     "Murder": [10, 0.75],
+        #     "Auto theft": [12, 0.7],
+        #     "Theft": [4, 1.0],
+        #     "Drug deals": [8, 0.8],
+        #     "Fraud crimes": [11, 0.95],
+        #     "Other crimes": [2, 1.0],
+        #     "Total": [2, 1.0],
+        # }
 
         awards = dict(
             {
-                "Illegal products": dict(),
+                # "Illegal products": dict(),
+                # "Theft": dict(),
+                # "Auto theft": dict(),
+                # "Drug deals": dict(),
+                # "Computer crimes": dict(),
+                "Illegal Production": dict(),
+                "Extortion": dict(),
+                "Cybercrime": dict(),
+                "Illicit Service": dict(),
+                "Fraud": dict(),
+                "Counterfeiting": dict(),
                 "Theft": dict(),
-                "Auto theft": dict(),
-                "Drug deals": dict(),
-                "Computer crimes": dict(),
-                "Murder": dict(),
-                "Fraud crimes": dict(),
-                "Other crimes": dict(),
+                "Vandalism": dict(),
+                "Skill": dict(),
+                "Misc": dict(),
                 "Organised crimes": dict(),
                 "Jail": dict(),
                 "Total": dict(),
@@ -236,8 +245,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
         for k, v in tornAwards["honors"].items():
             if v["type"] in [5, 15]:
                 vp = v
-                # vp["left"] = 0
-                # vp["comment"] = ["", int(k)]
                 vp["awardType"] = "Honor"
                 vp["img"] = str(honorsId.get(int(k), 0))
                 if int(k) in honors_awarded:
@@ -245,148 +252,26 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [2, 25, 154, 157, 158]:
-                    type = "Theft"
+                if int(k) in [1012]:
+                    #  "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink", "type": 5,
+                    type = "Misc"
                     vp["category"] = category
                     vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
+                    # vp["goal"] = 7
+                    # vp["current"] = 0
+                    # vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [6]:
-                    type = "Other crimes"
+                elif int(k) in [1014]:
+                    #  "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash", "type": 5,
+                    type = "Skill"
                     vp["category"] = category
                     vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
+                    vp["goal"] = int(v["description"].split(" ")[5].replace(",", ""))
+                    key = "_".join([k.lower() for k in v["description"].split("in")[1].split()])
+                    vp["current"] = userInfo.get(key, 0.0)
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [24]:
-                    type = "Fraud crimes"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [152]:
-                    type = "Illegal products"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [153]:
-                    type = "Drug deals"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [155, 161]:
-                    type = "Computer crimes"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [159]:
-                    type = "Murder"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [160]:
-                    type = "Auto theft"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [251]:
-                    type = "Total"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    nerve = max(
-                        forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                        0,
-                    )
-                    n = dLeftN(nerve)
-                    vp["left"] = n[0]
-                    vp["comment"] = n[1]
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [552]:
@@ -444,13 +329,12 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
                 # else:
+                #     print(k, vp)
                 #     vp["comment"] = ["", ""]
                 #     vp["left"] = ""
 
         for k, v in tornAwards["medals"].items():
             vp = v
-            # vp["left"] = 0
-            # vp["comment"] = ["", int(k)]
             vp["awardType"] = "Medal"
             vp["img"] = k
             if int(k) in medals_awarded:
@@ -459,19 +343,24 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 vp["awarded_time"] = 0
 
             if v["type"] == "CRM":
-                type = crimeBridgeMedal2App[" ".join(v["description"].split(" ")[2:-1])]
+                if int(k) < 241:
+                    # crimes 1.0
+                    continue
+
+                # print(vp["description"])
+                if "a total of" in v["description"]:
+                    type = "Total"
+                    goal_pos = 4
+                else:
+                    type = crimeBridgeMedal2App[" ".join(v["description"].split(" ")[2:-1])]
+                    goal_pos = 1
+
+                # print(f"category: {category} subcategory: {type}")
                 vp["category"] = category
                 vp["subcategory"] = type
-                vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                vp["goal"] = int(v["description"].split(" ")[goal_pos].replace(",", ""))
                 vp["current"] = userInfo.get("criminalrecord", dict({})).get(crimeBridgeApp2API[type], 0)
                 vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                nerve = max(
-                    forComment[type][0] * (vp["goal"] - vp["current"]) / forComment[type][1],
-                    0,
-                )
-                n = dLeftN(nerve)
-                vp["left"] = n[0]
-                vp["comment"] = n[1]
                 awards[type]["m_" + k] = vp
 
             elif v["type"] == "OTR":
@@ -488,7 +377,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["m_" + k] = vp
 
     elif category == "drugs":
-
         # WARNING absolute discusting HACK to avoid type Speed from drug and from gym to mix up
         # (which results in 50 speed no showing up in all awards)
         # There is a white space after avery drug type.
@@ -560,7 +448,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
     elif category == "attacks":
-
         awards = dict(
             {
                 "Wins": dict(),
@@ -1216,7 +1103,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["m_" + k] = vp
 
     elif category == "faction":
-
         awards = dict(
             {
                 "Respect": dict(),
@@ -1335,7 +1221,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["m_" + k] = vp
 
     elif category == "items":
-
         awards = dict(
             {
                 "City": dict(),
@@ -1617,7 +1502,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["m_" + k] = vp
 
     elif category == "travel":
-
         awards = dict(
             {
                 "Destinations": dict(),
@@ -2011,7 +1895,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
     elif category == "gym":
-
         gym_happy = get_happy(userInfo)
         gym_dot, gym_name = get_gym(userInfo)
         gym_bonus = get_bonus(userInfo)
@@ -2143,7 +2026,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
     elif category == "money":
-
         awards = dict(
             {
                 "Stocks": dict(),
@@ -2392,7 +2274,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["m_" + k] = vp
 
     elif category == "competitions":
-
         awards = dict(
             {
                 "Elimination": dict(),
@@ -2553,7 +2434,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     awards[type]["h_" + k] = vp
 
     elif category == "commitment":
-
         awards = dict(
             {
                 "Spouse": dict(),
@@ -2844,7 +2724,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 #     awards[type]["m_" + k] = vp
 
     elif category == "miscellaneous":
-
         awards = dict(
             {
                 "Social": dict(),
@@ -3298,7 +3177,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                         nextCrime.append((subcat, k1))
 
     if category == "crimes":
-        for (c, k) in nextCrime:
+        for c, k in nextCrime:
             awards[c][k]["next"] = True
 
     return awards, awardsSummary

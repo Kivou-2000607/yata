@@ -1,21 +1,19 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
+# Copyright 2019 kivou.2000607@gmail.com
+#
+# This file is part of yata.
+#
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+#
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
 d = {
     # 0
@@ -56,7 +54,6 @@ d = {
     4: 904962349,  # Intern
     164: 738476338,  # Stuck in a Rut
     742: 541423641,  # Overtime
-
     # 1
     171: 228001376,  # Afghanistan
     172: 200538715,  # Albania
@@ -167,7 +164,6 @@ d = {
     128: 535956474,  # Vietnam
     129: 415068830,  # Wales
     606: 428803145,  # Decorated
-
     # 2
     149: 138334568,  # The Stabbist
     150: 526451239,  # Slasher
@@ -195,7 +191,6 @@ d = {
     944: 393014668,  # Scorched
     945: 148152221,  # Marked
     951: 388620477,  # Dragon's Breath
-
     # 3
     39: 198010293,  # Woodland Camo
     40: 110459989,  # Desert Storm Camo
@@ -211,7 +206,6 @@ d = {
     50: 985394864,  # Zebra Skin
     51: 582546730,  # Leopard Skin
     52: 358419107,  # Tiger Skin
-
     # 4
     55: 920148790,  # Combat Bachelor
     60: 145755443,  # History Bachelor
@@ -233,7 +227,6 @@ d = {
     651: 693932389,  # Wise Guy
     656: 513618856,  # Whiz Kid
     844: 215268269,  # Working Bee
-
     # 5
     25: 566282329,  # Candy Man
     157: 486487597,  # Smile, You're On Camera
@@ -250,7 +243,8 @@ d = {
     152: 324639311,  # Civil Offence
     160: 433767732,  # Joy Rider
     159: 767298121,  # Professional
-
+    1012: 0,  # Spoiled Rotten
+    1014: 0,  # Pay Dirt
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
@@ -263,7 +257,6 @@ d = {
     33: 115402063,  # The Fields Of Opium
     36: 750549181,  # Angel Dust
     35: 628080473,  # Crank It Up
-
     # 7
     11: 241952085,  # Mile High Club
     549: 724568067,  # Tourist
@@ -286,7 +279,6 @@ d = {
     543: 267993904,  # Trafficker
     853: 661177633,  # Souvenir
     846: 832087778,  # International
-
     # 8
     20: 778719620,  # Precision
     15: 303172651,  # Kill Streaker 1
@@ -349,7 +341,6 @@ d = {
     1003: 149967611,  # Kapow!
     1004: 101698604,  # Wham!
     476: 318823239,  # Chainer 5
-
     # 9
     431: 733603085,  # Lame
     437: 703700900,  # Mediocre
@@ -363,7 +354,6 @@ d = {
     275: 689389128,  # Jackpot
     237: 446331026,  # Poker King
     519: 478776463,  # Foot Soldier
-
     # 10
     687: 835636011,  # Lean
     233: 439667520,  # Bronze Belt
@@ -395,7 +385,6 @@ d = {
     690: 662053219,  # Ripped
     704: 174689730,  # Shredded
     700: 706832937,  # Leaderboard
-
     # 11
     163: 431464057,  # Fascination
     309: 959806366,  # Christmas in Torn
@@ -413,14 +402,12 @@ d = {
     375: 994774255,  # Resolution
     731: 782638013,  # Tornication
     873: 276392311,  # Welcome
-
     # 12
     18: 978797305,  # Another Brick In The Wall
     259: 587092963,  # Half Way There
     13: 257829928,  # The Beautiful City
     264: 211521466,  # The Whole Nine Yards
     265: 398815295,  # To The Limit
-
     # 13
     283: 363100539,  # Globule
     226: 783491253,  # Purple Heart
@@ -455,7 +442,6 @@ d = {
     969: 524309184,  # Phantastic
     964: 775408521,  # Something Humerus
     966: 932815844,  # Oh My Gourd!
-
     # 14
     12: 533285823,  # Pocket Money
     10: 927018892,  # Green, Green Grass
@@ -474,7 +460,6 @@ d = {
     544: 177427194,  # City Slicker
     545: 455773716,  # Diamond Hands
     548: 727291710,  # Tendies
-
     # 15
     367: 474813486,  # Clotted
     406: 534029106,  # Vampire
@@ -493,7 +478,6 @@ d = {
     863: 408571758,  # Crucifixion
     903: 233036142,  # Booboo
     906: 442561096,  # Repeat Offender
-
     # 16
     239: 275270401,  # Middleman
     1: 315115646,  # I'm Watching You
@@ -511,7 +495,6 @@ d = {
     743: 273202925,  # Lavish
     699: 725072235,  # Collector
     882: 312835313,  # Radaway
-
     # 17
     371: 668653618,  # Protege
     664: 309095716,  # Mercenary
