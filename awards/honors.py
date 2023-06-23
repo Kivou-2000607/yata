@@ -243,8 +243,8 @@ d = {
     152: 324639311,  # Civil Offence
     160: 433767732,  # Joy Rider
     159: 767298121,  # Professional
-    1012: 0,  # Spoiled Rotten
-    1014: 0,  # Pay Dirt
+    1012: 357729425,  # Spoiled Rotten
+    1014: 763198651,  # Pay Dirt
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
