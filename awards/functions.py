@@ -252,7 +252,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [1012]:
+                if int(k) in [1012, 1031]:
                     #  "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink", "type": 5,
                     type = "Misc"
                     vp["category"] = category
@@ -263,7 +263,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [1014]:
+                elif int(k) in [1014, 1025]:
                     #  "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash", "type": 5,
                     type = "Skill"
                     vp["category"] = category

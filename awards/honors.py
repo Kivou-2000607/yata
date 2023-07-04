@@ -245,6 +245,8 @@ d = {
     159: 767298121,  # Professional
     1012: 357729425,  # Spoiled Rotten
     1014: 763198651,  # Pay Dirt
+    1025: 0,  # Box Office
+    1031: 0,  # Online Entrepreneur
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
