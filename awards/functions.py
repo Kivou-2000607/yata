@@ -252,8 +252,10 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [1012, 1031]:
-                    #  "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink", "type": 5,
+                if int(k) in [1012, 1031, 1032]:
+                    # "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink", "type": 5,
+                    # "1031": { "name": "Online Entrepreneur", "description": "Acquire 10,000 customers on your online counterfeit DVD store", "type": 5,
+                    # "1032": { "name": "Fresh Blud", "description": "Become initiated into one of Torn's five graffiti crews", "type": 5,
                     type = "Misc"
                     vp["category"] = category
                     vp["subcategory"] = type
@@ -263,8 +265,10 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [1014, 1025]:
-                    #  "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash", "type": 5,
+                elif int(k) in [1014, 1025, 1034]:
+                    # "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash", "type": 5,
+                    # "1025": { "name": "Box Office", "description": "Achieve a skill level of 100 in Bootlegging", "type": 5,
+                    # "1034": { "name": "Let Us Spray", "description": "Achieve a skill level of 100 in Graffiti", "type": 5,
                     type = "Skill"
                     vp["category"] = category
                     vp["subcategory"] = type

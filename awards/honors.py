@@ -245,8 +245,10 @@ d = {
     159: 767298121,  # Professional
     1012: 357729425,  # Spoiled Rotten
     1014: 763198651,  # Pay Dirt
-    1025: 0,  # Box Office
-    1031: 0,  # Online Entrepreneur
+    1025: 239353214,  # Box Office
+    1031: 593430740,  # Online Entrepreneur
+    1032: 777690368,  # Fresh Blud
+    1034: 0,  # Let Us Spray
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
