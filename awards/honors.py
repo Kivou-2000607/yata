@@ -248,7 +248,9 @@ d = {
     1025: 239353214,  # Box Office
     1031: 593430740,  # Online Entrepreneur
     1032: 777690368,  # Fresh Blud
-    1034: 0,  # Let Us Spray
+    1034: 150953812,  # Let Us Spray
+    1038: 723121143,  # Notorious
+    1029: 245849865,  # Retail Therapy
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
