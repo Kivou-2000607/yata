@@ -4196,8 +4196,6 @@ def spies(request, secret=False, export=False):
             if secret and export:  # export database
                 if export == "csv":
                     db = SpyDatabase.objects.filter(secret=secret).first()
-                    print(secret)
-                    print(db)
 
                     class Echo:
                         def write(self, value):
@@ -4257,14 +4255,22 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "view-database":  # view database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
 
             elif request.POST.get("action") == "update-database":  # update database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None and faction.tId == db.master_id:
                     db.updateSpies()
 
             elif request.POST.get("action") == "kick-faction":  # change database secret
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None and faction.tId == db.master_id:
                     fa = db.factions.filter(tId=request.POST.get("faction_id")).first()
                     if fa is not None:
@@ -4273,6 +4279,9 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "change-name":  # change database name
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None:
                     db.change_name()
                     db.save()
@@ -4281,6 +4290,9 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "toggle-api":  # toggle api usage
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None:
                     db.use_api = not db.use_api
                     db.save()
@@ -4289,6 +4301,9 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "change-secret":  # kick from database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None:
                     db.change_secret()
                     db.save()
@@ -4297,6 +4312,9 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "refresh-target-data":  # refresh target data
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 spy = db.spy_set.filter(target_id=request.POST.get("target_id")).first()
                 try:
                     req = apiCall(
@@ -4353,12 +4371,18 @@ def spies(request, secret=False, export=False):
 
             elif request.POST.get("action") == "delete-database":  # delete database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None and db.master_id == faction.tId:
                     db.delete()
                 return render(request, "faction/spies/controls.html")
 
             elif request.POST.get("action") == "leave-database":  # leave database
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
+                if faction not in db.factions.all():
+                    return returnError(type=403)
+
                 if db is not None and db.master_id != faction.tId:
                     db.factions.remove(faction)
                 return render(request, "faction/spies/controls.html")
