@@ -252,7 +252,7 @@ d = {
     1038: 723121143,  # Notorious
     1029: 245849865,  # Retail Therapy
     1053: 0,  # King PIN
-    1054: 0,  # Zero Liability
+    1054: 733519275,  # Zero Liability
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
