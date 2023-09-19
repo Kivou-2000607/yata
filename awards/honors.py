@@ -236,7 +236,7 @@ d = {
     552: 409748477,  # Mastermind
     153: 193222093,  # Escobar
     2: 529618516,  # Smokin' Barrels
-    158: 374334948,  # Breaking And Entering
+    # 158: 374334948,  # Breaking And Entering
     155: 282251659,  # We Have A Breach
     154: 491826814,  # Stroke Bringer
     6: 707200186,  # Find A Penny, Pick It Up
@@ -253,6 +253,8 @@ d = {
     1029: 245849865,  # Retail Therapy
     1053: 838243379,  # King PIN
     1054: 733519275,  # Zero Liability
+    1064: 900536076,  # Breaking and Entering
+    676: 0,  # Key to the City
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
