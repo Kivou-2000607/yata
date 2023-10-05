@@ -254,7 +254,7 @@ d = {
     1053: 838243379,  # King PIN
     1054: 733519275,  # Zero Liability
     1064: 900536076,  # Breaking and Entering
-    676: 0,  # Key to the City
+    676: 806839751,  # Key to the City
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal
