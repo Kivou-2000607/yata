@@ -191,6 +191,29 @@ sou: South Africa</code></pre>
 
   </div>
 
+  <h3 id="spies" class="module-doc">Battle stats estimate&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
+  <div class="module-doc">
+  <h4 class="command-doc">Get stats [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
+  <div class="command-doc">
+    <ul>
+      <li><b>URL</b> <tt>/api/v1/bs/&lt;target_id&gt;?key=&lt;api_key&gt;</tt></li>
+      <li><b>Payload</b>
+        <pre><code classe="json">Object {
+      "&lt;target_id&gt;": Object {
+          "total": Number,  // estimation of the total battle stats
+          "type": Number,  // build type: Offensive, Defensive or Balanced
+          "skewness": Number,  // Percentage that shows how skewed is the build
+          "timestamp": Number,  // Timestamp of the estimate
+      },
+    }</code></pre>
+    </li>
+    <li><b>Note</b> The prediction is based on a trained neural network with data from 200m to 20b. Take it with a grain of salt, especially outside of the training range. It's still a work in progress so feel free to discuss it with me on the discord.</li>
+    <li><b>Cache</b> There is a one hour cache on these requests (shared among all users).</li>
+
+    </ul>
+  </div>
+  </div>
+
   <h3 id="spies" class="module-doc">Spies&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
   <div class="module-doc">
 <h4 class="command-doc">Export Spy [GET]&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>

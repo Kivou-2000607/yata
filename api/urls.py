@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from .views import auth, faction, loot, main, setup, spies, targets, travel
+from .views import auth, bse, faction, loot, main, setup, spies, targets, travel
 
 app_name = "api"
 urlpatterns = [
@@ -34,4 +34,6 @@ urlpatterns = [
     # setup
     re_path(r"^v1/setup/donations/$", setup.donations, name="donations"),
     re_path(r"^v1/setup/players/$", setup.players, name="players"),
+    # bse
+    re_path(r"^v1/bs/(?P<target_id>[0-9]*)/$", bse.bs, name="bs"),
 ]

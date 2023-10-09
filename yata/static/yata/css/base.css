@@ -568,7 +568,7 @@ h3.module-doc {
 }
 
 div.module-doc {
-	/* display: none; */
+	display: none;
 	margin-left: 2%;
 }
 
@@ -577,7 +577,7 @@ h4.command-doc {
 }
 
 div.command-doc {
-	/* display: none; */
+	display: none;
 	margin-left: 2%;
 }
 

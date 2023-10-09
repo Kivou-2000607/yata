@@ -47,3 +47,9 @@ scipy==1.7.3
 
 # git
 pre-commit
+
+# NN
+cloudpickle
+xgboost
+scikit-learn
+datasieve
