@@ -252,13 +252,14 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [1012, 1031, 1032, 1038, 1054, 676]:
+                if int(k) in [1012, 1031, 1032, 1038, 1054, 676, 1076]:
                     # "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink"
                     # "1031": { "name": "Online Entrepreneur", "description": "Acquire 10,000 customers on your online counterfeit DVD store"
                     # "1032": { "name": "Fresh Blud", "description": "Become initiated into one of Torn's five graffiti crews"
                     # "1038": { "name": "Notorious", "description": "Achieve 100% notoriety at all stores at the same time in Shoplifting"
                     # "1054": { "name": "Zero Liability", "description": "Recover a skimmer which has accumulated at least 250 card details"
                     # "676": { "name": "Key to the City", "description": "Successfully burgle all 34 areas",
+                    # "1076": { "name": "Pig Rustler", "description": "Pickpocket a police officer's badge",
                     type = "Misc"
                     vp["category"] = category
                     vp["subcategory"] = type
@@ -268,13 +269,14 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064]:
+                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064, 1078]:
                     # "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash"
                     # "1025": { "name": "Box Office", "description": "Achieve a skill level of 100 in Bootlegging"
                     # "1029": { "name": "Retail Therapy", "description": "Achieve a skill level of 100 in Shoplifting"
                     # "1034": { "name": "Let Us Spray", "description": "Achieve a skill level of 100 in Graffiti"
                     # "1053": { "name": "King PIN", "description": "Achieve a skill level of 100 in Card Skimming",
                     # "1064": { "name": "Breaking and Entering", "description": "Achieve a skill level of 100 in Burglary",
+                    # "1078": { "name": "Pocketeer", "description": "Achieve a skill level of 100 in Pickpocketing",
                     type = "Skill"
                     vp["category"] = category
                     vp["subcategory"] = type
