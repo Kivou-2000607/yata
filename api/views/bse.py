@@ -75,8 +75,8 @@ def bs(request, target_id):
         yp = model.predict(X)
         yp, _, _ = pipeline[1].inverse_transform(yp)
         bs = int(yp[0][0])
-        build_type = "Defensive" if yp[0][1] < 0 else "Offensive"
-        skewness = abs(int(100 * yp[0][1]))
+        build_type = "Defensive" if yp[0][6] < 0 else "Offensive"
+        skewness = abs(int(100 * yp[0][6]))
         build_type = "Balanced" if not bs else build_type
 
         response = {r["player_id"]: {"total": int(yp[0][0]), "type": build_type, "skewness": skewness, "timestamp": int(time.time())}}
