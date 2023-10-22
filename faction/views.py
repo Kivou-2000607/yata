@@ -2698,18 +2698,13 @@ def attacksWar(request):
                     context = {"inlineError": msg}
                     return render(request, "yata/error.html", context)
 
+                # json.dump(war, open("tmp.json", 'w'), indent=4)
+
                 # merge "members" with "factions"
                 factions = war["factions"]
-                for member_id, member in sorted(war["members"].items(), key=lambda x: -x[1]["score"]):
-                    if not member.get("attacks"):
-                        continue
-                    member_faction = str(member["faction_id"])
-                    if "members" not in factions[member_faction]:
-                        factions[member_faction]["members"] = {}
-                    factions[member_faction]["members"][member_id] = member
-
-                del war["members"]
-                # json.dump(war, open("tmp.json", 'w'), indent=4)
+                # print(war)
+                for faction_id, faction in factions.items():
+                    factions[faction_id]["members"] = {k: v for k, v in sorted(faction["members"].items(), key=lambda x: -x[1]["score"]) if v["attacks"]}
 
                 page = "faction/attacks/war-ranked-report.html"
 

@@ -67,8 +67,8 @@ This file is part of yata.
             <tr>
                 <td>{% player_link member_id member.name %}</td>
                 <td class="text-center">{{member.level}}</td>
-                <td class="text-center">{{member.attacks}}</td>
-                <td class="text-end">{{member.score}}</td>
+                <td class="text-center">{{member.attacks|intcomma}}</td>
+                <td class="text-end">{{member.score|intcomma}}</td>
             </tr>
         {% endfor %}
         </tbody>
