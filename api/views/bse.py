@@ -34,9 +34,66 @@ from django.http import JsonResponse
 from yata.handy import apiCall
 
 try:
-    MODEL = cloudpickle.load(open("model.pk", "rb"))
+    print("Load models")
+    load_lvl1= ["10k_to_20b"]
+    load_lvl2= ["10k_to_100m", "100m_to_20b", "90m_to_110m"]
+    load_lvl3= ["10k_to_1m", "1m_to_100m", "100m_to_1b", "1b_to_20b"]
+
+    MODELS = []
+    MODELS.append([cloudpickle.load(open(f"nn/model_{name}.pk", "rb")) for name in load_lvl1])
+    MODELS.append([cloudpickle.load(open(f"nn/model_{name}.pk", "rb")) for name in load_lvl2])
+    MODELS.append([cloudpickle.load(open(f"nn/model_{name}.pk", "rb")) for name in load_lvl3])
+
+    # MODEL = cloudpickle.load(open("model.pk", "rb"))
 except Exception as e:
     MODEL = str(e)
+
+
+def predict(models, d):
+    def predict_from_single_model(m, d):
+        model = m["model"]
+        pipeline = m["pipeline"]
+        labels = m["labels"]
+        model_min = m["meta"]["stats"][0]
+        model_max = m["meta"]["stats"][1]
+
+        X = numpy.zeros((1, len(labels)))
+        for icol, stat in enumerate(labels):  # loop over stats
+            X[0, icol] = int(d.get(stat, 0))
+        X, _, _ = pipeline[0].transform(X)
+        yp = model.predict(X)
+        yp, _, _ = pipeline[1].inverse_transform(yp)
+
+        return yp[0], model_min, model_max
+
+    # level 0
+    lvl = 0
+    prediction, model_min, model_max = predict_from_single_model(models[lvl][0], d)
+    bs = prediction[1]
+    # print(f"LVL1__: {human_format(model_min):>6} {human_format(model_max):>6} / {human_format(bs):>6} ({human_format(truth):>6})")
+
+
+    # level 1
+    lvl = 1
+    i = 1 if bs > models[lvl][0]["meta"]["stats"][1] else 0
+    if models[lvl][2]["meta"]["stats"][0] < bs < models[lvl][2]["meta"]["stats"][1]:
+        i = 2
+    prediction, model_min, model_max = predict_from_single_model(models[lvl][i], d)
+    bs = prediction[1]
+    # print(f"LVL2_{i}: {human_format(model_min):>6} {human_format(model_max):>6} / {human_format(bs):>6} ({human_format(truth):>6})")
+
+    # level 2
+    lvl = 2
+    i = 1 if bs > models[lvl][1]["meta"]["stats"][1] else 0
+    j = 1 if bs > models[lvl][2 * i]["meta"]["stats"][1] else 0
+    prediction, model_min, model_max = predict_from_single_model(models[lvl][2 * i + j], d)
+    bs = prediction[1]
+    score = prediction[0]
+    skewness = prediction[2]
+    # print(f"LVL3_{2 * i + j}: {human_format(model_min):>6} {human_format(model_max):>6} / {human_format(bs):>6} ({human_format(truth):>6})")
+
+    print(bs, score, skewness)
+    return bs, score, skewness
 
 
 # @cache_page(24 * 3600)
@@ -55,31 +112,20 @@ def bs(request, target_id):
             return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
 
         # test model
-        if isinstance(MODEL, str):
-            return JsonResponse({"error": {"code": 1, "error": MODEL}}, status=500)
+        if isinstance(MODELS, str):
+            return JsonResponse({"error": {"code": 1, "error": MODELS}}, status=500)
 
         selections = ["profile", "personalstats", "discord", "timestamp"]
         r = apiCall("user", target_id, ",".join(selections), key=key)
         if "apiError" in r:
             return JsonResponse({"error": {"code": 4, "error": r["apiErrorString"]}}, status=400)
 
-        model = MODEL["model"]
-        pipeline = MODEL["pipeline"]
-        labels = MODEL["labels"]
-
-        X = numpy.zeros((1, len(labels)))
-        for icol, stat in enumerate(labels):  # loop over stats
-            X[0, icol] = int(r["personalstats"].get(stat, 0))
-        X, _, _ = pipeline[0].transform(X)
-
-        yp = model.predict(X)
-        yp, _, _ = pipeline[1].inverse_transform(yp)
-        bs = int(yp[0][0])
-        build_type = "Defensive" if yp[0][6] < 0 else "Offensive"
-        skewness = abs(int(100 * yp[0][6]))
+        bs, score, skewness = predict(MODELS, r)
+        build_type = "Defensive" if skewness < 0 else "Offensive"
+        skewness = abs(int(100 * skewness))
         build_type = "Balanced" if not bs else build_type
 
-        response = {r["player_id"]: {"total": int(yp[0][0]), "type": build_type, "skewness": skewness, "timestamp": int(time.time())}}
+        response = {r["player_id"]: {"total": int(bs), "score": int(score), "type": build_type, "skewness": int(skewness), "timestamp": int(time.time()), "version": 0.1}}
         cache.set(f"nn-stats-{target_id}", response, 3600 * 24)
 
         return JsonResponse(response, status=200)
