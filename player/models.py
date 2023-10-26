@@ -239,6 +239,8 @@ class Player(models.Model):
         if self.tId < 0:
             return {}
 
+        return {"inventory": {}, "bazaar": {}, "display": {}}
+
         # try to get cache
         inventory = cache.get(f"bazaar-inventory-{self.tId}", False)
         if inventory and not force:
