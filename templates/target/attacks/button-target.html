@@ -23,9 +23,9 @@ This file is part of yata.
 <form style="display: inline;">{% csrf_token %}
     <a class="attack-list-target" href="{% url 'target:target' %}">
        {% if v.targetId in targets %}
-           <i class="fas fa-crosshairs valid" title="Remove target"></i>
+           <i class="fas fa-user-minus valid" title="Remove target"></i>
        {% else %}
-            <i class="fas fa-crosshairs error" title="Add target"></i>
+            <i class="fas fa-user-plus error" title="Add target"></i>
        {% endif %}
     </a>
 </form>
