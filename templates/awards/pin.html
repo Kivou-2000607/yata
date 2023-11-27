@@ -48,11 +48,11 @@ This file is part of yata.
                     {% if award.awardType == "Honor" %}
                       {% if award.img == "0" %}
                         <div class="award-default-pinned">
-                          <img src="{% url_img_honor award.img %}" class="honors pinned-image">
+                          <img src="{% url_img_honor award.img awardId %}" class="honors pinned-image">
                           <span class="award-default">{{award.name}}</span>
                         </div>
                       {% else %}
-                        <img src="{% url_img_honor award.img %}" class="honors pinned-image">
+                        <img src="{% url_img_honor award.img awardId %}" class="honors pinned-image">
                       {% endif %}
                     {% else %}
                       <img src="{% url_img_medal award.img %}" class="medals pinned-image">

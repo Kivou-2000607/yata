@@ -257,6 +257,10 @@ d = {
     676: 806839751,  # Key to the City
     1076: 320692671,  # Pig Rustler
     1078: 0,  # Pocketeer
+    1083: 0,  # Crowd Teaser
+    1097: 0,  # Tekkers
+    1104: 0,  # Trash Bandit
+    1106: 0,  # Dissolving Agent
     # 6
     37: 602282262,  # Free Energy
     30: 196995484,  # Party Animal

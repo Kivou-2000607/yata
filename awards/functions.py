@@ -51,20 +51,20 @@ def computeRarity(c):
     return float(c)
 
 
-def honorId2Img(i):
-    from awards.honors import d
-
-    id = d.get(i)
-    if id is None:
-        url = None
-        # print("honor number {}: not in dictionnary".format(i))
-    elif not id:
-        url = None
-        # print("honor number {}: value 0".format(i))
-    else:
-        url = "https://awardimages.torn.com/{}.png".format(id)
-
-    return url
+# def honorId2Img(i):
+#     from awards.honors import d
+#
+#     id = d.get(i)
+#     if id is None:
+#         url = None
+#         # print("honor number {}: not in dictionnary".format(i))
+#     elif not id:
+#         url = None
+#         # print("honor number {}: value 0".format(i))
+#     else:
+#         url = "https://awardimages.torn.com/{}.png".format(id)
+#
+#     return url
 
 
 def createAwardsSummary(awards):
@@ -252,7 +252,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [1012, 1031, 1032, 1038, 1054, 676, 1076]:
+                if int(k) in [1012, 1031, 1032, 1038, 1054, 676, 1076, 1097, 1106]:
                     # "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink"
                     # "1031": { "name": "Online Entrepreneur", "description": "Acquire 10,000 customers on your online counterfeit DVD store"
                     # "1032": { "name": "Fresh Blud", "description": "Become initiated into one of Torn's five graffiti crews"
@@ -260,6 +260,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # "1054": { "name": "Zero Liability", "description": "Recover a skimmer which has accumulated at least 250 card details"
                     # "676": { "name": "Key to the City", "description": "Successfully burgle all 34 areas",
                     # "1076": { "name": "Pig Rustler", "description": "Pickpocket a police officer's badge",
+                    # "1097": { "name": "Tekkers", "description": "Achieve maximum technique in all four Hustling confidence tricks",
+                    # "1106": { "name": "Dissolving Agent", "description": "Dissolve a Dead Body in Acid",
                     type = "Misc"
                     vp["category"] = category
                     vp["subcategory"] = type
@@ -269,7 +271,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064, 1078]:
+                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064, 1078, 1083, 1104]:
                     # "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash"
                     # "1025": { "name": "Box Office", "description": "Achieve a skill level of 100 in Bootlegging"
                     # "1029": { "name": "Retail Therapy", "description": "Achieve a skill level of 100 in Shoplifting"
@@ -277,6 +279,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # "1053": { "name": "King PIN", "description": "Achieve a skill level of 100 in Card Skimming",
                     # "1064": { "name": "Breaking and Entering", "description": "Achieve a skill level of 100 in Burglary",
                     # "1078": { "name": "Pocketeer", "description": "Achieve a skill level of 100 in Pickpocketing",
+                    # "1083": { "name": "Crowd Teaser", "description": "Achieve a skill level of 100 in Hustling",
+                    # "1104": { "name": "Trash Bandit", "description": "Achieve a skill level of 100 in Disposal",
                     type = "Skill"
                     vp["category"] = category
                     vp["subcategory"] = type
@@ -1761,7 +1765,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 for perks_string in ["merit_perks", "stock_perks", "job_perks"]:
                     for perk in userInfo.get(perks_string, []):
                         if "Education length" in perk or "Course Time Reduction" in perk:
-                            print(perk)
+                            # print(perk)
                             edu_red_perks.append(int(perk.replace("+ ", "").split("%")[0]))
 
                 for red in edu_red_perks:

@@ -17,27 +17,23 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.utils import timezone
-from django.core.paginator import Paginator
-from django.forms.models import model_to_dict
-
 import json
-import numpy
 
-from yata.handy import apiCall
-from yata.handy import returnError
-from yata.handy import getPlayer
-from yata.handy import get_payload
-from awards.functions import createAwards
-from awards.functions import AWARDS_CAT
-from player.models import Player
+# import numpy
+from django.core.paginator import Paginator
 
+# from django.forms.models import model_to_dict
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+
+from awards.functions import AWARDS_CAT, createAwards
 from awards.models import AwardsData
+from player.models import Player
+from yata.handy import get_payload, getPlayer, returnError
 
-from django.views.decorators.csrf import csrf_exempt
+# from django.utils import timezone
+# from django.views.decorators.csrf import csrf_exempt
+
 
 # (json compatible)
 def index(request):
@@ -47,20 +43,20 @@ def index(request):
 
         # get graph data
         # awards = awardsPlayer.get('awards')
-        pinnedAwards = awardsPlayer.get('pinnedAwards')
+        pinnedAwards = awardsPlayer.get("pinnedAwards")
 
         graph = []
         for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
             # if h.get("rarity") not in ["Unknown Rarity"]:
 
             if h.get("circulation", 0) > 0:
-                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
         graph2 = []
         for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
             # if h.get("rarity") not in ["Unknown Rarity"]:
             if h.get("circulation", 0) > 0:
-                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
         context = {"player": player, "pinnedAwards": pinnedAwards, "graph": graph, "graph2": graph2, "awardscat": True, "view": {"awards": True}}
         for k, v in awardsPlayer.items():
@@ -68,7 +64,7 @@ def index(request):
         if error:
             context.update(error)
 
-        if request.session.get('json-output'):
+        if request.session.get("json-output"):
             context["player"] = {"awardsUpda": player.awardsUpda, "awardsScor": player.awardsScor, "awardsNumb": player.awardsNumb, "awardsPinn": json.loads(player.awardsPinn)}
             return JsonResponse(context, status=200)
         else:
@@ -80,13 +76,13 @@ def index(request):
 
 def list(request, type):
     try:
-        tId = request.session["player"].get("tId") if request.session.get('player') else -1
+        tId = request.session["player"].get("tId") if request.session.get("player") else -1
         player = getPlayer(tId)
         awardsPlayer, awardsTorn, error = player.getAwards()
 
-        userInfo = awardsPlayer.get('userInfo')
-        summaryByType = awardsPlayer.get('summaryByType')
-        pinnedAwards = awardsPlayer.get('pinnedAwards')
+        userInfo = awardsPlayer.get("userInfo")
+        summaryByType = awardsPlayer.get("summaryByType")
+        pinnedAwards = awardsPlayer.get("pinnedAwards")
 
         if type in AWARDS_CAT:
             awards, awardsSummary = createAwards(awardsTorn, userInfo, type)
@@ -97,80 +93,96 @@ def list(request, type):
                     # if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
                     if h.get("circulation", 0) > 0:
                         if h.get("awardType") in ["Honor"]:
-                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
                         elif h.get("awardType") in ["Medal"]:
-                            graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                            graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
             graph = sorted(graph, key=lambda x: -x[1])
             graph2 = sorted(graph2, key=lambda x: -x[1])
-            context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "awardsSummary": awardsSummary, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
+            context = {
+                "player": player,
+                "view": {"awards": True},
+                "pinnedAwards": pinnedAwards,
+                "awardscat": True,
+                "awards": awards,
+                "awardsSummary": awardsSummary,
+                "summaryByType": summaryByType,
+                "graph": graph,
+                "graph2": graph2,
+            }
             if error:
-                selectError = 'apiErrorSub' if request.method == 'POST' else 'apiError'
-                context.update({selectError: error['apiError']})
-            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+                selectError = "apiErrorSub" if request.method == "POST" else "apiError"
+                context.update({selectError: error["apiError"]})
+            page = "awards/content-reload.html" if request.method == "POST" else "awards.html"
             return render(request, page, context)
 
         else:
-            awards = awardsPlayer.get('awards')
+            awards = awardsPlayer.get("awards")
             graph = []
             for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
                 if h.get("circulation", 0) > 0:
-                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
             graph2 = []
             for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
                 if h.get("circulation", 0) > 0:
-                    graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                    graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
             context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
-            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+            page = "awards/content-reload.html" if request.method == "POST" else "awards.html"
             return render(request, page, context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
 # (json compatible)
 def hof(request):
     try:
-        tId = request.session["player"].get("tId") if request.session.get('player') else -1
+        tId = request.session["player"].get("tId") if request.session.get("player") else -1
         player = getPlayer(tId)
         awardsPlayer, awardsTorn, error = player.getAwards()
 
-        pinnedAwards = awardsPlayer.get('pinnedAwards')
-        userInfo = awardsPlayer.get('userInfo')
-        summaryByType = awardsPlayer.get('summaryByType')
+        pinnedAwards = awardsPlayer.get("pinnedAwards")
+        awardsPlayer.get("userInfo")
+        summaryByType = awardsPlayer.get("summaryByType")
 
-        hof_full = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by('-awardsScor').exclude(tId=-1))]
+        hof_full = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by("-awardsScor").exclude(tId=-1))]
         hof = Paginator(hof_full, 50).get_page(1)
 
         graph = []
         for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
             if h.get("circulation", 0) > 0:
-                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
         graph2 = []
         for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
             if h.get("circulation", 0) > 0:
-                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0)])
+                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
 
-        context = {"player": player,
-                   "view": {"hof": True},
-                   "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]),
-                   "awardscat": True,
-                   # "awards": awardsPlayer.get('awards'),
-                   "summaryByType": summaryByType,
-                   "graph": graph,
-                   "graph2": graph2,
-                   "hof": hof,
-                   "pinnedAwards": pinnedAwards,
-                   "hofGraph": json.loads(AwardsData.objects.first().hofHistogram)}
+        context = {
+            "player": player,
+            "view": {"hof": True},
+            "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]),
+            "awardscat": True,
+            # "awards": awardsPlayer.get('awards'),
+            "summaryByType": summaryByType,
+            "graph": graph,
+            "graph2": graph2,
+            "hof": hof,
+            "pinnedAwards": pinnedAwards,
+            "hofGraph": json.loads(AwardsData.objects.first().hofHistogram),
+        }
 
-        if request.session.get('json-output'):
+        if request.session.get("json-output"):
             del context["player"]
-            context["hof"] = [{"player_name": v["player"].name, "player_id": v["player"].tId, "player_faction_name": v["player"].factionNa, "player_faction_id": v["player"].factionId, "rank": v["rank"]} for v in hof_full]
+            context["hof"] = [
+                {"player_name": v["player"].name, "player_id": v["player"].tId, "player_faction_name": v["player"].factionNa, "player_faction_id": v["player"].factionId, "rank": v["rank"]}
+                for v in hof_full
+            ]
             return JsonResponse(context, status=200)
         else:
-            page = 'awards/content-reload.html' if request.method == 'POST' else "awards.html"
+            page = "awards/content-reload.html" if request.method == "POST" else "awards.html"
             return render(request, page, context)
 
     except Exception as e:
@@ -179,12 +191,12 @@ def hof(request):
 
 def hofList(request):
     try:
-        tId = request.session["player"].get("tId") if request.session.get('player') else -1
-        hof = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by('-awardsScor').exclude(tId=-1))]
+        tId = request.session["player"].get("tId") if request.session.get("player") else -1
+        hof = [{"player": p, "rank": i + 1} for i, p in enumerate(Player.objects.order_by("-awardsScor").exclude(tId=-1))]
         awardsTorn = AwardsData.objects.first().loadAPICall()
-        return render(request, "awards/hof-list.html", {"player": getPlayer(tId),
-                                                        "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]),
-                                                        "hof": Paginator(hof, 50).get_page(request.GET.get("p_hof"))})
+        return render(
+            request, "awards/hof-list.html", {"player": getPlayer(tId), "nAwards": len(awardsTorn["medals"]) + len(awardsTorn["honors"]), "hof": Paginator(hof, 50).get_page(request.GET.get("p_hof"))}
+        )
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
@@ -192,23 +204,24 @@ def hofList(request):
 
 def showPinned(request):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
             awardsPlayer, awardsTorn, error = player.getAwards()
-            pinnedAwards = awardsPlayer.get('pinnedAwards')
+            pinnedAwards = awardsPlayer.get("pinnedAwards")
 
             return render(request, "awards/pin.html", {"player": player, "pinnedAwards": pinnedAwards})
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
 # (json compatible)
 def togglePin(request):
-    if request.session.get('player') and request.method == "POST":
+    if request.session.get("player") and request.method == "POST":
         post_payload = get_payload(request)
 
         player = getPlayer(request.session["player"].get("tId"))
@@ -227,16 +240,17 @@ def togglePin(request):
             player.awardsPinn = json.dumps(pinnedAwards)
             player.save()
 
-        if request.session.get('json-output'):
+        if request.session.get("json-output"):
             return JsonResponse({"awardId": awardId, "pinnedAwards": pinnedAwards}, status=200)
         else:
             return render(request, "awards/pin-button.html", {"player": player, "awardId": awardId, "pinnedAwards": pinnedAwards})
 
     else:
-        message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+        message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
         return returnError(type=403, msg=message)
 
 
 def bannersId(request):
     from awards.honors import d
+
     return HttpResponse(json.dumps(d), content_type="application/json")

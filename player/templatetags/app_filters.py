@@ -587,8 +587,10 @@ def url_img_npc(key):
 
 
 @register.simple_tag(name="url_img_honor")
-def url_img_honor(key):
+def url_img_honor(key, awardId):
     try:
+        if not int(key):
+            return f'https://www.torn.com/images/honors/{awardId.split("_")[1]}/f.png'
         return f"/media/honors/{int(key)}.png"
     except BaseException:
         return "/media/honors/default.png"

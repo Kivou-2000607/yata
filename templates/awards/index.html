@@ -48,8 +48,8 @@ This file is part of yata.
             function drawChart() {
               var data = google.visualization.arrayToDataTable([
                 ['Honor', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-                {% for h, c, s, im, p, r in graph %}
-                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={% url_img_honor im %} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
+                {% for h, c, s, im, p, r, k in graph %}
+                    ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, "<h3><img src={% url_img_honor im k %} atl={{h|safe}} height=19px;></h3> <span class=\"{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}\">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%"],
                  {% endfor %}
               ]);
 
@@ -75,7 +75,7 @@ This file is part of yata.
             {% if graph2|length %}
               var data2 = google.visualization.arrayToDataTable([
                   ['Medals', 'Circulation', {role: 'style'}, {role: 'tooltip', 'p': {'html': true}}],
-                  {% for h, c, s, im, p, r in graph2 %}
+                  {% for h, c, s, im, p, r, k in graph2 %}
                     ["{{h|safe}}", {{c}}, {% if s %}'fill-color: #0B8E14'{% elif r %}'fill-color: #777'{% else %}'fill-color: #CC3434'{% endif %}, '<h3><img src="{% url_img_medal im %}" atl={{h|safe}} height=19px;></h3> <span class="{% if s %}valid{% elif r %}neutral{% else %}error{% endif %}">{{h|safe}}</span><br>Circulation: {{c|intcomma}}<br>Rarity score: {{p|floatformat:4}}%'],
                   {% endfor %}
               ]);
@@ -162,11 +162,11 @@ This file is part of yata.
                       <div class="image-block" title="{{award.name}} [{{awardId|slice:"2:"}}]">
                             {% if award.img == "0" %}
                               <div class="award-default">
-                                <img src="{% url_img_honor award.img %}" class="honors">
+                                <img src="{% url_img_honor award.img awardId %}" class="honors">
                                 <span class="award-default">{{award.name}}</span>
                               </div>
                             {% else %}
-                              <img src="{% url_img_honor award.img %}" class="honors">
+                              <img src="{% url_img_honor award.img awardId %}" class="honors">
                             {% endif %}
                       </div>
                   </td>
