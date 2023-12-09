@@ -592,8 +592,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     bridge = sorted(bridge.values(), key=lambda x: -x[1])
                     vp["current"] = current
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    p = int(100 * min(1, v[1] / nHits))
-                    vp["comment"] = "<br>".join([f"<b class={v[2]}>{v[0]}</b>: {v[1]:,d} ({p}%)" for v in bridge])
+                    vp["comment"] = "<br>".join([f"<b class={v[2]}>{v[0]}</b>: {v[1]:,d} ({int(100 * min(1, v[1] / nHits))}%)" for v in bridge])
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [828, 871]:

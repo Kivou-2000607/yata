@@ -55,7 +55,7 @@ repos:
     rev: 6.0.0
     hooks:
     -   id: flake8
-        args: ['--ignore=E203,W503','--max-line-length=200']
+        args: ['--ignore=E203,W503,E501','--max-line-length=200']
 -   repo: https://github.com/PyCQA/autoflake
     rev: v2.0.1
     hooks:
