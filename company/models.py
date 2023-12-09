@@ -211,6 +211,10 @@ class Company(models.Model):
         if not self.director_hrm and director is not None:
             self.director_hrm = 11 in apiCall("user", "", "education", director.getKey(), verbose=False).get("education_completed", [])
 
+        #############
+        # EMPLOYEES #
+        #############
+
         # update employees
         employees = req.get("company_employees", {})
         employees = {} if employees is None else employees
@@ -293,6 +297,74 @@ class Company(models.Model):
             self.companydata_set.filter(id_ts=id_ts).delete()
             company_data, create = self.companydata_set.update_or_create(id_ts=id_ts, defaults=defaults)
 
+        ##########
+        # STOCKS #
+        ##########
+
+        # get stocks
+        defaults = {"timestamp": timestamp}
+        stocks = req.get("company_stock", {})
+
+        # create company posisions
+        p_abv = {position.name: position.abv for position in self.company_description.position_set.all()}
+        positions = {}
+        total = 0
+        for e in self.employee_set.all():
+            if e.position in p_abv:
+                total += 1
+                if p_abv[e.position] in positions:
+                    positions[p_abv[e.position]] += 1
+                else:
+                    positions[p_abv[e.position]] = 1
+
+        positions["TOT"] = total
+        previous_stock = self.companystock_set.exclude(id_ts=id_ts).order_by("-timestamp").first()
+        if previous_stock is not None:
+            pp = json.loads(previous_stock.positions)
+            delta_positions = {k: f"{int(v - pp.get(k, 0)):+d}" for k, v in positions.items() if v - pp.get(k, 0)}
+        else:
+            delta_positions = {}
+
+        # loop over stocks
+        for stock_name, stock in stocks.items():
+            for k, v in stock.items():
+                defaults[k] = v
+
+            # get previous stock
+            previous_stock = self.companystock_set.exclude(id_ts=id_ts).filter(name=stock_name).order_by("-timestamp").first()
+            if previous_stock is None:
+                defaults["delta_in_stock"] = defaults["in_stock"]
+                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
+                defaults["delta_created"] = defaults["created"]
+                defaults["delta_sold_worth"] = defaults["sold_worth"]
+                defaults["delta_sold_amount"] = defaults["sold_amount"]
+            else:
+                defaults["delta_in_stock"] = defaults["in_stock"] - previous_stock.in_stock
+                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
+                defaults["delta_created"] = defaults["created"] - previous_stock.created
+                defaults["delta_sold_worth"] = defaults["sold_worth"] - previous_stock.sold_worth
+                defaults["delta_sold_amount"] = defaults["sold_amount"] - previous_stock.sold_amount
+
+            defaults["positions"] = json.dumps(positions)
+            defaults["delta_positions"] = json.dumps(delta_positions)
+
+            try:
+                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
+            except BaseException:
+                self.companystock_set.filter(id_ts=id_ts, name=stock_name).delete()
+                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
+
+            # compute stocks cost for daily profit
+            company_data.daily_stockcost += stock["sold_amount"] * stock["cost"]
+
+            # print(company_stock, create)
+            # for k, v in defaults.items():
+            #     print(k, v)
+
+        ##########
+        # PROFIT #
+        ##########
+
         # create weekly_profit
         id_ts_lastw = id_ts - (7 * 24 * 3600)
         # contains 7 days before for the last week daily comparison and 1 to 6 days before for the weekly
@@ -317,9 +389,9 @@ class Company(models.Model):
         money_spent = 0
         n_data = company_datas.count()  # should be 7 if all data are found (8-1 for removing last week)
         for i, cd in enumerate(company_datas):
-            money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(n_data)  # in case less than 7 data (missing data)
+            money_spent += (cd.advertising_budget + cd.total_wage + cd.daily_stockcost) * 7 / float(n_data)  # in case less than 7 data (missing data)
 
-        company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
+        company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage - company_data.daily_stockcost
         company_data.weekly_profit = company_data.weekly_income - money_spent
         company_data.save()
 
@@ -374,62 +446,6 @@ class Company(models.Model):
                     setattr(company_data, attr, value)
                 company_data.save()
 
-        # get stocks
-        defaults = {"timestamp": timestamp}
-        stocks = req.get("company_stock", {})
-
-        # create company posisions
-        p_abv = {position.name: position.abv for position in self.company_description.position_set.all()}
-        positions = {}
-        total = 0
-        for e in self.employee_set.all():
-            if e.position in p_abv:
-                total += 1
-                if p_abv[e.position] in positions:
-                    positions[p_abv[e.position]] += 1
-                else:
-                    positions[p_abv[e.position]] = 1
-
-        positions["TOT"] = total
-        previous_stock = self.companystock_set.exclude(id_ts=id_ts).order_by("-timestamp").first()
-        if previous_stock is not None:
-            pp = json.loads(previous_stock.positions)
-            delta_positions = {k: f"{int(v - pp.get(k, 0)):+d}" for k, v in positions.items() if v - pp.get(k, 0)}
-        else:
-            delta_positions = {}
-
-        # loop over stocks
-        for stock_name, stock in stocks.items():
-            for k, v in stock.items():
-                defaults[k] = v
-
-            # get previous stock
-            previous_stock = self.companystock_set.exclude(id_ts=id_ts).filter(name=stock_name).order_by("-timestamp").first()
-            if previous_stock is None:
-                defaults["delta_in_stock"] = defaults["in_stock"]
-                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
-                defaults["delta_created"] = defaults["created"]
-                defaults["delta_sold_worth"] = defaults["sold_worth"]
-                defaults["delta_sold_amount"] = defaults["sold_amount"]
-            else:
-                defaults["delta_in_stock"] = defaults["in_stock"] - previous_stock.in_stock
-                defaults["created"] = defaults["delta_in_stock"] + defaults["sold_amount"]
-                defaults["delta_created"] = defaults["created"] - previous_stock.created
-                defaults["delta_sold_worth"] = defaults["sold_worth"] - previous_stock.sold_worth
-                defaults["delta_sold_amount"] = defaults["sold_amount"] - previous_stock.sold_amount
-
-            defaults["positions"] = json.dumps(positions)
-            defaults["delta_positions"] = json.dumps(delta_positions)
-
-            try:
-                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
-            except BaseException:
-                self.companystock_set.filter(id_ts=id_ts, name=stock_name).delete()
-                company_stock, create = self.companystock_set.update_or_create(id_ts=id_ts, name=stock_name, defaults=defaults)
-            # print(company_stock, create)
-            # for k, v in defaults.items():
-            #     print(k, v)
-
         return False, "updated"
 
 
@@ -472,6 +488,7 @@ class CompanyData(models.Model):
     daily_income = models.BigIntegerField(default=0)
     daily_customers = models.IntegerField(default=0)
     daily_profit = models.BigIntegerField(default=0)
+    daily_stockcost = models.BigIntegerField(default=0)
     lastw_income = models.BigIntegerField(default=0)
     lastw_customers = models.IntegerField(default=0)
     lastw_profit = models.BigIntegerField(default=0)
