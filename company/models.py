@@ -403,49 +403,6 @@ class Company(models.Model):
         self.lastw_income = company_data.lastw_income
         self.save()
 
-        if rebuildPast:
-            for company_data in self.companydata_set.all():
-                # create weekly_profit
-                id_ts_lastw = id_ts - (7 * 24 * 3600)
-                # contains 7 days before for the last week daily comparison and 1 to 6 days before for the weekly
-                # company_datas.count() should be 8 if all data are found
-                company_datas = self.companydata_set.filter(id_ts__gte=id_ts_lastw).order_by("id_ts")
-
-                # get last week data
-                cd = company_datas.filter(id_ts=id_ts_lastw).first()
-                if cd is None:
-                    # didn't find last week entry
-                    company_data.lastw_profit = 0
-                    company_data.lastw_customers = 0
-                    company_data.lastw_income = 0
-                else:
-                    # found last week entry
-                    company_data.lastw_profit = cd.daily_profit
-                    company_data.lastw_customers = cd.daily_customers
-                    company_data.lastw_income = cd.daily_income
-                    # remove from query_set
-                    company_datas = company_datas.exclude(id_ts=id_ts - (7 * 24 * 3600))
-
-                money_spent = 0
-                n_data = company_datas.count()  # should be 7 if all data are found (8-1 for removing last week)
-                for i, cd in enumerate(company_datas):
-                    money_spent += (cd.advertising_budget + cd.total_wage) * 7 / float(n_data)  # in case less than 7 data (missing data)
-
-                company_data.daily_profit = company_data.daily_income - company_data.advertising_budget - company_data.total_wage
-                company_data.weekly_profit = company_data.weekly_income - money_spent
-
-                # create effectiveness
-                defaults = {}
-                for emp_id, values in json.loads(company_data.employees).items():
-                    for k, v in values.items():
-                        if k[:13] == "effectiveness":
-                            defaults[k] = defaults[k] + v if k in defaults else v
-
-                # set company updates
-                for attr, value in defaults.items():
-                    setattr(company_data, attr, value)
-                company_data.save()
-
         return False, "updated"
 
 
