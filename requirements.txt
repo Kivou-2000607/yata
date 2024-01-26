@@ -42,8 +42,8 @@ psycopg2-binary==2.9.3
 # psycopg2==2.9.3                        # dependencies: libpq-dev python3-dev
 
 # math
-numpy==1.21.5                            # avoid 1.22: https://stackoverflow.com/questions/70612364/numpy-warning-with-django-4-numpy-float64-type-is-zero
-scipy==1.7.3
+numpy                            # avoid 1.22: https://stackoverflow.com/questions/70612364/numpy-warning-with-django-4-numpy-float64-type-is-zero
+scipy
 
 # git
 pre-commit

@@ -21,7 +21,6 @@ from django.db import models
 from django.utils import timezone
 
 from awards.functions import HONORS_UNREACH, computeRarity
-from awards.honors import d
 from setup.functions import randomKey
 from yata.handy import apiCall
 
@@ -55,15 +54,16 @@ class AwardsData(models.Model):
                         if circulation > 1:
                             popTotal += 1.0 / computeRarity(circulation)
                     if awardType in ["honors"]:
-                        req[awardType][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
+                        # req[awardType][k]["img"] = "https://awardimages.torn.com/{}.png".format(d.get(int(k), 0))
                         req[awardType][k]["unreach"] = 1 if int(k) in HONORS_UNREACH else 0
-                    elif awardType in ["medals"]:
-                        req[awardType][k]["img"] = "{}".format(k)
+                    # elif awardType in ["medals"]:
+                    #     req[awardType][k]["img"] = "{}".format(k)
                 for k in to_del:
                     del req[awardType][k]
 
             for awardType in ["honors", "medals"]:
                 for k, v in req[awardType].items():
+                    req[awardType][k]["id"] = int(k)
                     if v["circulation"] > 1:
                         req[awardType][k]["rScore"] = 100.0 / computeRarity(v["circulation"]) / popTotal
 

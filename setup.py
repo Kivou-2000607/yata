@@ -117,8 +117,8 @@ if fill_db:
     r = os.system(cmd)
     cmd = "python manage.py awards"
     r = os.system(cmd)
-    cmd = "python manage.py territories"
-    r = os.system(cmd)
+    # cmd = "python manage.py territories"
+    # r = os.system(cmd)
     cmd = "python manage.py items"
     r = os.system(cmd)
     cmd = "python manage.py players"

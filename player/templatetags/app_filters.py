@@ -17,6 +17,7 @@
 
 import math
 import re
+import os
 
 from django import template
 from django.utils.html import escape, format_html
@@ -587,21 +588,18 @@ def url_img_npc(key):
 
 
 @register.simple_tag(name="url_img_honor")
-def url_img_honor(key, awardId):
-    try:
-        if not int(key):
-            return f'https://www.torn.com/images/honors/{awardId.split("_")[1]}/f.png'
-        return f"/media/honors/{int(key)}.png"
-    except BaseException:
-        return "/media/honors/default.png"
+def url_img_honor(key):
+    # key = str(key).split("_")[-1]
+    image_file = f"/media/honors/{key}.png"
 
+    if not os.path.isfile(image_file):
+        return f"https://www.torn.com/images/honors/{key}/f.png"
+
+    return image_file
 
 @register.simple_tag(name="url_img_medal")
 def url_img_medal(key):
-    try:
-        return f"/media/medals/{int(key)}_r.png"
-    except BaseException:
-        return "/media/medals/default_r.png"
+    return f"/media/medals/{key}_r.png"
 
 
 @register.simple_tag(name="url_img_stocks")

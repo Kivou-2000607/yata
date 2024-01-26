@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "visitor";
+  src: url('/static/fonts/visitor/visitor2.ttf');
+}
+
 div.award-done {
 	color: var(--div-award-done-color) !important;
 	font-weight: 700;
@@ -129,20 +134,22 @@ div.award-default-pinned {
 
 span.award-default {
 	position: absolute;
-	top: 50%;
-	left: 50%;
+	top: 51.5%;
+	left: 50.5%;
 	transform: translate(-50%, -50%);
 	color: var(--span-award-default-color);
-	font-size: 15px;
-	font-family: "Impact";
-	font-weight: 700;
-	font-style: normal;
+	font-size: 13px;
+	font-family: "visitor";
+/* 	font-weight: normal; */
+/* 	font-style: normal; */
 	-webkit-text-fill-color: var(--span-award-default-color);
 	-webkit-text-stroke-color: #000;
-	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-width: 2px;
 	text-shadow: 0 0 2px #000; /* horizontal-offset vertical-offset 'blur' colour */
 	-moz-text-shadow: 0 0 2px #000;
 	-webkit-text-shadow: 0 0 2px #000;
+/* 	letter-spacing: 0.5px; */
+	paint-order: stroke fill;
 }
 
 div.awards-pinned-card {

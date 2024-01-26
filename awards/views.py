@@ -50,13 +50,13 @@ def index(request):
             # if h.get("rarity") not in ["Unknown Rarity"]:
 
             if h.get("circulation", 0) > 0:
-                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
 
         graph2 = []
         for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
             # if h.get("rarity") not in ["Unknown Rarity"]:
             if h.get("circulation", 0) > 0:
-                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
 
         context = {"player": player, "pinnedAwards": pinnedAwards, "graph": graph, "graph2": graph2, "awardscat": True, "view": {"awards": True}}
         for k, v in awardsPlayer.items():
@@ -93,9 +93,9 @@ def list(request, type):
                     # if h.get("rarity", "Unknown Rarity") not in ["Unknown Rarity"]:
                     if h.get("circulation", 0) > 0:
                         if h.get("awardType") in ["Honor"]:
-                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                            graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
                         elif h.get("awardType") in ["Medal"]:
-                            graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                            graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
 
             graph = sorted(graph, key=lambda x: -x[1])
             graph2 = sorted(graph2, key=lambda x: -x[1])
@@ -121,12 +121,12 @@ def list(request, type):
             graph = []
             for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
                 if h.get("circulation", 0) > 0:
-                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                    graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), k])
 
             graph2 = []
             for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
                 if h.get("circulation", 0) > 0:
-                    graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                    graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), k])
 
             context = {"player": player, "view": {"awards": True}, "pinnedAwards": pinnedAwards, "awardscat": True, "awards": awards, "summaryByType": summaryByType, "graph": graph, "graph2": graph2}
             page = "awards/content-reload.html" if request.method == "POST" else "awards.html"
@@ -153,12 +153,12 @@ def hof(request):
         graph = []
         for k, h in sorted(awardsTorn.get("honors").items(), key=lambda x: x[1]["circulation"], reverse=True):
             if h.get("circulation", 0) > 0:
-                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                graph.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
 
         graph2 = []
         for k, h in sorted(awardsTorn.get("medals").items(), key=lambda x: x[1]["circulation"], reverse=True):
             if h.get("circulation", 0) > 0:
-                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("img", ""), h.get("rScore", 0), h.get("unreach", 0), k])
+                graph2.append([h.get("name", "?"), h.get("circulation", 0), int(h.get("achieve", 0)), h.get("rScore", 0), h.get("unreach", 0), h["id"]])
 
         context = {
             "player": player,

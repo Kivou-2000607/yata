@@ -39,23 +39,20 @@ This file is part of yata.
         {% for awardId, award in pinnedAwards.items %}
           <div class="overflow-auto mx-md-2 my-2">
 
-            <div class="container awards-pinned-card" style="cursor: help;" title="<div class=text-start><b>{{award.name}} [{{awardId|slice:"2:"}}]</b><br><i>{{award.description}}</i><br><br>{{award.comment|safe}}</div>" data-bs-toggle="tooltip" data-bs-placement="bottom">
+            <div class="container awards-pinned-card" style="cursor: help;" title="<b>{{award.name}} [{{award.id}}]</b><br><i>{{award.description}}</i><br><br>{{award.comment|safe}}" data-bs-toggle="tooltip" data-bs-placement="bottom">
               <div class="row align-items-center text-center ">
 
                 {# name #}
                 <div class="col-12 p-2">
                   <div class="awards-pinned-spin">
                     {% if award.awardType == "Honor" %}
-                      {% if award.img == "0" %}
                         <div class="award-default-pinned">
-                          <img src="{% url_img_honor award.img awardId %}" class="honors pinned-image">
+                          <img src="{% url_img_honor award.id %}" class="honors">
                           <span class="award-default">{{award.name}}</span>
                         </div>
-                      {% else %}
-                        <img src="{% url_img_honor award.img awardId %}" class="honors pinned-image">
-                      {% endif %}
                     {% else %}
-                      <img src="{% url_img_medal award.img %}" class="medals pinned-image">
+                      <img src="{% url_img_medal award.id %}" class="medals pinned-image">
+                      <span class="ms-2">{{award.name}}</span>
                     {% endif %}
                   </div>
                 </div>
