@@ -21,6 +21,7 @@ import os
 
 from django import template
 from django.utils.html import escape, format_html
+from django.conf import settings
 
 register = template.Library()
 
@@ -589,13 +590,10 @@ def url_img_npc(key):
 
 @register.simple_tag(name="url_img_honor")
 def url_img_honor(key):
-    # key = str(key).split("_")[-1]
-    image_file = f"/media/honors/{key}.png"
-
-    if not os.path.isfile(image_file):
+    if os.path.join(os.path.join(settings.MEDIA_ROOT, "honors"), f'{key}.png'):
+        return f"/media/honors/{key}.png"
+    else:
         return f"https://www.torn.com/images/honors/{key}/f.png"
-
-    return image_file
 
 @register.simple_tag(name="url_img_medal")
 def url_img_medal(key):

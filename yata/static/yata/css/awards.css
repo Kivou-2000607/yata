@@ -134,8 +134,10 @@ div.award-default-pinned {
 
 span.award-default {
 	position: absolute;
-	top: 51.5%;
-	left: 50.5%;
+	/*top: 51.5%;*/
+	/*left: 50.5%;*/
+	top: 50%;
+	left: 50%;
 	transform: translate(-50%, -50%);
 	color: var(--span-award-default-color);
 	font-size: 13px;
