@@ -53,3 +53,4 @@ cloudpickle
 xgboost
 scikit-learn
 datasieve
+gunicorn
