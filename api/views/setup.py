@@ -18,38 +18,9 @@ This file is part of yata.
 """
 # django
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
-# cache and rate limit
-from django.views.decorators.cache import cache_page
-from ratelimit.decorators import ratelimit
-from ratelimit.core import get_usage, is_ratelimited
-
-# standards
-import json
 
 # yata
-from setup.models import Balance
 from player.models import PlayerData
-
-
-def donations(request):
-    try:
-
-        b = Balance.objects.last()
-        payload = {
-            "schemaVersion": 1,
-            "label": "Donations",
-            "message": f'{float(b.paypal_balance)-float(b.droplet_account_balance):0.2f} EUR',
-            "cacheSeconds": 3600,
-            "namedLogo": "paypal",
-            "color": "447e9b",
-            "style": "for-the-badge",
-        }
-        return JsonResponse(payload, status=200, safe=False)
-
-    except BaseException as e:
-        return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
 def players(request):

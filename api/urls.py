@@ -32,7 +32,6 @@ urlpatterns = [
     # auth
     re_path(r"^v1/auth/$", auth.index, name="auth"),
     # setup
-    re_path(r"^v1/setup/donations/$", setup.donations, name="donations"),
     re_path(r"^v1/setup/players/$", setup.players, name="players"),
     # bse
     re_path(r"^v1/bs/(?P<target_id>[0-9]*)/$", bse.bs, name="bs"),

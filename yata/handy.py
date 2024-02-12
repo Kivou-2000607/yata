@@ -74,8 +74,6 @@ def apiCall(
 ):
     import requests
 
-    from setup.models import ApiCallLog
-
     key = str(key)
     # DEBUG live chain
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
@@ -182,20 +180,10 @@ def apiCall(
                     )
             else:
 
-                if config("API_CALL_LOG", default=False, cast=bool):
-                    ApiCallLog.objects.create(timestamp=tsnow(), error=-1, url=url.replace("&key=" + key, ""))
-
                 if cache_response:
                     print(f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}")
                     cache.set(cache_key, rjson, cache_response)
                 return rjson
-
-    if config("API_CALL_LOG", default=False, cast=bool):
-        ApiCallLog.objects.create(
-            timestamp=tsnow(),
-            error=err["error"]["code"],
-            url=url.replace("&key=" + key, ""),
-        )
 
     return apiCallError(err)
 

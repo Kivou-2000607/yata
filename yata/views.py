@@ -42,8 +42,6 @@ from yata.bans import user_bans
 
 def index(request):
     try:
-        # allNews = News.objects.all().order_by("-date")
-        allDonations = Donation.objects.all().order_by("-pk")
         if request.session.get('player'):
             print('[view.yata.index] get player id from session')
             tId = request.session["player"].get("tId")
@@ -52,18 +50,15 @@ def index(request):
             # shouldn't happen
             if player is None:
                 del request.session['player']
-                # context = {'allNews': allNews, 'allDonations': allDonations}
-                context = {'allDonations': allDonations}
+                context = {}
 
             else:
                 player.lastActionTS = int(timezone.now().timestamp())
                 player.active = True
                 player.save()
-                # context = {"player": player, 'allNews': allNews, 'allDonations': allDonations}
-                context = {"player": player, 'allDonations': allDonations}
+                context = {"player": player}
         else:
-            # context = {'allNews': allNews, 'allDonations': allDonations}
-            context = {'allDonations': allDonations}
+            context = {}
 
         return render(request, 'yata.html', context)
 

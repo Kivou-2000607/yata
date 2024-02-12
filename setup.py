@@ -107,18 +107,11 @@ if not len(CompanyDescription.objects.all()):
     cmd = "python manage.py init_companies"
     r = os.system(cmd)
 
-if not len(Bot.objects.all()) >= 3:
-    print("Create Bots")
-    for i in range(3):
-        Bot.objects.create(token=f"Token {i + 1}", name=f"Bot {i + 1}")
-
 if fill_db:
     cmd = "python manage.py check_keys"
     r = os.system(cmd)
     cmd = "python manage.py awards"
     r = os.system(cmd)
-    # cmd = "python manage.py territories"
-    # r = os.system(cmd)
     cmd = "python manage.py items"
     r = os.system(cmd)
     cmd = "python manage.py players"

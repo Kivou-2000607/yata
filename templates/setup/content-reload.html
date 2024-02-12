@@ -22,10 +22,3 @@ This file is part of yata.
 {% elif apiError %}
     {% include "yata/error.html" %}
 {% endif %}
-
-{% if view.prune %}
-    {% include "setup/prune.html" %}
-{% endif %}
-{% if view.donations %}
-    {% include "setup/donations.html" %}
-{% endif %}

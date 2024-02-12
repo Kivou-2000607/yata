@@ -40,12 +40,9 @@ urlpatterns = [
     # app
     re_path(r'^player/', include('player.urls')),
     re_path(r'^bazaar/', include('bazaar.urls')),
-    # re_path(r'^chain/', include('chain.urls')),
     re_path(r'^awards/', include('awards.urls')),
     re_path(r'^target/', include('target.urls')),
-    # re_path(r'^stock/', include('stock.urls')),
     re_path(r'^loot/', include('loot.urls')),
-    re_path(r'^bot/', include('bot.urls')),
     re_path(r'^faction/', include('faction.urls')),
     re_path(r'^setup/', include('setup.urls')),
     re_path(r'^api/', include('api.urls')),
@@ -58,13 +55,9 @@ urlpatterns = [
     path('logout', views.logout, name="logout"),
     path('delete', views.delete, name="delete"),
     path('update_session', views.update_session, name="update_session"),
-    # path('analytics', views.analytics, name="analytics"),
-    # path('tmp/gym', views.gym, name="gym"),
-    # path('api/gym', views.gymImport, name="gymImport"),
     path('discord', RedirectView.as_view(url="https://discord.gg/75J3VEWrwe"), name="discord"),
-
-    path('donations', setup_views.donations, name='donations'),
-
+    path('bot', RedirectView.as_view(url="https://bot.yata.yt")),
+    
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
 
