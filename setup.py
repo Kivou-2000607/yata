@@ -12,7 +12,6 @@ from django.contrib.auth.models import User  # noqa: E402
 
 from awards.models import AwardsData  # noqa: E402
 from bazaar.models import BazaarData  # noqa: E402
-from bot.models import Bot  # noqa: E402
 from company.models import CompanyDescription  # noqa: E402
 from faction.models import Faction, FactionData  # noqa: E402
 from loot.models import NPC  # noqa: E402
