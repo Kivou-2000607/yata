@@ -56,7 +56,7 @@ urlpatterns = [
     path('delete', views.delete, name="delete"),
     path('update_session', views.update_session, name="update_session"),
     path('discord', RedirectView.as_view(url="https://discord.gg/75J3VEWrwe"), name="discord"),
-    path('bot', RedirectView.as_view(url="https://bot.yata.yt")),
+    path('bot', RedirectView.as_view(url="https://bot.yata.yt"), name="bot"),
     
     # robot.txt
     path('robots.txt', lambda x: HttpResponse("User-Agent: *\nDisallow: /", content_type="text/plain"), name="robots_file"),
