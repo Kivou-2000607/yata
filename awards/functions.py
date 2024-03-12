@@ -251,7 +251,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 else:
                     vp["awarded_time"] = 0
 
-                if int(k) in [1012, 1031, 1032, 1038, 1054, 676, 1076, 1097, 1106, 1129]:
+                if int(k) in [1012, 1031, 1032, 1038, 1054, 676, 1076, 1097, 1106, 1129, 1136]:
                     # "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink"
                     # "1031": { "name": "Online Entrepreneur", "description": "Acquire 10,000 customers on your online counterfeit DVD store"
                     # "1032": { "name": "Fresh Blud", "description": "Become initiated into one of Torn's five graffiti crews"
@@ -262,6 +262,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # "1097": { "name": "Tekkers", "description": "Achieve maximum technique in all four Hustling confidence tricks",
                     # "1106": { "name": "Dissolving Agent", "description": "Dissolve a Dead Body in Acid",
                     # "1129": { "name": "Character Assassination", "description": "Successfully guess 250 password characters in Cracking",
+                    # "1136": { "name": "Assembly Line", "description": "Have ten of the same project in a state of cooldown at the same time in Forgery",
                     type = "Misc"
                     vp["category"] = category
                     vp["subcategory"] = type
@@ -271,7 +272,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
                     awards[type]["h_" + k] = vp
 
-                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064, 1078, 1083, 1104, 1118]:
+                elif int(k) in [1014, 1025, 1029, 1034, 1053, 1064, 1078, 1083, 1104, 1118, 1130]:
                     # "1014": { "name": "Pay Dirt", "description": "Achieve a skill level of 100 in Search for Cash"
                     # "1025": { "name": "Box Office", "description": "Achieve a skill level of 100 in Bootlegging"
                     # "1029": { "name": "Retail Therapy", "description": "Achieve a skill level of 100 in Shoplifting"
@@ -281,7 +282,8 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # "1078": { "name": "Pocketeer", "description": "Achieve a skill level of 100 in Pickpocketing",
                     # "1083": { "name": "Crowd Teaser", "description": "Achieve a skill level of 100 in Hustling",
                     # "1104": { "name": "Trash Bandit", "description": "Achieve a skill level of 100 in Disposal",
-                    # "1118": { "name": "Cryptographer", "description": "Achieve a skill level of 100 in Cracking",
+                    # "1118": { "name": "Cryptographer", "description": "Achieve a skill level of 100 in Cracking",
+                    # "1130": { "name": "Documented Success", "description": "Achieve a skill level of 100 in Forgery"
                     type = "Skill"
                     vp["category"] = category
                     vp["subcategory"] = type

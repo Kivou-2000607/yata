@@ -171,3 +171,7 @@ span.awarded-time {
 	color: var(--span-awarded-time-color);
 	font-style: italic;
 }
+
+img.honors {
+  width: 200px;
+}
