@@ -48,9 +48,9 @@ This file is part of yata.
         </div>
     </td>
     {% if target.status_color == "blue" %}
-        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="">{{target.status_description}}</td>
+        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="">{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{{target.status_description}}{% endif %}</td>
     {% else %}
-        <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="{{target.status_until}}">{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{{target.status_description}}{% endif %}</td>
+        <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
     {% endif %}
     <td class="text-center update-timer" title="Last update on {{target.update_timestamp|ts2date}}" data-val="{{target.update_timestamp}}"><i class="fa fa-spinner fa-pulse"></i></td>
 
