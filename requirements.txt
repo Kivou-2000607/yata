@@ -29,7 +29,7 @@ requests==2.27.1
 python-decouple==3.6
 schedule==1.1.0                          # needed for ?
 python-magic>=0.4.22
-Pillow==9.0.1                            # If OOM: pip install --compile --install-option=-O1 Pillow
+Pillow==10.3.0                            # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 libmagic
 # fontawesome-free
