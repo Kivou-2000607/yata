@@ -17,3 +17,4 @@ yata_uwsgi.ini
 yata.sock
 tmp
 debug/faction-keys-*
+**.idea/**

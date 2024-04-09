@@ -271,3 +271,7 @@ else:
 
 #  src directory
 SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')
+
+
+# ADMIN URL HASH
+ADMIN_URL_HASH = hash(SECRET_KEY)

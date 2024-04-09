@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.views.generic.base import RedirectView
 
-# for media
+# for media and admin url obfuscation
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -47,7 +47,7 @@ urlpatterns = [
     re_path(r'^setup/', include('setup.urls')),
     re_path(r'^api/', include('api.urls')),
     re_path(r'^company/', include('company.urls')),
-    path('admin/', admin.site.urls),
+    path(f'{settings.ADMIN_URL_HASH}/admin/', admin.site.urls),
 
     # site
     path('', views.index, name="index"),
