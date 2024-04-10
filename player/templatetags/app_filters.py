@@ -195,7 +195,7 @@ def clean_travel_status(raw_html):
             travel_text = travel_text[0].upper() + travel_text[1:]
         return travel_text
 
-    return raw_html
+    return cleantext
 
 
 @register.filter(name="string2List")
