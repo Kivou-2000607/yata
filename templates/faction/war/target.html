@@ -48,7 +48,7 @@ This file is part of yata.
         </div>
     </td>
     {% if target.status_color == "blue" %}
-        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="">{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{{target.status_description}}{% endif %}</td>
+        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="">{% if target.status_details %}{{target.status_details|clean_travel_status}}{% else %}{{target.status_description}}{% endif %}</td>
     {% else %}
         <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
     {% endif %}
