@@ -3,7 +3,7 @@
 # pip 22.0.2
 
 # django
-Django==4.1.0
+Django==4.1.13
 django-mathfilters==1.0.0
 django-json-widget==1.1.1                # https://github.com/jmrivas86/django-json-widget/issues/63
 django-extensions==3.1.5
