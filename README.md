@@ -27,6 +27,7 @@ Create a local .env file
     SECRET_KEY="xxx"
     ALLOWED_HOSTS="*"
     LOG_KEY="xxx"
+    ADMIN_URL_PREFIX="prefix/" # Enter a prefix for your admin URL with a trailing slash.
 
     # Database selection
     DATABASE=sqlite
