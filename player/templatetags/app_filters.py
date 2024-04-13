@@ -178,10 +178,23 @@ def playerURLShort(value, arg):
 
 @register.filter(name="cleanhtml")
 def cleanhtml(raw_html):
-    import re
-
     cleanr = re.compile("<.*?>")
     cleantext = re.sub(cleanr, "", raw_html)
+    return cleantext
+
+
+@register.filter(name='clean_travel_status')
+def clean_travel_status(raw_html):
+    cleanr = re.compile("<.*?>")
+    cleantext = re.sub(cleanr, "", raw_html)
+    clean_travel_r = re.compile(r"^(?:Returning to Torn|Traveling)")
+
+    if clean_travel_r.match(raw_html):
+        travel_text = re.sub(clean_travel_r, "", cleantext).strip()
+        if travel_text[0].islower():
+            travel_text = travel_text[0].upper() + travel_text[1:]
+        return travel_text
+
     return cleantext
 
 

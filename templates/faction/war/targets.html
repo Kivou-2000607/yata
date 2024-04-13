@@ -43,20 +43,45 @@ This file is part of yata.
               9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               10: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               11: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              14: function(node, table, cellIndex) {return $(node).attr("data-val"); },
             },
             cssAsc: 'up',
             cssDesc: 'down',
-            sortList: [[11,0],[7,1],[6,0]]
+            sortList: [[11,0],[7,1],[6,0],[14,0]]
         });
 
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl)
         })
+
+        $('.add-target').on('click tap', function (e) {
+            e.preventDefault();
+
+            var target_id = $(this).attr('data-val');
+            var csrf_token = getCookie('csrftoken');
+            var faction_id = "{{ faction.tId }}";
+            var removeOrAdd = $(this).find('i').hasClass('fa-toggle-off') ? 1 : 0;
+            $(this).find('i').toggleClass('fa-toggle-off').toggleClass('fa-toggle-on');
+
+            const params = new URLSearchParams();
+            params.set('target_id', target_id);
+            params.set('faction_id', faction_id);
+            params.set('csrfmiddlewaretoken', csrf_token);
+            params.set('remove_or_add', ''+removeOrAdd)
+            $.ajax({
+                type: 'POST',
+                url: './?rank_target=1',
+                data: params.toString(),
+                success: function(data) {
+                    // do something to show success
+                }
+            });
+        });
     });
 </script>
-
 <div class="table-responsive">
+
     <table id="faction-targets" class="table table-hover table-striped table-borderless tablesorter faction-targets">
           <thead>
               <tr>
@@ -74,6 +99,7 @@ This file is part of yata.
                   <th class="f" title="Status of the target">Status</th>
                   <th class="g" title="Time since last update">Update</th>
                   <th class="h" title="Call dibs">Dibs</th>
+                  <th class="i" style="width: 2.5vw;" title="Add target">A</th>
           </thead>
           <tbody>
           {% for target in targets %}
