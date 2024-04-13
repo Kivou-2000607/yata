@@ -56,4 +56,9 @@ This file is part of yata.
     <td class="text-center dont-touch-me" data-val="{{target.target_id}}">
         {% include "faction/war/dibs.html" %}
     </td>
+    <td class="text-center dont-touch-me" data-val="{% if target.target_id in player_targets %}1{% else %}0{% endif %}" >
+        <a class="add-target" data-val="{{ target.target_id }}">
+           <i class="fas {% if target.target_id in player_targets %}fa-toggle-on{% else %}fa-toggle-off{% endif %}" title=""></i>
+        </a>
+    </td>
 {% endif %}

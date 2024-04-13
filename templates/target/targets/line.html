@@ -69,6 +69,13 @@ This file is part of yata.
             <!-- add to faction -->
             {% include "target/targets/faction.html" %}
         </td>
+        <td class="text-center" data-val="{% if targetId in factionTargets %}1{% else %}0{% endif %}">
+            {% if targetId in faction_targets %}
+                <i class="fas fa-check-circle text-success" title="Target is in ranked war targets"></i>
+            {% else %}
+                <i class="fas fa-xmark-circle text-danger" title="Target is not in ranked war targets"></i>
+            {% endif %}
+        </td>
     {% else %}
         <td colspan="3"><span class="error"><i class="far fa-dizzy fa-icon-inline"></i>No recorded id. Will be deleted soon.</span></td>
     {% endif %}
