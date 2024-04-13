@@ -28,7 +28,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from faction.models import Faction
+from faction.models import Faction, FactionTarget
 from player.models import Key, Player
 from target.functions import getTargets, updateAttacks, updateRevives
 from yata.handy import apiCall, getFaction, getPlayer, returnError
@@ -228,8 +228,15 @@ def attack(request):
 
             else:
                 returnError(type=403, msg="Unknown request")
+            faction = getFaction(player.factionId)
 
-            context = {"v": attack, "targets": getTargets(player), "ts": int(time.time())}
+            faction_targets = FactionTarget.objects.filter(target_id__in=faction.getTargetsId())
+            context = {
+                "v": attack,
+                "targets": getTargets(player),
+                "ts": int(time.time()),
+                "faction_targets": faction_targets.values_list("target_id", flat=True),
+            }
             return render(request, "target/attacks/button-target.html", context)
 
         else:

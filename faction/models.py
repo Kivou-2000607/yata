@@ -1272,7 +1272,9 @@ class Faction(models.Model):
                         war["them"]["faction_id"] = int(fid)
                         self.warAgainst = fid
                 break
-
+        # if you want to debug this
+        # you can return a crafted dictionary like so:
+        # return {'them': {'faction_id': 9528}, 'us': {'faction_id': 41363}}
         return war
 
     def updateFactionTargets(self):
