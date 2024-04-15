@@ -4687,7 +4687,7 @@ def rankedWar(request):
                         target_object, created = TargetInfo.objects.get_or_create(player=player, target_id=selected_target)
                         if created:
                             target_object.getTarget(update=True)
-                return JsonResponse({'success': 'Target added successfully'}, )
+                return JsonResponse({'success': True, 'remove_or_add': add_target})
 
             # get page
             page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
