@@ -36,6 +36,7 @@ This file is part of yata.
                       // console.log($(node).attr("data-col") + $(node).find("input.target-list-note").val() + "->" + a + "-" + b);
                       return a + "-" + b; },
                   12: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+                  15: function(node, table, cellIndex) { return $(node).attr("data-val"); },
                 },
                 cssAsc: 'up',
                 cssDesc: 'down',
@@ -83,6 +84,7 @@ This file is part of yata.
                 <th class="j" title="Attack target">A</th>
                 <th class="j" title="Delete target">D</th>
                 <th class="j" title="Faction target">F</th>
+                <th class="j" title="Faction target">RW</th>
         </thead>
         <tbody>
         {% for targetId, target in targets.items %}

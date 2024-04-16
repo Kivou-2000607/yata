@@ -43,20 +43,52 @@ This file is part of yata.
               9: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               10: function(node, table, cellIndex) { return $(node).attr("data-val"); },
               11: function(node, table, cellIndex) { return $(node).attr("data-val"); },
+              14: function(node, table, cellIndex) {return $(node).attr("data-val"); },
             },
             cssAsc: 'up',
             cssDesc: 'down',
-            sortList: [[11,0],[7,1],[6,0]]
+            sortList: [[11,0],[7,1],[6,0],[14,0]]
         });
 
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl)
         })
+
+        $('.add-target').on('click tap', function (e) {
+            e.preventDefault();
+            let self = $(this);
+            let data = {
+                target_id: self.attr('data-val'),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }
+            let params = new URLSearchParams(data);
+            params.set('target_id', self.attr('data-val'));
+            params.set('csrfmiddlewaretoken', '{{ csrf_token }}');
+            params.set('faction_id', '{{ faction.tId }}');
+            params.set('remove_or_add', $(this).find('i').hasClass('fa-user-plus') ? '1' : '0');
+            self.html(spinner);
+            $.ajax({
+                type: 'POST',
+                url: './',
+                data: params.toString(),
+                success: function(data) {
+                    if(data.remove_or_add === true){
+                        self.html('<i class="fas fa-user-minus valid" title="Remove target"></i>');
+                    } else {
+                        self.html('<i class="fas fa-user-plus error" title="Add target"></i>');
+                    }
+                },
+                error: function(data) {
+                    self.html('<i class="fas fa-user-plus error" title="Add target"></i>');
+                    console.log('there was an error', data)
+                }
+            });
+        });
     });
 </script>
-
 <div class="table-responsive">
+
     <table id="faction-targets" class="table table-hover table-striped table-borderless tablesorter faction-targets">
           <thead>
               <tr>
@@ -74,6 +106,7 @@ This file is part of yata.
                   <th class="f" title="Status of the target">Status</th>
                   <th class="g" title="Time since last update">Update</th>
                   <th class="h" title="Call dibs">Dibs</th>
+                  <th class="i" style="width: 2.5vw;" title="Add target">Save</th>
           </thead>
           <tbody>
           {% for target in targets %}

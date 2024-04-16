@@ -57,8 +57,9 @@ from faction.models import (
     RevivesReport,
     SpyDatabase,
     Territory,
+    FactionTarget,
 )
-from target.models import Target
+from target.models import Target, TargetInfo
 from yata.bulkManager import BulkUpdateManager
 from yata.handy import (
     apiCall,
@@ -4670,10 +4671,23 @@ def fightclub(request):
 # SECTION: war
 def rankedWar(request):
     try:
-
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
+            if 'remove_or_add' in request.POST:
+                # get the target list
+                new_target = request.POST.get('target_id')
+                add_target = request.POST.get('remove_or_add') == '1'
+                # get the target id of the ranked war page target
+                new_targets = FactionTarget.objects.filter(target_id=new_target).values_list('target_id', flat=True)
+                if not add_target:
+                    player.targetinfo_set.filter(target_id__in=new_targets).delete()
+                else:
+                    for selected_target in new_targets:
+                        target_object, created = TargetInfo.objects.get_or_create(player=player, target_id=selected_target)
+                        if created:
+                            target_object.getTarget(update=True)
+                return JsonResponse({'success': True, 'remove_or_add': add_target})
 
             # get page
             page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
@@ -4687,11 +4701,16 @@ def rankedWar(request):
 
             error = False
 
+            player_targets = FactionTarget.objects.filter(
+                target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
+            ).values_list('target_id', flat=True)
+
             context = {
                 "player": player,
                 "faction": faction,
                 "factioncat": True,
                 "view": {"war": True},
+                "player_targets": player_targets,
             }
             if error:
                 selectError = "apiErrorSub" if request.method == "POST" else "apiError"
@@ -4754,6 +4773,9 @@ def wartargets(request):
                 return render(request, "yata/error.html", context)
 
         targets = faction.updateFactionTargets()
+        player_targets = FactionTarget.objects.filter(
+            target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
+        ).values_list('target_id', flat=True)
 
         return render(
             request,
@@ -4762,6 +4784,7 @@ def wartargets(request):
                 "player": player,
                 "faction": faction,
                 "targets": targets,
+                "player_targets": player_targets,
             },
         )
 
