@@ -127,5 +127,5 @@ if static_file:
     p = Path(_.__path__[0]) / "static" / "dist" / "jsoneditor.map"
     p.touch()
 
-    cmd = "python manage.py collectstatic"
+    cmd = "python manage.py collectstatic --noinput"
     r = os.system(cmd)
