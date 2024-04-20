@@ -270,7 +270,7 @@ def targets(request):
                 "targetcat": True,
                 "targets": targets,
                 "factionTargets": factionTargets,
-                "faction_enemy_targets": faction_targets,
+                "enemy_faction_targets": faction_targets,
                 "ts": int(time.time()),
                 "view": {"targets": True},
             }
