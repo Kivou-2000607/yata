@@ -28,7 +28,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from faction.models import Faction, FactionTarget
+from faction.models import Faction, FactionTarget, Member
 from player.models import Key, Player
 from target.functions import getTargets, updateAttacks, updateRevives
 from yata.handy import apiCall, getFaction, getPlayer, returnError
@@ -230,12 +230,16 @@ def attack(request):
                 returnError(type=403, msg="Unknown request")
             faction = getFaction(player.factionId)
 
-            faction_targets = FactionTarget.objects.filter(target_id__in=faction.getTargetsId())
+            enemy_faction = Faction.objects.filter(tId=faction.warAgainst).first()
+            faction_targets = [] if not enemy_faction else (
+                Member.objects.filter(faction=enemy_faction).values_list('tId', flat=True)
+            )
+
             context = {
                 "v": attack,
                 "targets": getTargets(player),
                 "ts": int(time.time()),
-                "faction_targets": faction_targets.values_list("target_id", flat=True),
+                'enemy_faction_targers': faction_targets,
             }
             return render(request, "target/attacks/button-target.html", context)
 
@@ -257,12 +261,16 @@ def targets(request):
             # get faction
             faction = Faction.objects.filter(tId=player.factionId).first()
             factionTargets = [] if faction is None else faction.getTargetsId()
-
+            enemy_faction = Faction.objects.filter(tId=faction.warAgainst).first()
+            faction_targets = [] if not enemy_faction else (
+                Member.objects.filter(faction=enemy_faction).values_list('tId', flat=True)
+            )
             context = {
                 "player": player,
                 "targetcat": True,
                 "targets": targets,
                 "factionTargets": factionTargets,
+                "faction_enemy_targets": faction_targets,
                 "ts": int(time.time()),
                 "view": {"targets": True},
             }
