@@ -239,7 +239,7 @@ def attack(request):
                 "v": attack,
                 "targets": getTargets(player),
                 "ts": int(time.time()),
-                'enemy_faction_targers': faction_targets,
+                'enemy_faction_targets': faction_targets,
             }
             return render(request, "target/attacks/button-target.html", context)
 
