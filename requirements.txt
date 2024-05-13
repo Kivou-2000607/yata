@@ -32,6 +32,7 @@ python-magic>=0.4.22
 Pillow==10.3.0                            # If OOM: pip install --compile --install-option=-O1 Pillow
 xkcdpass==1.19.3
 libmagic
+django-cors-headers==4.3.1
 # fontawesome-free
 
 # http server                            # for prod, not both needed
