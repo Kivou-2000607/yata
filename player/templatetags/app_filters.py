@@ -729,4 +729,6 @@ def battle_stats(n):
 
 @register.simple_tag(name="life_percentage")
 def life_percentage(life, life_max):
+    if life_max ==0:
+        return 0
     return int(min(100 * life / life_max, 100))
