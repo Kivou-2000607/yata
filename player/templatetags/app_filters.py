@@ -652,6 +652,8 @@ def player_link(player_id, player_name="Player", page=None, short=False):
 
 @register.simple_tag(name="faction_link")
 def faction_link(faction_id, faction_name="Faction", short=False):
+    if faction_name==None:
+        faction_name= "Faction"
     faction_name = faction_name.replace("{", "{{").replace("}", "}}")
     if not faction_id:
         return "-"
