@@ -22,6 +22,7 @@ urlpatterns = [
     re_path(r"^v1/spy/(?P<target_id>[0-9]*)/$", spies.getSpy, name="getSpy"),
     # faction
     re_path(r"^v1/faction/crimes/export/$", faction.getCrimes, name="getCrimes"),
+    re_path(r"^v1/faction/armoryreport/export/$", faction.getArmoryReport, name="getArmoryReport"),
     re_path(
         r"^v1/faction/crimes/import/ranking/$",
         faction.updateRanking,

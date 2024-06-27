@@ -162,6 +162,40 @@ def livechain(request):
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
+@cache_page(60)
+def getArmoryReport(request):
+    # check if API key is valid with api call
+    key = request.GET.get("key", False)
+    if not key:
+        return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+
+    report_id = request.GET.get("report_id", False)
+    if not key:
+        return JsonResponse({"error": {"code": 2, "error": "No report_id provided"}}, status=400)
+
+    call = apiCall("user", "", "", key=key)
+    if "apiError" in call:
+        return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+
+    factionId = call.get("faction", {}).get("faction_id")
+    faction = Faction.objects.filter(tId=factionId).first()
+    if faction is None:
+        return JsonResponse(
+            {
+                "error": {
+                    "code": 2,
+                    "error": f"Can't find faction {factionId} in YATA database",
+                }
+            },
+            status=400,
+        )
+    report = faction.armoryreport_set.filter(pk=report_id).first()
+    if report is None:
+        return JsonResponse({"error": {"code": 2, "error": "Invalid API Key for report or no report found"}}, status=400)
+
+    return JsonResponse(json.loads(report.report))
+
+
 @cache_page(60 * 10)
 def getCrimes(request):
     try:
