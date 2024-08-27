@@ -2893,7 +2893,7 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                                     "error" if i else "valid",
                                     k.title(),
                                     v["rank"],
-                                    v["value"],
+                                    int(v["value"]),
                                 )
                                 for i, (k, v) in enumerate(hof)
                             ]
