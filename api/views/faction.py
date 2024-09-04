@@ -27,6 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 from scipy import stats
 
 from faction.models import Faction
+from player.models import Player
 from yata.handy import apiCall, tsnow
 
 
@@ -245,7 +246,7 @@ def getCrimes(request):
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
-@cache_page(60 * 10)  # cache based on full uri (player wide)
+
 def getMembers(request):
     try:
         # check if API key is valid with api call
@@ -270,9 +271,12 @@ def getMembers(request):
                 },
                 status=400,
             )
-
+        # check player has AA permissions
+        player = Player.objects.filter(tId=call["player_id"]).first()
+        aa = player.factionAA
+        
         # get faction wide cache
-        c = cache.get(f"faction-members-{factionId}", False)
+        c = cache.get(f"faction-members-{factionId}-{player.tId}", False)
         if c:
             print(f"[api.faction.getMembers] send members {factionId} [cache]")
             return JsonResponse(c, status=200)
@@ -300,16 +304,16 @@ def getMembers(request):
                 "revive": member.revive,
                 "carnage": member.singleHitHonors,
                 "stats_share": member.shareS,
-                "stats_dexterity": member.dexterity,
-                "stats_defense": member.defense,
-                "stats_speed": member.speed,
-                "stats_strength": member.strength,
-                "stats_total": member.getTotalStats(),
+                "stats_dexterity": member.dexterity if aa else 0,
+                "stats_defense": member.defense if aa else 0,
+                "stats_speed": member.speed if aa else 0,
+                "stats_strength": member.strength if aa else 0,
+                "stats_total": member.getTotalStats() if aa else 0,
             }
 
         # cache payload
         payload = {"members": members, "timestamp": tsnow()}
-        cache.set(f"faction-members-{factionId}", payload, 3600)
+        cache.set(f"faction-members-{factionId}-{player.tId}", payload, 3600)
         print(f"[api.faction.getMembers] update & send members to faction {factionId}")
         return JsonResponse(payload, status=200)
     except BaseException as e:
