@@ -37,11 +37,15 @@ def livechain(request):
         # check if API key is valid with api call
         key = request.GET.get("key", False)
         if not key:
-            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 2, "error": "No keys provided"}}, status=400
+            )
 
         call = apiCall("faction", "", "chain,basic", key=key)
         if "apiError" in call:
-            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 4, "error": call["apiErrorString"]}}, status=400
+            )
 
         # create basic payload
         payload = call["chain"]
@@ -52,7 +56,9 @@ def livechain(request):
         factionId = call.get("ID", 0)
         faction = Faction.objects.filter(tId=factionId).first()
         if faction is None:
-            payload["yata"] = {"error": f"Can't find faction {factionId} in YATA database"}
+            payload["yata"] = {
+                "error": f"Can't find faction {factionId} in YATA database"
+            }
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         # get live report
@@ -77,7 +83,9 @@ def livechain(request):
             livechain.assignCrontab()
             livechain.save()
 
-            payload["yata"] = {"error": f"Start computing live report for faction {factionId}"}
+            payload["yata"] = {
+                "error": f"Start computing live report for faction {factionId}"
+            }
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         elif not livechain.report:
@@ -91,7 +99,9 @@ def livechain(request):
             livechain.assignCrontab()
             livechain.save()
 
-            payload["yata"] = {"error": f"Start computing live report for faction {factionId}"}
+            payload["yata"] = {
+                "error": f"Start computing live report for faction {factionId}"
+            }
             return JsonResponse({"chain": payload, "timestamp": tsnow()}, status=200)
 
         graphs = json.loads(livechain.graphs)
@@ -100,7 +110,9 @@ def livechain(request):
         graphSplitStat = graphs.get("members", "").split(",")
         if len(graphSplit) > 1 and len(graphSplitCrit) > 1:
             # compute average time for one bar
-            bins = (int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])) / float(60 * (len(graphSplit) - 1))
+            bins = (
+                int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])
+            ) / float(60 * (len(graphSplit) - 1))
             graph = {
                 "hits": [],
                 "members": [],
@@ -168,15 +180,21 @@ def getArmoryReport(request):
     # check if API key is valid with api call
     key = request.GET.get("key", False)
     if not key:
-        return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+        return JsonResponse(
+            {"error": {"code": 2, "error": "No keys provided"}}, status=400
+        )
 
     report_id = request.GET.get("report_id", False)
     if not key:
-        return JsonResponse({"error": {"code": 2, "error": "No report_id provided"}}, status=400)
+        return JsonResponse(
+            {"error": {"code": 2, "error": "No report_id provided"}}, status=400
+        )
 
     call = apiCall("user", "", "", key=key)
     if "apiError" in call:
-        return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+        return JsonResponse(
+            {"error": {"code": 4, "error": call["apiErrorString"]}}, status=400
+        )
 
     factionId = call.get("faction", {}).get("faction_id")
     faction = Faction.objects.filter(tId=factionId).first()
@@ -192,7 +210,15 @@ def getArmoryReport(request):
         )
     report = faction.armoryreport_set.filter(pk=report_id).first()
     if report is None:
-        return JsonResponse({"error": {"code": 2, "error": "Invalid API Key for report or no report found"}}, status=400)
+        return JsonResponse(
+            {
+                "error": {
+                    "code": 2,
+                    "error": "Invalid API Key for report or no report found",
+                }
+            },
+            status=400,
+        )
 
     return JsonResponse(json.loads(report.report))
 
@@ -203,11 +229,15 @@ def getCrimes(request):
         # check if API key is valid with api call
         key = request.GET.get("key", False)
         if not key:
-            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 2, "error": "No keys provided"}}, status=400
+            )
 
         call = apiCall("user", "", "", key=key)
         if "apiError" in call:
-            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 4, "error": call["apiErrorString"]}}, status=400
+            )
 
         #  check if can get faction
         factionId = call.get("faction", {}).get("faction_id")
@@ -246,17 +276,20 @@ def getCrimes(request):
         return JsonResponse({"error": {"code": 1, "error": str(e)}}, status=500)
 
 
-
 def getMembers(request):
     try:
         # check if API key is valid with api call
         key = request.GET.get("key", False)
         if not key:
-            return JsonResponse({"error": {"code": 2, "error": "No keys provided"}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 2, "error": "No keys provided"}}, status=400
+            )
 
         call = apiCall("user", "", "", key=key)
         if "apiError" in call:
-            return JsonResponse({"error": {"code": 4, "error": call["apiErrorString"]}}, status=400)
+            return JsonResponse(
+                {"error": {"code": 4, "error": call["apiErrorString"]}}, status=400
+            )
 
         #  check if can get faction
         factionId = call.get("faction", {}).get("faction_id")
@@ -274,7 +307,7 @@ def getMembers(request):
         # check player has AA permissions
         player = Player.objects.filter(tId=call["player_id"]).first()
         aa = player.factionAA
-        
+
         # get faction wide cache
         c = cache.get(f"faction-members-{factionId}-{player.tId}", False)
         if c:
@@ -322,4 +355,12 @@ def getMembers(request):
 
 @csrf_exempt
 def updateRanking(request):
-    return JsonResponse({"error": {"code": 1, "error": "Deprecaded request due to TORN API directly giving the ranking."}}, status=300)
+    return JsonResponse(
+        {
+            "error": {
+                "code": 1,
+                "error": "Deprecaded request due to TORN API directly giving the ranking.",
+            }
+        },
+        status=300,
+    )
