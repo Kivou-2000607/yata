@@ -304,11 +304,11 @@ def getMembers(request):
                 "revive": member.revive,
                 "carnage": member.singleHitHonors,
                 "stats_share": member.shareS,
-                "stats_dexterity": member.dexterity if aa else 0,
-                "stats_defense": member.defense if aa else 0,
-                "stats_speed": member.speed if aa else 0,
-                "stats_strength": member.strength if aa else 0,
-                "stats_total": member.getTotalStats() if aa else 0,
+                "stats_dexterity": member.dexterity if aa else -1,
+                "stats_defense": member.defense if aa else -1,
+                "stats_speed": member.speed if aa else -1,
+                "stats_strength": member.strength if aa else -1,
+                "stats_total": member.getTotalStats() if aa else -1,
             }
 
         # cache payload
