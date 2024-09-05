@@ -54,11 +54,11 @@ This file is part of yata.
 {# {% cache 60 stocks-abroad %} #}
 <ul class="nav justify-content-center mx-md-5 mb">
         {% for id, country in country_list.items %}
-
+        
             {% if id == filters.countries %}
                 <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
                     {% if country.flag %}
-                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag" />
+                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag" data-fil="countries" data-key="{{id}}"  />
                     {% else %}
                         <i class="fas fa-toggle-on"></i>
                     {% endif %}
@@ -67,7 +67,7 @@ This file is part of yata.
             {% else %}
                 <li data-fil="countries" data-key="{{id}}" class="nav-item  m-2 bazaar-toggle-filters buttons">
                     {% if country.flag %}
-                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag-gs" />
+                        <img src="{% url_img_flag country.flag %}" alt="{{country.flag}}" class="flag-gs" data-fil="countries" data-key="{{id}}"  />
                     {% else %}
                         <i class="fas fa-toggle-off"></i>
                     {% endif %}
