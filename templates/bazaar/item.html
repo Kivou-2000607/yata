@@ -57,7 +57,7 @@ This file is part of yata.
     {% if player.tId > 0 %}
     <div class="col-12 px-4">
       <div class="item-table-header {% if not item.stock %}lack{% endif %}" data-act="toggle" title='Stock Details&#013;Inventory: {{item.stockI}}&#013;Bazaar: {{item.stockB}}&#013;Display Cabinet: {{item.stockD}}&#013;Click to {% if item.tId|stringformat:"i" in list %}remove{% else %}add{% endif %} {{item.tName}} to your custom list'>
-        stock: {{item.stock}}<i class="fas fa-toggle-{% if item.tId|stringformat:"i" in list %}on{%else%}off{%endif%} ms-2"></i>
+        stock: {{item.stock}}<i class="{% if item.tId|stringformat:"i" in list %}fas fa-heart{%else%}fa-regular fa-heart{%endif%} ms-2"></i>
       </div>
     </div>
     {% endif %}
