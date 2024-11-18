@@ -3932,18 +3932,19 @@ class ArmoryReport(models.Model):
                 continue
 
             # merge blood bags
+            item = item.replace(" items","")
             if item == "Empty Blood Bag" and transaction_type == "filled":
                 item = "Blood Bag"
             elif item[:9] == "Blood Bag":
                 item = "Blood Bag"
             elif item == "the faction's points to refill their energy.":
                 item = "point"
-
+            
             # get item type
             fake_types = {"point": "Points", "money": "$"}
             item_type = dict(ITEM_TYPE, **fake_types).get(item, "Unknown")
 
-            # print(f'type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
+            #print(f'------------type: {item_type:<10} name: {member_name:<16} [{member_id:>10}] transaction: {transaction_type:<10} number: {transaction_number:>5} item: {item}')
 
             if item_type == "Unknown":
                 print(f"{self} item type not known: {news_string} {item}")
