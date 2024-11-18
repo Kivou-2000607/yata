@@ -3937,7 +3937,7 @@ class ArmoryReport(models.Model):
                 item = "Blood Bag"
             elif item[:9] == "Blood Bag":
                 item = "Blood Bag"
-            elif item == "the faction's points to refill their energy.":
+            elif "the faction's points to refill their" in item:
                 item = "point"
             
             # get item type
