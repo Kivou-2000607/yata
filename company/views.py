@@ -162,7 +162,9 @@ def supervise(request, shareId=False):
                     error, message = company.update_info()
 
                 # update company
-                if (int(time.time()) - company.timestamp) > 3600 or request.POST.get("type") == "update-data":
+                midnight_today = int(time.time()) - int(time.time()) % 86400
+                new_company_day = midnight_today + (18 * 3600)
+                if company.timestamp < new_company_day or request.POST.get("type") == "update-data":
                     error, message = company.update_info()
 
             # add employees requirements and potential efficiency on the fly
