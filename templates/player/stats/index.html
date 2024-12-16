@@ -23,44 +23,4 @@ This file is part of yata.
 {% load app_filters %}
 
 
-{% if apiErrorSub %}
-    <p class="error mb-0"><i class="fas fa-skull-crossbones fa-icon-inline"></i> {{apiErrorSub}}</p>
-{% else %}
-
-{% for cat, defsub in personalstats.items %}
-    <h3 class="module-doc">{{cat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
-    <div class="module-doc">
-      <ul>
-
-        {% for s in defsub.0 %}
-            {% if s.2 == "money" %}
-            <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
-            {% elif s.2 == "time" %}
-            <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
-            {% else %}
-            <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
-            {% endif %}
-        {% endfor %}
-      </ul>
-    </table>
-
-        {% for subcat, stats in defsub.1.items %}
-            <h4 class="command-doc">{{subcat|capfirst}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h4>
-            <div class="command-doc" style="margin-left: 10%">
-              <ul>
-                {% for s in stats %}
-                    {% if s.2 == "money" %}
-                        <li>{{s.0|capfirst}}: ${{s.1|intcomma}}</li>
-                        {% elif s.2 == "time" %}
-                        <li>{{s.0|capfirst}}: {{s.1|intdiv:86400|intcomma}} days</li>
-                        {% else %}
-                        <li>{{s.0|capfirst}}: {{s.1|intcomma}}</li>
-                    {% endif %}
-                {% endfor %}
-              </ul>
-            </div>
-        {% endfor %}
-    </div>
-{% endfor %}
-
-{% endif %}
+<p class="warning mb-0"><i class="fas fa-skull-crossbones fa-icon-inline"></i> This page is not maintained anymore. In view of the new tools developped by the community we strongly encorage you to checkout <a href="https://torn.report" target="_blank">Torn Report</a> if you're interested in viewing your personal stats.</p>

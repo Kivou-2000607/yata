@@ -1,21 +1,19 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
+# Copyright 2019 kivou.2000607@gmail.com
+# 
+# This file is part of yata.
+# 
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+# 
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import time
@@ -510,38 +508,6 @@ class Player(models.Model):
         # Hospitalizing - *Increases hospitalization time by 5%*
 
         return merits
-
-    def getPersonalstats(self, req=None):
-        from player.personalstats_dic import d as personalstats_dic
-
-        if req is None:
-            return dict({})
-
-        personnalstats = dict({})
-
-        for k, v in req.items():
-            s = personalstats_dic.get(
-                k,
-                {
-                    "category": "New entries",
-                    "sub": "default",
-                    "type": "integer",
-                    "name": k,
-                },
-            )
-            if s["category"] not in personnalstats:
-                personnalstats[s["category"]] = [[], dict({})]
-            if s["sub"] == "default":
-                personnalstats[s["category"]][0].append([s["name"], v, s["type"]])
-            else:
-                if s["sub"] not in personnalstats[s["category"]][1]:
-                    personnalstats[s["category"]][1][s["sub"]] = []
-                personnalstats[s["category"]][1][s["sub"]].append([s["name"], v, s["type"]])
-
-            if s["category"] == "Unknown":
-                print(k, v)
-
-        return personnalstats
 
 
 class Message(models.Model):

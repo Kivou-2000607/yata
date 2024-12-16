@@ -95,6 +95,34 @@ def apiCall(
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
 
+    # check personalstats modification
+    pscat = [
+        "all",
+        "popular",
+        "attacking",
+        "battle_stats",
+        "jobs",
+        "trading",
+        "jail",
+        "hospital",
+        "finishing_hits",
+        "communication",
+        "crimes",
+        "bounties",
+        "investments",
+        "items",
+        "travel",
+        "drugs",
+        "missions",
+        "racing",
+        "networth",
+        "other",
+        "criminal_offenses"
+    ]
+    
+    if "personalstats" in selections.split(",") and kv.get("cat", None) not in pscat:
+        kv["cat"] = "all"
+        
     base_url = "https://api.torn.com"
 
     url = f"{base_url}/{section}/{id}"
@@ -108,7 +136,6 @@ def apiCall(
         keys_values[k] = v
 
     url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
-
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
 

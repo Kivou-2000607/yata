@@ -1,21 +1,19 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
+# Copyright 2019 kivou.2000607@gmail.com
+# 
+# This file is part of yata.
+# 
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+# 
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
 from django.utils import timezone
@@ -38,6 +36,9 @@ def updatePlayer(player, i=None, n=None):
 
     progress = "{:04}/{:04}: ".format(i, n) if i is not None else ""
 
+    # personal stats categories
+    # Attacking, Jobs, Trading, Jail, Hospital, Finishing Hits, Communication, Criminal Offenses, Bounties, Items, Travel, Drugs, Missions, Racing, Networth and Other.
+    
     if player.tId == -1:
         # print("[player.functions.updatePlayer] {}{} action: ignore".format(progress, player.nameAligned()))
         return 0
@@ -91,7 +92,7 @@ def updatePlayer(player, i=None, n=None):
     else:
         selection = []
 
-    user = apiCall('user', '', ','.join(selection), player.getKey(), verbose=False)
+    user = apiCall('user', '', ','.join(selection), player.getKey(), kv={"cat", "all"}, verbose=True)
 
     # set active
     player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
