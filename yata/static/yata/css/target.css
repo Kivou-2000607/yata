@@ -240,13 +240,3 @@ div.life-bar > span {
     }
 }
 
-
-table.target-dogtags th.a {
-    width: 5%;
-}
-table.target-dogtags th.b {
-    width: 3%;
-}
-table.target-dogtags th.c {
-    width: 8%;
-}

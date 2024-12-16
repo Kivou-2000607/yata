@@ -3,11 +3,6 @@ from django.contrib import admin
 from target.models import *
 
 
-class DogTagsAdmin(admin.ModelAdmin):
-
-    list_display = ['target_id', 'name', 'level', 'defendslost', 'last_action', 'last_update']
-
-
 class TargetAdmin(admin.ModelAdmin):
 
     list_display = ['__str__', 'update_timestamp', 'n_players']
@@ -26,7 +21,6 @@ class AttackAdmin(admin.ModelAdmin):
     list_display = ['__str__']
 
 
-admin.site.register(DogTags, DogTagsAdmin)
 admin.site.register(Target, TargetAdmin)
 admin.site.register(Attack, AttackAdmin)
 admin.site.register(TargetInfo, TargetInfoAdmin)

@@ -19,7 +19,4 @@ urlpatterns = [
     re_path(r'^revives/$', views.revives, name='revives'),
     re_path(r'^revive/$', views.revive, name='revive'),
 
-    re_path(r'^dogtags/$', views.dogtags, name='dogtags'),
-    # re_path(r'^revive/$', views.revive, name='revive'),
-
     ]
