@@ -66,11 +66,12 @@ def apiCall(
     id,
     selections,
     key,
-    kv={},
+    kv=dict(),
     sub=None,
     verbose=False,
     cache_response=False,
     cache_private=True,
+    v2=False
 ):
     import requests
 
@@ -122,20 +123,24 @@ def apiCall(
     
     if "personalstats" in selections.split(",") and kv.get("cat", None) not in pscat:
         kv["cat"] = "all"
-        
-    base_url = "https://api.torn.com"
+
+    
+    base_url = "https://api.torn.com/v2" if v2 else "https://api.torn.com"
 
     url = f"{base_url}/{section}/{id}"
+
 
     keys_values = {
         "selections": selections,
         "key": key,
         "comment": config("API_HOST", default="-"),
     }
+    
     for k, v in kv.items():
         keys_values[k] = v
 
     url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
+    
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
 

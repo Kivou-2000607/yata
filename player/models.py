@@ -234,10 +234,11 @@ class Player(models.Model):
         return error
 
     def getInventory(self, force=False):
+
         if self.tId < 0:
             return {}
 
-        return {"inventory": {}, "bazaar": {}, "display": {}}
+        # return {"inventory": {}, "bazaar": {}, "display": {}}
 
         # try to get cache
         inventory = cache.get(f"bazaar-inventory-{self.tId}", False)
@@ -251,7 +252,8 @@ class Player(models.Model):
             return inventory
 
         print("[getInventory] build inventory")
-        invtmp = apiCall("user", "", "inventory,display,bazaar", self.getKey())
+        # invtmp = apiCall("user", "", "inventory,display,bazaar,itemmarket", self.getKey(), )
+        invtmp = apiCall("user", "", "display,bazaar,itemmarket", self.getKey(), v2=True)
         for k, v in invtmp.items():
             if v is None:
                 invtmp[k] = dict({})

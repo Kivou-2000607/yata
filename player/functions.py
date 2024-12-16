@@ -92,7 +92,7 @@ def updatePlayer(player, i=None, n=None):
     else:
         selection = []
 
-    user = apiCall('user', '', ','.join(selection), player.getKey(), kv={"cat", "all"}, verbose=True)
+    user = apiCall('user', '', ','.join(selection), player.getKey(), kv={"cat": "all"}, verbose=True)
 
     # set active
     player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31

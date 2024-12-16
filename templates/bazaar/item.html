@@ -105,7 +105,8 @@ This file is part of yata.
               {% else %}                                             <tr class="{% if forloop.counter > 1 %}d-none {%else%}keep-showing {%endif%}d-md-table-row eq"  title="cumulative: {{data.cumulativeQ|intcomma}} for ${{data.cumulativeP|intcomma}} ({{data.cumulativeP|intdiv:data.cumulativeQ|intcomma}} $/u)">
               {% endif %}
             {% endif %}
-            <td class="a text-end">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="b text-end">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
+            {# <td class="a text-end">{% if data.itemmarket %}*{%endif%}{{data.quantity}}</td><td class="b text-end">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td> #}
+	    <td class="a text-end">{{data.quantity}}</td><td class="b text-end">{% ifchanged %}${{data.cost|intcomma}}{% endifchanged %}</td>
             </tr>
             {% if forloop.counter == 2 %}
               <tr class="d-table-row d-md-none show-more">

@@ -1,21 +1,19 @@
-"""
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-"""
+# Copyright 2019 kivou.2000607@gmail.com
+# 
+# This file is part of yata.
+# 
+#     yata is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     any later version.
+# 
+#     yata is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
 from django.db import models
 from django.utils import timezone
@@ -230,43 +228,40 @@ class Item(models.Model):
 
     def update_bazaar(self, key="", n=10):
         # API Call
-        req = apiCall("market", self.tId, "bazaar,itemmarket,timestamp", key)
-        bazaar = req.get("bazaar") if req.get("bazaar") else dict({})
+        req = apiCall("market", self.tId, "itemmarket", key, v2=True)
+
         itemmarket = req.get("itemmarket") if req.get("itemmarket") else dict({})
 
-        if 'apiError' in bazaar:
-            return bazaar
         if 'apiError' in itemmarket:
             return itemmarket
-        else:
-            # fuse both
-            marketData = []
-            for v in bazaar:
-                marketData.append({"cost": v["cost"], "quantity": v["quantity"], "itemmarket": False})
 
-            pp = 0  # previews price
-            q = 0  # quantity
-            for i, v in enumerate(itemmarket):
-                pp = v["cost"] if i == 0 else pp
-                if v["cost"] == pp:
-                    q += 1
-                else:
-                    marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
-                    q = 1
-                    pp = v["cost"]
-            if len(itemmarket):
+        # fuse both
+        marketData = []
+
+        pp = 0  # previews price
+        q = 0  # quantity
+        for i, v in enumerate(itemmarket["listings"]):
+            pp = pp if i else v["price"]
+            if v["price"] == pp:
+                q += 1
+            else:
                 marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
+                q = 1
+                pp = v["price"]
 
-            marketData = sorted(marketData, key=lambda x: x['cost'], reverse=False)
-            self.marketdata_set.all().delete()
-            for i, (v) in enumerate(marketData):
-                # print("[model.bazaar.update_bazaar] update_bazaar: (q:{}, c:{})".format(v["quantity"], v["cost"]))
-                self.marketdata_set.create(quantity=v["quantity"], cost=v["cost"], itemmarket=v["itemmarket"])
-                if i >= n - 1:
-                    break
-            self.lastUpdateTS = int(req.get('timestamp', timezone.now().timestamp()))
-            self.save()
-            return marketData
+        if len(itemmarket["listings"]):
+            marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
+
+        marketData = sorted(marketData, key=lambda x: x['cost'], reverse=False)
+        self.marketdata_set.all().delete()
+        for i, (v) in enumerate(marketData):
+            # print("[model.bazaar.update_bazaar] update_bazaar: (q:{}, c:{})".format(v["quantity"], v["cost"]))
+            self.marketdata_set.create(quantity=v["quantity"], cost=v["cost"], itemmarket=v["itemmarket"])
+            if i >= n - 1:
+                break
+        self.lastUpdateTS = int(req.get('timestamp', timezone.now().timestamp()))
+        self.save()
+        return marketData
 
 
 class MarketData(models.Model):
