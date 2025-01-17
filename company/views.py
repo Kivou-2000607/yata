@@ -161,9 +161,9 @@ def supervise(request, shareId=False):
                     company = Company.objects.filter(tId=player.companyId).first()
                     error, message = company.update_info()
 
-                # update company
-                if (int(time.time()) - company.timestamp) > 3600 or request.POST.get("type") == "update-data":
-                    error, message = company.update_info()
+            # Only update company if we don't have any data, otherwise the cron should take care of this.
+            if company.timestamp == 0:
+                company.update_info()
 
             # add employees requirements and potential efficiency on the fly
             company_positions = company.company_description.position_set.all()
