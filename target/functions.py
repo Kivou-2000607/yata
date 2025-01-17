@@ -17,13 +17,8 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import json
-import math
-
-from yata.handy import *
-from faction.functions import BONUS_HITS
-from faction.functions import modifiers2lvl1
-from target.models import *
+from faction.functions import BONUS_HITS, modifiers2lvl1
+from yata.handy import apiCall, tsnow
 
 
 def updateAttacks(player, full=False):
@@ -32,9 +27,9 @@ def updateAttacks(player, full=False):
     # if tsnow() - player.attacksUpda < 15 * 60:
     #     return False, player.attack_set.all()
 
-    query = 'attacksfull,timestamp' if full else 'attacks,timestamp'
-    req = apiCall('user', "", query, player.getKey())
-    if 'apiError' in req:
+    query = "attacksfull,timestamp" if full else "attacks,timestamp"
+    req = apiCall("user", "", query, player.getKey())
+    if "apiError" in req:
         return req, player.attack_set.order_by("-timestamp_ended").all()
 
     attacks = req.get("attacks", dict({}))
@@ -44,7 +39,6 @@ def updateAttacks(player, full=False):
     if not len(attacks):
         attacks = dict({})
 
-    remove = []
     old = tsnow() - 2678400  # 1 month old
     batch = Attack.objects.bulk_operation()
     for k, v in attacks.items():
@@ -72,28 +66,27 @@ def updateAttacks(player, full=False):
 
         if v["chain"] in BONUS_HITS:
             # case attacker and bonus hit
-            v["flat_respect"] = float(v["respect"]) / float(v['modifiers']['chain_bonus'])
+            v["flat_respect"] = float(v["respect"]) / float(v["modifiers"]["chain_bonus"])
             v["bonus"] = v["chain"]
         else:
             allModifiers = 1.0
             for mod in ["fair_fight", "war", "retaliation", "group_attack", "overseas", "chain_bonus", "warlord_bonus"]:
-                allModifiers *= float(v['modifiers'].get(mod, 1))
+                allModifiers *= float(v["modifiers"].get(mod, 1))
             if v["result"] == "Mugged":
                 allModifiers *= 0.75
             base_respect = float(v["respect"]) / allModifiers
-            level = 1 if full else int(math.exp(4. * base_respect - 1))
+            level = 1 if full else round(198 * (base_respect - (197 / 198)))
             v["base_respect"] = base_respect
-            v["flat_respect"] = float(v['modifiers']["fair_fight"]) * base_respect
+            v["flat_respect"] = float(v["modifiers"]["fair_fight"]) * base_respect
             v["bonus"] = 0
             v["level"] = level
 
         if v["defender_name"] == "Gareth-Bale":
-            print(f'{allModifiers}')
+            print(f"{allModifiers}")
 
         v = modifiers2lvl1(v)
 
         batch.update_or_create(tId=int(k), player_id=int(player.id), defaults=v)
-
 
     if batch.count():
         batch.run()
@@ -117,11 +110,11 @@ def getTargets(player):
 
 
 def updateRevives(player):
-    tId = player.tId
+    player.tId
     key = player.getKey()
 
-    req = apiCall('user', "", 'revives,timestamp', key)
-    if 'apiError' in req:
+    req = apiCall("user", "", "revives,timestamp", key)
+    if "apiError" in req:
         return req, player.revive_set.order_by("-timestamp").all()
     else:
         revives = req.get("revives", dict({}))
@@ -137,7 +130,7 @@ def updateRevives(player):
         player_revives.filter(timestamp__lt=lastMonth).delete()
 
         for k, v in revives.items():
-            exists = len(player_revives.filter(tId=int(k)))
+            # exists = len(player_revives.filter(tId=int(k)))
             old = v.get("timestamp", 0) < lastMonth
             if not old:
                 revives[k]["target_last_action_status"] = revives[k]["target_last_action"].get("status", "Unknown")
