@@ -272,12 +272,7 @@ This file is part of yata.
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
       <div class="px-2 me-auto"><i class="fas fa-building"></i>&nbsp;{{company.name|safe}}</div>
-      {% if not share %}
-        <div class="px-2">
-          <a id="update-data" href="{% url "company:supervise" %}"><i class="fas fa-sync-alt fa-icon-inline"></i>&nbsp;Update data</a>
-        </div>
-      {% endif %}
-      {% if not share and player.companyDi %}
+          {% if not share and player.companyDi %}
         <div class="px-2">
           {% include 'company/supervise/share.html' %}
         </div>
