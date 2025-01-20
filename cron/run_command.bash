@@ -7,7 +7,7 @@ fi
 
 # virtualenv root directory
 if [ "$YATA_VENV_DIR" == "" ]; then
-  YATA_VENV_DIR=$HOME/.virtualenvs/yata/
+  YATA_VENV_DIR=$HOME/yata/venv/
 fi
 
 # log file
