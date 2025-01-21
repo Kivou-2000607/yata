@@ -1,72 +1,47 @@
-# setup for with UTC time
+YATA_VENV_DIR=/home/decap/yata/venv
+YATA_DIR=/home/decap/yata
 
-YATA_DIR=~/yata
-
+########
+# YATA #
+########
 
 # ADMINISTRATION
-0 0 * * *    bash -c "$YATA_DIR/cron/run_command.bash check_keys"
-# 0 * * * *  bash -c "$YATA_DIR/cron/run_command.bash analytics"
-0 0,12 * * * bash -c "$YATA_DIR/cron/run_command.bash donations"
+0 0 * * *    bash -c "~/yata/cron/run_command.bash check_keys"
 
 # AWARDS
-5 0,12 * * * bash -c "$YATA_DIR/cron/run_command.bash awards"
+5 0,12 * * * bash -c "~/yata/cron/run_command.bash awards"
 
 # FACTIONS
-0 0,12 * * * bash -c "$YATA_DIR/cron/run_command.bash factions"
-0 1,13 * * * bash -c "$YATA_DIR/cron/run_command.bash posters"
-0 */4  * * * bash -c "$YATA_DIR/cron/run_command.bash territories"
+0 0,12 * * * bash -c "~/yata/cron/run_command.bash factions"
+0 1,13 * * * bash -c "~/yata/cron/run_command.bash posters"
+0 1,13  * * * bash -c "~/yata/cron/run_command.bash spies"
 
 # BAZAAR
-30 2,14 * * * bash -c "$YATA_DIR/cron/run_command.bash items"
-35 2,14 * * * bash -c "$YATA_DIR/cron/run_command.bash fstocks_clients"
-0 0 * * *     bash -c "$YATA_DIR/cron/run_command.bash items_images"
+30 2,14 * * * bash -c "~/yata/cron/run_command.bash items"
+35 2,14 * * * bash -c "~/yata/cron/run_command.bash fstocks_clients"
+0  0 * * *    bash -c "~/yata/cron/run_command.bash items_images"
+*  * * * *    bash -c "~/yata/cron/run_command.bash fstocks_clear_cache"
 
 # PLAYERS
-1 3,15 * * * bash -c "$YATA_DIR/cron/run_command.bash players"
-0 3,15 * * * bash -c "$YATA_DIR/cron/run_command.bash players_stats"
+5 3,15 * * * bash -c "~/yata/cron/run_command.bash players"
+0 3,15 * * * bash -c "~/yata/cron/run_command.bash players_stats"
 
 # COMPANIES (setup to catch before and after Torn update)
-55 16,18 * * * bash -c "$YATA_DIR/cron/run_command.bash companies"
-
-# LOOT
-*/10 * * * * bash -c "$YATA_DIR/cron/run_command.bash loot"
-
-# STOCKS
-*/15 * * * * bash -c "$YATA_DIR/cron/run_command.bash stocks"
+0 7,20 * * * bash -c "~/yata/cron/run_command.bash companies"
 
 # REPORTS
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 01"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 02"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 03"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 04"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 05"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 06"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 07"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 08"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 09"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 10"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash chain 11"
+* * * * * bash -c "~/yata/cron/run_command.bash chain 01"
+* * * * * bash -c "~/yata/cron/run_command.bash chain 02"
+* * * * * bash -c "~/yata/cron/run_command.bash chain 03"
+* * * * * bash -c "~/yata/cron/run_command.bash chain 04"
+* * * * * bash -c "~/yata/cron/run_command.bash chain 05"
 
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 01"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 02"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 03"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 04"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 05"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 06"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 07"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 08"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 09"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 10"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash attacks 11"
+* * * * * bash -c "~/yata/cron/run_command.bash attacks 01"
+* * * * * bash -c "~/yata/cron/run_command.bash attacks 02"
+* * * * * bash -c "~/yata/cron/run_command.bash attacks 03"
 
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 01"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 02"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 03"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 04"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 05"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 06"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 07"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 08"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 09"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 10"
-* * * * * bash -c "$YATA_DIR/cron/run_command.bash revives 11"
+* * * * * bash -c "~/yata/cron/run_command.bash revives 01"
+* * * * * bash -c "~/yata/cron/run_command.bash revives 02"
+
+* * * * * bash -c "~/yata/cron/run_command.bash armory 01"
+* * * * * bash -c "~/yata/cron/run_command.bash armory 02"
