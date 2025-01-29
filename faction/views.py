@@ -94,7 +94,13 @@ def index(request):
                 player.factionNa = "-"
                 player.factionAA = False
                 player.save()
-                return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, "faction.html", {"player": player, "apiError": msg})
+                return (
+                    JsonResponse({"error": msg}, status=400)
+                    if request.session.get("json-output")
+                    else render(
+                        request, "faction.html", {"player": player, "apiError": msg}
+                    )
+                )
 
             # update faction information
             factionId = int(user.get("faction")["faction_id"])
@@ -110,7 +116,9 @@ def index(request):
             # get /create faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                faction = Faction.objects.create(tId=factionId, name=user.get("faction")["faction_name"])
+                faction = Faction.objects.create(
+                    tId=factionId, name=user.get("faction")["faction_name"]
+                )
             else:
                 faction.name = user.get("faction")["faction_name"]
                 faction.save()
@@ -120,8 +128,12 @@ def index(request):
             # add/remove key depending of AA member
             faction.manageKey(player)
             chainsreports = faction.chain_set.filter(computing=True).order_by("-start")
-            attacksreports = faction.attacksreport_set.filter(computing=True).order_by("-start")
-            revivesreports = faction.revivesreport_set.filter(computing=True).order_by("-start")
+            attacksreports = faction.attacksreport_set.filter(computing=True).order_by(
+                "-start"
+            )
+            revivesreports = faction.revivesreport_set.filter(computing=True).order_by(
+                "-start"
+            )
             events = faction.event_set.order_by("timestamp")
 
             # get logs
@@ -165,7 +177,9 @@ def logsList(request):
             player = getPlayer(request.session["player"].get("tId"))
             faction = getFaction(player.factionId)
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found in the database.",
@@ -195,7 +209,11 @@ def target(request):
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                context = {"apiErrorLine": "Faction {} not found in the database.".format(factionId)}
+                context = {
+                    "apiErrorLine": "Faction {} not found in the database.".format(
+                        factionId
+                    )
+                }
                 return render(request, "faction/targets/line.html", context)
 
             if request.POST.get("type", False):
@@ -204,10 +222,16 @@ def target(request):
                     # update target
                     target_id = int(request.POST["targetId"])
                     target, _ = faction.target_set.get_or_create(target_id=target_id)
-                    req = apiCall("user", target.target_id, "profile,timestamp", player.getKey())
+                    req = apiCall(
+                        "user", target.target_id, "profile,timestamp", player.getKey()
+                    )
                     error, target = target.updateFromApi(req)
                     if error:
-                        context = {"apiErrorLine": "Error while updating {}: {}".format(target, req.get("apiError", "Unknown error"))}
+                        context = {
+                            "apiErrorLine": "Error while updating {}: {}".format(
+                                target, req.get("apiError", "Unknown error")
+                            )
+                        }
                     else:
                         context = {"player": player, "target": target, "ts": tsnow()}
                     return render(request, "faction/targets/line.html", context)
@@ -244,7 +268,11 @@ def target(request):
             return render(request, "faction/targets/line.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except BaseException as e:
@@ -270,7 +298,11 @@ def configurations(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             faction.manageKey(player)
@@ -305,21 +337,37 @@ def configurations(request):
 
             # handle upload of poster head/tail
             if request.POST.get("upload_head"):
-                form = PosterHeadForm(request.POST, request.FILES, instance=faction)
-                valid_form = form.is_valid()
-                if valid_form:
-                    form.save()
-                    context["validMessageSub"] = "Poster header uploaded"
+                if request.POST.get("delete_head") == "1":
+                    faction.posterHeadImg.delete()
+                    faction.posterHead = False
+                    faction.save()
+                    context["validMessageSub"] = "Poster header deleted"
                 else:
-                    context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
+                    form = PosterHeadForm(request.POST, request.FILES, instance=faction)
+                    valid_form = form.is_valid()
+                    if valid_form:
+                        form.save()
+                        context["validMessageSub"] = "Poster header uploaded"
+                    else:
+                        context["errorMessageSub"] = (
+                            "Error uploading the image (size should be < 500kb)"
+                        )
             if request.POST.get("upload_tail"):
-                form = PosterTailForm(request.POST, request.FILES, instance=faction)
-                valid_form = form.is_valid()
-                if valid_form:
-                    form.save()
-                    context["validMessageSub"] = "Poster footer uploaded"
+                if request.POST.get("delete_tail") == "1":
+                    faction.posterTailImg.delete()
+                    faction.posterTail = False
+                    faction.save()
+                    context["validMessageSub"] = "Poster footer deleted"
                 else:
-                    context["errorMessageSub"] = "Error uploading the image (size should be < 500kb)"
+                    form = PosterTailForm(request.POST, request.FILES, instance=faction)
+                    valid_form = form.is_valid()
+                    if valid_form:
+                        form.save()
+                        context["validMessageSub"] = "Poster footer uploaded"
+                    else:
+                        context["errorMessageSub"] = (
+                            "Error uploading the image (size should be < 500kb)"
+                        )
 
             # add poster
             if faction.poster:
@@ -336,7 +384,11 @@ def configurations(request):
                 context["fonts"] = fntId
                 updatePoster(faction)
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
             if request.POST.get("upload_image"):
                 page = "faction.html"
 
@@ -365,7 +417,11 @@ def configurationsKey(request):
             return render(request, "faction/aa/keys.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -385,7 +441,9 @@ def configurationsEvent(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": f"Faction {player.factionId} not found in the database."},
+                    {
+                        "errorMessage": f"Faction {player.factionId} not found in the database."
+                    },
                 )
 
             if request.POST.get("type") == "delete":
@@ -396,7 +454,11 @@ def configurationsEvent(request):
 
             elif request.POST.get("type") == "create":
                 v = dict({})
-                v["title"] = request.POST.get("title") if request.POST.get("title")[:63] else "{} event".format(faction.name)[:63]
+                v["title"] = (
+                    request.POST.get("title")
+                    if request.POST.get("title")[:63]
+                    else "{} event".format(faction.name)[:63]
+                )
                 v["description"] = request.POST.get("description")[:255]
                 v["timestamp"] = request.POST.get("ts")
                 stack = int(request.POST.get("stack", 0))
@@ -410,7 +472,11 @@ def configurationsEvent(request):
             return render(request, "faction/aa/events.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -432,7 +498,11 @@ def configurationsThreshold(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             previousThreshold = faction.hitsThreshold
@@ -449,7 +519,11 @@ def configurationsThreshold(request):
             return render(request, "faction/aa/threshold.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -471,7 +545,11 @@ def configurationsPoster(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             print(request.POST)
@@ -528,7 +606,11 @@ def configurationsPoster(request):
             return render(request, "faction/aa/poster.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -542,12 +624,18 @@ def members(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -570,7 +658,9 @@ def members(request):
             }
             if error:
                 selectError = "apiErrorSub" if request.method == "POST" else "apiError"
-                context.update({selectError: error["apiError"] + " Members not updated."})
+                context.update(
+                    {selectError: error["apiError"] + " Members not updated."}
+                )
             return render(request, page, context)
 
         else:
@@ -611,7 +701,11 @@ def updateMember(request):
                 return render(
                     request,
                     "faction/members/line.html",
-                    {"errorMessage": "Member {} not found in faction {}".format(memberId, factionId)},
+                    {
+                        "errorMessage": "Member {} not found in faction {}".format(
+                            memberId, factionId
+                        )
+                    },
                 )
 
             # update status and last action
@@ -627,7 +721,9 @@ def updateMember(request):
                 return render(
                     request,
                     "faction/members/line.html",
-                    {"errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'},
+                    {
+                        "errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'
+                    },
                 )
 
             try:
@@ -644,7 +740,9 @@ def updateMember(request):
             update["name"] = api_member["name"]
             update["daysInFaction"] = api_member["days_in_faction"]
             # update status
-            update["description"] = clean_html_status_description(api_member["status"]["description"])
+            update["description"] = clean_html_status_description(
+                api_member["status"]["description"]
+            )
             update["details"] = api_member["status"]["details"]
             update["state"] = api_member["status"]["state"]
             update["color"] = api_member["status"]["color"]
@@ -662,7 +760,9 @@ def updateMember(request):
                 return render(
                     request,
                     "faction/members/line.html",
-                    {"errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'},
+                    {
+                        "errorMessage": f'API error {r["apiErrorString"]} [{r["apiErrorCode"]}]'
+                    },
                 )
             elif "error" in r:
                 return render(
@@ -677,7 +777,11 @@ def updateMember(request):
             return render(request, "faction/members/line.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -756,10 +860,16 @@ def toggleMemberShare(request):
 
                 # member.save()
             else:
-                return render(request, "faction/members/nnb.html", {"errorMessage": "?"})
+                return render(
+                    request, "faction/members/nnb.html", {"errorMessage": "?"}
+                )
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -775,14 +885,24 @@ def chains(request):
             factionId = player.factionId
 
             # get page
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 msg = f"Faction {factionId} not found in the database"
-                return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, page, {"player": player, selectError: msg})
+                return (
+                    JsonResponse({"error": msg}, status=400)
+                    if request.session.get("json-output")
+                    else render(request, page, {"player": player, selectError: msg})
+                )
 
             # update chains if AA
             error = False
@@ -803,7 +923,9 @@ def chains(request):
                 if apichains is not None:
                     for k, v in req.get("chains", dict({})).items():
                         old = tsnow() - int(v["end"]) > faction.getHist("chains")
-                        new = tsnow() - int(v["end"]) < v["chain"] * 6  # wait end of live chain cooldown
+                        new = (
+                            tsnow() - int(v["end"]) < v["chain"] * 6
+                        )  # wait end of live chain cooldown
 
                         if v["chain"] < faction.hitsThreshold or old or new:
                             chains.filter(tId=k).delete()
@@ -824,8 +946,12 @@ def chains(request):
                 # req["chain"]["cooldown"] = 0
                 # req["chain"]["start"] = tsnow() - 10
 
-                if "apiError" in req.get("chain", {"apiError": "chain not found int API request"}):
-                    error = req.get("chain", {"apiError": "chain not found int API request"})
+                if "apiError" in req.get(
+                    "chain", {"apiError": "chain not found int API request"}
+                ):
+                    error = req.get(
+                        "chain", {"apiError": "chain not found int API request"}
+                    )
 
                 elif req["chain"]["current"] > 9:
                     if live is None:
@@ -876,7 +1002,9 @@ def chains(request):
                 selectError = "apiErrorSub" if request.method == "POST" else "apiError"
                 context.update({selectError: error["apiError"]})
             if message:
-                selectMessage = "validMessageSub" if request.method == "POST" else "validMessage"
+                selectMessage = (
+                    "validMessageSub" if request.method == "POST" else "validMessage"
+                )
                 context.update({selectMessage: message})
 
             if request.session.get("json-output"):
@@ -913,13 +1041,21 @@ def manageReport(request):
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 msg = f"Faction {factionId} not found in the database"
-                return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, "yata/error.html", {"inlineError": msg})
+                return (
+                    JsonResponse({"error": msg}, status=400)
+                    if request.session.get("json-output")
+                    else render(request, "yata/error.html", {"inlineError": msg})
+                )
 
             # get chain
             chain = faction.chain_set.filter(tId=chainId).first()
             if chain is None:
                 msg = f"Chain {chainId} not found in the database"
-                return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, "yata/error.html", {"inlineError": msg})
+                return (
+                    JsonResponse({"error": msg}, status=400)
+                    if request.session.get("json-output")
+                    else render(request, "yata/error.html", {"inlineError": msg})
+                )
 
             if post_payload.get("type", False) == "share":
                 if chain.shareId == "":
@@ -928,7 +1064,11 @@ def manageReport(request):
                     chain.shareId = ""
                 chain.save()
                 context = {"chain": chain}
-                return JsonResponse(json_context(context), status=200) if request.session.get("json-output") else render(request, "faction/chains/share.html", context)
+                return (
+                    JsonResponse(json_context(context), status=200)
+                    if request.session.get("json-output")
+                    else render(request, "faction/chains/share.html", context)
+                )
 
             if post_payload.get("type", False) == "combine":
                 chain.combine = not chain.combine
@@ -982,7 +1122,11 @@ def manageReport(request):
                 return render(request, "faction/chains/buttons.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -995,13 +1139,19 @@ def report(request, chainId, share=False):
         if request.session.get("player") or share == "share":
 
             # get page
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             if share == "share":
                 # if shared report
                 chain = Chain.objects.filter(shareId=chainId).first()
                 if chain is None:
-                    return returnError(type=404, msg="Shared report {} not found.".format(chainId))
+                    return returnError(
+                        type=404, msg="Shared report {} not found.".format(chainId)
+                    )
                 faction = chain.faction
 
             else:
@@ -1011,9 +1161,17 @@ def report(request, chainId, share=False):
 
                 # get faction
                 if faction is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     msg = f"Faction {factionId} not found in the database"
-                    return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, page, {selectError: msg})
+                    return (
+                        JsonResponse({"error": msg}, status=400)
+                        if request.session.get("json-output")
+                        else render(request, page, {selectError: msg})
+                    )
 
                 chains = faction.chain_set.order_by("-end")
                 combined = len(chains.filter(combine=True))
@@ -1021,11 +1179,23 @@ def report(request, chainId, share=False):
                     chain.status = CHAIN_ATTACKS_STATUS[chain.state]
 
                 # get chain
-                chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
+                chain = (
+                    faction.chain_set.filter(tId=chainId).first()
+                    if chainId.isdigit()
+                    else None
+                )
                 if chain is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     msg = f"Chain {chainId} not found in the database"
-                    return JsonResponse({"error": msg}, status=400) if request.session.get("json-output") else render(request, page, {selectError: msg})
+                    return (
+                        JsonResponse({"error": msg}, status=400)
+                        if request.session.get("json-output")
+                        else render(request, page, {selectError: msg})
+                    )
 
             # create graph
             graphs = json.loads(chain.graphs)
@@ -1033,9 +1203,15 @@ def report(request, chainId, share=False):
             graphSplitCrit = graphs.get("crit", "").split(",")
             graphSplitStat = graphs.get("members", "").split(",")
             if len(graphSplit) > 1 and len(graphSplitCrit) > 1:
-                print("[view.chain.report] data found for graph of length {}".format(len(graphSplit)))
+                print(
+                    "[view.chain.report] data found for graph of length {}".format(
+                        len(graphSplit)
+                    )
+                )
                 # compute average time for one bar
-                bins = (int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])) / float(60 * (len(graphSplit) - 1))
+                bins = (
+                    int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])
+                ) / float(60 * (len(graphSplit) - 1))
                 graph = {
                     "data": [],
                     "dataCrit": [],
@@ -1065,7 +1241,14 @@ def report(request, chainId, share=False):
                             int(spltCrit[2]),
                         ]
                     )
-                    speedRate = cummulativeHits * 300 / float(int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0]))  # hits every 5 minutes
+                    speedRate = (
+                        cummulativeHits
+                        * 300
+                        / float(
+                            int(graphSplit[-1].split(":")[0])
+                            - int(graphSplit[0].split(":")[0])
+                        )
+                    )  # hits every 5 minutes
                     graph["info"]["speedRate"] = speedRate
                     x[i] = int(splt[0])
                     y[i] = cummulativeHits
@@ -1107,7 +1290,9 @@ def report(request, chainId, share=False):
                 }
 
             # context
-            counts = chain.count_set.extra(select={"fieldsum": "wins + bonus"}, order_by=("-fieldsum", "-respect"))
+            counts = chain.count_set.extra(
+                select={"fieldsum": "wins + bonus"}, order_by=("-fieldsum", "-respect")
+            )
             chain.status = CHAIN_ATTACKS_STATUS[chain.state]
             if share == "share":
                 context = dict(
@@ -1164,7 +1349,11 @@ def iReport(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"inlineError": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "inlineError": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             chainId = request.POST.get("chainId", 0)
@@ -1175,14 +1364,20 @@ def iReport(request):
                 member = faction.member_set.filter(tId=memberId).first()
                 counts = {"graph": [], "chains": []}
                 for chain in chains:
-                    inFaction = tsnow() - chain.start - (member.daysInFaction * 3600 * 24) < 0 if member is not None else True
+                    inFaction = (
+                        tsnow() - chain.start - (member.daysInFaction * 3600 * 24) < 0
+                        if member is not None
+                        else True
+                    )
                     if inFaction:
                         count = chain.count_set.filter(attackerId=memberId).first()
                         if count is not None:
                             counts["graph"].append(
                                 [
                                     timestampToDate(count.chain.start),
-                                    100 * (count.wins + count.bonus) / float(count.chain.chain),
+                                    100
+                                    * (count.wins + count.bonus)
+                                    / float(count.chain.chain),
                                 ]
                             )
                             counts["chains"].append(count)
@@ -1196,7 +1391,11 @@ def iReport(request):
                     return render(
                         request,
                         "yata/error.html",
-                        {"inlineError": "Chain {} not found in the database.".format(chainId)},
+                        {
+                            "inlineError": "Chain {} not found in the database.".format(
+                                chainId
+                            )
+                        },
                     )
 
                 # create graph
@@ -1205,7 +1404,10 @@ def iReport(request):
                     graphSplit = count.graph.split(",")
                     if len(graphSplit) > 1:
                         # compute average time for one bar
-                        bins = (int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0])) / float(60 * (len(graphSplit) - 1))
+                        bins = (
+                            int(graphSplit[-1].split(":")[0])
+                            - int(graphSplit[0].split(":")[0])
+                        ) / float(60 * (len(graphSplit) - 1))
                         graph = {
                             "data": [],
                             "info": {"binsTime": bins, "criticalHits": int(bins) / 5},
@@ -1221,7 +1423,14 @@ def iReport(request):
                                     cummulativeHits,
                                 ]
                             )
-                            speedRate = cummulativeHits * 300 / float(int(graphSplit[-1].split(":")[0]) - int(graphSplit[0].split(":")[0]))  # hits every 5 minutes
+                            speedRate = (
+                                cummulativeHits
+                                * 300
+                                / float(
+                                    int(graphSplit[-1].split(":")[0])
+                                    - int(graphSplit[0].split(":")[0])
+                                )
+                            )  # hits every 5 minutes
                             graph["info"]["speedRate"] = speedRate
                     else:
                         graph = {
@@ -1237,7 +1446,11 @@ def iReport(request):
                     return render(request, "faction/chains/ireport.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -1250,12 +1463,18 @@ def combined(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -1273,13 +1492,17 @@ def combined(request):
             # get chains
             chains = faction.chain_set.filter(combine=True).order_by("start")
 
-            print("[VIEW jointReport] {} chains for the joint report".format(len(chains)))
+            print(
+                "[VIEW jointReport] {} chains for the joint report".format(len(chains))
+            )
             if len(chains) < 1:
                 chains = faction.chain_set.order_by("start")
                 combined = len(chains.filter(combine=True))
                 for chain in chains:
                     chain.status = CHAIN_ATTACKS_STATUS[chain.state]
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     selectError: "No chains found for the combined report. Add chains through the chain list.",
                     "faction": faction,
@@ -1322,8 +1545,12 @@ def combined(request):
                         counts[count.attackerId]["retaliation"] += count.retaliation
                         counts[count.attackerId]["group_attack"] += count.group_attack
                         counts[count.attackerId]["overseas"] += count.overseas
-                        counts[count.attackerId]["watcher"] += count.watcher / float(len(chains))
-                        counts[count.attackerId]["beenThere"] = count.beenThere or counts[count.attackerId]["beenThere"]  # been present to at least one chain
+                        counts[count.attackerId]["watcher"] += count.watcher / float(
+                            len(chains)
+                        )
+                        counts[count.attackerId]["beenThere"] = (
+                            count.beenThere or counts[count.attackerId]["beenThere"]
+                        )  # been present to at least one chain
                     else:
                         # compute last dif if possible
                         if "apiError" in update:
@@ -1363,7 +1590,11 @@ def combined(request):
                         del bonuses[k]
 
             for k, v in counts.items():
-                if k not in bonuses and int(v["wins"]) >= smallHit and v["daysInFaction"] >= 0:
+                if (
+                    k not in bonuses
+                    and int(v["wins"]) >= smallHit
+                    and v["daysInFaction"] >= 0
+                ):
                     bonuses[k] = [v["name"], [], 0, v["wins"]]
 
                 # else:
@@ -1378,7 +1609,12 @@ def combined(request):
                     key=lambda x: (-x[1]["wins"] - x[1]["bonus"], -x[1]["respect"]),
                 )
             ]
-            arrayBonuses = [[i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins] for i, (name, hits, respect, wins) in sorted(bonuses.items(), key=lambda x: x[1][1], reverse=True)]
+            arrayBonuses = [
+                [i, name, ", ".join([str(h) for h in sorted(hits)]), respect, wins]
+                for i, (name, hits, respect, wins) in sorted(
+                    bonuses.items(), key=lambda x: x[1][1], reverse=True
+                )
+            ]
 
             now = tsnow()
             bulk_u_mgr = BulkUpdateManager(["bonusScore"], chunk_size=100)
@@ -1390,7 +1626,9 @@ def combined(request):
                     member.bonusScore = 0
                 else:
                     arrayBonuses[i].append(now - member.lastActionTS)
-                    arrayBonuses[i].append(member.singleHitHonors if member.shareE > -1 else -1)
+                    arrayBonuses[i].append(
+                        member.singleHitHonors if member.shareE > -1 else -1
+                    )
                     member.bonusScore = int(100 * bonus[4] / float(max(1, bonus[3])))
 
                 bulk_u_mgr.add(member)
@@ -1419,11 +1657,17 @@ def combined(request):
 
             if error:
                 selectError = "apiErrorSub" if request.method == "POST" else "apiError"
-                context.update({selectError: error["apiError"] + " List of members not updated."})
+                context.update(
+                    {selectError: error["apiError"] + " List of members not updated."}
+                )
             return render(request, page, context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -1436,12 +1680,18 @@ def membersExport(request):
             player = getPlayer(request.session["player"].get("tId"))
 
             # in case of error
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=player.factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -1452,7 +1702,9 @@ def membersExport(request):
             members = faction.member_set.all().order_by(Lower("name"))
 
             response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = f'attachment; filename="members_report_{filedate()}.csv"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="members_report_{filedate()}.csv"'
+            )
 
             csv_data = [
                 [
@@ -1503,7 +1755,11 @@ def membersExport(request):
             return response
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -1517,12 +1773,18 @@ def reportExport(request, chainId, type):
             factionId = player.factionId
 
             # in case of error
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -1530,9 +1792,15 @@ def reportExport(request, chainId, type):
                 return render(request, page, context)
 
             # get chain
-            chain = faction.chain_set.filter(tId=chainId).first() if chainId.isdigit() else None
+            chain = (
+                faction.chain_set.filter(tId=chainId).first()
+                if chainId.isdigit()
+                else None
+            )
             if chain is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     "faction": faction,
@@ -1542,7 +1810,11 @@ def reportExport(request, chainId, type):
 
             if type == "0":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="Chain_report_{}_counts.csv"'.format(chain.tId)
+                response["Content-Disposition"] = (
+                    'attachment; filename="Chain_report_{}_counts.csv"'.format(
+                        chain.tId
+                    )
+                )
 
                 csv_data = [
                     [
@@ -1595,7 +1867,11 @@ def reportExport(request, chainId, type):
             return returnError(type=403, msg="YOLOOO")
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -1609,12 +1885,18 @@ def attacksReports(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -1623,7 +1905,9 @@ def attacksReports(request):
 
             # delete contract
             if request.POST.get("type") == "delete":
-                contract = faction.attacksreport_set.filter(pk=request.POST["contractId"])
+                contract = faction.attacksreport_set.filter(
+                    pk=request.POST["contractId"]
+                )
                 contract.delete()
                 # dummy render
                 return render(request, page)
@@ -1682,7 +1966,8 @@ def attacksReports(request):
 
                         # send message
                         msg = [
-                            f"New report created based on ranked war {war_id} " f'against {war["ennemy"]["name"]}',
+                            f"New report created based on ranked war {war_id} "
+                            f'against {war["ennemy"]["name"]}',
                             f"Starts: {timestampToDate(start, fmt=True)}",
                             f"Ends: {timestampToDate(end, fmt=True)}",
                         ]
@@ -1739,7 +2024,8 @@ def attacksReports(request):
                             if not start:
                                 message = [
                                     "errorMessageSub",
-                                    f"Can't find when assault for {territory}" "started.",
+                                    f"Can't find when assault for {territory}"
+                                    "started.",
                                 ]
                             else:
                                 # create report
@@ -1764,7 +2050,8 @@ def attacksReports(request):
 
                                 # send message
                                 msg = [
-                                    f"New report created based on territory war {war_id} " f"against {faction_name} over the sovereignty of {territory}",
+                                    f"New report created based on territory war {war_id} "
+                                    f"against {faction_name} over the sovereignty of {territory}",
                                     f"Starts: {timestampToDate(start, fmt=True)}",
                                     f"Ends: {timestampToDate(end, fmt=True)}",
                                 ]
@@ -1820,7 +2107,8 @@ def attacksReports(request):
                             if not start:
                                 message = [
                                     "errorMessageSub",
-                                    f"Can't find when assault for {territory}" "started.",
+                                    f"Can't find when assault for {territory}"
+                                    "started.",
                                 ]
                             else:
                                 # create report
@@ -1844,7 +2132,8 @@ def attacksReports(request):
 
                                 # send message
                                 msg = [
-                                    f"New report created based on raid {war_id} " f"against {faction_name}",
+                                    f"New report created based on raid {war_id} "
+                                    f"against {faction_name}",
                                     f"Starts: {timestampToDate(start, fmt=True)}",
                                     f"Ends: {timestampToDate(end, fmt=True)}",
                                 ]
@@ -1877,18 +2166,26 @@ def attacksReports(request):
                     elif start > tsnow():
                         message = [
                             "errorMessageSub",
-                            "Select a starting date in the past.<br>Starts: {}".format(timestampToDate(start, fmt=True)),
+                            "Select a starting date in the past.<br>Starts: {}".format(
+                                timestampToDate(start, fmt=True)
+                            ),
                         ]
                     elif start and live:
-                        report = faction.attacksreport_set.create(start=start, end=0, live=True, computing=True)
+                        report = faction.attacksreport_set.create(
+                            start=start, end=0, live=True, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
                             "validMessageSub",
-                            "New live report created.<br>Starts: {}".format(timestampToDate(start, fmt=True)),
+                            "New live report created.<br>Starts: {}".format(
+                                timestampToDate(start, fmt=True)
+                            ),
                         ]
                     elif start and end and start < end:
-                        report = faction.attacksreport_set.create(start=start, end=end, live=False, computing=True)
+                        report = faction.attacksreport_set.create(
+                            start=start, end=end, live=False, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
@@ -1938,12 +2235,18 @@ def manageAttacks(request):
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -1956,7 +2259,11 @@ def manageAttacks(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"inlineError": "Report {} not found in the database.".format(reportId)},
+                    {
+                        "inlineError": "Report {} not found in the database.".format(
+                            reportId
+                        )
+                    },
                 )
 
             # toggle share
@@ -1985,14 +2292,20 @@ def manageAttacks(request):
 def attacksReport(request, reportId, share=False):
     try:
         if request.session.get("player") or share == "share":
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             if share == "share":
                 # if shared report
                 player = False
                 report = AttacksReport.objects.filter(shareId=reportId).first()
                 if report is None:
-                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
+                    return returnError(
+                        type=404, msg="Shared report {} not found.".format(reportId)
+                    )
                 faction = report.faction
 
             else:
@@ -2002,7 +2315,11 @@ def attacksReport(request, reportId, share=False):
                 # get faction
                 faction = Faction.objects.filter(tId=factionId).first()
                 if faction is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = {
                         "player": player,
                         selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2011,7 +2328,11 @@ def attacksReport(request, reportId, share=False):
 
                 # get breakdown
                 if not reportId.isdigit():
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = dict(
                         {
                             "player": player,
@@ -2025,7 +2346,11 @@ def attacksReport(request, reportId, share=False):
 
                 report = faction.attacksreport_set.filter(pk=reportId).first()
                 if report is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = dict(
                         {
                             "player": player,
@@ -2041,12 +2366,19 @@ def attacksReport(request, reportId, share=False):
             orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
             order_fa = orders[o_fa]
 
-            if request.GET.get("p_fa") is not None or request.GET.get("o_fa") is not None:
+            if (
+                request.GET.get("p_fa") is not None
+                or request.GET.get("o_fa") is not None
+            ):
                 if order_fa:
-                    paginator = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
+                    paginator = Paginator(
+                        report.attacksfaction_set.order_by(order_fa), 10
+                    )
                 else:
                     paginator = Paginator(
-                        report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"),
+                        report.attacksfaction_set.order_by(
+                            "-hits", "-attacks", "-defends", "-attacked"
+                        ),
                         10,
                     )
                 p_fa = request.GET.get("p_fa")
@@ -2065,15 +2397,22 @@ def attacksReport(request, reportId, share=False):
             orders = [False, "-hits", "-attacks", "-defends", "-attacked"]
             order_pl = orders[o_pl]
 
-            if request.GET.get("p_pl") is not None or request.GET.get("o_pl") is not None:
+            if (
+                request.GET.get("p_pl") is not None
+                or request.GET.get("o_pl") is not None
+            ):
                 if order_pl:
                     paginator = Paginator(
-                        report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl),
+                        report.attacksplayer_set.filter(show=True)
+                        .exclude(player_faction_id=-1)
+                        .order_by(order_pl),
                         10,
                     )
                 else:
                     paginator = Paginator(
-                        report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"),
+                        report.attacksplayer_set.filter(show=True)
+                        .exclude(player_faction_id=-1)
+                        .order_by("-hits", "-attacks", "-defends", "-attacked"),
                         10,
                     )
                 p_pl = request.GET.get("p_pl")
@@ -2122,12 +2461,18 @@ def attacksReport(request, reportId, share=False):
                     f = int(request.POST["factionId"])
                     if f in factions:
                         factions.remove(f)
-                        report.attacksfaction_set.filter(faction_id=f).update(show=False)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(show=False)
+                        report.attacksfaction_set.filter(faction_id=f).update(
+                            show=False
+                        )
+                        report.attacksplayer_set.filter(player_faction_id=f).update(
+                            show=False
+                        )
                     else:
                         factions.append(f)
                         report.attacksfaction_set.filter(faction_id=f).update(show=True)
-                        report.attacksplayer_set.filter(player_faction_id=f).update(show=True)
+                        report.attacksplayer_set.filter(player_faction_id=f).update(
+                            show=True
+                        )
                     report.factions = json.dumps(factions)
                     report.save()
                     p_fa = request.POST["page"]
@@ -2136,15 +2481,26 @@ def attacksReport(request, reportId, share=False):
 
             elif request.POST.get("type") == "faction_filter_all":
                 try:
-                    factions_false = [f.faction_id for f in report.attacksfaction_set.filter(show=False)]
+                    factions_false = [
+                        f.faction_id
+                        for f in report.attacksfaction_set.filter(show=False)
+                    ]
 
                     # move all false to true
-                    report.attacksfaction_set.filter(faction_id__in=factions_false).update(show=True)
-                    report.attacksplayer_set.filter(player_faction_id__in=factions_false).update(show=True)
+                    report.attacksfaction_set.filter(
+                        faction_id__in=factions_false
+                    ).update(show=True)
+                    report.attacksplayer_set.filter(
+                        player_faction_id__in=factions_false
+                    ).update(show=True)
 
                     # move all true to false
-                    report.attacksfaction_set.exclude(faction_id__in=factions_false).update(show=False)
-                    report.attacksplayer_set.exclude(player_faction_id__in=factions_false).update(show=False)
+                    report.attacksfaction_set.exclude(
+                        faction_id__in=factions_false
+                    ).update(show=False)
+                    report.attacksplayer_set.exclude(
+                        player_faction_id__in=factions_false
+                    ).update(show=False)
 
                     report.factions = json.dumps(factions_false)
                     report.save()
@@ -2155,8 +2511,12 @@ def attacksReport(request, reportId, share=False):
 
             report.player_filter = 0
             report.save()
-            attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
-            attacks_set = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+            attacksFilters = Q(attacker_faction__in=factions) | Q(
+                defender_faction__in=factions
+            )
+            attacks_set = report.attackreport_set.filter(attacksFilters).order_by(
+                "-timestamp_ended"
+            )
             paginator = Paginator(attacks_set, 25)
             p_at = request.GET.get("p_at")
             attacks = paginator.get_page(p_at)
@@ -2173,7 +2533,9 @@ def attacksReport(request, reportId, share=False):
                 factions = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
             else:
                 factions = Paginator(
-                    report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked"),
+                    report.attacksfaction_set.order_by(
+                        "-hits", "-attacks", "-defends", "-attacked"
+                    ),
                     10,
                 )
             p_fa = request.GET.get("p_fa") if not p_fa else p_fa
@@ -2181,12 +2543,16 @@ def attacksReport(request, reportId, share=False):
 
             if order_pl:
                 players = Paginator(
-                    report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by(order_pl),
+                    report.attacksplayer_set.filter(show=True)
+                    .exclude(player_faction_id=-1)
+                    .order_by(order_pl),
                     10,
                 )
             else:
                 players = Paginator(
-                    report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked"),
+                    report.attacksplayer_set.filter(show=True)
+                    .exclude(player_faction_id=-1)
+                    .order_by("-hits", "-attacks", "-defends", "-attacked"),
                     10,
                 )
             p_pl = request.GET.get("p_pl")
@@ -2251,7 +2617,9 @@ def attacksMembers(request, reportId):
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2261,7 +2629,9 @@ def attacksMembers(request, reportId):
             # get breakdown
             report = faction.attacksreport_set.filter(pk=reportId).first()
             if report is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Report {} not found.".format(reportId),
@@ -2269,7 +2639,10 @@ def attacksMembers(request, reportId):
                 return render(request, "yata/error.html", context)
 
             o_me = int(request.GET.get("o_me", 7))
-            if request.GET.get("p_me") is not None or request.GET.get("o_me") is not None:
+            if (
+                request.GET.get("p_me") is not None
+                or request.GET.get("o_me") is not None
+            ):
                 members = Paginator(report.getMembersBreakdown(order=o_me), 10)
                 p_me = request.GET.get("p_me")
                 members = members.get_page(p_me)
@@ -2309,7 +2682,9 @@ def attacksList(request, reportId):
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2319,7 +2694,9 @@ def attacksList(request, reportId):
             # get breakdown
             report = faction.attacksreport_set.filter(pk=reportId).first()
             if report is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Report {} not found.".format(reportId),
@@ -2336,10 +2713,16 @@ def attacksList(request, reportId):
             factions = json.loads(report.factions)
 
             if report.player_filter:
-                attacksFilters = Q(attacker_id=report.player_filter) | Q(defender_id=report.player_filter)
+                attacksFilters = Q(attacker_id=report.player_filter) | Q(
+                    defender_id=report.player_filter
+                )
             else:
-                attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
-            attacks_set = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+                attacksFilters = Q(attacker_faction__in=factions) | Q(
+                    defender_faction__in=factions
+                )
+            attacks_set = report.attackreport_set.filter(attacksFilters).order_by(
+                "-timestamp_ended"
+            )
             paginator = Paginator(attacks_set, 25)
             p_at = request.GET.get("p_at", 1)
             attacks = paginator.get_page(p_at)
@@ -2380,12 +2763,18 @@ def attacksExport(request, reportId, type):
             factionId = player.factionId
 
             # in case of error
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2394,7 +2783,9 @@ def attacksExport(request, reportId, type):
 
             # get breakdown
             if not reportId.isdigit():
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = dict(
                     {
                         "player": player,
@@ -2408,7 +2799,9 @@ def attacksExport(request, reportId, type):
 
             report = faction.attacksreport_set.filter(pk=reportId).first()
             if report is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = dict(
                     {
                         "player": player,
@@ -2422,7 +2815,11 @@ def attacksExport(request, reportId, type):
 
             if type == "0":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="Attacks_report_{}_factions.csv"'.format(report.pk)
+                response["Content-Disposition"] = (
+                    'attachment; filename="Attacks_report_{}_factions.csv"'.format(
+                        report.pk
+                    )
+                )
 
                 csv_data = [
                     [
@@ -2436,7 +2833,9 @@ def attacksExport(request, reportId, type):
                     ]
                 ]
 
-                factions = report.attacksfaction_set.order_by("-hits", "-attacks", "-defends", "-attacked")
+                factions = report.attacksfaction_set.order_by(
+                    "-hits", "-attacks", "-defends", "-attacked"
+                )
                 for faction in factions:
                     if faction.faction_id == 0:
                         faction.faction_name = "-"
@@ -2462,7 +2861,11 @@ def attacksExport(request, reportId, type):
 
             elif type == "1":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="Attacks_report_{}_players.csv"'.format(report.pk)
+                response["Content-Disposition"] = (
+                    'attachment; filename="Attacks_report_{}_players.csv"'.format(
+                        report.pk
+                    )
+                )
 
                 csv_data = [
                     [
@@ -2478,7 +2881,11 @@ def attacksExport(request, reportId, type):
                     ]
                 ]
 
-                players = report.attacksplayer_set.filter(show=True).exclude(player_faction_id=-1).order_by("-hits", "-attacks", "-defends", "-attacked")
+                players = (
+                    report.attacksplayer_set.filter(show=True)
+                    .exclude(player_faction_id=-1)
+                    .order_by("-hits", "-attacks", "-defends", "-attacked")
+                )
                 for player in players:
                     if player.player_faction_id == 0:
                         player.player_faction_name = "-"
@@ -2504,7 +2911,11 @@ def attacksExport(request, reportId, type):
 
             elif type == "2":
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="Attacks_report_{}_breakdown.csv"'.format(report.pk)
+                response["Content-Disposition"] = (
+                    'attachment; filename="Attacks_report_{}_breakdown.csv"'.format(
+                        report.pk
+                    )
+                )
 
                 csv_data = [
                     [
@@ -2554,15 +2965,25 @@ def attacksExport(request, reportId, type):
             elif type == "3":
                 # return error if no filters
                 response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = 'attachment; filename="Attacks_report_{}_attacks.csv"'.format(report.pk)
+                response["Content-Disposition"] = (
+                    'attachment; filename="Attacks_report_{}_attacks.csv"'.format(
+                        report.pk
+                    )
+                )
 
                 if report.player_filter:
-                    attacksFilters = Q(attacker_id=report.player_filter) | Q(defender_id=report.player_filter)
+                    attacksFilters = Q(attacker_id=report.player_filter) | Q(
+                        defender_id=report.player_filter
+                    )
                 else:
                     factions = json.loads(report.factions)
-                    attacksFilters = Q(attacker_faction__in=factions) | Q(defender_faction__in=factions)
+                    attacksFilters = Q(attacker_faction__in=factions) | Q(
+                        defender_faction__in=factions
+                    )
 
-                attacks = report.attackreport_set.filter(attacksFilters).order_by("-timestamp_ended")
+                attacks = report.attackreport_set.filter(attacksFilters).order_by(
+                    "-timestamp_ended"
+                )
 
                 keys = [
                     "tId",
@@ -2617,7 +3038,11 @@ def attacksExport(request, reportId, type):
             return returnError(type=403, msg="YOLOOO")
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -2705,7 +3130,13 @@ def attacksWar(request):
                 factions = war["factions"]
                 # print(war)
                 for faction_id, faction in factions.items():
-                    factions[faction_id]["members"] = {k: v for k, v in sorted(faction["members"].items(), key=lambda x: -x[1]["score"]) if v["attacks"]}
+                    factions[faction_id]["members"] = {
+                        k: v
+                        for k, v in sorted(
+                            faction["members"].items(), key=lambda x: -x[1]["score"]
+                        )
+                        if v["attacks"]
+                    }
 
                 page = "faction/attacks/war-ranked-report.html"
 
@@ -2738,12 +3169,18 @@ def revivesReports(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2752,7 +3189,9 @@ def revivesReports(request):
 
             # delete contract
             if request.POST.get("type") == "delete":
-                contract = faction.revivesreport_set.filter(pk=request.POST["contractId"])
+                contract = faction.revivesreport_set.filter(
+                    pk=request.POST["contractId"]
+                )
                 contract.delete()
                 # dummy render
                 return render(request, page)
@@ -2789,15 +3228,21 @@ def revivesReports(request):
                             ),
                         ]
                     elif start and live:
-                        report = faction.revivesreport_set.create(start=start, end=0, live=True, computing=True)
+                        report = faction.revivesreport_set.create(
+                            start=start, end=0, live=True, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
                             "validMessageSub",
-                            "New live report created.<br>Starts: {}".format(timestampToDate(start, fmt=True)),
+                            "New live report created.<br>Starts: {}".format(
+                                timestampToDate(start, fmt=True)
+                            ),
                         ]
                     elif start and end and start < end:
-                        report = faction.revivesreport_set.create(start=start, end=end, live=False, computing=True)
+                        report = faction.revivesreport_set.create(
+                            start=start, end=end, live=False, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
@@ -2847,12 +3292,18 @@ def manageRevives(request):
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2865,7 +3316,11 @@ def manageRevives(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"inlineError": "Report {} not found in the database.".format(reportId)},
+                    {
+                        "inlineError": "Report {} not found in the database.".format(
+                            reportId
+                        )
+                    },
                 )
 
             # toggle share
@@ -2894,14 +3349,20 @@ def manageRevives(request):
 def revivesReport(request, reportId, share=False):
     try:
         if request.session.get("player") or share == "share":
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             if share == "share":
                 # if shared report
                 player = False
                 report = RevivesReport.objects.filter(shareId=reportId).first()
                 if report is None:
-                    return returnError(type=404, msg="Shared report {} not found.".format(reportId))
+                    return returnError(
+                        type=404, msg="Shared report {} not found.".format(reportId)
+                    )
                 faction = report.faction
 
             else:
@@ -2911,7 +3372,11 @@ def revivesReport(request, reportId, share=False):
                 # get faction
                 faction = Faction.objects.filter(tId=factionId).first()
                 if faction is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = {
                         "player": player,
                         selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -2920,7 +3385,11 @@ def revivesReport(request, reportId, share=False):
 
                 # get breakdown
                 if not reportId.isdigit():
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = dict(
                         {
                             "player": player,
@@ -2934,7 +3403,11 @@ def revivesReport(request, reportId, share=False):
 
                 report = faction.revivesreport_set.filter(pk=reportId).first()
                 if report is None:
-                    selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                    selectError = (
+                        "errorMessageSub"
+                        if request.method == "POST"
+                        else "errorMessage"
+                    )
                     context = dict(
                         {
                             "player": player,
@@ -2965,8 +3438,16 @@ def revivesReport(request, reportId, share=False):
 
                 type = request.POST["type"]
                 if type in ["online", "hospit"]:
-                    online = not report.filter >= 10 if type == "online" else report.filter >= 10
-                    hospit = not bool(report.filter % 10) if type == "hospit" else bool(report.filter % 10)
+                    online = (
+                        not report.filter >= 10
+                        if type == "online"
+                        else report.filter >= 10
+                    )
+                    hospit = (
+                        not bool(report.filter % 10)
+                        if type == "hospit"
+                        else bool(report.filter % 10)
+                    )
 
                     filter = 1 if hospit else 0
                     report.filter = filter + 10 if online else filter
@@ -2991,7 +3472,11 @@ def revivesReport(request, reportId, share=False):
 
             e = report.getFilterExt()
 
-            o_pl = int(request.GET.get("o_pl", 1)) if int(request.GET.get("o_pl", 1)) else int(request.POST.get("o_pl", 1))
+            o_pl = (
+                int(request.GET.get("o_pl", 1))
+                if int(request.GET.get("o_pl", 1))
+                else int(request.POST.get("o_pl", 1))
+            )
             orders_pl = [
                 False,
                 ["-revivesMade" + e, "-revivesReceived" + e],
@@ -2999,7 +3484,11 @@ def revivesReport(request, reportId, share=False):
             ]
             order_pl = orders_pl[o_pl]
 
-            o_fa = int(request.GET.get("o_fa", 1)) if int(request.GET.get("o_fa", 1)) else int(request.POST.get("o_pl", 1))
+            o_fa = (
+                int(request.GET.get("o_fa", 1))
+                if int(request.GET.get("o_fa", 1))
+                else int(request.POST.get("o_pl", 1))
+            )
             orders_fa = [
                 False,
                 ["-revivesMade" + e, "-revivesReceived" + e],
@@ -3007,12 +3496,19 @@ def revivesReport(request, reportId, share=False):
             ]
             order_fa = orders_fa[o_fa]
 
-            if request.GET.get("p_fa") is not None or request.GET.get("o_fa") is not None:
+            if (
+                request.GET.get("p_fa") is not None
+                or request.GET.get("o_fa") is not None
+            ):
                 if order_fa:
-                    paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
+                    paginator = Paginator(
+                        report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10
+                    )
                 else:
                     paginator = Paginator(
-                        report.revivesfaction_set.order_by("-revivesMade" + e, "-revivesReceived" + e),
+                        report.revivesfaction_set.order_by(
+                            "-revivesMade" + e, "-revivesReceived" + e
+                        ),
                         10,
                     )
                 p_fa = request.GET.get("p_fa")
@@ -3027,15 +3523,22 @@ def revivesReport(request, reportId, share=False):
                 }
                 return render(request, page, context)
 
-            if request.GET.get("p_pl") is not None or request.GET.get("o_pl") is not None:
+            if (
+                request.GET.get("p_pl") is not None
+                or request.GET.get("o_pl") is not None
+            ):
                 if order_pl:
                     paginator = Paginator(
-                        report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]),
+                        report.revivesplayer_set.filter(show=True).order_by(
+                            order_pl[0], order_pl[1]
+                        ),
                         10,
                     )
                 else:
                     paginator = Paginator(
-                        report.revivesplayer_set.filter(show=True).order_by("-revivesMade" + e, "-revivesReceived" + e),
+                        report.revivesplayer_set.filter(show=True).order_by(
+                            "-revivesMade" + e, "-revivesReceived" + e
+                        ),
                         10,
                     )
                 p_pl = request.GET.get("p_pl")
@@ -3059,12 +3562,18 @@ def revivesReport(request, reportId, share=False):
                     f = int(request.POST["factionId"])
                     if f in factions:
                         factions.remove(int(request.POST["factionId"]))
-                        report.revivesfaction_set.filter(faction_id=f).update(show=False)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(show=False)
+                        report.revivesfaction_set.filter(faction_id=f).update(
+                            show=False
+                        )
+                        report.revivesplayer_set.filter(player_faction_id=f).update(
+                            show=False
+                        )
                     else:
                         factions.append(f)
                         report.revivesfaction_set.filter(faction_id=f).update(show=True)
-                        report.revivesplayer_set.filter(player_faction_id=f).update(show=True)
+                        report.revivesplayer_set.filter(player_faction_id=f).update(
+                            show=True
+                        )
                     report.factions = json.dumps(factions)
                     report.save()
                     p_fa = request.POST["page"]
@@ -3076,9 +3585,14 @@ def revivesReport(request, reportId, share=False):
             report.save()
 
             if report.player_filter:
-                revivesFilter = (Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)) & Q(chance__gte=report.chance_filter)
+                revivesFilter = (
+                    Q(reviver_id=report.player_filter)
+                    | Q(target_id=report.player_filter)
+                ) & Q(chance__gte=report.chance_filter)
             else:
-                revivesFilter = (Q(reviver_faction__in=factions) | Q(target_faction__in=factions)) & Q(chance__gte=report.chance_filter)
+                revivesFilter = (
+                    Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+                ) & Q(chance__gte=report.chance_filter)
 
             if not report.include_failed:
                 revivesFilter = revivesFilter & Q(result=True)
@@ -3088,7 +3602,9 @@ def revivesReport(request, reportId, share=False):
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
-                revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
+                revives_set = revives_set.filter(
+                    target_hospital_reason__startswith="Hospitalized"
+                )
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get("p_re")
             revives = paginator.get_page(p_re)
@@ -3102,10 +3618,14 @@ def revivesReport(request, reportId, share=False):
             targets = sorted(targets.items(), key=lambda x: x[1])
 
             if order_fa:
-                paginator = Paginator(report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10)
+                paginator = Paginator(
+                    report.revivesfaction_set.order_by(order_fa[0], order_fa[1]), 10
+                )
             else:
                 paginator = Paginator(
-                    report.revivesfaction_set.order_by("-revivesMade" + e, "-revivesReceived" + e),
+                    report.revivesfaction_set.order_by(
+                        "-revivesMade" + e, "-revivesReceived" + e
+                    ),
                     10,
                 )
             p_fa = request.GET.get("p_fa") if not p_fa else p_fa
@@ -3113,12 +3633,16 @@ def revivesReport(request, reportId, share=False):
 
             if order_pl:
                 paginator = Paginator(
-                    report.revivesplayer_set.filter(show=True).order_by(order_pl[0], order_pl[1]),
+                    report.revivesplayer_set.filter(show=True).order_by(
+                        order_pl[0], order_pl[1]
+                    ),
                     10,
                 )
             else:
                 paginator = Paginator(
-                    report.revivesplayer_set.filter(show=True).order_by("-revivesMade" + e, "-revivesReceived" + e),
+                    report.revivesplayer_set.filter(show=True).order_by(
+                        "-revivesMade" + e, "-revivesReceived" + e
+                    ),
                     10,
                 )
             p_pl = request.GET.get("p_pl")
@@ -3180,7 +3704,9 @@ def revivesList(request, reportId):
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -3190,7 +3716,9 @@ def revivesList(request, reportId):
             # get breakdown
             report = faction.revivesreport_set.filter(pk=reportId).first()
             if report is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Report {} not found.".format(reportId),
@@ -3207,9 +3735,14 @@ def revivesList(request, reportId):
             factions = json.loads(report.factions)
 
             if report.player_filter:
-                revivesFilter = (Q(reviver_id=report.player_filter) | Q(target_id=report.player_filter)) & Q(chance__gte=report.chance_filter)
+                revivesFilter = (
+                    Q(reviver_id=report.player_filter)
+                    | Q(target_id=report.player_filter)
+                ) & Q(chance__gte=report.chance_filter)
             else:
-                revivesFilter = (Q(reviver_faction__in=factions) | Q(target_faction__in=factions)) & Q(chance__gte=report.chance_filter)
+                revivesFilter = (
+                    Q(reviver_faction__in=factions) | Q(target_faction__in=factions)
+                ) & Q(chance__gte=report.chance_filter)
 
             if not report.include_failed:
                 revivesFilter = revivesFilter & Q(result=True)
@@ -3218,7 +3751,9 @@ def revivesList(request, reportId):
             if report.filter >= 10:
                 revives_set = revives_set.filter(target_last_action_status="Online")
             if bool(report.filter % 10):
-                revives_set = revives_set.filter(target_hospital_reason__startswith="Hospitalized")
+                revives_set = revives_set.filter(
+                    target_hospital_reason__startswith="Hospitalized"
+                )
             paginator = Paginator(revives_set, 25)
             p_re = request.GET.get("p_re", 1)
             revives = paginator.get_page(p_re)
@@ -3260,10 +3795,16 @@ def armory(request):
             faction = getFaction(player.factionId)
 
             message = False
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found in the database.",
@@ -3295,18 +3836,26 @@ def armory(request):
                     elif start > tsnow():
                         message = [
                             "errorMessageSub",
-                            "Select a starting date in the past.<br>Starts: {}".format(timestampToDate(start, fmt=True)),
+                            "Select a starting date in the past.<br>Starts: {}".format(
+                                timestampToDate(start, fmt=True)
+                            ),
                         ]
                     elif start and live:
-                        report = faction.armoryreport_set.create(start=start, end=0, live=True, computing=True)
+                        report = faction.armoryreport_set.create(
+                            start=start, end=0, live=True, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
                             "validMessageSub",
-                            "New live report created.<br>Starts: {}".format(timestampToDate(start, fmt=True)),
+                            "New live report created.<br>Starts: {}".format(
+                                timestampToDate(start, fmt=True)
+                            ),
                         ]
                     elif start and end and start < end:
-                        report = faction.armoryreport_set.create(start=start, end=end, live=False, computing=True)
+                        report = faction.armoryreport_set.create(
+                            start=start, end=end, live=False, computing=True
+                        )
                         report.assignCrontab()
                         report.save()
                         message = [
@@ -3326,7 +3875,9 @@ def armory(request):
 
             # delete report
             if request.POST.get("type") == "delete" and player.factionAA:
-                ArmoryReport.objects.filter(pk=request.POST.get("reportId")).first().delete()
+                ArmoryReport.objects.filter(
+                    pk=request.POST.get("reportId")
+                ).first().delete()
                 return render(request, page)
 
             reports = faction.armoryreport_set.all()
@@ -3352,13 +3903,19 @@ def armory(request):
 def armoryReport(request, reportId, share=False):
     try:
         if request.session.get("player") or share == "share":
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             player = getPlayer(request.session["player"].get("tId"))
             faction = getFaction(player.factionId)
 
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found. It might come from a API issue. Check again later.",
@@ -3367,7 +3924,9 @@ def armoryReport(request, reportId, share=False):
 
             # get breakdown
             if not reportId.isdigit():
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = dict(
                     {
                         "player": player,
@@ -3382,7 +3941,9 @@ def armoryReport(request, reportId, share=False):
             report = faction.armoryreport_set.filter(pk=reportId).first()
             print(reportId)
             if report is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = dict(
                     {
                         "player": player,
@@ -3426,14 +3987,22 @@ def bigBrother(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             message = False
@@ -3515,13 +4084,19 @@ def bigBrother(request):
                             if not c[2] - c[1]:
                                 del contributors[memberName]
 
-                        contributors = sorted(contributors.items(), key=lambda x: x[1][1] - x[1][2])
+                        contributors = sorted(
+                            contributors.items(), key=lambda x: x[1][1] - x[1][2]
+                        )
 
                     else:
-                        contributors = sorted(contributors.items(), key=lambda x: -x[1][1])
+                        contributors = sorted(
+                            contributors.items(), key=lambda x: -x[1][1]
+                        )
 
                 # get current faction members
-                faction_members = [str(m.tId) for m in faction.member_set.only("tId").all()]
+                faction_members = [
+                    str(m.tId) for m in faction.member_set.only("tId").all()
+                ]
                 for k in contributors:
                     in_fac = True if k[0] in faction_members else False
                     k[1].append(in_fac)
@@ -3579,7 +4154,11 @@ def bigBrother(request):
                 context[err + sub] = message
 
             if request.method == "POST":
-                page = "faction/content-reload.html" if request.POST.get("name") is None else "faction/bigbrother/table.html"
+                page = (
+                    "faction/content-reload.html"
+                    if request.POST.get("name") is None
+                    else "faction/bigbrother/table.html"
+                )
             else:
                 page = "faction.html"
             return render(request, page, context)
@@ -3606,10 +4185,18 @@ def removeContributors(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
-            s = faction.contributors_set.filter(stat=request.POST.get("name")).filter(timestamp=request.POST.get("ts")).first()
+            s = (
+                faction.contributors_set.filter(stat=request.POST.get("name"))
+                .filter(timestamp=request.POST.get("ts"))
+                .first()
+            )
             try:
                 s.delete()
                 m = "Okay"
@@ -3618,10 +4205,16 @@ def removeContributors(request):
                 m = str(e)
                 t = -1
 
-            return HttpResponse(json.dumps({"message": m, "type": t}), content_type="application/json")
+            return HttpResponse(
+                json.dumps({"message": m, "type": t}), content_type="application/json"
+            )
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -3635,14 +4228,22 @@ def territories(request):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             # get faction territories
@@ -3709,7 +4310,11 @@ def territories(request):
                 "summary": summary,
                 "view": {"territories": True},
             }
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
             return render(request, page, context)
 
         else:
@@ -3731,7 +4336,11 @@ def territoriesFullMap(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             # get faction territories
@@ -3794,7 +4403,11 @@ def territoriesFullMap(request):
             return render(request, "faction/territories/fullmap.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -3816,7 +4429,11 @@ def simulator(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
             # update if needed
@@ -3838,24 +4455,32 @@ def simulator(request):
 
                     # get FactionTree
                     if level:
-                        u = FactionTree.objects.filter(shortname=shortname, level=level).first()
+                        u = FactionTree.objects.filter(
+                            shortname=shortname, level=level
+                        ).first()
                         v = {
                             "active": True,
                             "level": level,
                             "branch": u.branch,
                             "tId": u.tId,
                         }
-                        faction.upgrade_set.update_or_create(simu=True, shortname=shortname, defaults=v)
+                        faction.upgrade_set.update_or_create(
+                            simu=True, shortname=shortname, defaults=v
+                        )
                         faction.setSimuDependencies(u)
                     else:
-                        u = FactionTree.objects.filter(shortname=shortname, level=1).first()
+                        u = FactionTree.objects.filter(
+                            shortname=shortname, level=1
+                        ).first()
                         v = {
                             "active": False,
                             "level": 1,
                             "branch": u.branch,
                             "tId": u.tId,
                         }
-                        faction.upgrade_set.update_or_create(simu=True, shortname=shortname, defaults=v)
+                        faction.upgrade_set.update_or_create(
+                            simu=True, shortname=shortname, defaults=v
+                        )
                         faction.setSimuDependencies(u, unset=True)
 
                 # change order
@@ -3865,7 +4490,9 @@ def simulator(request):
                     if order:
                         forceOrder = [branch, order]
                     else:
-                        faction.upgrade_set.filter(simu=True, branch=branch).update(branchorder=0, level=1, active=False)
+                        faction.upgrade_set.filter(simu=True, branch=branch).update(
+                            branchorder=0, level=1, active=False
+                        )
 
                 # update simulator TS
                 faction.simulationTS = tsnow()
@@ -3886,7 +4513,9 @@ def simulator(request):
                 faction.upgradeType = select
                 faction.updateUpgrades()
 
-            tree, respect = faction.getFactionTree(optimize=optimize, forceOrder=forceOrder)
+            tree, respect = faction.getFactionTree(
+                optimize=optimize, forceOrder=forceOrder
+            )
 
             deltaSimu = tsnow() - faction.simulationTS
             if deltaSimu < 5 * 60 and player.tId != faction.simulationID:
@@ -3911,9 +4540,21 @@ def simulator(request):
                 sub = "Sub" if request.method == "POST" else ""
                 context[err + sub] = message
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
             if request.method == "POST":
-                page = "faction/simulator/table.html" if (request.POST.get("reset") or request.POST.get("change") or request.POST.get("refresh")) else "faction/content-reload.html"
+                page = (
+                    "faction/simulator/table.html"
+                    if (
+                        request.POST.get("reset")
+                        or request.POST.get("change")
+                        or request.POST.get("refresh")
+                    )
+                    else "faction/content-reload.html"
+                )
             else:
                 page = "faction.html"
             return render(request, page, context)
@@ -3940,10 +4581,16 @@ def simulatorChallenge(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
-            challenges = FactionTree.objects.filter(shortname=request.POST.get("upgradeId")).order_by("level")
+            challenges = FactionTree.objects.filter(
+                shortname=request.POST.get("upgradeId")
+            ).order_by("level")
             for ch in challenges:
                 ch.progress = ch.progress(faction)
 
@@ -3952,7 +4599,11 @@ def simulatorChallenge(request):
             return render(request, page, context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -3973,12 +4624,18 @@ def oc(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": f"Faction {player.factionId} not found in the database."},
+                    {
+                        "errorMessage": f"Faction {player.factionId} not found in the database."
+                    },
                 )
 
             crimes, error, message = faction.updateCrimes()
 
-            filters = {k: request.GET.get(k) for k in ["team_id", "crime_id", "planned_by", "initiated_by"] if request.GET.get(k, False)}
+            filters = {
+                k: request.GET.get(k)
+                for k in ["team_id", "crime_id", "planned_by", "initiated_by"]
+                if request.GET.get(k, False)
+            }
             crimes = crimes.filter(**filters)
             getfilters = "".join(["&{}={}".format(k, v) for k, v in filters.items()])
 
@@ -4001,7 +4658,9 @@ def oc(request):
                 crimesDB[crime.crime_id]["crimes"][1] += 1 if crime.success else 0
                 crimesDB[crime.crime_id]["money"][0] += crime.money_gain
                 crimesDB[crime.crime_id]["respect"][0] += crime.respect_gain
-                crimesDB[crime.crime_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                crimesDB[crime.crime_id]["time"][0] += len(
+                    json.loads(crime.participants)
+                ) * (crime.time_completed - crime.time_started)
 
             # create teams
             teamsDB = dict({})
@@ -4022,7 +4681,9 @@ def oc(request):
                     teamsDB[crime.team_id]["crimes"][1] += 1 if crime.success else 0
                     teamsDB[crime.team_id]["money"][0] += crime.money_gain
                     teamsDB[crime.team_id]["respect"][0] += crime.respect_gain
-                    teamsDB[crime.team_id]["time"][0] += len(json.loads(crime.participants)) * (crime.time_completed - crime.time_started)
+                    teamsDB[crime.team_id]["time"][0] += len(
+                        json.loads(crime.participants)
+                    ) * (crime.time_completed - crime.time_started)
 
             # compute crimesDB averages
             for k, v in crimesDB.items():
@@ -4034,10 +4695,14 @@ def oc(request):
                 v["respect"][2] = v["respect"][0] / float(v["time"][1]) * 24 * 3600
                 v["money"][3] = round(v["money"][2] / float(v["crimes"][0]))
                 v["money"][4] = OC_EFFICIENCY[k]["money"]
-                v["money"][5] = round(100 * v["money"][3] / float(OC_EFFICIENCY[k]["money"]))
+                v["money"][5] = round(
+                    100 * v["money"][3] / float(OC_EFFICIENCY[k]["money"])
+                )
                 v["respect"][3] = round(v["respect"][2] / float(v["crimes"][0]), 2)
                 v["respect"][4] = OC_EFFICIENCY[k]["respect"]
-                v["respect"][5] = round(100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"]))
+                v["respect"][5] = round(
+                    100 * v["respect"][3] / float(OC_EFFICIENCY[k]["respect"])
+                )
 
             # compute current crimes progress
             now = tsnow()
@@ -4045,7 +4710,8 @@ def oc(request):
                 crime.progress = math.floor(
                     100
                     * min(
-                        (now - crime.time_started) / (crime.time_ready - crime.time_started),
+                        (now - crime.time_started)
+                        / (crime.time_ready - crime.time_started),
                         1,
                     )
                 )
@@ -4056,9 +4722,13 @@ def oc(request):
                 v["crimes"][2] = round(100 * (v["crimes"][1] / max(v["crimes"][0], 1)))
                 v["time"][1] = round(v["time"][0] / float(max(v["crimes"][0], 1)))
                 v["money"][1] = round(v["money"][0] / float(max(v["crimes"][0], 1)))
-                v["money"][2] = round(v["money"][0] / float(max(v["time"][1], 1)) * 24 * 3600)
+                v["money"][2] = round(
+                    v["money"][0] / float(max(v["time"][1], 1)) * 24 * 3600
+                )
                 v["respect"][1] = v["respect"][0] / float(max(v["crimes"][0], 1))
-                v["respect"][2] = v["respect"][0] / float(max(v["time"][1], 1)) * 24 * 3600
+                v["respect"][2] = (
+                    v["respect"][0] / float(max(v["time"][1], 1)) * 24 * 3600
+                )
                 if v["crimes"][0] == 1:
                     todel.append(k)
                 elif len(currentCrimes.filter(team_id=k)):
@@ -4072,8 +4742,12 @@ def oc(request):
             teamsDB = sorted(teamsDB.items(), key=lambda x: -x[1]["time"][0])
 
             # pagination
-            currentCrimes = Paginator(currentCrimes, 25).get_page(request.GET.get("p_ccrimes"))
-            pastCrimes = Paginator(pastCrimes, 25).get_page(request.GET.get("p_pcrimes"))
+            currentCrimes = Paginator(currentCrimes, 25).get_page(
+                request.GET.get("p_ccrimes")
+            )
+            pastCrimes = Paginator(pastCrimes, 25).get_page(
+                request.GET.get("p_pcrimes")
+            )
 
             context = {
                 "player": player,
@@ -4091,11 +4765,21 @@ def oc(request):
             if message:
                 sub = "Sub" if request.method == "POST" else ""
                 if error:
-                    context["errorMessage" + sub] = f"Crimes: API error {message}, crimes list not updated"
+                    context["errorMessage" + sub] = (
+                        f"Crimes: API error {message}, crimes list not updated"
+                    )
                 else:
-                    context["validMessage" + sub] = "Crimes list has been updated. {created} created, {updated} updated, {deleted} deleted, {ready} ready.".format(**message)
+                    context["validMessage" + sub] = (
+                        "Crimes list has been updated. {created} created, {updated} updated, {deleted} deleted, {ready} ready.".format(
+                            **message
+                        )
+                    )
 
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
             return render(request, page, context)
 
         else:
@@ -4120,10 +4804,18 @@ def ocList(request):
                 return render(
                     request,
                     "yata/error.html",
-                    {"errorMessage": "Faction {} not found in the database.".format(factionId)},
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
                 )
 
-            filters = {k: request.GET.get(k) for k in ["team_id", "crime_id", "planned_by", "initiated_by"] if request.GET.get(k, False)}
+            filters = {
+                k: request.GET.get(k)
+                for k in ["team_id", "crime_id", "planned_by", "initiated_by"]
+                if request.GET.get(k, False)
+            }
             getfilters = "".join(["&{}={}".format(k, v) for k, v in filters.items()])
             crimes = faction.crimes_set.filter(**filters)
 
@@ -4135,7 +4827,8 @@ def ocList(request):
                     crime.progress = math.floor(
                         100
                         * min(
-                            (now - crime.time_started) / (crime.time_ready - crime.time_started),
+                            (now - crime.time_started)
+                            / (crime.time_ready - crime.time_started),
                             1,
                         )
                     )
@@ -4178,10 +4871,16 @@ def spies(request, secret=False, export=False):
                 return returnError(type=403, msg="You need AA rights.")
 
             message = False
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 context = {
                     "player": player,
                     selectError: "Faction not found in the database.",
@@ -4227,8 +4926,12 @@ def spies(request, secret=False, export=False):
 
                     pseudo_buffer = Echo()
                     writer = csv.writer(pseudo_buffer)
-                    response = StreamingHttpResponse((writer.writerow(row) for row in rows), content_type="text/csv")
-                    response["Content-Disposition"] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.csv'
+                    response = StreamingHttpResponse(
+                        (writer.writerow(row) for row in rows), content_type="text/csv"
+                    )
+                    response["Content-Disposition"] = (
+                        f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.csv'
+                    )
                     return response
 
                 else:
@@ -4236,7 +4939,9 @@ def spies(request, secret=False, export=False):
                     if db is not None and faction.tId == db.master_id:
                         payload = {"spies": db.getSpies()}
                         response = JsonResponse(payload)
-                        response["Content-Disposition"] = f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.json'
+                        response["Content-Disposition"] = (
+                            f'attachment; filename=yata_spies_{db.name.replace(" ", "-")}_{filedate()}.json'
+                        )
                         return response
 
             db = False
@@ -4306,7 +5011,9 @@ def spies(request, secret=False, export=False):
                 context = {"player": player, "faction": faction, "database": db}
                 return render(request, "faction/spies/controls.html", context)
 
-            elif request.POST.get("action") == "refresh-target-data":  # refresh target data
+            elif (
+                request.POST.get("action") == "refresh-target-data"
+            ):  # refresh target data
                 db = SpyDatabase.objects.filter(pk=request.POST.get("pk")).first()
                 if faction not in db.factions.all():
                     return returnError(type=403)
@@ -4336,8 +5043,12 @@ def spies(request, secret=False, export=False):
                     # refresh cache
                     all_spies = cache.get(f"spy-db-{db.secret}")
                     all_spies[spy.target_id]["target_name"] = spy.target_name
-                    all_spies[spy.target_id]["target_faction_id"] = spy.target_faction_id
-                    all_spies[spy.target_id]["target_faction_name"] = spy.target_faction_name
+                    all_spies[spy.target_id][
+                        "target_faction_id"
+                    ] = spy.target_faction_id
+                    all_spies[spy.target_id][
+                        "target_faction_name"
+                    ] = spy.target_faction_name
                     cache.set(f"spy-db-{db.secret}", all_spies, 3600)
 
                 except BaseException as e:
@@ -4351,7 +5062,9 @@ def spies(request, secret=False, export=False):
                 return render(request, "faction/spies/table-line.html", context)
 
             elif request.POST.get("action") == "join-database":  # joining database
-                db = SpyDatabase.objects.filter(secret=request.POST.get("secret")).first()
+                db = SpyDatabase.objects.filter(
+                    secret=request.POST.get("secret")
+                ).first()
                 if db is None:
                     message = [
                         "errorMessageSub",
@@ -4404,7 +5117,9 @@ def spies(request, secret=False, export=False):
                 del request.session["message"]
             if "db-pk" in request.session:
                 print("db in sessions")
-                context["database"] = databases.filter(pk=request.session["db-pk"]).first()
+                context["database"] = databases.filter(
+                    pk=request.session["db-pk"]
+                ).first()
                 del request.session["db-pk"]
             return render(request, page, context)
 
@@ -4463,9 +5178,17 @@ def spiesImport(request):
 
                 try:
                     row_i = 0
-                    ts = int(time.mktime(datetime.datetime.strptime(request.POST.get("date", "70/1/1"), "%y/%m/%d").timetuple()))
+                    ts = int(
+                        time.mktime(
+                            datetime.datetime.strptime(
+                                request.POST.get("date", "70/1/1"), "%y/%m/%d"
+                            ).timetuple()
+                        )
+                    )
                     line_parsed = 0
-                    for row_i, line in enumerate(request.POST.get("spy", "").split("\n")):
+                    for row_i, line in enumerate(
+                        request.POST.get("spy", "").split("\n")
+                    ):
                         splt = line.rstrip().replace(" ", "").split(":")
 
                         if len(splt) == 2:
@@ -4475,7 +5198,9 @@ def spiesImport(request):
                                 target_id = value.split("[")[1].replace("]", "")
                                 spy["target_name"] = value.split("[")[0]
                                 if int(target_id) > 2147483647:
-                                    raise ValueError(f'Target ID for player {spy["target_name"]} [{target_id}] out of bounds.')
+                                    raise ValueError(
+                                        f'Target ID for player {spy["target_name"]} [{target_id}] out of bounds.'
+                                    )
                                 line_parsed += 1
                             elif key in [
                                 "strength",
@@ -4487,7 +5212,9 @@ def spiesImport(request):
                                 integer = value.replace(",", "").strip()
                                 spy[key] = int(integer) if integer.isdigit() else -1
                                 if spy[key] > 9223372036854775807:
-                                    raise ValueError(f"Stat {key} = {spy[key]} out of bounds.")
+                                    raise ValueError(
+                                        f"Stat {key} = {spy[key]} out of bounds."
+                                    )
                                 spy[f"{key}_timestamp"] = ts
                                 line_parsed += 1
 
@@ -4564,16 +5291,32 @@ def spiesImport(request):
                                 continue
 
                             try:
-                                splt1 = [_.strip('"').strip("'").replace(" ", "") for _ in row.rstrip().decode().split('","')]  # try torn stats style
+                                splt1 = [
+                                    _.strip('"').strip("'").replace(" ", "")
+                                    for _ in row.rstrip().decode().split('","')
+                                ]  # try torn stats style
                                 if len(splt1) == 1:
-                                    splt1 = [_.strip('"').strip("'").replace(" ", "") for _ in row.rstrip().decode().split(",")]  # try torn stats style
+                                    splt1 = [
+                                        _.strip('"').strip("'").replace(" ", "")
+                                        for _ in row.rstrip().decode().split(",")
+                                    ]  # try torn stats style
                                 splt2 = row.decode().split(",")  # try yata style
 
                                 if len(splt1) == 11:
-                                    target_id = int(splt1[1].split("[")[1].replace("]", ""))
+                                    target_id = int(
+                                        splt1[1].split("[")[1].replace("]", "")
+                                    )
                                     if target_id > 2147483647:
-                                        raise ValueError(f"Target ID = {target_id} out of bounds.")
-                                    ts = int(time.mktime(datetime.datetime.strptime(splt1[10], "%d/%m/%y").timetuple()))
+                                        raise ValueError(
+                                            f"Target ID = {target_id} out of bounds."
+                                        )
+                                    ts = int(
+                                        time.mktime(
+                                            datetime.datetime.strptime(
+                                                splt1[10], "%d/%m/%y"
+                                            ).timetuple()
+                                        )
+                                    )
                                     new_spies[target_id] = {}
                                     for j, k in enumerate(
                                         [
@@ -4588,13 +5331,23 @@ def spiesImport(request):
                                         stat = stat if stat else -1
                                         timestamp = ts if stat + 1 else 0
                                         new_spies[target_id][k] = stat
-                                        new_spies[target_id][f"{k}_timestamp"] = timestamp
+                                        new_spies[target_id][
+                                            f"{k}_timestamp"
+                                        ] = timestamp
                                         if stat > 9223372036854775807:
-                                            raise ValueError(f"Stat {key} = {stat} out of bounds.")
+                                            raise ValueError(
+                                                f"Stat {key} = {stat} out of bounds."
+                                            )
 
-                                    new_spies[target_id]["target_faction_name"] = splt1[3].replace("None", "Faction") if splt1[3] else "Faction"
+                                    new_spies[target_id]["target_faction_name"] = (
+                                        splt1[3].replace("None", "Faction")
+                                        if splt1[3]
+                                        else "Faction"
+                                    )
                                     new_spies[target_id]["target_faction_id"] = 0
-                                    new_spies[target_id]["target_name"] = splt1[1].split("[")[0]
+                                    new_spies[target_id]["target_name"] = splt1[
+                                        1
+                                    ].split("[")[0]
 
                                 elif len(splt2) == 14:
                                     target_id = int(splt2[0])
@@ -4629,9 +5382,13 @@ def spiesImport(request):
                         )
                         return redirect("faction:spies")
 
-                message_content = f'{len(new_spies)} {"spy" if len(new_spies) == 1 else "spies"} read'
+                message_content = (
+                    f'{len(new_spies)} {"spy" if len(new_spies) == 1 else "spies"} read'
+                )
                 if len(row_failed):
-                    fails_string = textwrap.shorten(", ".join(row_failed), width=64, placeholder="...")
+                    fails_string = textwrap.shorten(
+                        ", ".join(row_failed), width=64, placeholder="..."
+                    )
                     message_content += f' - <span class="warning" style="cursor: help;" title="{fails_string}">{len(row_failed)} rows failed</span>'
 
             db.updateSpies(payload=new_spies)
@@ -4643,7 +5400,11 @@ def spiesImport(request):
             return redirect("faction:spies")
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -4656,7 +5417,9 @@ def fightclub(request):
             player = getFool(request.session["player"].get("tId"))
 
             if not player.fight_club_gym_access:
-                return returnError(type=403, msg="You don't have access to this section.")
+                return returnError(
+                    type=403, msg="You don't have access to this section."
+                )
 
             return render(request, "yata/fightclub.html")
 
@@ -4674,36 +5437,48 @@ def rankedWar(request):
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
-            if 'remove_or_add' in request.POST:
+            if "remove_or_add" in request.POST:
                 # get the target list
-                new_target = request.POST.get('target_id')
-                add_target = request.POST.get('remove_or_add') == '1'
+                new_target = request.POST.get("target_id")
+                add_target = request.POST.get("remove_or_add") == "1"
                 # get the target id of the ranked war page target
-                new_targets = FactionTarget.objects.filter(target_id=new_target).values_list('target_id', flat=True)
+                new_targets = FactionTarget.objects.filter(
+                    target_id=new_target
+                ).values_list("target_id", flat=True)
                 if not add_target:
                     player.targetinfo_set.filter(target_id__in=new_targets).delete()
                 else:
                     for selected_target in new_targets:
-                        target_object, created = TargetInfo.objects.get_or_create(player=player, target_id=selected_target)
+                        target_object, created = TargetInfo.objects.get_or_create(
+                            player=player, target_id=selected_target
+                        )
                         if created:
                             target_object.getTarget(update=True)
-                return JsonResponse({'success': True, 'remove_or_add': add_target})
+                return JsonResponse({"success": True, "remove_or_add": add_target})
 
             # get page
-            page = "faction/content-reload.html" if request.method == "POST" else "faction.html"
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
             if faction is None:
-                selectError = "errorMessageSub" if request.method == "POST" else "errorMessage"
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
                 msg = f"Faction {factionId} not found in the database"
                 return render(request, page, {"player": player, selectError: msg})
 
             error = False
 
             player_targets = FactionTarget.objects.filter(
-                target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
-            ).values_list('target_id', flat=True)
+                target_id__in=TargetInfo.objects.filter(player=player).values_list(
+                    "target_id", flat=True
+                )
+            ).values_list("target_id", flat=True)
 
             context = {
                 "player": player,
@@ -4774,8 +5549,10 @@ def wartargets(request):
 
         targets = faction.updateFactionTargets()
         player_targets = FactionTarget.objects.filter(
-            target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
-        ).values_list('target_id', flat=True)
+            target_id__in=TargetInfo.objects.filter(player=player).values_list(
+                "target_id", flat=True
+            )
+        ).values_list("target_id", flat=True)
 
         return render(
             request,
@@ -4806,7 +5583,9 @@ def wartarget(request):
             context = {"inlineError": f"Server error: {msg}"}
             return render(request, "yata/error.html", context)
 
-        target = faction.factiontarget_set.filter(target_id=request.POST.get("targetId")).first()
+        target = faction.factiontarget_set.filter(
+            target_id=request.POST.get("targetId")
+        ).first()
 
         if target is None:
             msg = f'Target {request.POST.get("target_id")} not found in the database.'
@@ -4838,7 +5617,9 @@ def wartarget(request):
             page = "faction/war/target.html"
 
         else:
-            context = {"inlineError": f'User error: Unknown action {request.POST.get("type")}'}
+            context = {
+                "inlineError": f'User error: Unknown action {request.POST.get("type")}'
+            }
             return render(request, "yata/error.html", context)
 
         return render(

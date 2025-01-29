@@ -273,21 +273,26 @@ This file is part of yata.
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <input type="hidden" name="upload_image" value="1">
       <input type="hidden" name="upload_head" value="1">
+      <input type="hidden" name="delete_head" id="delete_head" value="0">
       <div class="input-group">
         <label class="input-group-text" for="id_posterHeadImg">{% if faction.posterHeadImg %}Update{% else %}Add{% endif %} header</label>
         <input type="file" name="posterHeadImg" accept="image/*" id="id_posterHeadImg" class="form-control" required>
         <button type="submit" class="btn btn-outline">Upload</button>
+        {% if faction.posterHeadImg %}<button type="submit" id="headDeleteBtn" onclick="document.getElementById('delete_head').value = '1'; document.getElementById('id_posterHeadImg').removeAttribute('required');" class="btn btn-outline">Delete</button>{%endif%}
       </div>
     </form>
+
   </div>
   <div class="col-md-12 my-2">
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <input type="hidden" name="upload_image" value="1">
       <input type="hidden" name="upload_tail" value="1">
+      <input type="hidden" name="delete_tail" id="delete_tail" value="0">
       <div class="input-group">
         <label class="input-group-text" for="id_posterTailImg">{% if faction.posterTailImg %}Update{% else %}Add{% endif %} footer</label>
         <input type="file" name="posterTailImg" accept="image/*" id="id_posterTailImg" class="form-control" required>
         <button type="submit" class="btn btn-outline">Upload</button>
+        {% if faction.posterTailImg %}<button type="submit" id="headDeleteBtn" onclick="document.getElementById('delete_tail').value = '1'; document.getElementById('id_posterTailImg').removeAttribute('required');" class="btn btn-outline">Delete</button>{%endif%}
       </div>
     </form>
   </div>
