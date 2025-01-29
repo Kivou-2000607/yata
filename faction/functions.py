@@ -391,17 +391,20 @@ def updatePoster(faction):
     # add title
     txt = html.unescape(req["name"])
     d.text((10, 10), txt, font=fntBig, fill=fontColor)
-    x, y = d.textsize(txt, font=fntBig)
+    bbox = d.textbbox((10, 10), txt, font=fntBig)  # Get text bounding box
+    x, y = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
 
     txt = "{:,} respect\n".format(req["respect"])
     d.text((x + 20, 20), txt, font=fnt, fill=fontColor)
-    x, y = d.textsize(txt, font=fntBig)
+    bbox = d.textbbox((x + 20, 20), txt, font=fntBig)  # Get text bounding box
+    x, y = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
 
     iconType = posterOpt.get("iconType", [0])[0]
     for upgrades_type, tree in trees.items():
         txt = upgrades_type.title()
         d.text((20, 10 + y), txt, font=fntBig, fill=fontColor)
-        xTmp, yTmp = d.textsize(txt, font=fntBig)
+        bbox = d.textbbox((20, 10 + y), txt, font=fntBig)  # Get text bounding box
+        xTmp, yTmp = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
         x = max(xTmp, x)
         y += yTmp + 10
 
@@ -423,7 +426,8 @@ def updatePoster(faction):
 
             # txt = "a"
             d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
-            xTmp, yTmp = d.textsize(txt, font=fnt)
+            bbox = d.textbbox((90, 10 + y), txt, font=fnt)  # Get text bounding box
+            xTmp, yTmp = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
             x = max(xTmp, x)
             y += yTmp
 
@@ -496,7 +500,12 @@ def updatePoster(faction):
     sep = [" ", "\n", " ", ""]
     txt = "".join(f"{k} {v}%{s}" for s, (k, v) in zip(sep, gym_perks.items()))
     d.text((10, 5), txt, font=fntBig, fill=fontColor)
-    x, y = d.textsize(txt, font=fntBig)
+
+    # Get bounding box of the text
+    bbox = d.textbbox((10, 5), txt, font=fntBig)
+    x, y = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
+
+    # Crop the image based on text size
     img_gym = img_gym.crop((0, 0, x + 20, y + 20))
 
     f = BytesIO()
