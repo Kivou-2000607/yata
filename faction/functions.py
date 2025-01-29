@@ -18,7 +18,7 @@
 
 import json
 
-from yata.handy import apiCall, tsnow
+from yata.handy import apiCall, clear_cf_cache, tsnow
 
 # global bonus hits
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
@@ -46,10 +46,14 @@ def getBonusHits(hitNumber, ts):
 
     if int(ts) < int(time.mktime(datetime.datetime(2018, 10, 30, 15, 00).timetuple())):
         # bonus respect values are 4.2*2**n
-        return 4.2 * 2 ** (1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+        return 4.2 * 2 ** (
+            1 + float([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0])
+        )
     else:
         # bonus respect values are 10*2**(n-1)
-        return 10 * 2 ** (int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0]))
+        return 10 * 2 ** (
+            int([i for i, x in enumerate(BONUS_HITS) if x == int(hitNumber)][0])
+        )
 
 
 def getCrontabs(type):
@@ -68,7 +72,9 @@ def optimize_spies(spy_1, spy_2=False):
         spy = {}
         for k in bs_keys:
             spy[k] = max(spy_1[k], spy_2[k])
-            spy[f"{k}_timestamp"] = max(spy_1[f"{k}_timestamp"], spy_2[f"{k}_timestamp"])
+            spy[f"{k}_timestamp"] = max(
+                spy_1[f"{k}_timestamp"], spy_2[f"{k}_timestamp"]
+            )
     else:
         spy = spy_1
 
@@ -76,7 +82,9 @@ def optimize_spies(spy_1, spy_2=False):
     missing_stats = [k for k in bs_keys if spy[k] == -1]
     if len(missing_stats) == 1:
         miss = missing_stats[0]
-        sum_stats = sum([spy[k] for k in bs_keys]) + 1  # add one to account for the missing one (-1)
+        sum_stats = (
+            sum([spy[k] for k in bs_keys]) + 1
+        )  # add one to account for the missing one (-1)
         spy[miss] = sum_stats if miss == "total" else 2 * spy["total"] - sum_stats
 
     # TODO: more fancy checks based in timestamps
@@ -362,7 +370,9 @@ def updatePoster(faction):
     for upgrades_type, upgrades in all_upgrades.items():
         if upgrades_type not in trees:
             trees[upgrades_type] = dict({})
-        for _, upgrade in sorted(upgrades.items(), key=lambda x: x[1]["branchorder"], reverse=False):
+        for _, upgrade in sorted(
+            upgrades.items(), key=lambda x: x[1]["branchorder"], reverse=False
+        ):
             if upgrade["branch"] != "Core":
                 if trees[upgrades_type].get(upgrade["branch"]) is None:
                     trees[upgrades_type][upgrade["branch"]] = dict({})
@@ -374,14 +384,21 @@ def updatePoster(faction):
 
     # choose font
     fontFamily = posterOpt.get("fontFamily", [0])[0]
-    fntId = {i: [f, int(f.split("__")[1].split(".")[0])] for i, f in enumerate(sorted(os.listdir(FONT_DIR)))}
+    fntId = {
+        i: [f, int(f.split("__")[1].split(".")[0])]
+        for i, f in enumerate(sorted(os.listdir(FONT_DIR)))
+    }
     if fontFamily not in fntId:
         fontFamily = 0
 
     # fntId = {0: 'CourierPolski1941.ttf', 1: 'JustAnotherCourier.ttf'}
     # print("[function.chain.factionTree] fontFamily: {} {}".format(fontFamily, fntId[fontFamily]))
-    fntBig = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1] + 10)
-    fnt = ImageFont.truetype(os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1])
+    fntBig = ImageFont.truetype(
+        os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1] + 10
+    )
+    fnt = ImageFont.truetype(
+        os.path.join(FONT_DIR, fntId[fontFamily][0]), fntId[fontFamily][1]
+    )
     d = ImageDraw.Draw(main)
 
     fontColor = tuple(posterOpt.get("fontColor", (0, 0, 0, 255)))
@@ -427,7 +444,10 @@ def updatePoster(faction):
             # txt = "a"
             d.text((90, 10 + y), txt, font=fnt, fill=fontColor)
             bbox = d.textbbox((90, 10 + y), txt, font=fnt)  # Get text bounding box
-            xTmp, yTmp = bbox[2] - bbox[0], bbox[3] - bbox[1]  # Calculate width and height
+            xTmp, yTmp = (
+                bbox[2] - bbox[0],
+                bbox[3] - bbox[1],
+            )  # Calculate width and height
             x = max(xTmp, x)
             y += yTmp
 
@@ -513,12 +533,16 @@ def updatePoster(faction):
         faction.posterGymImg.delete()
 
         img_gym.save(f, format="png")
-        faction.posterGymImg.save(f"posters/{faction.tId}-gym.png", ContentFile(f.getvalue()))
+        faction.posterGymImg.save(
+            f"posters/{faction.tId}-gym.png", ContentFile(f.getvalue())
+        )
         faction.posterGymImg.name = f"posters/{faction.tId}-gym.png"
     finally:
         f.close()
 
     faction.save()
+    clear_cf_cache(f"https://yata.yt{faction.posterImg.url}")
+    clear_cf_cache(f"https://yata.yt{faction.posterGymImg.url}")
 
 
 def updatePosterConf(faction, post):
