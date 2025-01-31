@@ -18,23 +18,24 @@ This file is part of yata.
 """
 
 from django.core.management.base import BaseCommand
-
+from yata.logger import logger
 from loot.models import NPC
 from yata.handy import logdate
 from yata.handy import clear_cf_cache
 from django.core.cache import cache
 
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('-c', '--clear-cache', action='store_true')
-        parser.add_argument('-ts', '--torn-stats', action='store_true')
+        parser.add_argument("-c", "--clear-cache", action="store_true")
+        parser.add_argument("-ts", "--torn-stats", action="store_true")
 
     def handle(self, **options):
-        print(f"[CRON {logdate()}] start loot")
+        logger.info(f"[CRON {logdate()}] start loot")
 
         # update NPC status
         for npc in NPC.objects.filter(show=True):
-            print(f"[CRON {logdate()}] update {npc}")
+            logger.info(f"[CRON {logdate()}] update {npc}")
             if options.get("torn_stats"):
                 # backup plan in case of failure
                 npc.update_from_torn_stats()
@@ -42,9 +43,11 @@ class Command(BaseCommand):
                 npc.update()
 
         if options.get("clear_cache", False):
-            print(f"[CRON {logdate()}] clear loot cache")
+            logger.info(f"[CRON {logdate()}] clear loot cache")
             cache.delete("context_processor_loot")
             # cache.delete("api_loot")
-            r = clear_cf_cache(["https://yata.yt/api/v1/loot/", "https://yata.yt/api/v1/loot"])
+            r = clear_cf_cache(
+                ["https://yata.yt/api/v1/loot/", "https://yata.yt/api/v1/loot"]
+            )
 
-        print(f"[CRON {logdate()}] end")
+        logger.info(f"[CRON {logdate()}] end")
