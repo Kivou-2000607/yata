@@ -22,7 +22,7 @@ from yata.handy import apiCall, clear_cf_cache, tsnow
 
 # global bonus hits
 BONUS_HITS = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
-API_CODE_DELETE = [2, 7, 13, 16]
+API_CODE_DELETE = [2, 7, 13, 16, 18]
 OC_EFFICIENCY = {
     1: {"money": 5000, "respect": 1.0},
     2: {"money": 8750, "respect": 1.25},
