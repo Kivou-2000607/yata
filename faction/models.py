@@ -231,7 +231,7 @@ class Faction(models.Model):
     discordName = models.CharField(default="", max_length=64, null=True, blank=True)
 
     def __str__(self):
-        return format_html("{} [{}]".format(self.name, self.tId))
+        return format_html("{} [{}]".format(self.name.replace('{',"").replace('}',''), self.tId))
 
     def fullname(self):
         return format_html("{} [{}]".format(self.name, self.tId))
