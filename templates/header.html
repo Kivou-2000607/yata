@@ -216,7 +216,13 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
         <span class="mb-2"><i class="fas fa-skull-crossbones"></i>&nbsp;{{ apiError }}</span>
       </div>
     {% endif %}
-
+    {% if player and player.key_level == 4 %}
+    <nav class="navbar navbar-expand-md navbar-light py-0">
+      <div class="container-fluid error">
+       <i> You are using an API key with FULL ACCESS permisions. This is not required to use YATA. We strongly recommened you <a id="yata-logout-submit" href="{% url 'logout' %}" class="error">logout</a> and use a key with limited permisions.</i>
+      </div>
+    </nav>
+    {% endif %}
     {% if playercat %}
         {% include "player/categories.html" %}
     {% elif awardscat %}
