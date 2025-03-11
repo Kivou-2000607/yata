@@ -4610,6 +4610,39 @@ def simulatorChallenge(request):
         return returnError(exc=e, session=request.session)
 
 
+# SECTION: OC2
+def oc2(request):
+    try:
+        if request.session.get("player"):
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            if faction is None:
+                return render(
+                    request,
+                    "yata/error.html",
+                    {
+                        "errorMessage": f"Faction {player.factionId} not found in the database."
+                    },
+                )
+
+            page = (
+                "faction/oc2/index.html" if request.method == "POST" else "faction.html"
+            )
+            context = {}
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
 # SECTION: organised crimes
 def oc(request):
     try:
