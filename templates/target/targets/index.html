@@ -111,6 +111,7 @@ This file is part of yata.
             <label for="target-add-id" class="input-group-text">Add target by torn ID</label>
             <input id="target-add-id" placeholder="Torn ID" type=text class="form-control {% if addError %}is-invalid{% endif %}" aria-describedby="target-add-error" required>
             <button id="target-add-submit" type="submit" class="btn btn-outline" aria-describedby="target-add-id"><i class="fas fa-plus-circle"></i></button>
+            <span class="input-group-text neutral" data-bs-toggle="tooltip" title="You can enter multiple ID's seperated by a comma (e.g 1,5,7)" style="cursor: help;"><i class="fas fa-question-circle"></i></span>
             {% if addError %}
               <div id="target-add-id" class="invalid-feedback mx-2"><i class="fas fa-skull-crossbones me-2"></i>{{ addError }}</div>
             {% endif %}
