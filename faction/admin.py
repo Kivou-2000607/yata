@@ -9,7 +9,8 @@ class EventAdmin(admin.TabularInline):
     model = Event
     extra = 1
 
-
+class FactionTreeAdmin(admin.ModelAdmin):
+    pass
 class FactionAdmin(admin.ModelAdmin):
     class Media:
         css = {'all': ('yata/css/admin.css',)}
@@ -243,3 +244,4 @@ admin.site.register(Chain, ChainAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(FactionTarget, FactionTargetAdmin)
 admin.site.register(Faction, FactionAdmin)
+admin.site.register(FactionTree,FactionTreeAdmin)

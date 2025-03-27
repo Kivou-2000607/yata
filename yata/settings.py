@@ -281,9 +281,3 @@ else:
 
 #  src directory
 SRC_ROOT = os.path.join(PROJECT_ROOT, "src")
-
-
-# ADMIN URL HASH
-ADMIN_URL_PREFIX = ""
-if config("ADMIN_URL_PREFIX", default=""):
-    ADMIN_URL_PREFIX = config("ADMIN_URL_PREFIX")
