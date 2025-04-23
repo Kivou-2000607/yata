@@ -39,6 +39,7 @@ class Command(BaseCommand):
 
                     # print(f"[CRON {logdate()}] faction {faction}: update crimes")
                     faction.updateCrimes()
+                    faction.updateCrimes2()
 
                     # print(f"[CRON {logdate()}] faction {faction}: update members")
                     faction.updateMembers()

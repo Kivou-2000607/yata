@@ -368,6 +368,46 @@ class Faction(models.Model):
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
 
+    def updateCrimes2(self, force=False):
+
+        now = tsnow()
+        old = now - self.getHist("crimes")
+        # don't update if less than 1 hour ago and force is False
+        # if not force and (now - self.crimesUpda) < 3600:
+        # return self.crimes_set.all(), False, False
+
+        # api call and update key
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return self.crimes_set.all(), True, "No keys to update faction crimes"
+
+        crimesAPI = apiCall(
+            "faction", "", "crimes", key=key.value, sub="crimes", verbose=False, v2=True
+        )
+
+        if "apiError" in crimesAPI:
+            msg = f'Update faction upgrades ({crimesAPI["apiErrorString"]})'
+            if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+                return self.crimes_set.all(), True, msg
+            else:
+                key.reason = msg
+                key.lastPulled = crimesAPI.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            return self.crimes_set.all(), True, msg
+
+        key.lastPulled = tsnow()
+        key.reason = "Update crimes list"
+        key.save()
+
+        for crime in crimesAPI:
+            print(crime)
+
     def updateCrimes(self, force=False):
 
         now = tsnow()
@@ -4740,6 +4780,20 @@ class Event(models.Model):
 
     def __str__(self):
         return format_html("{} event {}".format(self.faction, self.title))
+
+
+class Crimes2(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    tID = models.IntegerField(default=0)
+    name = models.CharField(default="Crime Name", max_length=64)
+    difficulty = models.IntegerField(default=0)
+    status = models.CharField(default="Not started", max_length=64)
+    created_at = models.IntegerField(default=0)
+    planning_at = models.IntegerField(default=0)
+    executed_at = models.IntegerField(default=0)
+    ready_at = models.IntegerField(default=0)
+    expired_at = models.IntegerField(default=0)
 
 
 class Crimes(models.Model):
