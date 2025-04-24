@@ -2325,8 +2325,12 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
                     vp["current"] = 0
                     for key in ["endurance", "intelligence", "manual_labor"]:
-                        vp["current"] = max(int(vp["current"]), int(userInfo.get(key, 0)))
-                    vp["achieve"] = min(1, float(int(vp["current"])) / float(vp["goal"]))
+                        vp["current"] = max(
+                            int(vp["current"]), int(userInfo.get(key, 0))
+                        )
+                    vp["achieve"] = min(
+                        1, float(int(vp["current"])) / float(vp["goal"])
+                    )
                     vp["left"] = max((vp["goal"] - int(vp["current"])) / 50.0, 0)
                     vp["comment"] = (
                         "{:.1f} days if single daily train as primary stat".format(
