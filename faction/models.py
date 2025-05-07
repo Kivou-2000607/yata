@@ -603,7 +603,8 @@ class Faction(models.Model):
         # get key if needed
         # if key is None or isinstance(key, bool):
         key = self.getKey()
-
+        if key == None:
+            return []
         # call members and return error
         response = apiCall("faction", "", "basic,crimeexp", key.value)
         key.lastPulled = tsnow()

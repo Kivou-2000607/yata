@@ -661,6 +661,17 @@ def members(request):
                 context.update(
                     {selectError: error["apiError"] + " Members not updated."}
                 )
+            if members == []:
+                selectError = (
+                    "errorMessageSub" if request.method == "POST" else "errorMessage"
+                )
+                context.update(
+                    {
+                        selectError: "Faction {} has no key to update members".format(
+                            factionId
+                        )
+                    }
+                )
             return render(request, page, context)
 
         else:
