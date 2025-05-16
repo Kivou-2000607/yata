@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load app_filters %}
 
 
 {% block title%}
@@ -49,6 +50,53 @@
     <p>
         Torn Data not avaliable through public API calls is not shared without any other member without your consent. This includes, but is not limited to, your faction information, company information, and any other data that is not publicly available.
     </p>
+</div>
+<div class="container-fluid p-3 mb-3 module rounded">
+  <p>
+    <b>YATA</b> website is open sourced on <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i>&nbsp;github</a>.<br />
+    For suggestions and bug reports please join our <a href="https://yata.yt/discord" target="_blank"><i class="fab fa-discord"></i>&nbsp;discord</a> and open a ticket.
+  </p>
+  <hr class="sep" />
+  <p>
+    <i>Player's information gathered by YATA will only be used for the features you see on YATA.</i>
+  </p>
+  <hr class="sep" />
+  <div>
+    {% include 'yata/badges.html' %}
+  </div>
+</div>
+
+<h2 class="title grey rounded-top px-2 py-2 toggle-display rounded mb-3">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto">
+      <i class="fas fa-code"></i>&nbsp;Contributors
+    </div>
+    <div class="px-2 toggle-rotate">
+      <i class="fas fa-caret-right"></i>
+    </div>
+  </div>
+</h2>
+<div class="container-fluid p-3 mb-3 module" style="display: none;">
+  <h3><i class="fab fa-python"></i>&nbsp;Developer</h3>
+  <p>
+    {% player_link '2000607' 'Kivou' %}
+  </p>
+  <h3><i class="fas fa-server"></i>&nbsp;Server admin</h3>
+  <p>
+    {% player_link '47662' 'Decap' %}
+  </p>
+  <h3><i class="fab fa-discord"></i>&nbsp;Discord staff</h3>
+  <p>
+    {% player_link '2363978' 'SVD_NL' %},{% player_link '672082' 'Isca' %},{% player_link '2255595' 'Redxjak' %},{% player_link '1160609' 'Tipsy' %},{% player_link '2130575' 'cynikal' %}
+  </p>
+  <h3><i class="fab fa-js-square"></i>&nbsp;Javascript and userscripts</h3>
+  <p>
+    {% player_link '1934501' 'Helcostr' %},{% player_link '2111649' 'Pyrit' %}
+  </p>
+
+  <p class="mb-0">
+    If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a> and reach out to us.
+  </p>
 </div>
 {% endblock %}
   
