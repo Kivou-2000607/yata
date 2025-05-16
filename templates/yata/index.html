@@ -1,155 +1,165 @@
-{% comment %}
-Copyright 2019 kivou.2000607@gmail.com
-
-This file is part of yata.
-
-    yata is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    any later version.
-
-    yata is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with yata. If not, see <https://www.gnu.org/licenses/>.
-{% endcomment %}
-
 {% load app_filters %}
 
 <div class="clearfix p-md-3 p-1 mb-3 module rounded citymap">
-    <img class="bd-placeholder-img col-md-1 float-md-end mb-3 ms-md-3 d-none d-md-block rounded-icon" src="/media/yata.png" alt="YATA" width="100%" />
+  <img class="bd-placeholder-img col-md-1 float-md-end mb-3 ms-md-3 d-none d-md-block rounded-icon" src="/media/yata.png" alt="YATA" width="100%" />
 
-    <p><b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp.
-        It has been designed to enhance your gameplay using information from the <a style="font-weight: bold;" href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
-        To see what's in there browse through the following categories.<br />
-        Some parts are public and you can browse them anonymously but if you want to unleash the full power of YATA you need to enter your <a style="font-weight: bold;" href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a>.
-    </p>
+  <p>
+    <b>YATA</b> stands for <b>Y</b>et <b>A</b>nother <b>T</b>orn <b>A</b>pp. It has been designed to enhance your gameplay using information from the <a style="font-weight: bold;" href="http://api.torn.com" target="_blank">official Torn API</a>.<br />
+    To see what's in there browse through the following categories.<br />
+    Some parts are public and you can browse them anonymously but if you want to unleash the full power of YATA you need to enter your <a style="font-weight: bold;" href="https://www.torn.com/preferences.php#tab=api" target="_blank">API key</a>.
+  </p>
 
-    <div class="container-fluid">
-      <div class="row justify-content-start">
-        <div class="col"><a href="{% url 'player:index' %}"><b><i class="fas fa-home"></i>&nbsp;Home</b></a> <span class="error">private</span></div>
-
-        {# home #}
-        <div class="w-100"></div>
-        <div class="col">
-          Checkout your personal stats and use the simulators.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# bazaar #}
-        <div class="col"><a href="{% url 'bazaar:index' %}"><b><i class="fas fa-store"></i>&nbsp;Bazaar</b></a> <span class="warning">limited</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# company #}
-        <div class="col"><a href="{% url 'company:index' %}"><b><i class="fas fa-building"></i>&nbsp;Company</b></a> <span class="warning">limited</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Supervise your company and compare your work stats to job positions.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# faction #}
-        <div class="col"><a href="{% url 'faction:index' %}"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a> <span class="error">private</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Build your chain, attacks and revives reports, monitor your members and armory, share your spies and manage your perks.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# targets #}
-        <div class="col"><a href="{% url 'target:index' %}"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></a> <span class="error">private</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Build up a target list and maximize your respect gains during chains, manage your revives and losses.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# awards #}
-        <div class="col"><a href="{% url 'awards:index' %}"><b><i class="fas fa-medal"></i>&nbsp;Awards</b></a> <span class="warning">limited</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Track your honors and medals and check which one you can get next.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# loot #}
-        <div class="col"><a href="{% url 'loot:index' %}"><b><i class="fas fa-user-secret"></i>&nbsp;Loot</b></a> <span class="valid">public</span></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Checkout the timing of NPC's loot levels.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# <div class="col"><hr class="sep"></div> #}
-        {# <div class="w-100 mb-2"></div> #}
-
-        {# bot #}
-        <div class="col"><a href="{% url 'bot' %}" target="_blank"><b><i class="fab fa-discord"></i>&nbsp;Bot</b></a></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Documentation and settings of the YATA discord bot.
-        </div>
-        <div class="w-100 mb-2"></div>
-
-        {# api #}
-        <div class="col"><a href="{% url 'api:index' %}"><b><i class="fas fa-code"></i>&nbsp;API</b></a></div>
-        <div class="w-100"></div>
-        <div class="col">
-          Documentation of the YATA API for stocks abroad, loot timings, faction spies and other things.
-        </div>
-
-        <div class="w-100 mb-2"></div>
-        <div class="col"><hr class="sep"></div>
-        <div class="w-100 mb-2"></div>
-
-        <div>
-          {% include 'yata/toggle-colors.html' %}
-        </div>
-        {% if player %}
-          <div class="w-100 mb-2"></div>
-          <div class="col error"><a id="yata-logout-submit" href="{% url 'logout' %}" class="error"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></div>
-          <div class="w-100 mb-2"></div>
-          <div class="col error"><a id="yata-delete-submit" href="{% url 'delete' %}" class="error"><i class="fas fa-user-slash"></i>&nbsp;Delete account</a></div>
-          <div class="w-100 mb-2"></div>
-        {% endif %}
+  <div class="container-fluid">
+    <div class="row justify-content-start">
+      <div class="col">
+        <a href="{% url 'player:index' %}"><b><i class="fas fa-home"></i>&nbsp;Home</b></a> <span class="error">private</span>
       </div>
 
+      {# home #}
+      <div class="w-100"></div>
+      <div class="col">Checkout your personal stats and use the simulators.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# bazaar #}
+      <div class="col">
+        <a href="{% url 'bazaar:index' %}"><b><i class="fas fa-store"></i>&nbsp;Bazaar</b></a> <span class="warning">limited</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Look at the current bazaar prices and market value tendencies to sell or buy at the best prices.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# company #}
+      <div class="col">
+        <a href="{% url 'company:index' %}"><b><i class="fas fa-building"></i>&nbsp;Company</b></a> <span class="warning">limited</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Supervise your company and compare your work stats to job positions.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# faction #}
+      <div class="col">
+        <a href="{% url 'faction:index' %}"><b><i class="fas fa-fist-raised"></i>&nbsp;Faction</b></a> <span class="error">private</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Build your chain, attacks and revives reports, monitor your members and armory, share your spies and manage your perks.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# targets #}
+      <div class="col">
+        <a href="{% url 'target:index' %}"><b><i class="fas fa-crosshairs"></i>&nbsp;Targets</b></a> <span class="error">private</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Build up a target list and maximize your respect gains during chains, manage your revives and losses.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# awards #}
+      <div class="col">
+        <a href="{% url 'awards:index' %}"><b><i class="fas fa-medal"></i>&nbsp;Awards</b></a> <span class="warning">limited</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Track your honors and medals and check which one you can get next.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# loot #}
+      <div class="col">
+        <a href="{% url 'loot:index' %}"><b><i class="fas fa-user-secret"></i>&nbsp;Loot</b></a> <span class="valid">public</span>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Checkout the timing of NPC's loot levels.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# <div class="col"><hr class="sep"></div> #}
+      {# <div class="w-100 mb-2"></div> #}
+
+      {# bot #}
+      <div class="col">
+        <a href="{% url 'bot' %}" target="_blank"><b><i class="fab fa-discord"></i>&nbsp;Bot</b></a>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Documentation and settings of the YATA discord bot.</div>
+      <div class="w-100 mb-2"></div>
+
+      {# api #}
+      <div class="col">
+        <a href="{% url 'api:index' %}"><b><i class="fas fa-code"></i>&nbsp;API</b></a>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">Documentation of the YATA API for stocks abroad, loot timings, faction spies and other things.</div>
+      <div class="w-100 mb-2"></div>
+      {# TOS #}
+      <div class="col">
+        <a href="{% url 'tos' %}"><b><i class="fas fa-gavel"></i>&nbsp;TOS</b></a>
+      </div>
+      <div class="w-100"></div>
+      <div class="col">YATA's Terms of Service</div>
+
+      <div class="w-100 mb-2"></div>
+      <div class="col">
+        <hr class="sep" />
+      </div>
+      <div class="w-100 mb-2"></div>
+
+      <div>
+        {% include 'yata/toggle-colors.html' %}
+      </div>
+      {% if player %}
+        <div class="w-100 mb-2"></div>
+        <div class="col error">
+          <a id="yata-logout-submit" href="{% url 'logout' %}" class="error"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a>
+        </div>
+        <div class="w-100 mb-2"></div>
+        <div class="col error">
+          <a id="yata-delete-submit" href="{% url 'delete' %}" class="error"><i class="fas fa-user-slash"></i>&nbsp;Delete account</a>
+        </div>
+        <div class="w-100 mb-2"></div>
+      {% endif %}
     </div>
+  </div>
 </div>
 <div class="container-fluid p-3 mb-3 module rounded">
-    <p><b>YATA</b> website is open sourced on <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i>&nbsp;github</a>.<br />
-        For suggestions and bug reports please join our <a href="https://yata.yt/discord" target="_blank"><i class="fab fa-discord"></i>&nbsp;discord</a> and open a ticket.
-    </p>
-    <hr class="sep">
-    <p><i>Player's information gathered by YATA will only be used for the features you see on YATA.</i></p>
-    <hr class="sep">
-    <div>
-      {% include 'yata/badges.html' %}
-    </div>
+  <p>
+    <b>YATA</b> website is open sourced on <a href="https://github.com/Kivou-2000607/yata" target="_blank"><i class="fab fa-github"></i>&nbsp;github</a>.<br />
+    For suggestions and bug reports please join our <a href="https://yata.yt/discord" target="_blank"><i class="fab fa-discord"></i>&nbsp;discord</a> and open a ticket.
+  </p>
+  <hr class="sep" />
+  <p>
+    <i>Player's information gathered by YATA will only be used for the features you see on YATA.</i>
+  </p>
+  <hr class="sep" />
+  <div>
+    {% include 'yata/badges.html' %}
+  </div>
 </div>
 
 <h2 class="title grey rounded-top px-2 py-2 toggle-display rounded mb-3">
-    <div class="d-flex flex-wrap align-items-center">
-      <div class="px-2 me-auto"><i class="fas fa-code"></i>&nbsp;Contributors</div>
-      <div class="px-2 toggle-rotate"><i class="fas fa-caret-right"></i></div>
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto">
+      <i class="fas fa-code"></i>&nbsp;Contributors
     </div>
+    <div class="px-2 toggle-rotate">
+      <i class="fas fa-caret-right"></i>
+    </div>
+  </div>
 </h2>
 <div class="container-fluid p-3 mb-3 module" style="display: none;">
   <h3><i class="fab fa-python"></i>&nbsp;Developer</h3>
-    <p>{% player_link "2000607" "Kivou" %}</p>
+  <p>
+    {% player_link '2000607' 'Kivou' %}
+  </p>
   <h3><i class="fas fa-server"></i>&nbsp;Server admin</h3>
-    <p>{% player_link "47662" "Decap" %}</p>
+  <p>
+    {% player_link '47662' 'Decap' %}
+  </p>
   <h3><i class="fab fa-discord"></i>&nbsp;Discord staff</h3>
-    <p>{% player_link "2363978" "SVD_NL" %}, {% player_link "672082" "Isca" %}, {% player_link "2255595" "Redxjak" %}, {% player_link "1160609" "Tipsy" %}, {% player_link "2130575" "cynikal" %}</p>
+  <p>
+    {% player_link '2363978' 'SVD_NL' %},{% player_link '672082' 'Isca' %},{% player_link '2255595' 'Redxjak' %},{% player_link '1160609' 'Tipsy' %},{% player_link '2130575' 'cynikal' %}
+  </p>
   <h3><i class="fab fa-js-square"></i>&nbsp;Javascript and userscripts</h3>
-    <p>{% player_link "1934501" "Helcostr" %}, {% player_link "2111649" "Pyrit" %}</p>
+  <p>
+    {% player_link '1934501' 'Helcostr' %},{% player_link '2111649' 'Pyrit' %}
+  </p>
 
-  <p class="mb-0">If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a> and reach out to us.</p>
+  <p class="mb-0">
+    If you want to contribute to YATA please join the <a href="{% url 'discord' %}" target="_blank"><i class="fab fa-discord"></i> discord</a> and reach out to us.
+  </p>
 </div>

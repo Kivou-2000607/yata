@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title%}
+    | Terms of Service
+{% endblock %}
+
+{% block content %}
+<div class="clearfix p-md-3 p-1 mb-3 module rounded citymap">
+  <img class="bd-placeholder-img col-md-1 float-md-end mb-3 ms-md-3 d-none d-md-block rounded-icon" src="/media/yata.png" alt="YATA" width="100%" />
+  <h1>Terms of Service</h1>
+    <P>
+        
+        By using YATA, you agree to the following terms and conditions. If you do not agree with these terms, please do not use the service. 
+    </P>
+    <p>
+        {% if player %}
+         Should you wish to delete your account, you can do so here <a id="yata-delete-submit" href="{% url 'delete' %}" class="error">Delete account</a>
+          {% else %}
+        Should you wish to delete your account, please sign in and return to this page. You will be able to delete your account from here.
+        {% endif %}
+       
+    <p>
+        YATA is a Torn API client and is not affiliated with Torn City or its developers. The service is provided "as is" without any warranties or guarantees. The developers of YATA are not responsible for any damages or losses incurred while using the service.
+    </p>
+    <p>
+        YATA may collect and store user data for the purpose of improving the service. This data will not be shared with third parties without your consent, except as required by law.
+    </p>
+    <p>
+        YATA reserves the right to modify or terminate the service at any time without notice. The developers of YATA are not responsible for any interruptions or errors in the service.
+    </p>
+    <p>
+        By using YATA, you agree to comply with all applicable laws and regulations. You are solely responsible for your use of the service and any content you create or share while using it.
+    </p>
+    <p>
+        The developers of YATA reserve the right to remove any content that violates these terms or is deemed inappropriate at their discretion.
+    </p>
+
+    <h1>How We Use Your Torn Data</h1>
+    <p>
+        YATA uses your Torn data to provide you with personalized features and functionality. This includes, but is not limited to, displaying your stats, tracking your progress, and providing recommendations based on your gameplay.
+    </p>
+    <p>
+        YATA may also use your data to improve the service, such as by analyzing usage patterns and identifying areas for improvement. This data will be used in aggregate form and will not be linked to your personal information.
+    </p>
+        Your API key may be used to update your player information, information regarding any faction or company you are in, and any other information that is available through the Torn API. This data is used to enhance your experience on YATA and provide you with the most accurate and up-to-date information possible.
+    </p>
+    <p>
+        Torn Data not avaliable through public API calls is not shared without any other member without your consent. This includes, but is not limited to, your faction information, company information, and any other data that is not publicly available.
+    </p>
+</div>
+{% endblock %}
+  
