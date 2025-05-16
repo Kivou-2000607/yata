@@ -18,3 +18,5 @@ yata.sock
 tmp
 debug/faction-keys-*
 **.idea/**
+*.log
+nn/
