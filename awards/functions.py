@@ -268,6 +268,17 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     1129,
                     1136,
                     1166,
+                    1243, # start new batch of Crimes 2.0 honors
+                    1229,
+                    1328,
+                    1349,
+                    1218,
+                    1241,
+                    1284,
+                    1028,
+                    1271,
+                    1326,
+                    328
                 ]:
                     # "1012": { "name": "Spoiled Rotten", "description": "Find all seven rotten food & drink"
                     # "1031": { "name": "Online Entrepreneur", "description": "Acquire 10,000 customers on your online counterfeit DVD store"
