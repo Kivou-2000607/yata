@@ -40,6 +40,11 @@ from faction.models import Faction
 from yata.handy import *
 from yata.bans import user_bans
 
+# yata/views.py
+from django.shortcuts import redirect
+
+def bot_redirect(request):
+    return redirect("https://bot.yata.yt", permanent=True)
 
 def index(request):
     try:

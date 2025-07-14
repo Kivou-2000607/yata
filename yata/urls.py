@@ -18,11 +18,11 @@ from django.urls import include, path, re_path
 from django.contrib import admin
 from django.http import HttpResponse
 from django.views.generic.base import RedirectView
-
+from .views import bot_redirect
 # for media and admin url obfuscation
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.shortcuts import redirect
 from . import views
 from setup import views as setup_views
 
@@ -62,7 +62,7 @@ urlpatterns = [
         RedirectView.as_view(url="https://discord.gg/75J3VEWrwe"),
         name="discord",
     ),
-    path("bot", RedirectView.as_view(url="https://bot.yata.yt"), name="bot"),
+    path("bot", bot_redirect, name="bot"),
     path("tos", views.tos, name="tos"),
     # robot.txt
     path(
