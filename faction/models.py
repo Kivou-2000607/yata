@@ -1491,6 +1491,7 @@ class Member(models.Model):
     state = models.CharField(default="", max_length=64, blank=True)
     color = models.CharField(default="", max_length=16, blank=True)
     until = models.IntegerField(default=0)
+    travel_type = models.CharField(default="", max_length=32, blank=True)
 
     # honors
     singleHitHonors = models.IntegerField(
