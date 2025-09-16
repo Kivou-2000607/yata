@@ -26,16 +26,16 @@ from yata.handy import logdate
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('crontab', type=int)
+        parser.add_argument("crontab", type=int)
 
     def handle(self, *args, **options):
-        crontabId = options['crontab']
+        crontabId = options["crontab"]
         print(f"[CRON {logdate()}] START armory report on crontab {crontabId}")
-        reports = (
-    ArmoryReport.objects
-    .filter(computing=True, crontab=crontabId)
-    .order_by('update')[:3]   # <-- limit to 3
-)
+        reports = ArmoryReport.objects.filter(
+            computing=True, crontab=crontabId
+        ).order_by("update")[
+            :3
+        ]  # <-- limit to 3
         for report in reports:
             # report.updateReport()
             try:
