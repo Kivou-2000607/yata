@@ -31,8 +31,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         crontabId = options['crontab']
         print(f"[CRON {logdate()}] START armory report on crontab {crontabId}")
-        report = ArmoryReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
-        if report is not None:
+        reports = (
+    ArmoryReport.objects
+    .filter(computing=True, crontab=crontabId)
+    .order_by('update')[:3]   # <-- limit to 3
+)
+        for report in reports:
             # report.updateReport()
             try:
                 report.updateReport()
