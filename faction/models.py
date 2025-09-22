@@ -1274,8 +1274,8 @@ class Faction(models.Model):
                 break
         # if you want to debug this
         # you can return a crafted dictionary like so:
-        # return {'them': {'faction_id': 9528}, 'us': {'faction_id': 41363}}
-        return war
+        return {'them': {'faction_id': 9528}, 'us': {'faction_id': 8124}}
+        #return war
 
     def updateFactionTargets(self):
         print(f"{self} [faction targets] Update targets")
