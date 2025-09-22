@@ -5448,24 +5448,20 @@ def rankedWar(request):
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
-            if "remove_or_add" in request.POST:
+            if 'remove_or_add' in request.POST:
                 # get the target list
-                new_target = request.POST.get("target_id")
-                add_target = request.POST.get("remove_or_add") == "1"
+                new_target = request.POST.get('target_id')
+                add_target = request.POST.get('remove_or_add') == '1'
                 # get the target id of the ranked war page target
-                new_targets = FactionTarget.objects.filter(
-                    target_id=new_target
-                ).values_list("target_id", flat=True)
+                new_targets = FactionTarget.objects.filter(target_id=new_target).values_list('target_id', flat=True)
                 if not add_target:
                     player.targetinfo_set.filter(target_id__in=new_targets).delete()
                 else:
                     for selected_target in new_targets:
-                        target_object, created = TargetInfo.objects.get_or_create(
-                            player=player, target_id=selected_target
-                        )
+                        target_object, created = TargetInfo.objects.get_or_create(player=player, target_id=selected_target)
                         if created:
                             target_object.getTarget(update=True)
-                return JsonResponse({"success": True, "remove_or_add": add_target})
+                return JsonResponse({'success': 'Target added successfully'}, )
 
             # get page
             page = (
@@ -5486,10 +5482,8 @@ def rankedWar(request):
             error = False
 
             player_targets = FactionTarget.objects.filter(
-                target_id__in=TargetInfo.objects.filter(player=player).values_list(
-                    "target_id", flat=True
-                )
-            ).values_list("target_id", flat=True)
+                target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
+            ).values_list('target_id', flat=True)
 
             context = {
                 "player": player,
@@ -5560,10 +5554,8 @@ def wartargets(request):
 
         targets = faction.updateFactionTargets()
         player_targets = FactionTarget.objects.filter(
-            target_id__in=TargetInfo.objects.filter(player=player).values_list(
-                "target_id", flat=True
-            )
-        ).values_list("target_id", flat=True)
+            target_id__in=TargetInfo.objects.filter(player=player).values_list('target_id', flat=True)
+        ).values_list('target_id', flat=True)
 
         return render(
             request,

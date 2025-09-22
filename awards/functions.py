@@ -3408,25 +3408,19 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
 
                     if hof is not None and len(hof):
                         vp["goal"] = top
-                        vp["current"] = (
-                            1 if int(k) in honors_awarded else hof[0][1]["rank"]
-                        )
-                        vp["achieve"] = (
-                            1
-                            if int(k) in honors_awarded
-                            else min(1, float(vp["goal"]) / float(vp["current"]))
-                        )
-
+                        vp["current"] = 1 if int(k) in honors_awarded else hof[0][1]["rank"]
+                        vp["achieve"] = 1 if int(k) in honors_awarded else min(1, float(vp["goal"]) / float(vp["current"]))
+                        def fmt0(x):
+                            if x is None:
+                                return "—"
+                            try:
+                                return f"{x:,.0f}"      # works for int/float
+                            except Exception:
+                                return str(x)
                         vp["comment"] = "<br>".join(
-                            [
-                                "<b class={}>{}</b>: #{:,d} ({:,d})".format(
-                                    "error" if i else "valid",
-                                    k.title(),
-                                    v["rank"],
-                                    int(v["value"]),
-                                )
-                                for i, (k, v) in enumerate(hof)
-                            ]
+                            f'<b class="{"error" if i else "valid"}">{k.title()}</b>: '
+                            f'#{fmt0(v.get("rank"))} ({fmt0(v.get("value"))})'
+                            for i, (k, v) in enumerate(hof)
                         )
 
                     else:

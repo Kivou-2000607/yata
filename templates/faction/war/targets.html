@@ -57,31 +57,24 @@ This file is part of yata.
 
         $('.add-target').on('click tap', function (e) {
             e.preventDefault();
-            let self = $(this);
-            let data = {
-                target_id: self.attr('data-val'),
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            }
-            let params = new URLSearchParams(data);
-            params.set('target_id', self.attr('data-val'));
-            params.set('csrfmiddlewaretoken', '{{ csrf_token }}');
-            params.set('faction_id', '{{ faction.tId }}');
-            params.set('remove_or_add', $(this).find('i').hasClass('fa-user-plus') ? '1' : '0');
-            self.html(spinner);
+
+            var target_id = $(this).attr('data-val');
+            var csrf_token = getCookie('csrftoken');
+            var faction_id = "{{ faction.tId }}";
+            var removeOrAdd = $(this).find('i').hasClass('fa-toggle-off') ? 1 : 0;
+            $(this).find('i').toggleClass('fa-toggle-off').toggleClass('fa-toggle-on');
+
+            const params = new URLSearchParams();
+            params.set('target_id', target_id);
+            params.set('faction_id', faction_id);
+            params.set('csrfmiddlewaretoken', csrf_token);
+            params.set('remove_or_add', ''+removeOrAdd)
             $.ajax({
                 type: 'POST',
-                url: './',
+                url: './?rank_target=1',
                 data: params.toString(),
                 success: function(data) {
-                    if(data.remove_or_add === true){
-                        self.html('<i class="fas fa-user-minus valid" title="Remove target"></i>');
-                    } else {
-                        self.html('<i class="fas fa-user-plus error" title="Add target"></i>');
-                    }
-                },
-                error: function(data) {
-                    self.html('<i class="fas fa-user-plus error" title="Add target"></i>');
-                    console.log('there was an error', data)
+                    // do something to show success
                 }
             });
         });
@@ -106,7 +99,7 @@ This file is part of yata.
                   <th class="f" title="Status of the target">Status</th>
                   <th class="g" title="Time since last update">Update</th>
                   <th class="h" title="Call dibs">Dibs</th>
-                  <th class="i" style="width: 2.5vw;" title="Add target">Save</th>
+                  <th class="i" style="width: 2.5vw;" title="Add target">A</th>
           </thead>
           <tbody>
           {% for target in targets %}
