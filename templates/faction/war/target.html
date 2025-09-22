@@ -1,3 +1,4 @@
+{% load i18n %}
 {% comment %}
 Copyright 2019 kivou.2000607@gmail.com
 
@@ -47,7 +48,7 @@ This file is part of yata.
         </div>
     </td>
     {% if target.status_color == "blue" %}
-        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="">{{target.status_description}}</td>
+        <td class='text-start player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% else %}{% trans 'Destination unavailable at this time' %}{% endif %}" data-val="">{% if target.status_details %}{{target.status_details|clean_travel_status}}{% else %}{{target.status_description}}{% endif %}</td>
     {% else %}
         <td class='text-start status player-status-{{target.status_color}}' title="{% if target.status_details %}{{target.status_details|cleanhtml}}{% endif %}" data-val="{{target.status_until}}">{{target.status_description}}</td>
     {% endif %}
@@ -57,16 +58,8 @@ This file is part of yata.
         {% include "faction/war/dibs.html" %}
     </td>
     <td class="text-center dont-touch-me" data-val="{% if target.target_id in player_targets %}1{% else %}0{% endif %}" >
-            <a class="add-target" data-val="{{ target.target_id }}">
-               {% if target.target_id in player_targets %}
-                   <i class="fas fa-user-minus valid" title="Remove target"></i>
-               {% else %}
-                    <i class="fas fa-user-plus error" title="Add target"></i>
-               {% endif %}
-            </a>
-        </form>
-{#        <a class="add-target" data-val="{{ target.target_id }}">#}
-{#           <i class="fas {% if target.target_id in player_targets %}fa-toggle-on{% else %}fa-toggle-off{% endif %}" title=""></i>#}
-{#        </a>#}
+        <a class="add-target" data-val="{{ target.target_id }}">
+           <i class="fas {% if target.target_id in player_targets %}fa-toggle-on{% else %}fa-toggle-off{% endif %}" title=""></i>
+        </a>
     </td>
 {% endif %}
