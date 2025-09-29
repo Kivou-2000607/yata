@@ -1,29 +1,28 @@
 # Copyright 2019 kivou.2000607@gmail.com
-# 
+#
 # This file is part of yata.
-# 
+#
 #     yata is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     any later version.
-# 
+#
 #     yata is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU General Public License
 #     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
-from django.db import models
-from django.utils import timezone
-
 import json
 import math
+
+from django.db import models
+from django.utils import timezone
 from scipy import stats
 
-from yata.handy import apiCall
-from yata.handy import tsnow
+from yata.handy import apiCall, tsnow
 
 
 class Item(models.Model):
@@ -60,17 +59,19 @@ class Item(models.Model):
     @classmethod
     def create(cls, k, v):
         # print("[model.bazaar.item] create: ", k, v['name'], v['type'], v['market_value'])
-        item = cls(tId=int(k),
-                   tName=v['name'],
-                   tType=v['type'].replace(" ", ""),
-                   tMarketValue=int(v['market_value']),
-                   tSellPrice=int(v['sell_price']),
-                   tBuyPrice=int(v['buy_price']),
-                   tCirculation=int(v['circulation']),
-                   tDescription=v['description'],
-                   tEffect=v['effect'],
-                   tRequirement=v['requirement'],
-                   tImage=v['image'])
+        item = cls(
+            tId=int(k),
+            tName=v["name"],
+            tType=v["type"].replace(" ", ""),
+            tMarketValue=int(v["market_value"]),
+            tSellPrice=int(v["sell_price"]),
+            tBuyPrice=int(v["buy_price"]),
+            tCirculation=int(v["circulation"]),
+            tDescription=v["description"],
+            tEffect=v["effect"],
+            tRequirement=v["requirement"],
+            tImage=v["image"],
+        )
         return item
 
     def updateTendencies(self):
@@ -88,7 +89,7 @@ class Item(models.Model):
                     x.append(int(t))
                     y.append(int(p))
             # print(len(x), x)
-            if(len(x) > 1):
+            if len(x) > 1:
                 a, b, _, _, _ = stats.linregress(x, y)
                 if math.isnan(a) or math.isnan(b):
                     self.weekTendencyA = 0.0
@@ -105,7 +106,7 @@ class Item(models.Model):
                 self.weekTendencyA = 0.0
                 self.weekTendencyB = 0.0
                 self.weekTendency = 0.0
-        except BaseException as e:
+        except BaseException:
             self.weekTendencyA = 0.0
             self.weekTendencyB = 0.0
             self.weekTendency = 0.0
@@ -119,7 +120,7 @@ class Item(models.Model):
                 if ts - int(t) < 3600 * 24 * 31 + 30 and int(p):
                     x.append(int(t))
                     y.append(int(p))
-            if(len(x) > 1):
+            if len(x) > 1:
                 a, b, _, _, _ = stats.linregress(x, y)
                 # print(a, b)
                 if math.isnan(a) or math.isnan(b):
@@ -137,7 +138,7 @@ class Item(models.Model):
                 self.monthTendencyA = 0.0
                 self.monthTendencyB = 0.0
                 self.monthTendency = 0.0
-        except BaseException as e:
+        except BaseException:
             self.monthTendencyA = 0.0
             self.monthTendencyB = 0.0
             self.monthTendency = 0.0
@@ -158,18 +159,19 @@ class Item(models.Model):
         #      'circulation': 68911,
         #      'image': 'http://www.torn.com/images/items/6/large.png'}
         # print("[model.bazaar.item] update:", self.tId, v['name'], v['type'], v['market_value'])
-        self.tName = v['name']
-        self.tType = v['type'].replace(" ", "")
-        self.tMarketValue = int(v['market_value'])
-        self.tSellPrice = int(v['sell_price'])
-        self.tBuyPrice = int(v['buy_price'])
-        self.tCirculation = int(v['circulation'])
-        self.tDescription = v['description']
-        self.tEffect = v['effect'],
-        self.tRequirement = v['requirement'],
-        self.tImage = v['image']
+        self.tName = v["name"]
+        self.tType = v["type"].replace(" ", "")
+        self.tMarketValue = int(v["market_value"])
+        self.tSellPrice = int(v["sell_price"])
+        self.tBuyPrice = int(v["buy_price"])
+        self.tCirculation = int(v["circulation"])
+        self.tDescription = v["description"]
+        self.tEffect = (v["effect"],)
+        self.tRequirement = (v["requirement"],)
+        self.tImage = v["image"]
+
         priceHistory = json.loads(self.priceHistory)
-        ts = int(v.get('timestamp', timezone.now().timestamp()))
+        ts = int(v.get("timestamp", timezone.now().timestamp()))
         ts = int(ts) - int(ts) % 3600  # get the hour rounding
         to_del = []
         for t, p in priceHistory.items():
@@ -183,10 +185,24 @@ class Item(models.Model):
         priceHistory[ts] = int(v["market_value"])
         self.priceHistory = json.dumps(priceHistory)
         self.updateTendencies()
+
+        # determine if item is on market
+
+        normalized = {int(k): v for k, v in priceHistory.items()}
+        if len(normalized) < 10:
+            self.onMarket = False
+        else:
+            last10_vals = [v for _, v in sorted(normalized.items())][-10:]
+            if all(v > 0 for v in last10_vals):
+                self.onMarket = True
+            else:
+                self.onMarket = False
+
         self.save()
 
     def display_small(self):
         from django.utils.html import format_html
+
         # from urllib.parse import urlparse
         # from django.contrib.staticfiles.templatetags.staticfiles import static
         # return format_html("<img src=\"{}\" alt=\"{} [{}]\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
@@ -194,6 +210,7 @@ class Item(models.Model):
 
     def display_large(self):
         from django.utils.html import format_html
+
         # from urllib.parse import urlparse
         # from django.contrib.staticfiles.templatetags.staticfiles import static
         # return format_html("<img src=\"{}\" alt=\"{} [{}]\" />".format(static(urlparse(self.tImage)[2][1:]), self.tId, self.tName))
@@ -207,19 +224,21 @@ class Item(models.Model):
     #     return format_html("<img src='https://www.torn.com/images/items/{id}/small.png' alt='{name} [{id}]' class='thumb' />".format(id=self.tId, name=self.tName))
 
     def get_bazaar(self, n=10):
-        bData = self.marketdata_set.all().order_by('cost')
+        bData = self.marketdata_set.all().order_by("cost")
         try:
             cData = []
             tmpP = 0
             tmpQ = 0
             for i in range(len(bData)):
-                cData.append({'cost': bData[i].cost,
-                              'quantity': bData[i].quantity,
-                              'itemmarket': bData[i].itemmarket,
-                              'cumulativeQ': bData[i].quantity + tmpQ,
-                              'cumulativeP': int(float(bData[i].quantity) * float(bData[i].cost)) + tmpP,
-                              }
-                             )
+                cData.append(
+                    {
+                        "cost": bData[i].cost,
+                        "quantity": bData[i].quantity,
+                        "itemmarket": bData[i].itemmarket,
+                        "cumulativeQ": bData[i].quantity + tmpQ,
+                        "cumulativeP": int(float(bData[i].quantity) * float(bData[i].cost)) + tmpP,
+                    }
+                )
                 tmpP = cData[i]["cumulativeP"]
                 tmpQ = cData[i]["cumulativeQ"]
         except BaseException:
@@ -232,7 +251,7 @@ class Item(models.Model):
 
         itemmarket = req.get("itemmarket") if req.get("itemmarket") else dict({})
 
-        if 'apiError' in itemmarket:
+        if "apiError" in itemmarket:
             return itemmarket
 
         # fuse both
@@ -252,14 +271,14 @@ class Item(models.Model):
         if len(itemmarket["listings"]):
             marketData.append({"cost": pp, "quantity": q, "itemmarket": True})
 
-        marketData = sorted(marketData, key=lambda x: x['cost'], reverse=False)
+        marketData = sorted(marketData, key=lambda x: x["cost"], reverse=False)
         self.marketdata_set.all().delete()
         for i, (v) in enumerate(marketData):
             # print("[model.bazaar.update_bazaar] update_bazaar: (q:{}, c:{})".format(v["quantity"], v["cost"]))
             self.marketdata_set.create(quantity=v["quantity"], cost=v["cost"], itemmarket=v["itemmarket"])
             if i >= n - 1:
                 break
-        self.lastUpdateTS = int(req.get('timestamp', timezone.now().timestamp()))
+        self.lastUpdateTS = int(req.get("timestamp", timezone.now().timestamp()))
         self.save()
         return marketData
 
@@ -323,7 +342,7 @@ class AbroadStocks(models.Model):
         return "{} in {}".format(self.item, self.country)
 
     def payload(self):
-        from bazaar.countries import countries
+        from bazaar.countries import countries  # noqa
 
         return {
             # "country_key": self.country_key,
@@ -339,10 +358,10 @@ class AbroadStocks(models.Model):
             # "item_buy_price": self.item.tBuyPrice,
             # "item_week_tendency": self.item.weekTendency,
             # "country_fly_time": countries[self.country_id]["fly_time"],
-            }
+        }
 
     def payloadLight(self):
-        from bazaar.countries import countries
+        from bazaar.countries import countries  # noqa
 
         return {
             # "id": f'{self.country_key}-{self.item.tId}',
@@ -358,10 +377,11 @@ class AbroadStocks(models.Model):
             # "item_buy_price": self.item.tBuyPrice,
             # "item_week_tendency": self.item.weekTendency,
             # "country_fly_time": countries[self.country_id]["fly_time"],
-            }
+        }
 
     def get_country(self):
         from bazaar.countries import countries
+
         return countries.get(self.country_key)
 
     def get_efficiency(self, h=48):
