@@ -1,41 +1,29 @@
 # Copyright 2019 kivou.2000607@gmail.com
-# 
+#
 # This file is part of yata.
-# 
+#
 #     yata is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     any later version.
-# 
+#
 #     yata is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU General Public License
 #     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
+import json
+from datetime import timedelta
+
+from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-from ratelimit.decorators import ratelimit
 
-import json
-
-from bazaar.models import Item
-from bazaar.models import BazaarData
-from bazaar.models import AbroadStocks
-from bazaar.models import VerifiedClient
-from player.models import Player
-from yata.handy import apiCall
-from yata.handy import returnError
-from yata.handy import timestampToDate
-from yata.handy import tsnow
-from yata.handy import getPlayer
+from bazaar.models import AbroadStocks, BazaarData, Item
+from yata.handy import getPlayer, returnError, timestampToDate, tsnow
 
 
 def index(request):
@@ -43,13 +31,13 @@ def index(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # get items
-        itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
+        itemsOnMarket = Item.objects.filter(onMarket=True).order_by("tName")
         tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
         items = []
 
         # get/update inventory
         inventory = player.getInventory()
-        error = inventory if 'apiError' in inventory else False
+        error = inventory if "apiError" in inventory else False
 
         # build item list
         for tType in tTypes:
@@ -65,20 +53,15 @@ def index(request):
 
         context = {
             "player": player,
-            'list': json.loads(player.bazaarList),
+            "list": json.loads(player.bazaarList),
             "bazaarcat": True,
             "allItemsOnMarket": items,
-            "view": {
-                "refreshType": True,
-                "timer": True,
-                "hideType": True,
-                "loopType": True
-                },
-            "keyLevelRequired": 2
-            }
+            "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True},
+            "keyLevelRequired": 2,
+        }
         if error:
             context.update(error)
-        return render(request, 'bazaar.html', context)
+        return render(request, "bazaar.html", context)
 
         # else:
         #     return returnError(type=403, msg="You might want to log in.")
@@ -89,16 +72,16 @@ def index(request):
 
 def custom(request):
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
             # get items
-            itemsOnMarket = Item.objects.filter(tId__in=json.loads(player.bazaarList)).order_by('tName')
+            itemsOnMarket = Item.objects.filter(tId__in=json.loads(player.bazaarList)).order_by("tName")
             items = []
 
             # get/update inventory
             inventory = player.getInventory()
-            error = inventory if 'apiError' in inventory else False
+            error = inventory if "apiError" in inventory else False
 
             # build item list
             item_list = []
@@ -109,19 +92,19 @@ def custom(request):
                 item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
                 item.stock = item.stockI + item.stockB + item.stockD
                 item_list.append(item)
-            items.append(('Custom', item_list))
+            items.append(("Custom", item_list))
 
             context = {
                 "player": player,
-                'list': json.loads(player.bazaarList),
+                "list": json.loads(player.bazaarList),
                 "bazaarcat": True,
                 "allItemsOnMarket": items,
                 "view": {"refreshType": True, "timer": True, "loopType": True},
-                "keyLevelRequired": 2
+                "keyLevelRequired": 2,
             }
             if error:
                 context.update(error)
-            page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+            page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
             return render(request, page, context)
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -129,18 +112,18 @@ def custom(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+
 def my(request):
     try:
-        if request.session.get('player'):
+        if request.session.get("player"):
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
-
 
             # get/update inventory
             inventory = player.getInventory(force=True)
-            error = inventory if 'apiError' in inventory else False
+            error = inventory if "apiError" in inventory else False
 
             # get items
-            itemsOnMarket = Item.objects.filter(tId__in=inventory.get("bazaar", {})).order_by('tName')
+            itemsOnMarket = Item.objects.filter(tId__in=inventory.get("bazaar", {})).order_by("tName")
             tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
             items = []
 
@@ -162,11 +145,11 @@ def my(request):
                 "bazaarcat": True,
                 "allItemsOnMarket": items,
                 "view": {"refreshType": True, "timer": True, "summaryByType": True, "loopType": True},
-                "keyLevelRequired": 2
+                "keyLevelRequired": 2,
             }
             if error:
                 context.update(error)
-            page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+            page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
             return render(request, page, context)
         else:
             return returnError(type=403, msg="You might want to log in.")
@@ -180,13 +163,13 @@ def default(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # get items
-        itemsOnMarket = Item.objects.filter(onMarket=True).order_by('tName')
+        itemsOnMarket = Item.objects.filter(onMarket=True).order_by("tName")
         tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
         items = []
 
         # get/update inventory
         inventory = player.getInventory()
-        error = inventory if 'apiError' in inventory else False
+        error = inventory if "apiError" in inventory else False
 
         # build item list
         for tType in tTypes:
@@ -202,15 +185,15 @@ def default(request):
 
         context = {
             "player": player,
-            'list': json.loads(player.bazaarList),
+            "list": json.loads(player.bazaarList),
             "bazaarcat": True,
             "allItemsOnMarket": items,
             "view": {"refreshType": True, "timer": True, "hideType": True, "loopType": True},
-            "keyLevelRequired": 2
+            "keyLevelRequired": 2,
         }
         if error:
             context.update(error)
-        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
         return render(request, page, context)
 
     except Exception as e:
@@ -222,8 +205,7 @@ def sets(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # get items
-        allItems = Item.objects.all().order_by('tName')
-        tTypes = ["Flower", "Plushie"]
+        allItems = Item.objects.all().order_by("tName")
         sets = {
             "Plushie set": {
                 "ids": [186, 187, 215, 258, 261, 266, 268, 269, 273, 274, 281, 384, 618],
@@ -299,14 +281,13 @@ def sets(request):
             },
         }
 
-
         # get/update inventory
         inventory = player.getInventory()
-        error = inventory if 'apiError' in inventory else False
+        error = inventory if "apiError" in inventory else False
         point_value = BazaarData.objects.first().pointsValue
 
         for tType, set in sets.items():
-            for item in allItems.filter(tId__in=set.get('ids', [])):
+            for item in allItems.filter(tId__in=set.get("ids", [])):
                 item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
                 item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
                 item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
@@ -319,18 +300,10 @@ def sets(request):
             set["benefits"] = set["points_value"] - set["market_value"]
             set["benefitsps"] = 100 * (set["points_value"] - set["market_value"]) / set["points_value"]
 
-
-        context = {
-            "player": player,
-            'list': json.loads(player.bazaarList),
-            "bazaarcat": True,
-            "sets": sets,
-            "view": {"refreshType": True, "timer": True, "loopSets": True},
-            "keyLevelRequired": 2
-        }
+        context = {"player": player, "list": json.loads(player.bazaarList), "bazaarcat": True, "sets": sets, "view": {"refreshType": True, "timer": True, "loopSets": True}, "keyLevelRequired": 2}
         if error:
             context.update(error)
-        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
         return render(request, page, context)
 
     except Exception as e:
@@ -342,13 +315,13 @@ def all(request):
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
 
         # get items
-        itemsOnMarket = Item.objects.all().order_by('tName')
+        itemsOnMarket = Item.objects.all().order_by("tName")
         tTypes = {r["tType"] for r in itemsOnMarket.values("tType").distinct()}
         items = []
 
         # get/update inventory
         inventory = player.getInventory()
-        error = inventory if 'apiError' in inventory else False
+        error = inventory if "apiError" in inventory else False
 
         # build item list
         for tType in tTypes:
@@ -362,17 +335,10 @@ def all(request):
                 item_list.append(item)
             items.append((tType, item_list))
 
-        context = {
-            "player": player,
-            'list': json.loads(player.bazaarList),
-            "bazaarcat": True,
-            "allItemsOnMarket": items,
-            "view": {"hideType": True, "loopType": True},
-            "keyLevelRequired": 2
-        }
+        context = {"player": player, "list": json.loads(player.bazaarList), "bazaarcat": True, "allItemsOnMarket": items, "view": {"hideType": True, "loopType": True}, "keyLevelRequired": 2}
         if error:
             context.update(error)
-        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
         return render(request, page, context)
 
     except Exception as e:
@@ -388,40 +354,40 @@ def top10(request):
 
         # get/update inventory
         inventory = player.getInventory()
-        error = inventory if 'apiError' in inventory else False
+        error = inventory if "apiError" in inventory else False
 
         # build item list
         item_list = []
-        for item in Item.objects.filter(onMarket=True).order_by('weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by("weekTendency")[:10]:
             item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
             item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
             item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             item_list.append(item)
-        items.append(('Buy', item_list))
+        items.append(("Buy", item_list))
 
         item_list = []
-        for item in Item.objects.filter(onMarket=True).order_by('-weekTendency')[:10]:
+        for item in Item.objects.filter(onMarket=True).order_by("-weekTendency")[:10]:
             item.stockI = inventory.get("inventory", {}).get(str(item.tId), [0, 0])[0]
             item.stockB = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[0]
             item.stockBP = inventory.get("bazaar", {}).get(str(item.tId), [0, 0])[1]
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
             item_list.append(item)
-        items.append(('Sell', item_list))
+        items.append(("Sell", item_list))
 
         context = {
             "player": player,
-            'list': json.loads(player.bazaarList),
+            "list": json.loads(player.bazaarList),
             "bazaarcat": True,
             "allItemsOnMarket": items,
             "view": {"refreshType": True, "timer": True, "loopType": True},
-            "keyLevelRequired": 2
+            "keyLevelRequired": 2,
         }
         if error:
             context.update(error)
-        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
         return render(request, page, context)
 
     except Exception as e:
@@ -433,11 +399,11 @@ def details(request, itemId=168):
         if request.method == "POST":
             item = Item.objects.filter(tId=itemId).first()
 
-            context = {'item': item}
-            return render(request, 'bazaar/details.html', context)
+            context = {"item": item}
+            return render(request, "bazaar/details.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -447,7 +413,7 @@ def details(request, itemId=168):
 def prices(request):
     try:
         if request.method == "POST":
-            itemId = request.POST['item_id']
+            itemId = request.POST["item_id"]
             item = Item.objects.filter(tId=itemId).first()
 
             # create price histogram
@@ -471,11 +437,11 @@ def prices(request):
                 # convert timestamp to date
                 graph[i][0] = timestampToDate(int(t))
 
-            context = {'item': item, "graph": graph, "graphLength": graphLength}
-            return render(request, 'bazaar/prices.html', context)
+            context = {"item": item, "graph": graph, "graphLength": graphLength}
+            return render(request, "bazaar/prices.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -484,13 +450,13 @@ def prices(request):
 
 def update(request, itemId=168):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
             key = player.getKey()
 
             item = Item.objects.filter(tId=itemId).first()
             baz = item.update_bazaar(key=key, n=BazaarData.objects.first().nItems)
-            error = baz if 'apiError' in baz else False
+            error = baz if "apiError" in baz else False
 
             # get/update inventory
             inventory = player.getInventory()
@@ -500,13 +466,13 @@ def update(request, itemId=168):
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
 
-            context = {'player': player, 'list': json.loads(player.bazaarList), 'item': item, "view": {"timer": True}}
+            context = {"player": player, "list": json.loads(player.bazaarList), "item": item, "view": {"timer": True}}
             if error:
                 context.update(error)
             return render(request, "bazaar/item.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -515,18 +481,18 @@ def update(request, itemId=168):
 
 def delete(request, itemId):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
 
             item = Item.objects.filter(tId=itemId).first()
             item.lastUpdateTS = 0
             item.marketdata_set.all().delete()
             item.save()
 
-            context = {'item': item, "view": {"timer": True}}
+            context = {"item": item, "view": {"timer": True}}
             return render(request, "bazaar/item.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -535,7 +501,7 @@ def delete(request, itemId):
 
 def toggle(request, itemId):
     try:
-        if request.session.get('player') and request.method == "POST":
+        if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
             playerList = json.loads(player.bazaarList)
 
@@ -556,11 +522,11 @@ def toggle(request, itemId):
             item.stockD = inventory.get("display", {}).get(str(item.tId), [0, 0])[0]
             item.stock = item.stockI + item.stockB + item.stockD
 
-            context = {'player': player, 'item': item, 'list': json.loads(player.bazaarList), "view": {"timer": True}}
+            context = {"player": player, "item": item, "list": json.loads(player.bazaarList), "view": {"timer": True}}
             return render(request, "bazaar/item.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
@@ -573,15 +539,16 @@ def abroad(request):
         # build up filters list
         from bazaar.countries import countries as country_list
         from bazaar.countries import types as type_list
+
         country_list["all"] = {"name": "All", "n": 0}
         type_list["all"] = {"name": "All", "n": 0}
 
         # get player and page
         player = getPlayer(request.session.get("player", {}).get("tId", -1))
-        page = 'bazaar/content-reload.html' if request.method == 'POST' else "bazaar.html"
+        page = "bazaar/content-reload.html" if request.method == "POST" else "bazaar.html"
 
         # get filters
-        filters = request.session.get('stocks-filters', {"countries": "all", "types": ["all"]})
+        filters = request.session.get("stocks-filters", {"countries": "all", "types": ["all"]})
         if not isinstance(filters["types"], list):
             filters["types"] = ["all"]
 
@@ -610,7 +577,8 @@ def abroad(request):
         # old stocks
         old = tsnow() - 48 * 3600
         AbroadStocks.objects.filter(timestamp__lt=old).delete()
-        stocks = AbroadStocks.objects.filter(last=True)
+        cutoff = int((timezone.now() - timedelta(hours=48)).timestamp())
+        stocks = AbroadStocks.objects.filter(last=True).filter(Q(item__seenAbroad=True) | Q(item__lastSeenAbroad__gte=cutoff))
         bd = BazaarData.objects.first()
         if bd is None:
             clients = {}
@@ -628,14 +596,16 @@ def abroad(request):
             stock.profitperhour = round(30 * stock.profit / stock.get_country()["fly_time"])
             stock.update = tsnow() - stock.timestamp
 
-        context = {"player": player,
-                   "filters": filters,
-                   "country_list": country_list,
-                   "type_list": type_list,
-                   "stocks": stocks,
-                   "clients": sorted(clients.items(), key=lambda x: -x[1][0]),
-                   "bazaarcat": True,
-                   "view": {"abroad": True}}
+        context = {
+            "player": player,
+            "filters": filters,
+            "country_list": country_list,
+            "type_list": type_list,
+            "stocks": stocks,
+            "clients": sorted(clients.items(), key=lambda x: -x[1][0]),
+            "bazaarcat": True,
+            "view": {"abroad": True},
+        }
 
         return render(request, page, context)
 
@@ -647,14 +617,14 @@ def abroad(request):
 def abroadStocks(request):
     try:
         if request.method == "POST":
-            item_id = request.POST.get('item_id', False)
-            country_key = request.POST.get('country_key', False)
+            item_id = request.POST.get("item_id", False)
+            country_key = request.POST.get("country_key", False)
             old = tsnow() - 48 * 3600
             stocks = AbroadStocks.objects.filter(country_key=country_key, item__tId=item_id, timestamp__gt=old).order_by("-timestamp")
 
             if stocks is None:
-                context = {'item': None, "graph": []}
-                return render(request, 'bazaar/abroad/graph.html', context)
+                context = {"item": None, "graph": []}
+                return render(request, "bazaar/abroad/graph.html", context)
 
             # # get clients statistics
             # clients = dict({})
@@ -692,16 +662,12 @@ def abroadStocks(request):
 
             graph = [[timestampToDate(s.timestamp), s.quantity, s.cost] for s in stocks]
 
-            stock = stocks.first()
-            context = {'stock': stocks.first(),
-                       'graph': graph,
-                       'x': [timestampToDate(tsnow() - 48 * 3600),
-                             timestampToDate(tsnow() - 24 * 3600),
-                             timestampToDate(tsnow())]}
-            return render(request, 'bazaar/abroad/graph.html', context)
+            stocks.first()
+            context = {"stock": stocks.first(), "graph": graph, "x": [timestampToDate(tsnow() - 48 * 3600), timestampToDate(tsnow() - 24 * 3600), timestampToDate(tsnow())]}
+            return render(request, "bazaar/abroad/graph.html", context)
 
         else:
-            message = "You might want to log in." if request.method == "POST" else "You need to post. Don\'t try to be a smart ass."
+            message = "You might want to log in." if request.method == "POST" else "You need to post. Don't try to be a smart ass."
             return returnError(type=403, msg=message)
 
     except Exception as e:
