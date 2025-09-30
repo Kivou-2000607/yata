@@ -183,10 +183,6 @@ def importStocks(request):
         stocks = dict({})
         for item_id in distinct_items:
 
-            # ignore wrong output
-            if int(item_id) not in items_table[country_key]:
-                continue
-
             item = items.get(item_id, False)
             cost = 0
             quantity = 0
