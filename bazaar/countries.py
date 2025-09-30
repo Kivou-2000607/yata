@@ -16,6 +16,7 @@ types = {
     "Drug": {"name": "Drug"},
     "Flower": {"name": "Flower"},
     "Plushie": {"name": "Plushie"},
+    "Material": {"name": "Material"},
 }
 
 # brigde_countries = {
