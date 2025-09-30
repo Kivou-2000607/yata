@@ -52,6 +52,8 @@ class Item(models.Model):
     monthTendency = models.FloatField(default=0.0)
     monthTendencyA = models.FloatField(default=0.0)
     monthTendencyB = models.FloatField(default=0.0)
+    seenAbroad = models.BooleanField(default=False)
+    lastSeenAbroad = models.IntegerField(default=0)
 
     def __str__(self):
         return "[{}] {}".format(self.tId, self.tName)

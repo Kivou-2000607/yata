@@ -207,6 +207,9 @@ def importStocks(request):
                 AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
                 v["last"] = True
                 item.abroadstocks_set.create(**v)
+                item.seenAbroad = True
+                item.lastSeenAbroad = timestamp
+                item.save()
 
             # clear cloudflare cache
             # r = clear_cf_cache(["https://yata.yt/api/v1/travel/export/*"])
