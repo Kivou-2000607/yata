@@ -1,32 +1,28 @@
 # Copyright 2019 kivou.2000607@gmail.com
-# 
+#
 # This file is part of yata.
-# 
+#
 #     yata is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     any later version.
-# 
+#
 #     yata is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-# 
+#
 #     You should have received a copy of the GNU General Public License
 #     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
+import json
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.conf import settings
 
-import json
-import os
-
-from bazaar.models import Item
-from bazaar.models import BazaarData
-from yata.handy import apiCall
-from yata.handy import logdate
+from bazaar.models import BazaarData, Item
 from setup.functions import randomKey
+from yata.handy import apiCall, logdate
 
 
 class Command(BaseCommand):
@@ -41,7 +37,7 @@ class Command(BaseCommand):
 
         if items is None:
             print(f"[CRON {logdate()}] item is None")
-        elif 'apiError' in items:
+        elif "apiError" in items:
             print(f"[CRON {logdate()}] api error: {items['apiError']}")
         else:
 
@@ -83,7 +79,6 @@ class Command(BaseCommand):
             bd.lastScanTS = int(timezone.now().timestamp())
             bd.save()
 
-
         # delete bazaar info for custom items refreshed more than 24h ago
         items = Item.objects.filter(onMarket=False).filter(lastUpdateTS__lt=(int(timezone.now().timestamp()) - 86400))
         for item in items:
@@ -93,5 +88,10 @@ class Command(BaseCommand):
         bd.typeItem = json.dumps(typeItem)
         bd.itemType = json.dumps(itemType)
         bd.save()
+
+        # delete abroad stock that isnt the last entry
+        for item in Item.objects.all():
+            print(f"[CRON {logdate()}] Deleting old abroad stock for {item.tId} {item.tName}")
+            item.abroadstocks_set.filter(last=False).delete()
 
         print(f"[CRON {logdate()}] END")
