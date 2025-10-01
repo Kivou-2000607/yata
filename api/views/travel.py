@@ -207,7 +207,7 @@ def importStocks(request):
                 AbroadStocks.objects.filter(item=item, country_key=v["country_key"], last=True).update(last=False)
                 v["last"] = True
                 item.abroadstocks_set.create(**v)
-                if item["cost"] > 0 and item["quantity"] > 0:
+                if cost > 0 and quantity > 0:
                     item.seenAbroad = True
                     item.lastSeenAbroad = timestamp
                     item.save()
