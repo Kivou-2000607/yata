@@ -17,34 +17,22 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.shortcuts import render
-from django.shortcuts import reverse
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from django.http import JsonResponse
 from django.http import HttpResponseRedirect
-from django.utils import timezone
-from django.conf import settings
-from django.core import serializers
-from django.forms.models import model_to_dict
-from django.core.paginator import Paginator
-
-import json
-import os
-import traceback
-import re
-
-from player.models import *
-from player.functions import updatePlayer
-from faction.models import Faction
-from yata.handy import *
-from yata.bans import user_bans
 
 # yata/views.py
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, reverse
+from django.utils import timezone
+
+from faction.models import Faction
+from player.functions import updatePlayer
+from player.models import Player
+from yata.bans import user_bans
+from yata.handy import apiCall, returnError, tsnow
+
 
 def bot_redirect(request):
     return redirect("https://bot.yata.yt", permanent=True)
+
 
 def index(request):
     try:
@@ -107,16 +95,14 @@ def login(request):
             print("[view.yata.login] API call with key: {}".format(p.get("key")))
             try:
                 # user = apiCall('user', '', 'profile,bars', p.get('key'))
-                user = apiCall("user", "", "profile", p.get("key"))
+                user = apiCall("user", "", "basic", p.get("key"))
                 if "apiError" in user:
                     print("[view.yata.login] API error: {}".format(user))
                     context = user
                     context["login"] = True
                     return render(request, "header.html", context)
-                elif user["player_id"] in user_bans:
-                    context = {
-                        "apiError": f'[YATA User ban] {user_bans[user["player_id"]]}'
-                    }
+                elif user["profile"]["id"] in user_bans:
+                    context = {"apiError": f'[YATA User ban] {user_bans[user["profile"]["id"]]}'}
                     context["login"] = True
                     return render(request, "header.html", context)
 
@@ -125,13 +111,13 @@ def login(request):
                 return render(request, "header.html", context)
 
             # create/update player in the database
-            player = Player.objects.filter(tId=user.get("player_id")).first()
+            player = Player.objects.filter(tId=user.get("profile").get("id")).first()
             print("[view.yata.login] get player from database: {}".format(player))
 
             new_player = False
             if player is None:
                 print("[view.yata.login] create new player")
-                player = Player.objects.create(tId=int(user.get("player_id")))
+                player = Player.objects.create(tId=int(user.get("profile").get("id")))
                 new_player = True
 
             print("[view.yata.login] update player")
@@ -152,9 +138,7 @@ def login(request):
 
         # if not post
         else:
-            return returnError(
-                type=403, msg="You need to post. Don't try to be a smart ass."
-            )
+            return returnError(type=403, msg="You need to post. Don't try to be a smart ass.")
             # return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:

@@ -61,19 +61,7 @@ def filedate():
     return f"{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}"
 
 
-def apiCall(
-    section,
-    id,
-    selections,
-    key,
-    kv=dict(),
-    sub=None,
-    verbose=False,
-    cache_response=False,
-    cache_private=True,
-    v2=False
-):
-    import requests
+def apiCall(section, id, selections, key, kv=dict(), sub=None, verbose=False, cache_response=False, cache_private=True, v2=False):
 
     key = str(key)
     # DEBUG live chain
@@ -118,29 +106,27 @@ def apiCall(
         "racing",
         "networth",
         "other",
-        "criminal_offenses"
+        "criminal_offenses",
     ]
-    
+
     if "personalstats" in selections.split(",") and kv.get("cat", None) not in pscat:
         kv["cat"] = "all"
 
-    
-    base_url = "https://api.torn.com/v2" if v2 else "https://api.torn.com"
+    base_url = "https://api.torn.com/v2"
 
     url = f"{base_url}/{section}/{id}"
-
 
     keys_values = {
         "selections": selections,
         "key": key,
         "comment": config("API_HOST", default="-"),
     }
-    
+
     for k, v in kv.items():
         keys_values[k] = v
 
     url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
-    
+
     if verbose:
         print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
 
@@ -236,7 +222,7 @@ def timestampToDate(timestamp, fmt=False):
     d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
     if fmt is False:
         return d
-    elif type(fmt) == bool and fmt:
+    elif type(fmt) == bool and fmt:  # noqa
         return d.strftime("%Y/%m/%d %H:%M TCT")
     else:
         return d.strftime(fmt)
