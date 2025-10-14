@@ -164,7 +164,7 @@ class Player(models.Model):
             return
 
         # get api Key Info
-        key_data = apiCall("key", "", "info", key.value)
+        key_data = apiCall(section="key", id=None, subsection="info", selections="", key=key.value)
 
         if "apiError" in key_data:
             # 0 => Unknown error : Unhandled error, should not occur.
