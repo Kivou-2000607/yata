@@ -61,69 +61,25 @@ def filedate():
     return f"{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}"
 
 
-def apiCall(section, id, selections, key, kv=dict(), sub=None, verbose=False, cache_response=False, cache_private=True, v2=False):
+def apiCall(section, id=None, subsection=None, selections=dict(), key=None, sub=None, verbose=False, cache_response=False, cache_private=True):
 
     key = str(key)
-    # DEBUG live chain
-    # if selections in ["chain", "chain,timestamp"] and section == "faction":
-    #     from django.utils import timezone
-    #     print("[yata.function.apiCall] DEBUG chain/faction")
-    #     chain = dict({"timestamp": int(timezone.now().timestamp())-4,
-    #                   "chain": {"current": 76,
-    #                             "timeout": 8,
-    #                             "max": 100,
-    #                             "modifier": 0.75,
-    #                             "cooldown": 0,
-    #                             "start": 1555211268
-    #                             }})
-    #     if sub is None:
-    #         return chain
-    #     else:
-    #         return chain.get(sub)
-
-    # DEBUG API error
-    # return dict({"apiError": "API error code 42: debug error."})
-
-    # check personalstats modification
-    pscat = [
-        "all",
-        "popular",
-        "attacking",
-        "battle_stats",
-        "jobs",
-        "trading",
-        "jail",
-        "hospital",
-        "finishing_hits",
-        "communication",
-        "crimes",
-        "bounties",
-        "investments",
-        "items",
-        "travel",
-        "drugs",
-        "missions",
-        "racing",
-        "networth",
-        "other",
-        "criminal_offenses",
-    ]
-
-    if "personalstats" in selections.split(",") and kv.get("cat", None) not in pscat:
-        kv["cat"] = "all"
 
     base_url = "https://api.torn.com/v2"
 
-    url = f"{base_url}/{section}/{id}"
+    url = f"{base_url}/{section}"
+    if id is not None:
+        url = url + f"/{id}"
+    if subsection is not None:
+        url = url + f"/{subsection}"
 
     keys_values = {
-        "selections": selections,
         "key": key,
-        "comment": config("API_HOST", default="-"),
+        "comment": config("API_HOST", default="YATA"),
     }
-
-    for k, v in kv.items():
-        keys_values[k] = v
+    if len(selections) > 0:
+        for k, v in selections.items():
+            keys_values[k] = v
 
     url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
 
@@ -132,7 +88,7 @@ def apiCall(section, id, selections, key, kv=dict(), sub=None, verbose=False, ca
 
     if cache_response:
         cache_key = f"{section}-{id}-{selections}"
-        for k, v in kv.items():
+        for k, v in selections.items():
             cache_key += f"-{k}{v}"
         if cache_private:
             cache_key += f"-{key}"
