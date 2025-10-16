@@ -19,13 +19,14 @@ This file is part of yata.
 
 from django.core.management.base import BaseCommand
 
-from company.models import *
+from company.models import CompanyDescription, Position
 from setup.functions import randomKey
 from yata.handy import apiCall
 
+
 class Command(BaseCommand):
     def handle(self, **options):
-        companies = apiCall("torn", "", "companies", randomKey())
+        companies = apiCall(section="torn", id=None, subsection="companies", key=randomKey())
         # print(companies)
         for k, v in companies["companies"].items():
             positions = v["positions"]
@@ -47,8 +48,17 @@ class Command(BaseCommand):
                 position, create = company.position_set.update_or_create(name=k1, defaults=v1)
                 print("\t", position, create)
             # create unassigned
-            k1 = 'Unassigned'
-            v1 = {'man_required': 0, 'int_required': 0, 'end_required': 0, 'man_gain': 0, 'int_gain': 0, 'end_gain': 0, 'special_ability': 'None', 'description': 'This position is tasked with the heavy duties of ball scratching and looking busy whilst being utterly unproductive.'}
+            k1 = "Unassigned"
+            v1 = {
+                "man_required": 0,
+                "int_required": 0,
+                "end_required": 0,
+                "man_gain": 0,
+                "int_gain": 0,
+                "end_gain": 0,
+                "special_ability": "None",
+                "description": "This position is tasked with the heavy duties of ball scratching and looking busy whilst being utterly unproductive.",
+            }
             position, create = company.position_set.update_or_create(name=k1, defaults=v1)
             print("\t", position, create)
 
@@ -65,7 +75,6 @@ class Command(BaseCommand):
             company.special_set.exclude(name__in=specials).delete()
             company.stock_set.exclude(name__in=stocks).delete()
             company.position_set.exclude(name__in=positions).delete()
-
 
         # create ABV
         for position in Position.objects.all():
