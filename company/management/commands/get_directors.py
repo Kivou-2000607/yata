@@ -17,13 +17,13 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import json
+
 from django.core.management.base import BaseCommand
 
 from player.models import Player
-from company.models import *
-from setup.functions import randomKey
 from yata.handy import apiCall
-import json
+
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -34,8 +34,8 @@ class Command(BaseCommand):
         for i, director in enumerate(directors):
             key = director.getKey()
             if key:
+                company = apiCall(section="company", id=None, subsection=None, selections={"selections": "profile,detailed"}, key=key)
 
-                company = apiCall("company", "", "profile,detailed", key)
                 if "apiError" in company:
                     print(i + 1, directors.count(), company)
                     continue
