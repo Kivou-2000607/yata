@@ -42,34 +42,33 @@ def updatePlayer(player, i=None, n=None):
     player.updateKeyLevel()
 
     if player.key_level == 1:
-        selection = ["personalstats", "profile", "discord"]
+        selection = ["job,", "faction,", "personalstats,", "profile,", "discord"]
     elif player.key_level == 2:
-        selection = ["personalstats", "crimes", "education", "workstats", "perks", "gym", "merits", "profile", "medals", "honors", "icons", "bars", "discord", "weaponexp"]
+        selection = ["job,", "faction,", "personalstats,", "education,", "workstats,", "perks,", "gym,", "merits,", "profile,", "medals,", "honors,", "icons,", "bars,", "discord,"]
     elif player.key_level >= 3:
         selection = [
-            "personalstats",
-            "crimes",
-            "education",
-            "battlestats",
-            "workstats",
-            "perks",
-            "gym",
-            "networth",
-            "merits",
-            "profile",
-            "medals",
-            "honors",
-            "icons",
-            "bars",
-            "discord",
-            "weaponexp",
+            "job,",
+            "faction,",
+            "personalstats,",
+            "education,",
+            "battlestats,",
+            "workstats,",
+            "perks,",
+            "gym,",
+            "networth,",
+            "merits,",
+            "profile,",
+            "medals,",
+            "honors,",
+            "icons,",
+            "bars,",
+            "discord,",
             "hof",
         ]
     else:
         selection = []
-    # TODO: update to v2 api call
-    user = apiCall("user", "", "".join(selection), player.getKey(), kv={"cat": "all"}, verbose=True)
 
+    user = apiCall(section="user", id=None, subsection="", selections={"selections": "".join(selection), "cat": "all"}, key=player.getKey(), verbose=True)
     # set active
     player.active = int(timezone.now().timestamp()) - player.lastActionTS < 60 * 60 * 24 * 31
 
@@ -84,7 +83,7 @@ def updatePlayer(player, i=None, n=None):
         player.key_set.all().delete()
 
     # discrod id
-    dId = user.get("discord", {"discordID": ""})["discordID"]
+    dId = user.get("discord").get("discordID")
     player.dId = 0 if dId in [""] else dId
 
     # skip if not yata active and no valid key
@@ -111,9 +110,9 @@ def updatePlayer(player, i=None, n=None):
 
     # update basic info (and chain)
     # print("[player.functions.updatePlayer] update basic info")
-    player.name = user.get("name", "?")
-    player.factionId = user.get("faction", dict({})).get("faction_id", 0)
-    player.factionNa = user.get("faction", dict({})).get("faction_name", "N/A")
+    player.name = user.get("profile", {}).get("name")
+    player.factionId = user.get("faction", {}).get("id", 0)
+    player.factionNa = user.get("faction", {}).get("name", "N/A")
 
     # update chain info
     # print("[player.functions.updatePlayer] update chain info")
@@ -122,8 +121,9 @@ def updatePlayer(player, i=None, n=None):
         if faction is None:
             faction = Faction.objects.create(tId=player.factionId)
         faction.name = player.factionNa
-        # TODO: update to v2
-        if "money" in apiCall("faction", "", "currency", player.getKey()):
+
+        r = apiCall(section="faction", id=None, subsection="balance", key=player.getKey())
+        if "money" in "money" in r["balance"]["faction"]:
             player.factionAA = True
             player.chainInfo = "{}".format(player.factionNa)
         else:
@@ -140,10 +140,10 @@ def updatePlayer(player, i=None, n=None):
 
     # update company info
     # print("[player.functions.updatePlayer] update company info")
-    player.companyId = user.get("job", {}).get("company_id", 0)
+    player.companyId = user.get("job", {}).get("id", 0)
     if player.companyId:
-        player.companyTy = user.get("job", {}).get("company_type", 0)
-        player.companyNa = user.get("job", {}).get("company_name", "-")
+        player.companyTy = user.get("job", {}).get("type_id", 0)
+        player.companyNa = user.get("job", {}).get("name", "-")
         player.companyDi = True if user.get("job", {}).get("position") == "Director" else False
         company_description = CompanyDescription.objects.filter(tId=player.companyTy).first()
         defaults = {"name": player.companyNa}
