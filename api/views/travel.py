@@ -83,7 +83,7 @@ def exportStocks(request):
         for k in countries:
             c_stocks = stocks.filter(country_key=k)
             if len(c_stocks):
-                countries[k] = {"update": c_stocks.first().timestamp, "stocks": [s.payloadLight() for s in c_stocks]}
+                countries[k] = {"update": c_stocks.order_by('-timestamp').first().timestamp, "stocks": [s.payloadLight() for s in c_stocks]}
             else:
                 countries[k] = {"update": 0, "stocks": []}
 
