@@ -47,7 +47,7 @@ items_table = {
     "jap": [197, 198, 200, 203, 204, 205, 206, 233, 234, 235, 236, 237, 238, 239, 277, 278, 279, 294, 334, 395, 427, 429, 433, 434, 437, 1249, 1333],
     "chi": [197, 199, 200, 201, 204, 244, 245, 246, 247, 248, 249, 250, 251, 274, 275, 276, 326, 335, 400, 1462],
     "uae": [381, 382, 383, 384, 385, 386, 387, 388, 412, 414, 440, 1264],
-    "sou": [4, 199, 200, 201, 203, 206, 225, 226, 227, 228, 280, 281, 282, 332, 406, 651, 652, 653, 654],
+    "sou": [4, 199, 200, 201, 203, 206, 225, 226, 227, 228, 280, 281, 282, 332, 358, 406, 651, 652, 653, 654],
 }
 
 
@@ -83,7 +83,7 @@ def exportStocks(request):
         for k in countries:
             c_stocks = stocks.filter(country_key=k)
             if len(c_stocks):
-                countries[k] = {"update": c_stocks.order_by('-timestamp').first().timestamp, "stocks": [s.payloadLight() for s in c_stocks]}
+                countries[k] = {"update": c_stocks.order_by("-timestamp").first().timestamp, "stocks": [s.payloadLight() for s in c_stocks]}
             else:
                 countries[k] = {"update": 0, "stocks": []}
 
