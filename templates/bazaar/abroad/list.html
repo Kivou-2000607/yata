@@ -22,7 +22,19 @@ This file is part of yata.
 {% load mathfilters %}
 {% load app_filters %}
 {% load cache %}
+<style >
+    .profit-help{
+  display:inline-block;
+  margin-left:6px;
+  font-size:12px;
+  line-height:1;
+  cursor:help;
+  color:#111;              /* make it visible */
+  opacity:.8;
+}
+.profit-help:hover{ opacity:1; }
 
+</style>
 <script>
     $(document).ready(function() {
         $("#bazaar-abroad-stocks").tablesorter({
@@ -103,8 +115,11 @@ This file is part of yata.
             <th class="c">Type</th>
             <th class="d">Stock</th>
             <th class="e">Price</th>
-            <th class="f">Profit</th>
-            <th class="g">Profit / hour</th>
+            <th class="f">
+  Profit
+  <span class="profit-help" title="Includes 5% item market fee">ⓘ</span>
+</th>
+            <th class="g">Profit / hour <span class="profit-help" title="Includes 5% item market fee">ⓘ</span></th>
             <th class="h">Weekly tendency</th>
             <th class="i">Update</th>
         </tr>

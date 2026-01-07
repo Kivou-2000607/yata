@@ -592,7 +592,7 @@ def abroad(request):
 
         # add fields
         for stock in stocks:
-            stock.profit = stock.item.tMarketValue - stock.cost
+            stock.profit = stock.item.tMarketValue * 0.95 - stock.cost
             stock.profitperhour = round(30 * stock.profit / stock.get_country()["fly_time"])
             stock.update = tsnow() - stock.timestamp
 
