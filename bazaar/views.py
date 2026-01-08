@@ -578,7 +578,7 @@ def abroad(request):
         old = tsnow() - 48 * 3600
         AbroadStocks.objects.filter(timestamp__lt=old).delete()
         cutoff = int((timezone.now() - timedelta(hours=48)).timestamp())
-        stocks = AbroadStocks.objects.filter(    last=True)
+        stocks = AbroadStocks.objects.select_related("item").filter(last=True)
         bd = BazaarData.objects.first()
         if bd is None:
             clients = {}
