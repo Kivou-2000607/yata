@@ -92,6 +92,22 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 ROOT_URLCONF = "yata.urls"
 
 if DEBUG:
+    INSTALLED_APPS += ["nplusone.ext.django"]
+    MIDDLEWARE = ["nplusone.ext.django.NPlusOneMiddleware", *MIDDLEWARE]
+    NPLUSONE_RAISE = True 
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {"class": "logging.StreamHandler"},
+        },
+        "loggers": {
+            "nplusone": {
+                "handlers": ["console"],
+                "level": "WARN",
+            },
+        },
+    }
     TEMPLATES = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
