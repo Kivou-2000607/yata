@@ -94,7 +94,7 @@ ROOT_URLCONF = "yata.urls"
 if DEBUG:
     INSTALLED_APPS += ["nplusone.ext.django"]
     MIDDLEWARE = ["nplusone.ext.django.NPlusOneMiddleware", *MIDDLEWARE]
-    NPLUSONE_RAISE = True 
+    NPLUSONE_RAISE = False
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
