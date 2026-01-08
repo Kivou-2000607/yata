@@ -99,12 +99,78 @@ def updateAttacks(player, full=False):
 
 
 def getTargets(player):
-    targets = dict({})
+    from target.models import Target, ATTACK_LOST
+    
+    targets = {}
 
-    # get Target Info of the player
-    for targetInfo in player.targetinfo_set.all():
-        _, target_id, target = targetInfo.getTarget()
-        targets[target_id] = target
+    # Load all TargetInfo rows once
+    tis = list(
+        player.targetinfo_set.all().only(
+            "target_id",
+            "last_attack_attacker",
+            "last_attack_timestamp",
+            "note",
+            "color",
+            "result",
+            "fair_fight",
+            "flat_respect",
+            "base_respect",
+        )
+    )
+
+    target_ids = [ti.target_id for ti in tis]
+    if not target_ids:
+        return targets
+
+    # Fetch all Targets in one query
+    existing = Target.objects.filter(target_id__in=target_ids)
+    targets_by_tid = {t.target_id: t for t in existing}
+
+    # Bulk create any missing Targets (avoid N get_or_create calls)
+    missing_ids = [tid for tid in target_ids if tid not in targets_by_tid]
+    if missing_ids:
+        Target.objects.bulk_create([Target(target_id=tid) for tid in missing_ids], ignore_conflicts=True)
+        # Re-fetch to fill dict
+        for t in Target.objects.filter(target_id__in=missing_ids):
+            targets_by_tid[t.target_id] = t
+
+    now = tsnow()
+
+    # Build target_dic without hitting DB
+    for ti in tis:
+        t = targets_by_tid.get(ti.target_id)
+        if not t:
+            continue
+
+        targets[ti.target_id] = {
+            # global target information
+            "name": t.name,
+            "life_current": t.life_current,
+            "life_maximum": t.life_maximum,
+            "status_description": t.customDescription(),
+            "status_details": t.status_details,
+            "status_color": t.status_color,
+            "status_state": t.status_state,
+            "status_until": t.status_until,
+            "level": t.level,
+            "last_action_relative": t.last_action_relative,
+            "last_action_timestamp": t.last_action_timestamp,
+            "last_action_status": t.last_action_status,
+            "update_timestamp": min(t.update_timestamp, now),
+
+            # player target information (from TargetInfo)
+            "last_attack_attacker": ti.last_attack_attacker,
+            "last_attack_timestamp": ti.last_attack_timestamp,
+            "note": ti.note,
+            "color": ti.color,
+            "result": ti.result,
+            "fair_fight": ti.fair_fight,
+            "flat_respect": ti.flat_respect,
+            "base_respect": ti.base_respect,
+
+            # additional fields for rendering
+            "win": 0 if ti.result in ATTACK_LOST else 1,
+        }
 
     return targets
 

@@ -38,34 +38,29 @@ from yata.handy import getFaction, getPlayer, returnError
 
 def index(request):
     try:
-        if request.session.get("player"):
-            # if cache.get('disable-status', False):
-            #     return returnError(
-            #         type=503,
-            #         msg="The server is currently overloaded. This section has been automatically disabled in order to insure a normal functionning of the other features of the website.")
-
-            player = getPlayer(request.session["player"].get("tId"))
-
-            targets = getTargets(player)
-
-            # get faction
-            faction = Faction.objects.filter(tId=player.factionId).first()
-            factionTargets = [] if faction is None else faction.getTargetsId()
-
-            player.targetInfo = len(targets)
-            player.save()
-            context = {
-                "player": player,
-                "targetcat": True,
-                "factionTargets": factionTargets,
-                "targets": targets,
-                "ts": int(time.time()),
-                "view": {"targets": True},
-            }
-            return render(request, "target.html", context)
-
-        else:
+        if not request.session.get("player"):
             return returnError(type=403, msg="You might want to log in.")
+
+        player = getPlayer(request.session["player"].get("tId"))
+        targets = getTargets(player)
+
+        faction = Faction.objects.filter(tId=player.factionId).only("id", "tId").first()
+        factionTargets = [] if faction is None else faction.getTargetsId()
+
+        new_val = len(targets)
+        if player.targetInfo != new_val:
+            player.targetInfo = new_val
+            player.save(update_fields=["targetInfo"])
+
+        context = {
+            "player": player,
+            "targetcat": True,
+            "factionTargets": factionTargets,
+            "targets": targets,
+            "ts": int(time.time()),
+            "view": {"targets": True},
+        }
+        return render(request, "target.html", context)
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
