@@ -61,37 +61,42 @@ def filedate():
     return f"{now.year}{now.month:02d}{now.day:02d}-{now.hour:02d}{now.minute:02d}"
 
 
+def timestampToDate(timestamp, fmt=False):
+    import datetime
+    import pytz
+
+    d = datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+    if fmt is False:
+        return d
+    elif type(fmt) == bool and fmt:
+        return d.strftime("%Y/%m/%d %H:%M TCT")
+    else:
+        return d.strftime(fmt)
+
+
 def apiCall(
     section,
-    id,
-    selections,
-    key,
+    id = None,
+    selections = None,
+    key=None,
     kv=dict(),
     sub=None,
     verbose=False,
     cache_response=False,
     cache_private=True,
-    v2=False
+    v2=False,
 ):
     import requests
 
+    # avoid mutating caller dict default
+    kv = dict(kv) if kv is not None else {}
+
     key = str(key)
-    # DEBUG live chain
+
+    # DEBUG live chain (kept for potential debugging)
     # if selections in ["chain", "chain,timestamp"] and section == "faction":
     #     from django.utils import timezone
     #     print("[yata.function.apiCall] DEBUG chain/faction")
-    #     chain = dict({"timestamp": int(timezone.now().timestamp())-4,
-    #                   "chain": {"current": 76,
-    #                             "timeout": 8,
-    #                             "max": 100,
-    #                             "modifier": 0.75,
-    #                             "cooldown": 0,
-    #                             "start": 1555211268
-    #                             }})
-    #     if sub is None:
-    #         return chain
-    #     else:
-    #         return chain.get(sub)
 
     # DEBUG API error
     # return dict({"apiError": "API error code 42: debug error."})
@@ -118,32 +123,39 @@ def apiCall(
         "racing",
         "networth",
         "other",
-        "criminal_offenses"
+        "criminal_offenses",
     ]
-    
-    if "personalstats" in selections.split(",") and kv.get("cat", None) not in pscat:
-        kv["cat"] = "all"
 
-    
+    if selections:
+        if "personalstats" in str(selections).split(",") and kv.get("cat", None) not in pscat:
+            kv["cat"] = "all"
+
     base_url = "https://api.torn.com/v2" if v2 else "https://api.torn.com"
 
-    url = f"{base_url}/{section}/{id}"
+    # allow id to be empty/None for v2 endpoints that don't require an id
+    if id in (None, ""):
+        url = f"{base_url}/{section}"
+    else:
+        url = f"{base_url}/{section}/{id}"
 
+    # build query parameters, omit empty selections
+    keys_values = {"key": key, "comment": config("API_HOST", default="-")}
+    if selections:
+        keys_values["selections"] = selections
 
-    keys_values = {
-        "selections": selections,
-        "key": key,
-        "comment": config("API_HOST", default="-"),
-    }
-    
     for k, v in kv.items():
         keys_values[k] = v
 
-    url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
-    
-    if verbose:
-        print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
+    if len(keys_values):
+        url += "?" + "&".join([f"{k}={v}" for k, v in keys_values.items()])
 
+    if verbose:
+        try:
+            print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
+        except Exception:
+            print("[yata.function.apiCall] {}".format(url))
+
+    cache_key = None
     if cache_response:
         cache_key = f"{section}-{id}-{selections}"
         for k, v in kv.items():
@@ -154,7 +166,7 @@ def apiCall(
         # try to get cache
         r = cache.get(cache_key)
         if verbose:
-            print(f'[yata.function.apiCall] cached: {"yes" if r else "no"} ({cache_key})')
+            print(f"[yata.function.apiCall] cached: {'yes' if r else 'no'} ({cache_key})")
         if r is not None:
             return r
 
@@ -169,27 +181,13 @@ def apiCall(
         rjson = r.json()
     except ValueError as e:
         print("[yata.function.apiCall] API deserialization  error {}".format(e))
-        err = dict(
-            {
-                "error": {
-                    "code": 0,
-                    "error": "deserialization error... API going crazy #blameched",
-                }
-            }
-        )
+        err = {"error": {"code": 0, "error": "deserialization error... API going crazy #blameched"}}
 
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError as e:
         print("[yata.function.apiCall] API HTTPError {}".format(e))
-        err = dict(
-            {
-                "error": {
-                    "code": r.status_code,
-                    "error": "{} #blameched".format(r.reason),
-                }
-            }
-        )
+        err = {"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}}
 
     if not err:
         if "error" in rjson:  # standard api error
@@ -197,38 +195,19 @@ def apiCall(
         else:
             if sub is not None:
                 if sub in rjson:
-                    if cache_response:
+                    if cache_response and cache_key:
                         print(f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}")
                         cache.set(cache_key, rjson[sub], cache_response)
                     return rjson[sub]
                 else:  # key not found
-                    err = dict(
-                        {
-                            "error": {
-                                "code": 0,
-                                "error": "key not found... something went wrong...",
-                            }
-                        }
-                    )
+                    err = {"error": {"code": 0, "error": "key not found... something went wrong..."}}
             else:
-
-                if cache_response:
+                if cache_response and cache_key:
                     print(f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}")
                     cache.set(cache_key, rjson, cache_response)
                 return rjson
 
     return apiCallError(err)
-
-
-def apiCallError(err):
-    return {
-        "apiError": "API error {}: {}.".format(err["error"]["code"], err["error"]["error"]),
-        "apiErrorString": err["error"]["error"],
-        "apiErrorCode": int(err["error"]["code"]),
-    }
-
-
-def timestampToDate(timestamp, fmt=False):
     import datetime
 
     import pytz
