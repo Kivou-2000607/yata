@@ -114,25 +114,7 @@ This file is part of yata.
         </div>
       </div>
     {% endif %}
-    {% if faction.useOC2 %}
-      <div class="col-md-6 my-2">
-        <div class="input-group">
-          <div class="input-group-text flex-grow-1 valid" id="link-poster">OC2.0 is enabled for this faction</div>
-          <button type="submit" class="btn btn-outline" title="Disable OC2.0">
-            <a id="faction-aa-toggle-oc2" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-on"></i></a>
-          </button>
-        </div>
-      </div>
-    {% else %}
-      <div class="col-md-6 my-2">
-        <div class="input-group">
-          <div class="input-group-text flex-grow-1 error" id="link-poster">OC2.0 is disabled for this faction</div>
-          <button type="submit" class="btn btn-outline" title="Enable OC2.0">
-            <a id="faction-aa-toggle-oc2" href="{% url 'faction:configurationsPoster' %}"><i class="fas fa-toggle-off"></i></a>
-          </button>
-        </div>
-      </div>
-    {% endif %}
+
   </div>
 {% else %}
   <div class="row mx-0">
@@ -148,6 +130,7 @@ This file is part of yata.
 {% endif %}
 
 {% if faction.poster %}
+
 
 <h3>Links</h3>
 <div class="row mx-0 mb-2">

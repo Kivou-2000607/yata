@@ -1,0 +1,19 @@
+<p>Enable or disable OC2.0 here</p>
+<h3>OC2.0</h3>
+<div class="row mx-0 mb-2">
+  <div class="col-md-6 my-2">
+    <div class="input-group">
+      {% if faction.useOC2 %}
+        <div class="input-group-text flex-grow-1 valid">OC2.0 is enabled for this faction</div>
+        <button type="submit" class="btn btn-outline" title="Disable OC2.0">
+          <a id="faction-aa-toggle-oc2" href="{% url 'faction:toggleOC2' %}"><i class="fas fa-toggle-on"></i></a>
+        </button>
+      {% else %}
+        <div class="input-group-text flex-grow-1 error">OC2.0 is disabled for this faction</div>
+        <button type="submit" class="btn btn-outline" title="Enable OC2.0">
+          <a id="faction-aa-toggle-oc2" href="{% url 'faction:toggleOC2' %}"><i class="fas fa-toggle-off"></i></a>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</div>

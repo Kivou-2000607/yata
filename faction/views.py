@@ -529,6 +529,46 @@ def configurationsThreshold(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+def toggleOC2(request):
+    try:
+        if request.session.get("player") and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(
+                    request,
+                    "yata/error.html",
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
+                )
+
+            # toggle OC2 opt-in for the faction
+            faction.useOC2 = not faction.useOC2
+            faction.save()
+
+            context = {"faction": faction}
+            return render(request, "faction/aa/oc2.html", context)
+
+        else:
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
 
 def configurationsPoster(request):
     try:
@@ -567,10 +607,6 @@ def configurationsPoster(request):
 
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
-
-            elif request.POST.get("type", False) == "oc2":
-                # toggle OC2 opt-in for the faction
-                faction.useOC2 = not faction.useOC2
 
             elif request.POST.get("type", False) == "current":
                 faction.posterPerksCurrent = not faction.posterPerksCurrent
