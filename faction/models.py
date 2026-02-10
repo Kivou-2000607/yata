@@ -187,6 +187,8 @@ class Faction(models.Model):
     posterPerksWar = models.BooleanField(default=False)
     posterPerksPeace = models.BooleanField(default=False)
     posterPerksCurrent = models.BooleanField(default=True)
+    # Opt-in for Torn OC2.0 (factions can enable to use new OC format)
+    useOC2 = models.BooleanField(default=False)
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
     posterGymImg = models.ImageField(blank=True)

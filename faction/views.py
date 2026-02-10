@@ -568,6 +568,10 @@ def configurationsPoster(request):
             elif request.POST.get("type", False) == "hold":
                 faction.posterHold = not faction.posterHold
 
+            elif request.POST.get("type", False) == "oc2":
+                # toggle OC2 opt-in for the faction
+                faction.useOC2 = not faction.useOC2
+
             elif request.POST.get("type", False) == "current":
                 faction.posterPerksCurrent = not faction.posterPerksCurrent
             elif request.POST.get("type", False) == "peace":
