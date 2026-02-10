@@ -555,6 +555,12 @@ def toggleOC2(request):
             faction.useOC2 = not faction.useOC2
             faction.save()
 
+            # update cached faction so future reads don't overwrite this change
+            try:
+                cache.set(f"faction_by_id_{faction.tId}", faction, 3600)
+            except Exception:
+                pass
+
             context = {"faction": faction}
             return render(request, "faction/aa/oc2.html", context)
 
@@ -4667,7 +4673,7 @@ def oc(request):
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             faction = getFaction(player.factionId)
-
+            
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
@@ -4679,6 +4685,10 @@ def oc(request):
                         "errorMessage": f"Faction {player.factionId} not found in the database."
                     },
                 )
+
+            # Redirect to OC2 view if faction has opted in
+            if faction.useOC2:
+                return redirect("faction:ocv2")
 
             crimes, error, message = faction.updateCrimes()
 
@@ -4825,6 +4835,46 @@ def oc(request):
                             **message
                         )
                     )
+
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def ocv2(request):
+    try:
+        if request.session.get("player"):
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+            
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            if faction is None:
+                return render(
+                    request,
+                    "yata/error.html",
+                    {
+                        "errorMessage": f"Faction {player.factionId} not found in the database."
+                    },
+                )
+
+            context = {
+                "player": player,
+                "factioncat": True,
+                "faction": faction,
+                "view": {"ocv2": True},
+            }
 
             page = (
                 "faction/content-reload.html"
