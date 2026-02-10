@@ -144,6 +144,11 @@ This file is part of yata.
     {% include "faction/tutorials/oc.html" %}
 {% endif %}
 
+{# organized crimes v2 #}
+{% if view.ocv2 %}
+    {% include "faction/ocv2/index.html" %}
+{% endif %}
+
 {# spies #}
 {% if view.spies %}
     {% include "faction/spies/index.html" %}
