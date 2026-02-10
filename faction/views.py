@@ -4688,6 +4688,16 @@ def oc(request):
 
             # Redirect to OC2 view if faction has opted in
             if faction.useOC2:
+             
+                if request.method == "POST":
+                    context = {
+                        "player": player,
+                        "factioncat": True,
+                        "faction": faction,
+                        "view": {"ocv2": True},
+                    }
+                    return render(request, "faction/content-reload.html", context)
+               
                 return redirect("faction:ocv2")
 
             crimes, error, message = faction.updateCrimes()

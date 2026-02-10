@@ -145,7 +145,7 @@ This file is part of yata.
 {% endif %}
 
 {# organized crimes v2 #}
-{% if view.ocv2 %}
+{% if view.ocv2 and not view.oc %}
     {% include "faction/ocv2/index.html" %}
 {% endif %}
 
