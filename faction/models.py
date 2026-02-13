@@ -369,16 +369,16 @@ class Faction(models.Model):
         print("updateCrimesv2")
         now = tsnow()
         if not force and (now - self.crimesUpda) < 3600:
-            
-            return self.crimesv2_set.all(),False, False
-        
+
+            return self.crimesv2_set.order_by('status', '-created_at'), False, False
+
         key = self.getKey()
         if key is None:
             msg = "{} no key to update news".format(self)
             self.nKey = 0
             self.save()
-            
-            return self.crimesv2_set.all(), True, "No keys to update faction crimes"
+
+            return self.crimesv2_set.order_by('status', '-created_at'), True, "No keys to update faction crimes"
 
         crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True, kv={"sort": "DESC"})
         if "apiError" in crimesAPI:
@@ -386,21 +386,21 @@ class Faction(models.Model):
             if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
-                
-                return self.crimesv2_set.all(), True, msg
+
+                return self.crimesv2_set.order_by('status', '-created_at'), True, msg
             else:
                 key.reason = msg
                 key.lastPulled = crimesAPI.get("timestamp", 0)
                 key.save()
                 print("{} {}".format(self, msg))
-            
-            return self.crimesv2_set.all(), True, msg
+
+            return self.crimesv2_set.order_by('status', '-created_at'), True, msg
 
         key.lastPulled = tsnow()
         key.reason = "Update crimes list"
         key.save()
 
-       
+
        # Start Adding Crimes TODO: Update to bulk manager
         for crime in crimesAPI["crimes"]:
             obj, created = Crimesv2.objects.update_or_create(
@@ -418,7 +418,7 @@ class Faction(models.Model):
                 "rewards" : crime["rewards"],
             },
         )
-        return self.crimesv2_set.all(), False, "OK"
+        return self.crimesv2_set.order_by('status', '-created_at'), False, "OK"
     def updateCrimes(self, force=False):
 
         now = tsnow()
