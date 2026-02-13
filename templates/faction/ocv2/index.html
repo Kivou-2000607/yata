@@ -2,6 +2,8 @@
 OC2.0 placeholder page
 {% endcomment %}
 {% load humanize %}
+{% load app_filters %}
+{% load mathfilters %}
 
 {% if error %}
     <div class="container-fluid p-md-3 p-1 mb-3 module">
@@ -9,7 +11,7 @@ OC2.0 placeholder page
     </div>
 {% endif %}
 
-{% if unpaid_crimes or missing_items_crimes %}
+{% if unpaid_crimes or missing_items_crimes or partial_recruiting_crimes %}
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
       <div class="px-2 me-auto"><i class="fas fa-exclamation-triangle"></i>&nbsp;Alerts</div>
@@ -28,11 +30,22 @@ OC2.0 placeholder page
     {% endif %}
 
     {% if missing_items_crimes %}
-    <div class="alert alert-warning mb-0">
+    <div class="alert alert-warning {% if partial_recruiting_crimes %}mb-3{% else %}mb-0{% endif %}">
         <h5 class="alert-heading"><i class="fas fa-box"></i> Missing Items ({{ missing_items_crimes|length }})</h5>
         <ul class="mb-0">
         {% for crime in missing_items_crimes %}
             <li>Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }})</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if partial_recruiting_crimes %}
+    <div class="alert alert-warning mb-0">
+        <h5 class="alert-heading"><i class="fas fa-users"></i> Partial Recruitment ({{ partial_recruiting_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in partial_recruiting_crimes %}
+            <li>Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }}) - {{ crime.filled_slots }} of {{ crime.slots_parsed|length }} slots filled</li>
         {% endfor %}
         </ul>
     </div>
@@ -67,25 +80,29 @@ OC2.0 placeholder page
                         {% if subgroup.sub_status|lower not in 'planning,recruiting' %}
                             <th>Executed At</th>
                         {% endif %}
-                        <th>Ready At</th>
+                        {% if subgroup.sub_status|lower == 'planning' %}
+                            <th>Ready At</th>
+                        {% endif %}
                         {% if subgroup.sub_status|lower == 'successful' %}
                             <th>Rewards</th>
                         {% endif %}
-                        <th>Slots</th>
+                        <th>Participants</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for crime in subgroup.crimes %}
-                    <tr {% if crime.has_missing_items or crime.is_unpaid %}class="table-warning"{% endif %}>
+                    <tr {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}class="table-warning"{% endif %}>
                         <td>{{ crime.tID }}</td>
                         <td>{{ crime.name }}</td>
                         <td>{{ crime.difficulty }}</td>
                         <td>{{ crime.previous_crime_id|default:"N/A" }}</td>
-                        <td>{{ crime.created_at }}</td>
+                        <td>{{ tsnow|sub:crime.created_at|ts2ago }}</td>
                         {% if subgroup.sub_status|lower not in 'planning,recruiting' %}
-                            <td>{{ crime.executed_at }}</td>
+                            <td>{{ crime.executed_at|ts2date }}</td>
                         {% endif %}
-                        <td>{{ crime.ready_at }}</td>
+                        {% if subgroup.sub_status|lower == 'planning' %}
+                            <td>{{ crime.ready_at|ts2date }}</td>
+                        {% endif %}
                         {% if subgroup.sub_status|lower == 'successful' %}
                             <td>
                                 {% if crime.has_displayable_rewards %}
@@ -112,8 +129,8 @@ OC2.0 placeholder page
                             </td>
                         {% endif %}
                         <td>
-                            <button type="button" class="btn btn-sm {% if crime.has_missing_items or crime.is_unpaid %}btn-warning{% else %}btn-info{% endif %}" data-bs-toggle="modal" data-bs-target="#slotsModal{{ crime.tID }}">
-                                {% if crime.has_missing_items or crime.is_unpaid %}<i class="fas fa-exclamation-triangle"></i> {% endif %}View Slots ({{ crime.slots_parsed|length }})
+                            <button type="button" class="btn btn-sm {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}btn-warning{% else %}btn-info{% endif %}" data-bs-toggle="modal" data-bs-target="#slotsModal{{ crime.tID }}">
+                                {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}<i class="fas fa-exclamation-triangle"></i> {% endif %}View{% if subgroup.sub_status|lower == 'recruiting' %} ({{ crime.filled_slots }} of {{ crime.slots_parsed|length }}){% elif subgroup.sub_status|lower != 'planning' %} ({{ crime.slots_parsed|length }}){% endif %}
                             </button>
 
                             <!-- Slots Modal -->
@@ -122,7 +139,7 @@ OC2.0 placeholder page
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="slotsModalLabel{{ crime.tID }}">
-                                                    Crime #{{ crime.tID }} - {{ crime.name }} - Slots
+                                                    Crime #{{ crime.tID }} - {{ crime.name }} - Participants
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>

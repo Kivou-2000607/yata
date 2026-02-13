@@ -4913,9 +4913,17 @@ def ocv2(request):
                             # Check if item is missing (only flag if user is assigned)
                             if slot.get('user') and slot['user'].get('id') and not slot['item_requirement'].get('is_available', False):
                                 crime.has_missing_items = True
+
+                    # Count filled slots for recruiting display
+                    crime.filled_slots = sum(1 for slot in crime.slots_parsed if slot.get('user') and slot['user'].get('id'))
+                    # Flag partially recruited crimes (some but not all slots filled)
+                    total_slots = len(crime.slots_parsed)
+                    crime.is_partial_recruiting = (crime.status.lower() == 'recruiting' and 0 < crime.filled_slots < total_slots)
                 except (ValueError, SyntaxError, TypeError):
                     crime.slots_parsed = []
                     crime.has_missing_items = False
+                    crime.filled_slots = 0
+                    crime.is_partial_recruiting = False
 
                 # Parse rewards (stored as Python string representation)
                 try:
@@ -4979,7 +4987,22 @@ def ocv2(request):
 
             for main_status in sorted_statuses:
                 subgroups = []
-                for sub_status in sorted(crimes_temp[main_status].keys()):
+                # Custom sort order for substatuses
+                substatus_keys = list(crimes_temp[main_status].keys())
+                if main_status == 'Completed':
+                    # For Completed, show successful before failure
+                    substatus_order = ['successful', 'failure']
+                    sorted_substatus = [s for s in substatus_order if s in substatus_keys]
+                    sorted_substatus += sorted([s for s in substatus_keys if s not in substatus_order])
+                elif main_status == 'In Progress':
+                    # For In Progress, show planning before recruiting
+                    substatus_order = ['planning', 'recruiting']
+                    sorted_substatus = [s for s in substatus_order if s in substatus_keys]
+                    sorted_substatus += sorted([s for s in substatus_keys if s not in substatus_order])
+                else:
+                    sorted_substatus = sorted(substatus_keys)
+
+                for sub_status in sorted_substatus:
                     subgroups.append({
                         'sub_status': sub_status,
                         'crimes': crimes_temp[main_status][sub_status]
@@ -4993,11 +5016,17 @@ def ocv2(request):
             # Collect crimes with issues for alerts section
             unpaid_crimes = []
             missing_items_crimes = []
+            partial_recruiting_crimes = []
             for crime in crimes:
                 if hasattr(crime, 'is_unpaid') and crime.is_unpaid:
                     unpaid_crimes.append(crime)
                 if hasattr(crime, 'has_missing_items') and crime.has_missing_items:
                     missing_items_crimes.append(crime)
+                # Check for partially filled recruiting crimes (some but not all slots filled)
+                if crime.status.lower() == 'recruiting' and hasattr(crime, 'filled_slots') and hasattr(crime, 'slots_parsed'):
+                    total_slots = len(crime.slots_parsed)
+                    if 0 < crime.filled_slots < total_slots:
+                        partial_recruiting_crimes.append(crime)
 
             context = {
                 "player": player,
@@ -5007,8 +5036,10 @@ def ocv2(request):
                 "crimes_grouped": crimes_grouped,
                 "unpaid_crimes": unpaid_crimes,
                 "missing_items_crimes": missing_items_crimes,
+                "partial_recruiting_crimes": partial_recruiting_crimes,
                 "error": error,
                 "message": message,
+                "tsnow": tsnow(),
                 "view": {"ocv2": True},
             }
 
