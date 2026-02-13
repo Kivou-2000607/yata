@@ -4878,11 +4878,14 @@ def ocv2(request):
                         "errorMessage": f"Faction {player.factionId} not found in the database."
                     },
                 )
-
+            crimes, error, message = faction.updateCrimesv2(True)
             context = {
                 "player": player,
                 "factioncat": True,
                 "faction": faction,
+                "crimes": crimes,
+                "error": error,
+                "message": message,
                 "view": {"ocv2": True},
             }
 

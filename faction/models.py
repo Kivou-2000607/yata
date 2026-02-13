@@ -365,7 +365,22 @@ class Faction(models.Model):
         #         print(f'\t{k2}: {v2}')
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
+    def updateCrimesv2(self,force=False):
+        print("updateCrimesv2")
+        now = tsnow()
+        if not force and (now - self.crimesUpda) < 3600:
+            return self.crimes_set_v2.all(),False, False
+        
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+            return self.crimes_set_v2.all(), True, "No keys to update faction crimes"
 
+        crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True)
+       
+        print("asd")
     def updateCrimes(self, force=False):
 
         now = tsnow()

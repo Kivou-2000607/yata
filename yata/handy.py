@@ -76,8 +76,8 @@ def timestampToDate(timestamp, fmt=False):
 
 def apiCall(
     section,
-    id = None,
-    selections = None,
+    id=None,
+    selections=None,
     key=None,
     kv=dict(),
     sub=None,
@@ -127,7 +127,10 @@ def apiCall(
     ]
 
     if selections:
-        if "personalstats" in str(selections).split(",") and kv.get("cat", None) not in pscat:
+        if (
+            "personalstats" in str(selections).split(",")
+            and kv.get("cat", None) not in pscat
+        ):
             kv["cat"] = "all"
 
     base_url = "https://api.torn.com/v2" if v2 else "https://api.torn.com"
@@ -151,7 +154,11 @@ def apiCall(
 
     if verbose:
         try:
-            print("[yata.function.apiCall] {}".format(url.replace("&key=" + key, "&key=xxx")))
+            print(
+                "[yata.function.apiCall] {}".format(
+                    url.replace("&key=" + key, "&key=xxx")
+                )
+            )
         except Exception:
             print("[yata.function.apiCall] {}".format(url))
 
@@ -166,7 +173,9 @@ def apiCall(
         # try to get cache
         r = cache.get(cache_key)
         if verbose:
-            print(f"[yata.function.apiCall] cached: {'yes' if r else 'no'} ({cache_key})")
+            print(
+                f"[yata.function.apiCall] cached: {'yes' if r else 'no'} ({cache_key})"
+            )
         if r is not None:
             return r
 
@@ -181,13 +190,20 @@ def apiCall(
         rjson = r.json()
     except ValueError as e:
         print("[yata.function.apiCall] API deserialization  error {}".format(e))
-        err = {"error": {"code": 0, "error": "deserialization error... API going crazy #blameched"}}
+        err = {
+            "error": {
+                "code": 0,
+                "error": "deserialization error... API going crazy #blameched",
+            }
+        }
 
     try:
         r.raise_for_status()
     except requests.exceptions.HTTPError as e:
         print("[yata.function.apiCall] API HTTPError {}".format(e))
-        err = {"error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}}
+        err = {
+            "error": {"code": r.status_code, "error": "{} #blameched".format(r.reason)}
+        }
 
     if not err:
         if "error" in rjson:  # standard api error
@@ -196,18 +212,40 @@ def apiCall(
             if sub is not None:
                 if sub in rjson:
                     if cache_response and cache_key:
-                        print(f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}")
+                        print(
+                            f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}"
+                        )
                         cache.set(cache_key, rjson[sub], cache_response)
                     return rjson[sub]
                 else:  # key not found
-                    err = {"error": {"code": 0, "error": "key not found... something went wrong..."}}
+                    err = {
+                        "error": {
+                            "code": 0,
+                            "error": "key not found... something went wrong...",
+                        }
+                    }
             else:
                 if cache_response and cache_key:
-                    print(f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}")
+                    print(
+                        f"[yata.function.apiCall] set cache for {cache_response}s with key {cache_key}"
+                    )
                     cache.set(cache_key, rjson, cache_response)
                 return rjson
 
     return apiCallError(err)
+
+
+def apiCallError(err):
+    return {
+        "apiError": "API error {}: {}.".format(
+            err["error"]["code"], err["error"]["error"]
+        ),
+        "apiErrorString": err["error"]["error"],
+        "apiErrorCode": int(err["error"]["code"]),
+    }
+
+
+def timestampToDate(timestamp, fmt=False):
     import datetime
 
     import pytz
@@ -336,16 +374,26 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
 
     if type == 403:
         msg = "Permission Denied" if msg is None else msg
-        return HttpResponseForbidden(render_to_string("403.html", {"exception": msg, "home": home, "redirect": True}))
+        return HttpResponseForbidden(
+            render_to_string(
+                "403.html", {"exception": msg, "home": home, "redirect": True}
+            )
+        )
     if type == 404:
         msg = "Not Found" if msg is None else msg
-        return HttpResponseNotFound(render_to_string("404.html", {"exception": msg, "home": home}))
+        return HttpResponseNotFound(
+            render_to_string("404.html", {"exception": msg, "home": home})
+        )
     if type == 503:
         from setup.models import Disabled
 
         d = Disabled.objects.first()
         msg = "Service Unavailable" if msg is None else msg
-        return HttpResponseNotFound(render_to_string("503.html", {"disabled": d, "exception": msg, "home": home}))
+        return HttpResponseNotFound(
+            render_to_string(
+                "503.html", {"disabled": d, "exception": msg, "home": home}
+            )
+        )
     else:
         message = traceback.format_exc().strip()
         if session is not None and session.get("player", False):
@@ -358,11 +406,15 @@ def returnError(type=500, exc=None, msg=None, home=True, session=None):
                 from sentry_sdk import capture_exception
 
                 capture_exception(exc)
-            player.error_set.update_or_create(short_error=exc, long_error=message, defaults=defaults)
+            player.error_set.update_or_create(
+                short_error=exc, long_error=message, defaults=defaults
+            )
             print(message)
         except BaseException as e:
             print("Meta error", e)
-        return HttpResponseServerError(render_to_string("500.html", {"exception": exc, "home": home}))
+        return HttpResponseServerError(
+            render_to_string("500.html", {"exception": exc, "home": home})
+        )
 
 
 def clear_cf_cache(urls):
@@ -378,7 +430,9 @@ def clear_cf_cache(urls):
             headers=headers,
         )
         rjson = r.json()
-        print(f'clearing CF cache: {urls} [{"success" if rjson["success"] else "failed"}]')
+        print(
+            f'clearing CF cache: {urls} [{"success" if rjson["success"] else "failed"}]'
+        )
         return r.json()
     else:
         return {
