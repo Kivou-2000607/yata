@@ -369,16 +369,36 @@ class Faction(models.Model):
         print("updateCrimesv2")
         now = tsnow()
         if not force and (now - self.crimesUpda) < 3600:
-            return self.crimes_set_v2.all(),False, False
+            #TODO: Update return to crime set when built
+            return None,False, False
         
         key = self.getKey()
         if key is None:
             msg = "{} no key to update news".format(self)
             self.nKey = 0
             self.save()
-            return self.crimes_set_v2.all(), True, "No keys to update faction crimes"
+            #TODO: Update return to crime set when built
+            return None, True, "No keys to update faction crimes"
 
-        crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True)
+        crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True, kv={"sort": "DESC"})
+        if "apiError" in crimesAPI:
+            msg = f'Update faction crimes ({crimesAPI["apiErrorString"]})'
+            if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+                #TODO: Update return to crime set when built
+                return None, True, msg
+            else:
+                key.reason = msg
+                key.lastPulled = crimesAPI.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+            #TODO: Update return to crime set when built
+            return None, True, msg
+
+        key.lastPulled = tsnow()
+        key.reason = "Update crimes list"
+        key.save()
        
         print("asd")
     def updateCrimes(self, force=False):
@@ -4387,6 +4407,20 @@ class Event(models.Model):
     def __str__(self):
         return format_html("{} event {}".format(self.faction, self.title))
 
+class Crimesv2(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    tID = models.IntegerField(default=0)
+    previous_crime_id = models.IntegerField(default=None)
+    name = models.CharField(default="Crime Name", max_length=64)
+    difficulty = models.IntegerField(default=0)
+    status = models.CharField(default="Status", max_length=32)
+    created_at = models.IntegerField(default=0)
+    executed_at = models.IntegerField(default=0)
+    ready_at = models.IntegerField(default=0)
+    expired_at = models.IntegerField(default=0)
+    slots = models.CharField(default="[]", max_length=512)
+    rewards = models.CharField(default="[]", max_length=512)
 
 class Crimes(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
