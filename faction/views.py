@@ -4879,11 +4879,119 @@ def ocv2(request):
                     },
                 )
             crimes, error, message = faction.updateCrimesv2(True)
+
+            # Organize crimes by custom groups
+            from collections import defaultdict
+            import ast
+            crimes_temp = defaultdict(lambda: defaultdict(list))
+
+            # Build member lookup dict for name resolution
+            member_lookup = {}
+            for member in faction.member_set.all():
+                member_lookup[member.tId] = member.name
+
+            # Build item lookup dict for item names
+            from bazaar.models import Item
+            item_lookup = {}
+            for item in Item.objects.all():
+                item_lookup[item.tId] = item.tName
+
+            for crime in crimes:
+                # Parse slots (stored as Python string representation)
+                try:
+                    crime.slots_parsed = ast.literal_eval(crime.slots) if crime.slots else []
+                    crime.has_missing_items = False
+                    # Enrich user data with member names and item names
+                    for slot in crime.slots_parsed:
+                        if slot.get('user') and slot['user'].get('id'):
+                            user_id = slot['user']['id']
+                            slot['user']['name'] = member_lookup.get(user_id, 'Unknown')
+                        if slot.get('item_requirement'):
+                            if slot['item_requirement'].get('id'):
+                                item_id = slot['item_requirement']['id']
+                                slot['item_requirement']['name'] = item_lookup.get(item_id, f'Item {item_id}')
+                            # Check if item is missing (only flag if user is assigned)
+                            if slot.get('user') and slot['user'].get('id') and not slot['item_requirement'].get('is_available', False):
+                                crime.has_missing_items = True
+                except (ValueError, SyntaxError, TypeError):
+                    crime.slots_parsed = []
+                    crime.has_missing_items = False
+
+                # Parse rewards (stored as Python string representation)
+                try:
+                    crime.rewards_parsed = ast.literal_eval(crime.rewards) if crime.rewards else None
+                    if crime.rewards_parsed:
+                        # Enrich items with names
+                        if crime.rewards_parsed.get('items'):
+                            for item in crime.rewards_parsed['items']:
+                                item_id = item.get('id')
+                                if item_id:
+                                    item['name'] = item_lookup.get(item_id, f'Item {item_id}')
+                        # Enrich payout with member name
+                        if crime.rewards_parsed.get('payout') and crime.rewards_parsed['payout'].get('paid_by'):
+                            paid_by_id = crime.rewards_parsed['payout']['paid_by']
+                            crime.rewards_parsed['payout']['paid_by_name'] = member_lookup.get(paid_by_id, f'Player {paid_by_id}')
+                except (ValueError, SyntaxError, TypeError):
+                    crime.rewards_parsed = None
+
+                # Check if successful crime is unpaid (only if there are actual rewards)
+                crime.is_unpaid = False
+                if crime.status.lower() == 'successful' and crime.rewards_parsed:
+                    # Check if there are actual rewards (money, items, or respect)
+                    has_rewards = (crime.rewards_parsed.get('money') or
+                                   crime.rewards_parsed.get('items') or
+                                   crime.rewards_parsed.get('respect'))
+                    # Only flag as unpaid if there are rewards but no payout info
+                    if has_rewards and (not crime.rewards_parsed.get('payout') or not crime.rewards_parsed['payout'].get('paid_at')):
+                        crime.is_unpaid = True
+
+                if crime.status.lower() in ['planning', 'recruiting']:
+                    main_status = 'In Progress'
+                    sub_status = crime.status
+                elif crime.status.lower() in ['failure', 'successful']:
+                    main_status = 'Completed'
+                    sub_status = crime.status
+                else:
+                    main_status = crime.status
+                    sub_status = None
+
+                if sub_status:
+                    crimes_temp[main_status][sub_status].append(crime)
+                else:
+                    crimes_temp[main_status]['_no_substatus'].append(crime)
+
+            # Convert to regular dict for template with custom order
+            crimes_grouped = []
+            # Define custom order: In Progress first, then Completed, then others alphabetically
+            status_order = ['In Progress', 'Completed']
+            sorted_statuses = []
+            for status in status_order:
+                if status in crimes_temp:
+                    sorted_statuses.append(status)
+            # Add remaining statuses alphabetically
+            for status in sorted(crimes_temp.keys()):
+                if status not in status_order:
+                    sorted_statuses.append(status)
+
+            for main_status in sorted_statuses:
+                subgroups = []
+                for sub_status in sorted(crimes_temp[main_status].keys()):
+                    subgroups.append({
+                        'sub_status': sub_status,
+                        'crimes': crimes_temp[main_status][sub_status]
+                    })
+
+                crimes_grouped.append({
+                    'main_status': main_status,
+                    'subgroups': subgroups
+                })
+
             context = {
                 "player": player,
                 "factioncat": True,
                 "faction": faction,
                 "crimes": crimes,
+                "crimes_grouped": crimes_grouped,
                 "error": error,
                 "message": message,
                 "view": {"ocv2": True},
