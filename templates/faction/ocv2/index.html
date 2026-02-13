@@ -9,6 +9,37 @@ OC2.0 placeholder page
     </div>
 {% endif %}
 
+{% if unpaid_crimes or missing_items_crimes %}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-exclamation-triangle"></i>&nbsp;Alerts</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    {% if unpaid_crimes %}
+    <div class="alert alert-warning mb-3">
+        <h5 class="alert-heading"><i class="fas fa-dollar-sign"></i> Unpaid Crimes ({{ unpaid_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in unpaid_crimes %}
+            <li>Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }})</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if missing_items_crimes %}
+    <div class="alert alert-warning mb-0">
+        <h5 class="alert-heading"><i class="fas fa-box"></i> Missing Items ({{ missing_items_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in missing_items_crimes %}
+            <li>Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }})</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
 {% for group in crimes_grouped %}
 <h2 class="title rounded-top px-2 py-2">
     <div class="d-flex flex-wrap align-items-center">
@@ -57,7 +88,7 @@ OC2.0 placeholder page
                         <td>{{ crime.ready_at }}</td>
                         {% if subgroup.sub_status|lower == 'successful' %}
                             <td>
-                                {% if crime.rewards_parsed %}
+                                {% if crime.has_displayable_rewards %}
                                     <div style="white-space: nowrap;">
                                         {% if crime.is_unpaid %}
                                             <span class="badge bg-warning text-dark mb-1">⚠️ UNPAID</span><br>
@@ -76,7 +107,7 @@ OC2.0 placeholder page
                                         {% endif %}
                                     </div>
                                 {% else %}
-                                    <em>No rewards</em>
+                                    None
                                 {% endif %}
                             </td>
                         {% endif %}

@@ -4936,14 +4936,18 @@ def ocv2(request):
 
                 # Check if successful crime is unpaid (only if there are actual rewards)
                 crime.is_unpaid = False
+                crime.has_displayable_rewards = False
                 if crime.status.lower() == 'successful' and crime.rewards_parsed:
                     # Check if there are actual rewards (money, items, or respect)
                     has_rewards = (crime.rewards_parsed.get('money') or
                                    crime.rewards_parsed.get('items') or
                                    crime.rewards_parsed.get('respect'))
+                    # Set flag for template to check if there's displayable content
+                    crime.has_displayable_rewards = has_rewards or crime.is_unpaid
                     # Only flag as unpaid if there are rewards but no payout info
                     if has_rewards and (not crime.rewards_parsed.get('payout') or not crime.rewards_parsed['payout'].get('paid_at')):
                         crime.is_unpaid = True
+                        crime.has_displayable_rewards = True  # Unpaid badge counts as displayable
 
                 if crime.status.lower() in ['planning', 'recruiting']:
                     main_status = 'In Progress'
@@ -4986,12 +4990,23 @@ def ocv2(request):
                     'subgroups': subgroups
                 })
 
+            # Collect crimes with issues for alerts section
+            unpaid_crimes = []
+            missing_items_crimes = []
+            for crime in crimes:
+                if hasattr(crime, 'is_unpaid') and crime.is_unpaid:
+                    unpaid_crimes.append(crime)
+                if hasattr(crime, 'has_missing_items') and crime.has_missing_items:
+                    missing_items_crimes.append(crime)
+
             context = {
                 "player": player,
                 "factioncat": True,
                 "faction": faction,
                 "crimes": crimes,
                 "crimes_grouped": crimes_grouped,
+                "unpaid_crimes": unpaid_crimes,
+                "missing_items_crimes": missing_items_crimes,
                 "error": error,
                 "message": message,
                 "view": {"ocv2": True},
