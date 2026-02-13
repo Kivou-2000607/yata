@@ -369,16 +369,16 @@ class Faction(models.Model):
         print("updateCrimesv2")
         now = tsnow()
         if not force and (now - self.crimesUpda) < 3600:
-            #TODO: Update return to crime set when built
-            return None,False, False
+            
+            return self.crimesv2_set.all(),False, False
         
         key = self.getKey()
         if key is None:
             msg = "{} no key to update news".format(self)
             self.nKey = 0
             self.save()
-            #TODO: Update return to crime set when built
-            return None, True, "No keys to update faction crimes"
+            
+            return self.crimesv2_set.all(), True, "No keys to update faction crimes"
 
         crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True, kv={"sort": "DESC"})
         if "apiError" in crimesAPI:
@@ -386,21 +386,39 @@ class Faction(models.Model):
             if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
-                #TODO: Update return to crime set when built
-                return None, True, msg
+                
+                return self.crimesv2_set.all(), True, msg
             else:
                 key.reason = msg
                 key.lastPulled = crimesAPI.get("timestamp", 0)
                 key.save()
                 print("{} {}".format(self, msg))
-            #TODO: Update return to crime set when built
-            return None, True, msg
+            
+            return self.crimesv2_set.all(), True, msg
 
         key.lastPulled = tsnow()
         key.reason = "Update crimes list"
         key.save()
+
        
-        print("asd")
+       # Start Adding Crimes TODO: Update to bulk manager
+        for crime in crimesAPI["crimes"]:
+            obj, created = Crimesv2.objects.update_or_create(
+            faction=self,
+            tID=crime["id"],
+            defaults={
+                "previous_crime_id" : crime["previous_crime_id"],
+                "name" : crime["name"],
+                "difficulty" : crime["difficulty"],
+                "status" : crime["status"],
+                "created_at" : crime["created_at"],
+                "executed_at" : crime["executed_at"],
+                "ready_at" : crime["ready_at"],
+                "slots" : crime["slots"],
+                "rewards" : crime["rewards"],
+            },
+        )
+        return self.crimesv2_set.all(), False, "OK"
     def updateCrimes(self, force=False):
 
         now = tsnow()
@@ -4411,16 +4429,16 @@ class Crimesv2(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
 
     tID = models.IntegerField(default=0)
-    previous_crime_id = models.IntegerField(default=None)
+    previous_crime_id = models.IntegerField(default=None, null=True, blank=True)
     name = models.CharField(default="Crime Name", max_length=64)
     difficulty = models.IntegerField(default=0)
     status = models.CharField(default="Status", max_length=32)
     created_at = models.IntegerField(default=0)
-    executed_at = models.IntegerField(default=0)
-    ready_at = models.IntegerField(default=0)
-    expired_at = models.IntegerField(default=0)
-    slots = models.CharField(default="[]", max_length=512)
-    rewards = models.CharField(default="[]", max_length=512)
+    executed_at = models.IntegerField(default=0, null=True, blank=True)
+    ready_at = models.IntegerField(default=0, null=True, blank=True)
+    expired_at = models.IntegerField(default=0, null=True, blank=True)
+    slots = models.CharField(default="[]", max_length=512, null=True, blank=True)
+    rewards = models.CharField(default="[]", max_length=512, null=True, blank=True)
 
 class Crimes(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
