@@ -15,29 +15,7 @@ OC2.0 placeholder page
 
    
 
-    {% comment %} Debug: Show all groups {% endcomment %}
-    <div class="alert alert-info">
-        <strong>Debug - Groups found:</strong>
-        <ul>
-        {% for group in crimes_grouped %}
-            <li>{{ group.main_status }}
-                <ul>
-                {% for subgroup in group.subgroups %}
-                    <li>{{ subgroup.sub_status }}: {{ subgroup.crimes|length }} crimes
-                        {% if subgroup.sub_status == 'successful' %}
-                            <ul>
-                            {% for crime in subgroup.crimes %}
-                                <li>Crime {{ crime.tID }}: is_unpaid={{ crime.is_unpaid }}, has rewards_parsed={{ crime.rewards_parsed|yesno:"yes,no" }}, rewards={{ crime.rewards }}</li>
-                            {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-        </ul>
-    </div>
+   
 
     {% for group in crimes_grouped %}
         {% comment %} Calculate total count for main status {% endcomment %}
