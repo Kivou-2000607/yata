@@ -418,7 +418,11 @@ class Faction(models.Model):
                 "rewards" : crime["rewards"],
             },
         )
-        return self.crimesv2_set.order_by('status', '-created_at'), False, "OK"
+        # Update timestamp to mark when crimes were last successfully fetched
+        self.crimesUpda = tsnow()
+        self.save()
+        # Query fresh from DB to ensure we return the latest crimes with updated timestamp
+        return self.__class__.objects.filter(pk=self.pk).first().crimesv2_set.order_by('status', '-created_at'), False, "OK"
     def updateCrimes(self, force=False):
 
         now = tsnow()
