@@ -4437,8 +4437,8 @@ class Crimesv2(models.Model):
     executed_at = models.IntegerField(default=0, null=True, blank=True)
     ready_at = models.IntegerField(default=0, null=True, blank=True)
     expired_at = models.IntegerField(default=0, null=True, blank=True)
-    slots = models.CharField(default="[]", max_length=512, null=True, blank=True)
-    rewards = models.CharField(default="[]", max_length=512, null=True, blank=True)
+    slots = models.TextField(default="[]", null=True, blank=True)
+    rewards = models.TextField(default="[]", null=True, blank=True)
 
 class Crimes(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
