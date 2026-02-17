@@ -95,52 +95,19 @@ if DEBUG:
     INSTALLED_APPS += ["nplusone.ext.django"]
     MIDDLEWARE = ["nplusone.ext.django.NPlusOneMiddleware", *MIDDLEWARE]
     NPLUSONE_RAISE = False
-
-# Configure logging for both DEBUG and production
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "[{levelname}] {asctime} {name}: {message}",
-            "style": "{",
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {"class": "logging.StreamHandler"},
         },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
+        "loggers": {
+            "nplusone": {
+                "handlers": ["console"],
+                "level": "WARN",
+            },
         },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "logs", "yata.log"),
-            "maxBytes": 1024 * 1024 * 10,  # 10MB
-            "backupCount": 5,
-            "formatter": "verbose",
-        },
-    },
-    "root": {
-        "handlers": ["console", "file"],
-        "level": "INFO",
-    },
-    "loggers": {
-        "nplusone": {
-            "handlers": ["console"],
-            "level": "WARN",
-        },
-        "faction.views": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-        },
-    },
-}
-
-# Ensure logs directory exists
-LOGS_DIR = os.path.join(BASE_DIR, "logs")
-if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
-
-if DEBUG:
+    }
 
     TEMPLATES = [
         {
