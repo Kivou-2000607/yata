@@ -86,8 +86,15 @@ $(document).on("click", "a#faction-aa-toggle-oc2", e => {
     e.preventDefault();
     const reload = $(e.currentTarget).closest("div.module");
     const divspinner = `<div style="text-align: center; height: ${reload.css("height")};">${spinner}</div>`;
+    reload.html(divspinner);
     reload.load("/faction/configurations/oc2/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
-    }).html(divspinner);
+    }, function(response, status, xhr) {
+        console.log("OC2 toggle response:", {status, responseLength: response.length, response});
+        if (status === "error") {
+            console.error("OC2 toggle error:", xhr.status, xhr.statusText);
+            reload.html(`<p style="color: red;">Error: ${xhr.status} ${xhr.statusText}</p>`);
+        }
+    });
 });
 

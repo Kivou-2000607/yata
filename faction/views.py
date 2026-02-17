@@ -538,15 +538,23 @@ def configurationsThreshold(request):
 
 def toggleOC2(request):
     try:
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"toggleOC2: session={bool(request.session.get('player'))}, method={request.method}")
+        
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
+            logger.info(f"toggleOC2: player={player.tId}, faction={factionId}, AA={player.factionAA}")
 
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
             # get faction
             faction = Faction.objects.filter(tId=factionId).first()
+            logger.info(f"toggleOC2: faction_fetched={faction is not None}")
+            
             if faction is None:
                 return render(
                     request,
@@ -559,22 +567,30 @@ def toggleOC2(request):
                 )
 
             # toggle OC2 opt-in for the faction
+            old_state = faction.useOC2
             faction.useOC2 = not faction.useOC2
             # Reset crime cache timestamp to force fresh crime data load when switching OC versions
             faction.crimesUpda = 0
             faction.save()
+            logger.info(f"toggleOC2: toggled {old_state} -> {faction.useOC2}")
 
             # invalidate cache and refresh from database to ensure fresh state
             cache.delete(f"faction_by_id_{faction.tId}")
             faction.refresh_from_db()
+            logger.info(f"toggleOC2: after refresh useOC2={faction.useOC2}")
 
             context = {"faction": faction}
+            logger.info(f"toggleOC2: rendering template with faction.useOC2={faction.useOC2}")
             return render(request, "faction/aa/oc2.html", context)
 
         else:
+            logger.warning(f"toggleOC2: no session player")
             return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.exception(f"toggleOC2 exception: {e}")
         return returnError(exc=e, session=request.session)
 
 
