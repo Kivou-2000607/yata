@@ -4694,10 +4694,12 @@ def oc(request):
     try:
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
-            faction = getFaction(player.factionId)
-            
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
+            # Fetch fresh faction from DB (not cache) for crime data to avoid stale cache
+            faction = Faction.objects.filter(tId=player.factionId).first()
+            
+
 
             if faction is None:
                 return render(
@@ -4887,7 +4889,8 @@ def ocv2(request):
     try:
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
-            faction = getFaction(player.factionId)
+            # Fetch fresh faction from DB (not cache) for crime data to avoid stale cache
+            faction = Faction.objects.filter(tId=player.factionId).first()
             
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
