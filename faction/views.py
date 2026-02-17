@@ -560,6 +560,8 @@ def toggleOC2(request):
 
             # toggle OC2 opt-in for the faction
             faction.useOC2 = not faction.useOC2
+            # Reset crime cache timestamp to force fresh crime data load when switching OC versions
+            faction.crimesUpda = 0
             faction.save()
 
             # invalidate cache and refresh from database to ensure fresh state
