@@ -366,10 +366,13 @@ class Faction(models.Model):
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
     def updateCrimesv2(self,force=False):
-        print("updateCrimesv2")
+        import logging
+        logger = logging.getLogger("faction.views")
+        
+        logger.info(f"updateCrimesv2 called: faction={self.tId}, force={force}")
         now = tsnow()
         if not force and (now - self.crimesUpda) < 3600:
-
+            logger.info(f"updateCrimesv2: returning cached crimes, age={(now - self.crimesUpda)}s")
             return self.crimesv2_set.order_by('status', '-created_at'), False, False
 
         key = self.getKey()
@@ -377,16 +380,16 @@ class Faction(models.Model):
             msg = "{} no key to update news".format(self)
             self.nKey = 0
             self.save()
-
+            logger.warning(f"updateCrimesv2: no key available")
             return self.crimesv2_set.order_by('status', '-created_at'), True, "No keys to update faction crimes"
 
         crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True, kv={"sort": "DESC"})
         if "apiError" in crimesAPI:
             msg = f'Update faction crimes ({crimesAPI["apiErrorString"]})'
+            logger.warning(f"updateCrimesv2: API error: {msg}")
             if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
                 print("{} {} (remove key)".format(self, msg))
                 self.delKey(key=key)
-
                 return self.crimesv2_set.order_by('status', '-created_at'), True, msg
             else:
                 key.reason = msg
@@ -400,8 +403,8 @@ class Faction(models.Model):
         key.reason = "Update crimes list"
         key.save()
 
-
-       # Start Adding Crimes TODO: Update to bulk manager
+        # Start Adding Crimes TODO: Update to bulk manager
+        crime_count = 0
         for crime in crimesAPI["crimes"]:
             obj, created = Crimesv2.objects.update_or_create(
             faction=self,
@@ -418,9 +421,11 @@ class Faction(models.Model):
                 "rewards" : crime["rewards"],
             },
         )
+            crime_count += 1
         # Update timestamp to mark when crimes were last successfully fetched
         self.crimesUpda = tsnow()
         self.save()
+        logger.info(f"updateCrimesv2: updated {crime_count} crimes")
         # Query fresh from DB to ensure we return the latest crimes with updated timestamp
         return self.__class__.objects.filter(pk=self.pk).first().crimesv2_set.order_by('status', '-created_at'), False, "OK"
     def updateCrimes(self, force=False):

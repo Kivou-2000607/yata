@@ -4887,14 +4887,10 @@ def oc(request):
 
 def ocv2(request):
     try:
-        import logging
-        logger = logging.getLogger(__name__)
-        
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             # Fetch fresh faction from DB (not cache) for crime data to avoid stale cache
             faction = Faction.objects.filter(tId=player.factionId).first()
-            logger.info(f"ocv2: player={player.tId}, faction={faction.tId if faction else None}")
             
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
@@ -4908,7 +4904,6 @@ def ocv2(request):
                     },
                 )
             crimes, error, message = faction.updateCrimesv2(True)
-            logger.info(f"ocv2: crimes fetched={crimes.count()}, error={error}, message={message}")
 
 
             # Organize crimes by custom groups
