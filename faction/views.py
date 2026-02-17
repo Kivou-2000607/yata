@@ -531,7 +531,7 @@ def configurationsThreshold(request):
 
 def toggleOC2(request):
     try:
-        if request.session.get("player") and request.method == "POST":
+        if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             factionId = player.factionId
 
@@ -565,12 +565,7 @@ def toggleOC2(request):
             return render(request, "faction/aa/oc2.html", context)
 
         else:
-            message = (
-                "You might want to log in."
-                if request.method == "POST"
-                else "You need to post. Don't try to be a smart ass."
-            )
-            return returnError(type=403, msg=message)
+            return returnError(type=403, msg="You might want to log in.")
 
     except Exception as e:
         return returnError(exc=e, session=request.session)
