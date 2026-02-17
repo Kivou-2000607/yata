@@ -89,9 +89,10 @@ class Command(BaseCommand):
         bd.itemType = json.dumps(itemType)
         bd.save()
 
-        # delete abroad stock that isnt the last entry
+        # delete abroad stock that isn't the last entry and is older than 2 weeks
+        cutoff = int(timezone.now().timestamp()) - (14 * 24 * 3600)
         for item in Item.objects.all():
             print(f"[CRON {logdate()}] Deleting old abroad stock for {item.tId} {item.tName}")
-            item.abroadstocks_set.filter(last=False).delete()
+            item.abroadstocks_set.filter(last=False, timestamp__lt=cutoff).delete()
 
         print(f"[CRON {logdate()}] END")
