@@ -413,6 +413,9 @@ def configurationsKey(request):
             key.useFact = not key.useFact
             key.save()
 
+            # refresh from database to ensure fresh state
+            key.refresh_from_db()
+
             context = {"player": player, "key": key}
             return render(request, "faction/aa/keys.html", context)
 
@@ -509,6 +512,10 @@ def configurationsThreshold(request):
             faction.hitsThreshold = int(request.POST.get("threshold", 100))
             faction.save()
 
+            # invalidate cache and refresh from database to ensure fresh state
+            cache.delete(f"faction_by_id_{faction.tId}")
+            faction.refresh_from_db()
+
             context = {
                 "player": player,
                 "faction": faction,
@@ -555,11 +562,9 @@ def toggleOC2(request):
             faction.useOC2 = not faction.useOC2
             faction.save()
 
-            # update cached faction so future reads don't overwrite this change
-            try:
-                cache.set(f"faction_by_id_{faction.tId}", faction, 3600)
-            except Exception:
-                pass
+            # invalidate cache and refresh from database to ensure fresh state
+            cache.delete(f"faction_by_id_{faction.tId}")
+            faction.refresh_from_db()
 
             context = {"faction": faction}
             return render(request, "faction/aa/oc2.html", context)
@@ -621,6 +626,10 @@ def configurationsPoster(request):
                 updatePosterConf(faction, request.POST.dict())
 
             faction.save()
+
+            # invalidate cache and refresh from database to ensure fresh state
+            cache.delete(f"faction_by_id_{faction.tId}")
+            faction.refresh_from_db()
 
             context = {"faction": faction}
 
