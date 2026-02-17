@@ -254,7 +254,10 @@ def getCrimes(request):
             )
 
         # update crimes
-        faction.updateCrimes()
+        if faction.useOC2:
+            faction.updateCrimesv2()
+        else:
+            faction.updateCrimes()
 
         # get members
         members = {}

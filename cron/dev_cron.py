@@ -20,12 +20,10 @@ def every_minute():
 
 def every_30_minutes():
     os.system('python manage.py loot')
-    os.system('python manage.py stocks')
     os.system('python manage.py check_keys')
     os.system('python manage.py items')
     os.system('python manage.py factions')
     os.system('python manage.py awards')
-    os.system('python manage.py territories')
     os.system('python manage.py companies')
     os.system('python manage.py players_stats')
 

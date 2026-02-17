@@ -208,7 +208,11 @@ class UpgradeAdmin(admin.ModelAdmin):
     search_fields = ('faction__name', 'faction__tId', 'tId', 'level', 'unlocked',)
     list_filter = ('active', 'simu', 'branch', 'shortname')
 
-
+class Crimesv2Admin(admin.ModelAdmin):
+    list_display = ['__str__', 'tID', 'name', 'difficulty', 'status']
+    search_fields = ('faction__name', 'tID', 'name')
+    list_filter = ('difficulty', 'status')
+    
 class CrimesAdmin(admin.ModelAdmin):
     list_display = ['pk', 'tId', 'initiated', 'success', 'ready']
     search_fields = ('tId',)
@@ -230,6 +234,7 @@ class FactionTargetAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Crimes, CrimesAdmin)
+admin.site.register(Crimesv2, Crimesv2Admin)
 admin.site.register(SpyDatabase, SpyDatabaseAdmin)
 admin.site.register(Spy, SpyAdmin)
 # admin.site.register(Upgrade, UpgradeAdmin)

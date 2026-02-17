@@ -38,7 +38,10 @@ class Command(BaseCommand):
                     faction.updateLog()
 
                     # print(f"[CRON {logdate()}] faction {faction}: update crimes")
-                    faction.updateCrimes()
+                    if faction.useOC2:
+                        faction.updateCrimesv2()
+                    else:
+                        faction.updateCrimes()
 
                     # print(f"[CRON {logdate()}] faction {faction}: update members")
                     faction.updateMembers()

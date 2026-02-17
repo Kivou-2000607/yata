@@ -1,0 +1,218 @@
+{% comment %}
+OC2.0 placeholder page
+{% endcomment %}
+{% load humanize %}
+{% load app_filters %}
+{% load mathfilters %}
+
+{% if error %}
+    <div class="container-fluid p-md-3 p-1 mb-3 module">
+        <div class="alert alert-danger">{{ message }}</div>
+    </div>
+{% endif %}
+
+{% if unpaid_crimes or missing_items_crimes or partial_recruiting_crimes %}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-exclamation-triangle"></i>&nbsp;Alerts</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    {% if unpaid_crimes %}
+    <div class="alert alert-warning mb-3">
+        <h5 class="alert-heading"><i class="fas fa-dollar-sign"></i> Unpaid Crimes ({{ unpaid_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in unpaid_crimes %}
+            <li><a href="#crime-{{ crime.tID }}">Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }})</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if missing_items_crimes %}
+    <div class="alert alert-warning {% if partial_recruiting_crimes %}mb-3{% else %}mb-0{% endif %}">
+        <h5 class="alert-heading"><i class="fas fa-box"></i> Missing Items ({{ missing_items_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in missing_items_crimes %}
+            <li><a href="#crime-{{ crime.tID }}">Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }})</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if partial_recruiting_crimes %}
+    <div class="alert alert-warning mb-0">
+        <h5 class="alert-heading"><i class="fas fa-users"></i> Partial Recruitment ({{ partial_recruiting_crimes|length }})</h5>
+        <ul class="mb-0">
+        {% for crime in partial_recruiting_crimes %}
+            <li><a href="#crime-{{ crime.tID }}">Crime #{{ crime.tID }} - {{ crime.name }} ({{ crime.difficulty }}) - {{ crime.filled_slots }} of {{ crime.slots_parsed|length }} slots filled</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% for group in crimes_grouped %}
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+      <div class="px-2 me-auto"><i class="fas fa-{% if group.main_status == 'In Progress' %}hourglass-half{% else %}check-circle{% endif %}"></i>&nbsp;{{ group.main_status }}</div>
+    </div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    {% for subgroup in group.subgroups %}
+        {% if subgroup.sub_status != '_no_substatus' %}
+            <h4 class="mt-3 mb-2 d-flex align-items-center">
+                <a class="text-decoration-none flex-grow-1" data-bs-toggle="collapse" href="#collapse{{ group.main_status|slugify }}-{{ subgroup.sub_status|slugify }}" role="button" aria-expanded="{% if group.main_status != 'Completed' %}true{% else %}false{% endif %}" aria-controls="collapse{{ group.main_status|slugify }}-{{ subgroup.sub_status|slugify }}">
+                    <i class="fas fa-caret-{% if group.main_status != 'Completed' %}down{% else %}right{% endif %}"></i> {{ subgroup.sub_status|title }} ({{ subgroup.crimes|length }})
+                </a>
+            </h4>
+            <div class="collapse {% if group.main_status != 'Completed' %}show{% endif %}" id="collapse{{ group.main_status|slugify }}-{{ subgroup.sub_status|slugify }}">
+        {% endif %}
+            <table class="table table-hover table-striped table-borderless">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Difficulty</th>
+                        <th>Previous Crime</th>
+                        <th>Created At</th>
+                        {% if subgroup.sub_status|lower not in 'planning,recruiting' %}
+                            <th>Executed At</th>
+                        {% endif %}
+                        {% if subgroup.sub_status|lower == 'planning' %}
+                            <th>Ready At</th>
+                        {% endif %}
+                        {% if subgroup.sub_status|lower == 'successful' %}
+                            <th>Rewards</th>
+                        {% endif %}
+                        <th>Participants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crime in subgroup.crimes %}
+                    <tr id="crime-{{ crime.tID }}" {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}class="table-warning"{% endif %}>
+                        <td>{{ crime.tID }}</td>
+                        <td>{{ crime.name }}</td>
+                        <td>{{ crime.difficulty }}</td>
+                        <td>{{ crime.previous_crime_id|default:"N/A" }}</td>
+                        <td>{{ tsnow|sub:crime.created_at|ts2ago }}</td>
+                        {% if subgroup.sub_status|lower not in 'planning,recruiting' %}
+                            <td>{{ crime.executed_at|ts2date }}</td>
+                        {% endif %}
+                        {% if subgroup.sub_status|lower == 'planning' %}
+                            <td>{{ crime.ready_at|ts2date }}</td>
+                        {% endif %}
+                        {% if subgroup.sub_status|lower == 'successful' %}
+                            <td>
+                                {% if crime.has_displayable_rewards %}
+                                    <div style="white-space: nowrap;">
+                                        {% if crime.is_unpaid %}
+                                            <span class="badge bg-warning text-dark mb-1">⚠️ UNPAID</span><br>
+                                        {% endif %}
+                                        {% if crime.rewards_parsed.money %}💰 ${{ crime.rewards_parsed.money|floatformat:0|intcomma }}<br>{% endif %}
+                                        {% if crime.rewards_parsed.respect %}⭐ {{ crime.rewards_parsed.respect }} respect<br>{% endif %}
+                                        {% if crime.rewards_parsed.items %}
+                                            {% for item in crime.rewards_parsed.items %}
+                                                📦 {{ item.name|default:item.id }} x{{ item.quantity }}<br>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% if crime.rewards_parsed.payout %}
+                                            <small class="text-muted">
+                                                Paid: {{ crime.rewards_parsed.payout.percentage }}% by {{ crime.rewards_parsed.payout.paid_by_name|default:crime.rewards_parsed.payout.paid_by }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        <td>
+                            <button type="button" class="btn btn-sm {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}btn-warning{% else %}btn-info{% endif %}" data-bs-toggle="modal" data-bs-target="#slotsModal{{ crime.tID }}">
+                                {% if crime.has_missing_items or crime.is_unpaid or crime.is_partial_recruiting %}<i class="fas fa-exclamation-triangle"></i> {% endif %}View{% if subgroup.sub_status|lower == 'recruiting' %} ({{ crime.filled_slots }} of {{ crime.slots_parsed|length }}){% elif subgroup.sub_status|lower != 'planning' %} ({{ crime.slots_parsed|length }}){% endif %}
+                            </button>
+
+                            <!-- Slots Modal -->
+                                <div class="modal fade" id="slotsModal{{ crime.tID }}" tabindex="-1" aria-labelledby="slotsModalLabel{{ crime.tID }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="slotsModalLabel{{ crime.tID }}">
+                                                    Crime #{{ crime.tID }} - {{ crime.name }} - Participants
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% if crime.slots_parsed %}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-striped table-borderless table-sm">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Position</th>
+                                                                    <th>User</th>
+                                                                    <th>Progress</th>
+                                                                    <th>Pass Rate</th>
+                                                                    <th>Item</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for slot in crime.slots_parsed %}
+                                                                <tr>
+                                                                    <td>{{ slot.position }}</td>
+                                                                    <td>
+                                                                        {% if slot.user %}
+                                                                            {{ slot.user.name|default:slot.user.id }}
+                                                                        {% else %}
+                                                                            <em>Empty</em>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if slot.user %}
+                                                                            {{ slot.user.progress }}%
+                                                                        {% else %}
+                                                                            -
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>{{ slot.checkpoint_pass_rate }}%</td>
+                                                                    <td style="white-space: nowrap;">
+                                                                        {% if slot.item_requirement %}
+                                                                            {% if slot.item_requirement.is_available %}
+                                                                                <span class="text-success">✓</span>
+                                                                            {% else %}
+                                                                                <span class="text-danger">✗</span>
+                                                                            {% endif %}
+                                                                            {{ slot.item_requirement.name|default:slot.item_requirement.id }}
+                                                                            {% if slot.item_requirement.is_reusable %} ♻️{% endif %}
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                {% else %}
+                                                    <p><em>No slots</em></p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% if subgroup.sub_status != '_no_substatus' %}
+            </div> <!-- End subsection collapse -->
+        {% endif %}
+    {% endfor %}
+</div>
+{% empty %}
+    <div class="container-fluid p-md-3 p-1 mb-3 module">
+        <p class="text-center">No crimes found</p>
+    </div>
+{% endfor %}

@@ -187,6 +187,8 @@ class Faction(models.Model):
     posterPerksWar = models.BooleanField(default=False)
     posterPerksPeace = models.BooleanField(default=False)
     posterPerksCurrent = models.BooleanField(default=True)
+    # Opt-in for Torn OC2.0 (factions can enable to use new OC format)
+    useOC2 = models.BooleanField(default=False)
     posterOpt = models.TextField(default="{}")
     posterImg = models.ImageField(blank=True)
     posterGymImg = models.ImageField(blank=True)
@@ -363,7 +365,60 @@ class Faction(models.Model):
         #         print(f'\t{k2}: {v2}')
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
+    def updateCrimesv2(self,force=False):
+        print("updateCrimesv2")
+        now = tsnow()
+        if not force and (now - self.crimesUpda) < 3600:
 
+            return self.crimesv2_set.order_by('status', '-created_at'), False, False
+
+        key = self.getKey()
+        if key is None:
+            msg = "{} no key to update news".format(self)
+            self.nKey = 0
+            self.save()
+
+            return self.crimesv2_set.order_by('status', '-created_at'), True, "No keys to update faction crimes"
+
+        crimesAPI = apiCall("faction/crimes", key=key.value, verbose=True, v2=True, kv={"sort": "DESC"})
+        if "apiError" in crimesAPI:
+            msg = f'Update faction crimes ({crimesAPI["apiErrorString"]})'
+            if crimesAPI["apiErrorCode"] in API_CODE_DELETE:
+                print("{} {} (remove key)".format(self, msg))
+                self.delKey(key=key)
+
+                return self.crimesv2_set.order_by('status', '-created_at'), True, msg
+            else:
+                key.reason = msg
+                key.lastPulled = crimesAPI.get("timestamp", 0)
+                key.save()
+                print("{} {}".format(self, msg))
+
+            return self.crimesv2_set.order_by('status', '-created_at'), True, msg
+
+        key.lastPulled = tsnow()
+        key.reason = "Update crimes list"
+        key.save()
+
+
+       # Start Adding Crimes TODO: Update to bulk manager
+        for crime in crimesAPI["crimes"]:
+            obj, created = Crimesv2.objects.update_or_create(
+            faction=self,
+            tID=crime["id"],
+            defaults={
+                "previous_crime_id" : crime["previous_crime_id"],
+                "name" : crime["name"],
+                "difficulty" : crime["difficulty"],
+                "status" : crime["status"],
+                "created_at" : crime["created_at"],
+                "executed_at" : crime["executed_at"],
+                "ready_at" : crime["ready_at"],
+                "slots" : crime["slots"],
+                "rewards" : crime["rewards"],
+            },
+        )
+        return self.crimesv2_set.order_by('status', '-created_at'), False, "OK"
     def updateCrimes(self, force=False):
 
         now = tsnow()
@@ -4370,6 +4425,20 @@ class Event(models.Model):
     def __str__(self):
         return format_html("{} event {}".format(self.faction, self.title))
 
+class Crimesv2(models.Model):
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
+
+    tID = models.IntegerField(default=0)
+    previous_crime_id = models.IntegerField(default=None, null=True, blank=True)
+    name = models.CharField(default="Crime Name", max_length=64)
+    difficulty = models.IntegerField(default=0)
+    status = models.CharField(default="Status", max_length=32)
+    created_at = models.IntegerField(default=0)
+    executed_at = models.IntegerField(default=0, null=True, blank=True)
+    ready_at = models.IntegerField(default=0, null=True, blank=True)
+    expired_at = models.IntegerField(default=0, null=True, blank=True)
+    slots = models.CharField(default="[]", max_length=512, null=True, blank=True)
+    rewards = models.CharField(default="[]", max_length=512, null=True, blank=True)
 
 class Crimes(models.Model):
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)

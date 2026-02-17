@@ -80,3 +80,14 @@ $(document).on("click", "#link-poster-clipboard,#link-poster-gym-clipboard", e =
   const link = $(e.currentTarget).attr("data-val");
   navigator.clipboard.writeText(link);
 });
+
+// OC2.0 toggle (separate endpoint)
+$(document).on("click", "a#faction-aa-toggle-oc2", e => {
+    e.preventDefault();
+    const reload = $(e.currentTarget).closest("div.module");
+    const divspinner = `<div style="text-align: center; height: ${reload.css("height")};">${spinner}</div>`;
+    reload.load("/faction/configurations/oc2/", {
+        csrfmiddlewaretoken: getCookie("csrftoken")
+    }).html(divspinner);
+});
+

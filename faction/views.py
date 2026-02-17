@@ -529,6 +529,52 @@ def configurationsThreshold(request):
     except Exception as e:
         return returnError(exc=e, session=request.session)
 
+def toggleOC2(request):
+    try:
+        if request.session.get("player") and request.method == "POST":
+            player = getPlayer(request.session["player"].get("tId"))
+            factionId = player.factionId
+
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            # get faction
+            faction = Faction.objects.filter(tId=factionId).first()
+            if faction is None:
+                return render(
+                    request,
+                    "yata/error.html",
+                    {
+                        "errorMessage": "Faction {} not found in the database.".format(
+                            factionId
+                        )
+                    },
+                )
+
+            # toggle OC2 opt-in for the faction
+            faction.useOC2 = not faction.useOC2
+            faction.save()
+
+            # update cached faction so future reads don't overwrite this change
+            try:
+                cache.set(f"faction_by_id_{faction.tId}", faction, 3600)
+            except Exception:
+                pass
+
+            context = {"faction": faction}
+            return render(request, "faction/aa/oc2.html", context)
+
+        else:
+            message = (
+                "You might want to log in."
+                if request.method == "POST"
+                else "You need to post. Don't try to be a smart ass."
+            )
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
 
 def configurationsPoster(request):
     try:
@@ -4627,7 +4673,7 @@ def oc(request):
         if request.session.get("player"):
             player = getPlayer(request.session["player"].get("tId"))
             faction = getFaction(player.factionId)
-
+            
             if not player.factionAA:
                 return returnError(type=403, msg="You need AA rights.")
 
@@ -4639,6 +4685,20 @@ def oc(request):
                         "errorMessage": f"Faction {player.factionId} not found in the database."
                     },
                 )
+
+            # Redirect to OC2 view if faction has opted in
+            if faction.useOC2:
+             
+                if request.method == "POST":
+                    context = {
+                        "player": player,
+                        "factioncat": True,
+                        "faction": faction,
+                        "view": {"ocv2": True},
+                    }
+                    return render(request, "faction/content-reload.html", context)
+               
+                return redirect("faction:ocv2")
 
             crimes, error, message = faction.updateCrimes()
 
@@ -4785,6 +4845,203 @@ def oc(request):
                             **message
                         )
                     )
+
+            page = (
+                "faction/content-reload.html"
+                if request.method == "POST"
+                else "faction.html"
+            )
+            return render(request, page, context)
+
+        else:
+            message = "You might want to log in."
+            return returnError(type=403, msg=message)
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
+def ocv2(request):
+    try:
+        if request.session.get("player"):
+            player = getPlayer(request.session["player"].get("tId"))
+            faction = getFaction(player.factionId)
+            
+            if not player.factionAA:
+                return returnError(type=403, msg="You need AA rights.")
+
+            if faction is None:
+                return render(
+                    request,
+                    "yata/error.html",
+                    {
+                        "errorMessage": f"Faction {player.factionId} not found in the database."
+                    },
+                )
+            crimes, error, message = faction.updateCrimesv2(True)
+
+            # Organize crimes by custom groups
+            from collections import defaultdict
+            import ast
+            crimes_temp = defaultdict(lambda: defaultdict(list))
+
+            # Build member lookup dict for name resolution
+            member_lookup = {}
+            for member in faction.member_set.all():
+                member_lookup[member.tId] = member.name
+
+            # Build item lookup dict for item names
+            from bazaar.models import Item
+            item_lookup = {}
+            for item in Item.objects.all():
+                item_lookup[item.tId] = item.tName
+
+            for crime in crimes:
+                # Parse slots (stored as Python string representation)
+                try:
+                    crime.slots_parsed = ast.literal_eval(crime.slots) if crime.slots else []
+                    crime.has_missing_items = False
+                    # Enrich user data with member names and item names
+                    for slot in crime.slots_parsed:
+                        if slot.get('user') and slot['user'].get('id'):
+                            user_id = slot['user']['id']
+                            slot['user']['name'] = member_lookup.get(user_id, 'Unknown')
+                        if slot.get('item_requirement'):
+                            if slot['item_requirement'].get('id'):
+                                item_id = slot['item_requirement']['id']
+                                slot['item_requirement']['name'] = item_lookup.get(item_id, f'Item {item_id}')
+                            # Check if item is missing (only flag if user is assigned)
+                            if slot.get('user') and slot['user'].get('id') and not slot['item_requirement'].get('is_available', False):
+                                crime.has_missing_items = True
+
+                    # Count filled slots for recruiting display
+                    crime.filled_slots = sum(1 for slot in crime.slots_parsed if slot.get('user') and slot['user'].get('id'))
+                    # Flag partially recruited crimes (some but not all slots filled)
+                    total_slots = len(crime.slots_parsed)
+                    crime.is_partial_recruiting = (crime.status.lower() == 'recruiting' and 0 < crime.filled_slots < total_slots)
+                except (ValueError, SyntaxError, TypeError):
+                    crime.slots_parsed = []
+                    crime.has_missing_items = False
+                    crime.filled_slots = 0
+                    crime.is_partial_recruiting = False
+
+                # Parse rewards (stored as Python string representation)
+                try:
+                    crime.rewards_parsed = ast.literal_eval(crime.rewards) if crime.rewards else None
+                    if crime.rewards_parsed:
+                        # Enrich items with names
+                        if crime.rewards_parsed.get('items'):
+                            for item in crime.rewards_parsed['items']:
+                                item_id = item.get('id')
+                                if item_id:
+                                    item['name'] = item_lookup.get(item_id, f'Item {item_id}')
+                        # Enrich payout with member name
+                        if crime.rewards_parsed.get('payout') and crime.rewards_parsed['payout'].get('paid_by'):
+                            paid_by_id = crime.rewards_parsed['payout']['paid_by']
+                            crime.rewards_parsed['payout']['paid_by_name'] = member_lookup.get(paid_by_id, f'Player {paid_by_id}')
+                except (ValueError, SyntaxError, TypeError):
+                    crime.rewards_parsed = None
+
+                # Check if successful crime is unpaid (only if there are actual rewards)
+                crime.is_unpaid = False
+                crime.has_displayable_rewards = False
+                if crime.status.lower() == 'successful' and crime.rewards_parsed:
+                    # Check if there are actual rewards (money, items, or respect)
+                    has_rewards = (crime.rewards_parsed.get('money') or
+                                   crime.rewards_parsed.get('items') or
+                                   crime.rewards_parsed.get('respect'))
+                    # Set flag for template to check if there's displayable content
+                    crime.has_displayable_rewards = has_rewards or crime.is_unpaid
+                    # Only flag as unpaid if there are rewards but no payout info
+                    if has_rewards and (not crime.rewards_parsed.get('payout') or not crime.rewards_parsed['payout'].get('paid_at')):
+                        crime.is_unpaid = True
+                        crime.has_displayable_rewards = True  # Unpaid badge counts as displayable
+
+                if crime.status.lower() in ['planning', 'recruiting']:
+                    main_status = 'In Progress'
+                    sub_status = crime.status
+                elif crime.status.lower() in ['failure', 'successful']:
+                    main_status = 'Completed'
+                    sub_status = crime.status
+                else:
+                    main_status = crime.status
+                    sub_status = None
+
+                if sub_status:
+                    crimes_temp[main_status][sub_status].append(crime)
+                else:
+                    crimes_temp[main_status]['_no_substatus'].append(crime)
+
+            # Convert to regular dict for template with custom order
+            crimes_grouped = []
+            # Define custom order: In Progress first, then Completed, then others alphabetically
+            status_order = ['In Progress', 'Completed']
+            sorted_statuses = []
+            for status in status_order:
+                if status in crimes_temp:
+                    sorted_statuses.append(status)
+            # Add remaining statuses alphabetically
+            for status in sorted(crimes_temp.keys()):
+                if status not in status_order:
+                    sorted_statuses.append(status)
+
+            for main_status in sorted_statuses:
+                subgroups = []
+                # Custom sort order for substatuses
+                substatus_keys = list(crimes_temp[main_status].keys())
+                if main_status == 'Completed':
+                    # For Completed, show successful before failure
+                    substatus_order = ['successful', 'failure']
+                    sorted_substatus = [s for s in substatus_order if s in substatus_keys]
+                    sorted_substatus += sorted([s for s in substatus_keys if s not in substatus_order])
+                elif main_status == 'In Progress':
+                    # For In Progress, show planning before recruiting
+                    substatus_order = ['planning', 'recruiting']
+                    sorted_substatus = [s for s in substatus_order if s in substatus_keys]
+                    sorted_substatus += sorted([s for s in substatus_keys if s not in substatus_order])
+                else:
+                    sorted_substatus = sorted(substatus_keys)
+
+                for sub_status in sorted_substatus:
+                    subgroups.append({
+                        'sub_status': sub_status,
+                        'crimes': crimes_temp[main_status][sub_status]
+                    })
+
+                crimes_grouped.append({
+                    'main_status': main_status,
+                    'subgroups': subgroups
+                })
+
+            # Collect crimes with issues for alerts section
+            unpaid_crimes = []
+            missing_items_crimes = []
+            partial_recruiting_crimes = []
+            for crime in crimes:
+                if hasattr(crime, 'is_unpaid') and crime.is_unpaid:
+                    unpaid_crimes.append(crime)
+                if hasattr(crime, 'has_missing_items') and crime.has_missing_items:
+                    missing_items_crimes.append(crime)
+                # Check for partially filled recruiting crimes (some but not all slots filled)
+                if crime.status.lower() == 'recruiting' and hasattr(crime, 'filled_slots') and hasattr(crime, 'slots_parsed'):
+                    total_slots = len(crime.slots_parsed)
+                    if 0 < crime.filled_slots < total_slots:
+                        partial_recruiting_crimes.append(crime)
+
+            context = {
+                "player": player,
+                "factioncat": True,
+                "faction": faction,
+                "crimes": crimes,
+                "crimes_grouped": crimes_grouped,
+                "unpaid_crimes": unpaid_crimes,
+                "missing_items_crimes": missing_items_crimes,
+                "partial_recruiting_crimes": partial_recruiting_crimes,
+                "error": error,
+                "message": message,
+                "tsnow": tsnow(),
+                "view": {"ocv2": True},
+            }
 
             page = (
                 "faction/content-reload.html"

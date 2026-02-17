@@ -14,6 +14,7 @@ urlpatterns = [
     re_path(r'^configurations/key/$', views.configurationsKey, name='configurationsKey'),
     re_path(r'^configurations/threshold/$', views.configurationsThreshold, name='configurationsThreshold'),
     re_path(r'^configurations/poster/$', views.configurationsPoster, name='configurationsPoster'),
+    re_path(r'^configurations/oc2/$', views.toggleOC2, name='toggleOC2'),
     re_path(r'^configurations/event/$', views.configurationsEvent, name='configurationsEvent'),
 
     # SECTION: members
@@ -65,6 +66,7 @@ urlpatterns = [
 
     # SECTION: oc
     re_path(r'^oc/$', views.oc, name='oc'),
+    re_path(r'^ocv2/$', views.ocv2, name='ocv2'),
     re_path(r'^ocList/$', views.ocList, name='ocList'),
 
     # SECTION: oc
