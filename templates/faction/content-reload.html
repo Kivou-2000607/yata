@@ -147,6 +147,13 @@ This file is part of yata.
 {# organized crimes v2 #}
 {% if view.ocv2 and not view.oc %}
     {% include "faction/ocv2/index.html" %}
+    <script>
+        try {
+            window.history.replaceState(null, document.title, "{% url 'faction:ocv2' %}");
+        } catch (e) {
+            console.error('Failed to update history for ocv2:', e);
+        }
+    </script>
 {% endif %}
 
 {# spies #}

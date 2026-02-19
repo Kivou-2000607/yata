@@ -90,10 +90,21 @@ $(document).on("click", "a#faction-aa-toggle-oc2", e => {
     reload.load("/faction/configurations/oc2/", {
         csrfmiddlewaretoken: getCookie("csrftoken")
     }, function(response, status, xhr) {
-        console.log("OC2 toggle response:", {status, responseLength: response.length, response});
+        console.log("OC2 toggle response:", {status, responseLength: response ? response.length : 0});
         if (status === "error") {
             console.error("OC2 toggle error:", xhr.status, xhr.statusText);
             reload.html(`<p style="color: red;">Error: ${xhr.status} ${xhr.statusText}</p>`);
+            return;
+        }
+
+        // On success, reload the full page so templates (and nav links) are re-rendered
+        try {
+            // small delay to let the UI update the spinner
+            setTimeout(() => {
+                window.location.reload();
+            }, 150);
+        } catch (e) {
+            console.error('Failed to reload after OC2 toggle', e);
         }
     });
 });
