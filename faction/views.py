@@ -2262,18 +2262,27 @@ def attacksReports(request):
                             ),
                         ]
                     elif start and end and start < end:
-                        report = faction.attacksreport_set.create(
-                            start=start, end=end, live=False, computing=True
-                        )
-                        report.assignCrontab()
-                        report.save()
-                        message = [
-                            "validMessageSub",
-                            "New report created.<br>Starts: {}<br>Ends: {}".format(
-                                timestampToDate(start, fmt=True),
-                                timestampToDate(end, fmt=True),
-                            ),
-                        ]
+                        if end - start > 7 * 24 * 3600:
+                            message = [
+                                "errorMessageSub",
+                                "Time period cannot exceed 7 days.<br>Starts: {}<br>Ends: {}".format(
+                                    timestampToDate(start, fmt=True),
+                                    timestampToDate(end, fmt=True),
+                                ),
+                            ]
+                        else:
+                            report = faction.attacksreport_set.create(
+                                start=start, end=end, live=False, computing=True
+                            )
+                            report.assignCrontab()
+                            report.save()
+                            message = [
+                                "validMessageSub",
+                                "New report created.<br>Starts: {}<br>Ends: {}".format(
+                                    timestampToDate(start, fmt=True),
+                                    timestampToDate(end, fmt=True),
+                                ),
+                            ]
                     else:
                         message = ["errorMessageSub", "Error while creating new report"]
                 except BaseException as e:

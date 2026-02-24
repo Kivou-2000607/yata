@@ -48,14 +48,22 @@ $(document).ready(function() {
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
+                var maxDuration = 7 * 24 * 3600;
                 if(!end) {
                     $("#date-end").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").hide();
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
                     $("#date-end").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").hide();
+                    $("#create-report-attacks").hide()
+                } else if(end - start > maxDuration) {
+                    $("#date-end").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").show();
                     $("#create-report-attacks").hide()
                 } else {
                     $("#date-end").removeClass("is-invalid").addClass("is-valid");
+                    $("#attacks-date-error").hide();
                     $("#create-report-attacks").show()
                 }
             },
@@ -77,14 +85,22 @@ $(document).ready(function() {
 
                 var start = parseInt($("#ts-start").val());
                 var end = parseInt($("#ts-end").val());
+                var maxDuration = 7 * 24 * 3600;
                 if(!start) {
                     $("#date-start").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").hide();
                     $("#create-report-attacks").hide()
                 } else if(end < start) {
                     $("#date-start").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").hide();
+                    $("#create-report-attacks").hide()
+                } else if(end - start > maxDuration) {
+                    $("#date-start").removeClass("is-valid").addClass("is-invalid");
+                    $("#attacks-date-error").show();
                     $("#create-report-attacks").hide()
                 } else {
                     $("#date-start").removeClass("is-invalid").addClass("is-valid");
+                    $("#attacks-date-error").hide();
                     $("#create-report-attacks").show()
                 }
             },
@@ -154,7 +170,7 @@ $(document).ready(function () {
   <hr class="sep">
 
     <h3>Create new attacks reports</h3>
-    <p><i>Select a starting date and either an ending date or make it live.</i></p>
+    <p><i>Select a starting date and either an ending date or make it live. You are not able to create reports longer than 7 days.</i></p>
     <div class="row mx-0">
       <input id="ts-start" type="hidden" value="0">
       <input id="ts-end" type="hidden" value="0">
@@ -182,6 +198,9 @@ $(document).ready(function () {
       </div>
       <div class="col-auto m-2 align-self-center">
         <button id="create-report-attacks" type="submit" class="btn btn-outline" style="display: none;"><i class="fas fa-plus-circle fa-icon-inline"></i>&nbsp;Create report</button>
+      </div>
+      <div class="col-12">
+        <p id="attacks-date-error" class="error mb-0" style="display: none;">Time period cannot exceed 7 days.</p>
       </div>
     </div>
 
