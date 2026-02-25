@@ -2838,25 +2838,26 @@ class AttacksReport(models.Model):
 
     def getMembersBreakdown(self, order=7):
         members = dict({})
+        fields = ("attacker_id", "attacker_name", "defender_id", "defender_name", "result", "war", "retaliation")
 
         # outgoing
-        attacks = self.attackreport_set.filter(defender_faction__in=json.loads(self.factions))
+        attacks = self.attackreport_set.filter(defender_faction__in=json.loads(self.factions)).values(*fields).iterator(chunk_size=2000)
         for attack in attacks:
             # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total]
-            n = members[attack.attacker_id]["out"] if attack.attacker_id in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            n = members[attack["attacker_id"]]["out"] if attack["attacker_id"] in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
-            if attack.result in ["Attacked", "Special", "Arrested"]:
+            if attack["result"] in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
                 addOne.append(5)
-            elif attack.result in ["Mugged"]:
+            elif attack["result"] in ["Mugged"]:
                 addOne.append(1)
                 addOne.append(5)
-            elif attack.result in ["Hospitalized"]:
+            elif attack["result"] in ["Hospitalized"]:
                 addOne.append(2)
                 addOne.append(5)
-            elif attack.result in ["Assist"]:
+            elif attack["result"] in ["Assist"]:
                 addOne.append(6)
-            elif attack.result in [
+            elif attack["result"] in [
                 "Stalemate",
                 "Lost",
                 "Timeout",
@@ -2865,41 +2866,41 @@ class AttacksReport(models.Model):
             ]:
                 addOne.append(7)
             else:
-                print(attack.result)
+                print(attack["result"])
 
-            if attack.war > 1:
+            if attack["war"] > 1:
                 addOne.append(3)
 
-            if attack.retaliation > 1.0:
+            if attack["retaliation"] > 1.0:
                 addOne.append(4)
 
             addOne.append(8)
             for i in addOne:
                 n[i] = n[i] + 1
-            members[attack.attacker_id] = {
-                "name": attack.attacker_name,
+            members[attack["attacker_id"]] = {
+                "name": attack["attacker_name"],
                 "out": n,
                 "in": [0, 0, 0, 0, 0, 0, 0, 0, 0],
             }
 
         # incoming
-        attacks = self.attackreport_set.filter(attacker_faction__in=json.loads(self.factions))
+        attacks = self.attackreport_set.filter(attacker_faction__in=json.loads(self.factions)).values(*fields).iterator(chunk_size=2000)
         for attack in attacks:
             # n = [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total]
-            n = members[attack.defender_id]["in"] if attack.defender_id in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            n = members[attack["defender_id"]]["in"] if attack["defender_id"] in members else [0, 0, 0, 0, 0, 0, 0, 0, 0]
             addOne = []
-            if attack.result in ["Attacked", "Special", "Arrested"]:
+            if attack["result"] in ["Attacked", "Special", "Arrested"]:
                 addOne.append(0)
                 addOne.append(5)
-            elif attack.result in ["Mugged"]:
+            elif attack["result"] in ["Mugged"]:
                 addOne.append(1)
                 addOne.append(5)
-            elif attack.result in ["Hospitalized"]:
+            elif attack["result"] in ["Hospitalized"]:
                 addOne.append(2)
                 addOne.append(5)
-            elif attack.result in ["Assist"]:
+            elif attack["result"] in ["Assist"]:
                 addOne.append(6)
-            elif attack.result in [
+            elif attack["result"] in [
                 "Stalemate",
                 "Lost",
                 "Timeout",
@@ -2908,22 +2909,22 @@ class AttacksReport(models.Model):
             ]:
                 addOne.append(7)
             else:
-                print(attack.result)
+                print(attack["result"])
 
-            if attack.war > 1:
+            if attack["war"] > 1:
                 addOne.append(3)
 
-            if attack.retaliation > 1.0:
+            if attack["retaliation"] > 1.0:
                 addOne.append(4)
 
             addOne.append(8)
             for i in addOne:
                 n[i] = n[i] + 1
-            if attack.defender_id in members:
-                members[attack.defender_id]["in"] = n
+            if attack["defender_id"] in members:
+                members[attack["defender_id"]]["in"] = n
             else:
-                members[attack.defender_id] = {
-                    "name": attack.defender_name,
+                members[attack["defender_id"]] = {
+                    "name": attack["defender_name"],
                     "in": n,
                     "out": [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 }
@@ -3031,6 +3032,13 @@ class AttackReport(models.Model):
     warlord_bonus = models.FloatField(default=0.0)
 
     objects = BulkManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["report", "attacker_faction"]),
+            models.Index(fields=["report", "defender_faction"]),
+            models.Index(fields=["report", "timestamp_ended"]),
+        ]
 
     def __str__(self):
         return "{} -> {}".format(self.attacker_factionname, self.defender_factionname)

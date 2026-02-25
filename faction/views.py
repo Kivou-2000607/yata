@@ -16,6 +16,7 @@
 #     along with yata. If not, see <https://www.gnu.org/licenses/>.
 
 import csv
+import io
 import datetime
 import html
 import json
@@ -2609,13 +2610,10 @@ def attacksReport(request, reportId, share=False):
             p_at = request.GET.get("p_at")
             attacks = paginator.get_page(p_at)
 
-            attackers = dict({})
-            defenders = dict({})
-            for r in attacks_set:
-                attackers[r.attacker_id] = r.attacker_name
-                defenders[r.defender_id] = r.defender_name
-            attackers = sorted(attackers.items(), key=lambda x: x[1].lower())
-            defenders = sorted(defenders.items(), key=lambda x: x[1].lower())
+            attackers = dict(attacks_set.values_list("attacker_id", "attacker_name").distinct())
+            defenders = dict(attacks_set.values_list("defender_id", "defender_name").distinct())
+            attackers = sorted(attackers.items(), key=lambda x: (x[1] or "").lower())
+            defenders = sorted(defenders.items(), key=lambda x: (x[1] or "").lower())
 
             if order_fa:
                 factions = Paginator(report.attacksfaction_set.order_by(order_fa), 10)
@@ -2647,6 +2645,7 @@ def attacksReport(request, reportId, share=False):
             players = players.get_page(p_pl)
 
             # context
+            members = False
             report.status = REPORT_ATTACKS_STATUS[report.state]
             # get reports
             reports = faction.attacksreport_set.order_by("-end")
@@ -3005,30 +3004,29 @@ def attacksExport(request, reportId, type):
                     )
                 )
 
-                csv_data = [
-                    [
-                        "Player Id",
-                        "Player Name",
-                        "Outgoing Leave",
-                        "Outgoing Mug",
-                        "Outgoing Hosp",
-                        "Outgoing War",
-                        "Outgoing Retal",
-                        "Outgoing Win",
-                        "Outgoing Assist",
-                        "Outgoing Lost",
-                        "Outgoing Total",
-                        "Incoming Leave",
-                        "Incoming Mug",
-                        "Incoming Hosp",
-                        "Incoming War",
-                        "Incoming Retal",
-                        "Incoming Win",
-                        "Incoming Assist",
-                        "Incoming Lost",
-                        "Incoming Total",
-                    ]
-                ]
+                writer = csv.writer(response)
+                writer.writerow([
+                    "Player Id",
+                    "Player Name",
+                    "Outgoing Leave",
+                    "Outgoing Mug",
+                    "Outgoing Hosp",
+                    "Outgoing War",
+                    "Outgoing Retal",
+                    "Outgoing Win",
+                    "Outgoing Assist",
+                    "Outgoing Lost",
+                    "Outgoing Total",
+                    "Incoming Leave",
+                    "Incoming Mug",
+                    "Incoming Hosp",
+                    "Incoming War",
+                    "Incoming Retal",
+                    "Incoming Win",
+                    "Incoming Assist",
+                    "Incoming Lost",
+                    "Incoming Total",
+                ])
 
                 players = report.getMembersBreakdown()
                 for k, v in players:
@@ -3037,28 +3035,11 @@ def attacksExport(request, reportId, type):
                     #         'out': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
                     #         'in': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
                     # }
-                    data = [k, v["name"]]
-                    for _ in v["out"]:
-                        data.append(_)
-                    for _ in v["in"]:
-                        data.append(_)
-                    csv_data.append(data)
-
-                t = loader.get_template("faction/attacks/csv-breakdown.txt")
-                c = {"data": csv_data}
-                response.write(t.render(c))
+                    writer.writerow([k, v["name"]] + v["out"] + v["in"])
 
                 return response
 
             elif type == "3":
-                # return error if no filters
-                response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = (
-                    'attachment; filename="Attacks_report_{}_attacks.csv"'.format(
-                        report.pk
-                    )
-                )
-
                 if report.player_filter:
                     attacksFilters = Q(attacker_id=report.player_filter) | Q(
                         defender_id=report.player_filter
@@ -3097,30 +3078,39 @@ def attacksExport(request, reportId, type):
                     "code",
                 ]
 
-                csv_data = [keys]
-
-                for a in list(attacks.values()):
-                    if a.get("defender_faction") == 0:
-                        a["defender_factionname"] = "-"
-                    elif a.get("defender_faction") == -1:
-                        a["defender_factionname"] = "Stealth"
-                    if a.get("attacker_faction") == 0:
-                        a["attacker_factionname"] = "-"
-                    elif a.get("attacker_faction") == -1:
-                        a["attacker_factionname"] = "Stealth"
-                    data = []
-
-                    for k in keys:
-                        if k in ["attacker_factionname", "defender_factionname"]:
-                            data.append(html.unescape(a.get(k)))
+                def stream_attacks(qs, keys):
+                    buf = io.StringIO()
+                    writer = csv.writer(buf)
+                    writer.writerow(keys)
+                    yield buf.getvalue()
+                    buf.seek(0)
+                    buf.truncate(0)
+                    for a in qs.values(*keys).iterator(chunk_size=2000):
+                        if a["attacker_faction"] == 0:
+                            a["attacker_factionname"] = "-"
+                        elif a["attacker_faction"] == -1:
+                            a["attacker_factionname"] = "Stealth"
                         else:
-                            data.append(a.get(k))
-                    csv_data.append(data)
+                            a["attacker_factionname"] = html.unescape(a["attacker_factionname"] or "")
+                        if a["defender_faction"] == 0:
+                            a["defender_factionname"] = "-"
+                        elif a["defender_faction"] == -1:
+                            a["defender_factionname"] = "Stealth"
+                        else:
+                            a["defender_factionname"] = html.unescape(a["defender_factionname"] or "")
+                        writer.writerow([a[k] for k in keys])
+                        yield buf.getvalue()
+                        buf.seek(0)
+                        buf.truncate(0)
 
-                t = loader.get_template("faction/attacks/csv-attacks.txt")
-                c = {"data": csv_data}
-                response.write(t.render(c))
-
+                response = StreamingHttpResponse(
+                    stream_attacks(attacks, keys), content_type="text/csv"
+                )
+                response["Content-Disposition"] = (
+                    'attachment; filename="Attacks_report_{}_attacks.csv"'.format(
+                        report.pk
+                    )
+                )
                 return response
 
             return returnError(type=403, msg="YOLOOO")
