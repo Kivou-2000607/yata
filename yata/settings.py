@@ -90,6 +90,11 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 # SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 ROOT_URLCONF = "yata.urls"
+# Ignore xkcdpass from static files
+STATICFILES_IGNORE_PATTERNS = [
+    "*.wordlist", "eff-*", "spa-*", "ger-*", "fin-*", "nor-*",
+    "pt-*", "ita-*", "fr-*", "legacy",
+]
 
 if DEBUG:
     INSTALLED_APPS += ["nplusone.ext.django"]
@@ -271,7 +276,7 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "static"),)
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
 
 # whitenoise
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = "/media/"
