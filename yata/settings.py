@@ -276,7 +276,7 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, "static"),)
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
 
 # whitenoise
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = "yata.storage.ManifestStaticFilesStorageNotStrict"
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = "/media/"
