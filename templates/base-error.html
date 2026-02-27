@@ -34,10 +34,10 @@ This file is part of yata.
   {% block meta%}{% endblock %}
 
   <!-- load fontawesome -->
-  <link href="{% static 'thirdparty/fontawesome-free-6.1.1-web/css/all.css' %}" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" rel="stylesheet" type="text/css">
 
   <!-- bootstrap -->
-  <link rel="stylesheet" type="text/css" href='{% static "thirdparty/bootstrap-5.0.2-dist/css/bootstrap.min.css" %}'>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
 
   <!-- yata main css -->
   {% if request.session.dark %}
@@ -68,7 +68,7 @@ This file is part of yata.
     </div>
   </header>
 
-  <script src='{% static "thirdparty/bootstrap-5.0.2-dist/js/bootstrap.bundle.js" %}'></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
