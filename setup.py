@@ -1,8 +1,8 @@
 import os
-from pathlib import Path
+import subprocess
+import sys
 
 import django
-import django_json_widget as _
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yata.settings")
 django.setup()
@@ -21,19 +21,23 @@ from setup.models import APIKey  # noqa: E402
 
 def yes_or_no(question):
     reply = str(input(question + " (y/n): ")).lower().strip()
+    if not reply:
+        return yes_or_no(question)
     if reply[0] == "y":
         return True
     if reply[0] == "n":
         return False
-    else:
-        return yes_or_no("Uhhhh... please enter ")
+    return yes_or_no("Uhhhh... please enter ")
+
+
+def run(cmd):
+    result = subprocess.run(cmd, shell=True)
+    if result.returncode != 0:
+        print(f"Command failed (exit {result.returncode}): {cmd}")
+        sys.exit(result.returncode)
 
 
 key = config("SECRET_KEY")
-reset_db = False
-fill_db = False
-static_files = False
-
 
 reset_db = yes_or_no("Do you want to reset the database?")
 fill_db = yes_or_no("Do you want to fill the database?")
@@ -42,90 +46,67 @@ static_file = yes_or_no("Do you want to generate static files?")
 if reset_db:
     if config("DATABASE") == "postgresql":
         print("Remove local database")
-        cmd = "python manage.py reset_db"
-        r = os.system(cmd)
+        run("python manage.py reset_db")
     else:
-        # remove local database
         print("Remove local database")
-        cmd = "rm -vf db.sqlite3"
-        r = os.system(cmd)
+        run("rm -vf db.sqlite3")
 
-    # migrate
-    cmd = "python manage.py migrate"
-    r = os.system(cmd)
-
-    # create cache table
-    cmd = "python manage.py createcachetable"
-    r = os.system(cmd)
+    run("python manage.py migrate")
+    run("python manage.py createcachetable")
 
 # create db super user
-if not len(User.objects.all()):
+if not User.objects.exists():
     print("create superuser")
     User.objects.create_superuser("admin", "admin@example.com", "adminpass")
 
 # create required objects
-if not len(PlayerData.objects.all()):
+if not PlayerData.objects.exists():
     print("Create Players stats")
-    cmd = "python manage.py players_stats"
-    r = os.system(cmd)
+    run("python manage.py players_stats")
 
-if not len(Player.objects.filter(tId=-1)):
+if not Player.objects.filter(tId=-1).exists():
     print("Create Player")
     Player.objects.create(tId=-1, name="Anonymous", validKey=False)
 
-if not len(Faction.objects.filter(tId=-1)):
+if not Faction.objects.filter(tId=-1).exists():
     print("Create Faction")
     Faction.objects.create(tId=-1, name="Faction Anonymous")
 
-if not len(APIKey.objects.all()) and key:
+if not APIKey.objects.exists() and key:
     print("Create API Key")
     APIKey.objects.create(key=key)
 
-if not len(AwardsData.objects.all()):
+if not AwardsData.objects.exists():
     print("Create Awards data")
     AwardsData.objects.create()
 
-if not len(BazaarData.objects.all()):
+if not BazaarData.objects.exists():
     print("Create Bazaar data")
     BazaarData.objects.create()
 
-if not len(FactionData.objects.all()):
+if not FactionData.objects.exists():
     print("Create Faction data")
     FactionData.objects.create()
-    cmd = "python manage.py init_faction_tree"
-    r = os.system(cmd)
+    run("python manage.py init_faction_tree")
 
-if not len(NPC.objects.all()):
+if not NPC.objects.exists():
     print("Create NPC")
     NPC.objects.create(tId=4, show=True)
     NPC.objects.create(tId=15, show=True)
     NPC.objects.create(tId=19, show=True)
 
-if not len(CompanyDescription.objects.all()):
-    print("Create NPC")
-    cmd = "python manage.py init_companies"
-    r = os.system(cmd)
+if not CompanyDescription.objects.exists():
+    print("Create Company descriptions")
+    run("python manage.py init_companies")
 
 if fill_db:
-    cmd = "python manage.py check_keys"
-    r = os.system(cmd)
-    cmd = "python manage.py awards"
-    r = os.system(cmd)
-    cmd = "python manage.py items"
-    r = os.system(cmd)
-    cmd = "python manage.py players"
-    r = os.system(cmd)
-    cmd = "python manage.py loot"
-    r = os.system(cmd)
-    cmd = "python manage.py factions"
-    r = os.system(cmd)
-    cmd = "python manage.py companies"
-    r = os.system(cmd)
+    run("python manage.py check_keys")
+    run("python manage.py awards")
+    run("python manage.py items")
+    run("python manage.py players")
+    run("python manage.py loot")
+    run("python manage.py factions")
+    run("python manage.py companies")
 
 if static_file:
-
-    p = Path(_.__path__[0]) / "static" / "dist" / "jsoneditor.map"
-    p.touch()
-
-    cmd = "python manage.py collectstatic --noinput"
-    r = os.system(cmd)
+    run("python manage.py collectstatic --noinput")
