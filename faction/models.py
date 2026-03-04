@@ -282,37 +282,37 @@ class Faction(models.Model):
         if key is None:
             return {}
         else:
-            news = apiCall(
-                "faction",
-                self.tId,
-                "mainnews",
+            response = apiCall(
+                "faction/news",
                 key=key.value,
-                sub="mainnews",
+                v2=True,
+                kv={"striptags": "false", "limit": 100, "sort": "DESC", "cat": "main"},
                 cache_response=3600,
                 cache_private=False,
                 verbose=True,
             )
 
-        if "apiError" in news:
-            return news
+        if "apiError" in response:
+            return response
 
         wars = dict({})
-        for v in news.values():
+        for v in response["news"]:
+            text = v["text"]
 
-            if "rankreport&rankID=" in v["news"]:  # case ranked war
+            if "rankreport&rankID=" in text:  # case ranked war
                 war_type = "ranked"
                 reg = r"rankreport&rankID=\d{1,10}|step=profile&ID=\d{1,10}"
-            elif "warreport&warID=" in v["news"]:  # case territorial war
+            elif "warreport&warID=" in text:  # case territorial war
                 war_type = "territorial"
                 reg = r"warreport&warID=\d{1,10}|step=profile&ID=\d{1,10}"
-            elif "raidreport&raidID=" in v["news"]:  # case raid war
+            elif "raidreport&raidID=" in text:  # case raid war
                 war_type = "raid"
                 reg = r"raidreport&raidID=\d{1,10}|step=profile&ID=\d{1,10}"
             else:
                 continue
 
             # get factions ID and war ID
-            fac_a, fac_b, war_id = re.findall(reg, v["news"])
+            fac_a, fac_b, war_id = re.findall(reg, text)
             fac_a = int(fac_a.split("=")[-1])
             fac_b = int(fac_b.split("=")[-1])
             war_id = int(war_id.split("=")[-1])
@@ -329,19 +329,19 @@ class Faction(models.Model):
                 elif war_type == "raid":
                     reg = rf'ID={other_fac_id}">(.*?)</a>'
 
-                name = re.findall(reg, v["news"])[0]
+                name = re.findall(reg, text)[0]
                 wars[other_fac_id] = {"name": name, "n": 0, "wars": []}
 
             # extra data (dump for js)
             extra = {}
             if war_type == "territorial":
                 reg = r'terrName=(.*?)">'
-                extra["territory"] = re.findall(reg, v["news"])[0]
+                extra["territory"] = re.findall(reg, text)[0]
                 reg = rf'ID={other_fac_id}">(.*?)</a>'
-                extra["other_fac_name"] = re.findall(reg, v["news"])[0]
+                extra["other_fac_name"] = re.findall(reg, text)[0]
             elif war_type == "raid":
                 reg = rf'ID={other_fac_id}">(.*?)</a>'
-                extra["other_fac_name"] = re.findall(reg, v["news"])[0]
+                extra["other_fac_name"] = re.findall(reg, text)[0]
 
             # try to get report
             report = self.attacksreport_set.filter(war_id=war_id, war_type=war_type).first()
@@ -357,12 +357,6 @@ class Faction(models.Model):
                 }
             )
             wars[other_fac_id]["n"] += 1
-
-        # print("get wars")
-        # for k1, v1 in wars.items():
-        #     print(f'{k1}')
-        #     for k2, v2 in v1.items():
-        #         print(f'\t{k2}: {v2}')
 
         return sorted(wars.items(), key=lambda x: -x[1]["n"])
     def updateCrimesv2(self,force=False):
