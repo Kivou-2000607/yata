@@ -20,12 +20,15 @@ This file is part of yata.
 from django.db import models
 from django.utils import timezone
 
-import requests
-import json
-import urllib
-import datetime
 
-from yata.handy import tsnow
+class ApiCallLog(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    section = models.CharField(max_length=64, db_index=True)
+    is_error = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
 
 class APIKey(models.Model):
     tId = models.IntegerField(default=0)
@@ -36,23 +39,22 @@ class APIKey(models.Model):
     error = models.CharField(max_length=256, blank=True)
 
     def __str__(self):
-        return "API key of {} [{}]".format(self.tName, self.tId)
+        return f"API key of {self.tName} [{self.tId}]"
 
     def checkKey(self):
         from yata.handy import apiCall
 
         req = apiCall("user", "", "", self.key, verbose=False)
-        if 'apiError' in req:
+        if "apiError" in req:
             self.status = False
-            self.error = req['apiError']
-            print("[setup.models.checkKey] {} {}".format(self, self.error))
+            self.error = req["apiError"]
+            print(f"[setup.models.checkKey] {self} {self.error}")
         else:
             self.status = True
             self.tName = req.get("name", "?")
             self.tId = req.get("player_id", "0")
             self.error = ""
-            print("[setup.models.checkKey] {} checked".format(self))
+            print(f"[setup.models.checkKey] {self} checked")
 
         self.lastCheckTS = int(timezone.now().timestamp())
         self.save()
-

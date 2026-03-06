@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %} | API Stats{% endblock %}
+
+{% block jquery %}
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['bar']});
+  google.charts.setOnLoadCallback(drawCharts);
+
+  function drawCharts() {
+    var isDark = document.body.classList.contains('dark');
+    var textColor = isDark ? '#ccc' : '#333';
+    var bgColor = isDark ? '#222' : '#fff';
+
+    var hourlyData = google.visualization.arrayToDataTable({{ hourly_chart_json|safe }});
+    var hourlyOptions = {
+      chart: { title: 'Calls per hour (last 24h)' },
+      bars: 'vertical',
+      colors: ['#4e9af1', '#e05252'],
+      backgroundColor: bgColor,
+      hAxis: { textStyle: { color: textColor } },
+      vAxis: { textStyle: { color: textColor } },
+      legend: { textStyle: { color: textColor } },
+    };
+    var hourlyChart = new google.charts.Bar(document.getElementById('hourly-chart'));
+    hourlyChart.draw(hourlyData, google.charts.Bar.convertOptions(hourlyOptions));
+
+    var dailyData = google.visualization.arrayToDataTable({{ daily_chart_json|safe }});
+    var dailyOptions = {
+      chart: { title: 'Calls per day (last 30 days)' },
+      bars: 'vertical',
+      colors: ['#4e9af1', '#e05252'],
+      backgroundColor: bgColor,
+      hAxis: { textStyle: { color: textColor } },
+      vAxis: { textStyle: { color: textColor } },
+      legend: { textStyle: { color: textColor } },
+    };
+    var dailyChart = new google.charts.Bar(document.getElementById('daily-chart'));
+    dailyChart.draw(dailyData, google.charts.Bar.convertOptions(dailyOptions));
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 me-auto"><i class="fas fa-chart-bar"></i>&nbsp;Torn API Usage</div>
+    <div class="px-2 text-muted" style="font-size: 0.8rem;">Updated: {{ now|date:"Y-m-d H:i" }} TCT</div>
+  </div>
+</h2>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <p class="text-muted mb-3">Public view of YATA's Torn API call volume. Data is retained for 30 days. Cached responses are not counted.</p>
+
+  <!-- Summary cards -->
+  <div class="row g-3 mb-4">
+    {% for label, data in summary_cards %}
+    {% endfor %}
+
+    <div class="col-6 col-md-3">
+      <div class="p-3 rounded text-center" style="background: var(--module-bg-color); border: 1px solid var(--border-color);">
+        <div style="font-size: 1.8rem; font-weight: bold;">{{ this_hour.total|intcomma }}</div>
+        <div class="text-muted">This hour</div>
+        {% if this_hour.errors %}<div class="error" style="font-size: 0.85rem;">{{ this_hour.errors }} error{{ this_hour.errors|pluralize }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="p-3 rounded text-center" style="background: var(--module-bg-color); border: 1px solid var(--border-color);">
+        <div style="font-size: 1.8rem; font-weight: bold;">{{ today.total|intcomma }}</div>
+        <div class="text-muted">Today</div>
+        {% if today.errors %}<div class="error" style="font-size: 0.85rem;">{{ today.errors }} error{{ today.errors|pluralize }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="p-3 rounded text-center" style="background: var(--module-bg-color); border: 1px solid var(--border-color);">
+        <div style="font-size: 1.8rem; font-weight: bold;">{{ this_week.total|intcomma }}</div>
+        <div class="text-muted">Last 7 days</div>
+        {% if this_week.errors %}<div class="error" style="font-size: 0.85rem;">{{ this_week.errors }} error{{ this_week.errors|pluralize }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="p-3 rounded text-center" style="background: var(--module-bg-color); border: 1px solid var(--border-color);">
+        <div style="font-size: 1.8rem; font-weight: bold;">{{ this_month.total|intcomma }}</div>
+        <div class="text-muted">Last 30 days</div>
+        {% if this_month.errors %}<div class="error" style="font-size: 0.85rem;">{{ this_month.errors }} error{{ this_month.errors|pluralize }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hourly chart -->
+{% if hourly %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="px-2"><i class="fas fa-clock"></i>&nbsp;Last 24 Hours</div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div id="hourly-chart" style="height: 280px;"></div>
+</div>
+{% endif %}
+
+<!-- Daily chart -->
+{% if daily %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="px-2"><i class="fas fa-calendar-alt"></i>&nbsp;Last 30 Days</div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div id="daily-chart" style="height: 280px;"></div>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th class="text-end">Calls</th>
+          <th class="text-end">Errors</th>
+          <th class="text-end">Error rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in daily reversed %}
+        <tr>
+          <td>{{ d.day|date:"Y-m-d" }}</td>
+          <td class="text-end">{{ d.total|intcomma }}</td>
+          <td class="text-end">{% if d.errors %}<span class="error">{{ d.errors }}</span>{% else %}0{% endif %}</td>
+          <td class="text-end">
+            {% if d.total %}
+              {% widthratio d.errors d.total 100 %}%
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Top sections -->
+{% if top_sections %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="px-2"><i class="fas fa-list"></i>&nbsp;Top API Sections (30 days)</div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>Section</th>
+          <th class="text-end">Calls</th>
+          <th class="text-end">Errors</th>
+          <th class="text-end">Error rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in top_sections %}
+        <tr>
+          <td><code>{{ s.section }}</code></td>
+          <td class="text-end">{{ s.total|intcomma }}</td>
+          <td class="text-end">{% if s.errors %}<span class="error">{{ s.errors }}</span>{% else %}0{% endif %}</td>
+          <td class="text-end">
+            {% if s.total %}
+              {% widthratio s.errors s.total 100 %}%
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

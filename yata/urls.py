@@ -14,23 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import include, path, re_path
-from django.contrib import admin
-from django.http import HttpResponse
-from django.views.generic.base import RedirectView
-from .views import bot_redirect
 # for media and admin url obfuscation
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
-from . import views
-from setup import views as setup_views
+from django.contrib import admin
+from django.http import HttpResponse
+from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
+
+from company.views import supervise
+from faction.views import attacksReport, revivesReport
 
 # for shared reports
 from faction.views import report as chainReport
-from faction.views import attacksReport
-from faction.views import revivesReport
-from company.views import supervise
+from setup.views import api_stats
+
+from . import views
+from .views import bot_redirect
 
 
 # sentry
@@ -50,7 +50,7 @@ urlpatterns = [
     re_path(r"^setup/", include("setup.urls")),
     re_path(r"^api/", include("api.urls")),
     re_path(r"^company/", include("company.urls")),
-    path(f"admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     # site
     path("", views.index, name="index"),
     path("login", views.login, name="login"),
@@ -64,6 +64,7 @@ urlpatterns = [
     ),
     path("bot", bot_redirect, name="bot"),
     path("tos", views.tos, name="tos"),
+    path("api-stats/", api_stats, name="api_stats"),
     # robot.txt
     path(
         "robots.txt",
@@ -75,12 +76,8 @@ urlpatterns = [
     path("<slug:share>/attacks/<slug:reportId>/", attacksReport, name="attacksReport"),
     path("<slug:share>/revives/<slug:reportId>/", revivesReport, name="revivesReport"),
     path("share/company/<slug:shareId>/", supervise, name="company"),
-    # sentry
-    path("sentry-debug/", trigger_error),
     # redirect default favicon
-    path(
-        "favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)
-    ),
+    path("favicon.ico", RedirectView.as_view(url="/static/favicon.ico", permanent=True)),
 ]
 
 if settings.DEBUG:
