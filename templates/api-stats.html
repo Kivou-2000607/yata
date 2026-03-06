@@ -13,6 +13,19 @@
     var textColor = isDark ? '#ccc' : '#333';
     var bgColor = isDark ? '#222' : '#fff';
 
+    var minutelyData = google.visualization.arrayToDataTable({{ minutely_chart_json|safe }});
+    var minutelyOptions = {
+      chart: { title: 'Calls per minute (last hour)' },
+      bars: 'vertical',
+      colors: ['#4e9af1', '#e05252'],
+      backgroundColor: bgColor,
+      hAxis: { textStyle: { color: textColor } },
+      vAxis: { textStyle: { color: textColor } },
+      legend: { textStyle: { color: textColor } },
+    };
+    var minutelyChart = new google.charts.Bar(document.getElementById('minutely-chart'));
+    minutelyChart.draw(minutelyData, google.charts.Bar.convertOptions(minutelyOptions));
+
     var hourlyData = google.visualization.arrayToDataTable({{ hourly_chart_json|safe }});
     var hourlyOptions = {
       chart: { title: 'Calls per hour (last 24h)' },
@@ -91,6 +104,16 @@
     </div>
   </div>
 </div>
+
+<!-- Minutely chart -->
+{% if minutely %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="px-2"><i class="fas fa-stopwatch"></i>&nbsp;Last Hour (per minute)</div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div id="minutely-chart" style="height: 280px;"></div>
+</div>
+{% endif %}
 
 <!-- Hourly chart -->
 {% if hourly %}

@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from django.core.cache import cache
 from django.db.models import Count, Q
-from django.db.models.functions import TruncDay, TruncHour
+from django.db.models.functions import TruncDay, TruncHour, TruncMinute
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -51,6 +51,14 @@ def api_stats(request):
     this_week = summarize(ApiCallLog.objects.filter(timestamp__gte=now - timedelta(days=7)))
     this_month = summarize(ApiCallLog.objects.filter(timestamp__gte=now - timedelta(days=30)))
 
+    minutely = list(
+        ApiCallLog.objects.filter(timestamp__gte=now - timedelta(hours=1))
+        .annotate(minute=TruncMinute("timestamp"))
+        .values("minute")
+        .annotate(total=Count("id"), errors=Count("id", filter=Q(is_error=True)))
+        .order_by("minute")
+    )
+
     hourly = list(
         ApiCallLog.objects.filter(timestamp__gte=now - timedelta(hours=24))
         .annotate(hour=TruncHour("timestamp"))
@@ -72,6 +80,10 @@ def api_stats(request):
     )
 
     # Format chart data for Google Charts
+    minutely_chart = [["Minute", "Calls", "Errors"]]
+    for m in minutely:
+        minutely_chart.append([m["minute"].strftime("%H:%M"), m["total"], m["errors"]])
+
     hourly_chart = [["Hour", "Calls", "Errors"]]
     for h in hourly:
         hourly_chart.append([h["hour"].strftime("%H:%M"), h["total"], h["errors"]])
@@ -81,6 +93,8 @@ def api_stats(request):
         daily_chart.append([d["day"].strftime("%b %d"), d["total"], d["errors"]])
 
     context = {
+        "minutely": minutely,
+        "minutely_chart_json": json.dumps(minutely_chart),
         "this_hour": this_hour,
         "today": today,
         "this_week": this_week,
