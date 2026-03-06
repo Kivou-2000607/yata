@@ -79,6 +79,37 @@ def api_stats(request):
         ApiCallLog.objects.filter(timestamp__gte=now - timedelta(days=30)).values("section").annotate(total=Count("id"), errors=Count("id", filter=Q(is_error=True))).order_by("-total")[:10]
     )
 
+    error_code_labels = {
+        0: "Unknown / unreachable",
+        1: "Key is empty",
+        2: "Incorrect key",
+        3: "Wrong type",
+        4: "Wrong fields",
+        5: "Too many requests",
+        6: "Incorrect ID",
+        7: "Incorrect ID-entity relation",
+        8: "IP block",
+        9: "API disabled",
+        10: "Key owner in federal jail",
+        11: "Key change error",
+        12: "Key read error",
+        13: "Key disabled due to inactivity",
+        14: "Daily read limit reached",
+        15: "Temporary error",
+        16: "Access level too low",
+        17: "Backend error",
+        18: "API key paused by owner",
+    }
+
+    error_codes = list(
+        ApiCallLog.objects.filter(timestamp__gte=now - timedelta(days=30), is_error=True)
+        .values("error_code")
+        .annotate(count=Count("id"))
+        .order_by("-count")
+    )
+    for e in error_codes:
+        e["label"] = error_code_labels.get(e["error_code"], "HTTP error") if e["error_code"] is not None else "Unknown"
+
     # Format chart data for Google Charts
     minutely_chart = [["Minute", "Calls", "Errors"]]
     for m in minutely:
@@ -102,6 +133,7 @@ def api_stats(request):
         "hourly": hourly,
         "daily": daily,
         "top_sections": top_sections,
+        "error_codes": error_codes,
         "hourly_chart_json": json.dumps(hourly_chart),
         "daily_chart_json": json.dumps(daily_chart),
         "now": now,

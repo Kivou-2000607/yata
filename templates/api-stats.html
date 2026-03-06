@@ -197,4 +197,33 @@
 </div>
 {% endif %}
 
+<!-- Error codes -->
+{% if error_codes %}
+<h2 class="title rounded-top px-2 py-2">
+  <div class="px-2"><i class="fas fa-exclamation-triangle"></i>&nbsp;Errors by Code (30 days)</div>
+</h2>
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Description</th>
+          <th class="text-end">Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in error_codes %}
+        <tr>
+          <td><code>{{ e.error_code }}</code></td>
+          <td>{{ e.label }}</td>
+          <td class="text-end error">{{ e.count|intcomma }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

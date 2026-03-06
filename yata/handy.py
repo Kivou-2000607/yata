@@ -75,11 +75,11 @@ def timestampToDate(timestamp, fmt=False):
         return d.strftime(fmt)
 
 
-def _log_api_call(section, is_error):
+def _log_api_call(section, is_error, error_code=None):
     try:
         from setup.models import ApiCallLog
 
-        ApiCallLog.objects.create(section=str(section)[:64], is_error=is_error)
+        ApiCallLog.objects.create(section=str(section)[:64], is_error=is_error, error_code=error_code)
     except Exception:
         pass
 
@@ -183,7 +183,7 @@ def apiCall(
     try:
         r = requests.get(url)
     except BaseException:
-        _log_api_call(section, True)
+        _log_api_call(section, True, 0)
         return apiCallError({"error": {"code": 0, "error": f"can't reach {base_url}"}})
 
     err = False
@@ -230,7 +230,7 @@ def apiCall(
                 _log_api_call(section, False)
                 return rjson
 
-    _log_api_call(section, True)
+    _log_api_call(section, True, err["error"]["code"])
     return apiCallError(err)
 
 
