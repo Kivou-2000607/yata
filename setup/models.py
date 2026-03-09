@@ -26,6 +26,7 @@ class ApiCallLog(models.Model):
     section = models.CharField(max_length=64, db_index=True)
     is_error = models.BooleanField(default=False)
     error_code = models.IntegerField(null=True, blank=True)
+    caller = models.CharField(max_length=128, blank=True, default="")
 
     class Meta:
         ordering = ["-timestamp"]

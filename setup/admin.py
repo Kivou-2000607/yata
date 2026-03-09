@@ -30,3 +30,12 @@ class APIKeyAdmin(admin.ModelAdmin):
         return timestampToDate(instance.lastCheckTS)
 
 admin.site.register(APIKey, APIKeyAdmin)
+
+
+class ApiCallLogAdmin(admin.ModelAdmin):
+    list_display = ["timestamp", "section", "is_error", "error_code", "caller"]
+    list_filter = ["is_error", "error_code", "section"]
+    search_fields = ["caller", "section"]
+
+
+admin.site.register(ApiCallLog, ApiCallLogAdmin)

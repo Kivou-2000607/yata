@@ -77,9 +77,21 @@ def timestampToDate(timestamp, fmt=False):
 
 def _log_api_call(section, is_error, error_code=None):
     try:
+        import inspect
+
         from setup.models import ApiCallLog
 
-        ApiCallLog.objects.create(section=str(section)[:64], is_error=is_error, error_code=error_code)
+        caller = ""
+        for frame_info in inspect.stack():
+            filename = frame_info.filename
+            if "handy.py" in filename or "/django/" in filename or "site-packages" in filename:
+                continue
+            parts = filename.split("/yata/")
+            rel_path = parts[-1] if len(parts) > 1 else filename
+            caller = f"{rel_path}:{frame_info.function}"
+            break
+
+        ApiCallLog.objects.create(section=str(section)[:64], is_error=is_error, error_code=error_code, caller=caller[:128])
     except Exception:
         pass
 
