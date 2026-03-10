@@ -130,9 +130,12 @@ class Company(models.Model):
         director = Player.objects.filter(tId=self.director).first()
 
         if director is None:
-            return True, {"error": "Your director is not on YATA anymore, the data are not updated."}
+            return True, {"error": "Your director is not on YATA, the data will not be updated."}
 
         print(f"Company {self} -> update with director key: {director}")
+
+        if not director.getKey():
+            return True, {"error": "Director has no API key on YATA, the data will not updated."}
 
         # api call
         req = apiCall(

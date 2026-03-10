@@ -163,7 +163,7 @@ def supervise(request, shareId=False):
 
             # Only update company if we don't have any data, otherwise the cron should take care of this.
             if company.timestamp == 0:
-                company.update_info()
+                error, message = company.update_info()
 
             # add employees requirements and potential efficiency on the fly
             company_positions = company.company_description.position_set.all()
