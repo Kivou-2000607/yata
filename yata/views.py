@@ -104,10 +104,17 @@ def login(request):
 
         if request.method == "POST":
             p = request.POST
-            print("[view.yata.login] API call with key: {}".format(p.get("key")))
+            key = p.get("key", "")
+            print("[view.yata.login] API call with key: {}".format(key))
+
+            import re
+            if not re.fullmatch(r"[A-Za-z0-9]{16}", key):
+                context = {"apiError": "Invalid API key format (must be 16 alphanumeric characters).", "login": True}
+                return render(request, "header.html", context)
+
             try:
                 # user = apiCall('user', '', 'profile,bars', p.get('key'))
-                user = apiCall("user", "", "profile", p.get("key"))
+                user = apiCall("user", "", "profile", key)
                 if "apiError" in user:
                     print("[view.yata.login] API error: {}".format(user))
                     context = user
@@ -135,7 +142,7 @@ def login(request):
                 new_player = True
 
             print("[view.yata.login] update player")
-            player.addKey(p.get("key"))
+            player.addKey(key)
             # player.key = p.get('key')
             player.active = True
             player.lastActionTS = tsnow()
