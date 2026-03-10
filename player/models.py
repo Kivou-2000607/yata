@@ -122,7 +122,7 @@ class Player(models.Model):
         return "{:15} [{:07}]".format(self.name, self.tId)
 
     def getKey(self, value=True):
-        key = self.key_set.first()
+        key = self.key_set.filter(access_level__gte=0).first()
         if key is None:
             return False
         else:
