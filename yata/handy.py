@@ -242,7 +242,25 @@ def apiCall(
                 _log_api_call(section, False)
                 return rjson
 
-    _log_api_call(section, True, err["error"]["code"])
+    error_code = err["error"]["code"]
+
+    if error_code == 2 and key:
+        try:
+            from player.models import Key
+            key_obj = Key.objects.filter(value=key).first()
+            if key_obj:
+                player = key_obj.player
+                print(f"[yata.function.apiCall] error code 2 — invalidating key for player {player}")
+                key_obj.access_level = -1
+                key_obj.reason = "Incorrect key (error code 2)"
+                key_obj.save()
+                player.key_level = -1
+                player.validKey = False
+                player.save()
+        except Exception as e:
+            print(f"[yata.function.apiCall] failed to invalidate key on error 2: {e}")
+
+    _log_api_call(section, True, error_code)
     return apiCallError(err)
 
 
