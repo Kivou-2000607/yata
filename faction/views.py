@@ -4033,12 +4033,42 @@ def armoryReport(request, reportId, share=False):
                 )  # views
                 return render(request, page, context)
 
-            # for item_type, items in armory.items():
-            #     print(item_type)
-            #     for item, members in items.items():
-            #         print(f'\t{item}')
-            #         for member_id, transaction in members.items():
-            #             print(f'\t\t{member_id:>9}: {transaction}')
+            if request.method == "POST" and request.POST.get("type") == "csv":
+                def stream_armory(report_data):
+                    buf = io.StringIO()
+                    writer = csv.writer(buf)
+                    writer.writerow(["type", "item", "member_id", "member_name", "gave", "took", "filled", "diff", "first", "last"])
+                    yield buf.getvalue()
+                    buf.seek(0)
+                    buf.truncate(0)
+                    for item_type, items in report_data.items():
+                        for item_name, members in items.items():
+                            for member_id, v in members.items():
+                                gave = v.get("gave", 0)
+                                took = v.get("took", 0)
+                                filled = v.get("filled", 0)
+                                diff = gave + filled - took
+                                writer.writerow([
+                                    item_type,
+                                    item_name,
+                                    member_id,
+                                    html.unescape(v.get("name", "")),
+                                    gave,
+                                    took,
+                                    filled,
+                                    diff,
+                                    v.get("first", 0),
+                                    v.get("last", 0),
+                                ])
+                                yield buf.getvalue()
+                                buf.seek(0)
+                                buf.truncate(0)
+
+                response = StreamingHttpResponse(
+                    stream_armory(report.getReport()), content_type="text/csv"
+                )
+                response["Content-Disposition"] = 'attachment; filename="Armory_report_{}.csv"'.format(report.pk)
+                return response
 
             context = dict(
                 {

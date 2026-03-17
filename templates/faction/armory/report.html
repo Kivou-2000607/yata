@@ -67,6 +67,12 @@ This file is part of yata.
         </div>
 
 
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="csv">
+            <button type="submit" class="btn btn-sm btn-outline-secondary mb-2"><i class="fas fa-file-csv"></i>&nbsp;Export CSV</button>
+        </form>
+
         {% for type, items in report.getReport.items %}
         {% if items|length %}
         <h3 class="module-doc">{{type}}&nbsp;&nbsp;<i class="fas fa-caret-right"></i></h3>
