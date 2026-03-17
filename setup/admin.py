@@ -33,9 +33,9 @@ admin.site.register(APIKey, APIKeyAdmin)
 
 
 class ApiCallLogAdmin(admin.ModelAdmin):
-    list_display = ["timestamp", "section", "is_error", "error_code", "caller"]
+    list_display = ["timestamp", "section", "is_error", "error_code", "caller", "player_id"]
     list_filter = ["is_error", "error_code", "section"]
-    search_fields = ["caller", "section"]
+    search_fields = ["caller", "section", "player_id"]
 
 
 admin.site.register(ApiCallLog, ApiCallLogAdmin)

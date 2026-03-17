@@ -122,6 +122,12 @@ def updatePlayer(player, i=None, n=None):
     elif 'apiError' in user: # skip if api error (not invalid key)
         print("[player.functions.updatePlayer] {}{} action: {:010} active: {:1} api: {:1} -> api error {}".format(progress, player.nameAligned(), player.lastActionTS, player.active, player.validKey, user["apiError"]))
         player.key_last_code = user["apiErrorCode"]
+        if user["apiErrorCode"] == 7:
+            try:
+                from setup.models import ApiCallLog
+                ApiCallLog.objects.create(section="user", is_error=True, error_code=7, caller="player/functions.py:updatePlayer", player_id=player.tId)
+            except Exception:
+                pass
         player.save()
         return 0
 
