@@ -47,6 +47,11 @@ This file is part of yata.
       </li>
           <li class="nav-item medium">
             <div class="nav-link yt-cat-link">
+          <a href="{% url 'awards:list' type="hospital" %}" title="hospital awards"><i class="fas fa-hospital"></i>&nbsp;Hospital ({{summaryByType.Hospital.nAwarded}}/{{summaryByType.Hospital.nAwards}})</a>
+        </div>
+      </li>
+          <li class="nav-item medium">
+            <div class="nav-link yt-cat-link">
           <a href="{% url 'awards:list' type="faction" %}" title="faction awards"><i class="fas fa-fist-raised"></i>&nbsp;Faction ({{summaryByType.Faction.nAwarded}}/{{summaryByType.Faction.nAwards}})</a>
         </div>
       </li>

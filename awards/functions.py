@@ -26,6 +26,7 @@ AWARDS_CAT = [
     "crimes",
     "drugs",
     "attacks",
+    "hospital",
     "faction",
     "items",
     "travel",
@@ -825,24 +826,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     days = dLeftE(e, r=ratio, c="stealth / win")
                     vp["left"] = days[0]
                     vp["comment"] = days[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [903]:
-                    # "903": { "name": "Booboo", "description": "Go to hospital 250 times", "type": 15,
-                    type = "Other Attacks"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[3].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get(
-                        "hospital", 0
-                    )
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["left"] = (
-                        max((vp["goal"] - vp["current"]) / ratio, 0)
-                        if ratio > 0
-                        else -1
-                    )
-
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [740, 741, 786]:
@@ -3256,6 +3239,138 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 #     vp["comment"] = vp["left"]
                 #     awards[type]["m_" + k] = vp
 
+    elif category == "hospital":
+        awards = dict(
+            {
+                "Hospital Visits": dict(),
+                "Revives": dict(),
+                "Medical Items": dict(),
+            }
+        )
+
+        hospital_ids = {903, 23, 267, 322, 870, 863, 7, 367, 398, 406, 418}
+        for k, v in tornAwards["honors"].items():
+            if int(k) not in hospital_ids:
+                continue
+
+            vp = v
+            vp["awardType"] = "Honor"
+            if int(k) in honors_awarded:
+                vp["awarded_time"] = int(honors_time[honors_awarded.index(int(k))])
+            else:
+                vp["awarded_time"] = 0
+
+            if int(k) in [903]:
+                # "903": { "name": "Booboo", "description": "Go to hospital 250 times", "type": 18,
+                type = "Hospital Visits"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = int(v["description"].split(" ")[3].replace(",", ""))
+                vp["current"] = userInfo.get("personalstats", dict({})).get(
+                    "hospital", 0
+                )
+                vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                ratio = vp["current"] / daysOld
+                vp["left"] = (
+                    max((vp["goal"] - vp["current"]) / ratio, 0)
+                    if ratio > 0
+                    else -1
+                )
+                vp["comment"] = (
+                    "With {:.2g} hospital visits / day".format(ratio)
+                    if ratio > 0
+                    else ""
+                )
+                awards[type]["h_" + k] = vp
+
+            elif int(k) in [23, 267]:
+                # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 18}
+                # 267 {'name': 'Second Chance', 'description': 'Revive 1,000 people', 'type': 18}
+                type = "Revives"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                vp["current"] = userInfo.get("personalstats", dict({})).get(
+                    "revives", 0
+                )
+                vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                er = 75
+                for perk in userInfo.get("faction_perks", []):
+                    start, end = " ".join(perk.split(" ")[:-1]), perk.split(" ")[-1]
+                    er = (
+                        float(end)
+                        if start == "+ Reduces the energy used while reviving to"
+                        else er
+                    )
+                days = dLeftE(
+                    max(er * (vp["goal"] - vp["current"]), 0),
+                    c="With {} energy / revive".format(er),
+                )
+                vp["left"] = days[0]
+                vp["comment"] = days[1]
+                awards[type]["h_" + k] = vp
+
+            elif int(k) in [322, 870, 863]:
+                # 322: {"name": "Miracle Worker", "description": "Revive 10 people within 10 minutes", "type": 18}
+                # 870: {"name": "Resurrection", "description": "Revive someone you've just defeated", "type": 18}
+                # 863: {"name": "Crucifixion", "description": "Defeat someone you've just revived", "type": 18}
+                type = "Revives"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = 1
+                vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                vp["current"] = 1 if int(k) in honors_awarded else 0
+                awards[type]["h_" + k] = vp
+
+            elif int(k) in [398, 418]:
+                # 398: {"name": "Anaemic", "description": "Fill 1,000 empty blood bags", "type": 18}
+                # 418: {"name": "Transfusion", "description": "Fill 250 empty blood bags", "type": 18}
+                type = "Medical Items"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                vp["current"] = userInfo.get("personalstats", dict({})).get(
+                    "bloodwithdrawn", 0
+                )
+                vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                vp["left"] = max((vp["goal"] - vp["current"]) / 24, 0)
+                vp["comment"] = "1h cooldown / blood bag filled"
+                awards[type]["h_" + k] = vp
+
+            elif int(k) in [406, 367]:
+                # 406: {"name": "Vampire", "description": "Random chance upon using a blood bag", "type": 18}
+                # 367: {"name": "Clotted", "description": "Hospitalize yourself by using the wrong blood bag...", "type": 18}
+                type = "Medical Items"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = 1
+                vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                vp["current"] = 1 if int(k) in honors_awarded else 0
+                awards[type]["h_" + k] = vp
+
+            elif int(k) in [7]:
+                # 7: {"name": "Magical Veins", "description": "Use 5,000 medical items", "type": 18}
+                type = "Medical Items"
+                vp["category"] = category
+                vp["subcategory"] = type
+                vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
+                vp["current"] = userInfo.get("personalstats", dict({})).get(
+                    "medicalitemsused", 0
+                )
+                vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
+                ratio = vp["current"] / daysOld
+                vp["left"] = (
+                    max((vp["goal"] - vp["current"]) / ratio, 0)
+                    if ratio > 0
+                    else -1
+                )
+                vp["comment"] = (
+                    "With {:.2g} medical items / day".format(ratio)
+                    if ratio > 0
+                    else ""
+                )
+                awards[type]["h_" + k] = vp
+
     elif category == "miscellaneous":
         awards = dict(
             {
@@ -3266,7 +3381,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                 "Awards": dict(),
                 "Missions": dict(),
                 "Maximum": dict(),
-                "Revives": dict(),
                 "Events": dict(),
                 "Other Misc": dict(),
             }
@@ -3300,45 +3414,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # 246 {'name': 'Pyramid Scheme', 'description': 'Have one of your referrals refer 5 Other players', 'type': 11,
                     # 'circulation': 1041, 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': 536984897, 'title': 'Pyramid Scheme [246]: Extraordinary (1041)'}
                     type = "Social"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = 1
-                    vp["achieve"] = 1 if int(k) in honors_awarded else 0
-                    vp["current"] = 1 if int(k) in honors_awarded else 0
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [23, 267]:
-                    # 23 {'name': 'Florence Nightingale', 'description': 'Revive 500 people', 'type': 15, 'circulation': 1053,
-                    # 'rarity': 'Extraordinary', 'awardType': 'Honor', 'img': None, 'title': 'Florence Nightingale [23]: Extraordinary (1053)'}
-                    type = "Revives"
-                    vp["category"] = category
-                    vp["subcategory"] = type
-                    vp["goal"] = int(v["description"].split(" ")[1].replace(",", ""))
-                    vp["current"] = userInfo.get("personalstats", dict({})).get(
-                        "revives", 0
-                    )
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    er = 75
-                    for perk in userInfo.get("faction_perks", []):
-                        start, end = " ".join(perk.split(" ")[:-1]), perk.split(" ")[-1]
-                        er = (
-                            float(end)
-                            if start == "+ Reduces the energy used while reviving to"
-                            else er
-                        )
-                    days = dLeftE(
-                        max(er * (vp["goal"] - vp["current"]), 0),
-                        c="With {} energy / revive".format(er),
-                    )
-                    vp["left"] = days[0]
-                    vp["comment"] = days[1]
-                    awards[type]["h_" + k] = vp
-
-                elif int(k) in [322, 870, 863]:
-                    # 322: {"name": "Miracle Worker","description": "Revive 10 people within 10 minutes","type": 15,
-                    # "870": { "name": "Resurrection", "description": "Revive someone you've just defeated", "type": 15,
-                    # "863": { "name": "Crucifixion", "description": "Defeat someone you've just revived", "type": 15,
-                    type = "Revives"
                     vp["category"] = category
                     vp["subcategory"] = type
                     vp["goal"] = 1
