@@ -30,13 +30,17 @@ from yata.handy import logdate
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument("--force", action="store_true", help="Re-download all images even if they already exist")
+
     def handle(self, **options):
         print(f"[CRON {logdate()}] START items_images")
+        force = options["force"]
 
         for item in Item.objects.all():
             image_file = os.path.join(os.path.join(settings.MEDIA_ROOT, "items"), f'{item.tId}.png')
-            if not os.path.isfile(image_file):
-                print(f"Missing image for {item}")
+            if force or not os.path.isfile(image_file):
+                print(f"{'Replacing' if force and os.path.isfile(image_file) else 'Missing'} image for {item}")
                 print(image_file)
                 image_url = f"https://www.torn.com/images/items/{item.tId}/large.png"
                 r = requests.get(image_url, stream = True)
