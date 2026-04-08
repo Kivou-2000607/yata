@@ -216,7 +216,7 @@ along with yata. If not, see <https: //www.gnu.org/licenses />.
         <span class="mb-2"><i class="fas fa-skull-crossbones"></i>&nbsp;{{ apiError }}</span>
       </div>
     {% endif %}
-    {% if player and player.key_level >= 0 and player.key_level != 2 %}
+    {% if player and player.key_level >= 0 and player.key_level != 3 %}
     <nav class="navbar navbar-expand-md navbar-light py-0">
       <div class="container-fluid error">
        <i> You are using an API key with {{ player.key_set.first.access_type|upper }} permissions. This may cause issues with YATA functionality. We suggest you <a id="yata-logout-submit" href="{% url 'logout' %}" class="error">logout</a> and login with a limited permission key.</i>
