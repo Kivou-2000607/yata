@@ -360,17 +360,19 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                         "peoplebusted", 0
                     )
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / daysOld
-                    vp["left"] = (
-                        max((vp["goal"] - vp["current"]) / ratio, 0)
-                        if ratio > 0
-                        else -1
-                    )
+                    remaining = max(vp["goal"] - vp["current"], 0)
+                    nerve_100 = 5 * remaining
+                    nerve_50 = 10 * remaining
+                    d100_nat = nerve_100 * 5 / (60 * 24)
+                    d100_refi = nerve_100 * timeToGet1nerveRefi / (60 * 24)
+                    d50_nat = nerve_50 * 5 / (60 * 24)
+                    d50_refi = nerve_50 * timeToGet1nerveRefi / (60 * 24)
+                    vp["left"] = d100_nat
                     vp["comment"] = (
-                        "{:.1f} days with a current ratio of {:,.2g} people busted / day".format(
-                            vp["left"], ratio
-                        )
-                    )
+                        "If dedicating all nerve to busts (5 nerve each):<br>"
+                        "At 100% success ({:,} nerve): natural <b>{:.1f}</b> days / with refill <b>{:.1f}</b> days<br>"
+                        "At 50% success ({:,} nerve): natural <b>{:.1f}</b> days / with refill <b>{:.1f}</b> days"
+                    ).format(nerve_100, d100_nat, d100_refi, nerve_50, d50_nat, d50_refi)
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [252]:
@@ -472,17 +474,19 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                         "peoplebusted", 0
                     )
                     vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    ratio = vp["current"] / daysOld
-                    vp["left"] = (
-                        max((vp["goal"] - vp["current"]) / ratio, 0)
-                        if ratio > 0
-                        else -1
-                    )
+                    remaining = max(vp["goal"] - vp["current"], 0)
+                    nerve_100 = 5 * remaining
+                    nerve_50 = 10 * remaining
+                    d100_nat = nerve_100 * 5 / (60 * 24)
+                    d100_refi = nerve_100 * timeToGet1nerveRefi / (60 * 24)
+                    d50_nat = nerve_50 * 5 / (60 * 24)
+                    d50_refi = nerve_50 * timeToGet1nerveRefi / (60 * 24)
+                    vp["left"] = d100_nat
                     vp["comment"] = (
-                        "{:.1f} days with a current ratio of {:,.2g} people busted / day".format(
-                            vp["left"], ratio
-                        )
-                    )
+                        "If dedicating all nerve to busts (5 nerve each):<br>"
+                        "At 100% success ({:,} nerve): natural <b>{:.1f}</b> days / with refill <b>{:.1f}</b> days<br>"
+                        "At 50% success ({:,} nerve): natural <b>{:.1f}</b> days / with refill <b>{:.1f}</b> days"
+                    ).format(nerve_100, d100_nat, d100_refi, nerve_50, d50_nat, d50_refi)
                     awards[type]["m_" + k] = vp
 
     elif category == "drugs":
