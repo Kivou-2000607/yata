@@ -505,6 +505,12 @@ def json_context(context):
     return context
 
 
+def xls_safe(v):
+    if isinstance(v, str) and v and v[0] in ('-', '=', '+', '@'):
+        return '\t' + v
+    return v
+
+
 def clean_html_status_description(description):
     splt = description.split("data-time=")
     if len(splt) > 1:

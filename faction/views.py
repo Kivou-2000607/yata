@@ -75,6 +75,7 @@ from yata.handy import (
     returnError,
     timestampToDate,
     tsnow,
+    xls_safe,
 )
 
 
@@ -2979,9 +2980,9 @@ def attacksExport(request, reportId, type):
                     csv_data.append(
                         [
                             player.player_faction_id,
-                            html.unescape(player.player_faction_name),
+                            xls_safe(html.unescape(player.player_faction_name)),
                             player.player_id,
-                            player.player_name,
+                            xls_safe(player.player_name),
                             player.hits,
                             player.attacks,
                             player.defends,
@@ -3035,7 +3036,7 @@ def attacksExport(request, reportId, type):
                     #         'out': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
                     #         'in': [0 leave, 1 mug, 2 hosp, 3 war, 4 retal, 5 win, 6 assist, 7 lost, 8 total],
                     # }
-                    writer.writerow([k, v["name"]] + v["out"] + v["in"])
+                    writer.writerow([k, xls_safe(v["name"])] + v["out"] + v["in"])
 
                 return response
 
@@ -3098,7 +3099,7 @@ def attacksExport(request, reportId, type):
                             a["defender_factionname"] = "Stealth"
                         else:
                             a["defender_factionname"] = html.unescape(a["defender_factionname"] or "")
-                        writer.writerow([a[k] for k in keys])
+                        writer.writerow([xls_safe(a[k]) for k in keys])
                         yield buf.getvalue()
                         buf.seek(0)
                         buf.truncate(0)
@@ -4049,10 +4050,10 @@ def armoryReport(request, reportId, share=False):
                                 filled = v.get("filled", 0)
                                 diff = gave + filled - took
                                 writer.writerow([
-                                    item_type,
-                                    item_name,
+                                    xls_safe(item_type),
+                                    xls_safe(item_name),
                                     member_id,
-                                    html.unescape(v.get("name", "")),
+                                    xls_safe(html.unescape(v.get("name", ""))),
                                     gave,
                                     took,
                                     filled,
