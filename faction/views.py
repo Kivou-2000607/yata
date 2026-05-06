@@ -20,6 +20,7 @@ import io
 import datetime
 import html
 import json
+import logging
 import math
 import os
 import random
@@ -5456,15 +5457,19 @@ def spies(request, secret=False, export=False):
 
 def spiesImport(request):
     try:
+        print(f"[SPIES IMPORT] Called - method: {request.method}, has player session: {bool(request.session.get('player'))}")
         if request.session.get("player") and request.method == "POST":
             player = getPlayer(request.session["player"].get("tId"))
             faction = getFaction(player.factionId)
+            print(f"[SPIES IMPORT] Player loaded: {player.tId}, Faction: {faction.tId if faction else None}, factionAA: {player.factionAA}")
 
             if not player.factionAA:
+                print(f"[SPIES IMPORT] REJECTED: Player {player.tId} attempted spy import without AA permission")
                 request.session["message"] = ("errorMessageSub", "You need AA perm.")
                 return redirect("faction:spies")
 
             if faction is None:
+                print(f"[SPIES IMPORT] REJECTED: Faction not found in database for factionId: {player.factionId}")
                 request.session["message"] = (
                     "errorMessageSub",
                     "Faction not found in the database.",
@@ -5472,17 +5477,21 @@ def spiesImport(request):
                 return redirect("faction:spies")
 
             # get database
-            db = SpyDatabase.objects.filter(pk=request.POST.get("db-pk")).first()
+            db_pk = request.POST.get("db-pk")
+            print(f"[SPIES IMPORT] Looking up spy database with pk: {db_pk}")
+            db = SpyDatabase.objects.filter(pk=db_pk).first()
             if db is None:
+                print(f"[SPIES IMPORT] REJECTED: Spy database not found with pk: {db_pk}")
                 request.session["message"] = (
                     "errorMessageSub",
-                    f'Spy database id {request.POST.get("db-pk")} not found.',
+                    f'Spy database id {db_pk} not found.',
                 )
                 return redirect("faction:spies")
 
             # if copy paste
             new_spies = {}
             if request.POST.get("action") == "paste-spy":  # paste spy
+                print("[SPIES IMPORT] Processing paste-spy action")
                 spy = {
                     "strength": -1,
                     "speed": -1,
@@ -5549,6 +5558,9 @@ def spiesImport(request):
                         message_content = f'Spy not imported: {line_parsed} line{"" if line_parsed else "s"} parsed'
 
                 except BaseException as e:
+                    print(f"[SPIES IMPORT] REJECTED: Error while parsing paste-spy text line {row_i + 1}: {type(e).__name__}: {e}")
+                    import traceback
+                    traceback.print_exc()
                     request.session["message"] = (
                         "errorMessageSub",
                         f"Error while parsing text line {row_i + 1}: {e}",
@@ -5560,15 +5572,19 @@ def spiesImport(request):
                 # init
                 row_failed = []
                 target_id = 0
+                print(f"[SPIES IMPORT] Processing file upload - action: {request.POST.get('action', 'not specified')}")
 
                 if not len(request.FILES) or "file" not in request.FILES:
+                    print("[SPIES IMPORT] REJECTED: No file found in request.FILES")
                     request.session["message"] = ("errorMessageSub", "No files found.")
                     return redirect("faction:spies")
 
                 file = request.FILES["file"]
+                print(f"[SPIES IMPORT] File found: {file.name}, size: {file.size} bytes")
 
                 # get meme type
                 content_type = magic.from_buffer(file.read(2048), mime=True)
+                print(f"[SPIES IMPORT] Detected content type: {content_type}")
                 valid_content_type = [
                     "text/csv",
                     "text/plain",
@@ -5576,6 +5592,7 @@ def spiesImport(request):
                     "application/json",
                 ]
                 if content_type not in valid_content_type:
+                    print(f"[SPIES IMPORT] REJECTED: Invalid content type: {content_type}. Valid types: {valid_content_type}")
                     request.session["message"] = (
                         "errorMessageSub",
                         f'Unvalid content type {content_type}. Valid content type are: {", ".join(valid_content_type)}.',
@@ -5583,6 +5600,7 @@ def spiesImport(request):
                     return redirect("faction:spies")
 
                 if file.size > 5000000:
+                    print(f"[SPIES IMPORT] REJECTED: File size exceeds limit: {file.size:,d} B > 5000000 B")
                     request.session["message"] = (
                         "errorMessageSub",
                         f"File size too large ({file.size:,d} B). Should be lower than 5 MiB.",
@@ -5596,8 +5614,10 @@ def spiesImport(request):
                     file.seek(0, 0)
                     for k, v in json.loads(file_read)["spies"].items():
                         new_spies[int(k)] = v
+                    print(f"[SPIES IMPORT] Successfully parsed JSON file with {len(new_spies)} spies")
 
-                except BaseException:
+                except BaseException as e:
+                    print(f"[SPIES IMPORT] JSON parsing failed (expected for CSV): {type(e).__name__}")
                     pass
 
                 if content_type in [
@@ -5605,26 +5625,22 @@ def spiesImport(request):
                     "text/plain",
                     "application/csv",
                 ] and not len(new_spies):
+                    print(f"[SPIES IMPORT] Attempting to parse as CSV (content_type: {content_type})")
                     try:
-
+                        file.seek(0)
+                        file_content = file.read().decode('utf-8')
+                        file_obj = io.StringIO(file_content)
+                        csv_reader = csv.reader(file_obj, quotechar='"', delimiter=',')
                         header = True
-                        for row_i, row in enumerate(file):
+                        for row_i, splt2 in enumerate(csv_reader):
                             # skip header
                             if header:
                                 header = False
                                 continue
 
                             try:
-                                splt1 = [
-                                    _.strip('"').strip("'").replace(" ", "")
-                                    for _ in row.rstrip().decode().split('","')
-                                ]  # try torn stats style
-                                if len(splt1) == 1:
-                                    splt1 = [
-                                        _.strip('"').strip("'").replace(" ", "")
-                                        for _ in row.rstrip().decode().split(",")
-                                    ]  # try torn stats style
-                                splt2 = row.decode().split(",")  # try yata style
+                                print(f"[SPIES IMPORT] Row {row_i + 1} raw (parsed): {splt2[:4]}... (len={len(splt2)})")
+                                splt1 = [s.replace(" ", "") for s in splt2]
 
                                 if len(splt1) == 11:
                                     target_id = int(
@@ -5673,6 +5689,54 @@ def spiesImport(request):
                                         1
                                     ].split("[")[0]
 
+                                elif len(splt2) == 12:
+                                    # New format: [empty], Name [ID], Level, Faction, Strength, Speed, Defense, Dexterity, Total, [empty], [empty], Date
+                                    print(f"[SPIES IMPORT] Row {row_i + 1}: parsing as 12-column format")
+                                    target_id = int(splt2[1].split("[")[1].replace("]", ""))
+                                    if target_id > 2147483647:
+                                        raise ValueError(
+                                            f"Target ID = {target_id} out of bounds."
+                                        )
+                                    date_str = splt2[11].strip()
+                                    print(f"[SPIES IMPORT] Row {row_i + 1}: date_str = '{date_str}', faction='{splt2[3]}'")
+                                    ts = int(
+                                        time.mktime(
+                                            datetime.datetime.strptime(
+                                                date_str, "%d/%m/%y"
+                                            ).timetuple()
+                                        )
+                                    )
+                                    new_spies[target_id] = {}
+                                    for j, k in enumerate(
+                                        [
+                                            "strength",
+                                            "speed",
+                                            "defense",
+                                            "dexterity",
+                                            "total",
+                                        ]
+                                    ):
+                                        stat = int(splt2[4 + j].replace(",", ""))
+                                        stat = stat if stat else -1
+                                        timestamp = ts if stat + 1 else 0
+                                        new_spies[target_id][k] = stat
+                                        new_spies[target_id][
+                                            f"{k}_timestamp"
+                                        ] = timestamp
+                                        if stat > 9223372036854775807:
+                                            raise ValueError(
+                                                f"Stat {k} = {stat} out of bounds."
+                                            )
+
+                                    new_spies[target_id]["target_faction_name"] = (
+                                        splt2[3].replace("None", "Faction")
+                                        if splt2[3]
+                                        else "Faction"
+                                    )
+                                    new_spies[target_id]["target_faction_id"] = 0
+                                    new_spies[target_id]["target_name"] = splt2[1].split("[")[0]
+                                    print(f"[SPIES IMPORT] Row {row_i + 1}: SUCCESS parsed spy {new_spies[target_id]['target_name']} [{target_id}]")
+
                                 elif len(splt2) == 14:
                                     target_id = int(splt2[0])
                                     new_spies[target_id] = {
@@ -5691,15 +5755,20 @@ def spiesImport(request):
                                         "total_timestamp": int(splt2[13]),
                                     }
                                 else:
+                                    print(f"[SPIES IMPORT] Row {row_i + 1} FAILED: no format match (splt1 len={len(splt1)}, splt2 len={len(splt2)})")
                                     row_failed.append(f"row #{row_i + 1}")
                                     continue
 
-                            except BaseException:
+                            except BaseException as e:
+                                print(f"[SPIES IMPORT] Row {row_i + 1} EXCEPTION: {type(e).__name__}: {e}")
                                 row_failed.append(f"row #{row_i + 1}")
                                 if target_id in new_spies:
                                     del new_spies[target_id]
 
                     except BaseException as e:
+                        print(f"[SPIES IMPORT] REJECTED: Error while parsing CSV file: {type(e).__name__}: {e}")
+                        import traceback
+                        traceback.print_exc()
                         request.session["message"] = (
                             "errorMessageSub",
                             f"Error while importing csv file: {e}.",
@@ -5715,12 +5784,14 @@ def spiesImport(request):
                     )
                     message_content += f' - <span class="warning" style="cursor: help;" title="{fails_string}">{len(row_failed)} rows failed</span>'
 
+            print(f"[SPIES IMPORT] Updating spy database {db.pk} with {len(new_spies)} spies - message: {message_content}")
             db.updateSpies(payload=new_spies)
             request.session["message"] = (
                 "validMessageSub" if len(new_spies) else "errorMessageSub",
                 message_content,
             )
             request.session["db-pk"] = db.pk
+            print(f"[SPIES IMPORT] SUCCESS: Spy import completed for user {player.tId}")
             return redirect("faction:spies")
 
         else:
@@ -5729,9 +5800,13 @@ def spiesImport(request):
                 if request.method == "POST"
                 else "You need to post. Don't try to be a smart ass."
             )
+            print(f"[SPIES IMPORT] REJECTED: Unauthorized attempt - player session: {bool(request.session.get('player'))}, method: {request.method}")
             return returnError(type=403, msg=message)
 
     except Exception as e:
+        print(f"[SPIES IMPORT] REJECTED: Unexpected exception: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         return returnError(exc=e, session=request.session)
 
 
