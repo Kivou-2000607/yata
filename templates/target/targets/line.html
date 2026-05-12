@@ -57,7 +57,7 @@ This file is part of yata.
             {% include "target/targets/note.html" %}
         </td>
         <td class="text-center dont-touch-me" data-val='{% if target.status_state == "Okay" %}1{%else%}0{% endif %}'>
-            <a href="https://www.torn.com/loader2.php?sid=getInAttack&user2ID={{targetId}}" target="_blank" alt="attack"><i class='fas fa-crosshairs {% if target.status_state == "Okay" %}error{% endif %}' title="Attack target"></i></a>
+            <a href="https://www.torn.com/page.php?sid=attack&user2ID={{targetId}}" target="_blank" alt="attack"><i class='fas fa-crosshairs {% if target.status_state == "Okay" %}error{% endif %}' title="Attack target"></i></a>
         </td>
         <td class="text-center dont-touch-me">
             <!-- delete -->
