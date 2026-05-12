@@ -243,7 +243,7 @@ window.setInterval(() => {
 			cl = "warning";
 		}
 
-		$(lootTimer).html(`<a class="${cl}" href="https://www.torn.com/loader.php?sid=attack&user2ID=${tid}" target="_blank">${name}: ${cd}</a>`);
+		$(lootTimer).html(`<a class="${cl}" href="https://www.torn.com/page.php?sid=attack&user2ID=${tid}" target="_blank">${name}: ${cd}</a>`);
 	}}, 1000);
 
 //
