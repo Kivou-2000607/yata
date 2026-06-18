@@ -64,7 +64,7 @@ Create a local .env file
     #SENTRY_ENVIRONMENT=dev
     #SENTRY_SAMPLE_RATE=1.0
 
-Then run setup.py to initalise everything
+Then run setup.py to initialise everything
 
     python setup.py
 
@@ -72,7 +72,7 @@ Then run setup.py to initalise everything
 
 ## Running YATA
 
-To emulate cron activity `./cron/dev_cron.py` can be run as a seperate process. Cron jobs designed to run on a per minute basis will be run as such. Cron's with a longer delay will run on a 30 minute schedule.
+To emulate cron activity `./cron/dev_cron.py` can be run as a separate process. Cron jobs designed to run on a per minute basis will be run as such. Cron's with a longer delay will run on a 30 minute schedule.
 
     python ./cron/dev_cron.py
 
