@@ -392,6 +392,72 @@ def manageCompany(request):
     #     return returnError(exc=e, session=request.session)
 
 
+def monthlyFinancials(request, shareId=False):
+    try:
+        if request.session.get("player") or shareId:
+            player = getPlayer(request.session.get("player", {}).get("tId", -1))
+
+            if shareId:
+                company = Company.objects.filter(shareId=shareId).first()
+                if company is None:
+                    return returnError(type=404, msg=f"Shared company {shareId} not found.")
+            else:
+                company = Company.objects.filter(tId=player.companyId).first()
+                if company is None:
+                    return returnError(type=403, msg="You don't have a company.")
+
+            # Get all company data, group by month
+            from datetime import datetime
+
+            company_data = company.companydata_set.all().order_by("-id_ts")
+
+            monthly_summary = {}
+            for data in company_data:
+                # Convert id_ts to month key
+                dt = datetime.fromtimestamp(data.id_ts)
+                month_key = dt.strftime("%Y-%m")
+
+                if month_key not in monthly_summary:
+                    monthly_summary[month_key] = {
+                        "month": dt.strftime("%B %Y"),
+                        "total_income": 0,
+                        "total_customers": 0,
+                        "total_profit": 0,
+                        "days": 0,
+                    }
+
+                monthly_summary[month_key]["total_income"] += data.daily_income
+                monthly_summary[month_key]["total_customers"] += data.daily_customers
+                monthly_summary[month_key]["total_profit"] += data.daily_profit
+                monthly_summary[month_key]["days"] += 1
+
+            # Calculate averages
+            for data in monthly_summary.values():
+                data["avg_daily_income"] = int(data["total_income"] / data["days"]) if data["days"] > 0 else 0
+                data["avg_daily_profit"] = int(data["total_profit"] / data["days"]) if data["days"] > 0 else 0
+
+            # Convert to sorted list (newest first)
+            monthly_data = sorted(monthly_summary.items(), reverse=True)
+
+            context = {
+                "player": player,
+                "share": shareId,
+                "company": company,
+                "monthly_data": monthly_data,
+                "compcat": True,
+                "view": {"financials": True},
+            }
+
+            page = "company/content-reload.html" if request.method == "POST" else "company.html"
+            return render(request, page, context)
+
+        else:
+            return returnError(type=403, msg="You might want to log in.")
+
+    except Exception as e:
+        return returnError(exc=e, session=request.session)
+
+
 # @cache_page(60*10)
 # def ws(request):
 #     payload = {"effectiveness": []}

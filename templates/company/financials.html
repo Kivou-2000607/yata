@@ -1,0 +1,151 @@
+{% load humanize %}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawCharts);
+
+  function drawCharts() {
+    drawIncomeChart();
+    drawProfitChart();
+  }
+
+  function drawIncomeChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Month', 'Total Income', 'Avg Daily Income'],
+      {% for month_key, data in monthly_data reversed %}
+        ['{{ data.month }}', {{ data.total_income }}, {{ data.avg_daily_income }}],
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Monthly Income Trend',
+      curveType: 'function',
+      legend: { position: 'bottom' },
+      hAxis: {
+        title: 'Month',
+        slantedText: true,
+        slantedTextAngle: 45,
+      },
+      vAxis: { title: 'Income ($)' },
+      pointSize: 5,
+      lineWidth: 2,
+      chartArea: { width: '85%', height: '80%' },
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('income-chart'));
+    chart.draw(data, options);
+  }
+
+  function drawProfitChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Month', 'Total Profit', 'Avg Daily Profit'],
+      {% for month_key, data in monthly_data reversed %}
+        ['{{ data.month }}', {{ data.total_profit }}, {{ data.avg_daily_profit }}],
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Monthly Profit Trend',
+      curveType: 'function',
+      legend: { position: 'bottom' },
+      hAxis: {
+        title: 'Month',
+        slantedText: true,
+        slantedTextAngle: 45,
+      },
+      vAxis: { title: 'Profit ($)' },
+      pointSize: 5,
+      lineWidth: 2,
+      chartArea: { width: '85%', height: '80%' },
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('profit-chart'));
+    chart.draw(data, options);
+  }
+</script>
+
+<h2 class="title rounded-top px-2 py-2">
+    <div class="d-flex flex-wrap align-items-center">
+        <div class="px-2 me-auto"><i class="fas fa-chart-line"></i>&nbsp;Monthly Financials</div>
+    </div>
+</h2>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <style>
+        .financials-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .financials-table thead {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .financials-table th {
+            padding: 12px 8px;
+            text-align: right;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .financials-table th:first-child {
+            text-align: left;
+        }
+        .financials-table td {
+            padding: 10px 8px;
+            text-align: right;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .financials-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        .financials-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .financials-table tbody tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+    </style>
+    <div class="table-responsive">
+        <table class="financials-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Total Income</th>
+                    <th>Total Customers</th>
+                    <th>Total Profit</th>
+                    <th>Days</th>
+                    <th>Avg Daily Income</th>
+                    <th>Avg Daily Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month_key, data in monthly_data %}
+                    <tr>
+                        <td>{{ data.month }}</td>
+                        <td>${{ data.total_income|intcomma }}</td>
+                        <td>{{ data.total_customers|intcomma }}</td>
+                        <td {% if data.total_profit >= 0 %}class="valid"{% else %}class="error"{% endif %}>{{ data.total_profit|intcomma }}</td>
+                        <td>{{ data.days }}</td>
+                        <td>${{ data.avg_daily_income|intcomma }}</td>
+                        <td {% if data.avg_daily_profit >= 0 %}class="valid"{% else %}class="error"{% endif %}>{{ data.avg_daily_profit|intcomma }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #999;">No financial data available</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div id="income-chart" style="width: 100%; height: 450px;"></div>
+</div>
+
+<div class="container-fluid p-md-3 p-1 mb-3 module">
+    <div id="profit-chart" style="width: 100%; height: 450px;"></div>
+</div>
