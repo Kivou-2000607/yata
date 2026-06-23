@@ -100,7 +100,7 @@ def companies(request):
         )
 
         if "apiError" in r:
-            context = {"apiError": f'API error: {r["apiErrorString"]}'}
+            context = {"apiError": f"API error: {r['apiErrorString']}"}
             return render(request, "yata/error.html", context)
 
         # get companies cap
@@ -138,12 +138,11 @@ def supervise(request, shareId=False):
     try:
         if request.session.get("player") or shareId:
             player = getPlayer(request.session.get("player", {}).get("tId", -1))
-            message = False
 
             if shareId:
                 company = Company.objects.filter(shareId=shareId).first()
                 if company is None:
-                    return returnError(type=404, msg="Shared company {} not found.".format(shareId))
+                    return returnError(type=404, msg=f"Shared company {shareId} not found.")
 
             else:
                 # get player and company
@@ -159,11 +158,6 @@ def supervise(request, shareId=False):
                 elif company is None:
                     updatePlayer(player)
                     company = Company.objects.filter(tId=player.companyId).first()
-                    error, message = company.update_info()
-
-            # Only update company if we don't have any data, otherwise the cron should take care of this.
-            if company.timestamp == 0:
-                error, message = company.update_info()
 
             # add employees requirements and potential efficiency on the fly
             company_positions = company.company_description.position_set.all()
@@ -211,10 +205,7 @@ def supervise(request, shareId=False):
                         P = hrm * sta[Pi] / float(req[Pi])
                         S = hrm * sta[Si] / float(req[Si])
                         ws_eff = (
-                            min(45, 45 * P)
-                            + 5 * math.log2(max(P, 1))
-                            + min(45, 45 * S)
-                            + 5 * math.log2(max(S, 1))
+                            min(45, 45 * P) + 5 * math.log2(max(P, 1)) + min(45, 45 * S) + 5 * math.log2(max(S, 1))
                             # + employee.effectiveness_merits
                         )
                     else:
@@ -349,16 +340,6 @@ def supervise(request, shareId=False):
                 "compcat": True,
                 "view": {"supervise": True},
             }
-
-            if message:
-                sub = "Sub" if request.method == "POST" else ""
-                if error:
-                    if "apiErrorString" in message:
-                        context["errorMessage" + sub] = f'Company: API error {message["apiErrorString"]}, data not updated'
-                    elif "error" in message:
-                        context["errorMessage" + sub] = f'Company: {message["error"]}'
-                else:
-                    context["validMessage" + sub] = "Company data has been updated."
 
             page = "company/content-reload.html" if request.method == "POST" else "company.html"
             return render(request, page, context)

@@ -125,7 +125,6 @@ class Company(models.Model):
         return mark_safe(f'<a href="https://www.torn.com/joblist.php#?p=corpinfo&ID={self.tId}" target="_blank">{self}</a>')
 
     def update_info(self, rebuildPast=False):
-
         # try to get director's key
         director = Player.objects.filter(tId=self.director).first()
 
@@ -155,6 +154,20 @@ class Company(models.Model):
                 print(f"Company {self} -> New director ID: {self.director}")
                 director = Player.objects.filter(tId=self.director).first()
                 print(f"Company {self} -> New director: {director}")
+
+                # Fetch fresh data with new director's key
+                if director is not None and director.getKey():
+                    req = apiCall(
+                        "company",
+                        self.tId,
+                        "detailed,employees,profile,stock,timestamp",
+                        director.getKey(),
+                        verbose=False,
+                    )
+                    if "apiError" in req:
+                        return True, req
+                else:
+                    return True, {"error": "New director not on YATA or has no API key"}
             else:
                 return True, req
 
@@ -186,7 +199,6 @@ class Company(models.Model):
             "director",
             "employees_hired",
             "employees_capacity",
-            "employees_capacity",
             "daily_income",
             "daily_customers",
             "weekly_income",
@@ -212,7 +224,9 @@ class Company(models.Model):
 
         # get director edication
         if not self.director_hrm and director is not None:
-            self.director_hrm = 11 in apiCall("user", "", "education", director.getKey(), verbose=False).get("education_completed", [])
+            edu_resp = apiCall("user", "", "education", director.getKey(), verbose=False)
+            if "apiError" not in edu_resp:
+                self.director_hrm = 11 in edu_resp.get("education_completed", [])
 
         #############
         # EMPLOYEES #
@@ -308,6 +322,9 @@ class Company(models.Model):
         defaults = {"timestamp": timestamp}
         stocks = req.get("company_stock", {})
 
+        # reset daily_stockcost for accumulation (in case of multiple updates same day)
+        company_data.daily_stockcost = 0
+
         # create company posisions
         p_abv = {position.name: position.abv for position in self.company_description.position_set.all()}
         positions = {}
@@ -330,6 +347,7 @@ class Company(models.Model):
 
         # loop over stocks
         for stock_name, stock in stocks.items():
+            defaults = {"timestamp": timestamp}
             for k, v in stock.items():
                 defaults[k] = v
 

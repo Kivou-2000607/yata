@@ -25,7 +25,7 @@ repos:
     rev: v0.9.9
     hooks:
     -   id: ruff  # replaces autoflake, pyupgrade, isort, flake8
-        args: ["--fix", "--select=E,W,F,I,UP", "--ignore=E203,W503,E501", "--line-length=200"]
+        args: ["--fix", "--select=E,W,F,I,UP", "--ignore=E203,E501", "--line-length=200"]
     -   id: ruff-format  # replaces black
         args: ["--line-length=200"]
 -   repo: https://github.com/asottile/blacken-docs

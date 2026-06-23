@@ -22,7 +22,7 @@ import time
 from django.core.management.base import BaseCommand
 
 from company.models import Company, CompanyData, CompanyStock
-from yata.handy import logdate
+from yata.handy import logdate, tsnow
 
 # import json
 
@@ -34,11 +34,36 @@ class Command(BaseCommand):
     def handle(self, **options):
         rebuild_past = options.get("rebuild_past", False)
         print(f"[CRON {logdate()}] start companies: rebuild past = {rebuild_past}")
-        for company in Company.objects.all():
+
+        print(f"[CRON {logdate()}] calculating today's id_ts boundary")
+        # Calculate today's id_ts boundary (same logic as models.py)
+        now = tsnow()
+        today_id_ts = (now + 3600 * 6) - (now + 3600 * 6) % (3600 * 24)
+        print(f"[CRON {logdate()}] today_id_ts calculated: {today_id_ts}")
+
+        print(f"[CRON {logdate()}] fetching all companies from database")
+        companies = Company.objects.all()
+        print(f"[CRON {logdate()}] fetched companies query object")
+
+        for company in companies:
+            print(f"[CRON {logdate()}] Processing company {company.tId} ({company.name})")
+
+            # Skip if already updated today (unless rebuilding past)
+            if not rebuild_past and company.timestamp > 0:
+                company_today_id_ts = (company.timestamp + 3600 * 6) - (company.timestamp + 3600 * 6) % (3600 * 24)
+                if company_today_id_ts == today_id_ts:
+                    print(f"[CRON {logdate()}] Company {company.tId} ({company.name}) - SKIPPED: already updated today")
+                    continue
 
             if rebuild_past:
+                print(f"[CRON {logdate()}] Company {company.tId} - rebuild_past: starting historical data rebuild")
+                company_data_count = company.companydata_set.count()
+                print(f"[CRON {logdate()}] Company {company.tId} - found {company_data_count} historical records")
+
                 # compute company_data.daily_stockcost
-                for company_data in company.companydata_set.all():
+                for i, company_data in enumerate(company.companydata_set.all(), 1):
+                    if i % 100 == 0:
+                        print(f"[CRON {logdate()}] Company {company.tId} - processing record {i}/{company_data_count}")
                     id_ts = company_data.id_ts
                     stock = company.companystock_set.filter(id_ts=id_ts)
                     company_data.daily_stockcost = 0
@@ -85,8 +110,22 @@ class Command(BaseCommand):
                     #                     for attr, value in defaults.items():
                     #                         setattr(company_data, attr, value)
                     company_data.save()
+                print(f"[CRON {logdate()}] Company {company.tId} - rebuild_past: completed")
 
-            company.update_info(rebuildPast=rebuild_past)
+            print(f"[CRON {logdate()}] Company {company.tId} - starting update_info()")
+            error, message = company.update_info(rebuildPast=rebuild_past)
+            print(f"[CRON {logdate()}] Company {company.tId} - update_info() completed")
+            if error:
+                if isinstance(message, dict) and "error" in message:
+                    print(f"[CRON {logdate()}] Company {company.tId} ({company.name}) - FAILED: {message['error']}")
+                elif isinstance(message, dict) and "apiErrorString" in message:
+                    print(f"[CRON {logdate()}] Company {company.tId} ({company.name}) - API ERROR: {message['apiErrorString']}")
+                else:
+                    print(f"[CRON {logdate()}] Company {company.tId} ({company.name}) - FAILED: {message}")
+
+            # Brief pause between companies to avoid hitting Torn API rate limits
+            time.sleep(0.5)
+
         print(f"[CRON {logdate()}] clean old data")
         one_year_ago = int(time.time() - 3600 * 24 * 365)
         n, _ = CompanyData.objects.filter(id_ts__lt=one_year_ago).delete()
