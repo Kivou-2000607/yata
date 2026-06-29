@@ -361,13 +361,15 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
 
                     rows = sorted(rows, key=lambda x: -x[1])
                     vp["current"] = current
-                    vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
-                    vp["comment"] = "<br>".join(
-                        [
-                            f"<b class={r[2]}>{r[0]}</b>: {r[1]:,d} successful burgle{'s' if r[1] != 1 else ''}"
-                            for r in rows
-                        ]
-                    )
+                    vp["achieve"] = min(1, vp["current"] / vp["goal"])
+
+                    incomplete = [r for r in rows if r[2] == "error"]
+                    if incomplete:
+                        incomplete_names = ", ".join([r[0] for r in incomplete])
+                        vp["comment"] = f"{vp['current']}/{vp['goal']} complete. Remaining: {incomplete_names}"
+                    else:
+                        vp["comment"] = f"{vp['current']}/{vp['goal']} complete"
+
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [
