@@ -262,7 +262,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     1032,
                     1038,
                     1054,
-                    676,
                     1076,
                     1097,
                     1106,
@@ -286,7 +285,6 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # "1032": { "name": "Fresh Blud", "description": "Become initiated into one of Torn's five graffiti crews"
                     # "1038": { "name": "Notorious", "description": "Achieve 100% notoriety at all stores at the same time in Shoplifting"
                     # "1054": { "name": "Zero Liability", "description": "Recover a skimmer which has accumulated at least 250 card details"
-                    # "676": { "name": "Key to the City", "description": "Successfully burgle all 34 areas",
                     # "1076": { "name": "Pig Rustler", "description": "Pickpocket a police officer's badge",
                     # "1097": { "name": "Tekkers", "description": "Achieve maximum technique in all four Hustling confidence tricks",
                     # "1106": { "name": "Dissolving Agent", "description": "Dissolve a Dead Body in Acid",
@@ -300,6 +298,78 @@ def createAwards(tornAwards, userInfo, category, pinned=False):
                     # vp["current"] = 0
                     # vp["achieve"] = min(1, float(vp["current"]) / float(vp["goal"]))
                     vp["achieve"] = 1 if int(k) in honors_awarded else 0
+                    awards[type]["h_" + k] = vp
+
+                elif int(k) in [676]:
+                    # "676": { "name": "Key to the City", "description": "Successfully burgle all 34 areas",
+                    type = "Misc"
+                    vp["category"] = category
+                    vp["subcategory"] = type
+                    # subcrime id (Burgle variant) -> property name, from /v2/torn/subcrimes
+                    bridge = {
+                        70: "Tool Shed",
+                        72: "Beach Hut",
+                        74: "Mobile Home",
+                        76: "Bungalow",
+                        78: "Cottage",
+                        80: "Apartment",
+                        82: "Suburban Home",
+                        84: "Secluded Cabin",
+                        86: "Farmhouse",
+                        88: "Lake House",
+                        90: "Luxury Villa",
+                        92: "Manor House",
+                        94: "Self Storage Facility",
+                        96: "Postal Office",
+                        98: "Funeral Parlor",
+                        100: "Market",
+                        102: "Cleaning Agency",
+                        104: "Barbershop",
+                        106: "Liquor Store",
+                        108: "Dentists Office",
+                        110: "Chiropractors",
+                        112: "Recruitment Agency",
+                        114: "Advertising Agency",
+                        116: "Shipyard",
+                        118: "Dockside Warehouse",
+                        120: "Farm Storage Unit",
+                        122: "Printing Works",
+                        124: "Brewery",
+                        126: "Truckyard",
+                        128: "Old Factory",
+                        130: "Slaughterhouse",
+                        132: "Paper Mill",
+                        134: "Foundry",
+                        136: "Fertilizer Plant",
+                    }
+                    vp["goal"] = len(bridge)
+
+                    subcrimes = {
+                        sc["id"]: sc
+                        for sc in userInfo.get("crimes2", dict({}))
+                        .get("attempts", dict({}))
+                        .get("subcrimes", [])
+                    }
+
+                    current = 0
+                    rows = []
+                    for cid, name in bridge.items():
+                        success = subcrimes.get(cid, dict({})).get("success", 0)
+                        done = success > 0
+                        current += 1 if done else 0
+                        rows.append([name, success, "valid" if done else "error"])
+
+                    rows = sorted(rows, key=lambda x: -x[1])
+                    vp["current"] = current
+                    vp["achieve"] = min(1, vp["current"] / vp["goal"])
+
+                    incomplete = [r for r in rows if r[2] == "error"]
+                    if incomplete:
+                        incomplete_names = ", ".join([r[0] for r in incomplete])
+                        vp["comment"] = f"{vp['current']}/{vp['goal']} complete. Remaining: {incomplete_names}"
+                    else:
+                        vp["comment"] = f"{vp['current']}/{vp['goal']} complete"
+
                     awards[type]["h_" + k] = vp
 
                 elif int(k) in [

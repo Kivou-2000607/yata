@@ -295,6 +295,9 @@ class Player(models.Model):
                     self.getKey(),
                 )
                 if "apiError" not in req:
+                    crimesV2 = apiCall("user", 7, "crimes", self.getKey(), v2=True)  # 7: Burglary crime id
+                    req["crimes2"] = crimesV2.get("crimes", dict({})) if "apiError" not in crimesV2 else dict({})
+
                     self.awardsUpda = tsnow()
                     defaults = {"req": json.dumps(req), "timestamp": tsnow()}
                     try:
