@@ -41,8 +41,8 @@ This file is part of yata.
     </thead>
     <tbody>
     {% for v in companies %}
-    <tr class="{% if v.flat_respect == 0 %}zero-respect{% endif %} {% if v.fair_fight == 3 %}max-fair-fight{% elif v.fair_fight|div:2 > 1 %}good-fair-fight{%endif%} {% if v.war > 1 %}war-attack{% endif %} {% if v.bonus %}bonus-attack{% endif %}" data-tId="{{v.targetId}}" data-aId="{{v.tId}}">
-        <td class="text-start">{% company_link v.ID v.name %}</td>
+    <tr data-tId="{{v.tId}}" data-aId="{{v.tId}}">
+        <td class="text-start">{% company_link v.tId v.name %}</td>
         <td class="text-start"><span class="update-player-name" data-val="{{v.director}}">{% player_link v.director %}</span></td>
         <td class="text-center">{{v.employees_capacity|sub:v.employees_hired|compOpeningsColor}}</td>
         <td class="text-center">${{v.weekly_income|intcomma}} ({{v.weekly_income|div:cap|percent}})</td>

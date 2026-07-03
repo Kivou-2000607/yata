@@ -24,14 +24,15 @@ import scipy
 
 # from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.db.models import F, Sum
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-from company.models import Company, CompanyDescription
+from company.models import Company, CompanyDescription, CompanyListing
 
 # from player.models import Player
 from player.functions import updatePlayer
-from yata.handy import apiCall, get_payload, getPlayer, randomSlug, returnError
+from yata.handy import get_payload, getPlayer, randomSlug, returnError
 
 
 def index(request):
@@ -81,42 +82,23 @@ def companies(request):
     feeds the company list table
     """
     try:
-        player = getPlayer(request.session.get("player", {}).get("tId", -1))
         if request.method != "POST":
             company_id = request.GET.get("company_id")
         else:
             company_id = request.POST.get("company_id")
 
-        # make the api call
-        r = apiCall(
-            "company",
-            company_id,
-            "companies",
-            player.getKey(),
-            sub="company",
-            cache_response=3600,
-            cache_private=False,
-            verbose=True,
-        )
-
-        if "apiError" in r:
-            context = {"apiError": f"API error: {r['apiErrorString']}"}
+        if not company_id:
+            context = {"inlineError": "No company selected"}
             return render(request, "yata/error.html", context)
 
-        # get companies cap
-        cap = 0
-        for v in r.values():
-            cap += v["weekly_income"]
+        listings = CompanyListing.objects.filter(company_type__tId=company_id).order_by("-weekly_income")
 
-        # filter based open positions
         openings = 1 if request.GET.get("openings") == "1" else 0
         if openings:
-            paginator = Paginator(
-                [_ for _ in r.values() if _["employees_capacity"] > _["employees_hired"]],
-                10,
-            )
-        else:
-            paginator = Paginator([_ for _ in r.values()], 10)
+            listings = listings.filter(appsclosed=False, employees_hired__lt=F("employees_capacity"))
+
+        cap = listings.aggregate(total=Sum("weekly_income"))["total"] or 0
+        paginator = Paginator(listings, 25)
         companies = paginator.get_page(request.GET.get("page"))
         return render(
             request,

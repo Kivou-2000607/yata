@@ -61,6 +61,27 @@ class Stock(models.Model):
         return f"{self.company} stock {self.name}"
 
 
+# Company listing (browse data)
+class CompanyListing(models.Model):
+    company_type = models.ForeignKey(CompanyDescription, on_delete=models.CASCADE)
+    tId = models.IntegerField(default=0, unique=True)
+    name = models.CharField(default="", max_length=128)
+    rating = models.IntegerField(default=0)
+    director = models.IntegerField(default=0)
+    employees_hired = models.IntegerField(default=0)
+    employees_capacity = models.IntegerField(default=0)
+    daily_income = models.BigIntegerField(default=0)
+    daily_customers = models.IntegerField(default=0)
+    weekly_income = models.BigIntegerField(default=0)
+    weekly_customers = models.IntegerField(default=0)
+    days_old = models.IntegerField(default=0)
+    appsclosed = models.BooleanField(default=False)
+    updated = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.name} [{self.tId}]"
+
+
 # Company
 class Company(models.Model):
     company_description = models.ForeignKey(CompanyDescription, on_delete=models.CASCADE)
