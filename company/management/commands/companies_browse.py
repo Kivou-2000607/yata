@@ -37,9 +37,13 @@ class Command(BaseCommand):
         key = player.getKey()
         run_start = tsnow()
         total_companies = 0
+        company_descriptions = list(CompanyDescription.objects.all())
+        print(f"[CRON {logdate()}] processing {len(company_descriptions)} company types")
 
-        for cd in CompanyDescription.objects.all():
+        for idx, cd in enumerate(company_descriptions, 1):
+            print(f"[CRON {logdate()}] [{idx}/{len(company_descriptions)}] fetching {cd.name}...")
             offset = 0
+            batch_count = 0
             while True:
                 url = f"https://api.torn.com/v2/company/{cd.tId}/companies?limit=100&offset={offset}&key={key}&comment=yata"
 
@@ -53,6 +57,7 @@ class Command(BaseCommand):
                 if not companies:
                     break
 
+                batch_count += 1
                 # Collect companies for bulk upsert
                 to_update = []
                 for c in companies:
@@ -113,12 +118,15 @@ class Command(BaseCommand):
                         batch_size=100,
                     )
 
+                print(f"[CRON {logdate()}]   batch {batch_count}: {len(companies)} companies ({total_companies} total so far)")
+
                 if r.get("_metadata", {}).get("links", {}).get("next") is None:
                     break
 
                 offset += 100
                 time.sleep(0.5)
 
+            print(f"[CRON {logdate()}] finished {cd.name}: {batch_count} batches")
             time.sleep(0.5)
 
         # Remove companies that no longer exist in the API

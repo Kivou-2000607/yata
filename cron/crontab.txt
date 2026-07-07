@@ -30,7 +30,7 @@ YATA_DIR=/home/decap/yata
 0 7,20 * * * bash -c "~/yata/cron/run_command.bash companies"
 
 # COMPANIES BROWSE (fetch all companies for listing page)
-0 5 * * * bash -c "~/yata/cron/run_command.bash companies_browse"
+5 * * * * bash -c "~/yata/cron/run_command.bash companies_browse"
 
 # REPORTS
 * * * * * bash -c "~/yata/cron/run_command.bash chain 01"
