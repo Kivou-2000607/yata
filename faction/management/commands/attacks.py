@@ -17,33 +17,34 @@ This file is part of yata.
     along with yata. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from django.core.management.base import BaseCommand
-from django.conf import settings
-
 import time
 
-from faction.models import AttacksReport
-from faction.models import REPORT_ATTACKS_STATUS
-from yata.handy import logdate
 from decouple import config
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
-ATTACKS_DELAY = int(config('ATTACKS_DELAY', default=30))
+from faction.models import REPORT_ATTACKS_STATUS, AttacksReport
+from yata.handy import logdate
+
+ATTACKS_DELAY = int(config("ATTACKS_DELAY", default=30))
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('crontab', type=int)
+        parser.add_argument("crontab", type=int)
 
     def handle(self, *args, **options):
-        crontabId = options['crontab']
+        crontabId = options["crontab"]
         print(f"[CRON {logdate()}] START attacks on crontab {crontabId}")
-        report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by('update').first()
+        report = AttacksReport.objects.filter(computing=True).filter(crontab=crontabId).order_by("update").first()
         if report is not None:
             if not settings.DEBUG:
                 print(f"[CRON {logdate()}] sleep for {ATTACKS_DELAY} seconds")
                 time.sleep(ATTACKS_DELAY)
             # sleep 30s to avoid cache with chain reports
             state = report.getAttacks()
-            report.fillReport()
+            if state >= 0:
+                report.fillReport()
             # type = "error" if state < 0 else "exit"
             status = REPORT_ATTACKS_STATUS.get(state, f"code {state}")
             print(f"[CRON {logdate()}] {report} {type} code {state}: {status}")

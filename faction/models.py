@@ -55,6 +55,10 @@ if settings.DEBUG:
 else:
     CACHE_RESPONSE = 10
 
+# tolerance for treating a non-live report as complete when the API keeps
+# returning cached responses for the last few seconds of its time window
+NEAR_COMPLETE_TOLERANCE = 30
+
 CHAIN_ATTACKS_STATUS = {
     # cooldown
     52: "No new attacks [stop]",
@@ -2509,6 +2513,7 @@ class AttacksReport(models.Model):
             self.crontab = 0
             # self.attackreport_set.filter(timestamp_started__gt=weekAgo).delete()
             self.state = -7
+            self.update = tsnow()
             self.save()
             return -7
 
@@ -2531,6 +2536,7 @@ class AttacksReport(models.Model):
             self.crontab = 0
             self.attackreport_set.all().delete()
             self.state = -1
+            self.update = tsnow()
             self.save()
             return -1
 
@@ -2565,10 +2571,12 @@ class AttacksReport(models.Model):
                     print(f"{self} --> deleting {key.player}'s key from faction (blank turn)")
                     faction.delKey(key=key)
                     self.state = -2
+                    self.update = tsnow()
                     self.save()
                     return -2
 
                 self.state = -3
+                self.update = tsnow()
                 self.save()
                 return -3
 
@@ -2581,6 +2589,17 @@ class AttacksReport(models.Model):
             # in case cache
             if cache > CACHE_RESPONSE:
                 print(f"{self} probably cached response... (blank turn)")
+                # non-live report is within tolerance of its end -> stop instead of retrying forever
+                if not self.live and (self.end - self.last) <= NEAR_COMPLETE_TOLERANCE:
+                    print(f"{self} within {NEAR_COMPLETE_TOLERANCE}s of end, completing despite cache")
+                    self.update = tsnow()
+                    self.computing = False
+                    self.crontab = 0
+                    self.state = 1
+                    self.last = self.end
+                    self.save()
+                    return 1
+                self.update = tsnow()
                 self.state = -4
                 self.save()
                 return -4
@@ -2609,6 +2628,7 @@ class AttacksReport(models.Model):
             self.computing = False
             self.crontab = 0
             self.state = -5
+            self.update = tsnow()
             self.save()
             return -5
 
