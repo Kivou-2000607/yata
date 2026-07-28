@@ -66,11 +66,11 @@
                   <option disabled><i>{{timestamps.0.0}}</i></option>
                   {% for name, ts in timestamps %}
                       {% if ts <= comparison.1 %}
-                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" disabled><b>{{ts|ts2date}}</option>
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" disabled><b>{{ts|ts2date}}</b></option>
                       {% elif ts == comparison.2 %}
-                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" selected><b>{{ts|ts2date}}</option>
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}" selected><b>{{ts|ts2date}}</b></option>
                       {% else %}
-                          <option value="{{statType}}-{{comparison.1}}-{{ts}}"><b>{{ts|ts2date}}</option>
+                          <option value="{{statType}}-{{comparison.1}}-{{ts}}"><b>{{ts|ts2date}}</b></option>
                       {% endif %}
                   {% endfor %}
               {% endif %}
