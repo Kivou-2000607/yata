@@ -22,6 +22,7 @@ import time
 from django.core.management.base import BaseCommand
 
 from company.models import Company, CompanyData, CompanyStock
+from player.models import Player
 from yata.handy import logdate, tsnow
 
 # import json
@@ -42,7 +43,8 @@ class Command(BaseCommand):
         print(f"[CRON {logdate()}] today_id_ts calculated: {today_id_ts}")
 
         print(f"[CRON {logdate()}] fetching all companies from database")
-        companies = Company.objects.all()
+        valid_directors = [p.tId for p in Player.objects.all() if p.validKey]
+        companies = Company.objects.filter(director__in=valid_directors)
         print(f"[CRON {logdate()}] fetched companies query object")
 
         for company in companies:
