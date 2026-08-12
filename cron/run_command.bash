@@ -34,40 +34,44 @@ if [[ "$1" == "chain" || "$1" == "attacks" || "$1" == "revives" ]]; then
   sleep $2
 fi
 
-# lock file
-mkdir -p /tmp/yata-crons
-if [ "$2" == "" ]; then
-  LOCK_FILE="/tmp/yata-crons/$1.lock"
-else
-  LOCK_FILE="/tmp/yata-crons/$1-$2.lock"
+# lock file (skip for companies - runs 2x daily, no lock needed)
+if [ "$1" != "companies" ]; then
+  mkdir -p /tmp/yata-crons
+  if [ "$2" == "" ]; then
+    LOCK_FILE="/tmp/yata-crons/$1.lock"
+  else
+    LOCK_FILE="/tmp/yata-crons/$1-$2.lock"
+  fi
+
+  echo "[BASH $(date -u "+%Y-%m-%d %T")] lockfile: $LOCK_FILE" >> $LOG_FILE 2>&1
+
+  # check lockfile
+  if [ -f "$LOCK_FILE" ]; then
+      echo "[BASH $(date -u "+%Y-%m-%d %T")] cron locked" >> $LOG_FILE 2>&1
+      echo "" >> $LOG_FILE 2>&1
+      exit
+  else
+      echo "[BASH $(date -u "+%Y-%m-%d %T")] cron free" >> $LOG_FILE 2>&1
+      touch $LOCK_FILE
+  fi
 fi
-
-echo "[BASH $(date -u "+%Y-%m-%d %T")] lockfile: $LOCK_FILE" >> $LOG_FILE 2>&1
-
-# check lockfile
-if [ -f "$LOCK_FILE" ]; then
-    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron locked" >> $LOG_FILE 2>&1
-    echo "" >> $LOG_FILE 2>&1
-    exit
-else
-    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron free" >> $LOG_FILE 2>&1
-    touch $LOCK_FILE
-fi
-
 
 # run command
 source $YATA_VENV_DIR/bin/activate
 python $YATA_DIR/manage.py $1 $2 >> $LOG_FILE 2>&1
 # flock -n $LOCK_FILE -c "python $YATA_DIR/manage.py $1 $2"
 
-#rm -fv $LOCK_FILE >> $LOG_FILE
-echo "[BASH $(date -u "+%Y-%m-%d %T")] $(rm -fv $LOCK_FILE)" >> $LOG_FILE 2>&1
+# cleanup lock (only if we created one)
+if [ "$1" != "companies" ]; then
+  #rm -fv $LOCK_FILE >> $LOG_FILE
+  echo "[BASH $(date -u "+%Y-%m-%d %T")] $(rm -fv $LOCK_FILE)" >> $LOG_FILE 2>&1
 
-# check lockfile
-if [ -f "$LOCK_FILE" ]; then
-    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron still locked" >> $LOG_FILE 2>&1
-else
-    echo "[BASH $(date -u "+%Y-%m-%d %T")] cron freed" >> $LOG_FILE 2>&1
+  # check lockfile
+  if [ -f "$LOCK_FILE" ]; then
+      echo "[BASH $(date -u "+%Y-%m-%d %T")] cron still locked" >> $LOG_FILE 2>&1
+  else
+      echo "[BASH $(date -u "+%Y-%m-%d %T")] cron freed" >> $LOG_FILE 2>&1
+  fi
 fi
 
 echo "[BASH $(date -u "+%Y-%m-%d %T")] END" >> $LOG_FILE 2>&1

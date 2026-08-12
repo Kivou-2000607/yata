@@ -26,8 +26,8 @@ YATA_DIR=/home/decap/yata
 5 3,15 * * * bash -c "~/yata/cron/run_command.bash players"
 0 3,15 * * * bash -c "~/yata/cron/run_command.bash players_stats"
 
-# COMPANIES (setup to catch before and after Torn update)
-0 7,20 * * * bash -c "~/yata/cron/run_command.bash companies"
+# COMPANIES
+0 20 * * * bash -c "~/yata/cron/run_command.bash companies"
 
 # COMPANIES BROWSE (fetch all companies for listing page)
 5 * * * * bash -c "~/yata/cron/run_command.bash companies_browse"
