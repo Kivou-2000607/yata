@@ -230,8 +230,13 @@
                         Visible to: Other YATA users who can access shared features/databases<br>
                         • May include references to your player data in shared faction reports<br>
                         • Public faction member data (if faction enables public sharing)<br><br>
-                        <strong>THIRD PARTIES:</strong><br>
-                        Never shared with external services, companies, APIs, or third parties
+                        <strong>THIRD PARTIES & EXTERNAL SERVICES:</strong><br>
+                        Never shared with external services or companies<br><br>
+                        <strong>YATA API:</strong><br>
+                        Data exposed via YATA's own REST API to authenticated users:<br>
+                        • Faction members: attack reports, revive reports, member data (if shared)<br>
+                        • Company members: company financials and employee data<br>
+                        • Spy database: faction members with database access
                     </td>
                     <td>
                         <strong>PLAYER PROFILE & STATS DISPLAY:</strong><br>
@@ -332,9 +337,9 @@
                         • Never: transmitted outside YATA server<br>
                         • Never: displayed to other users<br><br>
                         <strong>USER CONTROL:</strong><br>
-                        Toggle "Use for me" - enables personal features, limits API calls<br>
-                        Toggle "Use for faction" - enables faction features, allows faction member data access<br>
-                        Both can be disabled to stop all data collection<br><br>
+                        • Toggle "Use for me" - enables personal features, limits API calls<br>
+                        • Toggle "Use for faction" - enables faction data pulls<br>
+                        • Members control stat sharing individually (battle stats, energy, nerve)<br><br>
                         <strong>KEY PROTECTION:</strong><br>
                         • Connection: HTTPS/TLS<br>
                         • At rest: Database encryption<br>
@@ -348,320 +353,17 @@
                         • Limited<br>
                         • Full (maximum)<br><br>
                         <strong>REQUIRED BY FEATURE:</strong><br>
-                        • Public data: Public key<br>
-                        • Personal stats: Limited+ key<br>
-                        • Faction details: Limited+ key<br>
-                        • Member stats: Limited+ key<br>
-                        • Full history: Full key recommended<br><br>
+                        • Public data only: Public key<br>
+                        • Personal stats & attacks: Limited key<br>
+                        • Faction features: Limited key<br>
+                        • All features: Limited key (Full not needed)<br><br>
                         <strong>USER CONTROL:</strong><br>
                         • "Use for me" toggle: Enable/disable personal API usage<br>
-                        • "Use for faction" toggle: Enable/disable faction API usage<br>
-                        • Disabling toggles stops corresponding API calls<br>
-                        • Reduces data collection when disabled<br><br>
+                        • "Use for faction" toggle: Enable/disable faction API pulls<br>
+                        • Members can individually control stat sharing (strength, speed, defense, dexterity, energy, nerve)<br>
+                        • Disabling toggles stops corresponding API calls<br><br>
                         <strong>RECOMMENDATION:</strong><br>
-                        Use the lowest key level that supports features you need. Disable unused toggles to reduce API quota usage and data collection.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-            <style>
-                .api-disclosure-table {
-                    background-color: #ffffff;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-                    border-radius: 4px;
-                    overflow: hidden;
-                }
-                .api-disclosure-table td {
-                    vertical-align: top;
-                    padding: 16px !important;
-                    background-color: #fafafa;
-                    border-color: #e0e0e0 !important;
-                    font-size: 0.95rem;
-                    line-height: 1.6;
-                }
-                .api-disclosure-table td strong {
-                    color: #2c3e50;
-                    display: block;
-                    margin-top: 12px;
-                    margin-bottom: 6px;
-                }
-                .api-disclosure-table td strong:first-child {
-                    margin-top: 0;
-                }
-                .api-disclosure-table thead {
-                    background-color: #2c3e50;
-                    color: #ffffff;
-                }
-                .api-disclosure-table thead th {
-                    border-color: #1a252f !important;
-                    padding: 14px !important;
-                    font-weight: 600;
-                    font-size: 0.95rem;
-                }
-                .api-disclosure-table tbody tr:nth-child(even) td {
-                    background-color: #f5f5f5;
-                }
-                .api-disclosure-table tbody tr:hover td {
-                    background-color: #efefef;
-                }
-                @media (prefers-color-scheme: dark) {
-                    .api-disclosure-table {
-                        background-color: #2c2c2c;
-                    }
-                    .api-disclosure-table td {
-                        background-color: #323232;
-                        border-color: #444444 !important;
-                        color: #e0e0e0;
-                    }
-                    .api-disclosure-table td strong {
-                        color: #ffffff;
-                    }
-                    .api-disclosure-table thead {
-                        background-color: #1a1a1a;
-                    }
-                    .api-disclosure-table tbody tr:nth-child(even) td {
-                        background-color: #2d2d2d;
-                    }
-                    .api-disclosure-table tbody tr:hover td {
-                        background-color: #383838;
-                    }
-                }
-            </style>
-            <thead class="table-dark">
-                <tr>
-                    <th>Data Storage</th>
-                    <th>Data Sharing</th>
-                    <th>Purpose of Use</th>
-                    <th>Key Storage & Sharing</th>
-                    <th>Key Access Level</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <strong>Until deletion / Forever</strong><br><br>
-                        <strong>Cache:</strong> 1 hour in memory<br>
-                        <strong>Database:</strong> Indefinite (until account deletion)<br><br>
-                        <strong>PERSONAL PLAYER DATA:</strong><br>
-                        • Player ID, name, level, rank<br>
-                        • Balance, points, bounty status<br>
-                        • Status (online/offline/in hospital)<br>
-                        • Last action timestamp<br>
-                        • Faction ID, name, permission<br>
-                        • Company ID, type, role, wages<br>
-                        • Chain information (ongoing/completed)<br>
-                        • Attack/revive history status timestamps<br>
-                        • Bazaar shopping list<br>
-                        • Awards/honors score and counts<br>
-                        • Pinned awards<br>
-                        • Stocks portfolio data<br>
-                        • Discord ID (if linked)<br>
-                        • Notification preferences<br>
-                        • API key access level/validity<br><br>
-                        <strong>FACTION MEMBER DATA:</strong><br>
-                        • Member ID, name, status<br>
-                        • Days in faction, bonus score<br>
-                        • Last action (detailed)<br>
-                        • Description, details, state, color<br>
-                        • Travel info, honors (carnage, massacre, genocide)<br>
-                        • Energy level, refill usage, revive status<br>
-                        • Drug cooldown counter<br>
-                        • Natural nerve bar level<br>
-                        • Combat stats: Strength, Speed, Defense, Dexterity, total<br>
-                        • Stats sharing preferences<br><br>
-                        <strong>ATTACK RECORDS (Each attack includes):</strong><br>
-                        • Attack ID, timestamps (start/end)<br>
-                        • Attacker: ID, name, faction ID, faction name<br>
-                        • Defender: ID, name, faction ID, faction name<br>
-                        • Result (mugged, knocked out, hospitalized, etc.)<br>
-                        • Stealthed flag, chain number<br>
-                        • Respect: total, gained, lost<br>
-                        • Raid & ranked war flags<br>
-                        • Combat modifiers: Fair fight, War bonus, Retaliation, Group attack, Overseas, Chain bonus, Warlord bonus<br><br>
-                        <strong>REVIVE RECORDS (Each revive includes):</strong><br>
-                        • Revive ID, timestamp<br>
-                        • Reviver: ID, name, faction ID, faction name<br>
-                        • Target: ID, name, faction ID, faction name<br>
-                        • Target status (online/hospital)<br>
-                        • Hospital reason<br>
-                        • Early discharge flag<br>
-                        • Success chance, result (success/failure)<br><br>
-                        <strong>SPY DATABASE RECORDS (Each spy entry includes):</strong><br>
-                        • Target player ID, name<br>
-                        • Combat stats: Strength, Speed, Defense, Dexterity, total<br>
-                        • Stat timestamps (when each stat was recorded)<br>
-                        • Target faction ID, name<br>
-                        • Multiple snapshots over time<br><br>
-                        <strong>COMPANY DATA:</strong><br>
-                        • Daily/weekly/monthly income, profit, customer counts<br>
-                        • Popularity, efficiency, environment scores<br>
-                        • Employee count, advertising budget, total wages<br>
-                        • Stock cost tracking<br><br>
-                        <strong>AWARDS DATA:</strong><br>
-                        • Awards catalog with rarity, circulation info<br>
-                        • Hall of Fame rankings<br>
-                        • User award progression<br><br>
-                        <strong>API KEY METADATA:</strong><br>
-                        • API key value itself<br>
-                        • Key type (personal/faction/both)<br>
-                        • Access level (Public, Minimal, Limited, Full)<br>
-                        • Usage flags: Use for me, Use for faction<br>
-                        • Last pull timestamp, reason<br>
-                        • Error codes from API
-                    </td>
-                    <td>
-                        <strong>PERSONAL DATA (Private):</strong><br>
-                        Only visible to: You + YATA admins (Kivou [2000607], Decap [47662])<br><br>
-                        <strong>FACTION DATA (If you enable "Use for faction"):</strong><br>
-                        Shared with: All faction members who can access YATA faction features<br>
-                        • Full attack reports with all attacker/defender names, IDs, factions, timestamps, results, respect changes, and all modifiers<br>
-                        • Full revive reports with names, IDs, factions, timestamps, chances, success/failure<br>
-                        • Member stats (strength, speed, defense, dexterity) only if member has enabled sharing<br>
-                        • Member status (energy, nerve bar, last action, honors, crimes rank)<br>
-                        • Historical trends (attacks, revives, crimes, armory, upgrades)<br>
-                        • Spy database records (if faction has spy database)<br>
-                        • War/war history data<br><br>
-                        <strong>COMPANY DATA (If in company):</strong><br>
-                        Shared with: Other company members (directors, employees, managers)<br>
-                        • Company financials (daily/weekly/monthly income, profit, customers)<br>
-                        • Employee roster and performance<br>
-                        • Company efficiency, popularity, environment scores<br>
-                        • Stock data and director information<br><br>
-                        <strong>PUBLIC DATA (If you enable "Use for me"):</strong><br>
-                        Visible to: Other YATA users who can access shared features/databases<br>
-                        • May include references to your player data in shared faction reports<br>
-                        • Public faction member data (if faction enables public sharing)<br><br>
-                        <strong>THIRD PARTIES:</strong><br>
-                        Never shared with external services, companies, APIs, or third parties
-                    </td>
-                    <td>
-                        <strong>PLAYER PROFILE & STATS DISPLAY:</strong><br>
-                        • Display your player profile, level, rank, balance<br>
-                        • Show combat stats (strength, speed, defense, dexterity)<br>
-                        • Display faction membership and role<br>
-                        • Show company employment status and wages<br>
-                        • Track your status (online/hospital/traveling)<br>
-                        • Display last action and activity history<br><br>
-                        <strong>PERSONAL ATTACK & REVIVE TRACKING:</strong><br>
-                        • Display your personal attack history<br>
-                        • Show revives you've made/received<br>
-                        • Track combat performance and statistics<br>
-                        • Analyze damage dealt and received<br>
-                        • Show respect gains/losses<br>
-                        • Calculate combat modifiers applied<br><br>
-                        <strong>AWARDS, HONORS & ACHIEVEMENTS:</strong><br>
-                        • Display medals and honors earned<br>
-                        • Show achievement rankings and percentiles<br>
-                        • Track award progression and rarity<br>
-                        • Generate hall of fame statistics<br><br>
-                        <strong>STOCKS & MARKET TRACKING:</strong><br>
-                        • Display your personal stock portfolio<br>
-                        • Show stock prices and historical trends<br>
-                        • Track stock market data<br>
-                        • Display dividends and portfolio performance<br>
-                        • Show market-wide stock statistics<br>
-                        • Generate faction stock analysis (if in faction)<br><br>
-                        <strong>BAZAAR & TRADING:</strong><br>
-                        • Display bazaar listings and prices<br>
-                        • Show your bazaar inventory<br>
-                        • Track marketplace trends<br>
-                        • Display item statistics<br><br>
-                        <strong>FACTION FEATURES (with "Use for faction"):</strong><br>
-                        • Generate live attack reports (updated minutely)<br>
-                        • Generate chain tracking reports<br>
-                        • Generate revive reports with member performance<br>
-                        • Display faction member list with stats/energy/nerve<br>
-                        • Track member activity and last actions<br>
-                        • Monitor member honor counts (single hit attacks)<br>
-                        • Display member battle stats (if they share)<br>
-                        • Track faction crimes and member contributions<br>
-                        • Monitor armory/upgrades and historical changes<br>
-                        • Track faction wars and dispute history<br>
-                        • Maintain spy database for faction intelligence<br>
-                        • Track target player stats over time (spy feature)<br>
-                        • Display faction territory control<br>
-                        • Generate faction member posters and organization charts<br>
-                        • Analyze faction chain bonuses and performance<br>
-                        • Track war modifiers and bonuses applied<br><br>
-                        <strong>TARGET & LOOT TRACKING:</strong><br>
-                        • Track potential attack targets<br>
-                        • Monitor loot locations and availability<br>
-                        • Track scheduled attacks and defense info<br><br>
-                        <strong>COMPANY MANAGEMENT (if in company):</strong><br>
-                        • Display company financial metrics<br>
-                        • Show employee roster and performance<br>
-                        • Track daily/weekly/monthly income and profit<br>
-                        • Monitor company efficiency and popularity<br>
-                        • Display stock data and director information<br><br>
-                        <strong>ANALYTICS & STATISTICS:</strong><br>
-                        • Calculate faction-wide combat effectiveness<br>
-                        • Generate member activity reports<br>
-                        • Analyze attack success rates and patterns<br>
-                        • Track donation tracking (if enabled)<br>
-                        • Generate meta-game statistics<br>
-                        • Calculate reputation scores<br><br>
-                        <strong>SERVICE IMPROVEMENT & MAINTENANCE:</strong><br>
-                        • Collect aggregate usage statistics<br>
-                        • Identify bugs and performance issues<br>
-                        • Monitor API reliability and response times<br>
-                        • Detect duplicate or invalid player data<br>
-                        • Validate API key health and access levels<br>
-                        • Update item database with prices/images<br>
-                        • Sync faction hierarchy and structure<br>
-                        • Maintain awards catalog and circulation data<br>
-                        • Update company directory and leadership<br><br>
-                        <strong>TECHNICAL OPERATIONS:</strong><br>
-                        • API quota tracking and rate limiting<br>
-                        • Request/response logging and error diagnostics<br>
-                        • System monitoring and performance tracking<br>
-                        • Cache management (1-hour memory cache)<br>
-                        • Validate API keys and access permissions<br>
-                        • Handle concurrent data updates safely
-                    </td>
-                    <td>
-                        <strong>STORAGE METHOD:</strong><br>
-                        PostgreSQL database with provider-level encryption at rest<br><br>
-                        <strong>ACCESS CONTROL:</strong><br>
-                        • Database access: Only YATA admins (Kivou, Decap)<br>
-                        • No automated tools access the database<br>
-                        • No shared admin accounts<br><br>
-                        <strong>KEY USAGE:</strong><br>
-                        • Used ONLY for authorized Torn API calls<br>
-                        • Never: shared with third parties<br>
-                        • Never: logged in application logs (error codes only)<br>
-                        • Never: used beyond stated purposes<br>
-                        • Never: transmitted outside YATA server<br>
-                        • Never: displayed to other users<br><br>
-                        <strong>USER CONTROL:</strong><br>
-                        Toggle "Use for me" - enables personal features, limits API calls<br>
-                        Toggle "Use for faction" - enables faction features, allows faction member data access<br>
-                        Both can be disabled to stop all data collection<br><br>
-                        <strong>KEY PROTECTION:</strong><br>
-                        • Connection: HTTPS/TLS<br>
-                        • At rest: Database encryption<br>
-                        • Validation: API access level verified
-                    </td>
-                    <td>
-                        <strong>ACCEPTED LEVELS:</strong><br>
-                        YATA accepts all access levels:<br>
-                        • Public (minimum)<br>
-                        • Minimal<br>
-                        • Limited<br>
-                        • Full (maximum)<br><br>
-                        <strong>REQUIRED BY FEATURE:</strong><br>
-                        • Public data: Public key<br>
-                        • Personal stats: Limited+ key<br>
-                        • Faction details: Limited+ key<br>
-                        • Member stats: Limited+ key<br>
-                        • Full history: Full key recommended<br><br>
-                        <strong>USER CONTROL:</strong><br>
-                        • "Use for me" toggle: Enable/disable personal API usage<br>
-                        • "Use for faction" toggle: Enable/disable faction API usage<br>
-                        • Disabling toggles stops corresponding API calls<br>
-                        • Reduces data collection when disabled<br><br>
-                        <strong>RECOMMENDATION:</strong><br>
-                        Use the lowest key level that supports features you need. Disable unused toggles to reduce API quota usage and data collection.
+                        Use a LIMITED key - no YATA features require Full access. Disable unused toggles to reduce API quota usage and data collection.
                     </td>
                 </tr>
             </tbody>
