@@ -30,10 +30,8 @@ print(f"[YATA {datestr()}] settings DEBUG={DEBUG}")
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY set in config variables
 SECRET_KEY = config("SECRET_KEY")
-print(f"[YATA {datestr()}] settings SECRET_KEY={SECRET_KEY}")
 
 LOG_KEY = config("LOG_KEY")
-print(f"[YATA {datestr()}] settings LOG_KEY={LOG_KEY}")
 
 ALLOWED_HOSTS = [config("ALLOWED_HOSTS", default="*")]
 print(f"[YATA {datestr()}] settings ALLOWED_HOSTS={ALLOWED_HOSTS}")
@@ -92,8 +90,16 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 ROOT_URLCONF = "yata.urls"
 # Ignore xkcdpass from static files
 STATICFILES_IGNORE_PATTERNS = [
-    "*.wordlist", "eff-*", "spa-*", "ger-*", "fin-*", "nor-*",
-    "pt-*", "ita-*", "fr-*", "legacy",
+    "*.wordlist",
+    "eff-*",
+    "spa-*",
+    "ger-*",
+    "fin-*",
+    "nor-*",
+    "pt-*",
+    "ita-*",
+    "fr-*",
+    "legacy",
 ]
 
 if DEBUG:
